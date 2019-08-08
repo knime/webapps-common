@@ -1,4 +1,25 @@
-// custom image rule for SVGs including optimization (inspired by https://github.com/sam3d/nuxt-svg)
+/*
+Custom image rule for SVGs including optimization (inspired by https://github.com/sam3d/nuxt-svg)
+
+Example usage in Nuxt nuxt.config.js:
+    import svgConfig from '../webapps-common/webpack/webpack.svg.config';
+    export default {
+        build: {
+            extend(config) {
+                config.module.rules.push(svgConfig);
+            }
+        }
+    };
+
+Example usage in Vue postcss.config.js:
+    const svgConfig = require('./webapps-common/webpack/webpack.svg.config');
+    module.exports = {
+        chainWebpack: config => {
+            config.module.rule('svg').uses.clear();
+            config.merge({ module: { rule: { svg: svgConfig } } });
+        }
+    };
+*/
 
 const svgoOptions = {
     plugins: [
@@ -25,7 +46,7 @@ module.exports = {
                 loader: 'url-loader'
             },
             {
-                loader: 'vue-svg-loader',
+                loader: 'svgo-loader',
                 options: svgoOptions
             }
         ]

@@ -11,7 +11,7 @@ Include this in your [ESLint config file]:
 
 ```js
 {
-  extends: ['./webapps-common/.eslintrc-base.js']
+  extends: ['./webapps-common/lint/.eslintrc-base.js']
 }
 ```
 
@@ -25,7 +25,7 @@ Configuration files are made for ESLint 5.
 Import the config file using
 
 ```
-module.exports = require('./webapps-common/.stylelintrc');
+module.exports = require('./webapps-common/lint/.stylelintrc');
 ```
 
 in your `.stylelintrc.js`.
