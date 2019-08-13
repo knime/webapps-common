@@ -2,7 +2,7 @@
 Custom image rule for SVGs including optimization (inspired by https://github.com/sam3d/nuxt-svg)
 
 Example usage in Nuxt nuxt.config.js:
-    import svgConfig from '../webapps-common/webpack/webpack.svg.config';
+    import svgConfig from 'webapps-common/webpack/webpack.svg.config';
     export default {
         build: {
             extend(config) {
@@ -12,7 +12,7 @@ Example usage in Nuxt nuxt.config.js:
     };
 
 Example usage in Vue postcss.config.js:
-    const svgConfig = require('./webapps-common/webpack/webpack.svg.config');
+    const svgConfig = require('webapps-common/webpack/webpack.svg.config');
     module.exports = {
         chainWebpack: config => {
             config.module.rule('svg').uses.clear();

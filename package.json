@@ -1,0 +1,20 @@
+{
+  "name": "webapps-common",
+  "version": "1.0.0",
+  "description": "Shared files for web projects. See README for details.",
+  "license": "UNLICENSED",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "private": true,
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "5.16.0"
+  },
+  "peerDependencies": {
+    "eslint": "5.x",
+    "stylelint": "10.x",
+    "stylelint-config-standard": "18.x"
+  }
+}

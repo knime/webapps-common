@@ -30,6 +30,7 @@ module.exports = {
                 'scrollToTop',
                 'transition',
                 'model',
+                ['inject', 'provide'],
                 ['props', 'propsData'],
                 'data',
                 'asyncData',
