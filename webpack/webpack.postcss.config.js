@@ -1,6 +1,6 @@
 /*
 Example usage in Nuxt nuxt.config.js:
-    import postcssConfig from '../webapps-common/webpack/webpack.postcss.config';
+    import postcssConfig from 'webapps-common/webpack/webpack.postcss.config';
     export default {
         build: {
             postcss: postcssConfig
@@ -8,7 +8,7 @@ Example usage in Nuxt nuxt.config.js:
     };
 
 Example usage in Vue postcss.config.js:
-    const { preset, plugins } = require('./webapps-common/webpack/webpack.postcss.config');
+    const { preset, plugins } = require('webapps-common/webpack/webpack.postcss.config');
     module.exports = {
         plugins: Object.assign({}, plugins, {
             'postcss-preset-env': preset
