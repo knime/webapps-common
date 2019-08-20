@@ -1,0 +1,27 @@
+@import "normalize.css";
+@import "./variables";
+@import "./grid";
+@import "./fonts";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+svg {
+  shape-rendering: geometricPrecision;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"] {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}

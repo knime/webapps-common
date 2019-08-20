@@ -1,6 +1,6 @@
 /*
 Example usage in Nuxt nuxt.config.js:
-    import postcssConfig from 'webapps-common/webpack/webpack.postcss.config';
+    import postcssConfig from '~/webapps-common/webpack/webpack.postcss.config';
     export default {
         build: {
             postcss: postcssConfig

@@ -38,6 +38,29 @@ timeout(time: 15, unit: 'MINUTES') {
         '''
       }
 
+      stage('Unit Tests') {
+        try {
+          // trows exception on failing test
+          sh '''
+            npm run coverage -- --ci
+          '''
+        } catch (ignore) {
+          // failing tests should not result in a pipeline exception
+        } finally {
+          junit 'coverage/junit.xml'
+        }
+      }
+
+      if (BRANCH_NAME == "master") {
+        stage('Upload Coverage data') {
+          withCredentials([usernamePassword(credentialsId: 'SONAR_CREDENTIALS', passwordVariable: 'SONAR_PASSWORD', usernameVariable: 'SONAR_LOGIN')]) {
+            sh '''
+              npm run sendcoverage
+            '''
+          }
+        }
+      }
+
     } catch (ex) {
       currentBuild.result = 'FAILED'
       throw ex

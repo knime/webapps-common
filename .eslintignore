@@ -1,1 +1,4 @@
 !.eslintrc*.js
+dist/
+coverage/
+demo/node_modules/

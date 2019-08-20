@@ -1,0 +1,25 @@
+{
+  "name": "webapps-common-demo",
+  "version": "1.0.0",
+  "description": "Showcase for common UI components",
+  "license": "UNLICENSED",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "normalize.css": "8.0.1",
+    "nuxt": "2.9.1",
+    "postcss-css-variables": "0.13.0",
+    "svgo": "1.2.2",
+    "svgo-loader": "2.2.1",
+    "typeface-roboto": "0.0.75",
+    "typeface-roboto-mono": "0.0.75",
+    "vue-svg-loader": "0.11.0",
+    "webapps-common": "file:.."
+  },
+  "private": true
+}
