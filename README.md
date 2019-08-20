@@ -48,5 +48,16 @@ Configuration files are made for Stylelint 10.
 
 (see inline comments in `webpack/*`)
 
+### CSS
+
+This project contains shared CSS files in `ui/css`. See comments in that folder for further info.
+
+All CSS files are designed for usage in Vue projects, where they can be imported like so:
+
+```css
+@import "webapps-common/ui/css/…";
+```
+
+
 [ESLint config file]: https://eslint.org/docs/user-guide/configuring
 [peer dependencies]: https://docs.npmjs.com/files/package.json#peerdependencies

@@ -1,0 +1,5 @@
+<svg fill="none" stroke="#000" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <line x1="0" y1="0" x2="0" y2="0" transform="translate(16, 8) scale(3)" />
+    <line x1="0" y1="0" x2="0" y2="0" transform="translate(16, 16) scale(3)" />
+    <line x1="0" y1="0" x2="0" y2="0" transform="translate(16, 24) scale(3)" />
+</svg>
