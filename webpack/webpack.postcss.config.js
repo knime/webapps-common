@@ -17,7 +17,7 @@ Example usage in Vue postcss.config.js:
 */
 
 module.exports = {
-    preset: {
+    preset: { // config for postcss-preset-env which converts modern CSS into something most browsers can understand
         stage: 2,
         features: {
             'nesting-rules': true,

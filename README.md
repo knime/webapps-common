@@ -70,7 +70,7 @@ This is used for loading resources in templates or CSS:
 
 ```css
 .foo {
-    mask: url("~webapps-common/ui/assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+    mask: url("~webapps-common/ui/assets/img/icons/link-external.svg?data") no-repeat 50% 50%; /* inline SVG as base64 */
 }
 ```
 
@@ -96,7 +96,9 @@ This syntax can be used for importing CSS files from within other CSS files:
 | `<img src="…">` |                     | ✅                  |                   |
 | CSS `url()`     |                     | ✅                  |                   |
 | CSS `@import`   | (not for fonts)     |                    | ✅                 |
-    
+
+
+
 ### ESLint
 
 Include this in your [ESLint config file]:
@@ -128,6 +130,24 @@ Configuration files are made for Stylelint 10.
 
 (see inline comments in `webpack/*`)
 
+## Styling and theming
 
+### CSS tooling and syntax
+All CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
+
+Nesting of CSS rules is supported via [postcss-nesting] following the [CSS Nesting specification] (draft).
+
+
+### Theming
+In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in
+`/ui/css/variables`. Since IE11 doesn't support them, theming won't work here; the default theme will be shown.
+
+
+
+
+
+[PostCSS]: https://postcss.org/
+[postcss-nesting]: https://github.com/jonathantneal/postcss-nesting
+[CSS Nesting specification]: https://tabatkins.github.io/specs/css-nesting/#nest-selector
 [ESLint config file]: https://eslint.org/docs/user-guide/configuring
 [peer dependencies]: https://docs.npmjs.com/files/package.json#peerdependencies
