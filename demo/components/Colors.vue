@@ -1,3 +1,15 @@
+<script>
+import ThemeColorsCSS from '!!raw-loader!webapps-common/ui/css/variables/colors.css';
+
+export default {
+    computed: {
+        ThemeColorsCSS() {
+            return ThemeColorsCSS;
+        }
+    }
+};
+</script>
+
 <template>
   <section>
     <div class="grid-container">
@@ -12,6 +24,14 @@
           <div style="--bg: var(--knime-porcelain);">--knime-porcelain</div>
           <div style="--bg: var(--knime-white);">--knime-white</div>
         </div>
+        <p>
+          To support theming, please always use the <code>--theme-color-x</code> variables instead of directly refering
+          the colors.
+        </p>
+        <details>
+          <summary>Show available color variables</summary>
+          <pre>{{ ThemeColorsCSS }}</pre>
+        </details>
       </div>
     </div>
   </section>

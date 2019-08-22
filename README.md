@@ -58,7 +58,12 @@ This can be used when importing js files or SVG images into a `.vue` file:
 import DownloadIcon from '~/webapps-common/ui/assets/img/icons/cloud-download.svg?inline'; // inline SVG
 import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle'; // .js
 import Description from '~/webapps-common/ui/components/Description'; // Vue component
-``` 
+```
+
+The Vue components expect that the app provides the following:
+
+- Vue and Consola compatible to the versions defined in [`package.json`](package.json)
+- global `window.consola` instance for logging
 
 #### `~webapps-common/…`
 
