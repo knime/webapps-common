@@ -28,7 +28,9 @@ export default {
         postcss: postcssConfig,
         extend(config, { isDev, isClient, isServer }) {
             // limit nuxt default image rule to *.gif because we want to handle all others ourselves
-            const imgRule = config.module.rules.find(rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp)$/i));
+            const imgRule = config.module.rules.find(
+                rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp)$/i)
+            );
             imgRule.test = /\.(gif)$/i;
 
             config.module.rules.push(svgConfig);

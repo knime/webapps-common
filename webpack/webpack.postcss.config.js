@@ -8,11 +8,12 @@ Example usage in Nuxt nuxt.config.js:
     };
 
 Example usage in Vue postcss.config.js:
-    const { preset, plugins } = require('webapps-common/webpack/webpack.postcss.config');
+    const { preset, plugins, order } = require('webapps-common/webpack/webpack.postcss.config');
     module.exports = {
         plugins: Object.assign({}, plugins, {
             'postcss-preset-env': preset
-        })
+        }),
+        order
     };
 */
 
@@ -26,10 +27,13 @@ module.exports = {
             'custom-properties': false
         }
     },
+    order: 'presetEnvAndCssnanoLast',
     plugins: {
+        'postcss-import': {},
+        'postcss-url': {},
         'postcss-css-variables': { // only because of IE11: add fallbacks for css custom properties
             preserve: true // ...but keep native CSS custom props, so modern browser will use them
         },
-        'postcss-calc': true
+        'postcss-calc': {}
     }
 };

@@ -28,7 +28,7 @@ You should follow these steps
 
     The latter allows to require the files via `require('webapps-common')` as if they had been pulled from the npm
     registry, as opposed to writing `require('{RELATIVE_PATH}/webapps-common')`.  
-    It also makes sure that [peer dependencies] are installed correctly.
+    It also warns you about installing required [peer dependencies].
    
 1. Now set up an alias for the `webapps-common` folder:
 
