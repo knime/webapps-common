@@ -7,15 +7,9 @@
   </div>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 img {
   height: 4vmin;
   margin: 1vmin;
-}
-
-summary {
-  outline: none !important;
-  font-weight: 500;
-  cursor: pointer;
 }
 </style>

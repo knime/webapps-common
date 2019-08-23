@@ -1,10 +1,14 @@
 <script>
-import ThemeColorsCSS from '!!raw-loader!webapps-common/ui/css/variables/colors.css';
+import CodeExample from './demo/CodeExample';
+import themeColorsCSS from '!!raw-loader!webapps-common/ui/css/variables/colors.css';
 
 export default {
+    components: {
+        CodeExample
+    },
     computed: {
-        ThemeColorsCSS() {
-            return ThemeColorsCSS;
+        themeColorsCSS() {
+            return themeColorsCSS;
         }
     }
 };
@@ -28,17 +32,14 @@ export default {
           To support theming, please always use the <code>--theme-color-x</code> variables instead of directly refering
           the colors.
         </p>
-        <details>
-          <summary>Show available color variables</summary>
-          <pre>{{ ThemeColorsCSS }}</pre>
-        </details>
+        <CodeExample summary="Show available color variables">{{ themeColorsCSS }}</CodeExample>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
+@import "webapps-common/ui/css/variables";
 
 .demo {
   display: flex;

@@ -60,7 +60,7 @@
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
+@import "webapps-common/ui/css/variables";
 
 .grid-demo {
   font-weight: 500;
