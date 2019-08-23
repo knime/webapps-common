@@ -31,7 +31,7 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h1>Webapps Common Components</h1>
+          <h1>Web Apps Common Components</h1>
           <p>TODO</p>
         </div>
       </div>

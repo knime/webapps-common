@@ -8,10 +8,10 @@ export default {
     alias: {
         'webapps-common': path.resolve(__dirname, '..'),
         '../../../node_modules/typeface-roboto': path.resolve(__dirname, 'node_modules', 'typeface-roboto'),
-        '../../../node_modules/typeface-roboto-mono': path.resolve(__dirname, 'node_modules', 'typeface-roboto-mono'),
+        '../../../node_modules/typeface-roboto-mono': path.resolve(__dirname, 'node_modules', 'typeface-roboto-mono')
     },
     head: {
-        title: 'KNIME Webapps Common Demo',
+        title: 'KNIME Web Apps Common Demo',
         meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' }

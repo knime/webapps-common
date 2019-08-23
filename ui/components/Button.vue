@@ -2,22 +2,35 @@
 
 export default {
     props: {
+        /**
+         * if set, the button renders an <a> element instead of a <button> element
+         */
         href: {
             type: String,
             default: ''
         },
+        // to pass-trough all other props
         optionalProps: {
             type: Object,
             default: () => ({})
         },
+        /**
+         * show button with border
+         */
         withBorder: {
             type: Boolean,
             default: false
         },
+        /**
+         * switches hover colors to use button on a dark background
+         */
         onDark: {
             type: Boolean,
             default: false
         },
+        /**
+         * smaller font size and padding
+         */
         compact: {
             type: Boolean,
             default: false
