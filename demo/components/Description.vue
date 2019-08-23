@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Description from 'webapps-common/ui/components/Description.vue';
-import code from '!!raw-loader!webapps-common/ui/components/Description.vue';
+import Description from '../../ui/components/Description';
+import code from '!!raw-loader!../../ui/components/Description';
 
 export default {
     components: {
@@ -22,13 +22,20 @@ export default {
     }
 };
 </script>
+
 <template>
-  <section>
-    <div class="grid-container">
-      <div class="grid-item-12">
-        <h2>Description</h2>
-        <p>The Description component provides styling for rich-text markup (see component code for details)…</p>
-        <Description class="description">
+  <div>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <h2>Description</h2>
+          <p>The Description component provides styling for rich-text markup (see component code for details)…</p>
+        </div>
+      </div>
+    </section>
+    <section class="demo">
+      <div class="grid-container">
+        <Description class="description grid-item-12">
           <h5>Links</h5>
           <p>
             <a href="/">Internal link</a> or <a href="https://www.knime.com/">External link</a>
@@ -43,16 +50,15 @@ export default {
           </ol>
           <ul>
             <li>
-              <b>Replace outlier values:</b> Allows to replace outliers based on the selected
-              "Replacement strategy"
+              <b>Replace outlier values:</b> Allows to replace outliers based on the selected "Replacement strategy"
             </li>
             <li>
-              <b>Remove outlier rows:</b> Removes all rows from the input data that contain in any of the selected
-              columns at least one outlier
+              <b>Remove outlier rows:</b>
+              Removes all rows from the input data that contain in any of the selected columns at least one outlier
             </li>
             <li>
-              <b>Remove non-outlier rows:</b> Retains only those rows of the input data that contain at least one
-              outlier in any of the selected columns
+              <b>Remove non-outlier rows:</b>
+              Retains only those rows of the input data that contain at least one outlier in any of the selected columns
             </li>
           </ul>
 
@@ -100,7 +106,8 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre>
           <p>or <code>inline code</code></p>
           <h5>Definition list</h5>
           <dl>
-            <dt>knimeNode:</dt><dd>
+            <dt>knimeNode:</dt>
+            <dd>
               The knimeNode must have the correct namespace.
             </dd>
             <dt>
@@ -111,19 +118,23 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre>
             </dd>
           </dl>
         </Description>
-
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Description.vue code">{{ code }}</CodeExample>
       </div>
-    </div>
-  </section>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+          <CodeExample summary="Show Description.vue code">{{ code }}</CodeExample>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.description {
+section.demo {
   background-color: var(--knime-porcelain);
-  padding: 10px;
 }
 </style>

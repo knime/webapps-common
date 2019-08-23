@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Button from 'webapps-common/ui/components/Button.vue';
-import buttonCode from '!!raw-loader!webapps-common/ui/components/Button.vue';
+import Button from '../../ui/components/Button';
+import buttonCode from '!!raw-loader!../../ui/components/Button';
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>

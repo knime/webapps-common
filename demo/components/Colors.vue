@@ -32,6 +32,7 @@ export default {
           To support theming, please always use the <code>--theme-color-x</code> variables instead of directly refering
           the colors.
         </p>
+        <!-- eslint-disable-next-line vue/max-attributes-per-line -->
         <CodeExample summary="Show available color variables" language="css">{{ themeColorsCSS }}</CodeExample>
       </div>
     </div>

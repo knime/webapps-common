@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Breadcrumb from 'webapps-common/ui/components/Breadcrumb.vue';
-import breadcrumbCode from '!!raw-loader!webapps-common/ui/components/Breadcrumb.vue';
+import Breadcrumb from '../../ui/components/Breadcrumb';
+import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
 const codeExample = `<template>
   <Breadcrumb :items="[{ text: 'segment without link' }, { text: 'segment with link', href: '/' }]" />

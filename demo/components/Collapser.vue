@@ -1,8 +1,8 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Collapser from 'webapps-common/ui/components/Collapser.vue';
-import BulbIcon from 'webapps-common/ui/assets/img/icons/bulb.svg?inline';
-import code from '!!raw-loader!webapps-common/ui/components/Collapser.vue';
+import Collapser from '../../ui/components/Collapser';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
+import code from '!!raw-loader!../../ui/components/Collapser';
 
 export default {
     components: {

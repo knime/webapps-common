@@ -24,6 +24,9 @@ export default {
     css: [
         '~/assets/index.css'
     ],
+    plugins: [
+        '~/plugins/logger.client'
+    ],
     build: {
         postcss: postcssConfig,
         extend(config, { isDev, isClient, isServer }) {
@@ -39,8 +42,5 @@ export default {
     modules: [
         // this must be the first entry in the list
         '~/modules/server-logger'
-    ],
-    plugins: [
-        '~/plugins/client-logger'
     ]
 };

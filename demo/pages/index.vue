@@ -11,6 +11,7 @@ import Buttons from '../components/Buttons';
 import Collapser from '../components/Collapser';
 import Description from '../components/Description';
 import TabBar from '../components/TabBar';
+import Messages from '../components/Messages';
 
 export default {
     components: {
@@ -23,7 +24,8 @@ export default {
         Collapser,
         Description,
         TabBar,
-        Icons
+        Icons,
+        Messages
     }
 };
 </script>
@@ -52,6 +54,7 @@ export default {
     <Collapser />
     <Description />
     <TabBar />
+    <Messages />
   </main>
 </template>
 

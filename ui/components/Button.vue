@@ -37,6 +37,11 @@ export default {
     },
     methods: {
         onClick() {
+            /**
+             * Click event. Fired when the button is clicked.
+             *
+             * @event click
+             */
             this.$emit('click');
         }
     }

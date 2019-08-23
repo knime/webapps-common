@@ -27,7 +27,7 @@ export default {
 
 <style lang="postcss" scoped>
 details {
-  margin-bottom: 0.5em;
+  margin: 0.5em 0;
 }
 
 summary {

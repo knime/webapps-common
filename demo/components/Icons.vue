@@ -1,6 +1,4 @@
 <script>
-/* eslint-disable no-useless-escape */
-
 import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
 
