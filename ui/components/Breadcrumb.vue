@@ -1,6 +1,17 @@
 <script>
 export default {
     props: {
+        /**
+         * items as array with a 'text' and optional 'href' property
+         * e.g.
+         * [
+         *   { text: 'KNIME Hub', href: '/' },
+         *   { text: 'John Doe', href: '/john.doe' },
+         *   { text: 'Public Space', href: '/john.doe/space' },
+         *   { text: 'Examples', href: '/john.doe/space/examples' },
+         *   { text: 'Sentiment Prediction via REST' }
+         * ]
+         */
         items: {
             type: Array,
             default: () => []
