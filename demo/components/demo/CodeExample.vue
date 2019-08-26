@@ -1,9 +1,18 @@
 <script>
+import Prism from 'vue-prism-component';
+
 export default {
+    components: {
+        Prism
+    },
     props: {
         summary: {
             type: String,
             default: 'Code example'
+        },
+        language: {
+            type: String,
+            default: 'html'
         }
     }
 };
@@ -12,7 +21,7 @@ export default {
 <template>
   <details>
     <summary>{{ summary }}</summary>
-    <pre><code><slot /></code></pre>
+    <Prism :language="language"><slot /></Prism>
   </details>
 </template>
 

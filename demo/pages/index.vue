@@ -1,4 +1,6 @@
 <script>
+import 'prismjs';
+
 import Fonts from '../components/Fonts';
 import Colors from '../components/Colors';
 import Grid from '../components/Grid';

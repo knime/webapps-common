@@ -1,6 +1,4 @@
 <script>
-/* eslint-disable no-useless-escape */
-
 import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
 
@@ -15,9 +13,11 @@ export default {
 
 or e.g. inline as base64 in CSS:
 
+<style>
 .foo {
-  background-image: url("~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?data") no-repeat 50% 50%;
-}`
+  background: url("~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?data") no-repeat 50% 50%;
+}
+</style>`
         };
     },
     computed: {

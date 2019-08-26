@@ -12,38 +12,40 @@ export default {
     data() {
         return {
             codeExample: `<script>
-  import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
-  
-  export default {
-    components: {
-      FolderIcon
-    }
+import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
+
+export default {
+  components: {
+    FolderIcon
   }
+};
 <\/script>
+
 <template>
   <FolderIcon />
 </template>
+
 <style lang="postcss" scoped>
-  svg {
-    width: 25px;
-    height: 25px;
-    stroke: var(--theme-color-4);
-    stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
+svg {
+  width: 25px;
+  height: 25px;
+  stroke: var(--theme-color-4);
+  stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
 
-    &:hover {
-      stroke: var(--theme-color-5);
-    }
+  &:hover {
+    stroke: var(--theme-color-5);
   }
+}
 
-  /*
-    In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
-    neither does the fallback plugin:
-    svg {
-      width: calc(var(--icon-size) * 1px);
-      height: calc(var(--icon-size) * 1px);
-      stroke-width: calc(32px / var(--icon-size));
-    }
-  */
+/*
+  In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
+  neither does the fallback plugin:
+  svg {
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
+    stroke-width: calc(32px / var(--icon-size));
+  }
+*/
 </style>`
         };
     },

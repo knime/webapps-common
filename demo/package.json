@@ -14,11 +14,13 @@
     "normalize.css": "8.0.1",
     "nuxt": "2.9.1",
     "postcss-css-variables": "0.13.0",
+    "prismjs": "1.17.1",
     "raw-loader": "3.1.0",
     "svgo": "1.2.2",
     "svgo-loader": "2.2.1",
     "typeface-roboto": "0.0.75",
     "typeface-roboto-mono": "0.0.75",
+    "vue-prism-component": "1.1.1",
     "vue-svg-loader": "0.11.0",
     "webapps-common": "file:.."
   },

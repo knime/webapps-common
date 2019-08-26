@@ -32,7 +32,7 @@ export default {
           To support theming, please always use the <code>--theme-color-x</code> variables instead of directly refering
           the colors.
         </p>
-        <CodeExample summary="Show available color variables">{{ themeColorsCSS }}</CodeExample>
+        <CodeExample summary="Show available color variables" language="css">{{ themeColorsCSS }}</CodeExample>
       </div>
     </div>
   </section>
