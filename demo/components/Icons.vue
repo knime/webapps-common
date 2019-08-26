@@ -1,10 +1,12 @@
 <script>
 /* eslint-disable no-useless-escape */
 
+import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
 
 export default {
     components: {
+        ImagePreviews,
         CodeExample
     },
     data() {
@@ -63,14 +65,11 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h2>Icons</h2>
-          <div
-            v-for="(icon, index) of icons"
-            :key="index"
-            class="icon"
-          >
-            <img :src="icon.src">
-            <span>{{ icon.name }}</span>
-          </div>
+          <ImagePreviews
+            :images="icons"
+            width="60px"
+            height="60px"
+          />
           <p>
             The SVG icons have an original size of 32x32px. It's recommended to inline the icons as Vue components which
             also supports to change e.g. the stroke color and width via CSS:
@@ -82,42 +81,3 @@ export default {
     </section>
   </div>
 </template>
-
-<style scoped lang="postcss">
-@import "webapps-common/ui/css/variables";
-
-.icon {
-  display: inline-block;
-  position: relative;
-
-  & > img {
-    width: 60px;
-    height: 60px;
-    padding: 10px;
-    margin: 10px;
-  }
-
-  &:hover > img {
-    background-color: var(--knime-porcelain);
-  }
-
-  & > span {
-    display: none;
-    position: absolute;
-    bottom: -20px;
-    transform: translate(-50%, 0);
-    left: 50%;
-    padding: 8px;
-    z-index: 1;
-    background-color: var(--knime-masala);
-    color: var(--knime-white);
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  &:hover > span {
-    display: block;
-  }
-}
-
-</style>

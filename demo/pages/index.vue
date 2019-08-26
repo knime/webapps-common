@@ -32,7 +32,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h1>Web Apps Common Components</h1>
-          <p>TODO</p>
+          <p>This page gives an overview of shared CSS, assets like icons and UI components.</p>
         </div>
       </div>
     </section>
