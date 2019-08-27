@@ -3,24 +3,27 @@ import CodeExample from './demo/CodeExample';
 import Breadcrumb from 'webapps-common/ui/components/Breadcrumb.vue';
 import breadcrumbCode from '!!raw-loader!webapps-common/ui/components/Breadcrumb.vue';
 
+const codeExample = `<template>
+  <Breadcrumb :items="[{ text: 'segment without link' }, { text: 'segment with link', href: '/' }]" />
+</template>`;
+
 export default {
     components: {
         Breadcrumb,
         CodeExample
     },
-    computed: {
-        breadcrumbCode() {
-            return breadcrumbCode;
-        },
-        breadcrumbItems() {
-            return [
+    data() {
+        return {
+            breadcrumbCode,
+            breadcrumbItems: [
                 { text: 'KNIME Hub', href: '/' },
                 { text: 'John Doe', href: '/john.doe' },
                 { text: 'Public Space', href: '/john.doe/space' },
                 { text: 'Examples', href: '/john.doe/space/examples' },
                 { text: 'Sentiment Prediction via REST' }
-            ];
-        }
+            ],
+            codeExample
+        };
     }
 };
 </script>
@@ -31,7 +34,8 @@ export default {
       <div class="grid-item-12">
         <h2>Breadcrumbs</h2>
         <Breadcrumb :items="breadcrumbItems" />
-        <CodeExample summary="Show Breadcrumb.vue code">{{ breadcrumbCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+        <CodeExample summary="Show Breadcrumb.vue source code">{{ breadcrumbCode }}</CodeExample>
       </div>
     </div>
   </section>

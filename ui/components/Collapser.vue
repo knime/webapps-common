@@ -168,8 +168,7 @@ h3 {
   padding-left: 40px;
 }
 
-.expand-enter-active,
-.expand-leave-active {
+.panel {
   transition: height 0.4s ease-in-out;
   overflow: hidden;
 }

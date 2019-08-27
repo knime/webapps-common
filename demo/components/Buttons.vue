@@ -3,15 +3,22 @@ import CodeExample from './demo/CodeExample';
 import Button from 'webapps-common/ui/components/Button.vue';
 import buttonCode from '!!raw-loader!webapps-common/ui/components/Button.vue';
 
+const codeExample = `<Button>Button</Button>
+<Button with-border>Button with border</Button>
+<Button on-dark>Button on dark</Button>  <\!-- different hover style -->
+<Button compact>Button compact</Button>
+`;
+
 export default {
     components: {
         Button,
         CodeExample
     },
-    computed: {
-        buttonCode() {
-            return buttonCode;
-        }
+    data() {
+        return {
+            buttonCode,
+            codeExample
+        };
     }
 };
 </script>
@@ -24,10 +31,13 @@ export default {
         <div class="align-horizontal">
           <Button>Button</Button>
           <Button with-border>Button with border</Button>
-          <Button on-dark>Button on dark</Button>
+          <div style="background: var(--theme-color-4); padding: 10px 10px 0;">
+            <Button on-dark>Button on dark</Button>
+          </div>
           <Button compact>Button compact</Button>
         </div>
-        <CodeExample summary="Show Button.vue code">{{ buttonCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+        <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
       </div>
     </div>
   </section>

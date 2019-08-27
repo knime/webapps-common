@@ -26,7 +26,9 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+details {
+  margin-bottom: 0.5em;
+}
 
 summary {
   outline: none !important;

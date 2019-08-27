@@ -58,7 +58,7 @@ export default {
           </Collapser>
         </div>
         <CodeExample summary="Show usage example with icon">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Collapser.vue code">{{ code }}</CodeExample>
+        <CodeExample summary="Show Collapser.vue source code">{{ code }}</CodeExample>
       </div>
     </div>
   </section>

@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="wrapper">
     <div
       v-for="(image, index) of images"
       :key="index"
@@ -40,6 +40,10 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+
+.wrapper {
+  margin: 0 -20px;
+}
 
 .image {
   display: inline-block;
