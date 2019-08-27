@@ -1,19 +1,28 @@
 <script>
-import DropdownIcon from '~/webapps-common/ui/assets/img/icons/arrow-dropdown.svg?inline';
+import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
 
 export default {
     components: {
         DropdownIcon
     },
     props: {
+        /**
+         * the title/headline
+         */
         title: {
             type: String,
             default: ''
         },
+        /**
+         * if the initial state is expanded
+         */
         initiallyExpanded: {
             type: Boolean,
             default: false
         },
+        /**
+         * version with smaller font
+         */
         compact: {
             type: Boolean,
             default: false
@@ -65,6 +74,7 @@ export default {
           v-if="!!$slots.icon"
           class="icon"
         >
+          <!-- @slot icon slot -->
           <slot
             name="icon"
           />
@@ -85,6 +95,7 @@ export default {
         v-show="isExpanded"
         class="panel"
       >
+        <!-- @slot Panel content goes into default slot -->
         <slot />
       </div>
     </Transition>

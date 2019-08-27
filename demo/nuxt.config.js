@@ -33,5 +33,12 @@ export default {
 
             config.module.rules.push(svgConfig);
         }
-    }
+    },
+    modules: [
+        // this must be the first entry in the list
+        '~/modules/server-logger'
+    ],
+    plugins: [
+        '~/plugins/client-logger'
+    ]
 };

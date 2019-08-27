@@ -23,9 +23,5 @@ summary {
   outline: none !important;
   font-weight: 500;
   cursor: pointer;
-  position: sticky;
-  top: 5px;
-  box-shadow: 0 0 4px 7px var(--knime-white);
-  background-color: var(--knime-white);
 }
 </style>
