@@ -34,7 +34,11 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h1>Web Apps Common Components</h1>
-          <p>This page gives an overview of shared CSS, assets like icons and UI components.</p>
+          <p>
+            This page gives an overview of shared CSS, assets like icons and UI components.
+            It's recommended to integrate them as Git submodule as described in the
+            <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
+          </p>
         </div>
       </div>
     </section>

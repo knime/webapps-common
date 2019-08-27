@@ -64,7 +64,6 @@ export default {
   </section>
 </template>
 
-
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
@@ -76,14 +75,14 @@ export default {
 .collapser {
   background-color: var(--knime-porcelain);
 
-  & .panel {
-    margin: 0;
-    padding: 0 30px 10px 60px;
+  & >>> h3 {
+    /* TODO WH-715 */
+    font-size: unset;
+    line-height: unset;
   }
 
-  &.with-section {
-    padding-top: 0;
+  & >>> .panel {
+    padding: 0 30px;
   }
 }
-
 </style>

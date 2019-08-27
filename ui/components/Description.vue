@@ -1,14 +1,17 @@
 <script>
 
-// HTML content can be added via the 'text' prop OR via the default slot.
-// When using the slot, the 'text' and 'renderAsHtml' props are ignored.
-
 export default {
     props: {
+        /**
+         * the text to be shown
+         */
         text: {
             type: String,
             default: null
         },
+        /**
+         * whether the provided `text` should be rendered as HTML or plain text
+         */
         renderAsHtml: {
             type: Boolean,
             default: false
@@ -22,6 +25,7 @@ export default {
     v-if="$slots.default"
     class="description"
   >
+    <!-- @slot if content is provided via slot, the `text` and `renderAsHtml` props will be ignored -->
     <slot />
   </div>
   <!-- eslint-disable vue/no-v-html -->
