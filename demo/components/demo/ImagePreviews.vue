@@ -42,7 +42,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .wrapper {
-  margin: 0 -20px;
+  margin: 0 -10px;
 }
 
 .image {

@@ -1,14 +1,29 @@
 <script>
+/**
+ * A radio button group that looks like a tab bar
+*/
 export default {
     props: {
+        /**
+         * Make the whole tab bar read-only
+         */
         disabled: {
             type: Boolean,
             default: false
         },
+        /**
+         * Initial value. Should be one of the value attributes in the `possibleValues` prop.
+         */
         value: {
             type: String,
             default: ''
         },
+        /**
+         * Name of the form elements. This is useful when using the tab bar inside a <form>.
+         * Defaults to `value`.
+         * If you have multiple tab bars on one page, make sure to include them in separate forms or use unique `name`
+         * properties. Otherwise the browser will not allow to select more than one tab in total.
+         */
         name: {
             type: String,
             default: 'value'
@@ -34,7 +49,13 @@ export default {
          */
         possibleValues: {
             type: Array,
-            default: () => []
+            default: () => [],
+            validator(items = []) {
+                if (!Array.isArray(items)) {
+                    return false;
+                }
+                return !items.includes(item => !item.value);
+            }
         }
     },
     data() {
@@ -49,6 +70,13 @@ export default {
     },
     methods: {
         onChange() {
+            /**
+             * Update event. Fired when the selection is changed.
+             *
+             * @event update:value
+             * @type {String}
+             */
+            consola.trace('TabBar value changed to', this.selected);
             this.$emit('update:value', this.selected);
         }
     }
@@ -103,7 +131,9 @@ export const tabBarMixin = {
         }
     },
     created() {
-        this.activeTab = this.initialTab;
+        let { initialTab } = this;
+        consola.trace('TabBar mixin setting initial tab', initialTab);
+        this.activeTab = initialTab;
     }
 };
 </script>
@@ -180,7 +210,7 @@ input:disabled + span {
   }
 }
 
-input:checked + span,
+input:not(:disabled):checked + span,
 input:not(:disabled) + span:hover {
   color: var(--theme-color-4);
 

@@ -1,15 +1,10 @@
 <script>
 import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
+import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
+import svgWithTitle from '../../ui/util/svgWithTitle';
 
-export default {
-    components: {
-        ImagePreviews,
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample: `<script>
+const codeExample = `<script>
 import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
 
 export default {
@@ -38,13 +33,44 @@ svg {
 /*
   In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
   neither does the fallback plugin:
-  svg {
+  :root svg {
     width: calc(var(--icon-size) * 1px);
     height: calc(var(--icon-size) * 1px);
     stroke-width: calc(32px / var(--icon-size));
   }
+
+  #my-svg {
+    --icon-size: 25;
+  }
 */
-</style>`
+</style>`;
+
+const codeExampleTooltip = `<script>
+import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
+import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
+
+export default {
+  components: {
+    FolderIcon: svgWithTitle(FolderIcon, 'This is a folder')
+  }
+};
+<\/script>
+
+<template>
+  <FolderIcon />
+</template>`;
+
+export default {
+    components: {
+        FolderIcon,
+        FolderIconWithTip: svgWithTitle(FolderIcon, 'This is a folder'),
+        ImagePreviews,
+        CodeExample
+    },
+    data() {
+        return {
+            codeExample,
+            codeExampleTooltip
         };
     },
     computed: {
@@ -74,10 +100,37 @@ svg {
             The SVG icons have an original size of 32x32px. It's recommended to inline the icons as Vue components which
             also supports to change e.g. the stroke color and width via CSS:
           </p>
+          <FolderIcon class="hoverStyle" />
           <CodeExample summary="Show icon as Vue component code example">{{ codeExample }}</CodeExample>
           <p>Use <code>webapps-common/ui/util/svgWithTitle.js</code> to add a tooltip to the SVG.</p>
+          <FolderIconWithTip /> (hover to show the title)
+          <CodeExample summary="Show icon with tooltip code example">{{ codeExampleTooltip }}</CodeExample>
         </div>
       </div>
     </section>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
+
+>>> .wrapper {
+  margin: 0 -20px;
+}
+
+svg {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  stroke-width: calc(32px / 50);
+  stroke: var(--theme-color-4);
+
+  &.hoverStyle {
+    stroke: var(--theme-color-6);
+
+    &:hover {
+      stroke: var(--theme-color-4);
+    }
+  }
+}
+</style>

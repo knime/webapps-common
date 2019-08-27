@@ -1,3 +1,8 @@
 @import "webapps-common/ui/css";
 @import "webapps-common/ui/css/headlines";
 @import "./prism-theme-knime";
+
+:root {
+  font-size: 16px;
+  line-height: 1.44;
+}

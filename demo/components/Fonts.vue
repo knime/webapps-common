@@ -43,7 +43,7 @@
 @import "../../ui/css/variables";
 
 .demo {
-  background: var(--knime-porcelain);
+  background: var(--theme-color-5);
 
   & .grid-item-12 {
     padding: 1em 0;
@@ -57,7 +57,7 @@ samp {
 
 code {
   display: inline-block;
-  border: 1px solid var(--knime-silver-sand);
+  border: 1px solid var(--theme-color-6);
   font-weight: 300;
   background: white;
   padding: 0.5em;

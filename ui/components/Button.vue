@@ -90,6 +90,7 @@ export default {
 
   &.with-border {
     border: 1px solid var(--theme-color-2);
+    padding: 11px;
   }
 
   &.on-dark {
@@ -106,6 +107,10 @@ export default {
     min-width: 50px;
     font-size: 13px;
     line-height: 18px;
+
+    &.with-border {
+      padding: 5px 14px;
+    }
   }
 }
 </style>

@@ -3,9 +3,8 @@ import CodeExample from './demo/CodeExample';
 import Breadcrumb from '../../ui/components/Breadcrumb';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
-const codeExample = `<template>
-  <Breadcrumb :items="[{ text: 'segment without link' }, { text: 'segment with link', href: '/' }]" />
-</template>`;
+const codeExample =
+    `<Breadcrumb :items="[{ text: 'segment without link' }, { text: 'segment with link', href: '/' }]" />`;
 
 export default {
     components: {

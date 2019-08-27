@@ -4,7 +4,6 @@ import svgConfig from '../webpack/webpack.svg.config';
 import path from 'path';
 
 export default {
-    mode: 'universal',
     alias: {
         'webapps-common': path.resolve(__dirname, '..'),
         '../../../node_modules/typeface-roboto': path.resolve(__dirname, 'node_modules', 'typeface-roboto'),
@@ -24,6 +23,10 @@ export default {
     css: [
         '~/assets/index.css'
     ],
+    modules: [
+        // this must be the first entry in the list
+        '~/modules/server-logger'
+    ],
     plugins: [
         '~/plugins/logger.client'
     ],
@@ -39,8 +42,9 @@ export default {
             config.module.rules.push(svgConfig);
         }
     },
-    modules: [
-        // this must be the first entry in the list
-        '~/modules/server-logger'
-    ]
+    render: {
+        bundleRenderer: {
+            runInNewContext: false
+        }
+    }
 };

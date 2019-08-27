@@ -124,7 +124,7 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre>
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Description.vue code">{{ code }}</CodeExample>
+          <CodeExample summary="Show Description.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>

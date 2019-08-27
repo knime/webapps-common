@@ -30,7 +30,7 @@ export default {
   </Message>
   <Message
     class="error"
-    button="Okili-dokili!"
+    button="Okily Dokily!"
   >
     This is an error message with a button
   </Message>
@@ -81,7 +81,7 @@ export default {
         </Message>
         <Message
           class="error"
-          button="Okili-dokili!"
+          button="Okily Dokily!"
         >
           This is an error message with a button
         </Message>

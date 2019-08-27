@@ -57,9 +57,3 @@ export default {
     <Messages />
   </main>
 </template>
-
-<style lang="postcss">
-main > * {
-  margin-bottom: 5vmin;
-}
-</style>
