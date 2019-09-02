@@ -52,7 +52,7 @@ export default {
   padding-bottom: 15px;
   color: var(--theme-color-7);
   font-size: 13px;
-  line-height: 18px;
+  line-height: 22px;
   font-weight: 500;
   margin: 0;
   list-style-type: none;
