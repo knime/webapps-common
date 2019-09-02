@@ -48,11 +48,11 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .breadcrumb {
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   color: var(--theme-color-7);
   font-size: 13px;
-  line-height: 22px;
+  line-height: 25px;
   font-weight: 500;
   margin: 0;
   list-style-type: none;
