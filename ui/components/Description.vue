@@ -142,16 +142,6 @@ export default {
       font-weight: 700;
       border-bottom: solid 3px var(--theme-color-4);
     }
-
-    & tr:hover {
-      & td {
-        background-color: var(--theme-color-3);
-      }
-
-      & td:not(:last-child) {
-        box-shadow: 15px 0 0 var(--theme-color-3);
-      }
-    }
   }
 
   & >>> dt,
