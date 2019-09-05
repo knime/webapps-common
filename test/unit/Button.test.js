@@ -1,17 +1,17 @@
 import { shallowMount } from '@vue/test-utils';
 
-import KnimeButton from '~/ui/components/Button';
+import Button from '~/ui/components/Button';
 
-describe('KnimeButton.vue', () => {
+describe('Button.vue', () => {
     it('renders a button', () => {
-        const wrapper = shallowMount(KnimeButton);
+        const wrapper = shallowMount(Button);
         expect(wrapper.is('button')).toBeTruthy();
         expect(typeof wrapper.attributes().href === 'undefined').toBeTruthy();
         expect(wrapper.classes()).toEqual(['button-primary']);
     });
 
     it('renders an anchor tag', () => {
-        const wrapper = shallowMount(KnimeButton, {
+        const wrapper = shallowMount(Button, {
             propsData: {
                 href: 'testhref'
             }
@@ -21,7 +21,7 @@ describe('KnimeButton.vue', () => {
     });
 
     it('renders classes according to props', () => {
-        const wrapper = shallowMount(KnimeButton, {
+        const wrapper = shallowMount(Button, {
             propsData: {
                 compact: true,
                 withBorder: true,
@@ -32,7 +32,7 @@ describe('KnimeButton.vue', () => {
     });
 
     it('accepts any optional attribute', () => {
-        const wrapper = shallowMount(KnimeButton, {
+        const wrapper = shallowMount(Button, {
             propsData: {
                 href: 'testhref',
                 id: 'testId'
@@ -42,7 +42,7 @@ describe('KnimeButton.vue', () => {
     });
 
     it('emits events', () => {
-        let wrapper = shallowMount(KnimeButton);
+        let wrapper = shallowMount(Button);
         wrapper.find('button').trigger('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
