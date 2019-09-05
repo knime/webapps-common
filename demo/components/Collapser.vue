@@ -13,8 +13,9 @@ export default {
     data() {
         return {
             codeExample: `<Collapser title="Collapser with icon">
-  <template v-slot:icon>
-    <BulbIcon />
+  <template v-slot:title>
+    <BulbIcon style="width: 20px; height: 20px;" />
+    <h5>Collapser with icon</h5> /* Has to be h5 */
   </template>
   <p>Lorem ipsum…</p>
 </Collapser>`
@@ -36,24 +37,19 @@ export default {
         <div class="grid-container demo">
           <Collapser
             class="grid-item-3 collapser"
-            title="Collapser"
           >
-            <p>Lorem ipsum…</p>
-          </Collapser>
-          <Collapser
-            class="grid-item-3 collapser"
-            title="Collapser with icon"
-          >
-            <template v-slot:icon>
-              <BulbIcon style="width: 20px; height: 20px;" />
+            <template v-slot:title>
+              <h5>Collapser</h5>
             </template>
             <p>Lorem ipsum…</p>
           </Collapser>
           <Collapser
             class="grid-item-3 collapser"
-            title="Compact collapser"
-            compact
           >
+            <template v-slot:title>
+              <BulbIcon style="width: 20px; height: 20px;" />
+              <h5>Collapser with icon</h5>
+            </template>
             <p>Lorem ipsum…</p>
           </Collapser>
         </div>
@@ -66,6 +62,8 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/headlines.css";
+
 
 .demo {
   margin-bottom: 10px;
@@ -75,10 +73,10 @@ export default {
 .collapser {
   background-color: var(--knime-porcelain);
 
-  & >>> h3 {
-    /* TODO WH-715 */
-    font-size: unset;
-    line-height: unset;
+  & >>> h5 {
+    padding: 15px 30px;
+    margin: 0;
+    position: relative;
   }
 
   & >>> .panel {
