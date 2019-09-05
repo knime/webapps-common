@@ -7,23 +7,9 @@ export default {
     },
     props: {
         /**
-         * the title/headline
-         */
-        title: {
-            type: String,
-            default: ''
-        },
-        /**
          * if the initial state is expanded
          */
         initiallyExpanded: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * version with smaller font
-         */
-        compact: {
             type: Boolean,
             default: false
         }
@@ -64,25 +50,15 @@ export default {
 </script>
 
 <template>
-  <div :class="[{compact}]">
-    <h3
+  <div>
+      <button
       :aria-expanded="String(isExpanded)"
       @click="onTrigger"
-    >
-      <button>
-        <span
-          v-if="!!$slots.icon"
-          class="icon"
-        >
-          <!-- @slot icon slot -->
-          <slot
-            name="icon"
-          />
-        </span>
-        {{ title }}
+      >
+          <!-- @slot title slot -->
+          <slot name="title"/>
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </button>
-    </h3>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
@@ -105,59 +81,41 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-h3 {
-  padding: 15px 30px;
-  margin: 0;
+
+button {
   position: relative;
+  padding: 0;
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: bold;
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  -webkit-appearance: none;
+  color: inherit; /* Safari needs this */
+  width: 100%;
+  text-align: left;
 
-  & button {
-    padding: 0;
-    font-size: 18px;
-    line-height: 26px;
-    font-weight: bold;
-    background-color: transparent;
-    border: 0;
-    outline: none;
-    -webkit-appearance: none;
-    color: inherit; /* Safari needs this */
-    width: 100%;
-    text-align: left;
-
-    & .dropdown-icon {
-      width: 18px;
-      height: 18px;
-      stroke-width: calc(32px / 18);
-      stroke: var(--theme-color-4);
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      transition: transform 0.4s ease-in-out;
-
-      &.flip {
-        transform: scaleY(-1);
-      }
-    }
-
-    /* optional icon via slot */
-    & .icon svg {
-      position: relative;
-      top: 4px;
-      margin-right: 4px;
-    }
+  & svg {
+    position: relative;
+    top: 18px;
+    margin-right: 4px;
+    float: left;
+    margin-left: 4px;
   }
-}
 
-.compact h3 {
-  padding: 2px 0;
+  & .dropdown-icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: calc(32px / 18);
+    stroke: var(--theme-color-4);
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: transform 0.4s ease-in-out;
 
-  & button {
-    font-size: 13px;
-
-    & .dropdown-icon {
-      width: 16px;
-      height: 16px;
-      top: 8px;
-      right: 0;
+    &.flip {
+      transform: scaleY(-1);
     }
   }
 }
