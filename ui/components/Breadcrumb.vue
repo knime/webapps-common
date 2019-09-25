@@ -2,14 +2,14 @@
 export default {
     props: {
         /**
-         * items as array with a 'text' and optional 'href' property
+         * items as array with a 'text' and optional properties 'href' and 'noTrailingArrow'
          * e.g.
          * [
          *   { text: 'KNIME Hub', href: '/' },
          *   { text: 'John Doe', href: '/john.doe' },
          *   { text: 'Public Space', href: '/john.doe/space' },
          *   { text: 'Examples', href: '/john.doe/space/examples' },
-         *   { text: 'Sentiment Prediction via REST' }
+         *   { text: 'Sentiment Prediction via REST', noTrailingArrow: true }
          * ]
          */
         items: {
@@ -29,6 +29,7 @@ export default {
       <li
         v-for="(breadcrumbItem, i) in items"
         :key="i"
+        :class="{'arrow': breadcrumbItem.noTrailingArrow !== true}"
       >
         <nuxt-link
           v-if="breadcrumbItem.href"
@@ -68,7 +69,7 @@ export default {
     position: relative;
     margin-right: 15px;
 
-    &:not(:last-child)::after {
+    &.arrow::after {
       display: inline-block;
       content: '›';
       position: absolute;
@@ -94,4 +95,6 @@ export default {
     color: var(--theme-color-4);
   }
 }
+
+
 </style>
