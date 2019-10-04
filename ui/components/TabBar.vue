@@ -167,7 +167,7 @@ export const tabBarMixin = {
 @import "webapps-common/ui/css/variables";
 
 div {
-  border-bottom: 1px solid var(--theme-color-6);
+  border-bottom: 1px solid var(--theme-color-silver-sand);
   margin-bottom: 20px;
   height: 50px;
 }
@@ -189,7 +189,7 @@ span {
   display: inline-block;
   height: 51px;
   line-height: 51px;
-  color: var(--theme-color-7);
+  color: var(--theme-color-dove-gray);
 }
 
 svg {
@@ -198,29 +198,29 @@ svg {
   width: 21px;
   height: 21px;
   margin-right: 2px;
-  stroke: var(--theme-color-7);
+  stroke: var(--theme-color-dove-gray);
   stroke-width: calc(32px / 21);
 }
 
 input:disabled + span {
-  color: var(--theme-color-6);
+  color: var(--theme-color-silver-sand);
 
   & svg {
-    stroke: var(--theme-color-6);
+    stroke: var(--theme-color-silver-sand);
   }
 }
 
 input:not(:disabled):checked + span,
 input:not(:disabled) + span:hover {
-  color: var(--theme-color-4);
+  color: var(--theme-color-masala);
 
   & svg {
-    stroke: var(--theme-color-4);
+    stroke: var(--theme-color-masala);
   }
 }
 
 input:checked:not(:disabled) + span {
-  border-bottom: 3px solid var(--theme-color-4);
+  border-bottom: 3px solid var(--theme-color-masala);
 }
 
 input:not(:checked):not(:disabled) + span {

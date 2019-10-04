@@ -108,7 +108,7 @@ button {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
-    stroke: var(--theme-color-4);
+    stroke: var(--theme-color-masala);
     position: absolute;
     top: 20px;
     right: 20px;

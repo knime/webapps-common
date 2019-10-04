@@ -198,6 +198,6 @@ button {
 }
 
 >>> input[value="bananas"]:checked + span svg {
-  fill: var(--theme-color-1);
+  fill: var(--theme-color-yellow);
 }
 </style>

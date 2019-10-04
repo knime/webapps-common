@@ -23,11 +23,11 @@ export default {
 svg {
   width: 25px;
   height: 25px;
-  stroke: var(--theme-color-4);
+  stroke: var(--theme-color-masala);
   stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
 
   &:hover {
-    stroke: var(--theme-color-5);
+    stroke: var(--theme-color-porcelain);
   }
 }
 
@@ -64,19 +64,19 @@ export default {
 svg {
   width: 25px;
   height: 25px;
-  stroke: var(--theme-color-4);
+  stroke: var(--theme-color-masala);
   stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
 
   & .text {
     stroke: none;
-    fill: var(--theme-color-4);
+    fill: var(--theme-color-masala);
   }
 
   &:hover {
-    stroke: var(--theme-color-5);
+    stroke: var(--theme-color-porcelain);
 
     & .text {
-      fill: var(--theme-color-5);
+      fill: var(--theme-color-porcelain);
     }
   }
 }
@@ -181,25 +181,25 @@ svg {
   width: 50px;
   height: 50px;
   stroke-width: calc(32px / 50);
-  stroke: var(--theme-color-4);
+  stroke: var(--theme-color-masala);
 
   & >>> .text {
-    fill: var(--theme-color-4);
+    fill: var(--theme-color-masala);
     stroke: none;
   }
 
   &.hoverStyle {
-    stroke: var(--theme-color-6);
+    stroke: var(--theme-color-silver-sand);
 
     & .text {
-      fill: var(--theme-color-6);
+      fill: var(--theme-color-silver-sand);
     }
 
     &:hover {
-      stroke: var(--theme-color-4);
+      stroke: var(--theme-color-masala);
 
       & .text {
-        fill: var(--theme-color-4);
+        fill: var(--theme-color-masala);
       }
     }
   }

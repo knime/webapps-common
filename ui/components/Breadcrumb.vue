@@ -51,7 +51,7 @@ export default {
 .breadcrumb {
   padding-top: 12px;
   padding-bottom: 12px;
-  color: var(--theme-color-7);
+  color: var(--theme-color-dove-gray);
   font-size: 13px;
   line-height: 25px;
   font-weight: 500;
@@ -77,7 +77,7 @@ export default {
       right: -15px;
       width: 15px;
       font-weight: 300;
-      color: var(--theme-color-7);
+      color: var(--theme-color-dove-gray);
       text-align: center;
       pointer-events: none;
     }
@@ -92,7 +92,7 @@ export default {
 
   & span,
   & a:hover {
-    color: var(--theme-color-4);
+    color: var(--theme-color-masala);
   }
 }
 
