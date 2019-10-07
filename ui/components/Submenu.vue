@@ -1,9 +1,19 @@
 <script>
 export default {
     props: {
+        /**
+         * Items to be listed in the menu
+         */
         items: {
             required: true,
             type: Array
+        },
+        /**
+         * Button title
+         */
+        buttonTitle: {
+            default: '',
+            type: String
         }
     }
 };
@@ -13,7 +23,7 @@ export default {
     <!-- The @click is required by Firefox -->
     <button
       ref="submenu-toggle"
-      title="More KNIME"
+      :title="buttonTitle"
       class="submenu-toggle"
       aria-haspopup="true"
       tabindex="0"

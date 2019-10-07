@@ -10,11 +10,13 @@ describe('Submenu.vue', () => {
                 default: '<svg />click me please <strong>right there</strong>'
             },
             propsData: {
-                items: []
+                items: [],
+                buttonTitle: 'test button title'
             }
         });
         expect(wrapper.find('button svg').exists()).toBeTruthy();
         expect(wrapper.find('button').text()).toContain('click me please right there');
+        expect(wrapper.find('button').attributes('title')).toBe('test button title');
     });
 
     it('renders the submenu items', () => {
