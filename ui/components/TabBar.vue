@@ -146,10 +146,10 @@ export const tabBarMixin = {
     >
       <input
         v-model="selected"
-        type="radio"
         :name="name"
         :value="item.value"
         :disabled="disabled || item.disabled"
+        type="radio"
         @change="onChange"
       >
       <span>

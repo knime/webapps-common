@@ -19,6 +19,30 @@ describe('Submenu.vue', () => {
         expect(wrapper.find('button').attributes('title')).toBe('test button title');
     });
 
+    it('orients the submenu to the button', () => {
+        const wrapper = shallowMount(SubMenu, {
+            slots: {
+                default: 'buttontext'
+            },
+            propsData: {
+                items: [],
+                orientation: 'right'
+            }
+        });
+        expect(wrapper.find('ul[class="orient-right"]').exists()).toBe(true);
+
+        const wrapper2 = shallowMount(SubMenu, {
+            slots: {
+                default: 'buttontext'
+            },
+            propsData: {
+                items: [],
+                orientation: 'left'
+            }
+        });
+        expect(wrapper2.find('ul[class="orient-left"]').exists()).toBe(true);
+    });
+
     it('renders the submenu items', () => {
         const items =  [
             { href: 'https://www.google.com/slash', text: 'Google Slash' },
