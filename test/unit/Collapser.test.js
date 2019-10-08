@@ -6,16 +6,14 @@ describe('Collapser.vue', () => {
 
     it('renders content and title', () => {
         const wrapper = mount(Collapser, {
-            propsData: {
-                title: 'another title'
-            },
             slots: {
+                title: 'another title',
                 default: '<p>some test content <strong>here</strong></p>'
             }
         });
 
         expect(wrapper.find('svg').exists()).toBeTruthy();
-        expect(wrapper.find('h3').exists()).toBeTruthy();
+        expect(wrapper.find('button').exists()).toBeTruthy();
         expect(wrapper.text()).toContain('another title');
         expect(wrapper.text()).toContain('some test content here');
         expect(wrapper.find('.icon').exists()).toBeFalsy();
@@ -25,19 +23,10 @@ describe('Collapser.vue', () => {
     it('renders optional icon', () => {
         const wrapper = mount(Collapser, {
             slots: {
-                icon: '<svg></svg>'
+                title: '<svg class="icon"></svg>'
             }
         });
-        expect(wrapper.find('.icon svg').exists()).toBeTruthy();
-    });
-
-    it('renders compact version', () => {
-        const wrapper = mount(Collapser, {
-            propsData: {
-                compact: true
-            }
-        });
-        expect(wrapper.classes()).toContain('compact');
+        expect(wrapper.find('.icon').exists()).toBeTruthy();
     });
 
     it('calls transition handlers and expands', done => {
@@ -46,16 +35,14 @@ describe('Collapser.vue', () => {
         const leaveSpy = jest.spyOn(Collapser.methods, 'onLeave');
 
         const wrapper = mount(Collapser, {
-            propsData: {
-                title: 'yet another title'
-            },
             slots: {
+                title: 'yet another title',
                 default: '<p>some test content <strong>here</strong></p>'
             }
         });
 
         // open collapser
-        wrapper.find('h3').trigger('click');
+        wrapper.find('button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
 
         wrapper.vm.$nextTick(() => {
@@ -66,7 +53,7 @@ describe('Collapser.vue', () => {
             expect(wrapper.find('.panel').attributes('style')).toContain('height');
 
             // close it again
-            wrapper.find('h3').trigger('click');
+            wrapper.find('button').trigger('click');
             wrapper.vm.$nextTick(() => {
                 expect(leaveSpy).toHaveBeenCalled();
                 expect(wrapper.vm.isExpanded).toBeFalsy();
