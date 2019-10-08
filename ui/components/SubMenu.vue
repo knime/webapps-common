@@ -18,6 +18,7 @@ export default {
     }
 };
 </script>
+
 <template>
   <div class="submenu">
     <!-- The @click is required by Firefox -->
@@ -83,14 +84,14 @@ ul {
   right: 0;
   margin-top: 8px;
   padding: 0;
-  background-color: var(--theme-color-3);
-  color: var(--theme-color-7);
+  background-color: var(--theme-color-white);
+  color: var(--theme-color-dove-gray);
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
   text-align: left;
   list-style-type: none;
-  box-shadow: 0 1px 4px 0 var(--theme-color-9);
+  box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
   z-index: 1;
 
   & a {
@@ -100,7 +101,7 @@ ul {
     text-decoration: none;
 
     & .item-icon {
-      stroke: var(--theme-color-4);
+      stroke: var(--theme-color-masala);
       width: 18px;
       height: 18px;
       margin-right: 7px;
@@ -110,16 +111,15 @@ ul {
     &:hover,
     &:focus {
       outline: none;
-      background-color: var(--theme-color-4);
-      color: var(--theme-color-3);
+      background-color: var(--theme-color-masala);
+      color: var(--theme-color-white);
 
       & .item-icon {
-        stroke: var(--theme-color-3);
+        stroke: var(--theme-color-white);
       }
     }
   }
 }
-
 
 .submenu {
   position: relative;
@@ -129,6 +129,4 @@ ul {
     display: block;
   }
 }
-
-
 </style>
