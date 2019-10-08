@@ -1,11 +1,11 @@
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 
-import Submenu from '~/ui/components/Submenu';
+import SubMenu from '~/ui/components/SubMenu';
 
 describe('Submenu.vue', () => {
 
     it('renders the button', () => {
-        const wrapper = shallowMount(Submenu, {
+        const wrapper = shallowMount(SubMenu, {
             slots: {
                 default: '<svg />click me please <strong>right there</strong>'
             },
@@ -25,7 +25,7 @@ describe('Submenu.vue', () => {
             { href: 'https://www.linkedin.com', text: 'Linked' },
             { to: '/relative/route', text: 'Everything is relative' }
         ];
-        const wrapper = shallowMount(Submenu, {
+        const wrapper = shallowMount(SubMenu, {
             propsData: {
                 items
             },
