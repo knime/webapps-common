@@ -160,7 +160,8 @@ export default {
             class with a fill and stroke to none)
           <CodeExample summary="Show icon with text as Vue component code example">{{ codeExample2 }}</CodeExample>
 
-          <ListNumbersIconWithTip /> With title via <code>webapps-common/ui/util/svgWithTitle.js</code> (hover to show the title)
+          <ListNumbersIconWithTip />
+          With title via <code>webapps-common/ui/util/svgWithTitle.js</code> (hover to show the title)
           <CodeExample summary="Show icon with tooltip code example">{{ codeExampleTooltip }}</CodeExample>
         </div>
       </div>

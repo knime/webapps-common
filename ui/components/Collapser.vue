@@ -56,7 +56,7 @@ export default {
       @click="onTrigger"
       >
           <!-- @slot title slot -->
-          <slot name="title"/>
+          <slot name="title" />
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </button>
     <Transition
