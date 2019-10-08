@@ -51,14 +51,14 @@ export default {
 
 <template>
   <div>
-      <button
+    <button
       :aria-expanded="String(isExpanded)"
       @click="onTrigger"
-      >
-          <!-- @slot title slot -->
-          <slot name="title" />
-        <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
-      </button>
+    >
+      <!-- @slot title slot -->
+      <slot name="title" />
+      <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
+    </button>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
