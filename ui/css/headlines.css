@@ -1,10 +1,11 @@
+/* IE 11 doesn't apply font-weight bold automatically to headlines */
 h1,
 h2,
 h3,
 h4,
 h5,
-h6 {
-  /* IE 11 doesn't apply font-weight bold automatically to headlines */
+h6,
+.h7 {
   font-weight: bold;
 }
 
@@ -38,10 +39,14 @@ h6 {
   line-height: 21px;
 }
 
+/* HTML does not know a h7 element, but we can use
+
+  <div class="h7" role="heading" aria-level="7">
+
+cf. https://www.w3.org/WAI/GL/wiki/Using_role%3Dheading#Example_2 */
 .h7 {
   font-size: 16px;
   line-height: 20px;
-  font-weight: bold;
 }
 
 @media (max-width: 1023px) {

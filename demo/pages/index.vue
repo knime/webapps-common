@@ -13,6 +13,7 @@ import Description from '../components/Description';
 import TabBar from '../components/TabBar';
 import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
+import Headlines from '../components/Headlines';
 
 export default {
     components: {
@@ -24,6 +25,7 @@ export default {
         Buttons,
         Collapser,
         Description,
+        Headlines,
         TabBar,
         Icons,
         Messages,
@@ -48,13 +50,14 @@ export default {
     </section>
     <Fonts />
     <Colors />
+    <Headlines />
+    <Description />
     <Grid />
     <Images />
     <Icons />
     <Breadcrumb />
     <Buttons />
     <Collapser />
-    <Description />
     <TabBar />
     <Messages />
     <SubMenu />
