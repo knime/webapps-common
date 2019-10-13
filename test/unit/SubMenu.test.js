@@ -76,5 +76,26 @@ describe('Submenu.vue', () => {
 
     });
 
+    it('emits on click', () => {
+        const items =  [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' }
+        ];
+        const wrapper = shallowMount(SubMenu, {
+            propsData: {
+                items
+            },
+            slots: {
+                default: 'button me'
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        wrapper.findAll('li').at(0).trigger('click');
+        expect(typeof wrapper.emittedByOrder()[0].args[0]).toBe('object'); // event object
+        expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]); // item object
+        expect(wrapper.emittedByOrder()[0].args[2]).toEqual(0); // index
+
+    });
 
 });

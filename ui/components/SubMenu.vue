@@ -42,6 +42,11 @@ export default {
             }
         }
 
+    },
+    methods: {
+        onItemClick(event, item, index) {
+            this.$emit('item-click', event, item, index);
+        }
     }
 };
 </script>
@@ -67,6 +72,7 @@ export default {
       <li
         v-for="(item, index) in items"
         :key="index"
+        @click="onItemClick($event, item, index)"
       >
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"

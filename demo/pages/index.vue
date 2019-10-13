@@ -14,6 +14,7 @@ import TabBar from '../components/TabBar';
 import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
+import LoadMoreButton from '../components/LoadMoreButton';
 
 export default {
     components: {
@@ -29,7 +30,8 @@ export default {
         TabBar,
         Icons,
         Messages,
-        SubMenu
+        SubMenu,
+        LoadMoreButton
     }
 };
 </script>
@@ -61,5 +63,6 @@ export default {
     <TabBar />
     <Messages />
     <SubMenu />
+    <LoadMoreButton />
   </main>
 </template>
