@@ -43,7 +43,13 @@ export default {
           <h4>Headline 4</h4>
           <h5>Headline 5</h5>
           <h6>Headline 6</h6>
-          <div class="h7" role="heading" aria-level="7">Headline 7</div>
+          <div
+            class="h7"
+            role="heading"
+            aria-level="7"
+          >
+            Headline 7
+          </div>
         </div>
       </div>
     </section>
