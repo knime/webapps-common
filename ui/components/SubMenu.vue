@@ -24,6 +24,13 @@ export default {
             type: Array
         },
         /**
+         * Identifier for clickhandler
+         */
+        id: {
+            default: '',
+            type: String
+        },
+        /**
          * Button title
          */
         buttonTitle: {
@@ -44,8 +51,8 @@ export default {
 
     },
     methods: {
-        onItemClick(event, item, index) {
-            this.$emit('item-click', event, item, index);
+        onItemClick(event, item) {
+            this.$emit('item-click', event, item, this.id);
         }
     }
 };

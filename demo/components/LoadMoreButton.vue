@@ -107,7 +107,7 @@ export default {
 
   & ul {
     list-style-type: none;
-    padding: 15px 0;
+    padding: 15px 0 0 0;
     margin: 0;
   }
 

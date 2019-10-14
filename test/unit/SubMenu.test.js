@@ -78,11 +78,15 @@ describe('Submenu.vue', () => {
 
     it('emits on click', () => {
         const items =  [
-            { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' }
+            { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
         ];
+        const id = 'testfoobar543';
+
         const wrapper = shallowMount(SubMenu, {
             propsData: {
-                items
+                items,
+                id
             },
             slots: {
                 default: 'button me'
@@ -93,8 +97,13 @@ describe('Submenu.vue', () => {
         });
         wrapper.findAll('li').at(0).trigger('click');
         expect(typeof wrapper.emittedByOrder()[0].args[0]).toBe('object'); // event object
-        expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]); // item object
-        expect(wrapper.emittedByOrder()[0].args[2]).toEqual(0); // index
+        expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]);
+        expect(wrapper.emittedByOrder()[0].args[2]).toEqual(id);
+
+        wrapper.findAll('li').at(1).trigger('click');
+        expect(typeof wrapper.emittedByOrder()[1].args[0]).toBe('object'); // event object
+        expect(wrapper.emittedByOrder()[1].args[1]).toEqual(items[1]);
+        expect(wrapper.emittedByOrder()[1].args[2]).toEqual(id);
 
     });
 

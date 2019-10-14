@@ -1,9 +1,9 @@
 <script>
-import DownIcon from '../assets/img/icons/circle-arrow-down.svg?inline';
+import Button from './Button';
 
 export default {
     components: {
-        DownIcon
+        Button
     },
     props: {
         /**
@@ -45,14 +45,15 @@ export default {
       <span v-if="loading">
         Loading…
       </span>
-      <button
+      <Button
         v-else-if="showMore"
+        compact
+        with-border
         :disabled="loading"
         @click="onClick"
       >
         {{ text }}
-        <DownIcon />
-      </button>
+      </Button>
     </no-ssr>
   </div>
 </template>
@@ -65,49 +66,30 @@ export default {
   font-size: 13px;
   font-weight: 500;
   min-height: 85px;
-  color: var(--theme-color-dove-gray);
+  color: var(--theme-color-masala);
+  padding-top: 30px;
 
-  & button,
+  & >>> button,
   & span {
     min-width: 200px;
     margin: auto;
-    background: transparent;
+    background-color: transparent;
     border: none;
     left: 0;
     right: 0;
-    padding: 1em 1em 3em;
     display: block;
-    position: relative;
     color: inherit;
-  }
-
-  & button {
-    cursor: pointer;
   }
 
   & span {
     cursor: progress;
   }
 
-  & button > svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: calc(32px / 20);
-    stroke: var(--theme-color-dove-gray);
-    position: absolute;
-    left: calc((100% - 20px) / 2);
-    top: 32px;
-  }
-
   & button:hover,
   & button:focus,
   & button:active {
-    color: var(--theme-color-masala);
+    color: var(--theme-color-white);
     outline: none;
-
-    & > svg {
-      stroke: var(--theme-color-masala);
-    }
   }
 }
 </style>
