@@ -1,6 +1,7 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 
 import LoadMoreButton from '~/ui/components/LoadMoreButton';
+import Button from '~/ui/components/Button';
 
 describe('LoadMoreButton.vue', () => {
 
@@ -40,13 +41,13 @@ describe('LoadMoreButton.vue', () => {
     });
 
     it('emits events', () => {
-        let wrapper = shallowMount(LoadMoreButton, {
+        let wrapper = mount(LoadMoreButton, {
             propsData: {
                 loading: false,
                 showMore: true
             }
         });
-        wrapper.find('button').trigger('click');
+        wrapper.find(Button).trigger('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 
