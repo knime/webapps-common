@@ -69,7 +69,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .button-primary {
-  background-color: var(--theme-color-1);
+  background-color: var(--theme-color-yellow);
   display: block;
   text-align: center;
   font-weight: 500;
@@ -84,21 +84,21 @@ export default {
   &:active,
   &:hover {
     outline: none;
-    background-color: var(--theme-color-4);
-    color: var(--theme-color-3);
+    background-color: var(--theme-color-masala);
+    color: var(--theme-color-white);
   }
 
   &.with-border {
-    border: 1px solid var(--theme-color-2);
+    border: 1px solid var(--theme-color-blue);
     padding: 11px;
   }
 
   &.on-dark {
-    color: var(--theme-color-2);
+    color: var(--theme-color-blue);
 
     &:active,
     &:hover {
-      background-color: var(--theme-color-3);
+      background-color: var(--theme-color-white);
     }
   }
 

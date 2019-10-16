@@ -65,7 +65,7 @@ export default {
         content: "";
         mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
         mask-size: cover;
-        background-color: var(--theme-color-4); /* defines icon color */
+        background-color: var(--theme-color-masala); /* defines icon color */
         width: 16px;
         height: 16px;
         display: inline-block;
@@ -78,12 +78,12 @@ export default {
     &:focus,
     &:active {
       outline: none;
-      color: var(--theme-color-3);
-      background-color: var(--theme-color-4);
+      color: var(--theme-color-white);
+      background-color: var(--theme-color-masala);
       text-decoration: none;
 
       &::after {
-        background-color: var(--theme-color-3); /* defines icon color */
+        background-color: var(--theme-color-white); /* defines icon color */
       }
     }
   }
@@ -91,8 +91,8 @@ export default {
   & >>> pre,
   & >>> code, /* in case it will be used in the future since <tt> is deprecated */
   & >>> tt {
-    background-color: var(--theme-color-3);
-    border: 1px solid var(--theme-color-6);
+    background-color: var(--theme-color-white);
+    border: 1px solid var(--theme-color-silver-sand);
     padding: 0 5px;
     font-size: 17px;
   }
@@ -105,7 +105,7 @@ export default {
 
   & >>> hr {
     border: 0;
-    border-top: 1px solid var(--theme-color-6);
+    border-top: 1px solid var(--theme-color-silver-sand);
   }
 
   & >>> ul,
@@ -124,7 +124,7 @@ export default {
 
     & th {
       font-weight: 500;
-      border-bottom: solid 2px var(--theme-color-4);
+      border-bottom: solid 2px var(--theme-color-masala);
       text-align: inherit; /* IE11 */
     }
 
@@ -134,23 +134,13 @@ export default {
     }
 
     & td {
-      border-bottom: solid 1px var(--theme-color-4);
+      border-bottom: solid 1px var(--theme-color-masala);
     }
 
     & colgroup {
       font-size: 16px;
       font-weight: 700;
-      border-bottom: solid 3px var(--theme-color-4);
-    }
-
-    & tr:hover {
-      & td {
-        background-color: var(--theme-color-3);
-      }
-
-      & td:not(:last-child) {
-        box-shadow: 15px 0 0 var(--theme-color-3);
-      }
+      border-bottom: solid 3px var(--theme-color-masala);
     }
   }
 

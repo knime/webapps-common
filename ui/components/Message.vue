@@ -95,7 +95,7 @@ em {
   display: flex;
   align-items: center;
   position: relative;
-  color: var(--theme-color-3);
+  color: var(--theme-color-white);
   background: var(--theme-color-info);
   min-height: 68px;
 
@@ -115,7 +115,7 @@ em {
     width: 22px;
     height: 22px;
     stroke-width: calc(32px / 22);
-    stroke: var(--theme-color-3);
+    stroke: var(--theme-color-white);
     margin-right: 20px;
     flex-shrink: 0;
   }

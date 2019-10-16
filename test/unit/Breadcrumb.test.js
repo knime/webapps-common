@@ -47,5 +47,23 @@ describe('Breadcrumb.vue', () => {
         expect(renderedItems.at(1).props('to')).toBe('//h/ref');
         expect(renderedItems.at(3).props('to')).toBe('//another/href');
 
+        // check trailing arrows
+        expect(wrapper.findAll('li.arrow').length).toBe(4);
+    });
+
+    it('should sometimes render no trailing arrow', () => {
+        let wrapper = shallowMount(Breadcrumb, {
+            propsData: {
+                items: [{
+                    text: 'foo'
+                }, {
+                    text: 'bar',
+                    href: '//h/ref',
+                    noTrailingArrow: true
+                }]
+            }
+        });
+        // check trailing arrows
+        expect(wrapper.findAll('li.arrow').length).toBe(1);
     });
 });

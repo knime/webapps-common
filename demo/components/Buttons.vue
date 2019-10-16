@@ -31,7 +31,7 @@ export default {
         <div class="align-horizontal">
           <Button>Button</Button>
           <Button with-border>Button with border</Button>
-          <div style="background: var(--theme-color-4); padding: 10px 10px 0;">
+          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
             <Button on-dark>Button on dark</Button>
           </div>
           <Button compact>Button compact</Button>

@@ -1,10 +1,11 @@
 <script>
 import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
+import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg?inline';
 import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
 import svgWithTitle from '../../ui/util/svgWithTitle';
 
-const codeExample = `<script>
+const codeExample1 = `<script>
 import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
 
 export default {
@@ -22,11 +23,61 @@ export default {
 svg {
   width: 25px;
   height: 25px;
-  stroke: var(--theme-color-4);
+  stroke: var(--theme-color-masala);
   stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
 
   &:hover {
-    stroke: var(--theme-color-5);
+    stroke: var(--theme-color-porcelain);
+  }
+}
+
+/*
+  In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
+  neither does the fallback plugin:
+  :root svg {
+    width: calc(var(--icon-size) * 1px);
+    height: calc(var(--icon-size) * 1px);
+    stroke-width: calc(32px / var(--icon-size));
+  }
+
+  #my-svg {
+    --icon-size: 25;
+  }
+*/
+</style>`;
+
+const codeExample2 = `<script>
+import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg?inline';
+
+export default {
+  components: {
+    ListNumbersIcon
+  }
+};
+<\/script>
+
+<template>
+  <ListNumbersIcon />
+</template>
+
+<style lang="postcss" scoped>
+svg {
+  width: 25px;
+  height: 25px;
+  stroke: var(--theme-color-masala);
+  stroke-width: calc(32px / 25); /* replace 25 with the desired display size to get 1px stroke width */
+
+  & .text {
+    stroke: none;
+    fill: var(--theme-color-masala);
+  }
+
+  &:hover {
+    stroke: var(--theme-color-porcelain);
+
+    & .text {
+      fill: var(--theme-color-porcelain);
+    }
   }
 }
 
@@ -46,30 +97,32 @@ svg {
 </style>`;
 
 const codeExampleTooltip = `<script>
-import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
+import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg?inline';
 import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
 
 export default {
   components: {
-    FolderIcon: svgWithTitle(FolderIcon, 'This is a folder')
+    ListNumbersIcon: svgWithTitle(ListNumbersIcon, 'This is a list with numbers')
   }
 };
 <\/script>
 
 <template>
-  <FolderIcon />
+  <ListNumbersIcon />
 </template>`;
 
 export default {
     components: {
+        ListNumbersIcon,
         FolderIcon,
-        FolderIconWithTip: svgWithTitle(FolderIcon, 'This is a folder'),
+        ListNumbersIconWithTip: svgWithTitle(ListNumbersIcon, 'This is a list with numbers'),
         ImagePreviews,
         CodeExample
     },
     data() {
         return {
-            codeExample,
+            codeExample1,
+            codeExample2,
             codeExampleTooltip
         };
     },
@@ -128,13 +181,26 @@ svg {
   width: 50px;
   height: 50px;
   stroke-width: calc(32px / 50);
-  stroke: var(--theme-color-4);
+  stroke: var(--theme-color-masala);
+
+  & >>> .text {
+    fill: var(--theme-color-masala);
+    stroke: none;
+  }
 
   &.hoverStyle {
-    stroke: var(--theme-color-6);
+    stroke: var(--theme-color-silver-sand);
+
+    & .text {
+      fill: var(--theme-color-silver-sand);
+    }
 
     &:hover {
-      stroke: var(--theme-color-4);
+      stroke: var(--theme-color-masala);
+
+      & .text {
+        fill: var(--theme-color-masala);
+      }
     }
   }
 }

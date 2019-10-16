@@ -2,9 +2,7 @@
 @import "./variables";
 @import "./grid";
 @import "./fonts";
-
-/* TDOO: export headlines - WH-715
-@import "./headlines"; */
+@import "./headlines";
 
 *,
 *::before,

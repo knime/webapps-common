@@ -10,21 +10,25 @@ library "knime-pipeline@$BN"
 timeout(time: 15, unit: 'MINUTES') {
   node('nodejs') {
     stage('Clean Workspace') {
+      env.lastStage = env.STAGE_NAME
       cleanWs()
     }
 
     stage('Checkout Sources') {
+      env.lastStage = env.STAGE_NAME
       checkout scm
     }
 
     try {
       stage('Install npm Dependencies') {
+        env.lastStage = env.STAGE_NAME
         sh '''
           npm ci
         '''
       }
 
       stage('npm Security Audit') {
+        env.lastStage = env.STAGE_NAME
         retry(3) {
           sh '''
             npm audit
@@ -33,12 +37,14 @@ timeout(time: 15, unit: 'MINUTES') {
       }
 
       stage('Static Code Analysis') {
+        env.lastStage = env.STAGE_NAME
         sh '''
           npm run lint
         '''
       }
 
       stage('Unit Tests') {
+        env.lastStage = env.STAGE_NAME
         try {
           // trows exception on failing test
           sh '''
@@ -53,6 +59,7 @@ timeout(time: 15, unit: 'MINUTES') {
 
       if (BRANCH_NAME == "master") {
         stage('Upload Coverage data') {
+          env.lastStage = env.STAGE_NAME
           withCredentials([usernamePassword(credentialsId: 'SONAR_CREDENTIALS', passwordVariable: 'SONAR_PASSWORD', usernameVariable: 'SONAR_LOGIN')]) {
             sh '''
               npm run sendcoverage

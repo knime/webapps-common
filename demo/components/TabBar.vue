@@ -152,10 +152,10 @@ export default {
 
         <h4>Standalone</h4>
         <TabBar
-          name="t1"
           :disabled="disabled"
           :value="activeTabStandalone"
           :possible-values="possibleTabValuesStandalone"
+          name="t1"
           @update:value="activeTabStandalone = $event"
         />
         <p><b>active tab:</b> {{ activeTabStandalone }}</p>
@@ -169,9 +169,9 @@ export default {
 
         <h4>With Mixin</h4>
         <TabBar
-          name="t2"
           :value.sync="activeTab"
           :possible-values="possibleTabValues"
+          name="t2"
         />
         <p><b>active tab:</b> {{ activeTab }}</p>
         <CodeExample summary="Show usage example (withMixin)">{{ codeExampleMixin }}</CodeExample>
@@ -198,6 +198,6 @@ button {
 }
 
 >>> input[value="bananas"]:checked + span svg {
-  fill: var(--theme-color-1);
+  fill: var(--theme-color-yellow);
 }
 </style>
