@@ -4,11 +4,11 @@ import code from '!!raw-loader!../../ui/components/IdleReadyButton';
 import IdleReadyButton from '../../ui/components/IdleReadyButton';
 
 const codeExample = `<IdleReadyButton
-      :idle="loading"
-      :show="showMore"
-      text="Show more"
-      @click="onMore"
-    />
+  :idle="ready"
+  :show="showMore"
+  text="Show more"
+  @click="onMore"
+/>
 `;
 
 const pageSize = 4;
@@ -25,7 +25,7 @@ export default {
             code,
             pageSize,
             offset: pageSize,
-            loading: false
+            idle: false
         };
     },
     computed: {
@@ -44,11 +44,11 @@ export default {
     },
     methods: {
         onMore() {
-            this.loading = true;
+            this.idle = true;
             setTimeout(() => {
-                // simulate async loading
+                // simulate async idle
                 this.offset = this.offset + pageSize;
-                this.loading = false;
+                this.idle = false;
             }, 1000);
         }
     }
@@ -61,7 +61,12 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h2>Idle-ready button</h2>
-          <p>Button with two states: idle (e.g. while loading) and ready <strong>Can only be used with Nuxt</strong></p>
+          <p>Button with two states:</p>
+          <ul>
+            <li>idle (e.g. while ready)</li>
+            <li>and ready</li>
+          </ul>
+          <p>Ready and idle states are set with props, as well as the idle text and ready text.</p>
         </div>
       </div>
     </section>
@@ -77,8 +82,8 @@ export default {
             </li>
           </ul>
           <IdleReadyButton
-            :loading="loading"
-            :show-more="showMore"
+            :ready="showMore"
+            :idle="idle"
             @click="onMore"
           />
         </div>

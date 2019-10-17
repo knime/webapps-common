@@ -19,7 +19,7 @@ export default {
             type: String,
             default: 'info',
             validator(type = 'info') {
-                return ['info', 'error', 'success'].includes(type);
+                return ['info', 'error', 'success', 'transparent'].includes(type);
             }
         },
         /**
@@ -105,6 +105,10 @@ em {
 
   &.success {
     background: var(--theme-color-success);
+  }
+
+  &.transparent {
+    background: transparent;
   }
 
   & > .message {
