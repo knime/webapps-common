@@ -1,12 +1,12 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import LoadMoreButton from '~/ui/components/LoadMoreButton';
+import IdleReadyButton from '~/ui/components/IdleReadyButton';
 import Button from '~/ui/components/Button';
 
-describe('LoadMoreButton.vue', () => {
+describe('IdleReadyButton.vue', () => {
 
     it('doesn’t render when not needed', () => {
-        let wrapper = shallowMount(LoadMoreButton, {
+        let wrapper = shallowMount(IdleReadyButton, {
             propsData: {
                 showMore: false,
                 loading: false
@@ -16,7 +16,7 @@ describe('LoadMoreButton.vue', () => {
     });
 
     it('handles loading state correctly', () => {
-        let wrapper = shallowMount(LoadMoreButton, {
+        let wrapper = shallowMount(IdleReadyButton, {
             propsData: {
                 showMore: true,
                 loading: true
@@ -32,7 +32,7 @@ describe('LoadMoreButton.vue', () => {
     });
 
     it('accepts button text', () => {
-        let wrapper = shallowMount(LoadMoreButton, {
+        let wrapper = shallowMount(IdleReadyButton, {
             propsData: {
                 text: 'test text'
             }
@@ -41,7 +41,7 @@ describe('LoadMoreButton.vue', () => {
     });
 
     it('emits events', () => {
-        let wrapper = mount(LoadMoreButton, {
+        let wrapper = mount(IdleReadyButton, {
             propsData: {
                 loading: false,
                 showMore: true

@@ -1,11 +1,11 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import code from '!!raw-loader!../../ui/components/LoadMoreButton';
-import LoadMoreButton from '../../ui/components/LoadMoreButton';
+import code from '!!raw-loader!../../ui/components/IdleReadyButton';
+import IdleReadyButton from '../../ui/components/IdleReadyButton';
 
-const codeExample = `<LoadMoreButton
-      :loading="loading"
-      :show-more="showMore"
+const codeExample = `<IdleReadyButton
+      :idle="loading"
+      :show="showMore"
       text="Show more"
       @click="onMore"
     />
@@ -17,7 +17,7 @@ const maxLength = 11;
 export default {
     components: {
         CodeExample,
-        LoadMoreButton
+        IdleReadyButton
     },
     data() {
         return {
@@ -60,8 +60,8 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Load more button</h2>
-          <p>Button to use for "show more" usecases</p>
+          <h2>Idle-ready button</h2>
+          <p>Button with two states: idle (e.g. while loading) and ready <strong>Can only be used with Nuxt</strong></p>
         </div>
       </div>
     </section>
@@ -76,7 +76,7 @@ export default {
               {{ item.name }}
             </li>
           </ul>
-          <LoadMoreButton
+          <IdleReadyButton
             :loading="loading"
             :show-more="showMore"
             @click="onMore"
@@ -88,7 +88,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show LoadMoreButton.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show IdleReadyButton.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>

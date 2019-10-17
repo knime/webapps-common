@@ -7,23 +7,30 @@ export default {
     },
     props: {
         /**
-         * Indicate loading state
+         * Indicate idle state, e.g. loading
          */
-        loading: {
+        idle: {
             type: Boolean,
             default: false
         },
         /**
-         * Should the button be shown
+         * Idle text
          */
-        showMore: {
+        idleText: {
+            type: String,
+            default: 'Loading...'
+        },
+        /**
+         * Should the button be ready
+        */
+        ready: {
             type: Boolean,
             default: true
         },
         /**
-         * Button text
+         * Button ready text
          */
-        text: {
+        readyText: {
             type: String,
             default: 'More results'
         }
@@ -38,21 +45,21 @@ export default {
 
 <template>
   <div
-    v-if="loading || showMore"
+    v-if="idle || ready"
     class="load-more"
   >
     <no-ssr>
-      <span v-if="loading">
-        Loading…
+      <span v-if="idle">
+        {{ idleText }}
       </span>
       <Button
-        v-else-if="showMore"
+        v-else-if="ready"
         compact
         with-border
-        :disabled="loading"
+        :disabled="idle"
         @click="onClick"
       >
-        {{ text }}
+        {{ readyText }}
       </Button>
     </no-ssr>
   </div>
