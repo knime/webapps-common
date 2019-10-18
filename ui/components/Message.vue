@@ -91,9 +91,8 @@ em {
   font-style: normal;
   font-size: 16px;
   line-height: 24px;
-  padding: 10px 30px 10px 20px;
+  padding: 15px;
   display: flex;
-  align-items: center;
   position: relative;
   color: var(--theme-color-white);
   background: var(--theme-color-info);
@@ -109,6 +108,7 @@ em {
 
   &.transparent {
     background: transparent;
+    padding: 15px 0;
   }
 
   & > .message {
@@ -132,12 +132,9 @@ em {
 
   & svg.close {
     margin-right: 0;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    height: 12px;
-    width: 12px;
-    stroke-width: calc(32px / 12);
+    height: 18px;
+    width: 18px;
+    stroke-width: calc(32px / 18);
     cursor: pointer;
   }
 }
