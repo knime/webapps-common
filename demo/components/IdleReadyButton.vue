@@ -63,7 +63,7 @@ export default {
           <h2>Idle-ready button</h2>
           <p>Button with two states:</p>
           <ul>
-            <li>idle (e.g. while ready)</li>
+            <li>idle (e.g. while loading)</li>
             <li>and ready</li>
           </ul>
           <p>Ready and idle states are set with props, as well as the idle text and ready text.</p>
