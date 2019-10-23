@@ -1,5 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import Breadcrumb from '~/ui/components/Breadcrumb';
+import ArrowNext from '~/ui/assets/img/icons/arrow-next.svg?inline';
 
 describe('Breadcrumb.vue', () => {
     it('renders', () => {
@@ -26,7 +27,7 @@ describe('Breadcrumb.vue', () => {
                     href: '//h/ref'
                 }, {
                     text: 'baz',
-                    type: 'Folder'
+                    icon: ArrowNext
                 }, {
                     text: 'qux',
                     href: '//another/href'

@@ -1,22 +1,16 @@
 <script>
-import FolderIcon from '../assets/img/icons/folder.svg?inline';
-import WorkflowIcon from '../assets/img/icons/workflow.svg?inline';
-import PlayIcon from '../assets/img/icons/circle-play.svg?inline';
 import ArrowNext from '../assets/img/icons/arrow-next.svg?inline';
 
 export default {
     components: {
-        FolderIcon,
-        WorkflowIcon,
-        PlayIcon,
         ArrowNext
     },
     props: {
     /**
-     * items as array with a 'text' and optional properties 'href', 'type' and 'noTrailingArrow'
+     * items as array with a 'text' and optional properties 'href', 'icon' and 'noTrailingArrow'
      * e.g.
      * [
-     *   { text: 'KNIME Hub', href: '/', type: 'folder' },
+     *   { text: 'KNIME Hub', href: '/', icon: Icon },
      *   { text: 'John Doe', href: '/john.doe' },
      *   { text: 'Public Space', href: '/john.doe/space' },
      *   { text: 'Examples', href: '/john.doe/space/examples' },
@@ -26,22 +20,6 @@ export default {
         items: {
             type: Array,
             default: () => []
-        }
-    },
-    data() {
-        return {
-            typeIcons: {
-                Folder: FolderIcon,
-                Workflow: WorkflowIcon,
-                Play: PlayIcon
-            }
-        };
-    },
-    methods: {
-        getTypeIcon({ type }) {
-            return type && this.typeIcons[type]
-                ? this.typeIcons[type]
-                : this.typeIcons.other;
         }
     }
 };
@@ -61,11 +39,17 @@ export default {
           v-if="breadcrumbItem.href"
           :to="breadcrumbItem.href"
         >
-          <Component :is="getTypeIcon(breadcrumbItem)" />
+          <Component
+            :is="breadcrumbItem.icon"
+            v-if="breadcrumbItem.icon"
+          />
           {{ breadcrumbItem.text }}
         </nuxt-link>
         <span v-else>
-          <Component :is="getTypeIcon(breadcrumbItem)" />
+          <Component
+            :is="breadcrumbItem.icon"
+            v-if="breadcrumbItem.icon"
+          />
           {{ breadcrumbItem.text }}
         </span>
         <ArrowNext v-if="!breadcrumbItem.noTrailingArrow" />
