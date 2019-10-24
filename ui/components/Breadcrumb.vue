@@ -108,12 +108,13 @@ export default {
   & span > svg {
     width: 18px;
     margin-right: 2px;
+    stroke-width: calc((32px / 18) * 0.8);
   }
 
   & li > svg {
     width: 10px;
     margin: 15px 4px;
-    stroke-width: 2px;
+    stroke-width: calc(32px / 10);
   }
 
   & span > svg,

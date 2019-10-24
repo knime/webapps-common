@@ -79,7 +79,7 @@ describe('Breadcrumb.vue', () => {
         // check trailing arrows
         let arrows = 0;
         for (let i = 0; i < renderedItems.length; i++) {
-            if (renderedItems.at(i).element.tagName === 'ARROWNEXT-STUB') {
+            if (renderedItems.at(i).is(ArrowNext)) {
                 arrows += 1;
             }
         }
