@@ -67,8 +67,8 @@ export default {
         <div class="grid-item-12">
           <h2>Messages</h2>
           <p>
-            There are several types of messages: <code>info</code> (default), <code>success</code> and <code>error</code>.
-            Additionaly <code>transparent</code> allows you to apply custom styles more easily.
+            There are several types of messages: <code>info</code> (default),
+            <code>success</code> and <code>error</code>.
             You can select them with the <code>type</code> property.
           </p>
           <p>
