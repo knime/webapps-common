@@ -19,7 +19,7 @@ export default {
             type: String,
             default: 'info',
             validator(type = 'info') {
-                return ['info', 'error', 'success', 'transparent'].includes(type);
+                return ['info', 'error', 'success'].includes(type);
             }
         },
         /**
@@ -55,61 +55,72 @@ export default {
 </script>
 
 <template>
-  <em
+  <section
     v-if="active"
     :class="type"
   >
-    <!-- @slot Use this slot to add an icon. -->
-    <slot name="icon" />
-    <span class="message">
-      <!-- @slot Use this slot to add text content (markup). -->
-      <slot />
-    </span>
-    <Button
-      v-if="button"
-      class="close"
-      compact
-      on-dark
-      @click="onDismiss"
-    >
-      {{ button }}
-    </Button>
-    <span
-      v-else
-      @click="onDismiss"
-    >
-      <CloseIcon class="close" />
-    </span>
-  </em>
+    <div class="grid-container">
+      <em class="grid-item-12">
+        <!-- @slot Use this slot to add an icon. -->
+        <slot name="icon" />
+        <span class="message">
+          <!-- @slot Use this slot to add text content (markup). -->
+          <slot />
+        </span>
+        <Button
+          v-if="button"
+          class="close"
+          compact
+          on-dark
+          @click="onDismiss"
+        >
+          {{ button }}
+        </Button>
+        <span
+          v-else
+          class="close"
+          @click="onDismiss"
+        >
+          <CloseIcon />
+        </span>
+      </em>
+    </div>
+  </section>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables/colors";
+
+section {
+  border-bottom: 1px solid var(--theme-color-white);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &.info {
+    background-color: var(--theme-color-info);
+  }
+
+  &.error {
+    background-color: var(--theme-color-error);
+  }
+
+  &.success {
+    background-color: var(--theme-color-success);
+  }
+}
 
 em {
   font-weight: 700;
   font-style: normal;
   font-size: 16px;
   line-height: 24px;
-  padding: 15px;
+  padding: 15px 0;
   display: flex;
   position: relative;
+  align-items: center;
   color: var(--theme-color-white);
-  background: var(--theme-color-info);
-  min-height: 68px;
-
-  &.error {
-    background: var(--theme-color-error);
-  }
-
-  &.success {
-    background: var(--theme-color-success);
-  }
-
-  &.transparent {
-    background: transparent;
-    padding: 15px 0;
-  }
 
   & > .message {
     flex-grow: 1;
@@ -130,12 +141,17 @@ em {
     margin-left: 10px;
   }
 
-  & svg.close {
-    margin-right: 0;
-    height: 18px;
-    width: 18px;
-    stroke-width: calc(32px / 18);
-    cursor: pointer;
+  & .close {
+    display: flex;
+    align-items: center;
+
+    & svg {
+      margin-right: 0;
+      height: 18px;
+      width: 18px;
+      stroke-width: calc(32px / 18);
+      cursor: pointer;
+    }
   }
 }
 </style>
