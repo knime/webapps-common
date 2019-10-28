@@ -70,7 +70,7 @@ export default {
 
 .button-primary {
   background-color: var(--theme-color-yellow);
-  display: block;
+  display: inline-block;
   text-align: center;
   font-weight: 500;
   font-size: 16px;
