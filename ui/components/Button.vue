@@ -33,16 +33,27 @@ export default {
         compact: {
             type: Boolean,
             default: false
+        },
+        /**
+         * toggle to prevent default click handler
+         */
+        preventDefault: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
-        onClick() {
+        onClick(e) {
             /**
              * Click event. Fired when the button is clicked.
              *
              * @event click
              */
             this.$emit('click');
+            if (this.preventDefault) {
+                e.preventDefault();
+                return false;
+            }
         }
     }
 };
