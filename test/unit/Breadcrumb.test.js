@@ -1,5 +1,6 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import Breadcrumb from '~/ui/components/Breadcrumb';
+import ArrowNext from '~/ui/assets/img/icons/arrow-next.svg?inline';
 
 describe('Breadcrumb.vue', () => {
     it('renders', () => {
@@ -16,8 +17,8 @@ describe('Breadcrumb.vue', () => {
         expect(wrapper.isEmpty()).toBeTruthy();
     });
 
-    it('renders links and text', () => {
-        let wrapper = shallowMount(Breadcrumb, {
+    it('renders links, text, icons and arrows', () => {
+        let wrapper = mount(Breadcrumb, {
             propsData: {
                 items: [{
                     text: 'foo'
@@ -25,30 +26,40 @@ describe('Breadcrumb.vue', () => {
                     text: 'bar',
                     href: '//h/ref'
                 }, {
-                    text: 'baz'
+                    text: 'baz',
+                    icon: ArrowNext
                 }, {
                     text: 'qux',
                     href: '//another/href'
                 }]
             }
         });
-        let renderedItems = wrapper.findAll('li *');
+        let renderedItems = wrapper.findAll('li > *');
+        
         /* eslint-disable no-magic-numbers */
         expect(renderedItems.at(0).element.tagName).toBe('SPAN');
-        expect(renderedItems.at(1).element.tagName).toBe('A');
-        expect(renderedItems.at(2).element.tagName).toBe('SPAN');
-        expect(renderedItems.at(3).element.tagName).toBe('A');
+        expect(renderedItems.at(2).element.tagName).toBe('A');
+        expect(renderedItems.at(4).element.tagName).toBe('SPAN');
+        expect(renderedItems.at(6).element.tagName).toBe('A');
 
         expect(renderedItems.at(0).text()).toBe('foo');
-        expect(renderedItems.at(1).text()).toBe('bar');
-        expect(renderedItems.at(2).text()).toBe('baz');
-        expect(renderedItems.at(3).text()).toBe('qux');
+        expect(renderedItems.at(2).text()).toBe('bar');
+        expect(renderedItems.at(4).text()).toBe('baz');
+        expect(renderedItems.at(6).text()).toBe('qux');
 
-        expect(renderedItems.at(1).props('to')).toBe('//h/ref');
-        expect(renderedItems.at(3).props('to')).toBe('//another/href');
+        expect(renderedItems.at(2).props('to')).toBe('//h/ref');
+        expect(renderedItems.at(6).props('to')).toBe('//another/href');
+
+        expect(wrapper.findAll('li > *').at(4).find('svg').exists()).toBe(true);
 
         // check trailing arrows
-        expect(wrapper.findAll('li.arrow').length).toBe(4);
+        let arrows = 0;
+        for (let i = 0; i < renderedItems.length; i++) {
+            if (renderedItems.at(i).element.tagName === 'svg') {
+                arrows += 1;
+            }
+        }
+        expect(arrows).toBe(4);
     });
 
     it('should sometimes render no trailing arrow', () => {
@@ -63,7 +74,15 @@ describe('Breadcrumb.vue', () => {
                 }]
             }
         });
+        let renderedItems = wrapper.findAll('li > *');
+
         // check trailing arrows
-        expect(wrapper.findAll('li.arrow').length).toBe(1);
+        let arrows = 0;
+        for (let i = 0; i < renderedItems.length; i++) {
+            if (renderedItems.at(i).is(ArrowNext)) {
+                arrows += 1;
+            }
+        }
+        expect(arrows).toBe(1);
     });
 });

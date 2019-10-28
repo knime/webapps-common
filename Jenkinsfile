@@ -17,6 +17,7 @@ timeout(time: 15, unit: 'MINUTES') {
     stage('Checkout Sources') {
       env.lastStage = env.STAGE_NAME
       checkout scm
+	  knimetools.reportJIRAIssues()
     }
 
     try {
