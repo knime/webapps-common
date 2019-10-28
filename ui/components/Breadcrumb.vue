@@ -100,7 +100,7 @@ export default {
 
 
   & span,
-  & li:hover a {
+  & li a:hover {
     color: var(--theme-color-masala);
   }
 
