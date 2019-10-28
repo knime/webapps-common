@@ -118,7 +118,7 @@ export default {
   }
 
   & span > svg,
-  & li:hover a svg {
+  & li a:hover svg {
     stroke: var(--theme-color-masala);
   }
 
