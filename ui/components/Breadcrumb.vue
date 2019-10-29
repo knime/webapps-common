@@ -124,10 +124,6 @@ export default {
 
   /* Linked breadcrumb item */
   & a {
-    & svg {
-      stroke: var(--theme-color-dove-gray);
-    }
-
     &:hover {
       color: var(--theme-color-masala);
 
