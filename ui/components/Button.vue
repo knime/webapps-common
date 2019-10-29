@@ -89,12 +89,12 @@ export default {
   }
 
   &.with-border {
-    border: 1px solid var(--theme-color-blue);
+    border: 1px solid var(--theme-color-masala);
     padding: 11px;
   }
 
   &.on-dark {
-    color: var(--theme-color-blue);
+    color: var(--theme-color-masala);
 
     &:active,
     &:hover {

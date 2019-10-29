@@ -26,7 +26,9 @@
   --theme-color-gray-light-semi: var(--knime-gray-light-semi); /* #82858680 */
   --theme-color-gray-ultra-light: var(--knime-gray-ultra-light); /* #F8F9FA */
 
-  --theme-color-error: hsl(339, 88.4%, 43.9%); /* D30D52 */
-  --theme-color-success: hsl(166.3, 50.6%, 49.2%); /* #3EBDA0 */
+  --theme-color-error: hsl(357.5, 71.6%, 45.5%); /* #C72128 */
+  --theme-color-success: hsl(127.5, 50%, 47.1%); /* #3CB44B */
   --theme-color-info: var(--knime-blue); /* #00243C */
+  --theme-color-running: hsl(206, 70%, 39%); /* #1E6DA8 */
+  --theme-color-action-required: hsl(29, 100%, 60%); /* #FF9632 */
 }
