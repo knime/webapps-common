@@ -42,6 +42,7 @@ export default {
           <Component
             :is="breadcrumbItem.icon"
             v-if="breadcrumbItem.icon"
+            class="breadcrumb-icon"
           />
           {{ breadcrumbItem.text }}
         </nuxt-link>
@@ -49,10 +50,14 @@ export default {
           <Component
             :is="breadcrumbItem.icon"
             v-if="breadcrumbItem.icon"
+            class="breadcrumb-icon"
           />
           {{ breadcrumbItem.text }}
-        </span>
-        <ArrowNext v-if="!breadcrumbItem.noTrailingArrow" />
+        </span><!-- no whitespace
+        --><ArrowNext
+          v-if="!breadcrumbItem.noTrailingArrow"
+          class="arrow"
+        />
       </li>
     </ul>
   </nav>
@@ -91,35 +96,45 @@ export default {
 
   & svg {
     vertical-align: top;
-  }
-
-  & a > svg,
-  & li > svg {
     stroke: var(--theme-color-dove-gray);
   }
 
-
-  & span,
-  & li a:hover {
-    color: var(--theme-color-masala);
-  }
-
-  & a > svg,
-  & span > svg {
+  & .breadcrumb-icon {
     width: 18px;
+    height: 18px;
     margin-right: 2px;
     stroke-width: calc((32px / 18) * 0.8);
   }
 
-  & li > svg {
+  & .arrow {
     width: 10px;
+    height: 10px;
     margin: 15px 4px;
     stroke-width: calc(32px / 10);
   }
 
-  & span > svg,
-  & li a:hover svg {
-    stroke: var(--theme-color-masala);
+  /* Unlinked breadcrumb item */
+  & span {
+    color: var(--theme-color-masala);
+
+    & svg {
+      stroke: var(--theme-color-masala);
+    }
+  }
+
+  /* Linked breadcrumb item */
+  & a {
+    & svg {
+      stroke: var(--theme-color-dove-gray);
+    }
+
+    &:hover {
+      color: var(--theme-color-masala);
+
+      & svg {
+        stroke: var(--theme-color-masala);
+      }
+    }
   }
 
   & li:nth-child(n+2) > span,
