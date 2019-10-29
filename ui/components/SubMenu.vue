@@ -24,6 +24,13 @@ export default {
             type: Array
         },
         /**
+         * Identifier for clickhandler
+         */
+        id: {
+            default: '',
+            type: String
+        },
+        /**
          * Button title
          */
         buttonTitle: {
@@ -42,6 +49,11 @@ export default {
             }
         }
 
+    },
+    methods: {
+        onItemClick(event, item) {
+            this.$emit('item-click', event, item, this.id);
+        }
     }
 };
 </script>
@@ -67,6 +79,7 @@ export default {
       <li
         v-for="(item, index) in items"
         :key="index"
+        @click="onItemClick($event, item, index)"
       >
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"
