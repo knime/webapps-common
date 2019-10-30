@@ -84,7 +84,7 @@ export default {
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"
           :to="item.to"
-          :href="item.href ? item.href : null"
+          :href="item.href || null"
           tabindex="0"
         >
           <Component

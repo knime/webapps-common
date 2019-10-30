@@ -72,7 +72,6 @@ describe('Submenu.vue', () => {
         expect(wrapper.find(`li:nth-child(1) a`).attributes('href')).toBe(items[0].href);
         expect(wrapper.find(`li:nth-child(2) a`).attributes('href')).toBe(items[1].href);
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
-        expect(wrapper.find(`li:nth-child(3) a`).attributes('href')).toBe('');
 
     });
 
