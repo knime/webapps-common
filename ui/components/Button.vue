@@ -2,9 +2,17 @@
 export default {
     props: {
         /**
-         * if set, the button renders an <a> element instead of a <button> element
+         * If set, the button renders an <a> element instead of a <button> element
+         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
          */
         href: {
+            type: String,
+            default: ''
+        },
+        /**
+         * If set, the button renders a <nuxt-link> instead of a <button> element.
+         */
+        to: {
             type: String,
             default: ''
         },
@@ -61,8 +69,9 @@ export default {
 
 <template>
   <Component
-    :is="href ? 'a' : 'button'"
-    :href="href ? href : false"
+    :is="to ? 'nuxt-link' : href ? 'a' : 'button'"
+    :href="href || null"
+    :to="to || null"
     :class="[
       'button-primary',
       {'with-border': withBorder},
