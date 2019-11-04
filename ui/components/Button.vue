@@ -106,6 +106,10 @@ export default {
     outline: none;
     background-color: var(--theme-color-masala);
     color: var(--theme-color-white);
+
+    & >>> svg {
+      stroke: var(--theme-color-white);
+    }
   }
 
   &.with-border {
@@ -119,6 +123,10 @@ export default {
     &:active,
     &:hover {
       background-color: var(--theme-color-white);
+
+      & >>> svg {
+        stroke: var(--theme-color-masala);
+      }
     }
   }
 
