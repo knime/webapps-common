@@ -79,7 +79,8 @@ export default {
       {'compact': compact}
     ]"
     v-bind="optionalProps"
-    @click="onClick"
+    :event="preventDefault ? [] : 'click'"
+    @click.native="onClick"
   >
     <slot />
   </Component>
