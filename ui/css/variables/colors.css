@@ -29,7 +29,6 @@
   --theme-color-gray-ultra-light: var(--knime-gray-ultra-light); /* #F8F9FA */
 
 
-
   --theme-color-error: hsl(357.5, 71.6%, 45.5%); /* #C72128 */
   --theme-color-success: hsl(127.5, 50%, 47.1%); /* #3CB44B */
   --theme-color-info: var(--knime-blue); /* #00243C */
