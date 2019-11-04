@@ -1,6 +1,10 @@
 <script>
 import CloseIcon from '../assets/img/icons/close.svg?inline';
+import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
+import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
+import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 import Button from './Button';
+import Collapser from './Collapser';
 
 /**
  * Message banner component with close button
@@ -8,7 +12,8 @@ import Button from './Button';
 export default {
     components: {
         CloseIcon,
-        Button
+        Button,
+        Collapser
     },
     props: {
         /**
@@ -30,12 +35,26 @@ export default {
         button: {
             type: String,
             default: null
+        },
+        collapserItems: {
+            type: Array,
+            default: () => []
         }
     },
     data() {
         return {
             active: true
         };
+    },
+    computed: {
+        icon() {
+            if (this.type === 'error') {
+                return WarnIcon;
+            } else if (this.type === 'success') {
+                return SuccessIcon;
+            }
+            return InfoIcon;
+        }
     },
     methods: {
         onDismiss() {
@@ -62,11 +81,26 @@ export default {
     <div class="grid-container">
       <em class="grid-item-12">
         <!-- @slot Use this slot to add an icon. -->
-        <slot name="icon" />
+        <Component
+          :is="icon"
+          class="type-icon"
+        />
         <span class="message">
           <!-- @slot Use this slot to add text content (markup). -->
           <slot />
         </span>
+        <Collapser
+          v-if="collapserItems.length"
+          class="collapser"
+        >
+          <slot name="title" />
+          <ul
+            v-for="(collapserItem, index) in collapserItems"
+            :key="index"
+          >
+            <li>{{ collapserItem.message }}</li>
+          </ul>
+        </Collapser>
         <Button
           v-if="button"
           class="close"
