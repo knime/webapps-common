@@ -37,8 +37,8 @@ export default {
             default: null
         },
         collapserItems: {
-            type: Array,
-            default: () => []
+            type: Object,
+            default: () => {}
         }
     },
     data() {
@@ -68,6 +68,12 @@ export default {
              * @event success
              */
             this.$emit('dismiss');
+        },
+        isNotEmpty(obj) {
+            if (obj) {
+                return Object.keys(obj).length !== 0;
+            }
+            return false;
         }
     }
 };
@@ -80,43 +86,46 @@ export default {
   >
     <div class="grid-container">
       <em class="grid-item-12">
-        <!-- @slot Use this slot to add an icon. -->
-        <Component
-          :is="icon"
-          class="type-icon"
-        />
-        <span class="message">
-          <!-- @slot Use this slot to add text content (markup). -->
-          <slot />
-        </span>
-        <Collapser
-          v-if="collapserItems.length"
-          class="collapser"
-        >
-          <slot name="title" />
-          <ul
-            v-for="(collapserItem, index) in collapserItems"
-            :key="index"
+        <div class="divider">
+          <div>
+            <!-- @slot Use this slot to add an icon. -->
+            <Component
+              :is="icon"
+              class="type-icon"
+            />
+            <span class="message">
+              <!-- @slot Use this slot to add text content (markup). -->
+              <slot />
+            </span>
+          </div>
+          <Collapser
+            v-if="isNotEmpty(collapserItems)"
+            class="collapser"
           >
-            <li>{{ collapserItem.message }}</li>
-          </ul>
-        </Collapser>
-        <Button
-          v-if="button"
-          class="close"
-          compact
-          on-dark
-          @click="onDismiss"
-        >
-          {{ button }}
-        </Button>
-        <span
-          v-else
-          class="close"
-          @click="onDismiss"
-        >
-          <CloseIcon />
-        </span>
+            <ul
+              v-for="(collapserItem, key, index) in collapserItems"
+              :key="index"
+            >
+              <li>{{ key }}: {{ collapserItem.message }}</li>
+            </ul>
+          </Collapser>
+          <Button
+            v-if="button"
+            class="close"
+            compact
+            on-dark
+            @click="onDismiss"
+          >
+            {{ button }}
+          </Button>
+          <span
+            v-else
+            class="close"
+            @click="onDismiss"
+          >
+            <CloseIcon />
+          </span>
+        </div>
       </em>
     </div>
   </section>
@@ -165,8 +174,10 @@ em {
     height: 22px;
     stroke-width: calc(32px / 22);
     stroke: var(--theme-color-white);
-    margin-right: 20px;
+    margin-left: 35px;
     flex-shrink: 0;
+    vertical-align: middle;
+    margin-top: -3px;
   }
 
   & button.close {
@@ -180,12 +191,40 @@ em {
     align-items: center;
 
     & svg {
+      position: absolute;
+      right: 15px;
+      top: 20px;
       margin-right: 0;
       height: 18px;
       width: 18px;
       stroke-width: calc(32px / 18);
       cursor: pointer;
     }
+  }
+
+  & .collapser {
+    flex-grow: 1;
+    margin-left: -180px;
+    overflow: hidden;
+
+    & >>> svg {
+      top: -15px;
+      right: 25px;
+      stroke: var(--theme-color-white);
+    }
+
+    & li {
+      list-style: none;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 24px;
+    }
+  }
+
+  & .divider {
+    display: flex;
+    justify-content: space-between;
+    min-width: 100%;
   }
 }
 </style>
