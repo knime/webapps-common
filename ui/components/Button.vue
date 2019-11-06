@@ -62,7 +62,7 @@ export default {
 <template>
   <Component
     :is="href ? 'a' : 'button'"
-    :href="href ? href : false"
+    :href="href || false"
     :class="[
       'button-primary',
       {'with-border': withBorder},
