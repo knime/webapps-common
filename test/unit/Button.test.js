@@ -46,4 +46,18 @@ describe('Button.vue', () => {
         wrapper.find('button').trigger('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
+
+    it('allows preventing default', () => {
+        let wrapper = shallowMount(Button, {
+            propsData: {
+                preventDefault: true
+            }
+        });
+        let spy = jest.fn();
+        wrapper.find('button').trigger('click', {
+            preventDefault: spy
+        });
+        expect(spy).toHaveBeenCalled();
+        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
+    });
 });
