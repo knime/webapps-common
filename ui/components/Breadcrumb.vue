@@ -55,7 +55,7 @@ export default {
           {{ breadcrumbItem.text }}
         </span><!-- no whitespace
         --><ArrowNext
-          v-if="!breadcrumbItem.noTrailingArrow"
+          v-if="i !== items.length - 1"
           class="arrow"
         />
       </li>

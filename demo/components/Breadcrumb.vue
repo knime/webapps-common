@@ -7,7 +7,7 @@ const codeExample =
     `<Breadcrumb :items="[{ text: 'segment without link' },
     { text: 'segment with link', href: '/' },
     { text: 'segment with icon', icon: FolderIcon },
-    { text: 'segement without trailing arrow', noTrailingArrow: true }]" />`;
+    { text: 'segement without trailing arrow' }]" />`;
 
 export default {
     components: {
