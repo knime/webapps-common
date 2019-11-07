@@ -19,6 +19,10 @@ export default {
         title: {
             type: String,
             default: ''
+        },
+        textFormattingFn: {
+            type: Function,
+            default: text => text
         }
     },
     data() {
@@ -31,9 +35,10 @@ export default {
         optionText() {
             return this.checkedValue.length > 0
                 ? Object.keys(this.possibleValues)
-                    .map((key) => {
+                    .map((key) => { 
                         if (this.checkedValue.indexOf(key) > -1) {
-                            return `.${  key.toLowerCase()}`;
+                            return this.textFormattingFn(key).toString();
+                            // return `.${  key.toLowerCase()}`;
                         }
                     })
                     .filter(option => option)
@@ -47,7 +52,6 @@ export default {
                 if (this.checkedValue.indexOf(value) === -1) {
                     this.checkedValue.push(value);
                 }
-
             } else {
                 this.checkedValue = this.checkedValue.filter(x => x !== value);
             }
