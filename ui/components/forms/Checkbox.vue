@@ -4,12 +4,48 @@ export default {
         value: {
             type: Boolean,
             default: false
+        },
+        boxSize: {
+            type: String,
+            default: '1em'
+        },
+        boxPadding: {
+            type: String,
+            default: '4px 0 3px 1.5em'
+        },
+        checkHeight: {
+            type: String,
+            default: '0.35em'
+        },
+        checkWidth: {
+            type: String,
+            default: '0.6em'
+        },
+        checkTop: {
+            type: String,
+            default: '5px'
+        },
+        checkLeft: {
+            type: String,
+            default: '0'
         }
     },
     data() {
         return {
             currentValue: this.value
         };
+    },
+    computed: {
+        cssProps() {
+            return {
+                '--checkbox-size': this.boxSize,
+                '--checkbox-padding': this.boxPadding,
+                '--check-height': this.checkHeight,
+                '--check-width': this.checkWidth,
+                '--check-top': this.checkTop,
+                '--check-left': this.checkLeft
+            };
+        }
     },
     methods: {
         onChange($event) {
@@ -28,7 +64,10 @@ export default {
 </script>
 
 <template>
-  <label>
+  <label
+    class="knime-qf-title"
+    :style="cssProps"
+  >
     <input
       v-model="currentValue"
       type="checkbox"
@@ -45,7 +84,7 @@ export default {
 
 label {
   position: relative;
-  padding: 4px 0px 3px 1.5em;
+  padding: var(--checkbox-padding);
 }
 
 input {
@@ -54,8 +93,8 @@ input {
 
   & + span::before {
     background: var(--theme-color-porcelain);
-    width: 1em;
-    height: 1em;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
     display: inline-block;
     content: '';
   }
@@ -76,10 +115,10 @@ input {
     content: '';
     position: absolute;
     display: block;
-    left: 0;
-    top: 5px;
-    width: 0.6em;
-    height: 0.35em;
+    left: var(--check-left);
+    top: var(--check-top);
+    width: var(--check-width);
+    height: var(--check-height);
     border: solid var(--theme-color-white);
     border-width: 0 0 1px 1px;
     transform: translate(0.2em, 0.35em) rotate(-45deg);
