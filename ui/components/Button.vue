@@ -97,6 +97,7 @@ export default {
     outline: none;
     background-color: var(--theme-color-masala);
     color: var(--theme-color-white);
+    stroke: var(--theme-color-white);
   }
 
   &.with-border {

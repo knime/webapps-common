@@ -163,6 +163,10 @@ ul {
 
       & .item-icon {
         stroke: var(--theme-color-white);
+
+        & .text {
+          stroke: var(--theme-color-white);
+        }
       }
     }
   }
