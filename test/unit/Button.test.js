@@ -7,7 +7,7 @@ describe('Button.vue', () => {
         const wrapper = shallowMount(Button);
         expect(wrapper.is('button')).toBeTruthy();
         expect(typeof wrapper.attributes().href === 'undefined').toBeTruthy();
-        expect(wrapper.classes()).toEqual(['button-primary']);
+        expect(wrapper.classes()).toEqual(['button']);
     });
 
     it('renders an anchor tag', () => {
@@ -23,12 +23,13 @@ describe('Button.vue', () => {
     it('renders classes according to props', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
+                primary: true,
                 compact: true,
                 withBorder: true,
                 onDark: true
             }
         });
-        expect(wrapper.classes().sort()).toEqual(['button-primary', 'compact', 'with-border', 'on-dark'].sort());
+        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border', 'on-dark'].sort());
     });
 
     it('accepts any optional attribute', () => {
