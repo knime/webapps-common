@@ -11,6 +11,7 @@ import Buttons from '../components/Buttons';
 import Collapser from '../components/Collapser';
 import Description from '../components/Description';
 import TabBar from '../components/TabBar';
+import Message from '../components/Message';
 import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
@@ -29,6 +30,7 @@ export default {
         Headlines,
         TabBar,
         Icons,
+        Message,
         Messages,
         SubMenu,
         IdleReadyButton
@@ -61,6 +63,7 @@ export default {
     <Buttons />
     <Collapser />
     <TabBar />
+    <Message />
     <Messages />
     <SubMenu />
     <IdleReadyButton />
