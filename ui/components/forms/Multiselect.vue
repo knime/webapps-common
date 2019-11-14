@@ -35,11 +35,11 @@ export default {
         optionText() {
             return this.checkedValue.length > 0
                 ? Object.keys(this.possibleValues)
-                    .map((key) => { 
+                    .map((key) => {
                         if (this.checkedValue.indexOf(key) > -1) {
                             return this.textFormattingFn(key).toString();
-                            // return `.${  key.toLowerCase()}`;
                         }
+                        return '';
                     })
                     .filter(option => option)
                     .join(', ')
@@ -80,10 +80,10 @@ export default {
       class="options"
     >
       <Checkbox
-        v-for="(label, value) of possibleValues"
-        :key="`multiselect-${value}`"
-        :value="checkedValue.indexOf(value) > -1"
-        @input="onChange(value, $event)"
+        v-for="(label, val) of possibleValues"
+        :key="`multiselect-${val}`"
+        :value="checkedValue.indexOf(val) > -1"
+        @input="onChange(val, $event)"
       >
         {{ label }}
       </Checkbox>

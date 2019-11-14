@@ -6,17 +6,17 @@ export default {
         ArrowNext
     },
     props: {
-      /**
-       * items as array with a 'text' and optional properties 'href', 'icon'
-       * e.g.
-       * [
-       *   { text: 'KNIME Hub', href: '/', icon: Icon },
-       *   { text: 'John Doe', href: '/john.doe' },
-       *   { text: 'Public Space', href: '/john.doe/space' },
-       *   { text: 'Examples', href: '/john.doe/space/examples' },
-       *   { text: 'Sentiment Prediction via REST' }
-       * ]
-       */
+        /**
+         * items as array with a 'text' and optional properties 'href', 'icon'
+         * e.g.
+         * [
+         *   { text: 'KNIME Hub', href: '/', icon: Icon },
+         *   { text: 'John Doe', href: '/john.doe' },
+         *   { text: 'Public Space', href: '/john.doe/space' },
+         *   { text: 'Examples', href: '/john.doe/space/examples' },
+         *   { text: 'Sentiment Prediction via REST' }
+         * ]
+         */
         items: {
             type: Array,
             default: () => []
