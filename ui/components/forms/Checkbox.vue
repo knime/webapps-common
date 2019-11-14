@@ -30,11 +30,6 @@ export default {
             default: '0'
         }
     },
-    data() {
-        return {
-            currentValue: this.value
-        };
-    },
     computed: {
         cssProps() {
             return {
@@ -69,7 +64,7 @@ export default {
     :style="cssProps"
   >
     <input
-      v-model="currentValue"
+      v-model="value"
       type="checkbox"
       @input="onChange"
     >
@@ -120,7 +115,7 @@ input {
     width: var(--check-width);
     height: var(--check-height);
     border: solid var(--theme-color-white);
-    border-width: 0 0 1px 1px;
+    border-width: 0 0 2px 2px;
     transform: translate(0.2em, 0.35em) rotate(-45deg);
   }
 }
