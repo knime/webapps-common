@@ -79,7 +79,7 @@ export default {
 
 label {
   position: relative;
-  padding: var(--checkbox-padding);
+  padding: var(--checkbox-padding, 4px 0 3px 1.5em);
 }
 
 input {
@@ -88,8 +88,8 @@ input {
 
   & + span::before {
     background: var(--theme-color-porcelain);
-    width: var(--checkbox-size);
-    height: var(--checkbox-size);
+    width: var(--checkbox-size, 1em);
+    height: var(--checkbox-size, 1em);
     display: inline-block;
     content: '';
   }
@@ -110,10 +110,10 @@ input {
     content: '';
     position: absolute;
     display: block;
-    left: var(--check-left);
-    top: var(--check-top);
-    width: var(--check-width);
-    height: var(--check-height);
+    left: var(--check-left, 0);
+    top: var(--check-top, 5px);
+    width: var(--check-width, 0.6em);
+    height: var(--check-height, 0.35em);
     border: solid var(--theme-color-white);
     border-width: 0 0 2px 2px;
     transform: translate(0.2em, 0.35em) rotate(-45deg);
