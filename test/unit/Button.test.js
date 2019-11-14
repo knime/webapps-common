@@ -43,7 +43,10 @@ describe('Button.vue', () => {
 
     it('emits events', () => {
         let wrapper = shallowMount(Button);
-        wrapper.find('button').trigger('click');
+        let button = wrapper.find('button');
+        // workaround to make .native listener work with vue-test-utils
+        button.element.addEventListener('click', wrapper.vnode.data.nativeOn.click);
+        button.trigger('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 
@@ -54,7 +57,10 @@ describe('Button.vue', () => {
             }
         });
         let spy = jest.fn();
-        wrapper.find('button').trigger('click', {
+        let button = wrapper.find('button');
+        // workaround to make .native listener work with vue-test-utils
+        button.element.addEventListener('click', wrapper.vnode.data.nativeOn.click);
+        button.trigger('click', {
             preventDefault: spy
         });
         expect(spy).toHaveBeenCalled();
