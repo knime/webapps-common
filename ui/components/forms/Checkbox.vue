@@ -93,6 +93,16 @@ input {
   }
 }
 
+label:hover input + span::before {
+  background: var(--theme-color-silver-sand);
+}
+
+label:hover input + span::after {
+  border-color: var(--theme-color-masala);
+}
+
+/* Non-deterministic specificity */
+/* stylelint-disable no-descending-specificity */
 label.knime-checkbox-medium {
   padding: 5px 0 3px 26px;
 
@@ -140,12 +150,5 @@ label.knime-checkbox-large {
     }
   }
 }
-
-label:hover input + span::before {
-  background: var(--theme-color-silver-sand);
-}
-
-label:hover input + span::after {
-  border-color: var(--theme-color-masala);
-}
+/* stylelint-enable */
 </style>
