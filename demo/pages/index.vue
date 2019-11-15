@@ -16,6 +16,7 @@ import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
+import Multiselect from '../components/Multiselect';
 
 export default {
     components: {
@@ -33,7 +34,8 @@ export default {
         Message,
         Messages,
         SubMenu,
-        IdleReadyButton
+        IdleReadyButton,
+        Multiselect
     }
 };
 </script>
@@ -67,5 +69,12 @@ export default {
     <Messages />
     <SubMenu />
     <IdleReadyButton />
+    <Multiselect />
   </main>
 </template>
+
+<style scoped lang="postcss">
+main {
+  margin-bottom: 10em;
+}
+</style>
