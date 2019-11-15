@@ -51,6 +51,7 @@ export default {
         }
     },
     methods: {
+        // eslint-disable-next-line consistent-return
         onClick(e) {
             /**
              * Click event. Fired when the button is clicked.
