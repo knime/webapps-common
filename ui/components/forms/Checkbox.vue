@@ -7,39 +7,22 @@ export default {
         },
         boxSize: {
             type: String,
-            default: '1em'
-        },
-        boxPadding: {
-            type: String,
-            default: '4px 0 3px 1.5em'
-        },
-        checkHeight: {
-            type: String,
-            default: '0.35em'
-        },
-        checkWidth: {
-            type: String,
-            default: '0.6em'
-        },
-        checkTop: {
-            type: String,
-            default: '5px'
-        },
-        checkLeft: {
-            type: String,
-            default: '0'
+            default: 'Large'
         }
     },
     computed: {
-        cssProps() {
-            return {
-                '--checkbox-size': this.boxSize,
-                '--checkbox-padding': this.boxPadding,
-                '--check-height': this.checkHeight,
-                '--check-width': this.checkWidth,
-                '--check-top': this.checkTop,
-                '--check-left': this.checkLeft
-            };
+        /**
+         * Default class knime-checkbox-large
+         *
+         * @returns {String} class name for checkbox sizing
+         */
+        boxSizingClass() {
+            let size = this.boxSize.toLowerCase();
+            if (size.match(/m.*d/)) {
+                return 'knime-checkbox-medium';
+            } else {
+                return 'knime-checkbox-large';
+            }
         }
     },
     methods: {
@@ -60,8 +43,7 @@ export default {
 
 <template>
   <label
-    class="knime-qf-title"
-    :style="cssProps"
+    :class="[boxSizingClass, 'knime-qf-title']"
   >
     <input
       v-model="value"
@@ -79,7 +61,6 @@ export default {
 
 label {
   position: relative;
-  padding: var(--checkbox-padding, 4px 0 3px 1.5em);
 }
 
 input {
@@ -88,8 +69,6 @@ input {
 
   & + span::before {
     background: var(--theme-color-porcelain);
-    width: var(--checkbox-size, 1em);
-    height: var(--checkbox-size, 1em);
     display: inline-block;
     content: '';
   }
@@ -98,7 +77,6 @@ input {
   & + span::after {
     position: absolute;
     left: 0;
-    top: 6.5px;
   }
 
   &:checked + span::before {
@@ -110,13 +88,56 @@ input {
     content: '';
     position: absolute;
     display: block;
-    left: var(--check-left, 0);
-    top: var(--check-top, 5px);
-    width: var(--check-width, 0.6em);
-    height: var(--check-height, 0.35em);
     border: solid var(--theme-color-white);
-    border-width: 0 0 2px 2px;
     transform: translate(0.2em, 0.35em) rotate(-45deg);
+  }
+}
+
+label.knime-checkbox-medium {
+  padding: 5px 0 3px 26px;
+
+  & input {
+    & + span::before,
+    & + span::after {
+      top: 4.5px;
+    }
+
+    & + span::before {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:checked + span::after { /* ✓ */
+      left: -1px;
+      top: 2.5px;
+      width: 10px;
+      height: 5px;
+      border-width: 0 0 1.5px 1.5px;
+    }
+  }
+}
+
+label.knime-checkbox-large {
+  padding: 4px 0 3px 1.5em;
+
+  & input {
+    & + span::before,
+    & + span::after {
+      top: 6.5px;
+    }
+
+    & + span::before {
+      width: 1em;
+      height: 1em;
+    }
+
+    &:checked + span::after { /* ✓ */
+      left: 0;
+      top: 5px;
+      width: 0.6em;
+      height: 0.35em;
+      border-width: 0 0 2px 2px;
+    }
   }
 }
 
