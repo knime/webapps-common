@@ -16,6 +16,7 @@ import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
+import Checkbox from '../components/Checkbox';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -35,6 +36,7 @@ export default {
         Messages,
         SubMenu,
         IdleReadyButton,
+        Checkbox,
         Multiselect
     }
 };
@@ -69,6 +71,7 @@ export default {
     <Messages />
     <SubMenu />
     <IdleReadyButton />
+    <Checkbox />
     <Multiselect />
   </main>
 </template>
