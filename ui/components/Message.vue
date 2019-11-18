@@ -1,10 +1,6 @@
 <script>
 import CloseIcon from '../assets/img/icons/close.svg?inline';
-import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
-import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
-import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 import Button from './Button';
-import Collapser from './Collapser';
 
 /**
  * Message banner component with close button
@@ -12,8 +8,7 @@ import Collapser from './Collapser';
 export default {
     components: {
         CloseIcon,
-        Button,
-        Collapser
+        Button
     },
     props: {
         /**
@@ -35,26 +30,12 @@ export default {
         button: {
             type: String,
             default: null
-        },
-        collapserItems: {
-            type: Object,
-            default: () => {}
         }
     },
     data() {
         return {
             active: true
         };
-    },
-    computed: {
-        icon() {
-            if (this.type === 'error') {
-                return WarnIcon;
-            } else if (this.type === 'success') {
-                return SuccessIcon;
-            }
-            return InfoIcon;
-        }
     },
     methods: {
         onDismiss() {
@@ -68,12 +49,6 @@ export default {
              * @event success
              */
             this.$emit('dismiss');
-        },
-        isNotEmpty(obj) {
-            if (obj) {
-                return Object.keys(obj).length !== 0;
-            }
-            return false;
         }
     }
 };
@@ -86,46 +61,29 @@ export default {
   >
     <div class="grid-container">
       <em class="grid-item-12">
-        <div class="divider">
-          <div>
-            <!-- @slot Use this slot to add an icon. -->
-            <Component
-              :is="icon"
-              class="type-icon"
-            />
-            <span class="message">
-              <!-- @slot Use this slot to add text content (markup). -->
-              <slot />
-            </span>
-          </div>
-          <Collapser
-            v-if="isNotEmpty(collapserItems)"
-            class="collapser"
-          >
-            <ul
-              v-for="(collapserItem, key, index) in collapserItems"
-              :key="index"
-            >
-              <li>{{ key }}: {{ collapserItem.message }}</li>
-            </ul>
-          </Collapser>
-          <Button
-            v-if="button"
-            class="close"
-            compact
-            on-dark
-            @click="onDismiss"
-          >
-            {{ button }}
-          </Button>
-          <span
-            v-else
-            class="close"
-            @click="onDismiss"
-          >
-            <CloseIcon />
-          </span>
-        </div>
+        <!-- @slot Use this slot to add an icon. -->
+        <slot name="icon" />
+        <span class="message">
+          <!-- @slot Use this slot to add text content (markup). -->
+          <slot />
+        </span>
+        <Button
+          v-if="button"
+          class="close"
+          primary
+          compact
+          on-dark
+          @click="onDismiss"
+        >
+          {{ button }}
+        </Button>
+        <span
+          v-else
+          class="close"
+          @click="onDismiss"
+        >
+          <CloseIcon />
+        </span>
       </em>
     </div>
   </section>
@@ -174,10 +132,8 @@ em {
     height: 22px;
     stroke-width: calc(32px / 22);
     stroke: var(--theme-color-white);
-    margin-left: 35px;
+    margin-right: 20px;
     flex-shrink: 0;
-    vertical-align: middle;
-    margin-top: -3px;
   }
 
   & button.close {
@@ -191,40 +147,12 @@ em {
     align-items: center;
 
     & svg {
-      position: absolute;
-      right: 15px;
-      top: 20px;
       margin-right: 0;
       height: 18px;
       width: 18px;
       stroke-width: calc(32px / 18);
       cursor: pointer;
     }
-  }
-
-  & .collapser {
-    flex-grow: 1;
-    margin-left: -180px;
-    overflow: hidden;
-
-    & >>> svg {
-      top: -15px;
-      right: 25px;
-      stroke: var(--theme-color-white);
-    }
-
-    & li {
-      list-style: none;
-      font-size: 16px;
-      font-weight: 300;
-      line-height: 24px;
-    }
-  }
-
-  & .divider {
-    display: flex;
-    justify-content: space-between;
-    min-width: 100%;
   }
 }
 </style>

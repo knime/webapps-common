@@ -1,19 +1,9 @@
 import Message from '~/ui/components/Message';
+import Button from '~/ui/components/Button';
 import { shallowMount } from '@vue/test-utils';
 import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
 import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
 import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
-
-const collapserItemsData = {
-    FOO_ERROR: {
-        message: 'foo_error',
-        type: 'errror'
-    },
-    TEST_ERROR: {
-        message: 'test_error',
-        type: 'error'
-    }
-};
 
 describe('Message.vue', () => {
     let wrapper;
@@ -21,9 +11,9 @@ describe('Message.vue', () => {
     it('renders default', () => {
         wrapper = shallowMount(Message);
 
-        expect(wrapper.find('.type-icon').exists()).toBe(true);
+        expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find(InfoIcon).exists()).toBe(true);
-        expect(wrapper.find('.collapser').exists()).toBe(false);
+        expect(wrapper.find('span.close').exists()).toBe(true);
     });
 
     it('renders success', () => {
@@ -33,39 +23,52 @@ describe('Message.vue', () => {
             }
         });
 
-        expect(wrapper.find('.type-icon').exists()).toBe(true);
+        expect(wrapper.classes()).toEqual(['success']);
         expect(wrapper.find(SuccessIcon).exists()).toBe(true);
-        expect(wrapper.find('.collapser').exists()).toBe(false);
     });
 
     it('renders error', () => {
         wrapper = shallowMount(Message, {
             propsData: {
-                type: 'error',
-                collapserItems: collapserItemsData
+                type: 'error'
             }
         });
 
-        expect(wrapper.find('.type-icon').exists()).toBe(true);
+        expect(wrapper.classes()).toEqual(['error']);
         expect(wrapper.find(WarnIcon).exists()).toBe(true);
-        expect(wrapper.find('.collapser').exists()).toBe(true);
-        expect(wrapper.findAll('.collapser li').length).toBe(2);
-        Object.keys(collapserItemsData).forEach((collapserKey, i) => {
-            const element = wrapper.findAll('.collapser li').at(i);
-            expect(element.text()).toEqual(`${collapserKey}: ${collapserItemsData[collapserKey].message}`);
-        });
     });
 
-    it('deletes message', () => {
+    it('renders button', () => {
+        let buttonText = 'Okay';
         wrapper = shallowMount(Message, {
             propsData: {
-                type: 'error',
-                collapserItems: collapserItemsData
+                button: buttonText
+            }
+        });
+
+        expect(wrapper.find(Button).text()).toEqual(buttonText);
+    });
+
+    it('renders icon', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                icon: WarnIcon
+            }
+        });
+
+        expect(wrapper.find(WarnIcon).exists()).toBe(true);
+    });
+
+    it('dismisses message', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error'
             }
         });
 
         expect(wrapper.find('section').exists()).toBe(true);
         wrapper.find('.close').trigger('click');
         expect(wrapper.find('section').exists()).toBe(false);
+        expect(wrapper.emitted().dismiss).toBeTruthy();
     });
 });
