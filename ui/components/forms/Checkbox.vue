@@ -5,6 +5,17 @@ export default {
             type: Boolean,
             default: false
         },
+        /**
+         * This prop controls the size of the checkbox.
+         * The available options for this prop are: 'Large'
+         * or 'Medium'. The case of the first letter does
+         * NOT matter. If 'Medium' is provided, the checkbox
+         * will be 14px by 14px, which is ideal for the
+         * BooleanWidget component. If 'Large' is provided
+         * (which is also default), the checkbox will be 1em
+         *  x 1em. This is ideal for the Multiselect drop-
+         * down menu.
+         */
         boxSize: {
             type: String,
             default: 'Large'
@@ -12,17 +23,16 @@ export default {
     },
     computed: {
         /**
-         * Default class knime-checkbox-large
+         * Default class knime-checkbox-large. The options
+         * available are: 'Large' or 'Medium'.
          *
          * @returns {String} class name for checkbox sizing
          */
         boxSizingClass() {
-            let size = this.boxSize.toLowerCase();
-            if (size.match(/m.*d/)) {
+            if (/^med/i.test(this.boxSize)) {
                 return 'knime-checkbox-medium';
-            } else {
-                return 'knime-checkbox-large';
             }
+            return 'knime-checkbox-large';
         }
     },
     methods: {
