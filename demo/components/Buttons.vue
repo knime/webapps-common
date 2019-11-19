@@ -171,7 +171,7 @@ export default {
             primary
             disabled
           >
-            Primary button
+            Primary button disabled
           </Button>
           <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
             <Button

@@ -70,6 +70,7 @@ export default {
         <Button
           v-if="button"
           class="close"
+          primary
           compact
           on-dark
           @click="onDismiss"

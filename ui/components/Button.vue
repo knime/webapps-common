@@ -2,9 +2,17 @@
 export default {
     props: {
         /**
-         * if set, the button renders an <a> element instead of a <button> element
+         * If set, the button renders an <a> element instead of a <button> element
+         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
          */
         href: {
+            type: String,
+            default: ''
+        },
+        /**
+         * If set, the button renders a <nuxt-link> instead of a <button> element.
+         */
+        to: {
             type: String,
             default: ''
         },
@@ -68,8 +76,9 @@ export default {
 
 <template>
   <Component
-    :is="href ? 'a' : 'button'"
-    :href="href || false"
+    :is="to ? 'nuxt-link' : href ? 'a' : 'button'"
+    :href="href || null"
+    :to="to || null"
     :class="[
       'button',
       {'primary': primary},
@@ -78,6 +87,7 @@ export default {
       {'compact': compact}
     ]"
     v-bind="optionalProps"
+    :event="preventDefault ? [] : 'click'"
     @click="onClick"
   >
     <slot />
@@ -105,9 +115,8 @@ export default {
     width: 18px;
     height: 18px;
     stroke: var(--theme-color-dove-gray);
-    stroke-width: calc(32px / 18); /* replace 25 with the desired display size to get 1px stroke width */
-    position: relative;
-    top: 3px;
+    stroke-width: calc(32px / 18);
+    vertical-align: bottom;
     margin-right: 8px;
   }
 
@@ -120,8 +129,8 @@ export default {
     & svg {
       width: 14px;
       height: 14px;
-      stroke-width: calc(32px / 14); /* replace 25 with the desired display size to get 1px stroke width */
-      top: 2px;
+      stroke-width: calc(32px / 14);
+      vertical-align: text-bottom;
     }
 
     &.with-border {

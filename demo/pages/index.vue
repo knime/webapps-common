@@ -11,10 +11,13 @@ import Buttons from '../components/Buttons';
 import Collapser from '../components/Collapser';
 import Description from '../components/Description';
 import TabBar from '../components/TabBar';
+import Message from '../components/Message';
 import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
+import Checkbox from '../components/Checkbox';
+import Multiselect from '../components/Multiselect';
 
 export default {
     components: {
@@ -29,9 +32,12 @@ export default {
         Headlines,
         TabBar,
         Icons,
+        Message,
         Messages,
         SubMenu,
-        IdleReadyButton
+        IdleReadyButton,
+        Checkbox,
+        Multiselect
     }
 };
 </script>
@@ -61,8 +67,17 @@ export default {
     <Buttons />
     <Collapser />
     <TabBar />
+    <Message />
     <Messages />
     <SubMenu />
     <IdleReadyButton />
+    <Checkbox />
+    <Multiselect />
   </main>
 </template>
+
+<style scoped lang="postcss">
+main {
+  margin-bottom: 10em;
+}
+</style>
