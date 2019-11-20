@@ -2,9 +2,17 @@
 export default {
     props: {
         /**
-         * if set, the button renders an <a> element instead of a <button> element
+         * If set, the button renders an <a> element instead of a <button> element
+         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
          */
         href: {
+            type: String,
+            default: ''
+        },
+        /**
+         * If set, the button renders a <nuxt-link> instead of a <button> element.
+         */
+        to: {
             type: String,
             default: ''
         },
@@ -61,8 +69,9 @@ export default {
 
 <template>
   <Component
-    :is="href ? 'a' : 'button'"
-    :href="href || false"
+    :is="to ? 'nuxt-link' : href ? 'a' : 'button'"
+    :href="href || null"
+    :to="to || null"
     :class="[
       'button-primary',
       {'with-border': withBorder},
@@ -70,6 +79,7 @@ export default {
       {'compact': compact}
     ]"
     v-bind="optionalProps"
+    :event="preventDefault ? [] : 'click'"
     @click="onClick"
   >
     <slot />
@@ -97,7 +107,10 @@ export default {
     outline: none;
     background-color: var(--theme-color-masala);
     color: var(--theme-color-white);
-    stroke: var(--theme-color-white);
+
+    & >>> svg {
+      stroke: var(--theme-color-white);
+    }
   }
 
   &.with-border {
@@ -111,6 +124,10 @@ export default {
     &:active,
     &:hover {
       background-color: var(--theme-color-white);
+
+      & >>> svg {
+        stroke: var(--theme-color-masala);
+      }
     }
   }
 
