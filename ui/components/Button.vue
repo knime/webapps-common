@@ -50,11 +50,29 @@ export default {
             default: false
         },
         /**
+         * disable button
+         */
+        disabled: {
+            type: Boolean,
+            default: false
+        },
+        /**
          * toggle to prevent default click handler
          */
         preventDefault: {
             type: Boolean,
             default: false
+        }
+    },
+    computed: {
+        component() {
+            if (this.to) {
+                return 'nuxt-link';
+            } else if (this.href) {
+                return 'a';
+            } else {
+                return 'button';
+            }
         }
     },
     methods: {
@@ -76,7 +94,7 @@ export default {
 
 <template>
   <Component
-    :is="to ? 'nuxt-link' : href ? 'a' : 'button'"
+    :is="component"
     :href="href || null"
     :to="to || null"
     :class="[
@@ -84,10 +102,12 @@ export default {
       {'primary': primary},
       {'with-border': withBorder},
       {'on-dark': onDark},
-      {'compact': compact}
+      {'compact': compact},
+      {'disabled': disabled}
     ]"
     v-bind="optionalProps"
     :event="preventDefault ? [] : 'click'"
+    :disabled="component === 'button' ? disabled : null"
     @click="onClick"
   >
     <slot />
@@ -111,7 +131,7 @@ export default {
   color: var(--theme-color-dove-gray);
   background-color: transparent;
 
-  & svg {
+  & >>> svg {
     width: 18px;
     height: 18px;
     stroke: var(--theme-color-dove-gray);
@@ -126,7 +146,7 @@ export default {
     font-size: 13px;
     line-height: 18px;
 
-    & svg {
+    & >>> svg {
       width: 14px;
       height: 14px;
       stroke-width: calc(32px / 14);
@@ -138,7 +158,7 @@ export default {
     }
   }
 
-  &:disabled {
+  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
     opacity: 0.5;
     pointer-events: none;
   }
@@ -148,7 +168,7 @@ export default {
     outline: none;
     color: var(--theme-color-masala);
 
-    & svg {
+    & >>> svg {
       stroke: var(--theme-color-masala);
     }
   }
@@ -157,7 +177,7 @@ export default {
     color: var(--theme-color-masala);
     background-color: var(--theme-color-yellow);
 
-    & svg {
+    & >>> svg {
       stroke: var(--theme-color-masala);
     }
   }
@@ -167,7 +187,7 @@ export default {
     color: var(--theme-color-masala);
     padding: 11px;
 
-    & svg {
+    & >>> svg {
       stroke: var(--theme-color-masala);
     }
   }
@@ -179,7 +199,7 @@ export default {
       color: var(--theme-color-white);
       background-color: var(--theme-color-masala);
 
-      & svg {
+      & >>> svg {
         stroke: var(--theme-color-white);
       }
     }
@@ -191,7 +211,7 @@ export default {
       background-color: transparent;
       color: var(--theme-color-white);
 
-      & svg {
+      & >>> svg {
         stroke: var(--theme-color-white);
       }
     }
@@ -203,7 +223,7 @@ export default {
         background-color: var(--theme-color-white);
         color: var(--theme-color-masala);
 
-        & svg {
+        & >>> svg {
           stroke: var(--theme-color-masala);
         }
       }

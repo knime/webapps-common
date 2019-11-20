@@ -32,6 +32,16 @@ describe('Button.vue', () => {
         expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border', 'on-dark'].sort());
     });
 
+    it('renders disabled state', () => {
+        let wrapper = shallowMount(Button, {
+            propsData: {
+                disabled: true
+            }
+        });
+        expect(wrapper.attributes('disabled')).toEqual('disabled');
+        expect(wrapper.classes().sort()).toEqual(['button', 'disabled'].sort());
+    });
+
     it('accepts any optional attribute', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
