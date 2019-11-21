@@ -50,6 +50,14 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
+.messages {
+  pointer-events: none;
+
+  &.active {
+    pointer-events: all;
+  }
+}
+
 .messages-enter-active,
 .messages-leave-active {
   transition: all 0.3s;
