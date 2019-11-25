@@ -6,11 +6,16 @@ describe('Multiselect.vue', () => {
     it('renders properly', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: ''
             }
@@ -23,11 +28,16 @@ describe('Multiselect.vue', () => {
     it('emits input events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: ''
             }
@@ -39,11 +49,16 @@ describe('Multiselect.vue', () => {
     it('toggles properly', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: ''
             }
@@ -58,11 +73,16 @@ describe('Multiselect.vue', () => {
     it('adds values to the checked values', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: ''
             }
@@ -74,11 +94,16 @@ describe('Multiselect.vue', () => {
     it('removes values from the checked values', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: ''
             }
@@ -93,11 +118,17 @@ describe('Multiselect.vue', () => {
     it('uses the title text until options have been selected', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
-                possibleValues: {
-                    test1: 'test1',
-                    test2: 'test2',
-                    test3: 'test3'
-                },
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2',
+                    selectedText: 'Test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
                 value: [],
                 title: 'Test Title'
             }
@@ -106,6 +137,6 @@ describe('Multiselect.vue', () => {
         wrapper.vm.onChange('test1', true);
         expect(wrapper.vm.optionText).toBe('test1');
         wrapper.vm.onChange('test2', true);
-        expect(wrapper.vm.optionText).toBe('test1, test2');
+        expect(wrapper.vm.optionText).toBe('test1, Test2');
     });
 });

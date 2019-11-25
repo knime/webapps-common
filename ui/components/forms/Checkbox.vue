@@ -71,6 +71,7 @@ export default {
 
 label {
   position: relative;
+  padding: 4px 0 3px 1.5em;
 }
 
 input {
