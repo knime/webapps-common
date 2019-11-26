@@ -9,7 +9,13 @@ const codeExample = `<h1>Headline 1</h1>
 <h6>Headline 6</h6>
 <!-- HTML does not know a h7 element, but we can use the following;
 cf. https://www.w3.org/WAI/GL/wiki/Using_role%3Dheading#Example_2 -->
-<div class="h7" role="heading" aria-level="7">Headline 7</div>
+<div
+  class="h7"
+  role="heading"
+  aria-level="7"
+>
+  Headline 7
+</div>
 `;
 
 export default {
@@ -43,7 +49,13 @@ export default {
           <h4>Headline 4</h4>
           <h5>Headline 5</h5>
           <h6>Headline 6</h6>
-          <div class="h7" role="heading" aria-level="7">Headline 7</div>
+          <div
+            class="h7"
+            role="heading"
+            aria-level="7"
+          >
+            Headline 7
+          </div>
         </div>
       </div>
     </section>

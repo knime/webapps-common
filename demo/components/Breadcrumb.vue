@@ -4,7 +4,10 @@ import Breadcrumb from '../../ui/components/Breadcrumb';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
 const codeExample =
-    `<Breadcrumb :items="[{ text: 'segment without link' }, { text: 'segment with link', href: '/' }]" />`;
+    `<Breadcrumb :items="[{ text: 'segment without link' },
+    { text: 'segment with link', href: '/' },
+    { text: 'segment with icon', icon: FolderIcon },
+    { text: 'segement without trailing arrow', noTrailingArrow: true }]" />`;
 
 export default {
     components: {

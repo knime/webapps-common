@@ -1,17 +1,22 @@
 <script>
+import ArrowNext from '../assets/img/icons/arrow-next.svg?inline';
+
 export default {
+    components: {
+        ArrowNext
+    },
     props: {
-        /**
-         * items as array with a 'text' and optional properties 'href' and 'noTrailingArrow'
-         * e.g.
-         * [
-         *   { text: 'KNIME Hub', href: '/' },
-         *   { text: 'John Doe', href: '/john.doe' },
-         *   { text: 'Public Space', href: '/john.doe/space' },
-         *   { text: 'Examples', href: '/john.doe/space/examples' },
-         *   { text: 'Sentiment Prediction via REST', noTrailingArrow: true }
-         * ]
-         */
+    /**
+     * items as array with a 'text' and optional properties 'href', 'icon' and 'noTrailingArrow'
+     * e.g.
+     * [
+     *   { text: 'KNIME Hub', href: '/', icon: Icon },
+     *   { text: 'John Doe', href: '/john.doe' },
+     *   { text: 'Public Space', href: '/john.doe/space' },
+     *   { text: 'Examples', href: '/john.doe/space/examples' },
+     *   { text: 'Sentiment Prediction via REST', noTrailingArrow: true }
+     * ]
+     */
         items: {
             type: Array,
             default: () => []
@@ -29,17 +34,30 @@ export default {
       <li
         v-for="(breadcrumbItem, i) in items"
         :key="i"
-        :class="{'arrow': breadcrumbItem.noTrailingArrow !== true}"
       >
         <nuxt-link
           v-if="breadcrumbItem.href"
           :to="breadcrumbItem.href"
         >
+          <Component
+            :is="breadcrumbItem.icon"
+            v-if="breadcrumbItem.icon"
+            class="breadcrumb-icon"
+          />
           {{ breadcrumbItem.text }}
         </nuxt-link>
         <span v-else>
+          <Component
+            :is="breadcrumbItem.icon"
+            v-if="breadcrumbItem.icon"
+            class="breadcrumb-icon"
+          />
           {{ breadcrumbItem.text }}
-        </span>
+        </span><!-- no whitespace
+        --><ArrowNext
+          v-if="!breadcrumbItem.noTrailingArrow"
+          class="arrow"
+        />
       </li>
     </ul>
   </nav>
@@ -49,11 +67,9 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .breadcrumb {
-  padding-top: 12px;
-  padding-bottom: 12px;
   color: var(--theme-color-dove-gray);
   font-size: 13px;
-  line-height: 25px;
+  line-height: 18px;
   font-weight: 500;
   margin: 0;
   list-style-type: none;
@@ -67,20 +83,6 @@ export default {
 
   & li {
     position: relative;
-    margin-right: 15px;
-
-    &.arrow::after {
-      display: inline-block;
-      content: '›';
-      position: absolute;
-      top: 0;
-      right: -15px;
-      width: 15px;
-      font-weight: 300;
-      color: var(--theme-color-dove-gray);
-      text-align: center;
-      pointer-events: none;
-    }
   }
 
   & span,
@@ -88,13 +90,53 @@ export default {
     display: inline-block;
     text-decoration: none;
     overflow: visible;
+    vertical-align: top;
+    padding: 11px 4px 11px 0;
   }
 
-  & span,
-  & a:hover {
+  & svg {
+    vertical-align: top;
+    stroke: var(--theme-color-dove-gray);
+  }
+
+  & .breadcrumb-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 2px;
+    stroke-width: calc((32px / 18) * 0.8);
+  }
+
+  & .arrow {
+    width: 10px;
+    height: 10px;
+    margin: 15px 4px;
+    stroke-width: calc(32px / 10);
+  }
+
+  /* Unlinked breadcrumb item */
+  & span {
     color: var(--theme-color-masala);
+
+    & svg {
+      stroke: var(--theme-color-masala);
+    }
+  }
+
+  /* Linked breadcrumb item */
+  & a {
+    &:hover {
+      color: var(--theme-color-masala);
+
+      & svg {
+        stroke: var(--theme-color-masala);
+      }
+    }
+  }
+
+  & li:nth-child(n+2) > span,
+  & li:nth-child(n+2) > a {
+    padding-left: 4px;
   }
 }
-
-
 </style>
+
