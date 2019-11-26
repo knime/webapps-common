@@ -53,7 +53,7 @@ export default {
 
 <template>
   <label
-    :class="[boxSizingClass, 'knime-qf-title']"
+    :class="boxSizingClass"
   >
     <input
       v-model="value"
@@ -71,95 +71,100 @@ export default {
 
 label {
   position: relative;
-  padding: 4px 0 3px 1.5em;
-}
-
-input {
-  opacity: 0;
-  position: absolute;
-
-  & + span::before {
-    background: var(--theme-color-porcelain);
-    display: inline-block;
-    content: '';
-  }
-
-  & + span::before,
-  & + span::after {
-    position: absolute;
-    left: 0;
-  }
-
-  &:checked + span::before {
-    background: var(--theme-color-masala);
-    content: '';
-  }
-
-  &:checked + span::after { /* ✓ */
-    content: '';
-    position: absolute;
-    display: block;
-    border: solid var(--theme-color-white);
-    transform: translate(0.2em, 0.35em) rotate(-45deg);
-  }
-}
-
-label:hover input + span::before {
-  background: var(--theme-color-silver-sand);
-}
-
-label:hover input + span::after {
-  border-color: var(--theme-color-masala);
-}
-
-/* Non-deterministic specificity */
-/* stylelint-disable no-descending-specificity */
-label.knime-checkbox-medium {
-  padding: 5px 0 3px 26px;
+  line-height: 1;
 
   & input {
-    & + span::before,
-    & + span::after {
-      top: 4.5px;
+    opacity: 0;
+    position: absolute;
+
+    & + span::before { /* □ */
+      background: var(--theme-color-porcelain);
+      display: inline-block;
+      content: '';
     }
 
-    & + span::before {
-      width: 14px;
-      height: 14px;
-    }
-
-    &:checked + span::after { /* ✓ */
-      left: -1px;
-      top: 2.5px;
-      width: 10px;
-      height: 5px;
-      border-width: 0 0 1.5px 1.5px;
-    }
-  }
-}
-
-label.knime-checkbox-large {
-  padding: 4px 0 3px 1.5em;
-
-  & input {
-    & + span::before,
-    & + span::after {
-      top: 6.5px;
-    }
-
-    & + span::before {
-      width: 1em;
-      height: 1em;
-    }
-
-    &:checked + span::after { /* ✓ */
+    & + span::before, /* □ */
+    & + span::after { /* ✓ */
+      position: absolute;
       left: 0;
-      top: 5px;
-      width: 0.6em;
-      height: 0.35em;
-      border-width: 0 0 2px 2px;
+    }
+
+    &:checked + span::before { /* □ */
+      background: var(--theme-color-masala);
+      content: '';
+    }
+
+    &:checked + span::after { /* ✓ */
+      content: '';
+      position: absolute;
+      display: block;
+      border: solid var(--theme-color-white);
+      transform: translate(0.2em, 0.35em) rotate(-45deg);
     }
   }
+
+  &:hover input + span::before { /* □ */
+    background: var(--theme-color-silver-sand);
+  }
+
+  &:hover input + span::after { /* ✓ */
+    border-color: var(--theme-color-masala);
+  }
+
+  &.knime-checkbox-medium {
+    padding: 3px 0 3px 26px;
+
+    &.knime-qf-title {
+      padding-top: 0;
+    }
+
+    & input {
+      & + span::before,
+      & + span::after {
+        top: 4.5px;
+      }
+
+      & + span::before {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  &.knime-checkbox-large {
+    padding: 6px 0 3px 1.5em;
+
+    &.knime-qf-title {
+      padding-top: 3px;
+    }
+
+    & input {
+      & + span::before,
+      & + span::after {
+        top: 6.5px;
+      }
+
+      & + span::before {
+        width: 1em;
+        height: 1em;
+      }
+    }
+  }
+
+  &.knime-checkbox-medium input:checked + span::after { /* ✓ */
+    left: -1px;
+    top: 2.5px;
+    width: 10px;
+    height: 5px;
+    border-width: 0 0 1.5px 1.5px;
+  }
+
+  &.knime-checkbox-large input:checked + span::after { /* ✓ */
+    left: 0;
+    top: 5px;
+    width: 0.6em;
+    height: 0.35em;
+    border-width: 0 0 2px 2px;
+  }
 }
-/* stylelint-enable */
 </style>

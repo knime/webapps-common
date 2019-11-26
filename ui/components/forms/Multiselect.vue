@@ -149,12 +149,13 @@ h6 {
 .options {
   position: absolute;
   width: 100%;
-  padding: 5px 10px 0;
+  padding: 5px 10px;
   background: var(--theme-color-white);
   box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
 
   & >>> label {
     display: block;
+    padding-top: 8px;
   }
 }
 </style>
