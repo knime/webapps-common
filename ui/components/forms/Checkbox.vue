@@ -5,24 +5,46 @@ export default {
             type: Boolean,
             default: false
         },
+        /**
+         * This prop controls the size of the checkbox.
+         * The available options for this prop are: 'Large'
+         * or 'Medium'. The case of the first letter does
+         * NOT matter. If 'Medium' is provided, the checkbox
+         * will be 14px by 14px, which is ideal for the
+         * BooleanWidget component. If 'Large' is provided
+         * (which is also default), the checkbox will be 1em
+         *  x 1em. This is ideal for the Multiselect drop-
+         * down menu.
+         */
         boxSize: {
             type: String,
             default: 'Large'
+        },
+        /**
+         * This prop controls an additional class for the label
+         * in this checkbox component. If the prop passed is true,
+         * then the label text will render in a headline label style.
+         * This is used in the widgets when there is the need for a
+         * label, but can be used anytime emphasis is needed for the
+         * text of the checkbox.
+         */
+        headlineLabel: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
         /**
-         * Default class knime-checkbox-large
+         * Default class knime-checkbox-large. The options
+         * available are: 'Large' or 'Medium'.
          *
          * @returns {String} class name for checkbox sizing
          */
         boxSizingClass() {
-            let size = this.boxSize.toLowerCase();
-            if (size.match(/m.*d/)) {
+            if (/^med/i.test(this.boxSize)) {
                 return 'knime-checkbox-medium';
-            } else {
-                return 'knime-checkbox-large';
             }
+            return 'knime-checkbox-large';
         }
     },
     methods: {
@@ -43,7 +65,7 @@ export default {
 
 <template>
   <label
-    :class="[boxSizingClass, 'knime-qf-title']"
+    :class="[boxSizingClass, { 'knime-qf-title': headlineLabel }]"
   >
     <input
       v-model="value"
@@ -61,6 +83,15 @@ export default {
 
 label {
   position: relative;
+
+  &.knime-qf-title {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    display: block;
+    letter-spacing: 0.1px;
+    margin-bottom: 5px;
+  }
 }
 
 input {
@@ -104,7 +135,11 @@ label:hover input + span::after {
 /* Non-deterministic specificity */
 /* stylelint-disable no-descending-specificity */
 label.knime-checkbox-medium {
-  padding: 5px 0 3px 26px;
+  padding: 3px 0 3px 26px;
+
+  &.knime-qf-title {
+    padding-top: 0;
+  }
 
   & input {
     & + span::before,
@@ -128,7 +163,11 @@ label.knime-checkbox-medium {
 }
 
 label.knime-checkbox-large {
-  padding: 4px 0 3px 1.5em;
+  padding: 6px 0 3px 1.5em;
+
+  &.knime-qf-title {
+    padding-top: 3px;
+  }
 
   & input {
     & + span::before,
