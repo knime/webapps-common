@@ -41,12 +41,21 @@ describe('Button.vue', () => {
         expect(wrapper.attributes('id')).toEqual('testId');
     });
 
+    it('has native and generic click handler events', () => {
+        /* Depending on the `to` and `href` attributes, the component renders either a native button or a (nuxt-)link.
+        * To make sure click handlers work with both, we need to set both the `@click` and the `@click.native` handlers
+        * cf. https://stackoverflow.com/a/41476882/5134084 */
+        let wrapper = shallowMount(Button);
+        // Unfortunately, it is not possible to test whether the click handlers are the same, because Vue adds a
+        // wrapper around the @click. So let's test that they're defined
+        expect(wrapper.vnode.data.on.click).toBeDefined();
+        expect(wrapper.vnode.data.nativeOn.click).toBeDefined();
+    });
+
     it('emits events', () => {
         let wrapper = shallowMount(Button);
         let button = wrapper.find('button');
-        // workaround to make .native listener work with vue-test-utils
-        button.element.addEventListener('click', wrapper.vnode.data.nativeOn.click);
-        button.trigger('click');
+        button.vm.$emit('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 
@@ -58,8 +67,6 @@ describe('Button.vue', () => {
         });
         let spy = jest.fn();
         let button = wrapper.find('button');
-        // workaround to make .native listener work with vue-test-utils
-        button.element.addEventListener('click', wrapper.vnode.data.nativeOn.click);
         button.trigger('click', {
             preventDefault: spy
         });

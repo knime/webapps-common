@@ -8,21 +8,42 @@ export default {
         DropdownIcon
     },
     props: {
+        /**
+         * List of possible values. Each item must have an `id` and a `text` property, and optionally a `selectedText`
+         * property that is used for displaying the list of selected items. If it is omitted, `text` is used instead.
+         * @example
+         * [{
+         *   id: 'pdf',
+         *   text: 'PDF'
+         * }, {
+         *   id: 'XLS',
+         *   text: 'Excel',
+         *   selectedText: '.xls'
+         * }]
+         */
         possibleValues: {
-            type: Object,
-            default: () => ({})
+            type: Array,
+            default: () => [],
+            validator(values) {
+                if (!Array.isArray(values)) {
+                    return false;
+                }
+                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
+            }
         },
+        /**
+         * selected value (which is a list of ids of entries)
+         */
         value: {
             type: Array,
             default: () => []
         },
+        /**
+         * Title to be displayed when nothing is selected
+         */
         title: {
             type: String,
             default: ''
-        },
-        textFormattingFn: {
-            type: Function,
-            default: text => text
         }
     },
     data() {
@@ -33,17 +54,13 @@ export default {
     },
     computed: {
         optionText() {
-            return this.checkedValue.length > 0
-                ? Object.keys(this.possibleValues)
-                    .map((key) => {
-                        if (this.checkedValue.indexOf(key) > -1) {
-                            return this.textFormattingFn(key).toString();
-                        }
-                        return '';
-                    })
-                    .filter(option => option)
-                    .join(', ')
-                : this.title;
+            if (this.checkedValue.length === 0) {
+                return this.title;
+            }
+            return this.possibleValues
+                .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
+                .map(({ text, selectedText = text }) => selectedText)
+                .join(', ');
         }
     },
     methods: {
@@ -80,12 +97,12 @@ export default {
       class="options"
     >
       <Checkbox
-        v-for="(label, val) of possibleValues"
-        :key="`multiselect-${val}`"
-        :value="checkedValue.indexOf(val) > -1"
-        @input="onChange(val, $event)"
+        v-for="item of possibleValues"
+        :key="`multiselect-${item.id}`"
+        :value="checkedValue.indexOf(item.id) > -1"
+        @input="onChange(item.id, $event)"
       >
-        {{ label }}
+        {{ item.text }}
       </Checkbox>
     </div>
   </div>

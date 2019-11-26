@@ -71,7 +71,6 @@ export default {
 
 label {
   position: relative;
-
 }
 
 input {

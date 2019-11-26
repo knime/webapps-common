@@ -69,6 +69,7 @@ export default {
 </script>
 
 <template>
+  <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
   <Component
     :is="to ? 'nuxt-link' : href ? 'a' : 'button'"
     :href="href || null"
@@ -81,6 +82,7 @@ export default {
     ]"
     v-bind="optionalProps"
     :event="preventDefault ? [] : 'click'"
+    @click="onClick"
     @click.native="onClick"
   >
     <slot />
