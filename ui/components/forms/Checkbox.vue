@@ -19,18 +19,6 @@ export default {
         boxSize: {
             type: String,
             default: 'Large'
-        },
-        /**
-         * This prop controls an additional class for the label
-         * in this checkbox component. If the prop passed is true,
-         * then the label text will render in a headline label style.
-         * This is used in the widgets when there is the need for a
-         * label, but can be used anytime emphasis is needed for the
-         * text of the checkbox.
-         */
-        headlineLabel: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -65,7 +53,7 @@ export default {
 
 <template>
   <label
-    :class="[boxSizingClass, { 'knime-qf-title': headlineLabel }]"
+    :class="boxSizingClass"
   >
     <input
       v-model="value"
@@ -84,14 +72,6 @@ export default {
 label {
   position: relative;
 
-  &.knime-qf-title {
-    font-weight: bold;
-    font-size: 16px;
-    line-height: 24px;
-    display: block;
-    letter-spacing: 0.1px;
-    margin-bottom: 5px;
-  }
 }
 
 input {
