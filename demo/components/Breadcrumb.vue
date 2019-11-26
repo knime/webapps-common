@@ -1,13 +1,13 @@
 <script>
 import CodeExample from './demo/CodeExample';
+import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
 import Breadcrumb from '../../ui/components/Breadcrumb';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
-const codeExample =
-    `<Breadcrumb :items="[{ text: 'segment without link' },
+const codeExample = `<Breadcrumb :items="[{ text: 'segment without link' },
     { text: 'segment with link', href: '/' },
-    { text: 'segment with icon', icon: FolderIcon },
-    { text: 'segement without trailing arrow', noTrailingArrow: true }]" />`;
+    { text: 'segment with icon', icon: FolderIcon }]" />
+`;
 
 export default {
     components: {
@@ -20,8 +20,8 @@ export default {
             breadcrumbItems: [
                 { text: 'KNIME Hub', href: '/' },
                 { text: 'John Doe', href: '/john.doe' },
-                { text: 'Public Space', href: '/john.doe/space' },
-                { text: 'Examples', href: '/john.doe/space/examples' },
+                { text: 'Public Space', href: '/john.doe/space', icon: FolderIcon },
+                { text: 'Examples', icon: FolderIcon },
                 { text: 'Sentiment Prediction via REST' }
             ],
             codeExample

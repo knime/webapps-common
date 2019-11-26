@@ -84,7 +84,7 @@ export default {
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"
           :to="item.to"
-          :href="item.href ? item.href : ''"
+          :href="item.href || null"
           tabindex="0"
         >
           <Component
@@ -145,6 +145,7 @@ ul {
     display: flex;
     align-items: center;
     text-decoration: none;
+    cursor: pointer;
 
     & .item-icon {
       stroke: var(--theme-color-masala);

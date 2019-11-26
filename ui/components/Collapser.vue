@@ -25,7 +25,7 @@ export default {
             el.style.height = 0;
         },
         onEnter(el) {
-            consola.trace(`Collapser: expaning to ${el.scrollHeight}px`);
+            consola.trace(`Collapser: expanding to ${el.scrollHeight}px`);
             el.style.height = `${el.scrollHeight}px`;
         },
         onAfterEnter(el) {

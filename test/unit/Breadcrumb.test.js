@@ -35,7 +35,7 @@ describe('Breadcrumb.vue', () => {
             }
         });
         let renderedItems = wrapper.findAll('li > *');
-        
+
         /* eslint-disable no-magic-numbers */
         expect(renderedItems.at(0).element.tagName).toBe('SPAN');
         expect(renderedItems.at(2).element.tagName).toBe('A');
@@ -59,30 +59,7 @@ describe('Breadcrumb.vue', () => {
                 arrows += 1;
             }
         }
-        expect(arrows).toBe(4);
+        expect(arrows).toBe(3);
     });
 
-    it('should sometimes render no trailing arrow', () => {
-        let wrapper = shallowMount(Breadcrumb, {
-            propsData: {
-                items: [{
-                    text: 'foo'
-                }, {
-                    text: 'bar',
-                    href: '//h/ref',
-                    noTrailingArrow: true
-                }]
-            }
-        });
-        let renderedItems = wrapper.findAll('li > *');
-
-        // check trailing arrows
-        let arrows = 0;
-        for (let i = 0; i < renderedItems.length; i++) {
-            if (renderedItems.at(i).is(ArrowNext)) {
-                arrows += 1;
-            }
-        }
-        expect(arrows).toBe(1);
-    });
 });
