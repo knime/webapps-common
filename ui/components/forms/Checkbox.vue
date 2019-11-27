@@ -55,10 +55,12 @@ export default {
   <label
     :class="boxSizingClass"
   >
+    <!-- Edge needs explicit click listener; all others use input -->
     <input
-      v-model="value"
+      :value="value"
       type="checkbox"
       @input="onChange"
+      @click="onChange"
     >
     <span>
       <slot />
