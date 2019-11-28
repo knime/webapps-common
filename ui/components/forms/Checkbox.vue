@@ -4,12 +4,36 @@ export default {
         value: {
             type: Boolean,
             default: false
+        },
+        /**
+         * This prop controls the size of the checkbox.
+         * The available options for this prop are: 'Large'
+         * or 'Medium'. The case of the first letter does
+         * NOT matter. If 'Medium' is provided, the checkbox
+         * will be 14px by 14px, which is ideal for the
+         * BooleanWidget component. If 'Large' is provided
+         * (which is also default), the checkbox will be 1em
+         *  x 1em. This is ideal for the Multiselect drop-
+         * down menu.
+         */
+        boxSize: {
+            type: String,
+            default: 'Large'
         }
     },
-    data() {
-        return {
-            currentValue: this.value
-        };
+    computed: {
+        /**
+         * Default class knime-checkbox-large. The options
+         * available are: 'Large' or 'Medium'.
+         *
+         * @returns {String} class name for checkbox sizing
+         */
+        boxSizingClass() {
+            if (/^med/i.test(this.boxSize)) {
+                return 'knime-checkbox-medium';
+            }
+            return 'knime-checkbox-large';
+        }
     },
     methods: {
         onChange($event) {
@@ -28,9 +52,11 @@ export default {
 </script>
 
 <template>
-  <label>
+  <label
+    :class="boxSizingClass"
+  >
     <input
-      v-model="currentValue"
+      v-model="value"
       type="checkbox"
       @input="onChange"
     >
@@ -45,52 +71,100 @@ export default {
 
 label {
   position: relative;
-  padding: 4px 0 3px 1.5em;
-}
+  line-height: 1;
 
-input {
-  opacity: 0;
-  position: absolute;
-
-  & + span::before {
-    background: var(--theme-color-porcelain);
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    content: '';
-  }
-
-  & + span::before,
-  & + span::after {
+  & input {
+    opacity: 0;
     position: absolute;
-    left: 0;
-    top: 6.5px;
+
+    & + span::before { /* □ */
+      background: var(--theme-color-porcelain);
+      display: inline-block;
+      content: '';
+    }
+
+    & + span::before, /* □ */
+    & + span::after { /* ✓ */
+      position: absolute;
+      left: 0;
+    }
+
+    &:checked + span::before { /* □ */
+      background: var(--theme-color-masala);
+      content: '';
+    }
+
+    &:checked + span::after { /* ✓ */
+      content: '';
+      position: absolute;
+      display: block;
+      border: solid var(--theme-color-white);
+      transform: translate(0.2em, 0.35em) rotate(-45deg);
+    }
   }
 
-  &:checked + span::before {
-    background: var(--theme-color-masala);
-    content: '';
+  &:hover input + span::before { /* □ */
+    background: var(--theme-color-silver-sand);
   }
 
-  &:checked + span::after { /* ✓ */
-    content: '';
-    position: absolute;
-    display: block;
+  &:hover input + span::after { /* ✓ */
+    border-color: var(--theme-color-masala);
+  }
+
+  &.knime-checkbox-medium {
+    padding: 3px 0 3px 26px;
+
+    &.knime-qf-title {
+      padding-top: 0;
+    }
+
+    & input {
+      & + span::before,
+      & + span::after {
+        top: 4.5px;
+      }
+
+      & + span::before {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  &.knime-checkbox-large {
+    padding: 6px 0 3px 1.5em;
+
+    &.knime-qf-title {
+      padding-top: 3px;
+    }
+
+    & input {
+      & + span::before,
+      & + span::after {
+        top: 6.5px;
+      }
+
+      & + span::before {
+        width: 1em;
+        height: 1em;
+      }
+    }
+  }
+
+  &.knime-checkbox-medium input:checked + span::after { /* ✓ */
+    left: -1px;
+    top: 2.5px;
+    width: 10px;
+    height: 5px;
+    border-width: 0 0 1.5px 1.5px;
+  }
+
+  &.knime-checkbox-large input:checked + span::after { /* ✓ */
     left: 0;
     top: 5px;
     width: 0.6em;
     height: 0.35em;
-    border: solid var(--theme-color-white);
-    border-width: 0 0 1px 1px;
-    transform: translate(0.2em, 0.35em) rotate(-45deg);
+    border-width: 0 0 2px 2px;
   }
-}
-
-label:hover input + span::before {
-  background: var(--theme-color-silver-sand);
-}
-
-label:hover input + span::after {
-  border-color: var(--theme-color-masala);
 }
 </style>

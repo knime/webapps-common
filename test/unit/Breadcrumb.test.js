@@ -62,27 +62,4 @@ describe('Breadcrumb.vue', () => {
         expect(arrows).toBe(3);
     });
 
-    it('should support trailing arrow', () => {
-        let wrapper = shallowMount(Breadcrumb, {
-            propsData: {
-                items: [{
-                    text: 'foo'
-                }, {
-                    text: 'bar',
-                    href: '//h/ref'
-                }],
-                trailingArrow: true
-            }
-        });
-        let renderedItems = wrapper.findAll('li > *');
-
-        // check trailing arrows
-        let arrows = 0;
-        for (let i = 0; i < renderedItems.length; i++) {
-            if (renderedItems.at(i).is(ArrowNext)) {
-                arrows += 1;
-            }
-        }
-        expect(arrows).toBe(2);
-    });
 });

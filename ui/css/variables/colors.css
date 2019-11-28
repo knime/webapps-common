@@ -12,7 +12,7 @@
   --knime-blue-semi: hsla(204, 100%, 11.75%, 0.2); /* #00243C33 */
   --knime-gray-light-semi: hsla(200, 10%, 94%, 0.4); /* #EFF1F266 */
   --knime-gray-dark-semi: hsla(195, 2%, 52%, 0.4); /* #82858680 */
-  --knime-gray-dark: hsla(195, 2%, 52%); /* #828586 */
+  --knime-gray-dark: hsl(195, 2%, 52%); /* #828586 */
 
   --theme-color-yellow: var(--knime-yellow); /* #FFD800 */
   --theme-color-masala: var(--knime-masala); /* #3E3A39 */

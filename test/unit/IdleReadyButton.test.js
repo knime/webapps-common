@@ -54,7 +54,7 @@ describe('IdleReadyButton.vue', () => {
                 ready: true
             }
         });
-        wrapper.find(Button).trigger('click');
+        wrapper.find(Button).vm.$emit('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 

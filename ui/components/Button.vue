@@ -76,6 +76,7 @@ export default {
         }
     },
     methods: {
+        // eslint-disable-next-line consistent-return
         onClick(e) {
             /**
              * Click event. Fired when the button is clicked.
@@ -93,6 +94,7 @@ export default {
 </script>
 
 <template>
+  <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
   <Component
     :is="component"
     :href="href || null"
@@ -109,6 +111,7 @@ export default {
     :event="preventDefault ? [] : 'click'"
     :disabled="component === 'button' ? disabled : null"
     @click="onClick"
+    @click.native="onClick"
   >
     <slot />
   </Component>
