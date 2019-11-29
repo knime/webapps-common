@@ -45,7 +45,7 @@ export default {
              */
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
-            this.$emit('input', checked);
+            this.$emit('updateValue', checked);
         }
     }
 };
@@ -59,8 +59,7 @@ export default {
     <input
       :value="value"
       type="checkbox"
-      @input="onChange"
-      @click="onChange"
+      @change="onChange"
     >
     <span>
       <slot />

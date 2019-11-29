@@ -14,13 +14,13 @@ describe('Checkbox.vue', () => {
         expect(wrapper.is('label')).toBeTruthy();
     });
 
-    it('emits input events', () => {
+    it('emits updateValue events', () => {
         const wrapper = mount(Checkbox, {
             propsData: {
                 value: true
             }
         });
         wrapper.vm.onChange({ target: false });
-        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted().updateValue).toBeTruthy();
     });
 });

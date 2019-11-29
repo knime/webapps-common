@@ -25,7 +25,7 @@ describe('Multiselect.vue', () => {
         expect(wrapper.classes()).toContain('multiselect');
     });
 
-    it('emits input events', () => {
+    it('emits updateValue events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
                 possibleValues: [{
@@ -43,7 +43,7 @@ describe('Multiselect.vue', () => {
             }
         });
         wrapper.vm.onChange('test1', true);
-        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted().updateValue).toBeTruthy();
     });
 
     it('toggles properly', () => {
