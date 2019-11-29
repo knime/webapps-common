@@ -76,7 +76,7 @@ export default {
             /**
              * Update event. Fired when a checkbox is clicked.
              *
-             * @event input
+             * @event updateValue
              * @type {Array}
              */
             this.$emit('updateValue', this.checkedValue);

@@ -40,7 +40,7 @@ export default {
             /**
              * Update event. Fired when the checkbox is clicked.
              *
-             * @event input
+             * @event updateValue
              * @type {String}
              */
             let { checked } = $event.target;
@@ -52,10 +52,7 @@ export default {
 </script>
 
 <template>
-  <label
-    :class="boxSizingClass"
-  >
-    <!-- Edge needs explicit click listener; all others use input -->
+  <label :class="boxSizingClass">
     <input
       :value="value"
       type="checkbox"
