@@ -25,6 +25,11 @@ export default {
         code() {
             return code;
         }
+    },
+    methods: {
+        updateSelected(e) {
+            this.selected = e;
+        }
     }
 };
 </script>
@@ -44,7 +49,8 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Checkbox
-            v-model="selected"
+            :value="selected"
+            @updateValue="updateSelected"
           >
             I want cookies!
           </Checkbox>

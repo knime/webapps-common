@@ -40,25 +40,23 @@ export default {
             /**
              * Update event. Fired when the checkbox is clicked.
              *
-             * @event input
+             * @event updateValue
              * @type {String}
              */
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
-            this.$emit('input', checked);
+            this.$emit('updateValue', checked);
         }
     }
 };
 </script>
 
 <template>
-  <label
-    :class="boxSizingClass"
-  >
+  <label :class="boxSizingClass">
     <input
-      v-model="value"
+      :value="value"
       type="checkbox"
-      @input="onChange"
+      @change="onChange"
     >
     <span>
       <slot />

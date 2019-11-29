@@ -33,6 +33,11 @@ export default {
         code() {
             return code;
         }
+    },
+    methods: {
+        updateSelected(e) {
+            this.selected = e;
+        }
     }
 };
 </script>
@@ -52,7 +57,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Multiselect
-            v-model="selected"
+            :value="selected"
             title="Select stuff here!"
             :possible-values="[{
               id: 'foo',
@@ -65,6 +70,7 @@ export default {
               text: 'Baz',
               selectedText: 'Baz!!'
             }]"
+            @updateValue="updateSelected"
           />
         </div>
         <div class="grid-item-6">

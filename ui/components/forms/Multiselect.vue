@@ -76,10 +76,10 @@ export default {
             /**
              * Update event. Fired when a checkbox is clicked.
              *
-             * @event input
+             * @event updateValue
              * @type {Array}
              */
-            this.$emit('input', this.checkedValue);
+            this.$emit('updateValue', this.checkedValue);
         },
         toggle() {
             this.collapsed = !this.collapsed;
@@ -100,7 +100,7 @@ export default {
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
-        @input="onChange(item.id, $event)"
+        @updateValue="onChange(item.id, $event)"
       >
         {{ item.text }}
       </Checkbox>
