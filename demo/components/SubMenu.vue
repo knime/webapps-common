@@ -15,15 +15,19 @@ import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inli
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
+    icon: HelpIcon
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-    text: 'Oranges'
+    text: 'Oranges',
+    icon: StarIcon
 },  {
     to: '/testing-nuxt-link',
     text: 'Ananas',
+    icon: HeartIcon
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
-    text: 'Bananas'
+    text: 'Bananas',
+    icon: LeaveIcon
 }];
 
 export default {
@@ -41,9 +45,12 @@ export default {
 
 <template>
   <nav>
-    <SubMenu :items="subMenuItems">
-      <MenuIcon />
-    </SubMenu>
+    <SubMenu
+      primary
+      :items="subMenuItems"
+      orientation="left"
+      button-title="Open my submenu with icons"
+    >
   </nav>
 </template>
 
@@ -142,6 +149,16 @@ export default {
             <SubMenu
               :items="subMenuItems"
               orientation="left"
+              button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+          <div class="card">
+            <span class="menu-name">Primary color</span>
+            <SubMenu
+              :items="subMenuItems"
+              primary
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />

@@ -47,6 +47,13 @@ export default {
             validator(orientation = 'right') {
                 return ['right', 'left'].includes(orientation);
             }
+        },
+        /**
+         * switches colors
+         */
+        primary: {
+            type: Boolean,
+            default: false
         }
 
     },
@@ -59,7 +66,12 @@ export default {
 </script>
 
 <template>
-  <div class="submenu">
+  <div
+    :class="[
+      'submenu',
+      {'primary': primary}
+    ]"
+  >
     <!-- The @click is required by Firefox -->
     <button
       ref="submenu-toggle"
@@ -178,6 +190,19 @@ ul {
   &:focus-within ul,
   & .submenu-toggle:focus + ul { /* only for IE/Edge */
     display: block;
+  }
+}
+
+.primary {
+  background-color: var(--theme-color-yellow);
+
+  &:focus-within,
+  &:hover {
+    background-color: var(--theme-color-masala);
+
+    & button svg {
+      stroke: var(--theme-color-white);
+    }
   }
 }
 </style>
