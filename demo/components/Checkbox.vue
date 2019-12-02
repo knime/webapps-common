@@ -4,10 +4,10 @@ import Checkbox from '../../ui/components/forms/Checkbox';
 import code from '!!raw-loader!../../ui/components/forms/Checkbox';
 
 const codeExample = `<Checkbox
-  :value="true"
-  @input="onInput"
+  :value="selected"
+  @updateValue="updateSelected"
 >
-  Hello World!
+  I want cookies!
 </Checkbox>`;
 
 export default {

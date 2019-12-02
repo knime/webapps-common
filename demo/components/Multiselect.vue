@@ -4,6 +4,7 @@ import Multiselect from '../../ui/components/forms/Multiselect';
 import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
 const codeExample = `<Multiselect
+  :value="selected"
   title="Select stuff here!"
   :possible-values="[{
     id: 'foo',
@@ -16,6 +17,7 @@ const codeExample = `<Multiselect
     text: 'Baz',
     selectedText: 'Baz!!'
   }]"
+  @updateValue="updateSelected"
 />`;
 
 export default {
