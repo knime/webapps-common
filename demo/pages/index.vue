@@ -8,6 +8,7 @@ import Icons from '../components/Icons';
 import Images from '../components/Images';
 import Breadcrumb from '../components/Breadcrumb';
 import Buttons from '../components/Buttons';
+import SplitButton from '../components/SplitButton';
 import Collapser from '../components/Collapser';
 import Description from '../components/Description';
 import TabBar from '../components/TabBar';
@@ -27,6 +28,7 @@ export default {
         Images,
         Breadcrumb,
         Buttons,
+        SplitButton,
         Collapser,
         Description,
         Headlines,
@@ -65,6 +67,7 @@ export default {
     <Icons />
     <Breadcrumb />
     <Buttons />
+    <SplitButton />
     <Collapser />
     <TabBar />
     <Message />

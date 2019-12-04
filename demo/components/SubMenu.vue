@@ -46,7 +46,6 @@ export default {
 <template>
   <nav>
     <SubMenu
-      primary
       :items="subMenuItems"
       orientation="left"
       button-title="Open my submenu with icons"
@@ -149,16 +148,6 @@ export default {
             <SubMenu
               :items="subMenuItems"
               orientation="left"
-              button-title="Open my submenu with icons"
-            >
-              <MenuIcon class="open-icon" />
-            </SubMenu>
-          </div>
-          <div class="card">
-            <span class="menu-name">Primary color</span>
-            <SubMenu
-              :items="subMenuItems"
-              primary
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />

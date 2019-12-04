@@ -47,15 +47,7 @@ export default {
             validator(orientation = 'right') {
                 return ['right', 'left'].includes(orientation);
             }
-        },
-        /**
-         * switches colors
-         */
-        primary: {
-            type: Boolean,
-            default: false
         }
-
     },
     methods: {
         onItemClick(event, item) {
@@ -66,12 +58,7 @@ export default {
 </script>
 
 <template>
-  <div
-    :class="[
-      'submenu',
-      {'primary': primary}
-    ]"
-  >
+  <div class="submenu">
     <!-- The @click is required by Firefox -->
     <button
       ref="submenu-toggle"
@@ -136,7 +123,7 @@ ul {
   position: absolute;
   right: 0;
   margin-top: 8px;
-  padding: 0;
+  padding: 5px 0;
   background-color: var(--theme-color-white);
   color: var(--theme-color-dove-gray);
   font-size: 13px;
@@ -158,6 +145,7 @@ ul {
     align-items: center;
     text-decoration: none;
     cursor: pointer;
+    white-space: nowrap;
 
     & .item-icon {
       stroke: var(--theme-color-masala);
@@ -190,19 +178,6 @@ ul {
   &:focus-within ul,
   & .submenu-toggle:focus + ul { /* only for IE/Edge */
     display: block;
-  }
-}
-
-.primary {
-  background-color: var(--theme-color-yellow);
-
-  &:focus-within,
-  &:hover {
-    background-color: var(--theme-color-masala);
-
-    & button svg {
-      stroke: var(--theme-color-white);
-    }
   }
 }
 </style>
