@@ -2,6 +2,7 @@ import { shallowMount, mount } from '@vue/test-utils';
 
 import IdleReadyButton from '~/ui/components/IdleReadyButton';
 import Button from '~/ui/components/Button';
+import DownIcon from '../assets/img/icons/circle-arrow-down.svg?inline';
 
 describe('IdleReadyButton.vue', () => {
 
@@ -45,6 +46,22 @@ describe('IdleReadyButton.vue', () => {
         wrapper.setProps({ idle: false });
         expect(wrapper.text()).not.toContain('Idle');
         expect(wrapper.text()).toContain('test text');
+    });
+
+    it('renders an icon', () => {
+        let wrapper = shallowMount(IdleReadyButton, {
+            propsData: {
+                withDownIcon: false
+            }
+        });
+        expect(wrapper.find(DownIcon).exists()).toBeFalsy();
+
+        wrapper = shallowMount(IdleReadyButton, {
+            propsData: {
+                withDownIcon: true
+            }
+        });
+        expect(wrapper.find(DownIcon).exists()).toBeTruthy();
     });
 
     it('emits events', () => {
