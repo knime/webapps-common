@@ -153,6 +153,17 @@ export default {
               <MenuIcon class="open-icon" />
             </SubMenu>
           </div>
+
+          <div class="card">
+            <span class="menu-name">Orientation top</span>
+            <SubMenu
+              :items="subMenuItems"
+              orientation="top"
+              button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
         </div>
         <CodeExample summary="Show usage example">{{ codeExampleStandalone }}</CodeExample>
         <CodeExample summary="Show SubMenu.vue source code">{{ code }}</CodeExample>
