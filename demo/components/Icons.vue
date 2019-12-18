@@ -157,7 +157,7 @@ export default {
           <CodeExample summary="Show icon as Vue component code example">{{ codeExample1 }}</CodeExample>
 
           <ListNumbersIcon class="hoverStyle" /> With numbers or text (be sure to set the <code>.text</code>
-            class with a fill and stroke to none)
+          class with a fill and stroke to none)
           <CodeExample summary="Show icon with text as Vue component code example">{{ codeExample2 }}</CodeExample>
 
           <ListNumbersIconWithTip />

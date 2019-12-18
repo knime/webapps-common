@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import Multiselect from '~/ui/components/forms/Multiselect';
 
 describe('Multiselect.vue', () => {
-    it('renders properly', () => {
+    it('renders', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
                 possibleValues: [{
@@ -25,7 +25,7 @@ describe('Multiselect.vue', () => {
         expect(wrapper.classes()).toContain('multiselect');
     });
 
-    it('emits updateValue events', () => {
+    it('emits input events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
                 possibleValues: [{
@@ -43,7 +43,7 @@ describe('Multiselect.vue', () => {
             }
         });
         wrapper.vm.onChange('test1', true);
-        expect(wrapper.emitted().updateValue).toBeTruthy();
+        expect(wrapper.emitted().input).toBeTruthy();
     });
 
     it('toggles properly', () => {
