@@ -35,6 +35,7 @@ export default {
       v-for="message in messages"
       :key="message.id"
       :type="message.type.toLowerCase()"
+      :count="message.count"
       :button="message.button"
       @dismiss="$emit('dismiss', message.id)"
     >
