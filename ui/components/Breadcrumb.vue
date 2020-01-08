@@ -86,10 +86,11 @@ export default {
 
   & li {
     position: relative;
-  }
+    margin: 5px 0;
 
-  & li:not(:last-child) {
-    margin-right: 4px;
+    &:not(:last-child) {
+      margin-right: 4px;
+    }
   }
 
   & span,
@@ -98,7 +99,7 @@ export default {
     text-decoration: none;
     overflow: visible;
     vertical-align: top;
-    padding: 5px 4px 0 0;
+    padding-right: 4px;
   }
 
   & svg {
@@ -116,8 +117,9 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
-    margin: 10px 4px;
+    margin: 0 4px;
     stroke-width: calc(32px / 10);
+    vertical-align: middle;
   }
 
   /* Unlinked breadcrumb item */
