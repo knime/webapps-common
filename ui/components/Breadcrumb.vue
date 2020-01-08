@@ -78,11 +78,18 @@ export default {
   & li {
     display: inline-block;
     margin: 0;
-    padding: 0;
+  }
+
+  & ul {
+    padding: 10px 0;
   }
 
   & li {
     position: relative;
+  }
+
+  & li:not(:last-child) {
+    margin-right: 4px;
   }
 
   & span,
@@ -91,7 +98,7 @@ export default {
     text-decoration: none;
     overflow: visible;
     vertical-align: top;
-    padding: 11px 4px 11px 0;
+    padding: 5px 4px 0 0;
   }
 
   & svg {
@@ -109,7 +116,7 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
-    margin: 15px 4px;
+    margin: 10px 4px;
     stroke-width: calc(32px / 10);
   }
 
@@ -131,11 +138,6 @@ export default {
         stroke: var(--theme-color-masala);
       }
     }
-  }
-
-  & li:nth-child(n+2) > span,
-  & li:nth-child(n+2) > a {
-    padding-left: 4px;
   }
 }
 </style>
