@@ -168,3 +168,48 @@ section section {
 .grid-container .reset-spacing {
   width: calc(100% + var(--grid-gap-width));
 }
+
+@media only screen and (max-width: 768px) {
+  main section,
+  header section,
+  footer section,
+  header,
+  footer {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .grid-container {
+    flex-wrap: wrap;
+  }
+
+  [class^="grid-item-"] {
+    flex: 1 0 auto;
+  }
+
+  .grid-item-4,
+  .grid-item-5,
+  .grid-item-6,
+  .grid-item-7,
+  .grid-item-8,
+  .grid-item-9,
+  .grid-item-10,
+  .grid-item-11,
+  .grid-item-12 {
+    min-width: 300px;
+  }
+
+  .grid-item-3,
+  .grid-item-2,
+  .grid-item-1 {
+    min-width: 130px;
+  }
+
+  .grid-container .spacing-right {
+    padding-right: unset;
+  }
+
+  .grid-container .reset-spacing {
+    width: unset;
+  }
+}

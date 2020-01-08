@@ -157,4 +157,10 @@ export default {
 .plain {
   white-space: pre-line;
 }
+
+@media only screen and (max-width: 768px) {
+  .plain {
+    white-space: break-spaces;
+  }
+}
 </style>

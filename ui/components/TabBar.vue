@@ -184,12 +184,15 @@ input[type="radio"] {
 span {
   font-size: 16px;
   font-weight: 500;
-  margin-right: 20px;
   padding: 0 10px;
   display: inline-block;
   height: 51px;
   line-height: 51px;
   color: var(--theme-color-dove-gray);
+}
+
+label:not(:last-child) {
+  margin-right: 20px;
 }
 
 svg {
@@ -225,6 +228,21 @@ input:checked:not(:disabled) + span {
 
 input:not(:checked):not(:disabled) + span {
   cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+  div {
+    overflow-x: scroll;
+    white-space: nowrap;
+    min-height: 52px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+  }
 }
 
 </style>
