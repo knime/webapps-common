@@ -58,7 +58,8 @@ export default {
         <div class="grid-item-12">
           <h2>InputField</h2>
           <p>
-            Single line string input with optional icon and validity styling. It acts as a form element, so it emits input events and it has a value.
+            Single line string input with optional icon and validity styling.
+            It acts as a form element, so it emits input events and it has a value.
           </p>
         </div>
       </div>

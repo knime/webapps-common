@@ -27,9 +27,9 @@
     "sonar-scanner": "3.1.0",
     "stylelint": "10.1.0",
     "stylelint-config-standard": "18.3.0",
-    "vue": "2.6.10",
+    "vue": "2.6.11",
     "vue-jest": "3.0.4",
-    "vue-template-compiler": "2.6.10"
+    "vue-template-compiler": "2.6.11"
   },
   "peerDependencies": {
     "consola": "*",
