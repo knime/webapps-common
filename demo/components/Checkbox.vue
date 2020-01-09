@@ -3,11 +3,11 @@ import CodeExample from './demo/CodeExample';
 import Checkbox from '../../ui/components/forms/Checkbox';
 import code from '!!raw-loader!../../ui/components/forms/Checkbox';
 
-const codeExample = `<Checkbox
-  :value="selected"
-  @updateValue="updateSelected"
->
+const codeExample = `<Checkbox v-model="selected">
   I want cookies!
+</Checkbox>
+<Checkbox v-model="selected" box-size="medium">
+  I want smaller cookies!
 </Checkbox>`;
 
 export default {
@@ -24,11 +24,6 @@ export default {
     computed: {
         code() {
             return code;
-        }
-    },
-    methods: {
-        updateSelected(e) {
-            this.selected = e;
         }
     }
 };
@@ -48,11 +43,15 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Checkbox
-            :value="selected"
-            @updateValue="updateSelected"
-          >
+          <Checkbox v-model="selected">
             I want cookies!
+          </Checkbox>
+          <br>
+          <Checkbox
+            v-model="selected"
+            box-size="medium"
+          >
+            I want smaller cookies!
           </Checkbox>
         </div>
         <div class="grid-item-6">

@@ -28,16 +28,18 @@ timeout(time: 15, unit: 'MINUTES') {
         '''
       }
 
-      stage('npm Security Audit') {
+      parallel 'npm Security Audit': {
         env.lastStage = env.STAGE_NAME
-        retry(3) {
-          sh '''
-            npm audit
-          '''
-        }
-      }
 
-      stage('Static Code Analysis') {
+        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          retry(3) { // because npm registry sometimes break
+            sh '''
+              npm audit
+            '''
+          }
+        }
+      },
+      'Static Code Analysis': {
         env.lastStage = env.STAGE_NAME
         sh '''
           npm run lint

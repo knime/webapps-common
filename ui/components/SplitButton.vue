@@ -26,7 +26,8 @@ div {
     }
   }
 
-  &:hover {
+  &:hover,
+  &:focus-within {
     & >>> .button {
       &::after {
         display: none;
