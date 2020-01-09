@@ -62,8 +62,6 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
-@import "webapps-common/ui/css/headlines.css";
-
 
 .demo {
   margin-bottom: 10px;
