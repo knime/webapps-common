@@ -20,6 +20,14 @@ export default {
         items: {
             type: Array,
             default: () => []
+        },
+        /**
+         * `true` to render an additional arrow in the end, pointing at nothing.
+         * Defaults to `false`.
+         */
+        trailingArrow: {
+            type: Boolean,
+            default: false
         }
     }
 };
@@ -55,7 +63,7 @@ export default {
           {{ breadcrumbItem.text }}
         </span><!-- no whitespace
         --><ArrowNext
-          v-if="i !== items.length - 1"
+          v-if="trailingArrow || i !== items.length - 1"
           class="arrow"
         />
       </li>

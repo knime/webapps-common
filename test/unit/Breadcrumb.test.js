@@ -62,4 +62,21 @@ describe('Breadcrumb.vue', () => {
         expect(arrows).toBe(3);
     });
 
+    it('renders trailing arrow', () => {
+        let wrapper = mount(Breadcrumb, {
+            propsData: {
+                items: [{ text: 'foo' }],
+                trailingArrow: true
+            }
+        });
+        let renderedItems = wrapper.findAll('li > *');
+        let arrows = 0;
+        for (let i = 0; i < renderedItems.length; i++) {
+            if (renderedItems.at(i).element.tagName === 'svg') {
+                arrows += 1;
+            }
+        }
+        expect(arrows).toBe(1);
+    });
+
 });
