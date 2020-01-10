@@ -124,9 +124,9 @@ export default {
 h6 {
   margin: 0;
   background: var(--theme-color-porcelain);
-  padding: 10px 38px 10px 10px;
+  padding: 11px 38px 10px 10px;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 19px;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -139,7 +139,7 @@ h6 {
   stroke-width: calc(32px / 18);
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 11px;
   pointer-events: none;
 }
 

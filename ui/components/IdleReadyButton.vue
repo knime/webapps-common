@@ -1,9 +1,11 @@
 <script>
 import Button from './Button';
+import DownIcon from '../assets/img/icons/circle-arrow-down.svg?inline';
 
 export default {
     components: {
-        Button
+        Button,
+        DownIcon
     },
     props: {
         /**
@@ -33,6 +35,13 @@ export default {
         readyText: {
             type: String,
             default: 'More results'
+        },
+        /**
+         * `true` to render an arrow icon with the readyText. Defaults to `false`.
+         */
+        withDownIcon: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
@@ -48,7 +57,7 @@ export default {
     v-if="idle || ready"
     class="load-more"
   >
-    <no-ssr>
+    <client-only>
       <span v-if="idle">
         {{ idleText }}
       </span>
@@ -59,9 +68,10 @@ export default {
         :disabled="idle"
         @click="onClick"
       >
+        <DownIcon v-if="withDownIcon" />
         {{ readyText }}
       </Button>
-    </no-ssr>
+    </client-only>
   </div>
 </template>
 
