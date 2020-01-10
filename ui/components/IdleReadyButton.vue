@@ -57,7 +57,7 @@ export default {
     v-if="idle || ready"
     class="load-more"
   >
-    <no-ssr>
+    <client-only>
       <span v-if="idle">
         {{ idleText }}
       </span>
@@ -71,7 +71,7 @@ export default {
         <DownIcon v-if="withDownIcon" />
         {{ readyText }}
       </Button>
-    </no-ssr>
+    </client-only>
   </div>
 </template>
 
