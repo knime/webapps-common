@@ -73,6 +73,16 @@ export default {
             } else {
                 return 'button';
             }
+        },
+        classes() {
+            return [
+                'button',
+                { primary: this.primary },
+                { 'with-border': this.withBorder },
+                { 'on-dark': this.onDark },
+                { compact: this.compact },
+                { disabled: this.disabled }
+            ];
         }
     },
     methods: {
@@ -95,23 +105,25 @@ export default {
 
 <template>
   <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
-  <Component
-    :is="component"
-    :href="href || null"
-    :to="to || null"
-    :class="[
-      'button',
-      {'primary': primary},
-      {'with-border': withBorder},
-      {'on-dark': onDark},
-      {'compact': compact},
-      {'disabled': disabled}
-    ]"
+  <nuxt-link
+    v-if="component === 'nuxt-link'"
+    :to="to"
+    :class="classes"
     v-bind="optionalProps"
     :event="preventDefault ? [] : 'click'"
+    @click.native="onClick"
+  >
+    <slot />
+  </nuxt-link>
+
+  <Component
+    :is="component"
+    v-else
+    :href="href || null"
+    :class="classes"
+    v-bind="optionalProps"
     :disabled="component === 'button' ? disabled : null"
     @click="onClick"
-    @click.native="onClick"
   >
     <slot />
   </Component>

@@ -6,55 +6,36 @@ export default {
             default: false
         },
         /**
-         * This prop controls the size of the checkbox.
-         * The available options for this prop are: 'Large'
-         * or 'Medium'. The case of the first letter does
-         * NOT matter. If 'Medium' is provided, the checkbox
-         * will be 14px by 14px, which is ideal for the
-         * BooleanWidget component. If 'Large' is provided
-         * (which is also default), the checkbox will be 1em
-         *  x 1em. This is ideal for the Multiselect drop-
-         * down menu.
+         * Controls the size of the checkbox.
+         * Supported values:
+         *   large = 14×14px
+         *   medium = 1×1em
          */
         boxSize: {
             type: String,
-            default: 'Large'
-        }
-    },
-    computed: {
-        /**
-         * Default class knime-checkbox-large. The options
-         * available are: 'Large' or 'Medium'.
-         *
-         * @returns {String} class name for checkbox sizing
-         */
-        boxSizingClass() {
-            if (/^med/i.test(this.boxSize)) {
-                return 'knime-checkbox-medium';
-            }
-            return 'knime-checkbox-large';
+            default: 'large'
         }
     },
     methods: {
         onChange($event) {
             /**
-             * Update event. Fired when the checkbox is clicked.
+             * Fired when the checkbox value changes.
              *
-             * @event updateValue
-             * @type {String}
+             * @event input
+             * @type {Boolean}
              */
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
-            this.$emit('updateValue', checked);
+            this.$emit('input', checked);
         }
     }
 };
 </script>
 
 <template>
-  <label :class="boxSizingClass">
+  <label :class="boxSize">
     <input
-      :value="value"
+      :checked="value"
       type="checkbox"
       @change="onChange"
     >
@@ -109,10 +90,10 @@ label {
     border-color: var(--theme-color-masala);
   }
 
-  &.knime-checkbox-medium {
+  &.medium {
     padding: 3px 0 3px 26px;
 
-    &.knime-qf-title {
+    &.knime-qf-title { /* TODO WEBP-120 move to widget */
       padding-top: 0;
     }
 
@@ -129,10 +110,10 @@ label {
     }
   }
 
-  &.knime-checkbox-large {
+  &.large {
     padding: 6px 0 3px 1.5em;
 
-    &.knime-qf-title {
+    &.knime-qf-title { /* TODO WEBP-120 move to widget */
       padding-top: 3px;
     }
 
@@ -149,7 +130,7 @@ label {
     }
   }
 
-  &.knime-checkbox-medium input:checked + span::after { /* ✓ */
+  &.medium input:checked + span::after { /* ✓ */
     left: -1px;
     top: 2.5px;
     width: 10px;
@@ -157,7 +138,7 @@ label {
     border-width: 0 0 1.5px 1.5px;
   }
 
-  &.knime-checkbox-large input:checked + span::after { /* ✓ */
+  &.large input:checked + span::after { /* ✓ */
     left: 0;
     top: 5px;
     width: 0.6em;

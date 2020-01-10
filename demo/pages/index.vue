@@ -18,6 +18,7 @@ import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
 import Checkbox from '../components/Checkbox';
+import InputField from '../components/InputField';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -39,6 +40,7 @@ export default {
         SubMenu,
         IdleReadyButton,
         Checkbox,
+        InputField,
         Multiselect
     }
 };
@@ -75,6 +77,7 @@ export default {
     <SubMenu />
     <IdleReadyButton />
     <Checkbox />
+    <InputField />
     <Multiselect />
   </main>
 </template>

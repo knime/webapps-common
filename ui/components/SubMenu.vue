@@ -45,7 +45,7 @@ export default {
             type: String,
             default: 'right',
             validator(orientation = 'right') {
-                return ['right', 'left'].includes(orientation);
+                return ['right', 'left', 'top'].includes(orientation);
             }
         }
     },
@@ -137,6 +137,11 @@ ul {
   &.orient-left {
     right: auto;
     left: 0;
+  }
+
+  &.orient-top {
+    bottom: 18px;
+    right: 10px;
   }
 
   & a {

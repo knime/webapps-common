@@ -73,13 +73,14 @@ export default {
                 this.checkedValue = this.checkedValue.filter(x => x !== value);
             }
             consola.trace('Multiselect value changed to', this.checkedValue);
+            
             /**
-             * Update event. Fired when a checkbox is clicked.
+             * Fired when the selection changes.
              *
-             * @event updateValue
+             * @event input
              * @type {Array}
              */
-            this.$emit('updateValue', this.checkedValue);
+            this.$emit('input', this.checkedValue);
         },
         toggle() {
             this.collapsed = !this.collapsed;
@@ -100,7 +101,7 @@ export default {
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
-        @updateValue="onChange(item.id, $event)"
+        @input="onChange(item.id, $event)"
       >
         {{ item.text }}
       </Checkbox>
@@ -123,9 +124,9 @@ export default {
 h6 {
   margin: 0;
   background: var(--theme-color-porcelain);
-  padding: 10px 38px 10px 10px;
+  padding: 11px 38px 10px 10px;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 19px;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -138,7 +139,7 @@ h6 {
   stroke-width: calc(32px / 18);
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 11px;
   pointer-events: none;
 }
 
