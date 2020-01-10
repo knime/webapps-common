@@ -1,7 +1,7 @@
 /*
 Sticky footer class to set styles globally
 When using nuxt the footer sometimes jumps up as "& > *" in a scoped style doesn't work when navigating.
-Therefor we must keep the sticky-footer class in an unscoped separate file
+Therefore we must keep the sticky-footer class in an unscoped separate file
 */
 .sticky-footer {
   min-height: 100vh;
