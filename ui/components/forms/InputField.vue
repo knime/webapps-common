@@ -84,6 +84,7 @@ export default {
 
 label {
   position: relative;
+  display: block;
 }
 
 input {
@@ -91,17 +92,22 @@ input {
   font-weight: 500;
   color: var(--theme-color-masala);
   line-height: 18px;
-  background-color: var(--theme-color-porcelain);
   margin: 0;
   padding: 11px 10px 11px 10px;
   border-radius: 0;
   width: 100%;
-  border-left-width: 3px;
-  border-color: transparent;
-  border-left-style: solid;
+  border-width: 1px;
+  border-color: var(--theme-color-gray);
+  border-style: solid;
   outline: none;
-  border-top: none;
-  border-bottom: none;
+
+  &::placeholder {
+    color: var(--theme-color-dove-gray);
+  }
+
+  &:focus {
+    background-color: var(--theme-color-porcelain);
+  }
 
   &.with-icon {
     padding: 10px 10px 10px 38px;
@@ -119,7 +125,7 @@ svg {
   stroke: var(--theme-color-masala);
   position: absolute;
   left: 12px;
-  top: 2px;
+  top: 10px;
 }
 </style>
 
