@@ -86,11 +86,19 @@ export default {
   & li {
     display: inline-block;
     margin: 0;
-    padding: 0;
+  }
+
+  & ul {
+    padding: 10px 0;
   }
 
   & li {
     position: relative;
+    margin: 5px 0;
+
+    &:not(:last-child) {
+      margin-right: 4px;
+    }
   }
 
   & span,
@@ -99,7 +107,7 @@ export default {
     text-decoration: none;
     overflow: visible;
     vertical-align: top;
-    padding: 11px 4px 11px 0;
+    padding-right: 4px;
   }
 
   & svg {
@@ -117,8 +125,9 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
-    margin: 15px 4px;
+    margin: 0 4px;
     stroke-width: calc(32px / 10);
+    vertical-align: middle;
   }
 
   /* Unlinked breadcrumb item */
@@ -139,11 +148,6 @@ export default {
         stroke: var(--theme-color-masala);
       }
     }
-  }
-
-  & li:nth-child(n+2) > span,
-  & li:nth-child(n+2) > a {
-    padding-left: 4px;
   }
 }
 </style>

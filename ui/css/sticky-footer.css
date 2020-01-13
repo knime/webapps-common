@@ -1,20 +1,16 @@
 /*
 Sticky footer class to set styles globally
-When using nuxt the footer sometimes jumps up as "& > *" doesn't work when navigating.
-Also the workaround using ">>>" is not applicable here as we only want the the first generation child
-objects to be selected
-Therefor we must keep the sticky-footer class in an unscoped seperate file
+When using nuxt the footer sometimes jumps up as "& > *" in a scoped style doesn't work when navigating.
+Therefore we must keep the sticky-footer class in an unscoped separate file
 */
 .sticky-footer {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 
-
-  & >>> main {
+  & main {
     flex-grow: 1;
   }
-
 
   & > * {
     flex-shrink: 0;
