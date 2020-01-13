@@ -52,6 +52,21 @@ export default {
     methods: {
         onItemClick(event, item) {
             this.$emit('item-click', event, item, this.id);
+        },
+        /**
+         * Edge loses focus faster then emitting the actual click event, therefore we need to keep the focus on the
+         * submenu when the focus is about to change and only loose it when a click occurs outside of the submenu-items.
+         * To guarantee that this approach is working, the class name 'clickable-item' should only be used
+         * on submenu-items
+         *
+         * @param {Object} e - event object
+         * @returns {Boolean}
+         */
+        onMenuClick(e) {
+            if (e.relatedTarget && e.relatedTarget.className === 'clickable-item') {
+                e.currentTarget.focus();
+            }
+            return true;
         }
     }
 };
@@ -67,6 +82,7 @@ export default {
       aria-haspopup="true"
       tabindex="0"
       @click="e => { e.currentTarget.focus(); }"
+      @blur="onMenuClick"
     >
       <slot />
     </button>
@@ -85,6 +101,7 @@ export default {
           :to="item.to"
           :href="item.href || null"
           tabindex="0"
+          class="clickable-item"
         >
           <Component
             :is="item.icon"
