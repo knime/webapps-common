@@ -106,4 +106,28 @@ describe('Submenu.vue', () => {
 
     });
 
+    it('emits on blur', () => {
+        const id = 'testfoobar543';
+        const items =  [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
+        ];
+        const wrapper = shallowMount(SubMenu, {
+            propsData: {
+                items,
+                id
+            },
+            slots: {
+                default: 'button me'
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        let button = wrapper.find('.submenu-toggle');
+        button.trigger('click');
+        button.trigger('blur');
+        expect(wrapper.find('.clickable-item').exists()).toBe(true);
+        expect(document.activeElement).toBe(button.element);
+    });
 });
