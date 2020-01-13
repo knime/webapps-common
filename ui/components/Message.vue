@@ -70,12 +70,12 @@ export default {
         <span class="message">
           <!-- @slot Use this slot to add text content (markup). -->
           <slot />
-        </span>
-        <span
-          v-show="count && count > 1"
-          class="message-count"
-        >
-          {{ count }}
+          <span
+            v-show="count && count > 1"
+            class="message-count"
+          >
+            {{ "x" + count }}
+          </span>
         </span>
         <Button
           v-if="button"
@@ -103,12 +103,10 @@ export default {
 @import "webapps-common/ui/css/variables/colors";
 
 .message-count {
-  width: fit-content;
-  padding: 8px;
-  margin-right: 5px;
+  padding: 3px 7.5px;
+  margin-left: 5px;
   background-color: white;
-  border-radius: 16px;
-  line-height: 10px;
+  border-radius: 12px;
 }
 
 section {
