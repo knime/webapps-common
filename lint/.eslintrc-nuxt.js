@@ -9,7 +9,7 @@ module.exports = {
                 'nuxt',
                 'nuxt-link',
                 'nuxt-child',
-                'no-ssr'
+                'client-only'
             ]
         }],
         'vue/order-in-components': ['error', {

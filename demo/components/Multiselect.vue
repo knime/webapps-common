@@ -4,7 +4,7 @@ import Multiselect from '../../ui/components/forms/Multiselect';
 import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
 const codeExample = `<Multiselect
-  :value="selected"
+  v-model="selected"
   title="Select stuff here!"
   :possible-values="[{
     id: 'foo',
@@ -17,7 +17,6 @@ const codeExample = `<Multiselect
     text: 'Baz',
     selectedText: 'Baz!!'
   }]"
-  @updateValue="updateSelected"
 />`;
 
 export default {
@@ -34,11 +33,6 @@ export default {
     computed: {
         code() {
             return code;
-        }
-    },
-    methods: {
-        updateSelected(e) {
-            this.selected = e;
         }
     }
 };
@@ -59,7 +53,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Multiselect
-            :value="selected"
+            v-model="selected"
             title="Select stuff here!"
             :possible-values="[{
               id: 'foo',
@@ -72,7 +66,6 @@ export default {
               text: 'Baz',
               selectedText: 'Baz!!'
             }]"
-            @updateValue="updateSelected"
           />
         </div>
         <div class="grid-item-6">

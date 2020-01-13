@@ -1,4 +1,4 @@
-import truncateString from '~/ui/util/truncateString';
+import truncateString from '~/util/truncateString';
 
 describe('truncateString', () => {
 
