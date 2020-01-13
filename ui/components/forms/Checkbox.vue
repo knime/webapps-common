@@ -17,7 +17,7 @@ export default {
         }
     },
     methods: {
-        onChange($event) {
+        onInput($event) {
             /**
              * Fired when the checkbox value changes.
              *
@@ -27,6 +27,10 @@ export default {
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
             this.$emit('input', checked);
+        },
+        validate() {
+            return typeof this.$refs.input !== 'undefined' &&
+                typeof this.$refs.input.checked !== 'undefined';
         }
     }
 };
@@ -35,9 +39,10 @@ export default {
 <template>
   <label :class="boxSize">
     <input
+      ref="input"
       :checked="value"
       type="checkbox"
-      @change="onChange"
+      @change="onInput"
     >
     <span>
       <slot />

@@ -64,7 +64,7 @@ export default {
         }
     },
     methods: {
-        onChange(value, toggled) {
+        onInput(value, toggled) {
             if (toggled) {
                 if (this.checkedValue.indexOf(value) === -1) {
                     this.checkedValue.push(value);
@@ -101,7 +101,7 @@ export default {
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
-        @input="onChange(item.id, $event)"
+        @input="onInput(item.id, $event)"
       >
         {{ item.text }}
       </Checkbox>
