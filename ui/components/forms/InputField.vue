@@ -27,6 +27,10 @@ export default {
         inputClasses: {
             default: '',
             type: String
+        },
+        disabled: {
+            default: false,
+            type: Boolean
         }
     },
     computed: {
@@ -74,6 +78,7 @@ export default {
       :type="type"
       :pattern="pattern"
       :placeholder="placeholder"
+      :disabled="disabled"
       @input="onInput"
     >
   </label>
@@ -96,17 +101,25 @@ input {
   padding: 11px 10px 11px 10px;
   border-radius: 0;
   width: 100%;
-  border-width: 1px;
-  border-color: var(--theme-color-gray);
-  border-style: solid;
+  border: 1px solid var(--theme-color-gray);
   outline: none;
 
   &::placeholder {
     color: var(--theme-color-dove-gray);
   }
 
-  &:focus {
+  &:disabled {
+    color: var(--theme-color-dove-gray);
+  }
+
+  &:hover {
     background-color: var(--theme-color-porcelain);
+  }
+
+  /* active */
+  &:focus {
+    border: 1px solid var(--theme-color-masala);
+    background-color: var(--knime-white);
   }
 
   &.with-icon {
@@ -128,4 +141,5 @@ svg {
   top: 10px;
 }
 </style>
+
 

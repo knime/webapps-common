@@ -20,6 +20,11 @@ const codeExample = `<InputField
   :is-valid="false"
 />
 <InputField
+  :value="no edit here"
+  type="text"
+  disabled="true"
+/>
+<InputField
   type="password"
   value="secret-password"
 />
@@ -79,6 +84,11 @@ export default {
             v-model="inputValue"
             type="text"
             :is-valid="false"
+          />
+          <InputField
+            value="disabled: no edit here"
+            type="text"
+            disabled="true"
           />
           <InputField
             type="password"
