@@ -77,7 +77,7 @@ export default {
 </script>
 
 <template>
-  <label>
+  <div>
     <slot name="icon" />
     <span :class="markerClassList"></span>
     <input
@@ -90,15 +90,15 @@ export default {
       :disabled="disabled"
       @input="onInput"
     >
-  </label>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-label {
+div {
+  /* icon and marker need pos 0,0 to be the wrapper */
   position: relative;
-  display: block;
 }
 
 input {
