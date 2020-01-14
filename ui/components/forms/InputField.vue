@@ -34,6 +34,14 @@ export default {
         }
     },
     computed: {
+        markerClassList() {
+            let classes = ['marker'];
+
+            if (!this.isValid) {
+                classes.push('invalid');
+            }
+            return classes.join(' ');
+        },
         inputClassList() {
             let classes = this.inputClasses;
 
@@ -71,6 +79,7 @@ export default {
 <template>
   <label>
     <slot name="icon" />
+    <span :class="markerClassList"></span>
     <input
       ref="input"
       :value="value"
@@ -125,9 +134,19 @@ input {
   &.with-icon {
     padding: 10px 10px 10px 38px;
   }
+}
 
+.marker {
+  background-color: transparent;
+  position: absolute;
+  display: block;
+  width: 3px;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
   &.invalid {
-    border-left: 3px solid var(--theme-color-error);
+    background-color: var(--theme-color-error);
   }
 }
 
