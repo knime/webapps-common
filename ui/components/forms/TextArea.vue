@@ -1,13 +1,13 @@
 <script>
-/**
- * Default text area for widgets.
- */
 export default {
     props: {
         value: {
             default: '',
-            type: String
+            type: [Number, String]
         },
+        /**
+         * validity needs to be controlled by the parent component to be flexible
+         */
         isValid: {
             default: false,
             type: Boolean
@@ -23,20 +23,25 @@ export default {
         placeholder: {
             default: '',
             type: String
+        },
+        inputClasses: {
+            default: '',
+            type: String
         }
     },
     computed: {
-        textAreaClass() {
-            const classes = ['knime-qf-input', 'knime-string', 'knime-multi-line'];
+        inputClassList() {
+            let classes = this.inputClasses;
+
             if (!this.isValid) {
-                classes.push('knime-textarea-invalid');
+                classes += ' invalid';
             }
             return classes;
         }
     },
     methods: {
         getValue() {
-            return this.$el.value;
+            return this.$refs.input.value;
         },
         onInput(e) {
             this.$emit('input', this.getValue());
@@ -51,8 +56,9 @@ export default {
 
 <template>
   <textarea
+    ref="input"
     :value="value"
-    :class="textAreaClass"
+    :class="inputClassList"
     :cols="cols"
     :rows="rows"
     :placeholder="placeholder"
@@ -63,7 +69,7 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-textarea.knime-qf-input {
+textarea {
   font-size: 13px;
   font-weight: 500;
   color: var(--theme-color-masala);
@@ -79,7 +85,7 @@ textarea.knime-qf-input {
   border-left-style: solid;
 }
 
-textarea.knime-textarea-invalid {
+textarea.invalid {
   border-left-color: var(--theme-color-error);
 }
 </style>

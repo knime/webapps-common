@@ -6,10 +6,6 @@ const MOUSE_DOWN_CHANGE_INTERVAL = 50;
 const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 
-/**
- * Can either be a double or an integer input widget, based on the type received as a prop. It implements custom
- * user controls to augment the existing native HTML <input> component functionality and provide consistent styling.
- */
 export default {
     components: {
         ArrowIcon
@@ -135,8 +131,8 @@ export default {
          * The provided value (increment) should be signed (+/-) based on which button was pressed
          * (negative for the down arrow, etc.). This method will attempt to parse the value. It also
          * steps based on the current value to the next nearest step, regardless of the number of
-         * significant digits in the current value (1.00001 => 1.1). This preserves the existing
-         * behavior of KNIME numeric inputs and native inputs.
+         * significant digits in the current value (1.00001 => 1.1). This mimics the behavior
+         * native inputs.
          *
          * This method is different than the publishChangeEvent() method and the mouseEvent()
          * method because it contains additional validation steps and fallbacks to directly mani-
@@ -145,10 +141,9 @@ export default {
          * methods because it is needed only for the direct value manipulation and native behavior.
          *
          * @param  {Number} increment - the amount by which to change the current value.
-         * @param {Event} event - the original event object which trigger the changeValue call.
          * @returns {undefined}
          */
-        changeValue(increment, event) {
+        changeValue(increment) {
             let value = this.getValue();
             /**
              * This logic mimics the expected behavior of a number input with spinner arrows. If
@@ -181,7 +176,7 @@ export default {
              */
             if (this.validate(parsedVal)) {
                 this.$refs.input.value = parsedVal;
-                this.onInput(event);
+                this.onInput();
             }
         },
         /**

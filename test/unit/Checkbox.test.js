@@ -30,7 +30,7 @@ describe('Checkbox.vue', () => {
                 value: true
             }
         });
-        wrapper.vm.onChange({ target: false });
+        wrapper.vm.onInput({ target: false });
         expect(wrapper.emitted().input).toBeTruthy();
     });
 });

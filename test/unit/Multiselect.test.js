@@ -42,7 +42,7 @@ describe('Multiselect.vue', () => {
                 title: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.emitted().input).toBeTruthy();
     });
 
@@ -87,7 +87,7 @@ describe('Multiselect.vue', () => {
                 title: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
     });
 
@@ -108,10 +108,10 @@ describe('Multiselect.vue', () => {
                 title: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
         expect(wrapper.vm.checkedValue).toHaveLength(1);
-        wrapper.vm.onChange('test1', false);
+        wrapper.vm.onInput('test1', false);
         expect(wrapper.vm.checkedValue).toHaveLength(0);
     });
 
@@ -134,9 +134,9 @@ describe('Multiselect.vue', () => {
             }
         });
         expect(wrapper.vm.optionText).toBe('Test Title');
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.optionText).toBe('test1');
-        wrapper.vm.onChange('test2', true);
+        wrapper.vm.onInput('test2', true);
         expect(wrapper.vm.optionText).toBe('test1, Test2');
     });
 });
