@@ -101,7 +101,7 @@ input {
   padding: 11px 10px 11px 10px;
   border-radius: 0;
   width: 100%;
-  border: 1px solid var(--theme-color-gray);
+  border: 1px solid var(--theme-color-stone-gray);
   outline: none;
 
   &::placeholder {
@@ -112,7 +112,7 @@ input {
     color: var(--theme-color-dove-gray);
   }
 
-  &:hover {
+  &:hover:not(:focus) {
     background-color: var(--theme-color-porcelain);
   }
 
@@ -127,7 +127,7 @@ input {
   }
 
   &.invalid {
-    border-left-color: var(--theme-color-error);
+    border-left: 3px solid var(--theme-color-error);
   }
 }
 
