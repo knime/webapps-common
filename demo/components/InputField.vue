@@ -100,6 +100,13 @@ export default {
           >
             <template v-slot:icon><MailIcon /></template>
           </InputField>
+          <InputField
+            value="invalid"
+            :is-valid="false"
+            type="text"
+          >
+            <template v-slot:icon><MailIcon /></template>
+          </InputField>
         </div>
         <div class="grid-item-6">
           input value: {{ inputValue }}
