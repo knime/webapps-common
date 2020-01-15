@@ -119,6 +119,7 @@ input {
 
   &:disabled {
     color: var(--theme-color-dove-gray);
+    opacity: 0.5;
   }
 
   &:hover:not(:focus) {

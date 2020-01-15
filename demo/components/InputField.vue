@@ -22,7 +22,7 @@ const codeExample = `<InputField
 <InputField
   :value="no edit here"
   type="text"
-  disabled="true"
+  :disabled="true"
 />
 <InputField
   type="password"
@@ -88,7 +88,7 @@ export default {
           <InputField
             value="disabled: no edit here"
             type="text"
-            disabled="true"
+            :disabled="true"
           />
           <InputField
             type="password"
