@@ -16,22 +16,22 @@ export default {
             type: Number
         },
         min: {
-            default: 0,
+            default: Number.MIN_SAFE_INTEGER,
             type: Number
         },
         max: {
-            default: 1,
+            default: Number.MAX_SAFE_INTEGER,
             type: Number
         },
         /**
-         * validity needs to be controlled by the parent component to be flexible
+         * Validity controlled by the parent component to be flexible.
          */
         isValid: {
             default: true,
             type: Boolean
         },
         /**
-         * sets the significant digit of the spinner input.
+         * Sets the significant digit of the spinner input.
          *
          * Possible values: 'double' | 'integer'
          */
@@ -59,16 +59,12 @@ export default {
     /**
      * The reference to the timeout which is set when
      * a user clicks one of the numeric spinner wheels. This
-     * Timeout will trigger the rapid change of the number input
-     * value if the mouse is held down on an arrow.
+     * Timeout will trigger the spinnerArrowInterval.
      */
     spinnerArrowTimeout: null,
     /**
-     * The reference to the interval which is set when
-     * the Timeout expires and the user is still holding the mouse.
      * This interval rapid calls the change value method until the
-     * user releases the mouse (emitting a 'mouseup' event) or
-     * leaves the element (emitting a 'mouseleave' event).
+     * user releases the mouse.
      */
     spinnerArrowInterval: null,
     computed: {
@@ -86,58 +82,32 @@ export default {
     },
     mounted() {
         /**
-         * We store the initial value as a worst-case-scenario fall back when the
-         * user interaction leaves us no choice but to return to a known valid
-         * value (mimicking native behavior). Ex: If the user invalidates the value
-         * by accident when they are around -1,000,000 and there is a minimum on the
-         * input of -Number.MAX_SAFE_INTEGER, when they interact with the arrows, we
-         * will fall back to the initial value instead of either storing their prev
-         * value (which looks weird and random when you restore it) or jumping to the
-         * smallest value, which also looks strange because it has so many digits.
-         * This behavior is the same as native behavior. We also set this value in the
-         * mounted method so it is a static instance field and does not receive watchers
-         * from Vue.
+         * This value is the last valid input value for the number input.
+         * It is used as a fallback if the user enters invalid values.
          */
         this.initialValue = this.value;
     },
     methods: {
         getValue() {
-            let inputValue = this.$refs.input.valueAsNumber;
-            // for IE11 support
-            if (isNaN(inputValue)) {
-                inputValue = this.$refs.input.value;
-                // manually parse the value
-                return this.type === 'integer'
-                    ? parseInt(inputValue, 10)
-                    : parseFloat(inputValue);
-            }
-            return inputValue;
+            let inputValue = this.$refs.input.value;
+            return this.type === 'integer'
+                ? parseInt(inputValue, 10)
+                : parseFloat(inputValue);
         },
         onInput() {
             this.$emit('input', this.getValue());
         },
         validate(val) {
             let value = typeof val === 'undefined' ? this.getValue() : val;
-            // type check the value
             if (typeof value !== 'number' || isNaN(value)) {
                 return false;
             }
-            // check against the configured maximum and minimum
             return this.min <= value && value <= this.max;
         },
         /**
-         * This method is used by the input controls to change the value of the numeric input.
-         * The provided value (increment) should be signed (+/-) based on which button was pressed
-         * (negative for the down arrow, etc.). This method will attempt to parse the value. It also
-         * steps based on the current value to the next nearest step, regardless of the number of
-         * significant digits in the current value (1.00001 => 1.1). This mimics the behavior
-         * native inputs.
-         *
-         * This method is different than the publishChangeEvent() method and the mouseEvent()
-         * method because it contains additional validation steps and fallbacks to directly mani-
-         * pulate the value of the input element. These are designed to mimic native input behavior
-         * and the additional interim validation cannot be contained in the getValue() or validator()
-         * methods because it is needed only for the direct value manipulation and native behavior.
+         * Change value updates the actual value of the input field if a valid new value
+         * can be found. It prevents users from further invalidating the value in the input
+         * by moving in the wrong direction (lower than min/higher than max).
          *
          * @param  {Number} increment - the amount by which to change the current value.
          * @returns {undefined}
@@ -145,10 +115,7 @@ export default {
         changeValue(increment) {
             let value = this.getValue();
             /**
-             * This logic mimics the expected behavior of a number input with spinner arrows. If
-             * there is an invalid value, it will try to use fall backs, such as the closest valid
-             * number (min or max) or worst case the initial value. Expected behavior is when the
-             * value becomes invalid to return to the closest valid point.
+             * If value is currently invalid, find the nearest valid value.
              */
             if (!this.validate(value)) {
                 // use the min if value too low
@@ -182,17 +149,9 @@ export default {
          * This method is the callback handler for mouse events on the input field controls.
          * It is fired when either the up-arrow or down-arrow is pressed by the user. It manages
          * both mousedown and mouseup events. It clears any existing timeouts or intervals which
-         * may have been set previously and decides how the user would like the value updated
-         * (holding the button will rapidly change the value after a short delay; quickly clicking
-         * the button will use short increments instead).
-         *
-         * It also recognizes when the mouse leaves the button (which could cause a mouseup event
-         * to be missed) and therefore uses the this.clicked data property to ensure it doesn't
-         * get stuck in an interval.
-         *
-         * This method is different than the changeValue() method and the publishChangeEvent()
-         * method because it interprets arrow events specifically on the icons and processes them
-         * with additional logic to achieve the desired behavior.
+         * may have been set previously. It also recognizes when the mouse leaves the button
+         * (which could cause a mouseup event to be missed) and therefore uses the this.clicked
+         * data property to ensure it doesn't get stuck in an interval.
          *
          * @param {Event} e - the DOM event object which triggered the handler.
          * @param {String} type - the type of button pressed (either 'increased' or 'decreased').

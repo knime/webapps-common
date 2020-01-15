@@ -33,9 +33,4 @@ describe('TextArea.vue', () => {
         textArea.setValue(newValue);
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
     });
-
-    it('is valid when it has a value', () => {
-        const wrapper = mount(TextArea);
-        expect(wrapper.vm.validate()).toBe(true);
-    });
 });

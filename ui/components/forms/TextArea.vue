@@ -6,7 +6,7 @@ export default {
             type: [Number, String]
         },
         /**
-         * validity needs to be controlled by the parent component to be flexible
+         * Validity controlled by the parent component to be flexible.
          */
         isValid: {
             default: true,
@@ -45,10 +45,6 @@ export default {
         },
         onInput(e) {
             this.$emit('input', this.getValue());
-        },
-        validate() {
-            const value = this.getValue();
-            return Boolean(value || value === '');
         }
     }
 };

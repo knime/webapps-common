@@ -27,10 +27,6 @@ export default {
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
             this.$emit('input', checked);
-        },
-        validate() {
-            return typeof this.$refs.input !== 'undefined' &&
-                typeof this.$refs.input.checked !== 'undefined';
         }
     }
 };

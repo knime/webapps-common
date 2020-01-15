@@ -17,7 +17,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         expect(wrapper.html()).toBeTruthy();
@@ -39,7 +39,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         wrapper.vm.onInput('test1', true);
@@ -60,7 +60,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         expect(wrapper.vm.collapsed).toBe(true);
@@ -84,7 +84,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         wrapper.vm.onInput('test1', true);
@@ -105,7 +105,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         wrapper.vm.onInput('test1', true);
@@ -130,7 +130,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: 'Test Title'
+                placeholder: 'Test Title'
             }
         });
         expect(wrapper.vm.optionText).toBe('Test Title');
