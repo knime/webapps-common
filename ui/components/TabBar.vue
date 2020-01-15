@@ -167,9 +167,20 @@ export const tabBarMixin = {
 @import "webapps-common/ui/css/variables";
 
 div {
-  border-bottom: 1px solid var(--theme-color-silver-sand);
-  margin-bottom: 20px;
-  height: 50px;
+  margin-top: -20px;
+  padding: 20px 0;
+
+  &::after {
+    content: "";
+    display: block;
+    position: sticky;
+    border-bottom: 1px solid var(--theme-color-silver-sand);
+    left: 0;
+    right: 0;
+    z-index: 0;
+    top: 0;
+    margin-top: -3px;
+  }
 }
 
 input[type="radio"] {
@@ -222,8 +233,14 @@ input:not(:disabled) + span:hover {
   }
 }
 
-input:checked:not(:disabled) + span {
-  border-bottom: 3px solid var(--theme-color-masala);
+input:checked:not(:disabled) + span::after {
+  content: "";
+  position: relative;
+  display: block;
+  top: -4px;
+  width: 100%;
+  border-top: 3px solid var(--theme-color-masala);
+  z-index: 1;
 }
 
 input:not(:checked):not(:disabled) + span {
@@ -234,13 +251,18 @@ input:not(:checked):not(:disabled) + span {
   div {
     overflow-x: scroll;
     white-space: nowrap;
-    min-height: 52px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    -ms-overflow-style: none; /* needed to hide scroll bar in edge */
+    scrollbar-width: none; /* for firefox */
 
     &::-webkit-scrollbar {
       width: 0;
       height: 0;
+    }
+  }
+
+  @supports (-ms-ime-align: auto) { /* fires only on Edge */
+    div::after {
+      margin-top: 17px;
     }
   }
 }

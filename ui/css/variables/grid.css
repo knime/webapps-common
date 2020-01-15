@@ -5,7 +5,15 @@
   --item-size: 1; /* this is just required to avoid warnings in postcss-css-variables */
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 781px) and (max-width: 1180px) {
+  :root {
+    --grid-min-width: 768px;
+    --grid-max-width: 1180px;
+    --grid-gap-width: 18px;
+  }
+}
+
+@media only screen and (max-width: 780px) {
   :root {
     --grid-min-width: 356px;
     --grid-max-width: 768px;
