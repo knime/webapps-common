@@ -23,6 +23,9 @@ export default {
             default: 1,
             type: Number
         },
+        /**
+         * validity needs to be controlled by the parent component to be flexible
+         */
         isValid: {
             default: true,
             type: Boolean
@@ -38,10 +41,6 @@ export default {
             validator(val) {
                 return ['double', 'integer'].includes(val);
             }
-        },
-        title: {
-            default: null,
-            type: String
         },
         inputClasses: {
             default: '',
@@ -242,7 +241,6 @@ export default {
       :max="max"
       :step="stepSize"
       :class="inputClassList"
-      :title="title"
       @input="onInput"
     >
     <span

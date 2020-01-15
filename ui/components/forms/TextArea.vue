@@ -9,7 +9,7 @@ export default {
          * validity needs to be controlled by the parent component to be flexible
          */
         isValid: {
-            default: false,
+            default: true,
             type: Boolean
         },
         cols: {
@@ -21,7 +21,7 @@ export default {
             type: Number
         },
         placeholder: {
-            default: '',
+            default: null,
             type: String
         },
         inputClasses: {

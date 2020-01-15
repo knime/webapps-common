@@ -39,9 +39,9 @@ export default {
             default: () => []
         },
         /**
-         * Title to be displayed when nothing is selected
+         * placeholder to be displayed when nothing is selected
          */
-        title: {
+        placeholder: {
             type: String,
             default: ''
         }
@@ -55,7 +55,7 @@ export default {
     computed: {
         optionText() {
             if (this.checkedValue.length === 0) {
-                return this.title;
+                return this.placeholder;
             }
             return this.possibleValues
                 .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
