@@ -59,18 +59,22 @@ export default {
             return this.$refs.input.value;
         },
         onInput(e) {
-            this.$emit('input', this.getValue(), { isValid: this.validate() });
+            this.$emit('input', this.getValue());
         },
         /**
          * checks if value matches the provided pattern
          * @return {Boolean}
          */
         validate() {
+            const value = this.getValue();
+            if (typeof value === 'undefined') {
+                return false;
+            }
             if (!this.pattern) {
                 return true;
             }
-            const matches = this.getValue().match(this.pattern);
-            return matches !== null && matches[0] === this.getValue();
+            const matches = value.match(this.pattern);
+            return matches !== null && matches[0] === value;
         }
     }
 };

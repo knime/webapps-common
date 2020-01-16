@@ -17,7 +17,7 @@ export default {
         }
     },
     methods: {
-        onChange($event) {
+        onInput($event) {
             /**
              * Fired when the checkbox value changes.
              *
@@ -35,9 +35,10 @@ export default {
 <template>
   <label :class="boxSize">
     <input
+      ref="input"
       :checked="value"
       type="checkbox"
-      @change="onChange"
+      @change="onInput"
     >
     <span>
       <slot />

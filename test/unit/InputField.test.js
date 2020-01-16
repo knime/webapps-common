@@ -69,8 +69,9 @@ describe('InputField.vue', () => {
 
     it('emits input events', () => {
         const wrapper = mount(InputField);
+        const newValue = 'new value';
         let input = wrapper.find('input');
-        input.setValue('new value');
-        expect(wrapper.emitted().input[0]).toEqual(['new value', { isValid: true }]);
+        input.setValue(newValue);
+        expect(wrapper.emitted().input[0][0]).toEqual(newValue);
     });
 });
