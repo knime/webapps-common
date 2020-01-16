@@ -57,9 +57,13 @@ label {
     position: absolute;
 
     & + span::before { /* □ */
-      background: var(--theme-color-porcelain);
+      border: 1px solid var(--theme-color-stone-gray);
       display: inline-block;
       content: '';
+    }
+
+    & + span::before:hover { /* □ */
+      background: var(--theme-color-porcelain);
     }
 
     & + span::before, /* □ */
@@ -70,6 +74,7 @@ label {
 
     &:checked + span::before { /* □ */
       background: var(--theme-color-masala);
+      border-color: var(--theme-color-masala);
       content: '';
     }
 

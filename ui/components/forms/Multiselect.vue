@@ -73,7 +73,7 @@ export default {
                 this.checkedValue = this.checkedValue.filter(x => x !== value);
             }
             consola.trace('Multiselect value changed to', this.checkedValue);
-            
+
             /**
              * Fired when the selection changes.
              *
@@ -119,11 +119,15 @@ export default {
   &:hover {
     box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
   }
+
+  &.collapsed:hover {
+    background: var(--theme-color-porcelain);
+  }
 }
 
 h6 {
   margin: 0;
-  background: var(--theme-color-porcelain);
+  border: 1px solid var(--theme-color-stone-gray);
   padding: 11px 38px 10px 10px;
   font-size: 13px;
   line-height: 19px;
