@@ -5,7 +5,7 @@ import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
 const codeExample = `<Multiselect
   v-model="selected"
-  title="Select stuff here!"
+  placeholder="Select stuff here!"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -54,7 +54,7 @@ export default {
         <div class="grid-item-6">
           <Multiselect
             v-model="selected"
-            title="Select stuff here!"
+            placeholder="Select stuff here!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'

@@ -17,7 +17,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         expect(wrapper.html()).toBeTruthy();
@@ -39,10 +39,10 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.emitted().input).toBeTruthy();
     });
 
@@ -60,7 +60,7 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
         expect(wrapper.vm.collapsed).toBe(true);
@@ -84,10 +84,10 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
     });
 
@@ -105,13 +105,13 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: ''
+                placeholder: ''
             }
         });
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
         expect(wrapper.vm.checkedValue).toHaveLength(1);
-        wrapper.vm.onChange('test1', false);
+        wrapper.vm.onInput('test1', false);
         expect(wrapper.vm.checkedValue).toHaveLength(0);
     });
 
@@ -130,13 +130,13 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 value: [],
-                title: 'Test Title'
+                placeholder: 'Test Title'
             }
         });
         expect(wrapper.vm.optionText).toBe('Test Title');
-        wrapper.vm.onChange('test1', true);
+        wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.optionText).toBe('test1');
-        wrapper.vm.onChange('test2', true);
+        wrapper.vm.onInput('test2', true);
         expect(wrapper.vm.optionText).toBe('test1, Test2');
     });
 });
