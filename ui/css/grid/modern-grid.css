@@ -180,45 +180,44 @@ section section {
     padding-right: 20px;
   }
 
+  [class^="grid-item-"] {
+    flex-grow: 1;
+  }
+
   .grid-container {
     flex-wrap: wrap;
-  }
 
-  [class^="grid-item-"] {
-    flex: 1 0 auto;
-  }
+    & .grid-item-3,
+    & .grid-item-2,
+    & .grid-item-1 {
+      --item-size: 3;
 
+      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
 
-  .grid-item-3,
-  .grid-item-2,
-  .grid-item-1 {
-    --item-size: 3;
+    & .grid-item-4,
+    & .grid-item-5,
+    & .grid-item-6 {
+      --item-size: 6;
 
-    min-width: calc(var(--item-size) / 3 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-  }
+      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
 
-  .grid-item-4,
-  .grid-item-5,
-  .grid-item-6 {
-    --item-size: 6;
+    & .grid-item-7,
+    & .grid-item-8,
+    & .grid-item-9 {
+      --item-size: 9;
 
-    min-width: calc(var(--item-size) / 6 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-  }
+      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
 
-  .grid-item-7,
-  .grid-item-8,
-  .grid-item-9 {
-    --item-size: 9;
+    & .grid-item-10,
+    & .grid-item-11,
+    & .grid-item-12 {
+      --item-size: 12;
 
-    min-width: calc(var(--item-size) / 9 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-  }
-
-  .grid-item-10,
-  .grid-item-11,
-  .grid-item-12 {
-    --item-size: 12;
-
-    min-width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
   }
 }
 
@@ -233,34 +232,34 @@ section section {
     padding-right: 10px;
   }
 
+  [class^="grid-item-"] {
+    flex-grow: 1;
+  }
+
   .grid-container {
     flex-wrap: wrap;
-  }
 
-  [class^="grid-item-"] {
-    flex: 1 0 auto;
-  }
+    & .grid-item-4,
+    & .grid-item-5,
+    & .grid-item-6,
+    & .grid-item-7,
+    & .grid-item-8,
+    & .grid-item-9,
+    & .grid-item-10,
+    & .grid-item-11,
+    & .grid-item-12 {
+      --item-size: 12;
 
-  .grid-item-4,
-  .grid-item-5,
-  .grid-item-6,
-  .grid-item-7,
-  .grid-item-8,
-  .grid-item-9,
-  .grid-item-10,
-  .grid-item-11,
-  .grid-item-12 {
-    --item-size: 12;
+      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
 
-    min-width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-  }
+    & .grid-item-3,
+    & .grid-item-2,
+    & .grid-item-1 {
+      --item-size: 6;
 
-  .grid-item-3,
-  .grid-item-2,
-  .grid-item-1 {
-    --item-size: 6;
-
-    min-width: calc(var(--item-size) / 6 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+      width: calc(var(--item-size) / 6 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+    }
   }
 
   .grid-container .spacing-right {
