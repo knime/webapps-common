@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import Messages from '~/ui/components/Messages.vue';
 import Message from '~/ui/components/Message.vue';
 import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
@@ -7,7 +7,8 @@ const messages = [
     {
         message: 'Error 404',
         type: 'error',
-        id: 1
+        id: 1,
+        count: 2
     }, {
         message: 'Info of something',
         type: 'info',
@@ -58,4 +59,16 @@ describe('Messages.vue', () => {
         expect(wrapper.emitted().dismiss[0]).toEqual([messages[1].id]);
     });
 
+    it('handles messages with and without counts', () => {
+        wrapper = mount(Messages, {
+            propsData: { messages }
+        });
+
+        expect(wrapper.findAll(Message).at(0).find('.message-count').isVisible()).toBe(true);
+        expect(wrapper.findAll(Message).at(0).vm.count).toBe(2);
+        expect(wrapper.findAll(Message).at(1).find('.message-count').isVisible()).toBe(false);
+        expect(wrapper.findAll(Message).at(1).vm.count).toBe(1);
+        expect(wrapper.findAll(Message).at(2).find('.message-count').isVisible()).toBe(false);
+        expect(wrapper.findAll(Message).at(2).vm.count).toBe(1);
+    });
 });
