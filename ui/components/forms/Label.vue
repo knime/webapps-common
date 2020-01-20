@@ -14,8 +14,7 @@ export default {
 
 <template>
   <label>
-    <!-- knime-qf-title legacy selector -->
-    <span class="knime-qf-title">{{ text }}</span>
+    <span class="label-text">{{ text }}</span>
     <slot></slot>
   </label>
 </template>
@@ -23,7 +22,7 @@ export default {
 <style lang="postcss" scoped>
 @import "../../css/variables";
 
-.knime-qf-title {
+.label-text {
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;

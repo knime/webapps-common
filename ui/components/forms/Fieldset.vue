@@ -38,7 +38,7 @@ fieldset {
     }
 
     /* labels inside of the fieldset look different (smaller) */
-    & >>> .knime-qf-title {
+    & >>> .label-text {
         font-weight: 300;
         font-size: 14px;
         line-height: 18px;

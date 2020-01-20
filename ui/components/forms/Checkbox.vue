@@ -40,7 +40,7 @@ export default {
       type="checkbox"
       @change="onInput"
     >
-    <span>
+    <span class="checkbox-text">
       <slot />
     </span>
   </label>
@@ -99,10 +99,6 @@ label {
   &.medium {
     padding: 3px 0 3px 26px;
 
-    &.knime-qf-title { /* TODO WEBP-120 move to widget */
-      padding-top: 0;
-    }
-
     & input {
       & + span::before,
       & + span::after {
@@ -118,10 +114,6 @@ label {
 
   &.large {
     padding: 6px 0 3px 1.5em;
-
-    &.knime-qf-title { /* TODO WEBP-120 move to widget */
-      padding-top: 3px;
-    }
 
     & input {
       & + span::before,
