@@ -1,6 +1,6 @@
 <script>
 /**
- * Static (Sub)Label for Elements that contain more than one input field
+ * FieldSet for elements that contain more than one input field
  */
 export default {
     props: {

@@ -34,14 +34,6 @@ export default {
         }
     },
     computed: {
-        markerClassList() {
-            let classes = ['marker'];
-
-            if (!this.isValid) {
-                classes.push('invalid');
-            }
-            return classes.join(' ');
-        },
         inputClassList() {
             let classes = this.inputClasses;
 
@@ -83,7 +75,7 @@ export default {
 <template>
   <div>
     <slot name="icon" />
-    <span :class="markerClassList"></span>
+    <span v-if="!isValid" class="marker invalid"></span>
     <input
       ref="input"
       :value="value"
@@ -119,6 +111,7 @@ input {
 
   &::placeholder {
     color: var(--theme-color-dove-gray);
+    font-weight: 300;
   }
 
   &:disabled {
@@ -126,14 +119,14 @@ input {
     opacity: 0.5;
   }
 
-  &:hover:not(:focus) {
+  &:hover:not(:focus):not(:disabled) {
     background-color: var(--theme-color-porcelain);
   }
 
   /* active */
   &:focus {
     border: 1px solid var(--theme-color-masala);
-    background-color: var(--knime-white);
+    background-color: var(--theme-color-white);
   }
 
   &.with-icon {
@@ -147,6 +140,7 @@ input {
   display: block;
   width: 3px;
   left: -1px;
+  margin: 0;
   top: 0;
   bottom: 0;
   z-index: 10;
