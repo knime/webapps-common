@@ -184,12 +184,15 @@ div {
 }
 
 input[type="radio"] {
-  /* https://a11yproject.com/posts/how-to-hide-content/ */
-  position: absolute;
+  /* https://accessibility.18f.gov/hidden-content/ */
+  border: 0;
+  clip: rect(0 0 0 0);
   height: 1px;
-  width: 1px;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 
 span {
@@ -249,7 +252,7 @@ input:not(:checked):not(:disabled) + span {
 
 @media only screen and (max-width: 768px) {
   div {
-    overflow-x: scroll;
+    overflow-x: auto;
     white-space: nowrap;
     -ms-overflow-style: none; /* needed to hide scroll bar in edge */
     scrollbar-width: none; /* for firefox */
