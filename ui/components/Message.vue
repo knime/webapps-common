@@ -30,6 +30,10 @@ export default {
         button: {
             type: String,
             default: null
+        },
+        count: {
+            type: Number,
+            default: 1
         }
     },
     data() {
@@ -66,6 +70,12 @@ export default {
         <span class="message">
           <!-- @slot Use this slot to add text content (markup). -->
           <slot />
+          <span
+            v-show="count && count > 1"
+            class="message-count"
+          >
+            {{ "×" + count }}
+          </span>
         </span>
         <Button
           v-if="button"
@@ -92,6 +102,13 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables/colors";
 
+.message-count {
+  padding: 3px 7.5px;
+  margin-left: 5px;
+  background-color: white;
+  border-radius: 12px;
+}
+
 section {
   border-bottom: 1px solid var(--theme-color-white);
 
@@ -101,14 +118,26 @@ section {
 
   &.info {
     background-color: var(--theme-color-info);
+
+    & .message-count {
+      color: var(--theme-color-info);
+    }
   }
 
   &.error {
     background-color: var(--theme-color-error);
+
+    & .message-count {
+      color: var(--theme-color-error);
+    }
   }
 
   &.success {
     background-color: var(--theme-color-success);
+
+    & .message-count {
+      color: var(--theme-color-success);
+    }
   }
 }
 

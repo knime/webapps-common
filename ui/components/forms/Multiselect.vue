@@ -39,9 +39,9 @@ export default {
             default: () => []
         },
         /**
-         * Title to be displayed when nothing is selected
+         * placeholder to be displayed when nothing is selected
          */
-        title: {
+        placeholder: {
             type: String,
             default: ''
         }
@@ -55,7 +55,7 @@ export default {
     computed: {
         optionText() {
             if (this.checkedValue.length === 0) {
-                return this.title;
+                return this.placeholder;
             }
             return this.possibleValues
                 .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
@@ -64,7 +64,7 @@ export default {
         }
     },
     methods: {
-        onChange(value, toggled) {
+        onInput(value, toggled) {
             if (toggled) {
                 if (this.checkedValue.indexOf(value) === -1) {
                     this.checkedValue.push(value);
@@ -101,7 +101,7 @@ export default {
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
-        @input="onChange(item.id, $event)"
+        @input="onInput(item.id, $event)"
       >
         {{ item.text }}
       </Checkbox>

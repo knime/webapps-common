@@ -19,6 +19,8 @@ import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
 import Checkbox from '../components/Checkbox';
 import InputField from '../components/InputField';
+import TextArea from '../components/TextArea';
+import NumberInput from '../components/NumberInput';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -41,6 +43,8 @@ export default {
         IdleReadyButton,
         Checkbox,
         InputField,
+        TextArea,
+        NumberInput,
         Multiselect
     }
 };
@@ -78,6 +82,8 @@ export default {
     <IdleReadyButton />
     <Checkbox />
     <InputField />
+    <TextArea />
+    <NumberInput />
     <Multiselect />
   </main>
 </template>
