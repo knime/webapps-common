@@ -59,16 +59,26 @@ describe('Message.vue', () => {
         expect(wrapper.find(WarnIcon).exists()).toBe(true);
     });
 
-    it('dismisses message', () => {
+    it('hides count if message is unique', () => {
         wrapper = shallowMount(Message, {
             propsData: {
                 type: 'error'
             }
         });
 
-        expect(wrapper.find('section').exists()).toBe(true);
-        wrapper.find('.close').trigger('click');
-        expect(wrapper.find('section').exists()).toBe(false);
-        expect(wrapper.emitted().dismiss).toBeTruthy();
+        expect(wrapper.find('.message-count').exists()).toBe(true);
+        expect(wrapper.find('.message-count').isVisible()).toBe(false);
+    });
+
+    it('shows count if message is repeated', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                count: 2
+            }
+        });
+
+        expect(wrapper.find('.message-count').exists()).toBe(true);
+        expect(wrapper.find('.message-count').isVisible()).toBe(true);
     });
 });
