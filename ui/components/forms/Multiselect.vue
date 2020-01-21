@@ -128,8 +128,9 @@ export default {
 h6 {
   margin: 0;
   border: 1px solid var(--theme-color-stone-gray);
-  padding: 11px 38px 10px 10px;
+  padding: 10px 38px 10px 10px;
   font-size: 13px;
+  height: 40px;
   line-height: 19px;
   cursor: pointer;
   white-space: nowrap;

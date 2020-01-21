@@ -246,6 +246,7 @@ div {
     color: var(--theme-color-masala);
     letter-spacing: inherit;
     line-height: 18px;
+    height: 40px;
     border: 1px solid var(--theme-color-stone-gray);
     margin: 0;
     padding: 11px 10px 11px 10px;
