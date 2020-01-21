@@ -14,7 +14,9 @@ export default {
 
 <template>
   <label>
-    <span class="label-text">{{ text }}</span>
+    <span class="label-text">
+      {{ text }}
+    </span>
     <slot />
   </label>
 </template>
