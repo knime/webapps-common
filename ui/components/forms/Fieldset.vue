@@ -14,7 +14,10 @@ export default {
 
 <template>
   <fieldset>
-    <legend>{{ text }} <slot name="icon" /></legend>
+    <legend>
+      {{ text }}
+      <slot name="icon" />
+    </legend>
     <slot />
   </fieldset>
 </template>
@@ -33,7 +36,6 @@ fieldset {
     font-weight: 700;
     font-size: 16px;
     line-height: 24px;
-    display: block;
     margin-bottom: 5px;
   }
 
@@ -42,8 +44,6 @@ fieldset {
     font-weight: 300;
     font-size: 14px;
     line-height: 18px;
-    display: block;
-    margin-bottom: 5px;
   }
 
   & svg {
