@@ -52,7 +52,10 @@ export default {
 
 <template>
   <div>
-    <span v-if="!isValid" class="marker invalid"></span>
+    <span
+      v-if="!isValid"
+      class="marker invalid"
+    />
     <textarea
       ref="input"
       :value="value"
@@ -86,6 +89,7 @@ div {
     &:hover:not(:focus):not(:disabled) {
       background-color: var(--theme-color-porcelain);
     }
+
     &::placeholder {
       font-weight: 300;
     }

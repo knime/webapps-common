@@ -108,9 +108,9 @@ export default {
           </Fieldset>
 
           <InputField
-                  value="disabled: no edit here"
-                  type="text"
-                  :disabled="true"
+            value="disabled: no edit here"
+            type="text"
+            :disabled="true"
           />
           <InputField
             v-model="inputValue"

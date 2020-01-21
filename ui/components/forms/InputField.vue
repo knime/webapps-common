@@ -75,7 +75,10 @@ export default {
 <template>
   <div>
     <slot name="icon" />
-    <span v-if="!isValid" class="marker invalid"></span>
+    <span
+      v-if="!isValid"
+      class="marker invalid"
+    />
     <input
       ref="input"
       :value="value"
@@ -119,14 +122,14 @@ input {
     opacity: 0.5;
   }
 
-  &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-porcelain);
-  }
-
   /* active */
   &:focus {
     border: 1px solid var(--theme-color-masala);
     background-color: var(--theme-color-white);
+  }
+
+  &:hover:not(:focus):not(:disabled) {
+    background-color: var(--theme-color-porcelain);
   }
 
   &.with-icon {
@@ -144,6 +147,7 @@ input {
   top: 0;
   bottom: 0;
   z-index: 10;
+
   &.invalid {
     background-color: var(--theme-color-error);
   }
@@ -159,5 +163,3 @@ svg {
   top: 10px;
 }
 </style>
-
-

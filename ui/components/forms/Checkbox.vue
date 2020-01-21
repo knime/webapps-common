@@ -63,14 +63,14 @@ label {
       content: '';
     }
 
-    & + span::before:hover { /* □ */
-      background: var(--theme-color-porcelain);
-    }
-
     & + span::before, /* □ */
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
+    }
+
+    & + span::before:hover { /* □ */
+      background: var(--theme-color-porcelain);
     }
 
     &:checked + span::before { /* □ */

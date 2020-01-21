@@ -1,6 +1,6 @@
 <script>
 /**
- * Default label for widgets.
+ * Default label component
  */
 export default {
     props: {
@@ -15,7 +15,7 @@ export default {
 <template>
   <label>
     <span class="label-text">{{ text }}</span>
-    <slot></slot>
+    <slot />
   </label>
 </template>
 

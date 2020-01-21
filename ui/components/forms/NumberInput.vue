@@ -191,7 +191,10 @@ export default {
 
 <template>
   <div>
-    <span v-if="!isValid" class="marker invalid"></span>
+    <span
+      v-if="!isValid"
+      class="marker invalid"
+    />
     <input
       ref="input"
       type="number"
@@ -231,15 +234,15 @@ div {
 
   /* remove browser spinners FF */
   & input[type='number'] {
-    -moz-appearance:textfield;
+    -moz-appearance: textfield;
   }
+
   /* remove browser spinners WebKit/Blink */
   & input[type=number]::-webkit-inner-spin-button,
   & input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-  /* TODO: What about Edge Classic? Maybe background-color: var(--theme-color-white); ?*/
 
   & input {
     font-size: 13px;
@@ -254,12 +257,13 @@ div {
     width: 100%;
     outline: none;
 
-    &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-porcelain);
-    }
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */
+    }
+
+    &:hover:not(:focus):not(:disabled) {
+      background-color: var(--theme-color-porcelain);
     }
   }
 
@@ -270,31 +274,11 @@ div {
     width: 3px;
     left: -1px;
     top: 0;
-    /*margin: 0;*/
     bottom: 0;
     z-index: 10;
+
     &.invalid {
       background-color: var(--theme-color-error);
-    }
-  }
-
-  & .increase,
-  & .decrease {
-    position: absolute;
-    z-index: 1;
-    right: 1px;
-    width: 32px;
-    height: 19px;
-    padding-left: 10px;
-    padding-right: 9px;
-    &:hover {
-      background-color: var(--theme-color-porcelain);
-    }
-
-    & svg {
-      width: 100%;
-      height: 100%;
-      stroke-width: 1.5px;
     }
   }
 
@@ -307,12 +291,34 @@ div {
     bottom: 1px;
   }
 
+  & .increase,
+  & .decrease {
+    position: absolute;
+    z-index: 1;
+    right: 1px;
+    width: 32px;
+    height: 19px;
+    padding-left: 10px;
+    padding-right: 9px;
+
+    &:hover {
+      background-color: var(--theme-color-porcelain);
+    }
+
+    & svg {
+      width: 100%;
+      height: 100%;
+      stroke-width: 1.5px;
+    }
+  }
+
   & .increase:focus,
   & .increase:active,
   & .decrease:focus,
   & .decrease:active {
     color: var(--theme-color-white);
     background-color: var(--theme-color-masala);
+
     & svg {
       stroke: var(--theme-color-white);
     }
