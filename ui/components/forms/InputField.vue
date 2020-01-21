@@ -36,10 +36,6 @@ export default {
     computed: {
         inputClassList() {
             let classes = this.inputClasses;
-
-            if (!this.isValid) {
-                classes += ' invalid';
-            }
             if (this.$slots.icon && this.$slots.icon.length) {
                 classes += ' with-icon';
             }
@@ -77,7 +73,7 @@ export default {
     <slot name="icon" />
     <span
       v-if="!isValid"
-      class="marker invalid"
+      class="invalid-marker"
     />
     <input
       ref="input"
@@ -137,8 +133,7 @@ input {
   }
 }
 
-.marker {
-  background-color: transparent;
+.invalid-marker {
   position: absolute;
   display: block;
   width: 3px;
@@ -147,10 +142,7 @@ input {
   top: 0;
   bottom: 0;
   z-index: 10;
-
-  &.invalid {
-    background-color: var(--theme-color-error);
-  }
+  background-color: var(--theme-color-error);
 }
 
 svg {

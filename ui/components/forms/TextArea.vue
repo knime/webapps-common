@@ -32,10 +32,6 @@ export default {
     computed: {
         inputClassList() {
             let classes = this.inputClasses;
-
-            if (!this.isValid) {
-                classes += ' invalid';
-            }
             return classes;
         }
     },
@@ -54,7 +50,7 @@ export default {
   <div>
     <span
       v-if="!isValid"
-      class="marker invalid"
+      class="invalid-marker"
     />
     <textarea
       ref="input"
@@ -95,8 +91,7 @@ div {
     }
   }
 
-  & .marker {
-    background-color: transparent;
+  & .invalid-marker {
     position: absolute;
     display: block;
     width: 3px;
@@ -105,10 +100,7 @@ div {
     top: 0;
     bottom: 0;
     z-index: 10;
-
-    &.invalid {
-      background-color: var(--theme-color-error);
-    }
+    background-color: var(--theme-color-error);
   }
 }
 

@@ -22,8 +22,8 @@ describe('TextArea.vue', () => {
                 isValid: false
             }
         });
-        let textArea = wrapper.find('textarea');
-        expect(textArea.classes()).toContain('invalid');
+        let marker = wrapper.find('span');
+        expect(marker.classes()).toContain('invalid-marker');
     });
 
     it('emits input events', () => {
