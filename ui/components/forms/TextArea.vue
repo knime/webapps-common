@@ -75,7 +75,6 @@ div {
     font-weight: 500;
     color: var(--theme-color-masala);
     line-height: 18px;
-    margin: 0;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     border: 1px solid var(--theme-color-stone-gray);
