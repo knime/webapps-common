@@ -17,10 +17,12 @@ import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
 import Headlines from '../components/Headlines';
 import IdleReadyButton from '../components/IdleReadyButton';
-import Checkbox from '../components/Checkbox';
+import Label from '../components/Label';
+import Fieldset from '../components/Fieldset';
 import InputField from '../components/InputField';
 import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
+import Checkbox from '../components/Checkbox';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -41,10 +43,12 @@ export default {
         Messages,
         SubMenu,
         IdleReadyButton,
-        Checkbox,
+        Label,
+        Fieldset,
         InputField,
         TextArea,
         NumberInput,
+        Checkbox,
         Multiselect
     }
 };
@@ -80,10 +84,12 @@ export default {
     <Messages />
     <SubMenu />
     <IdleReadyButton />
-    <Checkbox />
+    <Label />
+    <Fieldset />
     <InputField />
     <TextArea />
     <NumberInput />
+    <Checkbox />
     <Multiselect />
   </main>
 </template>

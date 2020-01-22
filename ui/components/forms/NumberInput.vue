@@ -73,10 +73,6 @@ export default {
         },
         inputClassList() {
             let classes = this.inputClasses;
-
-            if (!this.isValid) {
-                classes += ' invalid';
-            }
             return classes;
         }
     },
@@ -191,6 +187,10 @@ export default {
 
 <template>
   <div>
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
     <input
       ref="input"
       type="number"
@@ -228,39 +228,79 @@ div {
   position: relative;
   width: 100%;
 
+  /* remove browser spinners FF */
+  & input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  /* remove browser spinners WebKit/Blink */
+  & input[type=number]::-webkit-inner-spin-button,
+  & input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   & input {
     font-size: 13px;
     font-weight: 500;
     color: var(--theme-color-masala);
     letter-spacing: inherit;
     line-height: 18px;
-    background-color: var(--theme-color-porcelain);
+    height: 40px;
+    border: 1px solid var(--theme-color-stone-gray);
     margin: 0;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     width: 100%;
-    border-left-width: 3px;
-    border-left-color: transparent;
-    border-left-style: solid;
-    border-top: none;
-    border-bottom: none;
     outline: none;
+
+    &:focus {
+      border-color: var(--theme-color-masala);
+    }
+
+    /* css3 invalid state */
+    &:invalid {
+      box-shadow: none; /* override default browser styling */
+    }
+
+    &:hover:not(:focus):not(:disabled) {
+      background-color: var(--theme-color-porcelain);
+    }
   }
 
-  & input.invalid {
-    border-left-color: var(--theme-color-error);
+  & .invalid-marker {
+    position: absolute;
+    display: block;
+    width: 3px;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
+
+  & .increase {
+    top: 1px;
+    transform: scaleY(-1);
+  }
+
+  & .decrease {
+    bottom: 1px;
   }
 
   & .increase,
   & .decrease {
     position: absolute;
     z-index: 1;
-    right: 0;
-    width: 33px;
-    height: 20px;
+    right: 1px;
+    width: 32px;
+    height: 19px;
     padding-left: 10px;
     padding-right: 9px;
-    background-color: var(--theme-color-porcelain);
+
+    &:hover {
+      background-color: var(--theme-color-porcelain);
+    }
 
     & svg {
       width: 100%;
@@ -269,20 +309,16 @@ div {
     }
   }
 
-  & .increase {
-    top: 0;
-    transform: scaleY(-1);
-  }
-
-  & .decrease {
-    bottom: 0;
-  }
-
   & .increase:focus,
   & .increase:active,
   & .decrease:focus,
   & .decrease:active {
-    background-color: var(--theme-color-silver-sand);
+    color: var(--theme-color-white);
+    background-color: var(--theme-color-masala);
+
+    & svg {
+      stroke: var(--theme-color-white);
+    }
   }
 }
 </style>

@@ -9,15 +9,22 @@ const codeExample = `<InputField
   type="text"
   title="Insert text"
 />
-<InputField
-  v-model="inputValue2"
-  type="text"
-  placeholder="I'm a placeholder"
-/>
+<Label text="Label of the Input Field">
+  <InputField
+    v-model="inputValue2"
+    type="text"
+    placeholder="I'm a placeholder"
+  />
+</Label>
 <InputField
   v-model="inputValue"
   type="text"
   :is-valid="false"
+/>
+<InputField
+  :value="no edit here"
+  type="text"
+  :disabled="true"
 />
 <InputField
   type="password"
@@ -76,16 +83,19 @@ export default {
             placeholder="I'm a placeholder"
           />
           <InputField
+            value="disabled: no edit here"
+            type="text"
+            disabled
+          />
+          <InputField
             v-model="inputValue"
             type="text"
+          >
+            <template v-slot:icon><MailIcon /></template>
+          </InputField>
+          <InputField
+            value="invalid"
             :is-valid="false"
-          />
-          <InputField
-            type="password"
-            value="secret-password"
-          />
-          <InputField
-            v-model="inputValue"
             type="text"
           >
             <template v-slot:icon><MailIcon /></template>
@@ -108,7 +118,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-.inputs >>> * {
+.inputs >>> > * {
   margin-bottom: 5px;
 }
 </style>

@@ -11,7 +11,7 @@ describe('InputField.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.is('label')).toBeTruthy();
+        expect(wrapper.is('div')).toBeTruthy();
         let input = wrapper.find('input');
         expect(input.attributes('type')).toBe('text'); // default
         expect(input.element.value).toBe('Test value');
@@ -24,8 +24,7 @@ describe('InputField.vue', () => {
                 isValid: false
             }
         });
-        let input = wrapper.find('input');
-        expect(input.classes()).toContain('invalid');
+        expect(wrapper.find('.invalid-marker').exists()).toBe(true);
     });
 
     it('renders with icon slot', () => {
