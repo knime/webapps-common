@@ -69,17 +69,6 @@ label {
       left: 0;
     }
 
-    /* keyboard focus; :focus-visible would be better once browser
-       support is there https://caniuse.com/#feat=css-focus-visible */
-    &:checked:focus + span::before,
-    &:focus + span::before { /* □ */
-      background: var(--theme-color-porcelain);
-    }
-
-    &:checked:focus + span::after { /* ✓ */
-      border-color: var(--theme-color-masala);
-    }
-
     & + span::before:hover { /* □ */
       background: var(--theme-color-porcelain);
     }
@@ -153,6 +142,17 @@ label {
     width: 0.6em;
     height: 0.35em;
     border-width: 0 0 2px 2px;
+  }
+
+  /* keyboard focus; :focus-visible would be better once browser
+support is there https://caniuse.com/#feat=css-focus-visible */
+  & input:focus + span::before,
+  & input:checked:focus + span::before { /* □ */
+    background: var(--theme-color-porcelain);
+  }
+
+  & input:checked:focus + span::after { /* ✓ */
+    border-color: var(--theme-color-masala);
   }
 }
 </style>

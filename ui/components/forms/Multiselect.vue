@@ -127,7 +127,7 @@ h6 {
 
 .multiselect {
   position: relative;
-  
+
   &:not(.collapsed) h6 {
     border-color: var(--theme-color-masala);
   }
