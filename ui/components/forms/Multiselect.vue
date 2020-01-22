@@ -127,12 +127,7 @@ h6 {
 
 .multiselect {
   position: relative;
-
-  &:not(.collapsed),
-  &:hover {
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
-  }
-
+  
   &:not(.collapsed) h6 {
     border-color: var(--theme-color-masala);
   }
