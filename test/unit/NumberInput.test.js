@@ -31,7 +31,7 @@ describe('NumberInput.vue', () => {
         wrapper.setProps({ isValid: false });
         expect(wrapper.find('.invalid-marker').exists()).toBe(true);
         wrapper.setProps({ isValid: true });
-        expect(wrapper.find('span').isEmpty());
+        expect(wrapper.find('.invalid-marker').exists()).toBe(false);
     });
 
     it('has validate logic to check min/max values', () => {

@@ -144,8 +144,8 @@ label {
     border-width: 0 0 2px 2px;
   }
 
-  /* keyboard focus; :focus-visible would be better once browser
-support is there https://caniuse.com/#feat=css-focus-visible */
+  /* keyboard focus; :focus-visible would be better once browser support
+     is there https://caniuse.com/#feat=css-focus-visible */
   & input:focus + span::before,
   & input:checked:focus + span::before { /* □ */
     background: var(--theme-color-porcelain);

@@ -74,7 +74,7 @@ export default {
             v-show="count && count > 1"
             class="message-count"
           >
-            {{ "x" + count }}
+            {{ '×' + count }}
           </span>
         </span>
         <Button
