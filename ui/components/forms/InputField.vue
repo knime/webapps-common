@@ -102,7 +102,6 @@ input {
   color: var(--theme-color-masala);
   line-height: 18px;
   height: 40px;
-  margin: 0;
   padding: 11px 10px 11px 10px;
   border-radius: 0;
   width: 100%;

@@ -118,7 +118,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-.inputs >>> * {
+.inputs >>> > * {
   margin-bottom: 5px;
 }
 </style>
