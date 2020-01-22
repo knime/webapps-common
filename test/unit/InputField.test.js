@@ -24,8 +24,7 @@ describe('InputField.vue', () => {
                 isValid: false
             }
         });
-        let marker = wrapper.find('span');
-        expect(marker.classes()).toContain('invalid-marker');
+        expect(wrapper.find('.invalid-marker').exists()).toBe(true);
     });
 
     it('renders with icon slot', () => {
