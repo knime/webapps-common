@@ -254,6 +254,10 @@ div {
     width: 100%;
     outline: none;
 
+    &:focus {
+      border-color: var(--theme-color-masala);
+    }
+
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */

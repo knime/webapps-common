@@ -82,6 +82,10 @@ div {
     outline: none;
     display: block;
 
+    &:focus {
+      border-color: var(--theme-color-masala);
+    }
+
     &:hover:not(:focus):not(:disabled) {
       background-color: var(--theme-color-porcelain);
     }

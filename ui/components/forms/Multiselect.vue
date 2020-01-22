@@ -112,19 +112,6 @@ export default {
 <style scoped lang="postcss">
 @import "webapps-common/ui/css/variables";
 
-.multiselect {
-  position: relative;
-
-  &:not(.collapsed),
-  &:hover {
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
-  }
-
-  &.collapsed:hover {
-    background: var(--theme-color-porcelain);
-  }
-}
-
 h6 {
   margin: 0;
   border: 1px solid var(--theme-color-stone-gray);
@@ -136,6 +123,23 @@ h6 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.multiselect {
+  position: relative;
+
+  &:not(.collapsed),
+  &:hover {
+    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
+  }
+
+  &:not(.collapsed) h6 {
+    border-color: var(--theme-color-masala);
+  }
+
+  &.collapsed:hover {
+    background: var(--theme-color-porcelain);
+  }
 }
 
 .icon {

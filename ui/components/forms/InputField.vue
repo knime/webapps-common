@@ -121,8 +121,7 @@ input {
 
   /* active */
   &:focus {
-    border: 1px solid var(--theme-color-masala);
-    background-color: var(--theme-color-white);
+    border-color: var(--theme-color-masala);
   }
 
   &:hover:not(:focus):not(:disabled) {
