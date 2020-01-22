@@ -40,7 +40,7 @@ export default {
       type="checkbox"
       @change="onInput"
     >
-    <span class="checkbox-text">
+    <span>
       <slot />
     </span>
   </label>

@@ -1,6 +1,6 @@
 <script>
 /**
- * FieldSet for elements that contain more than one input field
+ * Fieldset for elements that contain more than one input field
  */
 export default {
     props: {
