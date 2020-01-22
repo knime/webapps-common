@@ -69,6 +69,17 @@ label {
       left: 0;
     }
 
+    /* keyboard focus; :focus-visible would be better once browser
+       support is there https://caniuse.com/#feat=css-focus-visible */
+    &:checked:focus + span::before,
+    &:focus + span::before { /* □ */
+      background: var(--theme-color-porcelain);
+    }
+
+    &:checked:focus + span::after { /* ✓ */
+      border-color: var(--theme-color-masala);
+    }
+
     & + span::before:hover { /* □ */
       background: var(--theme-color-porcelain);
     }
@@ -89,7 +100,7 @@ label {
   }
 
   &:hover input + span::before { /* □ */
-    background: var(--theme-color-silver-sand);
+    background: var(--theme-color-porcelain);
   }
 
   &:hover input + span::after { /* ✓ */
