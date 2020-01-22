@@ -37,6 +37,19 @@ fieldset {
     font-size: 16px;
     line-height: 24px;
     margin-bottom: 5px;
+
+    & svg {
+      margin-right: 0;
+      height: 14px;
+      width: 14px;
+      stroke-width: calc(32px / 18);
+      stroke: var(--theme-color-masala);
+      cursor: pointer;
+      display: block;
+      float: right;
+      margin-top: 5px;
+      margin-left: 4px;
+    }
   }
 
   /* labels inside of the fieldset look different (smaller) */
@@ -44,19 +57,6 @@ fieldset {
     font-weight: 300;
     font-size: 14px;
     line-height: 18px;
-  }
-
-  & svg {
-    margin-right: 0;
-    height: 14px;
-    width: 14px;
-    stroke-width: calc(32px / 18);
-    stroke: var(--theme-color-masala);
-    cursor: pointer;
-    display: block;
-    float: right;
-    margin-top: 5px;
-    margin-left: 4px;
   }
 }
 </style>
