@@ -1,10 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import InputField from '../../ui/components/forms/InputField';
-import Label from '../../ui/components/forms/Label';
-import Fieldset from '../../ui/components/forms/Fieldset';
 import MailIcon from '../../ui/assets/img/icons/mail.svg?inline';
-import InfoIcon from '../../ui/assets/img/icons/circle-info.svg?inline';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField
@@ -44,9 +41,6 @@ export default {
     components: {
         InputField,
         MailIcon,
-        InfoIcon,
-        Label,
-        Fieldset,
         CodeExample
     },
     data() {
@@ -83,30 +77,11 @@ export default {
             type="text"
             title="Insert text"
           />
-          <Label text="Label: Some Input Field">
-            <InputField
-              v-model="inputValue2"
-              type="text"
-              placeholder="I'm a placeholder"
-            />
-          </Label>
-          <Fieldset text="Fieldset: Credentials Input">
-            <template v-slot:icon><InfoIcon /></template>
-            <Label text="Label: User">
-              <InputField
-                v-model="inputValue"
-                type="text"
-                :is-valid="false"
-              />
-            </Label>
-            <Label text="Label: Password">
-              <InputField
-                type="password"
-                value="secret-password"
-              />
-            </Label>
-          </Fieldset>
-
+          <InputField
+            v-model="inputValue2"
+            type="text"
+            placeholder="I'm a placeholder"
+          />
           <InputField
             value="disabled: no edit here"
             type="text"
