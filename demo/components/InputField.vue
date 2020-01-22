@@ -110,7 +110,7 @@ export default {
           <InputField
             value="disabled: no edit here"
             type="text"
-            :disabled="true"
+            disabled
           />
           <InputField
             v-model="inputValue"
