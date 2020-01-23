@@ -6,8 +6,8 @@ import code from '!!raw-loader!../../ui/components/forms/Checkbox';
 const codeExample = `<Checkbox v-model="selected">
   I want cookies!
 </Checkbox>
-<Checkbox v-model="selected" box-size="medium">
-  I want smaller cookies!
+<Checkbox v-model="selected2" label-size="large">
+  I want larger cookies!
 </Checkbox>`;
 
 export default {
@@ -18,7 +18,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: false
+            selected: false,
+            selectedLarge: false,
         };
     },
     computed: {
@@ -48,10 +49,10 @@ export default {
           </Checkbox>
           <br>
           <Checkbox
-            v-model="selected"
-            box-size="medium"
+                  v-model="selectedLarge"
+                  label-size="large"
           >
-            I want smaller cookies!
+            I want larger cookies!
           </Checkbox>
         </div>
         <div class="grid-item-6">
