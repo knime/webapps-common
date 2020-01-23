@@ -81,8 +81,7 @@ export default {
     scrollbar-width: none; /* for firefox */
 
     &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
+      display: none;
     }
   }
 

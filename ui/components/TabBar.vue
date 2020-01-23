@@ -198,6 +198,8 @@ input[type="radio"] {
   padding: 0;
   position: absolute;
   width: 1px;
+  top: 0; /* top/left prevent right margin mobile safari */
+  left: 0;
 }
 
 span {
