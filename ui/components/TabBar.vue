@@ -139,47 +139,52 @@ export const tabBarMixin = {
 </script>
 
 <template>
-  <div>
-    <label
-      v-for="item in possibleValues"
-      :key="item.value"
-    >
-      <input
-        v-model="selected"
-        :name="name"
-        :value="item.value"
-        :disabled="disabled || item.disabled"
-        type="radio"
-        @change="onChange"
+  <div class="wrapper">
+    <div class="overflow">
+      <label
+        v-for="item in possibleValues"
+        :key="item.value"
       >
-      <span>
-        <Component
-          :is="item.icon"
-          v-if="item.icon"
-        />
-        {{ item.label }}
-      </span>
-    </label>
+        <input
+          v-model="selected"
+          :name="name"
+          :value="item.value"
+          :disabled="disabled || item.disabled"
+          type="radio"
+          @change="onChange"
+        >
+        <span>
+          <Component
+            :is="item.icon"
+            v-if="item.icon"
+          />
+          {{ item.label }}
+        </span>
+      </label>
+    </div>
   </div>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
+.wrapper {
   margin-top: -20px;
   padding: 20px 0;
+  position: relative;
 
   &::after {
     content: "";
     display: block;
-    position: sticky;
+    position: absolute;
     border-bottom: 1px solid var(--theme-color-silver-sand);
-    left: 0;
-    right: 0;
+    width: 100%;
     z-index: 0;
-    top: 0;
-    margin-top: -3px;
+    bottom: 26px;
+  }
+
+  & .overflow {
+    height: 55px;
   }
 }
 
@@ -250,24 +255,11 @@ input:not(:checked):not(:disabled) + span {
   cursor: pointer;
 }
 
-@media only screen and (max-width: 768px) {
-  div {
-    overflow-x: auto;
-    white-space: nowrap;
-    -ms-overflow-style: none; /* needed to hide scroll bar in edge */
-    scrollbar-width: none; /* for firefox */
-
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-  }
-
+@media only screen and (max-width: 780px) {
   @supports (-ms-ime-align: auto) { /* fires only on Edge */
     div::after {
       margin-top: 17px;
     }
   }
 }
-
 </style>
