@@ -73,7 +73,7 @@ export default {
                 this.checkedValue = this.checkedValue.filter(x => x !== value);
             }
             consola.trace('Multiselect value changed to', this.checkedValue);
-            
+
             /**
              * Fired when the selection changes.
              *
@@ -112,25 +112,29 @@ export default {
 <style scoped lang="postcss">
 @import "webapps-common/ui/css/variables";
 
-.multiselect {
-  position: relative;
-
-  &:not(.collapsed),
-  &:hover {
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
-  }
-}
-
 h6 {
   margin: 0;
-  background: var(--theme-color-porcelain);
-  padding: 11px 38px 10px 10px;
+  border: 1px solid var(--theme-color-stone-gray);
+  padding: 10px 38px 10px 10px;
   font-size: 13px;
+  height: 40px;
   line-height: 19px;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.multiselect {
+  position: relative;
+
+  &:not(.collapsed) h6 {
+    border-color: var(--theme-color-masala);
+  }
+
+  &.collapsed:hover {
+    background: var(--theme-color-porcelain);
+  }
 }
 
 .icon {

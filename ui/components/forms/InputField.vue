@@ -27,15 +27,15 @@ export default {
         inputClasses: {
             default: '',
             type: String
+        },
+        disabled: {
+            default: false,
+            type: Boolean
         }
     },
     computed: {
         inputClassList() {
             let classes = this.inputClasses;
-
-            if (!this.isValid) {
-                classes += ' invalid';
-            }
             if (this.$slots.icon && this.$slots.icon.length) {
                 classes += ' with-icon';
             }
@@ -69,8 +69,12 @@ export default {
 </script>
 
 <template>
-  <label>
+  <div>
     <slot name="icon" />
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
     <input
       ref="input"
       :value="value"
@@ -78,15 +82,17 @@ export default {
       :type="type"
       :pattern="pattern"
       :placeholder="placeholder"
+      :disabled="disabled"
       @input="onInput"
     >
-  </label>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-label {
+div {
+  /* icon and marker need pos 0,0 to be the wrapper */
   position: relative;
 }
 
@@ -95,25 +101,47 @@ input {
   font-weight: 500;
   color: var(--theme-color-masala);
   line-height: 18px;
-  background-color: var(--theme-color-porcelain);
-  margin: 0;
+  height: 40px;
   padding: 11px 10px 11px 10px;
   border-radius: 0;
   width: 100%;
-  border-left-width: 3px;
-  border-color: transparent;
-  border-left-style: solid;
+  border: 1px solid var(--theme-color-stone-gray);
   outline: none;
-  border-top: none;
-  border-bottom: none;
+
+  &::placeholder {
+    color: var(--theme-color-dove-gray);
+    font-weight: 300;
+  }
+
+  &:disabled {
+    color: var(--theme-color-dove-gray);
+    opacity: 0.5;
+  }
+
+  /* active */
+  &:focus {
+    border-color: var(--theme-color-masala);
+  }
+
+  &:hover:not(:focus):not(:disabled) {
+    background-color: var(--theme-color-porcelain);
+  }
 
   &.with-icon {
     padding: 10px 10px 10px 38px;
   }
+}
 
-  &.invalid {
-    border-left-color: var(--theme-color-error);
-  }
+.invalid-marker {
+  position: absolute;
+  display: block;
+  width: 3px;
+  left: -1px;
+  margin: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: var(--theme-color-error);
 }
 
 svg {
@@ -123,7 +151,6 @@ svg {
   stroke: var(--theme-color-masala);
   position: absolute;
   left: 12px;
-  top: 2px;
+  top: 10px;
 }
 </style>
-

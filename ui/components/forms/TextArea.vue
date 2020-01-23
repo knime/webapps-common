@@ -32,10 +32,6 @@ export default {
     computed: {
         inputClassList() {
             let classes = this.inputClasses;
-
-            if (!this.isValid) {
-                classes += ' invalid';
-            }
             return classes;
         }
     },
@@ -51,38 +47,65 @@ export default {
 </script>
 
 <template>
-  <textarea
-    ref="input"
-    :value="value"
-    :class="inputClassList"
-    :cols="cols"
-    :rows="rows"
-    :placeholder="placeholder"
-    @input="onInput"
-  />
+  <div>
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
+    <textarea
+      ref="input"
+      :value="value"
+      :class="inputClassList"
+      :cols="cols"
+      :rows="rows"
+      :placeholder="placeholder"
+      @input="onInput"
+    />
+  </div>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-textarea {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--theme-color-masala);
-  line-height: 18px;
-  background-color: var(--theme-color-porcelain);
-  margin: 0;
-  padding: 11px 10px 11px 10px;
-  border-radius: 0;
-  border: none;
-  outline: none;
-  border-left-width: 3px;
-  border-color: transparent;
-  border-left-style: solid;
+div {
+  position: relative;
+
+  & textarea {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--theme-color-masala);
+    line-height: 18px;
+    padding: 11px 10px 11px 10px;
+    border-radius: 0;
+    border: 1px solid var(--theme-color-stone-gray);
+    outline: none;
+    display: block;
+
+    &:focus {
+      border-color: var(--theme-color-masala);
+    }
+
+    &:hover:not(:focus):not(:disabled) {
+      background-color: var(--theme-color-porcelain);
+    }
+
+    &::placeholder {
+      font-weight: 300;
+    }
+  }
+
+  & .invalid-marker {
+    position: absolute;
+    display: block;
+    width: 3px;
+    left: -1px;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
 }
 
-textarea.invalid {
-  border-left-color: var(--theme-color-error);
-}
 </style>
 

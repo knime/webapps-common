@@ -58,7 +58,7 @@ label {
     position: absolute;
 
     & + span::before { /* □ */
-      background: var(--theme-color-porcelain);
+      border: 1px solid var(--theme-color-stone-gray);
       display: inline-block;
       content: '';
     }
@@ -69,8 +69,13 @@ label {
       left: 0;
     }
 
+    & + span::before:hover { /* □ */
+      background: var(--theme-color-porcelain);
+    }
+
     &:checked + span::before { /* □ */
       background: var(--theme-color-masala);
+      border-color: var(--theme-color-masala);
       content: '';
     }
 
@@ -84,7 +89,7 @@ label {
   }
 
   &:hover input + span::before { /* □ */
-    background: var(--theme-color-silver-sand);
+    background: var(--theme-color-porcelain);
   }
 
   &:hover input + span::after { /* ✓ */
@@ -93,10 +98,6 @@ label {
 
   &.medium {
     padding: 3px 0 3px 26px;
-
-    &.knime-qf-title { /* TODO WEBP-120 move to widget */
-      padding-top: 0;
-    }
 
     & input {
       & + span::before,
@@ -113,10 +114,6 @@ label {
 
   &.large {
     padding: 6px 0 3px 1.5em;
-
-    &.knime-qf-title { /* TODO WEBP-120 move to widget */
-      padding-top: 3px;
-    }
 
     & input {
       & + span::before,
@@ -145,6 +142,17 @@ label {
     width: 0.6em;
     height: 0.35em;
     border-width: 0 0 2px 2px;
+  }
+
+  /* keyboard focus; :focus-visible would be better once browser support
+     is there https://caniuse.com/#feat=css-focus-visible */
+  & input:focus + span::before,
+  & input:checked:focus + span::before { /* □ */
+    background: var(--theme-color-porcelain);
+  }
+
+  & input:checked:focus + span::after { /* ✓ */
+    border-color: var(--theme-color-masala);
   }
 }
 </style>

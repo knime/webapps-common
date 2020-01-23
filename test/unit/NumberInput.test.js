@@ -28,11 +28,10 @@ describe('NumberInput.vue', () => {
     });
 
     it('\'s will change appearance when invalid', () => {
-        expect(wrapper.find('input').classes()).not.toContain('invalid');
         wrapper.setProps({ isValid: false });
-        expect(wrapper.find('input').classes()).toContain('invalid');
+        expect(wrapper.find('.invalid-marker').exists()).toBe(true);
         wrapper.setProps({ isValid: true });
-        expect(wrapper.find('input').classes()).not.toContain('invalid');
+        expect(wrapper.find('.invalid-marker').exists()).toBe(false);
     });
 
     it('has validate logic to check min/max values', () => {

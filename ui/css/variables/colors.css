@@ -13,6 +13,8 @@
   --knime-gray-light-semi: hsla(200, 10%, 94%, 0.4); /* #EFF1F266 */
   --knime-gray-dark-semi: hsla(195, 2%, 52%, 0.4); /* #82858680 */
   --knime-gray-dark: hsl(195, 2%, 52%); /* #828586 */
+  --knime-stone-gray: hsl(0, 0%, 53%); /* #88888; */
+
 
   --theme-color-yellow: var(--knime-yellow); /* #FFD800 */
   --theme-color-masala: var(--knime-masala); /* #3E3A39 */
@@ -27,6 +29,7 @@
   --theme-color-gray-dark: var(--knime-gray-dark); /* #828586 */
   --theme-color-gray-light-semi: var(--knime-gray-light-semi); /* #82858680 */
   --theme-color-gray-ultra-light: var(--knime-gray-ultra-light); /* #F8F9FA */
+  --theme-color-stone-gray: var(--knime-stone-gray); /* #888888 */
 
 
   --theme-color-error: hsl(357.5, 71.6%, 45.5%); /* #C72128 */
