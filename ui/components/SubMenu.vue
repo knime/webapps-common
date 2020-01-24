@@ -63,7 +63,7 @@ export default {
          * @returns {Boolean}
          */
         onMenuClick(e) {
-            if (e.relatedTarget && e.relatedTarget.className === 'clickable-item') {
+            if (e.relatedTarget && e.relatedTarget.className.includes('clickable-item')) {
                 e.currentTarget.focus();
             }
             return true;
