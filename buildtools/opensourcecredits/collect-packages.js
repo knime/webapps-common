@@ -5,20 +5,30 @@ const fs = require('fs');
 const path = require('path');
 const outFile = path.resolve(__dirname, 'used-packages.json');
 const semver = require('semver');
+const consola = require('consola');
 
 let currentDir = __dirname;
-let parentPkgPath = '../../package.json';
-let hasParentPkg = false;
+let localDir, localPkgPath, parentPkgPath, hasParentPkg;
 while (!hasParentPkg) {
     currentDir = path.resolve(currentDir, '..');
     parentPkgPath = path.resolve(currentDir, 'package.json');
-    if (!currentDir.includes('webapps-common') && fs.existsSync(parentPkgPath)) {
-        hasParentPkg = true;
+    if (fs.existsSync(parentPkgPath)) {
+        if (!currentDir.includes('webapps-common')) {
+            hasParentPkg = true;
+            break;
+        }
+        localDir = currentDir;
+        localPkgPath = parentPkgPath;
+    }
+    if (currentDir === '/') {
+        consola.warn('Warning: License collection could not detect parent package!');
+        currentDir = localDir;
+        parentPkgPath = localPkgPath;
         break;
     }
 }
 
-const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile) && hasParentPkg;
+const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
 if (!skip) {
 

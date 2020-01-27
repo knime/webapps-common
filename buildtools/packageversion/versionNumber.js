@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 const semver = require('semver');
-const packageJSON = require('../package.json');
 const { execSync } = require('child_process');
 
 let date = new Date().toISOString().replace(/[^0-9a-z]/gi, '-');
 
-let versionNumber = () => {
+let versionNumber = (packagePath) => {
+    const packageJSON = require(packagePath);
 
     let { version } = packageJSON;
 
