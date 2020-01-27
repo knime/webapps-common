@@ -1,6 +1,6 @@
 <script>
 /**
- * ***ATTENTION*** Carousel only for responsive design
+ * ***Disclaimer*** Carousel only for responsive design
 */
 export default {
     props: {
@@ -17,14 +17,26 @@ export default {
             }
         };
     },
-    computed: {
-        shadowStyle() {
-            return `background-image: linear-gradient(90deg, transparent 0%,\
-            var(--theme-color-${this.shadowColor}) 100%);`;
-        }
-    },
     mounted() {
         this.toggleShadow();
+
+        let debounce = function (func, wait, immediate, ...args) {
+            let timeout;
+            return function () {
+                let later = function () {
+                    timeout = null;
+                    /* eslint-disable-next-line no-invalid-this */
+                    if (!immediate) { func.apply(this, args); }
+                };
+                let callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                /* eslint-disable-next-line no-invalid-this */
+                if (callNow) { func.apply(this, args); }
+            };
+        };
+        /* eslint-disable-next-line no-magic-numbers */
+        window.addEventListener('resize', debounce(this.toggleShadow, 250, true));
     },
     methods: {
         toggleShadow(event) {
@@ -44,12 +56,10 @@ export default {
 <template>
   <div class="shadow-wrapper">
     <span
-      :class="[{ 'active': shadow.right }, 'shadow-right']"
-      :style="shadowStyle"
+      :class="[{ 'active': shadow.right }, 'shadow-right', {'white': shadowColor==='white'}]"
     />
     <span
-      :class="[{ 'active': shadow.left }, 'shadow-left']"
-      :style="shadowStyle"
+      :class="[{ 'active': shadow.left }, 'shadow-left', {'white': shadowColor==='white'}]"
     />
     <div
       ref="scrollContainer"
@@ -74,21 +84,6 @@ export default {
 }
 
 @media only screen and (max-width: 1180px) {
-  .carousel {
-    overflow-x: auto;
-    white-space: nowrap;
-    -ms-overflow-style: none; /* needed to hide scroll bar in edge */
-    scrollbar-width: none; /* for firefox */
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .carousel > >>> .wrapper {
-    position: unset;
-  }
-
   .shadow-wrapper {
     & .shadow-right,
     & .shadow-left {
@@ -99,6 +94,7 @@ export default {
       width: 20px;
       z-index: 2;
       opacity: 0;
+      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
     }
 
     & .shadow-right {
@@ -113,6 +109,25 @@ export default {
     & .active {
       opacity: 1;
     }
+
+    & .white {
+      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    }
+  }
+
+  .carousel {
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none; /* needed to hide scroll bar in edge */
+    scrollbar-width: none; /* for firefox */
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .carousel > >>> .wrapper {
+    position: unset;
   }
 }
 </style>

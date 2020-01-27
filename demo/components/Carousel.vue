@@ -37,8 +37,7 @@ export default {
         </p>
         <p>
           The color of the shadow can be adjusted to the background
-          by using the "shadowColor"-prop. Just use the standard KNIME
-          colors(e.g a shadowColor of --theme-color-masala would be achieved by using shadow-color="masala").
+          by using the "shadowColor"-prop. Currently the supported colors are: white and porcelain.
         </p>
         <p>The default value of the "shadowColor"-prop is 'porcelain'.</p>
         <Carousel shadow-color="white">
