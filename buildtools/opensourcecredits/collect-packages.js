@@ -1,6 +1,5 @@
 /* eslint-disable no-process-env */
-require('../../util/tilde-require');
-const config = require('~/config/opensourcecredits.config');
+const config = require('../config/opensourcecredits.config');
 const licensechecker = require('license-checker');
 const fs = require('fs');
 const path = require('path');
