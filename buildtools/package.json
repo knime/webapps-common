@@ -11,8 +11,8 @@
   },
   "private": true,
   "dependencies": {
-    "consola": "^2.11.3",
-    "license-checker": "^25.0.1",
-    "semver": "^7.1.1"
+    "consola": "2.9.0",
+    "license-checker": "25.0.1",
+    "semver": "6.1.3"
   }
 }

@@ -6,7 +6,6 @@ const fs = require('fs');
 const versionNumber = require('./versionNumber');
 const packageJSON = require('../package.json');
 const { execSync } = require('child_process');
-// eslint-disable-next-line no-process-env
 const parentPath = process.argv.pop();
 
 let taggedVersion = versionNumber(path.resolve(parentPath, 'package.json'));

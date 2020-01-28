@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const consola = require('consola');
 const semver = require('semver');
 const { execSync } = require('child_process');
 
@@ -25,8 +26,7 @@ let versionNumber = (packagePath) => {
 };
 
 if (require.main === module) {
-    // eslint-disable-next-line no-console
-    console.log(versionNumber());
+    consola.log(versionNumber());
 } else {
     module.exports = versionNumber;
 }
