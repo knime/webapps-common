@@ -10,11 +10,20 @@ export default {
          */
         labelSize: {
             type: String,
-            default: 'medium'
+            default: 'medium',
+            validator(val) {
+                return ['medium', 'large'].includes(val);
+            }
         },
+        /**
+         * Controls the alignment of the RadioButtons
+         */
         alignment: {
             type: String,
-            default: 'horizontal'
+            default: 'horizontal',
+            validator(val) {
+                return ['horizontal', 'vertical'].includes(val);
+            }
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -36,7 +45,7 @@ export default {
                 }
                 return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
             }
-        },
+        }
     },
     methods: {
         onInput($event) {
@@ -56,9 +65,10 @@ export default {
 
 <template>
   <div :class="alignment">
-    <label :class="labelSize"
-           v-for="item of possibleValues"
-           :key="`radio-${item.id}`"
+    <label
+      v-for="item of possibleValues"
+      :key="`radio-${item.id}`"
+      :class="labelSize"
     >
       <input
         ref="input"

@@ -27,7 +27,7 @@ export default {
     data() {
         return {
             codeExample,
-            selected: ''
+            selected: 'bar'
         };
     },
     computed: {
@@ -53,9 +53,9 @@ export default {
       <div class="grid-container">
         <div class="grid-item-5">
           <Radiobuttons
-                  v-model="selected"
-                  placeholder="Select stuff here!"
-                  :possible-values="[{
+            v-model="selected"
+            placeholder="Select stuff here!"
+            :possible-values="[{
               id: 'foo',
               text: 'Foo'
             }, {
@@ -70,10 +70,10 @@ export default {
         </div>
         <div class="grid-item-5">
           <Radiobuttons
-                  v-model="selected"
-                  alignment="vertical"
-                  placeholder="Select stuff here vertical!"
-                  :possible-values="[{
+            v-model="selected"
+            alignment="vertical"
+            placeholder="Select stuff here vertical!"
+            :possible-values="[{
               id: 'foo',
               text: 'Foo'
             }, {
