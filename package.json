@@ -15,6 +15,9 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
     "package": "npm run --prefix buildtools/ package"
   },
+  "dependencies": {
+    "knime-build-tools": "file:buildtools"
+  },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
     "@vue/test-utils": "1.0.0-beta.29",
@@ -26,7 +29,6 @@
     "jest": "24.9.0",
     "jest-junit": "6.4.0",
     "jest-transform-stub": "2.0.0",
-    "knime-build-tools": "file:buildtools",
     "sonar-scanner": "3.1.0",
     "stylelint": "10.1.0",
     "stylelint-config-standard": "18.3.0",
