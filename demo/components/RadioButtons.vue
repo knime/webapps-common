@@ -1,6 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Radiobuttons from '../../ui/components/forms/Radiobuttons';
+import Radiobuttons from '../../ui/components/forms/RadioButtons';
 import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
 const codeExample = `<Radiobuttons
@@ -43,7 +43,7 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Radiobuttons</h2>
+          <h2>RadioButtons</h2>
           <p>
             A list of choices the user must choose one of them, so it emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>.

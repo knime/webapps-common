@@ -23,7 +23,7 @@ import InputField from '../components/InputField';
 import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
-import Radiobuttons from '../components/Radiobuttons';
+import RadioButtons from '../components/RadioButtons';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -50,7 +50,7 @@ export default {
         TextArea,
         NumberInput,
         Checkbox,
-        Radiobuttons,
+        RadioButtons,
         Multiselect
     }
 };
@@ -92,7 +92,7 @@ export default {
     <TextArea />
     <NumberInput />
     <Checkbox />
-    <Radiobuttons />
+    <RadioButtons />
     <Multiselect />
   </main>
 </template>
