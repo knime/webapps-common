@@ -1,10 +1,11 @@
+/* eslint-disable no-process-env */
 require('../../util/tilde-require');
 const config = require('~/config/opensourcecredits.config');
 const licensechecker = require('license-checker');
 const fs = require('fs');
 const path = require('path');
-// eslint-disable-next-line no-process-env
-const outFile = path.resolve(process.env.CREDITS_BUILD_DIR || __dirname, 'used-packages.json');
+// if custom filename provide via env variable, build a git-tracked resource (e.g. pagebuilder)
+const outFile = path.resolve(__dirname, `${process.env.CREDITS_BUILD_PREFIX || 'used-packages'}.json`);
 const semver = require('semver');
 const consola = require('consola');
 
@@ -59,6 +60,14 @@ if (!skip) {
             repository: pkg.repository,
             licenseText: pkg.licenseText
         }));
+
+        // add additional licenses from external projects if provided by env variable
+        if (process.env.ADD_PACKAGE_FILE) {
+            const addPkgPath = path.resolve(__dirname, `${process.env.ADD_PACKAGE_FILE}.json`);
+            if (fs.existsSync(addPkgPath)) {
+                allPackages = allPackages.concat(require(addPkgPath));
+            }
+        }
 
         // remove duplicate packages (= different versions but same license)
         const allUniquePackages = [];
