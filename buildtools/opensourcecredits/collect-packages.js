@@ -3,7 +3,8 @@ const config = require('~/config/opensourcecredits.config');
 const licensechecker = require('license-checker');
 const fs = require('fs');
 const path = require('path');
-const outFile = path.resolve(__dirname, 'used-packages.json');
+// eslint-disable-next-line no-process-env
+const outFile = path.resolve(process.env.CREDITS_BUILD_DIR || __dirname, 'used-packages.json');
 const semver = require('semver');
 const consola = require('consola');
 

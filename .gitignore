@@ -86,5 +86,4 @@ dist
 
 # Ignore knime-build-tools npm & build files
 buildtools/node_modules
-buildtools/package-lock.json
 buildtools/opensourcecredits/used-packages.json
