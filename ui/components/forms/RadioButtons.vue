@@ -79,7 +79,7 @@ export default {
     <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
-      :class="labelSize"
+      :class="[labelSize, 'radio-label']"
     >
       <input
         ref="input"
@@ -99,7 +99,7 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-label {
+.radio-label {
   position: relative;
   line-height: 1;
   padding: 3px 0 3px 23px;
@@ -177,11 +177,11 @@ label {
   }
 }
 
-.horizontal label {
+.horizontal .radio-label {
   padding-right: 3px;
 }
 
-.vertical label {
+.vertical .radio-label {
   display: block;
 }
 
