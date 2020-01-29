@@ -18,8 +18,7 @@ export default {
     data() {
         return {
             codeExample,
-            selected: false,
-            selectedLarge: false,
+            selected: false
         };
     },
     computed: {
@@ -48,10 +47,7 @@ export default {
             I want cookies!
           </Checkbox>
           <br>
-          <Checkbox
-                  v-model="selectedLarge"
-                  label-size="large"
-          >
+          <Checkbox label-size="large">
             I want larger cookies!
           </Checkbox>
         </div>
