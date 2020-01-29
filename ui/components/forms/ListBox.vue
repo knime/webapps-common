@@ -170,9 +170,9 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 [role="listbox"] {
-  min-height: 1em;
+  min-height: 1.8em;
   padding: 0;
-  background: white;
+  background: var(--theme-color-white);
   border: 1px solid var(--theme-color-stone-gray);
 }
 
@@ -192,7 +192,6 @@ export default {
 }
 
 ul[role="listbox"] {
-  max-height: 18em;
   overflow-y: auto;
   position: relative;
 }
