@@ -58,6 +58,10 @@ export default {
             let value = $event.target.value;
             consola.trace('Radiobutton value changed to', value);
             this.$emit('input', value);
+        },
+        hasSelection() {
+            /* looks in the DOM if one radio button is checked */
+            return this.$refs.input.some(x => x.checked);
         }
     }
 };
