@@ -172,6 +172,7 @@ export default {
 [role="listbox"] {
   min-height: 1.8em;
   padding: 0;
+  margin: 0;
   background: var(--theme-color-white);
   border: 1px solid var(--theme-color-stone-gray);
 }
