@@ -1,6 +1,13 @@
 <script>
+let count = 0;
 export default {
     props: {
+        id: {
+            type: String,
+            default() {
+                return `RadioButtons-${count++}`;
+            }
+        },
         value: {
             type: String,
             default: ''
@@ -78,7 +85,7 @@ export default {
         ref="input"
         :checked="(value === item.id)"
         :value="item.id"
-        :name="`radio-${_uid}`"
+        :name="`radio-${id}`"
         type="radio"
         @change="onInput"
       >

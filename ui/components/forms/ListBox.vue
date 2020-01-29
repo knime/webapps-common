@@ -1,6 +1,13 @@
 <script>
+let count = 0;
 export default {
     props: {
+        id: {
+            type: String,
+            default() {
+                return `ListBox-${count++}`;
+            }
+        },
         value: {
             type: String,
             default: ''
@@ -107,6 +114,21 @@ export default {
         },
         hasSelection() {
             return this.selectedIndex >= 0;
+        },
+        getCurrentItem() {
+            // does not use value as this might be something different set from outside but not part of possible values
+            try {
+                return this.possibleValues[this.selectedIndex];
+            } catch (e) {
+                return { id: '', text: '' };
+            }
+        },
+        generateOptionId(item) {
+            if (!item) {
+                return '';
+            }
+            let cleanId = item.id.replace(/[^\w]/gi, '');
+            return `option-${this.id}-${cleanId}`;
         }
     }
 };
@@ -120,6 +142,7 @@ export default {
       tabindex="0"
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
+      :aria-activedescendant="generateOptionId(getCurrentItem())"
       @keydown.down.prevent="onArrowDown"
       @keydown.up.prevent="onArrowUp"
       @keydown.end.prevent="onEndKey"
@@ -127,12 +150,12 @@ export default {
     >
       <li
         v-for="(item, index) of possibleValues"
+        :id="generateOptionId(item)"
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
         :style="{ 'line-height': optionLineHeight }"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
-        :aria-activedescendant="isCurrentValue(item.id)"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
