@@ -111,7 +111,7 @@ label {
 
   /* label size */
   &.large {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 16px;
     line-height: 24px;
     display: block;
