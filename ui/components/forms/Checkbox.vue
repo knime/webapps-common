@@ -97,7 +97,7 @@ label {
     }
 
     &:checked + span {
-      font-weight: 700;
+      font-weight: 500;
     }
   }
 
@@ -111,12 +111,16 @@ label {
 
   /* label size */
   &.large {
-    font-weight: 500;
+    font-weight: 700;
     font-size: 16px;
     line-height: 24px;
     display: block;
     margin-bottom: 5px;
     padding-top: 0;
+
+    & input:checked + span {
+      font-weight: inherit;
+    }
   }
 
   &.medium {
