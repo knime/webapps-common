@@ -52,12 +52,12 @@ export default {
     data() {
         return {
             selectedIndex: 0,
-            optionLineHeight: 1.8
+            optionLineHeight: 20
         };
     },
     computed: {
         ulSizeStyle() {
-            return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}em` } : {};
+            return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}px` } : {};
         }
     },
     mounted() {
@@ -154,7 +154,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
-        :style="{ 'line-height': optionLineHeight }"
+        :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
@@ -170,16 +170,22 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 [role="listbox"] {
-  min-height: 1.8em;
+  font-size: 14px;
+  min-height: 20px;
   padding: 0;
   margin: 0;
   background: var(--theme-color-white);
   border: 1px solid var(--theme-color-stone-gray);
 }
 
+[role="listbox"]:focus {
+  outline: none;
+  border-color: var(--theme-color-masala);
+}
+
 [role="option"] {
   display: block;
-  padding: 0 1em 0 1em;
+  padding: 0 10px 0 10px;
   position: relative;
 }
 
@@ -192,14 +198,10 @@ export default {
   color: var(--theme-color-white);
 }
 
+/* this selector is required to override some * rules which interfer - so do not simplify */
 ul[role="listbox"] {
   overflow-y: auto;
   position: relative;
-}
-
-ul:focus {
-  outline: none;
-  border-color: var(--theme-color-masala);
 }
 
 .noselect {
