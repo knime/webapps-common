@@ -24,6 +24,7 @@ import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
 import RadioButtons from '../components/RadioButtons';
+import ListBox from '../components/ListBox';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -51,6 +52,7 @@ export default {
         NumberInput,
         Checkbox,
         RadioButtons,
+        ListBox,
         Multiselect
     }
 };
@@ -93,6 +95,7 @@ export default {
     <NumberInput />
     <Checkbox />
     <RadioButtons />
+    <ListBox />
     <Multiselect />
   </main>
 </template>
