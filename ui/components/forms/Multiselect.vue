@@ -101,6 +101,7 @@ export default {
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
+        class="boxes"
         @input="onInput(item.id, $event)"
       >
         {{ item.text }}
@@ -158,9 +159,8 @@ h6 {
   background: var(--theme-color-white);
   box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
 
-  & >>> label {
+  & .boxes {
     display: block;
-    padding-top: 8px;
   }
 }
 </style>
