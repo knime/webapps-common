@@ -74,8 +74,8 @@ export default {
         </div>
         <div class="grid-item-5">
           <ListBox
-            aria-label="A limited list"
             v-model="selected"
+            aria-label="A limited list"
             size="3"
             placeholder="Select stuff here vertical!"
             :possible-values="[{
