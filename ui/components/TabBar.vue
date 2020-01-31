@@ -257,7 +257,7 @@ input:not(:checked):not(:disabled) + span {
   cursor: pointer;
 }
 
-@media only screen and (max-width: 780px) {
+@media only screen and (max-width: 900px) {
   @supports (-ms-ime-align: auto) { /* fires only on Edge */
     div::after {
       margin-top: 17px;

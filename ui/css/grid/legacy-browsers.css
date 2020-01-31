@@ -3,9 +3,11 @@
 /* IE 11, Edge <= 15 compat.
  This is required because these browsers do not support variables.
  postcss-css-variables can resolve static variables only, but not dynamic variables like --item-size.
+
+ Only screens larger than 1180px are supported
  */
 
-@media only screen and (min-width: 781px) {
+@media only screen and (min-width: 1180px) {
   .grid-item-12 {
     width: 100%;
   }

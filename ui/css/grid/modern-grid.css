@@ -32,7 +32,6 @@
 header,
 section,
 footer {
-  min-width: var(--grid-min-width);
   padding-left: calc(3 * var(--grid-gap-width));
   padding-right: calc(3 * var(--grid-gap-width));
 }
@@ -104,6 +103,92 @@ section section {
   --item-size: 12;
 }
 
+/*
+ hack for breaking out of the grid system, because sometimes the visual design does not stick to it:
+ |    ||    ||    ||    ||    | header
+ |    ||    ||    ||   | |    | content
+ |    ||    ||    ||    ||    | footer
+
+ Notice that in the content area there is a double gap. This can be achieved by using the `spacing-right` class on the
+ column left to it. If you want to nest grid items, you have to use `reset-spacing` on the nested grid-container
+*/
+.grid-container .spacing-right {
+  padding-right: var(--grid-gap-width);
+}
+
+.grid-container .reset-spacing {
+  width: calc(100% + var(--grid-gap-width));
+}
+
+@media only screen and (max-width: 1180px) {
+  main section,
+  header section,
+  footer section,
+  .sticky-footer section,
+  header,
+  footer {
+    padding-left: var(--grid-gap-width);
+    padding-right: var(--grid-gap-width);
+  }
+
+  .grid-container {
+    flex-wrap: wrap;
+
+    & .grid-item-3,
+    & .grid-item-2,
+    & .grid-item-1 {
+      --item-size: 3;
+    }
+
+    & .grid-item-4,
+    & .grid-item-5,
+    & .grid-item-6 {
+      --item-size: 6;
+    }
+
+    & .grid-item-7,
+    & .grid-item-8,
+    & .grid-item-9 {
+      --item-size: 9;
+    }
+
+    & .grid-item-10,
+    & .grid-item-11,
+    & .grid-item-12 {
+      --item-size: 12;
+    }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  aside {
+    margin-top: 80px; /* Everything is full width so we need some top margin to visually separate the sidebar */
+  }
+
+  .grid-container {
+    flex-wrap: wrap;
+
+    & .grid-item-4,
+    & .grid-item-5,
+    & .grid-item-6,
+    & .grid-item-7,
+    & .grid-item-8,
+    & .grid-item-9,
+    & .grid-item-10,
+    & .grid-item-11,
+    & .grid-item-12 {
+      --item-size: 12;
+    }
+
+    & .grid-item-3,
+    & .grid-item-2,
+    & .grid-item-1 {
+      --item-size: 6;
+    }
+  }
+}
+
+
 [class^="grid-item-"] {
   width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
@@ -150,123 +235,4 @@ section section {
 
 .grid-item-1 .grid-item-1 {
   width: 100%;
-}
-
-/*
- hack for breaking out of the grid system, because sometimes the visual design does not stick to it:
- |    ||    ||    ||    ||    | header
- |    ||    ||    ||   | |    | content
- |    ||    ||    ||    ||    | footer
-
- Notice that in the content area there is a double gap. This can be achieved by using the `spacing-right` class on the
- column left to it. If you want to nest grid items, you have to use `reset-spacing` on the nested grid-container
-*/
-.grid-container .spacing-right {
-  padding-right: var(--grid-gap-width);
-}
-
-.grid-container .reset-spacing {
-  width: calc(100% + var(--grid-gap-width));
-}
-
-@media only screen and (min-width: 781px) and (max-width: 1180px) {
-  main section,
-  header section,
-  footer section,
-  .sticky-footer section,
-  header,
-  footer {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  [class^="grid-item-"] {
-    flex-grow: 1;
-  }
-
-  .grid-container {
-    flex-wrap: wrap;
-
-    & .grid-item-3,
-    & .grid-item-2,
-    & .grid-item-1 {
-      --item-size: 3;
-
-      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-
-    & .grid-item-4,
-    & .grid-item-5,
-    & .grid-item-6 {
-      --item-size: 6;
-
-      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-
-    & .grid-item-7,
-    & .grid-item-8,
-    & .grid-item-9 {
-      --item-size: 9;
-
-      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-
-    & .grid-item-10,
-    & .grid-item-11,
-    & .grid-item-12 {
-      --item-size: 12;
-
-      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-  }
-}
-
-@media only screen and (max-width: 780px) {
-  main section,
-  header section,
-  footer section,
-  .sticky-footer section,
-  header,
-  footer {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  [class^="grid-item-"] {
-    flex-grow: 1;
-  }
-
-  .grid-container {
-    flex-wrap: wrap;
-
-    & .grid-item-4,
-    & .grid-item-5,
-    & .grid-item-6,
-    & .grid-item-7,
-    & .grid-item-8,
-    & .grid-item-9,
-    & .grid-item-10,
-    & .grid-item-11,
-    & .grid-item-12 {
-      --item-size: 12;
-
-      width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-
-    & .grid-item-3,
-    & .grid-item-2,
-    & .grid-item-1 {
-      --item-size: 6;
-
-      width: calc(var(--item-size) / 6 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-    }
-  }
-
-  .grid-container .spacing-right {
-    padding-right: unset;
-  }
-
-  .grid-container .reset-spacing {
-    width: unset;
-  }
 }
