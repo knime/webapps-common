@@ -1,5 +1,10 @@
 <script>
 let count = 0;
+const KEY_DOWN = 40;
+const KEY_UP = 38;
+const KEY_HOME = 36;
+const KEY_END = 35;
+
 export default {
     props: {
         id: {
@@ -112,6 +117,25 @@ export default {
             this.setSelected(this.possibleValues[next].id, next);
             this.$refs.ul.scrollTop = 0;
         },
+        handleKeyDown(e)  {
+            /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
+            if (e.keyCode === KEY_DOWN) {
+                this.onArrowDown();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_UP) {
+                this.onArrowUp();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_END) {
+                this.onEndKey();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_HOME) {
+                this.onHomeKey();
+                e.preventDefault();
+            }
+        },
         hasSelection() {
             return this.selectedIndex >= 0;
         },
@@ -143,10 +167,7 @@ export default {
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentItem())"
-      @keydown.down.prevent="onArrowDown"
-      @keydown.up.prevent="onArrowUp"
-      @keydown.end.prevent="onEndKey"
-      @keydown.home.prevent="onHomeKey"
+      @keydown="handleKeyDown"
     >
       <li
         v-for="(item, index) of possibleValues"
