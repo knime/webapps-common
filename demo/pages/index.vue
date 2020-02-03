@@ -25,6 +25,7 @@ import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
 import RadioButtons from '../components/RadioButtons';
 import ListBox from '../components/ListBox';
+import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
 
 export default {
@@ -53,6 +54,7 @@ export default {
         Checkbox,
         RadioButtons,
         ListBox,
+        Dropdown,
         Multiselect
     }
 };
@@ -96,6 +98,7 @@ export default {
     <Checkbox />
     <RadioButtons />
     <ListBox />
+    <Dropdown />
     <Multiselect />
   </main>
 </template>

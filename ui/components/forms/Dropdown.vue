@@ -1,32 +1,28 @@
 <script>
+import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+
 let count = 0;
 const KEY_DOWN = 40;
 const KEY_UP = 38;
 const KEY_HOME = 36;
 const KEY_END = 35;
+const KEY_ESC = 27;
+const KEY_ENTER = 13;
 
 export default {
+    components: {
+        DropdownIcon
+    },
     props: {
         id: {
             type: String,
             default() {
-                return `ListBox-${count++}`;
+                return `Dropdown-${count++}`;
             }
         },
         value: {
             type: String,
             default: ''
-        },
-        /**
-         * Controls the size of the list. Number of visible items (for others user need to scroll)
-         * 0 means all
-         */
-        size: {
-            type: Number,
-            default: 0,
-            validator(val) {
-                return val >= 0;
-            }
         },
         ariaLabel: {
             type: String,
@@ -57,12 +53,16 @@ export default {
     data() {
         return {
             selectedIndex: 0,
-            optionLineHeight: 20
+            isExpanded: false
         };
     },
     computed: {
-        ulSizeStyle() {
-            return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}px` } : {};
+        displayTextMap() {
+            let map = {};
+            for (let value of this.possibleValues) {
+                map[value.id] = value.text;
+            }
+            return map;
         }
     },
     mounted() {
@@ -117,7 +117,13 @@ export default {
             this.setSelected(this.possibleValues[next].id, next);
             this.$refs.ul.scrollTop = 0;
         },
-        handleKeyDown(e)  {
+        toggleExpanded() {
+            this.isExpanded = !this.isExpanded;
+            if (this.isExpanded) {
+                setTimeout(() => this.$refs.ul.focus(), 0);
+            }
+        },
+        handleKeyDownList(e)  {
             /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
@@ -135,47 +141,86 @@ export default {
                 this.onHomeKey();
                 e.preventDefault();
             }
+            if (e.keyCode === KEY_ESC) {
+                this.isExpanded = false;
+                this.$refs.ul.blur();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_ENTER) {
+                this.isExpanded = false;
+                this.$refs.button.focus();
+                e.preventDefault();
+            }
+        },
+        handleKeyDownButton(e) {
+            if (e.keyCode === KEY_ENTER) {
+                this.toggleExpanded();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_DOWN) {
+                this.onArrowDown();
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_UP) {
+                this.onArrowUp();
+                e.preventDefault();
+            }
         },
         hasSelection() {
             return this.selectedIndex >= 0;
         },
-        getCurrentItem() {
-            // does not use value as this might be something different set from outside but not part of possible values
-            try {
-                return this.possibleValues[this.selectedIndex];
-            } catch (e) {
-                return { id: '', text: '' };
+        displayText(value) {
+            if (this.displayTextMap.hasOwnProperty(value)) {
+                return this.displayTextMap[value];
+            } else {
+                return `invalid: ${value}`;
             }
         },
-        generateOptionId(item) {
-            if (!item) {
-                return '';
+        getCurrentSelectedId() {
+            return this.possibleValues[this.selectedIndex].id;
+        },
+        generateId(node, itemId) {
+            if (!itemId) {
+                return `${node}-${this.id}`;
             }
-            let cleanId = item.id.replace(/[^\w]/gi, '');
-            return `option-${this.id}-${cleanId}`;
+            let cleanId = String(itemId).replace(/[^\w]/gi, '');
+            return `${node}-${this.id}-${cleanId}`;
         }
     }
 };
 </script>
 
 <template>
-  <div>
+  <div :class="['dropdown' , { collapsed: !isExpanded }]">
+    <h6
+      :id="generateId('button')"
+      ref="button"
+      role="button"
+      tabindex="0"
+      aria-haspopup="listbox"
+      :aria-label="ariaLabel"
+      :aria-labelledby="generateId('button')"
+      :aria-expanded="isExpanded"
+      @click="toggleExpanded"
+      @keydown="handleKeyDownButton"
+    >
+      {{ displayText(this.value) }}
+      <DropdownIcon class="icon" />
+    </h6>
     <ul
+      v-show="isExpanded"
       ref="ul"
       role="listbox"
-      tabindex="0"
-      :aria-label="ariaLabel"
-      :style="ulSizeStyle"
-      :aria-activedescendant="generateOptionId(getCurrentItem())"
-      @keydown="handleKeyDown"
+      tabindex="-1"
+      :aria-activedescendant="isExpanded ? generateId('option', getCurrentSelectedId()) : false"
+      @keydown="handleKeyDownList"
     >
       <li
         v-for="(item, index) of possibleValues"
-        :id="generateOptionId(item)"
+        :id="generateId('option', item.id)"
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
-        :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
@@ -190,13 +235,59 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
+h6 {
+  margin: 0;
+  border: 1px solid var(--theme-color-stone-gray);
+  padding: 10px 38px 10px 10px;
+  font-size: 13px;
+  height: 40px;
+  line-height: 19px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h6:focus {
+  border-color: var(--theme-color-masala);
+  outline: none;
+}
+
+.dropdown {
+  position: relative;
+
+  &:not(.collapsed) h6 {
+    border-color: var(--theme-color-masala);
+  }
+
+  &.collapsed:hover {
+    background: var(--theme-color-porcelain);
+  }
+}
+
+
+.icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: calc(32px / 18);
+  position: absolute;
+  right: 10px;
+  top: 11px;
+  pointer-events: none;
+}
+
+.dropdown:not(.collapsed) .icon {
+  transform: scale(-1);
+}
+
 [role="listbox"] {
   font-size: 14px;
-  min-height: 20px;
+  min-height: 24px;
+  width: 100%;
   padding: 0;
   margin: 0;
   background: var(--theme-color-white);
-  border: 1px solid var(--theme-color-stone-gray);
+  box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
 }
 
 [role="listbox"]:focus {
@@ -207,6 +298,7 @@ export default {
 [role="option"] {
   display: block;
   padding: 0 10px 0 10px;
+  line-height: 20px;
   position: relative;
 }
 
@@ -222,7 +314,10 @@ export default {
 /* this selector is required to override some * rules which interfer - so do not simplify */
 ul[role="listbox"] {
   overflow-y: auto;
-  position: relative;
+  position: absolute;
+
+  /* show max 10 items */
+  max-height: calc(24px * 10);
 }
 
 .noselect {
