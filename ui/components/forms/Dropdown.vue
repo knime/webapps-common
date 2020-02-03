@@ -284,7 +284,7 @@ h6:focus {
   font-size: 14px;
   min-height: 24px;
   width: 100%;
-  padding: 0;
+  padding: 8px 0;
   margin: 0;
   background: var(--theme-color-white);
   box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
@@ -298,7 +298,7 @@ h6:focus {
 [role="option"] {
   display: block;
   padding: 0 10px 0 10px;
-  line-height: 20px;
+  line-height: 24px;
   position: relative;
 }
 
@@ -317,7 +317,7 @@ ul[role="listbox"] {
   position: absolute;
 
   /* show max 10 items */
-  max-height: calc(24px * 10);
+  max-height: calc(24px * 7);
 }
 
 .noselect {

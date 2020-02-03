@@ -91,6 +91,27 @@ export default {
               id: 'bar3',
               text: 'Bar 3'
             }, {
+              id: 'bar4',
+              text: 'Bar 4'
+            }, {
+              id: 'bar5',
+              text: 'Bar 5'
+            }, {
+              id: 'bar6',
+              text: 'Bar 6'
+            }, {
+              id: 'bar7',
+              text: 'Bar 8'
+            }, {
+              id: 'bar9',
+              text: 'Bar 9'
+            }, {
+              id: 'bar10',
+              text: 'Bar 10'
+            }, {
+              id: 'bar11',
+              text: 'Bar 11'
+            }, {
               id: 'baz',
               text: 'Baz',
               selectedText: 'Baz!!'
