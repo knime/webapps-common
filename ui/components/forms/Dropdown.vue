@@ -1,5 +1,6 @@
 <script>
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import { mixin as clickaway } from 'vue-clickaway';
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -13,6 +14,7 @@ export default {
     components: {
         DropdownIcon
     },
+    mixins: [clickaway],
     props: {
         id: {
             type: String,
@@ -194,13 +196,19 @@ export default {
             }
             let cleanId = String(itemId).replace(/[^\w]/gi, '');
             return `${node}-${this.id}-${cleanId}`;
+        },
+        clickAway() {
+            this.isExpanded = false;
         }
     }
 };
 </script>
 
 <template>
-  <div :class="['dropdown' , { collapsed: !isExpanded }]">
+  <div
+    :class="['dropdown' , { collapsed: !isExpanded }]"
+    v-on-clickaway="clickAway"
+  >
     <h6
       :id="generateId('button')"
       ref="button"
