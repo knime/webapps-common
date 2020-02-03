@@ -331,6 +331,7 @@ h6:focus {
 ul[role="listbox"] {
   overflow-y: auto;
   position: absolute;
+  z-index: 2;
 
   /* show max 10 items */
   max-height: calc(24px * 7);
