@@ -78,6 +78,11 @@ export default {
             this.selectedIndex = index;
             this.$emit('input', value);
         },
+        onOptionClick(value, index) {
+            this.setSelected(value, index);
+            this.isExpanded = false;
+            this.$refs.button.focus();
+        },
         scrollToCurrent() {
             let listBoxNode = this.$refs.ul;
             if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
@@ -177,7 +182,11 @@ export default {
             }
         },
         getCurrentSelectedId() {
-            return this.possibleValues[this.selectedIndex].id;
+            try {
+                return this.possibleValues[this.selectedIndex].id;
+            } catch (e) {
+                return '';
+            }
         },
         generateId(node, itemId) {
             if (!itemId) {
@@ -223,8 +232,7 @@ export default {
         role="option"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
         :aria-selected="isCurrentValue(item.id)"
-        @click="setSelected(item.id, index)"
-        @focus="setSelected(item.id, index)"
+        @click="onOptionClick(item.id, index)"
       >
         {{ item.text }}
       </li>
