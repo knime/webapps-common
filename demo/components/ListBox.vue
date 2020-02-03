@@ -76,7 +76,7 @@ export default {
           <ListBox
             v-model="selected"
             aria-label="A limited list"
-            size="3"
+            :size="3"
             placeholder="Select stuff here vertical!"
             :possible-values="[{
               id: 'foo',
