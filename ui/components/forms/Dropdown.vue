@@ -204,7 +204,7 @@ export default {
       @click="toggleExpanded"
       @keydown="handleKeyDownButton"
     >
-      {{ displayText(this.value) }}
+      {{ displayText(value) }}
       <DropdownIcon class="icon" />
     </h6>
     <ul
