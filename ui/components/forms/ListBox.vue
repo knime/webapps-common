@@ -219,7 +219,7 @@ export default {
   color: var(--theme-color-white);
 }
 
-/* this selector is required to override some * rules which interfer - so do not simplify */
+/* this selector is required to override some * rules which interfere - so do not simplify */
 ul[role="listbox"] {
   overflow-y: auto;
   position: relative;

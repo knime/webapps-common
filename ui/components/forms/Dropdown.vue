@@ -209,7 +209,7 @@ export default {
     :class="['dropdown' , { collapsed: !isExpanded }]"
     v-on-clickaway="clickAway"
   >
-    <h6
+    <div
       :id="generateId('button')"
       ref="button"
       role="button"
@@ -223,7 +223,7 @@ export default {
     >
       {{ displayText(value) }}
       <DropdownIcon class="icon" />
-    </h6>
+    </div>
     <ul
       v-show="isExpanded"
       ref="ul"
@@ -251,98 +251,92 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-h6 {
-  margin: 0;
-  border: 1px solid var(--theme-color-stone-gray);
-  padding: 10px 38px 10px 10px;
-  font-size: 13px;
-  height: 40px;
-  line-height: 19px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-h6:focus {
-  border-color: var(--theme-color-masala);
-  outline: none;
-}
-
 .dropdown {
   position: relative;
 
-  &:not(.collapsed) h6 {
+  & [role=button] {
+    margin: 0;
+    border: 1px solid var(--theme-color-stone-gray);
+    padding: 10px 38px 10px 10px;
+    font-size: 13px;
+    height: 40px;
+    line-height: 19px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & [role=button]:focus {
+    border-color: var(--theme-color-masala);
+    outline: none;
+  }
+
+  &:not(.collapsed) [role=button] {
     border-color: var(--theme-color-masala);
   }
 
   &.collapsed:hover {
     background: var(--theme-color-porcelain);
   }
-}
 
+  & .icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: calc(32px / 18);
+    position: absolute;
+    right: 10px;
+    top: 11px;
+    pointer-events: none;
+  }
 
-.icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: calc(32px / 18);
-  position: absolute;
-  right: 10px;
-  top: 11px;
-  pointer-events: none;
-}
+  &:not(.collapsed) .icon {
+    transform: scale(-1);
+  }
 
-.dropdown:not(.collapsed) .icon {
-  transform: scale(-1);
-}
+  /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
+  & [role="listbox"] {
+    overflow-y: auto;
+    position: absolute;
+    z-index: 2;
+    max-height: calc(24px * 7); /* show max 7 items */
+    font-size: 14px;
+    min-height: 24px;
+    width: 100%;
+    padding: 8px 0;
+    margin: 0;
+    background: var(--theme-color-white);
+    box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
+  }
 
-[role="listbox"] {
-  font-size: 14px;
-  min-height: 24px;
-  width: 100%;
-  padding: 8px 0;
-  margin: 0;
-  background: var(--theme-color-white);
-  box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
-}
+  & [role="listbox"]:focus {
+    outline: none;
+    border-color: var(--theme-color-masala);
+  }
 
-[role="listbox"]:focus {
-  outline: none;
-  border-color: var(--theme-color-masala);
-}
+  & [role="option"] {
+    display: block;
+    padding: 0 10px 0 10px;
+    line-height: 24px;
+    position: relative;
+  }
 
-[role="option"] {
-  display: block;
-  padding: 0 10px 0 10px;
-  line-height: 24px;
-  position: relative;
-}
+  & [role="option"]:hover {
+    background: var(--theme-color-porcelain);
+  }
 
-[role="option"]:hover {
-  background: var(--theme-color-porcelain);
-}
+  & [role="option"].focused {
+    background: var(--theme-color-masala);
+    color: var(--theme-color-white);
+  }
 
-[role="option"].focused {
-  background: var(--theme-color-masala);
-  color: var(--theme-color-white);
-}
-
-/* this selector is required to override some * rules which interfer - so do not simplify */
-ul[role="listbox"] {
-  overflow-y: auto;
-  position: absolute;
-  z-index: 2;
-
-  /* show max 10 items */
-  max-height: calc(24px * 7);
-}
-
-.noselect {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  & .noselect {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 }
 
 </style>
