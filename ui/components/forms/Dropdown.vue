@@ -206,8 +206,8 @@ export default {
 
 <template>
   <div
-    :class="['dropdown' , { collapsed: !isExpanded }]"
     v-on-clickaway="clickAway"
+    :class="['dropdown' , { collapsed: !isExpanded }]"
   >
     <div
       :id="generateId('button')"
