@@ -75,7 +75,10 @@ export default {
 </script>
 
 <template>
-  <div :class="alignment">
+  <div
+    :class="alignment"
+    role="radiogroup"
+  >
     <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"

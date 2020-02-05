@@ -37,6 +37,7 @@ fieldset {
     font-size: 16px;
     line-height: 24px;
     margin-bottom: 5px;
+    cursor: default;
 
     & svg {
       margin-right: 0;
