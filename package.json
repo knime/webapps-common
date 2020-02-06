@@ -28,7 +28,6 @@
     "stylelint": "10.1.0",
     "stylelint-config-standard": "18.3.0",
     "vue": "2.6.11",
-    "vue-clickaway": "^2.2.2",
     "vue-jest": "3.0.4",
     "vue-template-compiler": "2.6.11"
   },
@@ -46,5 +45,8 @@
     "typeface-roboto": "*",
     "typeface-roboto-mono": "*"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "vue-clickaway": "^2.2.2"
+  }
 }
