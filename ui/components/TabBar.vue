@@ -1,8 +1,12 @@
 <script>
+import Carousel from './Carousel';
 /**
  * A radio button group that looks like a tab bar
 */
 export default {
+    components: {
+        Carousel
+    },
     props: {
         /**
          * Make the whole tab bar read-only
@@ -139,30 +143,32 @@ export const tabBarMixin = {
 </script>
 
 <template>
-  <div class="wrapper">
-    <div class="overflow">
-      <label
-        v-for="item in possibleValues"
-        :key="item.value"
-      >
-        <input
-          v-model="selected"
-          :name="name"
-          :value="item.value"
-          :disabled="disabled || item.disabled"
-          type="radio"
-          @change="onChange"
+  <Carousel>
+    <div class="wrapper">
+      <div class="overflow">
+        <label
+          v-for="item in possibleValues"
+          :key="item.value"
         >
-        <span>
-          <Component
-            :is="item.icon"
-            v-if="item.icon"
-          />
-          {{ item.label }}
-        </span>
-      </label>
+          <input
+            v-model="selected"
+            :name="name"
+            :value="item.value"
+            :disabled="disabled || item.disabled"
+            type="radio"
+            @change="onChange"
+          >
+          <span>
+            <Component
+              :is="item.icon"
+              v-if="item.icon"
+            />
+            {{ item.label }}
+          </span>
+        </label>
+      </div>
     </div>
-  </div>
+  </Carousel>
 </template>
 
 <style lang="postcss" scoped>
@@ -171,14 +177,15 @@ export const tabBarMixin = {
 .wrapper {
   margin-top: -20px;
   padding: 20px 0;
-  position: relative;
+  display: inline-block;
 
   &::after {
     content: "";
     display: block;
     position: absolute;
     border-bottom: 1px solid var(--theme-color-silver-sand);
-    width: 100%;
+    left: 0;
+    right: 0;
     z-index: 0;
     bottom: 26px;
   }
@@ -262,6 +269,12 @@ input:not(:checked):not(:disabled) + span {
     div::after {
       margin-top: 17px;
     }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  div::after {
+    left: 10px;
   }
 }
 </style>

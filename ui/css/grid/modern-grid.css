@@ -161,6 +161,16 @@ section section {
 }
 
 @media only screen and (max-width: 900px) {
+  main section,
+  header section,
+  footer section,
+  .sticky-footer section,
+  header,
+  footer {
+    padding-left: calc(var(--grid-gap-width) / 2);
+    padding-right: calc(var(--grid-gap-width) / 2);
+  }
+
   aside {
     margin-top: 80px; /* Everything is full width so we need some top margin to visually separate the sidebar */
   }
@@ -184,10 +194,19 @@ section section {
     & .grid-item-2,
     & .grid-item-1 {
       --item-size: 6;
+
+      flex-grow: 1;
     }
   }
-}
 
+  .grid-container .spacing-right {
+    padding-right: 0;
+  }
+
+  .grid-container .reset-spacing {
+    width: unset;
+  }
+}
 
 [class^="grid-item-"] {
   width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));

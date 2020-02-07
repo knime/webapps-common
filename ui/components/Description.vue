@@ -45,6 +45,8 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .description {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 18px;
   line-height: 26px;
   overflow-wrap: break-word;
