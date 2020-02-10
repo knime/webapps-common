@@ -126,10 +126,14 @@ section section {
   header section,
   footer section,
   .sticky-footer section,
-  header,
-  footer {
+  header {
     padding-left: var(--grid-gap-width);
     padding-right: var(--grid-gap-width);
+  }
+
+  footer {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .grid-container {
@@ -166,8 +170,7 @@ section section {
   header section,
   footer section,
   .sticky-footer section,
-  header,
-  footer {
+  header {
     padding-left: calc(var(--grid-gap-width) / 2);
     padding-right: calc(var(--grid-gap-width) / 2);
   }
