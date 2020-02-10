@@ -76,6 +76,9 @@ export default {
              * @type {Array}
              */
             this.$emit('input', this.checkedValue);
+        },
+        hasSelection() {
+            return this.$refs.boxes.some(x => x.isChecked);
         }
     }
 };
@@ -87,6 +90,7 @@ export default {
       class="options"
     >
       <Checkbox
+        ref="boxes"
         v-for="item of possibleValues"
         :key="`checkboxes-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
