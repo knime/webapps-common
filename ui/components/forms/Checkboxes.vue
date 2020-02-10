@@ -90,8 +90,8 @@ export default {
       class="options"
     >
       <Checkbox
-        ref="boxes"
         v-for="item of possibleValues"
+        ref="boxes"
         :key="`checkboxes-${item.id}`"
         :value="checkedValue.indexOf(item.id) > -1"
         class="boxes"
