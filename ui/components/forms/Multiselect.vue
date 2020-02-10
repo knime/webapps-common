@@ -91,7 +91,12 @@ export default {
 
 <template>
   <div :class="['multiselect', { collapsed }]">
-    <h6 @click="toggle">{{ optionText }}</h6>
+    <div
+      role="button"
+      @click="toggle"
+    >
+      {{ optionText }}
+    </div>
     <DropdownIcon class="icon" />
     <div
       v-show="!collapsed"
@@ -113,54 +118,56 @@ export default {
 <style scoped lang="postcss">
 @import "webapps-common/ui/css/variables";
 
-h6 {
-  margin: 0;
-  border: 1px solid var(--theme-color-stone-gray);
-  padding: 10px 38px 10px 10px;
-  font-size: 13px;
-  height: 40px;
-  line-height: 19px;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .multiselect {
   position: relative;
 
-  &:not(.collapsed) h6 {
+  & [role=button] {
+    margin: 0;
+    border: 1px solid var(--theme-color-stone-gray);
+    padding: 10px 38px 10px 10px;
+    font-size: 13px;
+    height: 40px;
+    line-height: 19px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+
+  &:not(.collapsed) [role=button] {
     border-color: var(--theme-color-masala);
   }
 
   &.collapsed:hover {
     background: var(--theme-color-porcelain);
   }
-}
 
-.icon {
-  width: 18px;
-  height: 18px;
-  stroke-width: calc(32px / 18);
-  position: absolute;
-  right: 10px;
-  top: 11px;
-  pointer-events: none;
-}
+  & .icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: calc(32px / 18);
+    position: absolute;
+    right: 10px;
+    top: 11px;
+    pointer-events: none;
+  }
 
-.multiselect:not(.collapsed) .icon {
-  transform: scale(-1);
-}
+  &:not(.collapsed) .icon {
+    transform: scale(-1);
+  }
 
-.options {
-  position: absolute;
-  width: 100%;
-  padding: 5px 10px;
-  background: var(--theme-color-white);
-  box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
+  & .options {
+    position: absolute;
+    width: 100%;
+    padding: 5px 10px;
+    background: var(--theme-color-white);
+    box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
 
-  & .boxes {
-    display: block;
+    & .boxes {
+      display: block;
+    }
   }
 }
+
 </style>
