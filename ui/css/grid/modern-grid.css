@@ -32,6 +32,7 @@
 header,
 section,
 footer {
+  min-width: var(--grid-min-width);
   padding-left: calc(3 * var(--grid-gap-width));
   padding-right: calc(3 * var(--grid-gap-width));
 }
