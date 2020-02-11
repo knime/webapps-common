@@ -20,6 +20,14 @@ export default {
             default: () => []
         },
         /**
+         * If enabled the single click will allow the user to select multiple items, otherwise this only works with
+         * CTRL + Click (similar to <select> html widgets)
+         */
+        multiselectByClick: {
+            type: Boolean,
+            default: false
+        },
+        /**
          * Controls the size of the list. Number of visible items (for others user need to scroll)
          * 0 means all
          */
@@ -72,6 +80,20 @@ export default {
         isCurrentValue(candidate) {
             return this.value.includes(candidate);
         },
+        handleCtrlClick(value, index) {
+            this.currentKeyNavIndex = index;
+            this.setSelected(value);
+        },
+        handleClick(value, index) {
+            if (!this.multiselectByClick) {
+                this.selectedValues = [];
+            }
+            this.currentKeyNavIndex = index;
+            this.setSelected(value);
+        },
+        handleDblClick(id, index) {
+            this.$emit('doubleClickOnItem', id, index);
+        },
         setSelected(value) {
             consola.trace('MultiselectListBox setSelected on', value);
             if (this.selectedValues.includes(value)) {
@@ -118,7 +140,7 @@ export default {
             this.currentKeyNavIndex = 0;
             this.$refs.ul.scrollTop = 0;
         },
-        handleKeyDown(e)  {
+        handleKeyDown(e) {
             /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
@@ -142,6 +164,11 @@ export default {
                 e.preventDefault();
             }
         },
+        selectAll(e) {
+            this.selectedValues = this.possibleValues.map(x => x.id);
+            this.$emit('input', this.selectedValues);
+            e.preventDefault();
+        },
         hasSelection() {
             return this.selectedValues.length > 0;
         },
@@ -149,7 +176,10 @@ export default {
             try {
                 return this.possibleValues[this.currentKeyNavIndex];
             } catch (e) {
-                return { id: '', text: '' };
+                return {
+                    id: '',
+                    text: ''
+                };
             }
         },
         generateOptionId(item) {
@@ -172,6 +202,7 @@ export default {
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
+      @keydown.ctrl.a.exact="selectAll"
       @keydown="handleKeyDown"
     >
       <li
@@ -187,8 +218,9 @@ export default {
           'noselect' :true
         }"
         :aria-selected="isCurrentValue(item.id)"
-        @click="setSelected(item.id)"
-        @focus="setSelected(item.id)"
+        @click.exact="handleClick(item.id, index)"
+        @click.ctrl="handleCtrlClick(item.id, index)"
+        @dblclick="handleDblClick(item.id, index)"
       >
         {{ item.text }}
       </li>
