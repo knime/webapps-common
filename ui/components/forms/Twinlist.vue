@@ -56,7 +56,7 @@ export default {
     },
     data() {
         return {
-            selectedValues: this.value,
+            chosenValues: this.value,
             selectedRight: [],
             selectedLeft: []
         };
@@ -67,30 +67,34 @@ export default {
             return Object.assign({}, ...this.possibleValues.map(obj => ({ [obj.id]: obj })));
         },
         leftItems() {
-            return this.possibleValues.filter(x => !this.selectedValues.includes(x.id));
+            return this.possibleValues.filter(x => !this.chosenValues.includes(x.id));
         },
         rightItems() {
-            return this.selectedValues.map(x => this.possibleValueMap[x]);
+            return this.chosenValues.map(x => this.possibleValueMap[x]);
         }
     },
     methods: {
-        moveRight() {
-            // add all left items to our values
-            let toBeAdded = this.selectedLeft;
-            this.selectedValues = [...toBeAdded, ...this.selectedValues];
-            this.selectedLeft = [];
-            this.selectedRight = toBeAdded;
-            this.$refs.right.focus();
-            this.$emit('input', this.selectedValues);
-        },
-        moveLeft() {
-            // remove all right values from or selectedValues
-            let toRemove = this.selectedRight;
-            this.selectedValues = this.selectedValues.filter(x => !toRemove.includes(x));
+        clearSelections() {
             this.selectedRight = [];
-            this.selectedLeft = toRemove;
-            this.$refs.left.focus();
-            this.$emit('input', this.selectedValues);
+            this.selectedLeft = [];
+            // this fixes the internal handling of selected values which gets not updated by :value binding in this case
+            // TODO: improve?
+            this.$refs.right.selectedValues = [];
+            this.$refs.left.selectedValues = [];
+        },
+        moveRight(items) {
+            // add all left items to our values
+            items = items || this.selectedLeft;
+            this.chosenValues = [...items, ...this.chosenValues].sort();
+            this.clearSelections();
+            this.$emit('input', this.chosenValues);
+        },
+        moveLeft(items) {
+            // remove all right values from or selectedValues
+            items = items || this.selectedRight;
+            this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort();
+            this.clearSelections();
+            this.$emit('input', this.chosenValues);
         },
         rightButtonClick() {
             this.moveRight();
@@ -109,20 +113,25 @@ export default {
             }
         },
         leftListBoxDoubleClick(item) {
-            this.selectedValues.push(item);
-            this.selectedLeft = [];
-            this.$refs.left.selectedValues = [];
+            this.moveRight([item]);
         },
         rightListBoxDoubleClick(item) {
-            this.selectedValues.splice(this.selectedValues.indexOf(item), 1);
-            this.selectedRight = [];
-            this.$refs.right.selectedValues = [];
+            this.moveLeft([item]);
         },
         leftInput(value) {
             this.selectedLeft = value;
         },
         rightInput(value) {
             this.selectedRight = value;
+        },
+        keyRightArrow() {
+            this.moveRight();
+            // move focus with keys
+            this.$refs.right.focus();
+        },
+        keyLeftArrow() {
+            this.moveLeft();
+            this.$refs.left.focus();
         }
     }
 };
@@ -138,7 +147,7 @@ export default {
       :possible-values="leftItems"
       :aria-label="ariaLabelLeft"
       @doubleClickOnItem="leftListBoxDoubleClick"
-      @keyArrowRight="moveRight"
+      @keyArrowRight="keyRightArrow"
       @input="leftInput"
     />
     <div>
@@ -169,7 +178,7 @@ export default {
       :size="size"
       :aria-label="ariaLabelRight"
       @doubleClickOnItem="rightListBoxDoubleClick"
-      @keyArrowLeft="moveLeft"
+      @keyArrowLeft="keyLeftArrow"
       @input="rightInput"
     />
   </div>
