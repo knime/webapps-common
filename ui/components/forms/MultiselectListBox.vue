@@ -69,6 +69,7 @@ export default {
     data() {
         return {
             currentKeyNavIndex: 0,
+            lastClickIndex: -1,
             selectedValues: this.value,
             optionLineHeight: 20
         };
@@ -84,26 +85,51 @@ export default {
         },
         handleCtrlClick(value, index) {
             this.currentKeyNavIndex = index;
-            this.setSelected(value);
+            this.lastClickIndex = index;
+            this.toggleSelection(value);
+        },
+        handleShiftClick(value, index) {
+            this.currentKeyNavIndex = index;
+            let values = [];
+            let lastClickIndex = this.lastClickIndex;
+            if (this.lastClickIndex !== -1) {
+                if (index > lastClickIndex) {
+                    for (let i = lastClickIndex; i <= index; i++) {
+                        values.push(this.possibleValues[i].id);
+                    }
+                } else {
+                    for (let i = index; i <= lastClickIndex; i++) {
+                        values.push(this.possibleValues[i].id);
+                    }
+                }
+            }
+            this.setSelected(values);
+            this.lastClickIndex = index;
         },
         handleClick(value, index) {
             if (!this.multiselectByClick) {
                 this.selectedValues = [];
             }
             this.currentKeyNavIndex = index;
-            this.setSelected(value);
+            this.lastClickIndex = index;
+            this.toggleSelection(value);
         },
         handleDblClick(id, index) {
             this.$emit('doubleClickOnItem', id, index);
         },
-        setSelected(value) {
-            consola.trace('MultiselectListBox setSelected on', value);
-            if (this.selectedValues.includes(value)) {
-                this.selectedValues.splice(this.selectedValues.indexOf(value), 1);
+        toggleSelection(value) {
+            let selectedValues = this.selectedValues;
+            if (selectedValues.includes(value)) {
+                selectedValues.splice(selectedValues.indexOf(value), 1);
             } else {
-                this.selectedValues.push(value);
+                selectedValues.push(value);
             }
-            this.$emit('input', this.selectedValues);
+            this.setSelected(selectedValues);
+        },
+        setSelected(values) {
+            consola.trace('MultiselectListBox setSelected on', values);
+            this.selectedValues = values;
+            this.$emit('input', values);
         },
         scrollToCurrent() {
             let listBoxNode = this.$refs.ul;
@@ -170,7 +196,7 @@ export default {
             }
             if (e.keyCode === KEY_SPACE || e.keyCode === KEY_ENTER) {
                 // do the selection
-                this.setSelected(this.possibleValues[this.currentKeyNavIndex].id);
+                this.toggleSelection(this.possibleValues[this.currentKeyNavIndex].id);
                 e.preventDefault();
             }
         },
@@ -233,6 +259,7 @@ export default {
         :aria-selected="isCurrentValue(item.id)"
         @click.exact="handleClick(item.id, index)"
         @click.ctrl="handleCtrlClick(item.id, index)"
+        @click.shift="handleShiftClick(item.id, index)"
         @dblclick="handleDblClick(item.id, index)"
       >
         {{ item.text }}
