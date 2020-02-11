@@ -1,9 +1,18 @@
 <script>
 import MultiselectListBox from '../forms/MultiselectListBox';
+import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg?inline';
+import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg?inline';
+import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg?inline';
+import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg?inline';
+
 const KEY_ENTER = 13;
 
 export default {
     components: {
+        ArrowNextDoubleIcon,
+        ArrowNextIcon,
+        ArrowPrevDoubleIcon,
+        ArrowPrevIcon,
         MultiselectListBox
     },
     props: {
@@ -96,20 +105,37 @@ export default {
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },
-        rightButtonClick() {
+        moveRightButtonClick() {
             this.moveRight();
         },
-        rightButtonKey(e) {
+        moveAllRightButtonClick() {
+            this.moveRight(this.leftItems.map(x => x.id));
+        },
+        moveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
                 this.moveRight();
             }
         },
-        leftButtonClick() {
+        moveRightButtonKey(e) {
+            if (e.keyCode === KEY_ENTER) { /* ENTER */
+                this.moveRight();
+            }
+        },
+        moveLeftButtonClick() {
             this.moveLeft();
         },
-        leftButtonKey(e) {
+        moveAllLeftButtonClick() {
+            console.log('moveAllLeftButtonClick', this.rightItems);
+            this.moveLeft(this.rightItems.map(x => x.id));
+        },
+        moveLeftButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
                 this.moveLeft();
+            }
+        },
+        moveAllLeftButtonKey(e) {
+            if (e.keyCode === KEY_ENTER) { /* ENTER */
+                this.moveAllLeftButtonClick();
             }
         },
         leftListBoxDoubleClick(item) {
@@ -150,24 +176,42 @@ export default {
       @keyArrowRight="keyRightArrow"
       @input="leftInput"
     />
-    <div>
+    <div class="buttons">
       <div
         ref="moveRight"
         role="button"
         tabindex="0"
-        @click="rightButtonClick"
-        @keydown="rightButtonKey"
+        @click="moveRightButtonClick"
+        @keydown="moveRightButtonKey"
       >
-        &gt;
+        <ArrowNextIcon class="icon" />
+      </div>
+      <div
+        ref="moveAllRight"
+        role="button"
+        tabindex="0"
+        @click="moveAllRightButtonClick"
+        @keydown="moveAllRightButtonKey"
+      >
+        <ArrowNextDoubleIcon class="icon" />
       </div>
       <div
         ref="moveLeft"
         role="button"
         tabindex="0"
-        @click="leftButtonClick"
-        @keydown="leftButtonKey"
+        @click="moveLeftButtonClick"
+        @keydown="moveLeftButtonKey"
       >
-        &lt;
+        <ArrowPrevIcon class="icon" />
+      </div>
+      <div
+        ref="moveAllLeft"
+        role="button"
+        tabindex="0"
+        @click="moveAllLeftButtonClick"
+        @keydown="moveAllLeftButtonKey"
+      >
+        <ArrowPrevDoubleIcon class="icon" />
       </div>
     </div>
     <MultiselectListBox
@@ -189,21 +233,45 @@ export default {
 
 .twinlist {
   display: flex;
+  align-items: stretch;
+
+  & >>> ul[role=listbox] {
+    min-height: 100%;
+  }
 
   & > .list {
     flex: 3;
   }
 
-  & > div {
-    flex: 1;
+  & > .buttons {
+    flex: 0 0 30px;
+    cursor: pointer;
+    margin: 15px 0;
   }
 
   & > div > [role="button"] {
-    background: var(--theme-color-stone-gray);
     text-align: center;
-    margin: 0 1em;
+    width: 30px;
+    height: 24px;
     display: block;
     user-select: none;
+
+    &:hover {
+      background: var(--theme-color-porcelain);
+    }
+
+    &:active {
+      background: var(--theme-color-masala);
+      color: var(--theme-color-white);
+    }
+  }
+
+
+  & .icon {
+    width: 15px;
+    height: 15px;
+    stroke-width: calc(32px / 15);
+    pointer-events: none;
   }
 }
 
