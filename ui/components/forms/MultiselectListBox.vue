@@ -2,6 +2,8 @@
 let count = 0;
 const KEY_DOWN = 40;
 const KEY_UP = 38;
+const KEY_LEFT = 37;
+const KEY_RIGHT = 39;
 const KEY_HOME = 36;
 const KEY_END = 35;
 const KEY_SPACE = 32;
@@ -150,6 +152,14 @@ export default {
                 this.onArrowUp();
                 e.preventDefault();
             }
+            if (e.keyCode === KEY_LEFT) {
+                this.$emit('keyArrowLeft', this.selectedValues);
+                e.preventDefault();
+            }
+            if (e.keyCode === KEY_RIGHT) {
+                this.$emit('keyArrowRight', this.selectedValues);
+                e.preventDefault();
+            }
             if (e.keyCode === KEY_END) {
                 this.onEndKey();
                 e.preventDefault();
@@ -188,6 +198,9 @@ export default {
             }
             let cleanId = item.id.replace(/[^\w]/gi, '');
             return `option-${this.id}-${cleanId}`;
+        },
+        focus() {
+            this.$refs.ul.focus();
         }
     }
 };

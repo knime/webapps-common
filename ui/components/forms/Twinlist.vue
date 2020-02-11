@@ -76,8 +76,11 @@ export default {
     methods: {
         moveRight() {
             // add all left items to our values
-            this.selectedValues = [...this.selectedLeft, ...this.selectedValues];
+            let toBeAdded = this.selectedLeft;
+            this.selectedValues = [...toBeAdded, ...this.selectedValues];
             this.selectedLeft = [];
+            this.selectedRight = toBeAdded;
+            this.$refs.right.focus();
             this.$emit('input', this.selectedValues);
         },
         moveLeft() {
@@ -85,6 +88,8 @@ export default {
             let toRemove = this.selectedRight;
             this.selectedValues = this.selectedValues.filter(x => !toRemove.includes(x));
             this.selectedRight = [];
+            this.selectedLeft = toRemove;
+            this.$refs.left.focus();
             this.$emit('input', this.selectedValues);
         },
         rightButtonClick() {
@@ -133,6 +138,7 @@ export default {
       :possible-values="leftItems"
       :aria-label="ariaLabelLeft"
       @doubleClickOnItem="leftListBoxDoubleClick"
+      @keyArrowRight="moveRight"
       @input="leftInput"
     />
     <div>
@@ -163,6 +169,7 @@ export default {
       :size="size"
       :aria-label="ariaLabelRight"
       @doubleClickOnItem="rightListBoxDoubleClick"
+      @keyArrowLeft="moveLeft"
       @input="rightInput"
     />
   </div>
