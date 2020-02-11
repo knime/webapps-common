@@ -161,17 +161,20 @@ export default {
 
 <template>
   <div class="twinlist">
-    <MultiselectListBox
-      ref="left"
-      class="list"
-      :size="size"
-      :value="selectedLeft"
-      :possible-values="leftItems"
-      :aria-label="ariaLabelLeft"
-      @doubleClickOnItem="leftListBoxDoubleClick"
-      @keyArrowRight="keyRightArrow"
-      @input="leftInput"
-    />
+    <div class="list">
+      <div class="title">{{ ariaLabelLeft }}</div>
+      <MultiselectListBox
+        ref="left"
+        :size="size"
+        class="listBox"
+        :value="selectedLeft"
+        :possible-values="leftItems"
+        :aria-label="ariaLabelLeft"
+        @doubleClickOnItem="leftListBoxDoubleClick"
+        @keyArrowRight="keyRightArrow"
+        @input="leftInput"
+      />
+    </div>
     <div class="buttons">
       <div
         ref="moveRight"
@@ -210,17 +213,20 @@ export default {
         <ArrowPrevDoubleIcon class="icon" />
       </div>
     </div>
-    <MultiselectListBox
-      ref="right"
-      class="list"
-      :value="selectedRight"
-      :possible-values="rightItems"
-      :size="size"
-      :aria-label="ariaLabelRight"
-      @doubleClickOnItem="rightListBoxDoubleClick"
-      @keyArrowLeft="keyLeftArrow"
-      @input="rightInput"
-    />
+    <div class="list">
+      <div class="title">{{ ariaLabelRight }}</div>
+      <MultiselectListBox
+        ref="right"
+        class="listBox"
+        :value="selectedRight"
+        :possible-values="rightItems"
+        :size="size"
+        :aria-label="ariaLabelRight"
+        @doubleClickOnItem="rightListBoxDoubleClick"
+        @keyArrowLeft="keyLeftArrow"
+        @input="rightInput"
+      />
+    </div>
   </div>
 </template>
 
@@ -232,20 +238,29 @@ export default {
   align-items: stretch;
 
   & >>> ul[role=listbox] {
-    min-height: 100%;
+    /* size that the buttons need */
+    min-height: 126px;
   }
 
-  & > .list {
+  & .listBox {
+    height: 100%;
+  }
+
+  & .title {
+    font-size: 13px;
+  }
+
+  & .list {
     flex: 3;
   }
 
-  & > .buttons {
+  & .buttons {
     flex: 0 0 30px;
     cursor: pointer;
-    margin: 15px 0;
+    margin: 41px 0 14px;
   }
 
-  & > div > [role="button"] {
+  & [role="button"] {
     text-align: center;
     width: 30px;
     height: 24px;
