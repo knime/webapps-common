@@ -33,7 +33,9 @@ export default {
   }
 }
 
-.carousel > >>> * {
-  padding-left: 12px;
+@media only screen and (max-width: 1180px) and (min-width: 901px) {
+  .carousel {
+    margin-left: -10px;
+  }
 }
 </style>

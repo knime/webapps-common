@@ -176,7 +176,9 @@ export const tabBarMixin = {
 
 .wrapper {
   margin-top: -20px;
-  padding: 20px 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 0;
   display: inline-block;
 
   &::after {
@@ -210,6 +212,7 @@ input[type="radio"] {
 }
 
 span {
+  position: relative;
   font-size: 16px;
   font-weight: 500;
   padding: 0 10px;
@@ -252,10 +255,11 @@ input:not(:disabled) + span:hover {
 
 input:checked:not(:disabled) + span::after {
   content: "";
-  position: relative;
+  position: absolute;
   display: block;
-  top: -4px;
-  width: 100%;
+  bottom: 1px;
+  left: 0;
+  right: 0;
   border-top: 3px solid var(--theme-color-masala);
   z-index: 1;
 }
@@ -272,9 +276,9 @@ input:not(:checked):not(:disabled) + span {
   }
 }
 
-@media only screen and (max-width: 900px) {
-  div::after {
-    left: 10px;
+@media only screen and (max-width: 1180px) {
+  .wrapper {
+    padding-left: 10px;
   }
 }
 </style>
