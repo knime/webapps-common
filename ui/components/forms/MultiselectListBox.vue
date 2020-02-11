@@ -133,7 +133,7 @@ export default {
         },
         setSelectedToCurrentKeyIndex() {
             let item = this.possibleValues[this.currentKeyNavIndex];
-            if(item && item.id) {
+            if (item && item.id) {
                 this.setSelected([item.id]);
             }
         },
@@ -251,7 +251,7 @@ export default {
       :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.exact="selectAll"
-      @keydown="handleKeyDown"
+      @keydown.exact="handleKeyDown"
     >
       <li
         v-for="(item, index) of possibleValues"
