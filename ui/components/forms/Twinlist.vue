@@ -125,7 +125,6 @@ export default {
             this.moveLeft();
         },
         moveAllLeftButtonClick() {
-            console.log('moveAllLeftButtonClick', this.rightItems);
             this.moveLeft(this.rightItems.map(x => x.id));
         },
         moveLeftButtonKey(e) {
@@ -152,12 +151,9 @@ export default {
         },
         keyRightArrow() {
             this.moveRight();
-            // move focus with keys
-            this.$refs.right.focus();
         },
         keyLeftArrow() {
             this.moveLeft();
-            this.$refs.left.focus();
         }
     }
 };

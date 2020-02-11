@@ -131,6 +131,12 @@ export default {
             this.selectedValues = values;
             this.$emit('input', values);
         },
+        setSelectedToCurrentKeyIndex() {
+            let item = this.possibleValues[this.currentKeyNavIndex];
+            if(item && item.id) {
+                this.setSelected([item.id]);
+            }
+        },
         scrollToCurrent() {
             let listBoxNode = this.$refs.ul;
             if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
@@ -150,6 +156,7 @@ export default {
                 return;
             }
             this.currentKeyNavIndex = next;
+            this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
         onArrowUp() {
@@ -158,14 +165,17 @@ export default {
                 return;
             }
             this.currentKeyNavIndex = next;
+            this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
         onEndKey() {
             this.currentKeyNavIndex = this.possibleValues.length - 1;
+            this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
             this.currentKeyNavIndex = 0;
+            this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = 0;
         },
         handleKeyDown(e) {
@@ -195,8 +205,7 @@ export default {
                 e.preventDefault();
             }
             if (e.keyCode === KEY_SPACE || e.keyCode === KEY_ENTER) {
-                // do the selection
-                this.toggleSelection(this.possibleValues[this.currentKeyNavIndex].id);
+                this.$emit('activated', this.selectedValues);
                 e.preventDefault();
             }
         },
@@ -253,7 +262,6 @@ export default {
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{
           'selected': isCurrentValue(item.id),
-          'hasKeyNavFocus' : currentKeyNavIndex === index,
           'noselect' :true
         }"
         :aria-selected="isCurrentValue(item.id)"
@@ -298,11 +306,6 @@ export default {
 [role="option"].selected {
   background: var(--theme-color-masala);
   color: var(--theme-color-white);
-}
-
-ul:focus-within [role="option"].hasKeyNavFocus {
-  /* TODO: decide how this style should be */
-  font-weight: 500;
 }
 
 /* this selector is required to override some * rules which interfere - so do not simplify */
