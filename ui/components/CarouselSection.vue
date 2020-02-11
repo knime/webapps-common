@@ -56,7 +56,7 @@ export default {
       display: block;
       height: 100%;
       width: 12px;
-      right: var(--grid-gap-width);
+      right: calc(var(--grid-gap-width) - 10px);
       top: 0;
       z-index: 2;
       background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
