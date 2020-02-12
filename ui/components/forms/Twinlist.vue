@@ -154,6 +154,9 @@ export default {
         },
         keyLeftArrow() {
             this.moveLeft();
+        },
+        hasSelection() {
+            return this.chosenValues.length > 0;
         }
     }
 };
