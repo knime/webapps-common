@@ -1,13 +1,5 @@
 <script>
 let count = 0;
-const KEY_DOWN = 40;
-const KEY_UP = 38;
-const KEY_LEFT = 37;
-const KEY_RIGHT = 39;
-const KEY_HOME = 36;
-const KEY_END = 35;
-const KEY_SPACE = 32;
-const KEY_ENTER = 13;
 
 export default {
     props: {
@@ -70,6 +62,7 @@ export default {
         return {
             currentKeyNavIndex: 0,
             lastClickIndex: -1,
+            lastShiftDirection: '',
             selectedValues: this.value,
             optionLineHeight: 20
         };
@@ -168,51 +161,54 @@ export default {
             this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
+        onArrowDownShift() {
+            let hasMultipleSelected = this.selectedValues.length > 1;
+            let next = this.currentKeyNavIndex + (this.lastShiftDirection === 'up' && hasMultipleSelected ? 0 : 1);
+            this.lastShiftDirection = 'down';
+            if (next >= this.possibleValues.length) {
+                return;
+            }
+            this.currentKeyNavIndex = next;
+            this.toggleSelection(this.possibleValues[next].id);
+            this.scrollToCurrent();
+        },
+        onArrowUpShift() {
+            let hasMultipleSelected = this.selectedValues.length > 1;
+            let next = this.currentKeyNavIndex - (this.lastShiftDirection === 'down' && hasMultipleSelected ? 0 : 1);
+            this.lastShiftDirection = 'up';
+            if (next < 0) {
+                return;
+            }
+            this.currentKeyNavIndex = next;
+            this.toggleSelection(this.possibleValues[next].id);
+            this.scrollToCurrent();
+        },
         onEndKey() {
-            this.currentKeyNavIndex = this.possibleValues.length - 1;
+            let next = this.possibleValues.length - 1;
+            this.currentKeyNavIndex = next;
+            this.shiftStartKeyNavIndex = next;
             this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
-            this.currentKeyNavIndex = 0;
+            let next = 0;
+            this.currentKeyNavIndex = next;
+            this.shiftStartKeyNavIndex = next;
             this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = 0;
         },
-        handleKeyDown(e) {
-            /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
-            if (e.keyCode === KEY_DOWN) {
-                this.onArrowDown();
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_UP) {
-                this.onArrowUp();
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_LEFT) {
-                this.$emit('keyArrowLeft', this.selectedValues);
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_RIGHT) {
-                this.$emit('keyArrowRight', this.selectedValues);
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_END) {
-                this.onEndKey();
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_HOME) {
-                this.onHomeKey();
-                e.preventDefault();
-            }
-            if (e.keyCode === KEY_SPACE || e.keyCode === KEY_ENTER) {
-                this.$emit('activated', this.selectedValues);
-                e.preventDefault();
-            }
+        onArrowLeft() {
+            this.$emit('keyArrowLeft', this.selectedValues);
         },
-        selectAll(e) {
+        onArrowRight() {
+            this.$emit('keyArrowRight', this.selectedValues);
+        },
+        onActivation() {
+            this.$emit('activated', this.selectedValues);
+        },
+        selectAll() {
             this.selectedValues = this.possibleValues.map(x => x.id);
             this.$emit('input', this.selectedValues);
-            e.preventDefault();
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -250,8 +246,17 @@ export default {
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
-      @keydown.ctrl.a.exact="selectAll"
-      @keydown.exact="handleKeyDown"
+      @keydown.ctrl.a.prevent.exact="selectAll"
+      @keydown.up.prevent.exact="onArrowUp"
+      @keydown.down.prevent.exact="onArrowDown"
+      @keydown.shift.up.prevent.exact="onArrowUpShift"
+      @keydown.shift.down.prevent.exact="onArrowDownShift"
+      @keydown.left.prevent.exact="onArrowLeft"
+      @keydown.right.prevent.exact="onArrowRight"
+      @keydown.end.prevent.exact="onEndKey"
+      @keydown.home.prevent.exact="onHomeKey"
+      @keydown.space.prevent.exact="onHomeKey"
+      @keydown.enter.prevent.exact="onActivation"
     >
       <li
         v-for="(item, index) of possibleValues"
