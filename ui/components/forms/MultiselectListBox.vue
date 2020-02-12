@@ -64,6 +64,8 @@ export default {
             lastClickIndex: -1,
             lastShiftDirection: '',
             selectedValues: this.value,
+            dragging: false,
+            draggingStartIndex: -1,
             optionLineHeight: 20
         };
     },
@@ -71,6 +73,9 @@ export default {
         ulSizeStyle() {
             return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}px` } : {};
         }
+    },
+    mounted() {
+        window.addEventListener('mouseup', this.stopDrag);
     },
     methods: {
         isCurrentValue(candidate) {
@@ -99,6 +104,26 @@ export default {
             this.setSelected(values);
             this.lastClickIndex = index;
         },
+        startDrag(e) {
+            this.dragging = true;
+            this.draggingStartIndex = Number(e.target.getAttribute('data-option-index'));
+        },
+        onDrag(e) {
+            if (this.dragging) {
+                let dataIndex = e.target.getAttribute('data-option-index');
+                if (!dataIndex) {
+                    return;
+                }
+                let index = Number(dataIndex);
+                let start = this.draggingStartIndex > index ? index : this.draggingStartIndex;
+                let end = this.draggingStartIndex > index ? this.draggingStartIndex : index;
+                this.setSelected(this.possibleValues.slice(start, end + 1).map(x => x.id));
+            }
+        },
+        stopDrag(e) {
+            this.dragging = false;
+            this.draggingStartIndex = -1;
+        },
         handleClick(value, index) {
             if (!this.multiselectByClick) {
                 this.selectedValues = [];
@@ -110,14 +135,32 @@ export default {
         handleDblClick(id, index) {
             this.$emit('doubleClickOnItem', id, index);
         },
-        toggleSelection(value) {
+        addToSelection(value) {
+            let added = false;
+            let selectedValues = this.selectedValues;
+            if (!selectedValues.includes(value)) {
+                selectedValues.push(value);
+                added = true;
+            }
+            this.setSelected(selectedValues);
+            return added;
+        },
+        removeFromSelection(value) {
+            let removed = false;
             let selectedValues = this.selectedValues;
             if (selectedValues.includes(value)) {
                 selectedValues.splice(selectedValues.indexOf(value), 1);
-            } else {
-                selectedValues.push(value);
+                removed = true;
             }
             this.setSelected(selectedValues);
+            return removed;
+        },
+        toggleSelection(value) {
+            if (this.selectedValues.includes(value)) {
+                this.removeFromSelection(value);
+            } else {
+                this.addToSelection(value);
+            }
         },
         setSelected(values) {
             consola.trace('MultiselectListBox setSelected on', values);
@@ -257,6 +300,8 @@ export default {
       @keydown.home.prevent.exact="onHomeKey"
       @keydown.space.prevent.exact="onHomeKey"
       @keydown.enter.prevent.exact="onActivation"
+      @mousedown="startDrag"
+      @mousemove="onDrag"
     >
       <li
         v-for="(item, index) of possibleValues"
@@ -264,6 +309,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
+        :data-option-index="index"
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{
           'selected': isCurrentValue(item.id),
