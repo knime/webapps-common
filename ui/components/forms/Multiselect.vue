@@ -48,31 +48,31 @@ export default {
     },
     data() {
         return {
-            checkedValue: this.value,
             collapsed: true
         };
     },
     computed: {
         optionText() {
-            if (this.checkedValue.length === 0) {
+            if (this.value.length === 0) {
                 return this.placeholder;
             }
             return this.possibleValues
-                .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
+                .filter(({ id }) => this.value.indexOf(id) > -1)
                 .map(({ text, selectedText = text }) => selectedText)
                 .join(', ');
         }
     },
     methods: {
         onInput(value, toggled) {
+            let checkedValue = Array.from(this.value);
             if (toggled) {
-                if (this.checkedValue.indexOf(value) === -1) {
-                    this.checkedValue.push(value);
+                if (checkedValue.indexOf(value) === -1) {
+                    checkedValue.push(value);
                 }
             } else {
-                this.checkedValue = this.checkedValue.filter(x => x !== value);
+                checkedValue = checkedValue.filter(x => x !== value);
             }
-            consola.trace('Multiselect value changed to', this.checkedValue);
+            consola.trace('Multiselect value changed to', checkedValue);
 
             /**
              * Fired when the selection changes.
@@ -80,10 +80,13 @@ export default {
              * @event input
              * @type {Array}
              */
-            this.$emit('input', this.checkedValue);
+            this.$emit('input', checkedValue);
         },
         toggle() {
             this.collapsed = !this.collapsed;
+        },
+        isChecked(itemId) {
+            return this.value.indexOf(itemId) > -1;
         }
     }
 };
@@ -105,7 +108,7 @@ export default {
       <Checkbox
         v-for="item of possibleValues"
         :key="`multiselect-${item.id}`"
-        :value="checkedValue.indexOf(item.id) > -1"
+        :value="isChecked(item.id)"
         class="boxes"
         @input="onInput(item.id, $event)"
       >

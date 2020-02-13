@@ -54,20 +54,20 @@ export default {
     },
     data() {
         return {
-            checkedValue: this.value,
             collapsed: true
         };
     },
     methods: {
         onInput(value, toggled) {
+            let checkedValue = Array.from(this.value);
             if (toggled) {
-                if (this.checkedValue.indexOf(value) === -1) {
-                    this.checkedValue.push(value);
+                if (checkedValue.indexOf(value) === -1) {
+                    checkedValue.push(value);
                 }
             } else {
-                this.checkedValue = this.checkedValue.filter(x => x !== value);
+                checkedValue = checkedValue.filter(x => x !== value);
             }
-            consola.trace('Checkboxes value changed to', this.checkedValue);
+            consola.trace('Checkboxes value changed to', checkedValue);
 
             /**
              * Fired when the selection changes.
@@ -75,7 +75,7 @@ export default {
              * @event input
              * @type {Array}
              */
-            this.$emit('input', this.checkedValue);
+            this.$emit('input', checkedValue);
         },
         hasSelection() {
             return this.$refs.boxes.some(x => x.isChecked);
@@ -93,7 +93,7 @@ export default {
         v-for="item of possibleValues"
         ref="boxes"
         :key="`checkboxes-${item.id}`"
-        :value="checkedValue.indexOf(item.id) > -1"
+        :value="value.indexOf(item.id) > -1"
         class="boxes"
         @input="onInput(item.id, $event)"
       >
