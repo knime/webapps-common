@@ -9,7 +9,7 @@ const scrollValueOffset = 5; // to prevent clicks not beeing bubbled to child by
 let startX, scrollLeft, slider;
 
 export default {
-  /**
+    /**
    * following methods allow dragging via mouse
    */
     methods: {
