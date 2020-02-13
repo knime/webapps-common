@@ -62,7 +62,7 @@ export default {
         return {
             currentKeyNavIndex: 0,
             lastClickIndex: -1,
-            lastShiftDirection: '',
+            shiftStartIndex: -1,
             selectedValues: this.value,
             dragging: false,
             draggingStartIndex: -1,
@@ -162,10 +162,15 @@ export default {
                 this.addToSelection(value);
             }
         },
-        setSelected(values) {
+        setSelectedNoShiftReset(values) {
             consola.trace('MultiselectListBox setSelected on', values);
             this.selectedValues = values;
             this.$emit('input', values);
+        },
+        setSelected(values) {
+            // reset shift start index on every change to selected values but shift operations itself
+            this.shiftStartIndex = -1;
+            this.setSelectedNoShiftReset(values);
         },
         setSelectedToCurrentKeyIndex() {
             let item = this.possibleValues[this.currentKeyNavIndex];
@@ -204,39 +209,36 @@ export default {
             this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
-        onArrowDownShift() {
-            let hasMultipleSelected = this.selectedValues.length > 1;
-            let next = this.currentKeyNavIndex + (this.lastShiftDirection === 'up' && hasMultipleSelected ? 0 : 1);
-            this.lastShiftDirection = 'down';
-            if (next >= this.possibleValues.length) {
-                return;
+        onArrowUpDownShift(direction) {
+            // set start index if this is the first shift up/down op
+            if (this.shiftStartIndex === -1) {
+                this.shiftStartIndex = this.currentKeyNavIndex;
             }
-            this.currentKeyNavIndex = next;
-            this.toggleSelection(this.possibleValues[next].id);
-            this.scrollToCurrent();
-        },
-        onArrowUpShift() {
-            let hasMultipleSelected = this.selectedValues.length > 1;
-            let next = this.currentKeyNavIndex - (this.lastShiftDirection === 'down' && hasMultipleSelected ? 0 : 1);
-            this.lastShiftDirection = 'up';
-            if (next < 0) {
-                return;
+            let next;
+            if (direction === 'down') {
+                next = this.currentKeyNavIndex + 1;
+                if (next >= this.possibleValues.length) {
+                    return;
+                }
+            } else { // up
+                next = this.currentKeyNavIndex - 1;
+                if (next < 0) {
+                    return;
+                }
             }
+            let start = this.shiftStartIndex > next ? next : this.shiftStartIndex;
+            let end = this.shiftStartIndex > next ? this.shiftStartIndex : next;
+            this.setSelectedNoShiftReset(this.possibleValues.slice(start, end + 1).map(x => x.id));
             this.currentKeyNavIndex = next;
-            this.toggleSelection(this.possibleValues[next].id);
             this.scrollToCurrent();
         },
         onEndKey() {
-            let next = this.possibleValues.length - 1;
-            this.currentKeyNavIndex = next;
-            this.shiftStartKeyNavIndex = next;
+            this.currentKeyNavIndex = this.possibleValues.length - 1;
             this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
-            let next = 0;
-            this.currentKeyNavIndex = next;
-            this.shiftStartKeyNavIndex = next;
+            this.currentKeyNavIndex = 0;
             this.setSelectedToCurrentKeyIndex();
             this.$refs.ul.scrollTop = 0;
         },
@@ -250,8 +252,7 @@ export default {
             this.$emit('activated', this.selectedValues);
         },
         selectAll() {
-            this.selectedValues = this.possibleValues.map(x => x.id);
-            this.$emit('input', this.selectedValues);
+            this.setSelected(this.possibleValues.map(x => x.id));
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -295,8 +296,8 @@ export default {
       @keydown.ctrl.a.prevent.exact="selectAll"
       @keydown.up.prevent.exact="onArrowUp"
       @keydown.down.prevent.exact="onArrowDown"
-      @keydown.shift.up.prevent.exact="onArrowUpShift"
-      @keydown.shift.down.prevent.exact="onArrowDownShift"
+      @keydown.shift.up.prevent.exact="onArrowUpDownShift('up')"
+      @keydown.shift.down.prevent.exact="onArrowUpDownShift('down')"
       @keydown.left.prevent.exact="onArrowLeft"
       @keydown.right.prevent.exact="onArrowRight"
       @keydown.end.prevent.exact="onEndKey"
