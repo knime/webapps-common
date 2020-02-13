@@ -107,8 +107,8 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .checkboxes {
-  & .options {
-    padding: 5px 10px;
+  & .boxes {
+    margin-right: 5px;
   }
 
   &.vertical .boxes {
