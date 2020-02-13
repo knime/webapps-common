@@ -27,6 +27,10 @@ import RadioButtons from '../components/RadioButtons';
 import ListBox from '../components/ListBox';
 import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
+import MultiselectListBox from '../components/MultiselectListBox';
+import Checkboxes from '../components/Checkboxes';
+import Twinlist from '../components/Twinlist';
+
 
 export default {
     components: {
@@ -55,7 +59,10 @@ export default {
         RadioButtons,
         ListBox,
         Dropdown,
-        Multiselect
+        Multiselect,
+        MultiselectListBox,
+        Checkboxes,
+        Twinlist
     }
 };
 </script>
@@ -100,6 +107,9 @@ export default {
     <ListBox />
     <Dropdown />
     <Multiselect />
+    <MultiselectListBox />
+    <Checkboxes />
+    <Twinlist />
   </main>
 </template>
 

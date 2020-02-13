@@ -1,9 +1,9 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import RadioButtons from '../../ui/components/forms/RadioButtons';
+import Checkboxes from '../../ui/components/forms/Checkboxes';
 import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
-const codeExample = `<RadioButtons
+const codeExample = `<Checkboxes
   v-model="selected"
   :possible-values="[{
     id: 'foo',
@@ -20,13 +20,13 @@ const codeExample = `<RadioButtons
 
 export default {
     components: {
-        RadioButtons,
+        Checkboxes,
         CodeExample
     },
     data() {
         return {
             codeExample,
-            selected: 'bar'
+            selected: ['bar', 'baz']
         };
     },
     computed: {
@@ -42,17 +42,18 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>RadioButtons</h2>
+          <h2>Checkboxes</h2>
           <p>
-            A list of choices the user must choose one of them, so it emits an <code>input</code> event
+            A list of choices the user must choose some of them or none, so it emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>.
           </p>
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-5">
-          <RadioButtons
+          <Checkboxes
             v-model="selected"
+            placeholder="Select stuff here!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -61,15 +62,15 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
         <div class="grid-item-5">
-          <RadioButtons
+          <Checkboxes
             v-model="selected"
             alignment="vertical"
+            placeholder="Select stuff here vertical!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -78,8 +79,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
@@ -92,7 +92,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show RadioButtons.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show Checkboxes.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>
