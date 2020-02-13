@@ -109,10 +109,10 @@ export default {
 .checkboxes {
   & .options {
     padding: 5px 10px;
+  }
 
-    &.vertical .boxes {
-      display: block;
-    }
+  &.vertical .boxes {
+    display: block;
   }
 }
 
