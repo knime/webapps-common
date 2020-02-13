@@ -275,6 +275,9 @@ export default {
         },
         focus() {
             this.$refs.ul.focus();
+        },
+        clearSelection() {
+            this.setSelected([]);
         }
     }
 };

@@ -84,12 +84,8 @@ export default {
     },
     methods: {
         clearSelections() {
-            this.selectedRight = [];
-            this.selectedLeft = [];
-            // this fixes the internal handling of selected values which gets not updated by :value binding in this case
-            // TODO: improve?
-            this.$refs.right.selectedValues = [];
-            this.$refs.left.selectedValues = [];
+            this.$refs.right.clearSelection();
+            this.$refs.left.clearSelection();
         },
         moveRight(items) {
             // add all left items to our values
