@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import RadioButtons from '../../ui/components/forms/RadioButtons';
-import code from '!!raw-loader!../../ui/components/forms/Multiselect';
+import code from '!!raw-loader!../../ui/components/forms/RadioButtons';
 
 const codeExample = `<RadioButtons
   v-model="selected"
