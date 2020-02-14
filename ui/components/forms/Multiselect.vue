@@ -1,12 +1,14 @@
 <script>
 import Checkbox from '../forms/Checkbox';
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import { mixin as clickaway } from 'vue-clickaway';
 
 export default {
     components: {
         Checkbox,
         DropdownIcon
     },
+    mixins: [clickaway],
     props: {
         /**
          * List of possible values. Each item must have an `id` and a `text` property, and optionally a `selectedText`
@@ -87,16 +89,29 @@ export default {
         },
         isChecked(itemId) {
             return this.value.indexOf(itemId) > -1;
+        },
+        closeOptions() {
+            this.collapsed = true;
+        },
+        showOptions() {
+            this.collapsed = false;
         }
     }
 };
 </script>
 
 <template>
-  <div :class="['multiselect', { collapsed }]">
+  <div
+    v-on-clickaway="closeOptions"
+    :class="['multiselect', { collapsed }]"
+    @keydown.esc.prevent="closeOptions"
+  >
     <div
       role="button"
+      tabindex="0"
       @click="toggle"
+      @keydown.esc.prevent="closeOptions"
+      @keydown.enter.prevent="showOptions"
     >
       {{ optionText }}
     </div>
@@ -135,8 +150,12 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
 
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
+  }
 
   &:not(.collapsed) [role=button] {
     border-color: var(--theme-color-masala);
