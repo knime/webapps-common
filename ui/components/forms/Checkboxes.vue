@@ -77,8 +77,12 @@ export default {
              */
             this.$emit('input', checkedValue);
         },
+        /**
+         * Is at least one checkbox checked?
+         * @returns {boolean}
+         */
         hasSelection() {
-            return this.$refs.boxes.some(x => x.isChecked);
+            return this.$refs.boxes.some(x => x.isChecked());
         }
     }
 };
