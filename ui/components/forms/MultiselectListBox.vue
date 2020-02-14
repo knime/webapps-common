@@ -60,12 +60,12 @@ export default {
     },
     data() {
         return {
-            currentKeyNavIndex: 0,
-            lastClickIndex: -1,
-            shiftStartIndex: -1,
             selectedValues: this.value,
-            dragging: false,
+            // indices for mouse and keyboard nav
+            currentKeyNavIndex: 0,
+            shiftStartIndex: -1,
             draggingStartIndex: -1,
+            // visual
             optionLineHeight: 20
         };
     },
@@ -83,45 +83,39 @@ export default {
         },
         handleCtrlClick(value, index) {
             this.currentKeyNavIndex = index;
-            this.lastClickIndex = index;
             this.toggleSelection(value);
         },
-        handleShiftClick(value, index) {
-            this.currentKeyNavIndex = index;
-            let values = [];
-            let lastClickIndex = this.lastClickIndex;
-            if (this.lastClickIndex !== -1) {
-                if (index > lastClickIndex) {
-                    for (let i = lastClickIndex; i <= index; i++) {
-                        values.push(this.possibleValues[i].id);
-                    }
-                } else {
-                    for (let i = index; i <= lastClickIndex; i++) {
-                        values.push(this.possibleValues[i].id);
-                    }
-                }
-            }
-            this.setSelected(values);
-            this.lastClickIndex = index;
+        handleShiftClick(value, clickedIndex) {
+            this.setSelected(this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex));
+        },
+        /**
+         * Returns all value ids (String) for two indices no matter which one is the start/end index
+         * @param firstIndex - index a
+         * @param secondIndex - index b
+         * @returns String[]
+         */
+        getPossibleValuesInSection(firstIndex, secondIndex) {
+            let start = firstIndex > secondIndex ? secondIndex : firstIndex;
+            let end = firstIndex > secondIndex ? firstIndex : secondIndex;
+            return this.possibleValues.slice(start, end + 1).map(x => x.id);
         },
         startDrag(e) {
-            this.dragging = true;
-            this.draggingStartIndex = Number(e.target.getAttribute('data-option-index'));
+            let index = e.target.getAttribute('data-option-index');
+            if (index) {
+                this.draggingStartIndex = Number(index);
+            }
         },
         onDrag(e) {
-            if (this.dragging) {
+            if (this.draggingStartIndex !== -1) {
                 let dataIndex = e.target.getAttribute('data-option-index');
                 if (!dataIndex) {
                     return;
                 }
                 let index = Number(dataIndex);
-                let start = this.draggingStartIndex > index ? index : this.draggingStartIndex;
-                let end = this.draggingStartIndex > index ? this.draggingStartIndex : index;
-                this.setSelected(this.possibleValues.slice(start, end + 1).map(x => x.id));
+                this.setSelected(this.getPossibleValuesInSection(this.draggingStartIndex, index));
             }
         },
         stopDrag(e) {
-            this.dragging = false;
             this.draggingStartIndex = -1;
         },
         handleClick(value, index) {
@@ -129,7 +123,6 @@ export default {
                 this.selectedValues = [];
             }
             this.currentKeyNavIndex = index;
-            this.lastClickIndex = index;
             this.toggleSelection(value);
         },
         handleDblClick(id, index) {
@@ -209,26 +202,29 @@ export default {
             this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
-        onArrowUpDownShift(direction) {
+        onArrowDownShift() {
             // set start index if this is the first shift up/down op
             if (this.shiftStartIndex === -1) {
                 this.shiftStartIndex = this.currentKeyNavIndex;
             }
-            let next;
-            if (direction === 'down') {
-                next = this.currentKeyNavIndex + 1;
-                if (next >= this.possibleValues.length) {
-                    return;
-                }
-            } else { // up
-                next = this.currentKeyNavIndex - 1;
-                if (next < 0) {
-                    return;
-                }
+            let next = this.currentKeyNavIndex + 1;
+            if (next >= this.possibleValues.length) {
+                return;
             }
-            let start = this.shiftStartIndex > next ? next : this.shiftStartIndex;
-            let end = this.shiftStartIndex > next ? this.shiftStartIndex : next;
-            this.setSelectedNoShiftReset(this.possibleValues.slice(start, end + 1).map(x => x.id));
+            this.setSelectedNoShiftReset(this.getPossibleValuesInSection(this.shiftStartIndex, next));
+            this.currentKeyNavIndex = next;
+            this.scrollToCurrent();
+        },
+        onArrowUpShift() {
+            // set start index if this is the first shift up/down op
+            if (this.shiftStartIndex === -1) {
+                this.shiftStartIndex = this.currentKeyNavIndex;
+            }
+            let next = this.currentKeyNavIndex - 1;
+            if (next < 0) {
+                return;
+            }
+            this.setSelectedNoShiftReset(this.getPossibleValuesInSection(this.shiftStartIndex, next));
             this.currentKeyNavIndex = next;
             this.scrollToCurrent();
         },
@@ -296,8 +292,8 @@ export default {
       @keydown.ctrl.a.prevent.exact="selectAll"
       @keydown.up.prevent.exact="onArrowUp"
       @keydown.down.prevent.exact="onArrowDown"
-      @keydown.shift.up.prevent.exact="onArrowUpDownShift('up')"
-      @keydown.shift.down.prevent.exact="onArrowUpDownShift('down')"
+      @keydown.shift.up.prevent.exact="onArrowUpShift"
+      @keydown.shift.down.prevent.exact="onArrowDownShift"
       @keydown.left.prevent.exact="onArrowLeft"
       @keydown.right.prevent.exact="onArrowRight"
       @keydown.end.prevent.exact="onEndKey"
