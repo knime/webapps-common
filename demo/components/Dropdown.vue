@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import Dropdown from '../../ui/components/forms/Dropdown';
-import code from '!!raw-loader!../../ui/components/forms/Multiselect';
+import code from '!!raw-loader!../../ui/components/forms/Dropdown';
 
 const codeExample = `<Dropdown
   v-model="selected"

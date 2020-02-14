@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import ListBox from '../../ui/components/forms/ListBox';
-import code from '!!raw-loader!../../ui/components/forms/Multiselect';
+import code from '!!raw-loader!../../ui/components/forms/ListBox';
 
 const codeExample = `<ListBox
   v-model="selected"
