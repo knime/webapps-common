@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import Checkboxes from '../../ui/components/forms/Checkboxes';
-import code from '!!raw-loader!../../ui/components/forms/Multiselect';
+import code from '!!raw-loader!../../ui/components/forms/Checkboxes';
 
 const codeExample = `<Checkboxes
   v-model="selected"
