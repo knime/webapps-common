@@ -170,8 +170,8 @@ export default {
             this.shiftStartIndex = -1;
             this.setSelectedNoShiftReset(values);
         },
-        setSelectedToCurrentKeyIndex() {
-            let item = this.possibleValues[this.currentKeyNavIndex];
+        setSelectedToIndex(index) {
+            let item = this.possibleValues[index];
             if (item && item.id) {
                 this.setSelected([item.id]);
             }
@@ -194,8 +194,8 @@ export default {
             if (next >= this.possibleValues.length) {
                 return;
             }
+            this.setSelectedToIndex(next);
             this.currentKeyNavIndex = next;
-            this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
         onArrowUp() {
@@ -203,8 +203,8 @@ export default {
             if (next < 0) {
                 return;
             }
+            this.setSelectedToIndex(next);
             this.currentKeyNavIndex = next;
-            this.setSelectedToCurrentKeyIndex();
             this.scrollToCurrent();
         },
         onArrowDownShift() {
@@ -234,13 +234,15 @@ export default {
             this.scrollToCurrent();
         },
         onEndKey() {
-            this.currentKeyNavIndex = this.possibleValues.length - 1;
-            this.setSelectedToCurrentKeyIndex();
+            let next = this.possibleValues.length - 1;
+            this.setSelectedToIndex(next);
+            this.currentKeyNavIndex = next;
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
-            this.currentKeyNavIndex = 0;
-            this.setSelectedToCurrentKeyIndex();
+            let next  = 0;
+            this.setSelectedToIndex(next);
+            this.currentKeyNavIndex = next;
             this.$refs.ul.scrollTop = 0;
         },
         onArrowLeft() {
@@ -301,9 +303,9 @@ export default {
       @keydown.shift.down.prevent.exact="onArrowDownShift"
       @keydown.left.prevent.exact="onArrowLeft"
       @keydown.right.prevent.exact="onArrowRight"
-      @keydown.end.prevent.exact="onEndKey"
       @keydown.home.prevent.exact="onHomeKey"
-      @keydown.space.prevent.exact="onHomeKey"
+      @keydown.end.prevent.exact="onEndKey"
+      @keydown.space.prevent.exact="onActivation"
       @keydown.enter.prevent.exact="onActivation"
       @mousedown="startDrag"
       @mousemove="onDrag"
