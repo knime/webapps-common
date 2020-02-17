@@ -13,8 +13,7 @@ const codeExample = `<RadioButtons
     text: 'Bar'
   }, {
     id: 'baz',
-    text: 'Baz',
-    selectedText: 'Baz!!'
+    text: 'Baz'
   }]"
 />`;
 
