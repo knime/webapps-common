@@ -76,6 +76,11 @@ export default {
     },
     mounted() {
         window.addEventListener('mouseup', this.stopDrag);
+        // set key nav index to last value
+        if (this.value.length > 0) {
+            let lastItem = this.value[this.value.length - 1];
+            this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
+        }
     },
     methods: {
         isCurrentValue(candidate) {
