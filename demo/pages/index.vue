@@ -79,14 +79,14 @@ export default {
     <Icons />
     <Breadcrumb />
     <Buttons />
+    <SubMenu />
     <SplitButton />
+    <IdleReadyButton />
     <Collapser />
     <TabBar />
     <Carousel />
     <Message />
     <Messages />
-    <SubMenu />
-    <IdleReadyButton />
     <Label />
     <Fieldset />
     <InputField />
