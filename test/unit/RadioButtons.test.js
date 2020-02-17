@@ -15,8 +15,7 @@ describe('RadioButtons.vue', () => {
                 id: 'test3',
                 text: 'test3'
             }],
-            value: '',
-            placeholder: ''
+            value: ''
         };
         const wrapper = mount(RadioButtons, {
             propsData
@@ -39,8 +38,7 @@ describe('RadioButtons.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }],
-                value: '',
-                placeholder: ''
+                value: ''
             }
         });
         let newValue = 'test2';
