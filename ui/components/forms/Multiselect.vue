@@ -50,31 +50,31 @@ export default {
     },
     data() {
         return {
+            checkedValue: this.value,
             collapsed: true
         };
     },
     computed: {
         optionText() {
-            if (this.value.length === 0) {
+            if (this.checkedValue.length === 0) {
                 return this.placeholder;
             }
             return this.possibleValues
-                .filter(({ id }) => this.value.indexOf(id) > -1)
+                .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
                 .map(({ text, selectedText = text }) => selectedText)
                 .join(', ');
         }
     },
     methods: {
         onInput(value, toggled) {
-            let checkedValue = Array.from(this.value);
             if (toggled) {
-                if (checkedValue.indexOf(value) === -1) {
-                    checkedValue.push(value);
+                if (this.checkedValue.indexOf(value) === -1) {
+                    this.checkedValue.push(value);
                 }
             } else {
-                checkedValue = checkedValue.filter(x => x !== value);
+                this.checkedValue = this.checkedValue.filter(x => x !== value);
             }
-            consola.trace('Multiselect value changed to', checkedValue);
+            consola.trace('Multiselect value changed to', this.checkedValue);
 
             /**
              * Fired when the selection changes.
@@ -82,13 +82,13 @@ export default {
              * @event input
              * @type {Array}
              */
-            this.$emit('input', checkedValue);
+            this.$emit('input', this.checkedValue);
         },
         toggle() {
             this.collapsed = !this.collapsed;
         },
         isChecked(itemId) {
-            return this.value.indexOf(itemId) > -1;
+            return this.checkedValue.indexOf(itemId) > -1;
         },
         closeOptions() {
             this.collapsed = true;
