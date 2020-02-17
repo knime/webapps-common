@@ -37,7 +37,7 @@ export default {
         <div class="align-horizontal">
           <Button>Button</Button>
           <Button with-border>Button with border</Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               with-border
               on-dark
@@ -46,7 +46,7 @@ export default {
             </Button>
           </div>
           <Button primary>Primary button</Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               primary
               on-dark
@@ -60,7 +60,7 @@ export default {
         <div class="align-horizontal">
           <Button><PlayIcon />Button</Button>
           <Button with-border><PlayIcon />Button with border</Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               with-border
               on-dark
@@ -69,7 +69,7 @@ export default {
             </Button>
           </div>
           <Button primary><PlayIcon />Primary button</Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               primary
               on-dark
@@ -88,7 +88,7 @@ export default {
           >
             Button compact with border
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               with-border
               on-dark
@@ -103,7 +103,7 @@ export default {
           >
             Primary button compact
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               primary
               on-dark
@@ -123,7 +123,7 @@ export default {
           >
             <PlayIcon />Button compact with border
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               with-border
               on-dark
@@ -138,7 +138,7 @@ export default {
           >
             <PlayIcon />Primary button compact
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               primary
               on-dark
@@ -158,7 +158,7 @@ export default {
           >
             Button disabled with border
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               with-border
               on-dark
@@ -173,7 +173,7 @@ export default {
           >
             Primary button disabled
           </Button>
-          <div style="background: var(--theme-color-masala); padding: 10px 10px 0;">
+          <div class="background">
             <Button
               primary
               on-dark
@@ -194,11 +194,16 @@ export default {
 <style lang="postcss" scoped>
 .align-horizontal {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   margin-bottom: 10px;
 
   & > * {
     margin-right: 20px;
   }
+}
+
+.background {
+  padding: 10px 10px;
+  background: var(--theme-color-masala);
 }
 </style>

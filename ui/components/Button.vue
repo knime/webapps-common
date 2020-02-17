@@ -140,7 +140,6 @@ export default {
   line-height: 19px;
   padding: 12px;
   text-decoration: none;
-  margin-bottom: 10px;
   border: 0;
   cursor: pointer;
   color: var(--theme-color-dove-gray);
