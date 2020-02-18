@@ -27,16 +27,13 @@ export default {
   white-space: nowrap;
   -ms-overflow-style: none; /* needed to hide scroll bar in edge */
   scrollbar-width: none; /* for firefox */
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-left: 10px;
+  padding-right: 10px;
 
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-@media only screen and (max-width: 1180px) and (min-width: 901px) {
-  .carousel {
-    margin-left: -10px;
-    margin-right: -10px;
   }
 }
 </style>

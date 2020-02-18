@@ -13,9 +13,15 @@ const codeExample = `<CarouselSection background-color="white">
 
 <style>
   .wrapper {
-    display: inline-flex; // or inline-block
+    display: inline-flex; /* or inline-block */
     padding-left: 20px;
-    margin-left: -20px; // values might need to be adjusted according to content
+    margin-left: -20px; /* values might need to be adjusted according to content */
+
+    & .child-elements:last-child {
+      border-right: 15px solid transparent;
+      /* might need to be set on last child of content to ensure that all the content is scrolled into the viewport*/
+    }
+  }
 </style>`;
 
 export default {
@@ -77,8 +83,6 @@ export default {
 .wrapper {
   display: inline-flex;
   flex-wrap: nowrap;
-  margin-left: -20px;
-  padding-left: 20px;
 
   & div:last-child {
     margin-right: 22px;

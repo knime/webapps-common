@@ -269,6 +269,10 @@ input:not(:checked):not(:disabled) + span {
 }
 
 @media only screen and (max-width: 900px) {
+  label:last-child {
+    border-right: 20px solid transparent;
+  }
+
   @supports (-ms-ime-align: auto) { /* fires only on Edge */
     div::after {
       margin-top: 17px;

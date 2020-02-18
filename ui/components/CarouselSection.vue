@@ -43,7 +43,7 @@ section {
     display: block;
     height: 100%;
     width: 12px;
-    left: calc(3 * var(--grid-gap-width));
+    left: calc(3 * var(--grid-gap-width) - 10px);
     top: 0;
     z-index: 2;
     background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
@@ -55,7 +55,7 @@ section {
     display: block;
     height: 100%;
     width: 12px;
-    right: calc(3 * var(--grid-gap-width));
+    right: calc(3 * var(--grid-gap-width) - 10px);
     top: 0;
     z-index: 2;
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
