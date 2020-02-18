@@ -30,8 +30,8 @@ export default {
     >
       <img
         :src="image.src"
-        :class="{checkerboard}"
-        :style="'width:' + width + '; height:' + height"
+        :class="{ checkerboard }"
+        :style="{ width, height }"
       >
       <span>{{ image.name }}</span>
     </div>
@@ -55,7 +55,7 @@ export default {
   }
 
   & > img.checkerboard {
-    --checkerboard-color: var(--knime-porcelain);
+    --checkerboard-color: var(--knime-silver-sand);
     --checkerboard-size: 15px;
 
     border: 1px solid var(--checkerboard-color);
@@ -70,7 +70,7 @@ export default {
   }
 
   &:hover > img {
-    background-color: var(--knime-porcelain);
+    background-color: var(--knime-silver-sand);
     background-image: none;
   }
 
