@@ -109,7 +109,7 @@ export default {
         },
         moveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
-                this.moveRight();
+                this.moveAllRightButtonClick();
             }
         },
         moveRightButtonKey(e) {
