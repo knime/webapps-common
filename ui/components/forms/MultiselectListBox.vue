@@ -99,9 +99,9 @@ export default {
         },
         /**
          * Returns all value ids (String) for two indices no matter which one is the start/end index
-         * @param firstIndex - index a
-         * @param secondIndex - index b
-         * @returns String[]
+         * @param {Number} firstIndex - index a
+         * @param {Number} secondIndex - index b
+         * @returns {String[]}
          */
         getPossibleValuesInSection(firstIndex, secondIndex) {
             let start = firstIndex > secondIndex ? secondIndex : firstIndex;
