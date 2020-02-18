@@ -7,9 +7,16 @@ import carouselSectionCode from '!!raw-loader!../../ui/components/CarouselSectio
 
 const codeExample = `<CarouselSection background-color="white">
   <Carousel>
-      <Statistics />
+      <Statistics class="wrapper" />
   </Carousel>
-</CarouselSection>`;
+</CarouselSection>
+
+<style>
+  .wrapper {
+    display: inline-flex; // or inline-block
+    padding-left: 20px;
+    margin-left: -20px; // values might need to be adjusted according to content
+</style>`;
 
 export default {
     components: {
@@ -34,21 +41,15 @@ export default {
         <h2>Carousel & CarouselSection</h2>
         <p>
           The carousel can fit items of any size and combined with a CarouselSection wrapped around creates shadows on
-          each side of the viewport to indicate that scrolling is possible.
-        </p>
-        <p>
-          When one side of the items inside of the carousel is reached
-          the shadow will disappear.
+          each side of the viewport to indicate that scrolling is possible. When one side of the items inside of the
+          carousel is reached the shadow should disappear.
         </p>
         <p>
           The color of the shadow can be adjusted to the background
-          by using the "backgroundColor"-prop. Currently the supported colors are: white and porcelain.
+          by using the "backgroundColor"-prop. Currently the supported colors are: white and porcelain(default).
         </p>
-        <p>The default value of the "backgroundColor"-prop is 'porcelain'.</p>
         <p>
-          You might need to set the display attribute of the child of the carousel(containing the content that should
-          be scrollable) to inline-flex or inline-block to ensure the right side of the content is scrollable across
-          the right shadow.
+          See usage example for CSS adjustments.
         </p>
         <CarouselSection background-color="white">
           <Carousel>
@@ -76,6 +77,8 @@ export default {
 .wrapper {
   display: inline-flex;
   flex-wrap: nowrap;
+  margin-left: -20px;
+  padding-left: 20px;
 
   & div:last-child {
     margin-right: 22px;

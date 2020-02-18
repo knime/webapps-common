@@ -31,47 +31,59 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-@media only screen and (max-width: 1180px) {
-  section {
-    position: relative;
-    padding: 0 var(--grid-gap-width);
-    background: var(--theme-color-porcelain);
-    overflow: hidden;
+section {
+  position: relative;
+  padding: 0 calc(3 * var(--grid-gap-width));
+  background: var(--theme-color-porcelain);
+  overflow: hidden;
 
-    &::before {
-      content: "";
-      position: absolute;
-      display: block;
-      height: 100%;
-      width: 12px;
-      left: calc(var(--grid-gap-width) - 10px);
-      top: 0;
-      z-index: 2;
-      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      display: block;
-      height: 100%;
-      width: 12px;
-      right: calc(var(--grid-gap-width) - 10px);
-      top: 0;
-      z-index: 2;
-      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
-    }
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    height: 100%;
+    width: 12px;
+    left: calc(3 * var(--grid-gap-width));
+    top: 0;
+    z-index: 2;
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
   }
 
-  .white {
-    background: var(--theme-color-white);
+  &::after {
+    content: "";
+    position: absolute;
+    display: block;
+    height: 100%;
+    width: 12px;
+    right: calc(3 * var(--grid-gap-width));
+    top: 0;
+    z-index: 2;
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
+  }
+}
+
+.white {
+  background: var(--theme-color-white);
+
+  &::before {
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+
+  &::after {
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+}
+
+@media only screen and (max-width: 1180px) {
+  section {
+    padding: 0 var(--grid-gap-width);
 
     &::before {
-      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+      left: calc(var(--grid-gap-width) - 10px);
     }
 
     &::after {
-      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+      right: calc(var(--grid-gap-width) - 10px);
     }
   }
 }
