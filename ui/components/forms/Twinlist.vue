@@ -31,6 +31,10 @@ export default {
                 return val >= 0;
             }
         },
+        isValid: {
+            default: true,
+            type: Boolean
+        },
         ariaLabelLeft: {
             type: String,
             required: true,
@@ -167,6 +171,7 @@ export default {
         :size="size"
         class="listBox"
         :value="selectedLeft"
+        :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="ariaLabelLeft"
         @doubleClickOnItem="leftListBoxDoubleClick"

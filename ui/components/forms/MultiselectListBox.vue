@@ -32,6 +32,10 @@ export default {
                 return val >= 0;
             }
         },
+        isValid: {
+            default: true,
+            type: Boolean
+        },
         ariaLabel: {
             type: String,
             required: true
@@ -288,10 +292,11 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="multiselect-list-box">
     <ul
       ref="ul"
       role="listbox"
+      :class="{ 'invalid' : !isValid}"
       tabindex="0"
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
@@ -337,47 +342,70 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-[role="listbox"] {
-  font-size: 14px;
-  min-height: 20px;
-  padding: 0;
-  margin: 0;
-  background: var(--theme-color-white);
-  border: 1px solid var(--theme-color-stone-gray);
-}
+.multiselect-list-box {
+  position: relative; /* required by .invalid-marker */
 
-[role="listbox"]:focus {
-  outline: none;
-  border-color: var(--theme-color-masala);
-}
+  & [role="listbox"] {
+    font-size: 14px;
+    min-height: 20px;
+    padding: 0;
+    margin: 0;
+    background: var(--theme-color-white);
+    border: 1px solid var(--theme-color-stone-gray);
+  }
 
-[role="option"] {
-  display: block;
-  padding: 0 10px 0 10px;
-  position: relative;
-}
+  & [role="listbox"]:focus {
+    outline: none;
+    border-color: var(--theme-color-masala);
+  }
 
-[role="option"]:hover {
-  background: var(--theme-color-porcelain);
-}
+  & [role="listbox"].invalid {
+    /* we don't use the border as the edges look different */
+    overflow: visible !important;
 
-[role="option"].selected {
-  background: var(--theme-color-masala);
-  color: var(--theme-color-white);
-}
+    &::before {
+      content: '';
+      position: absolute;
+      display: block;
+      width: 3px;
+      left: -1px;
+      margin: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+      background-color: var(--theme-color-error);
+    }
+  }
 
-/* this selector is required to override some * rules which interfere - so do not simplify */
-ul[role="listbox"] {
-  overflow-y: auto;
-  position: relative;
-}
+  & [role="option"] {
+    display: block;
+    padding: 0 10px 0 10px;
+    position: relative;
+  }
 
-.noselect {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  & [role="option"]:hover {
+    background: var(--theme-color-porcelain);
+  }
+
+  & [role="option"].selected {
+    background: var(--theme-color-masala);
+    color: var(--theme-color-white);
+  }
+
+  /* this selector is required to override some * rules which interfere - so do not simplify */
+
+  & ul[role="listbox"] {
+    overflow-y: auto;
+    position: relative;
+  }
+
+  & .noselect {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 }
 
 </style>
