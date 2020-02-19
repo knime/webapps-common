@@ -51,13 +51,13 @@ if (!skip) {
 
         // keep only the needed props
         allPackages = allPackages.map(pkg => ({
+            // TODO: WEBP-243 handle licenses with missing text
             name: pkg.name,
             repository: pkg.repository,
-            licenseText: pkg.licenseText,
-            licenses: pkg.licenses
+            licenseText: pkg.licenseText
         }));
 
-        // remove duplicate packages (= different versions but same license)
+        // remove duplicate packages (could be different versions but same license, etc.)
         const allUniquePackages = allPackages.filter((pkg, pos, arr) =>  arr.indexOf(pkg) === pos);
 
         // sort packages by name
