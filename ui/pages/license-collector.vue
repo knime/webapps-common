@@ -8,7 +8,7 @@ export default {
     },
     props: {
         additionalPackages: {
-            type: Object,
+            type: Array,
             default: () => []
         }
     },
