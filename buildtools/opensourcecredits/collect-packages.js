@@ -3,13 +3,13 @@ const config = require('../config/opensourcecredits.config');
 const licensechecker = require('license-checker');
 const fs = require('fs');
 const path = require('path');
-// if custom filename provide via env variable, build a git-tracked resource (e.g. pagebuilder)
-const outFile = path.resolve(__dirname, `${process.env.CREDITS_BUILD_PREFIX || 'used-packages'}.json`);
+const outFile = path.resolve(__dirname, 'used-packages.json');
 const semver = require('semver');
 const consola = require('consola');
 
 let currentDir = __dirname;
-let localDir, localPkgPath, parentPkgPath, hasParentPkg;
+let parentPkgPath, hasParentPkg;
+
 while (!hasParentPkg) {
     currentDir = path.resolve(currentDir, '..');
     parentPkgPath = path.resolve(currentDir, 'package.json');
@@ -18,13 +18,9 @@ while (!hasParentPkg) {
             hasParentPkg = true;
             break;
         }
-        localDir = currentDir;
-        localPkgPath = parentPkgPath;
     }
     if (currentDir === '/') {
         consola.warn('Warning: License collection could not detect parent package!');
-        currentDir = localDir;
-        parentPkgPath = localPkgPath;
         break;
     }
 }
@@ -57,30 +53,12 @@ if (!skip) {
         allPackages = allPackages.map(pkg => ({
             name: pkg.name,
             repository: pkg.repository,
-            licenseText: pkg.licenseText
+            licenseText: pkg.licenseText,
+            licenses: pkg.licenses
         }));
 
-        // add additional licenses from external projects if provided by env variable
-        if (process.env.ADD_PACKAGE_FILE) {
-            const addPkgPath = path.resolve(__dirname, `${process.env.ADD_PACKAGE_FILE}.json`);
-            if (fs.existsSync(addPkgPath)) {
-                allPackages = allPackages.concat(require(addPkgPath));
-            }
-        }
-
         // remove duplicate packages (= different versions but same license)
-        const allUniquePackages = [];
-        allPackages.forEach(pkg => {
-            const alreadyExists = allUniquePackages.some(
-                firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                    firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
-                    firstPkg.licenseText.toLowerCase() === pkg.licenseText.toLowerCase()
-            );
-
-            if (!alreadyExists) {
-                allUniquePackages.push(pkg);
-            }
-        });
+        const allUniquePackages = allPackages.filter((pkg, pos, arr) =>  arr.indexOf(pkg) === pos);
 
         // sort packages by name
         allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));

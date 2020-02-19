@@ -6,6 +6,12 @@ export default {
     components: {
         Description
     },
+    props: {
+        additionalPackages: {
+            type: Object,
+            default: () => []
+        }
+    },
     data() {
         return {
             title: 'Open Source Credits'
@@ -13,7 +19,7 @@ export default {
     },
     computed: {
         packages() {
-            return packages;
+            return packages.concat(this.additionalPackages).filter((pkg, pos, arr) =>  arr.indexOf(pkg) === pos);
         }
     },
     head() {

@@ -1,7 +1,7 @@
 {
   "name": "knime-build-tools",
   "version": "0.0.0",
-  "description": "Checks the dependent licenses of the parent package and writes them to a JSON file.",
+  "description": "Shared build tools for KNIME web applications.",
   "main": "index.js",
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",
