@@ -10,6 +10,6 @@
 <style lang="postcss" scoped>
 img {
   height: 4vmin;
-  margin: 1vmin;
+  margin: 2vmin 0;
 }
 </style>

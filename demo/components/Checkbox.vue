@@ -6,7 +6,7 @@ import code from '!!raw-loader!../../ui/components/forms/Checkbox';
 const codeExample = `<Checkbox v-model="selected">
   I want cookies!
 </Checkbox>
-<Checkbox v-model="selected2" label-size="large">
+<Checkbox v-model="selectedLarge" label-size="large">
   I want larger cookies!
 </Checkbox>`;
 
@@ -18,7 +18,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: false
+            selected: false,
+            selectedLarge: false
         };
     },
     computed: {
@@ -37,7 +38,7 @@ export default {
           <h2>Checkbox</h2>
           <p>
             A checkbox component. It acts as a form element, so it emits an <code>input</code> event when (de-)selected,
-            and it has a <code>value</code>.
+            and it has a <code>value</code>. The `label-size` property can be set to `large` for larger labels.
           </p>
         </div>
       </div>
@@ -47,12 +48,16 @@ export default {
             I want cookies!
           </Checkbox>
           <br>
-          <Checkbox label-size="large">
+          <Checkbox
+            v-model="selectedLarge"
+            label-size="large"
+          >
             I want larger cookies!
           </Checkbox>
         </div>
         <div class="grid-item-6">
-          value: {{ selected }}
+          value: {{ selected }}<br>
+          value: {{ selectedLarge }}
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 :root {
   --grid-gap-width: 24px;
   --grid-max-width: 1600px;
-  --grid-min-width: 1200px;
+  --grid-min-width: 365px;
   --item-size: 1; /* this is just required to avoid warnings in postcss-css-variables */
 }
+

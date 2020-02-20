@@ -12,6 +12,7 @@ import SplitButton from '../components/SplitButton';
 import Collapser from '../components/Collapser';
 import Description from '../components/Description';
 import TabBar from '../components/TabBar';
+import Carousel from '../components/Carousel';
 import Message from '../components/Message';
 import Messages from '../components/Messages';
 import SubMenu from '../components/SubMenu';
@@ -45,6 +46,7 @@ export default {
         Description,
         Headlines,
         TabBar,
+        Carousel,
         Icons,
         Message,
         Messages,
@@ -90,13 +92,14 @@ export default {
     <Icons />
     <Breadcrumb />
     <Buttons />
+    <SubMenu />
     <SplitButton />
+    <IdleReadyButton />
     <Collapser />
     <TabBar />
+    <Carousel />
     <Message />
     <Messages />
-    <SubMenu />
-    <IdleReadyButton />
     <Label />
     <Fieldset />
     <InputField />
