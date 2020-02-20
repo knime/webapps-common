@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import TabBar from '~/ui/components/TabBar';
 import WorkflowIcon from '~/ui/assets/img/icons/workflow.svg?inline';
 import NodeIcon from '~/ui/assets/img/icons/node.svg?inline';
+import Carousel from '~/ui/components/Carousel';
 
 describe('TabBar.vue', () => {
 
@@ -36,7 +37,10 @@ describe('TabBar.vue', () => {
             }
         });
 
+        expect(wrapper.find(Carousel).exists()).toBe(true);
         expect(wrapper.find(NodeIcon).exists()).toBeTruthy();
+        expect(wrapper.find('.wrapper').exists()).toBeTruthy();
+        expect(wrapper.find('.overflow').exists()).toBeTruthy();
         expect(wrapper.find('input:checked').attributes('value')).toEqual('all');
     });
 

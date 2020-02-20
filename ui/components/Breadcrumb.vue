@@ -90,11 +90,13 @@ export default {
 
   & ul {
     padding: 10px 0;
+    width: 100%;
   }
 
   & li {
     position: relative;
     margin: 5px 0;
+    max-width: 100%;
 
     &:not(:last-child) {
       margin-right: 4px;
@@ -105,9 +107,12 @@ export default {
   & a {
     display: inline-block;
     text-decoration: none;
-    overflow: visible;
     vertical-align: top;
     padding-right: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;
   }
 
   & svg {
