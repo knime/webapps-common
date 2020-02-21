@@ -4,21 +4,6 @@
  * indicate content beeing hidden which can be scrolled to
 */
 export default {
-    props: {
-        /**
-       * Switches the color of the shadows on the sides
-       * should match background color of parent
-       *
-       * currently possible values: porcelain(default), white
-       */
-        backgroundColor: {
-            type: String,
-            default: 'porcelain',
-            validator(backgroundColor = 'porcelain') {
-                return ['porcelain', 'white'].includes(backgroundColor);
-            }
-        }
-    }
 };
 </script>
 

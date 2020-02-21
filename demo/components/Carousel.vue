@@ -19,6 +19,16 @@ const codeExample = `
       /* might need to be set on last child of content to ensure that all the content is scrolled into the viewport*/
     }
   }
+/* overwrite shadow color */
+  section {
+    & >>> .shadow-wrapper::before {
+      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    }
+
+    & >>> .shadow-wrapper::after {
+      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    }
+  }
 </style>`;
 
 export default {
@@ -47,10 +57,10 @@ export default {
         </p>
         <p>
           The color of the shadow can be adjusted to the background
-          by using the "backgroundColor"-prop. Currently the supported colors are: white and porcelain(default).
+          by setting the .shadow-color's before and after elements background-image (example below)
         </p>
         <p>
-          See usage example for CSS adjustments.
+          See usage example for more CSS adjustments.
         </p>
         <section>
           <Carousel>
@@ -73,6 +83,16 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+
+section {
+  & >>> .shadow-wrapper::before {
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+
+  & >>> .shadow-wrapper::after {
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+}
 
 .wrapper {
   display: inline-flex;
