@@ -187,17 +187,15 @@ export const tabBarMixin = {
   }
 }
 
->>> .carousel {
-  &::after {
-    content: "";
-    display: block;
-    position: absolute;
-    border-bottom: 1px solid var(--theme-color-silver-sand);
-    left: var(--grid-gap-width);
-    right: var(--grid-gap-width);
-    z-index: 0;
-    bottom: 26px;
-  }
+>>> .carousel::after {
+  content: "";
+  display: block;
+  position: absolute;
+  border-bottom: 1px solid var(--theme-color-silver-sand);
+  left: var(--grid-gap-width);
+  right: var(--grid-gap-width);
+  z-index: 0;
+  bottom: 26px;
 }
 
 
@@ -273,6 +271,11 @@ input:not(:checked):not(:disabled) + span {
 }
 
 @media only screen and (max-width: 900px) {
+  >>> .carousel::after {
+    left: 0;
+    right: 0;
+  }
+
   @supports (-ms-ime-align: auto) { /* fires only on Edge */
     div::after {
       margin-top: 17px;
