@@ -119,7 +119,7 @@ export default {
       height: 14px;
       border-radius: 100%;
       left: 0;
-      top: 6px;
+      top: 4px;
       position: absolute;
       vertical-align: top;
       cursor: pointer;
