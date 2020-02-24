@@ -288,10 +288,11 @@ export default {
     right: 10px;
     top: 11px;
     pointer-events: none;
+    transition: transform 0.4s ease-in-out;
   }
 
   &:not(.collapsed) .icon {
-    transform: scale(-1);
+    transform: scaleY(-1);
   }
 
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
