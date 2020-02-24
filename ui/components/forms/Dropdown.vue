@@ -302,7 +302,8 @@ export default {
     max-height: calc(24px * 7); /* show max 7 items */
     font-size: 14px;
     min-height: 24px;
-    width: 100%;
+    min-width: 100%;
+    max-width: 50vw;
     padding: 8px 0;
     margin: 0;
     background: var(--theme-color-white);
@@ -315,7 +316,8 @@ export default {
   }
 
   & [role="option"] {
-    display: block;
+    display: inline-block;
+    min-width: 100%;
     padding: 0 10px 0 10px;
     line-height: 24px;
     position: relative;
