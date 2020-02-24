@@ -3,19 +3,29 @@
  * Displays a carousel where the user can scroll/swipe horizontally
  * with shadow borders indicating if there is content on the left or right which is scrollable
 */
-let isDown = false;
+let isMouseDown = false;
 let wasDragged = false;
 const scrollValueOffset = 5; // to prevent clicks not beeing bubbled to child by accident
 let startX, scrollLeft, slider;
 
 export default {
+    data() {
+        return {
+            isMouseDown,
+            wasDragged,
+            scrollValueOffset,
+            startX,
+            scrollLeft,
+            slider
+        };
+    },
     /**
    * following methods allow dragging via mouse
    */
     methods: {
         onMouseDown(e) {
-            slider = this.$el.querySelector('.carousel');
-            isDown = true;
+            slider = this.$refs.carousel;
+            isMouseDown = true;
             wasDragged = false;
             startX = e.pageX;
             scrollLeft = slider.scrollLeft;
@@ -24,10 +34,10 @@ export default {
             if (wasDragged) {
                 e.preventDefault();
             }
-            isDown = false;
+            isMouseDown = false;
         },
         onMouseMove(e) {
-            if (!isDown) { return; }
+            if (!isMouseDown) { return; }
             e.preventDefault();
             const x = e.pageX;
             const walk = x - startX;
@@ -35,8 +45,9 @@ export default {
                 wasDragged = true;
                 slider.scrollLeft = scrollLeft - walk;
             }
-
-
+        },
+        onDragStart(e) {
+            e.preventDefault();
         }
     }
 };
@@ -45,11 +56,13 @@ export default {
 <template>
   <div class="shadow-wrapper">
     <div
+      ref="carousel"
       class="carousel"
       @mousedown="onMouseDown"
       @mousemove="onMouseMove"
       @click.capture="onMouseEnd"
       @mouseleave="onMouseEnd"
+      @dragstart="onDragStart"
     >
       <slot />
     </div>

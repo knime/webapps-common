@@ -18,4 +18,32 @@ describe('Carousel.vue', () => {
         });
         expect(wrapper.find('.slot').exists()).toBe(true);
     });
+
+    it('renders scroll methods', () => {
+        const dragStartSpy = jest.spyOn(Carousel.methods, 'onDragStart');
+        const mouseLeaveSpy = jest.spyOn(Carousel.methods, 'onMouseEnd');
+        const mouseDownSpy = jest.spyOn(Carousel.methods, 'onMouseDown');
+        const mouseMoveSpy = jest.spyOn(Carousel.methods, 'onMouseMove');
+        const clickSpy = jest.spyOn(Carousel.methods, 'onMouseEnd');
+
+
+        const wrapper = shallowMount(Carousel);
+
+        wrapper.find('.carousel').trigger('dragstart');
+        expect(dragStartSpy).toHaveBeenCalled();
+
+        wrapper.find('.carousel').trigger('mousedown');
+        expect(mouseDownSpy).toHaveBeenCalled();
+        console.log(wrapper.vm.isMouseDown)
+        // expect(wrapper.vm.isMouseDown).toBe(true);
+
+        wrapper.find('.carousel').trigger('mousemove');
+        expect(mouseMoveSpy).toHaveBeenCalled();
+
+        wrapper.find('.carousel').trigger('mouseleave');
+        expect(mouseLeaveSpy).toHaveBeenCalled();
+
+        wrapper.find('.carousel').trigger('click');
+        expect(clickSpy).toHaveBeenCalledTimes(2);
+    });
 });
