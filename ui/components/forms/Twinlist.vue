@@ -246,16 +246,19 @@ export default {
     min-height: 126px;
   }
 
-  & .listBox {
-    height: 100%;
-  }
-
   & .title {
     font-size: 13px;
   }
 
   & .list {
     flex: 3;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  & .listBox {
+    flex-grow: 1;
   }
 
   & .buttons {

@@ -292,11 +292,10 @@ export default {
 </script>
 
 <template>
-  <div class="multiselect-list-box">
+  <div :class="{ 'invalid' : !isValid, 'multiselect-list-box': true}">
     <ul
       ref="ul"
       role="listbox"
-      :class="{ 'invalid' : !isValid}"
       tabindex="0"
       :aria-label="ariaLabel"
       :style="ulSizeStyle"
@@ -343,9 +342,13 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .multiselect-list-box {
-  position: relative; /* required by .invalid-marker */
+  position: relative; /* required by .invalid::before */
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
 
   & [role="listbox"] {
+    flex-grow: 1;
     font-size: 14px;
     min-height: 20px;
     padding: 0;
@@ -359,16 +362,12 @@ export default {
     border-color: var(--theme-color-masala);
   }
 
-  & [role="listbox"].invalid {
-    /* we don't use the border as the edges look different */
-    overflow: visible !important;
-
+  &.invalid {
     &::before {
       content: '';
       position: absolute;
-      display: block;
       width: 3px;
-      left: -1px;
+      left: 0;
       margin: 0;
       top: 0;
       bottom: 0;
