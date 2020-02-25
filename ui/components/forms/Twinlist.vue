@@ -296,6 +296,10 @@ export default {
     &:active {
       background: var(--theme-color-masala);
       color: var(--theme-color-white);
+
+      & .icon {
+        stroke: var(--theme-color-white);
+      }
     }
   }
 
