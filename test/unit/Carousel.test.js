@@ -34,8 +34,6 @@ describe('Carousel.vue', () => {
 
         wrapper.find('.carousel').trigger('mousedown');
         expect(mouseDownSpy).toHaveBeenCalled();
-        console.log(wrapper.vm.isMouseDown)
-        // expect(wrapper.vm.isMouseDown).toBe(true);
 
         wrapper.find('.carousel').trigger('mousemove');
         expect(mouseMoveSpy).toHaveBeenCalled();

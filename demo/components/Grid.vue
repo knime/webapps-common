@@ -13,9 +13,11 @@
             limits the width of the actual content. The grid items need not necessarily add up to 12 columns.
           </p>
           <p>Grids items can be nested in another grid container.</p>
-          <p>The grid has a responsive design. Threrefore two breakpoints are set. This reduces the number of columns
+          <p>
+            The grid has a responsive design. Threrefore two breakpoints are set. This reduces the number of columns
             the consists of to 4(at 1180px) and 2(at 900px) respectively. Grid items will be grouped together equally
-            to fit the scheme.</p>
+            to fit the scheme.
+          </p>
         </div>
       </div>
     </section>
