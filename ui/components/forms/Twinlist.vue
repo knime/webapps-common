@@ -97,8 +97,9 @@ export default {
         moveRight(items) {
             // add all left items to our values
             items = items || this.selectedLeft;
-            this.chosenValues = [...items, ...this.chosenValues].sort((a, b) =>
-                this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b));
+            this.chosenValues = [...items, ...this.chosenValues].sort(
+                (a, b) => this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b)
+            );
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },

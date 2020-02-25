@@ -69,6 +69,7 @@ export default {
             currentKeyNavIndex: 0,
             shiftStartIndex: -1,
             draggingStartIndex: -1,
+            draggingInverseMode: false,
             // visual
             optionLineHeight: 20
         };
@@ -109,9 +110,13 @@ export default {
             return this.possibleValues.slice(start, end + 1).map(x => x.id);
         },
         startDrag(e) {
-            // do not start drag if we press ctrl or shift (as they have different actions)
-            if (e.ctrlKey || e.shiftKey) {
+            // do not start drag if we press shift
+            if (e.shiftKey) {
                 return;
+            }
+            // enable inverse mode on ctrl key
+            if (e.ctrlKey) {
+                this.draggingInverseMode = true;
             }
             let index = e.target.getAttribute('data-option-index');
             if (index) {
@@ -125,11 +130,17 @@ export default {
                     return;
                 }
                 let index = Number(dataIndex);
-                this.setSelected(this.getPossibleValuesInSection(this.draggingStartIndex, index));
+                let sectionValues = this.getPossibleValuesInSection(this.draggingStartIndex, index);
+                // inverse mode means we remove all selected values from the current selection
+                if (this.draggingInverseMode) {
+                    sectionValues = this.selectedValues.filter(x => !sectionValues.includes(x));
+                }
+                this.setSelected(sectionValues);
             }
         },
         stopDrag(e) {
             this.draggingStartIndex = -1;
+            this.draggingInverseMode = false;
         },
         handleClick(value, index) {
             if (!this.multiselectByClick) {
