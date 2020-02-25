@@ -109,6 +109,10 @@ export default {
             return this.possibleValues.slice(start, end + 1).map(x => x.id);
         },
         startDrag(e) {
+            // do not start drag if we press ctrl or shift (as they have different actions)
+            if (e.ctrlKey || e.shiftKey) {
+                return;
+            }
             let index = e.target.getAttribute('data-option-index');
             if (index) {
                 this.draggingStartIndex = Number(index);
