@@ -115,8 +115,16 @@ export default {
     margin-right: 5px;
   }
 
-  &.vertical .boxes {
+  /* default and vertical style */
+  & .boxes {
     display: block;
+  }
+
+  /* use flexbox for horizontal */
+  &.horizontal .options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 
