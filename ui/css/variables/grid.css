@@ -5,3 +5,8 @@
   --item-size: 1; /* this is just required to avoid warnings in postcss-css-variables */
 }
 
+@media only screen and (max-width: 900px) {
+  :root {
+    --grid-gap-width: 12px;
+  }
+}

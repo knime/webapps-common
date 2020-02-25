@@ -160,7 +160,7 @@ export default {
 
 @media only screen and (max-width: 900px) {
   .plain {
-    white-space: break-spaces;
+    white-space: normal;
   }
 }
 </style>
