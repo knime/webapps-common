@@ -79,6 +79,9 @@ export default {
             // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
             return Object.assign({}, ...this.possibleValues.map(obj => ({ [obj.id]: obj })));
         },
+        possibleValueIds() {
+            return this.possibleValues.map(x => x.id);
+        },
         leftItems() {
             return this.possibleValues.filter(x => !this.chosenValues.includes(x.id));
         },
@@ -94,7 +97,8 @@ export default {
         moveRight(items) {
             // add all left items to our values
             items = items || this.selectedLeft;
-            this.chosenValues = [...items, ...this.chosenValues].sort();
+            this.chosenValues = [...items, ...this.chosenValues].sort((a, b) =>
+                this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b));
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },
