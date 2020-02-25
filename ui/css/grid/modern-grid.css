@@ -166,15 +166,6 @@ section section {
 }
 
 @media only screen and (max-width: 900px) {
-  main section,
-  header section,
-  footer section,
-  .sticky-footer section,
-  header {
-    padding-left: calc(var(--grid-gap-width) / 2);
-    padding-right: calc(var(--grid-gap-width) / 2);
-  }
-
   aside {
     margin-top: 80px; /* Everything is full width so we need some top margin to visually separate the sidebar */
   }
