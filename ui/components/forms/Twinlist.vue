@@ -144,8 +144,14 @@ export default {
         leftListBoxDoubleClick(item) {
             this.moveRight([item]);
         },
+        leftListBoxShiftDoubleClick(items) {
+            this.moveRight(items);
+        },
         rightListBoxDoubleClick(item) {
             this.moveLeft([item]);
+        },
+        rightListBoxShiftDoubleClick(items) {
+            this.moveLeft(items);
         },
         leftInput(value) {
             this.selectedLeft = value;
@@ -179,6 +185,7 @@ export default {
         :possible-values="leftItems"
         :aria-label="ariaLabelLeft"
         @doubleClickOnItem="leftListBoxDoubleClick"
+        @doubleClickShift="leftListBoxShiftDoubleClick"
         @keyArrowRight="keyRightArrow"
         @input="leftInput"
       />
@@ -231,6 +238,7 @@ export default {
         :size="size"
         :aria-label="ariaLabelRight"
         @doubleClickOnItem="rightListBoxDoubleClick"
+        @doubleClickShift="rightListBoxShiftDoubleClick"
         @keyArrowLeft="keyLeftArrow"
         @input="rightInput"
       />

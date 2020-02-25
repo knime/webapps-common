@@ -141,6 +141,9 @@ export default {
         handleDblClick(id, index) {
             this.$emit('doubleClickOnItem', id, index);
         },
+        handleShiftDblClick(id, index) {
+            this.$emit('doubleClickShift', this.selectedValues);
+        },
         addToSelection(value) {
             let added = false;
             let selectedValues = this.selectedValues;
@@ -334,7 +337,8 @@ export default {
         @click.exact="handleClick(item.id, index)"
         @click.ctrl="handleCtrlClick(item.id, index)"
         @click.shift="handleShiftClick(item.id, index)"
-        @dblclick="handleDblClick(item.id, index)"
+        @dblclick.shift="handleShiftDblClick(item.id, index)"
+        @dblclick.exact="handleDblClick(item.id, index)"
       >
         {{ item.text }}
       </li>
