@@ -244,6 +244,7 @@ export default {
 .twinlist {
   display: flex;
   align-items: stretch;
+  flex-wrap: wrap;
 
   & >>> ul[role=listbox] {
     /* size that the buttons need */
