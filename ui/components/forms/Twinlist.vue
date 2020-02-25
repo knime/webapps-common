@@ -293,6 +293,13 @@ export default {
       background: var(--theme-color-porcelain);
     }
 
+    & .icon {
+      width: 15px;
+      height: 15px;
+      stroke-width: calc(32px / 15);
+      pointer-events: none;
+    }
+
     &:active {
       background: var(--theme-color-masala);
       color: var(--theme-color-white);
@@ -301,14 +308,6 @@ export default {
         stroke: var(--theme-color-white);
       }
     }
-  }
-
-
-  & .icon {
-    width: 15px;
-    height: 15px;
-    stroke-width: calc(32px / 15);
-    pointer-events: none;
   }
 }
 
