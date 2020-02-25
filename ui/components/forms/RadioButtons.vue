@@ -92,7 +92,7 @@ export default {
         type="radio"
         @change="onInput"
       >
-      <span>
+      <span :title="item.text">
         {{ item.text }}
       </span>
     </label>
@@ -111,6 +111,13 @@ export default {
     opacity: 0;
     position: absolute;
 
+    & + span {
+      display: inline-block;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     & + span::before { /* ◯ */
       border: 1px solid var(--theme-color-stone-gray);
       display: inline-block;
@@ -119,7 +126,7 @@ export default {
       height: 14px;
       border-radius: 100%;
       left: 0;
-      top: 6px;
+      top: 4px;
       position: absolute;
       vertical-align: top;
       cursor: pointer;
@@ -180,12 +187,20 @@ export default {
   }
 }
 
-.horizontal .radio-label {
-  padding-right: 3px;
-}
-
 .vertical .radio-label {
   display: block;
 }
+
+.horizontal {
+  display: flex;
+  flex-wrap: wrap;
+
+  & .radio-label {
+    display: block;
+    padding-right: 3px;
+    min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
+  }
+}
+
 
 </style>
