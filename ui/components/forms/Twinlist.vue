@@ -90,6 +90,9 @@ export default {
         }
     },
     methods: {
+        compareByOriginalSorting(a, b) {
+            return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
+        },
         clearSelections() {
             this.$refs.right.clearSelection();
             this.$refs.left.clearSelection();
@@ -97,16 +100,14 @@ export default {
         moveRight(items) {
             // add all left items to our values
             items = items || this.selectedLeft;
-            this.chosenValues = [...items, ...this.chosenValues].sort(
-                (a, b) => this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b)
-            );
+            this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },
         moveLeft(items) {
             // remove all right values from or selectedValues
             items = items || this.selectedRight;
-            this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort();
+            this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },
