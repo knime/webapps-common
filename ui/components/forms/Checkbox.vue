@@ -73,7 +73,7 @@ label {
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
-      top: 4.5px;
+      top: 4px;
     }
 
     & + span::before:hover { /* □ */
