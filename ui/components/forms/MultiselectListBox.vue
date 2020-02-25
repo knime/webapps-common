@@ -376,11 +376,6 @@ export default {
     border: 1px solid var(--theme-color-stone-gray);
   }
 
-  & [role="listbox"]:focus {
-    outline: none;
-    border-color: var(--theme-color-masala);
-  }
-
   &.invalid {
     &::before {
       content: '';

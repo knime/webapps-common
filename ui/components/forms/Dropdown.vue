@@ -267,11 +267,6 @@ export default {
     text-overflow: ellipsis;
   }
 
-  & [role=button]:focus {
-    border-color: var(--theme-color-masala);
-    outline: none;
-  }
-
   &:not(.collapsed) [role=button] {
     border-color: var(--theme-color-masala);
   }
@@ -309,11 +304,6 @@ export default {
     margin: 0;
     background: var(--theme-color-white);
     box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
-  }
-
-  & [role="listbox"]:focus {
-    outline: none;
-    border-color: var(--theme-color-masala);
   }
 
   & [role="option"] {

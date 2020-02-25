@@ -146,22 +146,14 @@ export default {
     }
   }
 
-  /* keyboard focus; :focus-visible would be better once browser support
-       is there https://caniuse.com/#feat=css-focus-visible */
+  /* artificial outline for focus as we don't use the native input element */
   & input:focus + span::before { /* ◯ */
-    background: var(--theme-color-porcelain);
+    outline: 1px dotted;
   }
 
   /* hover state */
   &:hover input + span::before { /* ◯ */
     background: var(--theme-color-porcelain);
-  }
-
-  /* keyboard focus; :focus-visible would be better once browser support
-     is there https://caniuse.com/#feat=css-focus-visible */
-  & input:checked:focus + span::before { /* 🔘 */
-    background: var(--theme-color-masala);
-    box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
   }
 
   /* hover state  checked */

@@ -199,11 +199,6 @@ export default {
   border: 1px solid var(--theme-color-stone-gray);
 }
 
-[role="listbox"]:focus {
-  outline: none;
-  border-color: var(--theme-color-masala);
-}
-
 [role="option"] {
   display: block;
   padding: 0 10px 0 10px;

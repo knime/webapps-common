@@ -132,15 +132,11 @@ label {
     line-height: 18px;
   }
 
-  /* keyboard focus; :focus-visible would be better once browser support
-     is there https://caniuse.com/#feat=css-focus-visible */
+  /* artificial outline for focus as we don't use the native input element */
   & input:focus + span::before,
   & input:checked:focus + span::before { /* □ */
-    background: var(--theme-color-porcelain);
-  }
-
-  & input:checked:focus + span::after { /* ✓ */
-    border-color: var(--theme-color-masala);
+    outline: 1px dotted;
   }
 }
+
 </style>
