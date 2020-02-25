@@ -113,10 +113,8 @@ export default {
 .checkboxes {
   & .boxes {
     margin-right: 5px;
-  }
 
-  /* default and vertical style */
-  & .boxes {
+    /* default and vertical style */
     display: block;
   }
 
