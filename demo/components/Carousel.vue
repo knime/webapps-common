@@ -1,26 +1,44 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import Carousel from '../../ui/components/Carousel';
-import CarouselSection from '../../ui/components/CarouselSection';
 import carouselCode from '!!raw-loader!../../ui/components/Carousel';
-import carouselSectionCode from '!!raw-loader!../../ui/components/CarouselSection';
 
-const codeExample = `<CarouselSection background-color="white">
+const codeExample = `
   <Carousel>
-      <Statistics />
+      <Statistics class="wrapper" />
   </Carousel>
-</CarouselSection>`;
+
+<style>
+  .wrapper {
+    display: inline-flex; /* or inline-block */
+    padding-left: 20px;
+    margin-left: -20px; /* values might need to be adjusted according to content */
+
+    & .child-elements:last-child {
+      border-right: 15px solid transparent;
+      /* might need to be set on last child of content to ensure that all the content is scrolled into the viewport*/
+    }
+  }
+/* overwrite shadow color */
+  section {
+    & >>> .shadow-wrapper::before {
+      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    }
+
+    & >>> .shadow-wrapper::after {
+      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    }
+  }
+</style>`;
 
 export default {
     components: {
         Carousel,
-        CarouselSection,
         CodeExample
     },
     data() {
         return {
             carouselCode,
-            carouselSectionCode,
             codeExample
         };
     }
@@ -31,26 +49,20 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Carousel & CarouselSection</h2>
+        <h2>Carousel</h2>
         <p>
-          The carousel can fit items of any size and combined with a CarouselSection wrapped around creates shadows on
-          each side of the viewport to indicate that scrolling is possible.
-        </p>
-        <p>
-          When one side of the items inside of the carousel is reached
-          the shadow will disappear.
+          The carousel can fit items of any size and creates shadows on
+          each side of the viewport to indicate that scrolling is possible. When one side of the items inside of the
+          carousel is reached the shadow should disappear.
         </p>
         <p>
           The color of the shadow can be adjusted to the background
-          by using the "backgroundColor"-prop. Currently the supported colors are: white and porcelain.
+          by setting the .shadow-color's before and after elements background-image (example below)
         </p>
-        <p>The default value of the "backgroundColor"-prop is 'porcelain'.</p>
         <p>
-          You might need to set the display attribute of the child of the carousel(containing the content that should
-          be scrollable) to inline-flex or inline-block to ensure the right side of the content is scrollable across
-          the right shadow.
+          See usage example for more CSS adjustments.
         </p>
-        <CarouselSection background-color="white">
+        <section>
           <Carousel>
             <div class="wrapper">
               <div class="card card1" />
@@ -61,10 +73,9 @@ export default {
               <div class="card card3" />
             </div>
           </Carousel>
-        </CarouselSection>
+        </section>
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Carousel.vue source code">{{ carouselCode }}</CodeExample>
-        <CodeExample summary="Show CarouselSection.vue source code">{{ carouselSectionCode }}</CodeExample>
       </div>
     </div>
   </section>
@@ -72,6 +83,16 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+
+section {
+  & >>> .shadow-wrapper::before {
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+
+  & >>> .shadow-wrapper::after {
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+}
 
 .wrapper {
   display: inline-flex;
