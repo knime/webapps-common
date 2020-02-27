@@ -19,7 +19,7 @@ describe('Carousel.vue', () => {
         expect(wrapper.find('.slot').exists()).toBe(true);
     });
 
-    it('renders scroll methods', () => {
+    it('calls scroll methods', () => {
         const dragStartSpy = jest.spyOn(Carousel.methods, 'onDragStart');
         const mouseLeaveSpy = jest.spyOn(Carousel.methods, 'onMouseEnd');
         const mouseDownSpy = jest.spyOn(Carousel.methods, 'onMouseDown');

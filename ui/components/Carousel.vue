@@ -1,27 +1,17 @@
 <script>
 /**
  * Displays shadows on both sides of a carousel
- * indicate content beeing hidden which can be scrolled to
-*/
+ * indicate content being hidden which can be scrolled to
+ */
 let isMouseDown = false;
 let wasDragged = false;
-const scrollValueOffset = 5; // to prevent clicks not beeing bubbled to child by accident
+const scrollThreshold = 5; // to prevent clicks not being bubbled to child by accident
 let startX, scrollLeft, slider;
 
 export default {
-    data() {
-        return {
-            isMouseDown,
-            wasDragged,
-            scrollValueOffset,
-            startX,
-            scrollLeft,
-            slider
-        };
-    },
     /**
-   * following methods allow dragging via mouse
-   */
+     * following methods allow dragging via mouse
+     */
     methods: {
         onMouseDown(e) {
             slider = this.$refs.carousel;
@@ -41,7 +31,7 @@ export default {
             e.preventDefault();
             const x = e.pageX;
             const walk = x - startX;
-            if (Math.abs(walk) > scrollValueOffset || wasDragged) {
+            if (wasDragged || Math.abs(walk) > scrollThreshold) {
                 wasDragged = true;
                 slider.scrollLeft = scrollLeft - walk;
             }
@@ -77,27 +67,24 @@ export default {
   margin-left: calc(var(--grid-gap-width) * -1);
   margin-right: calc(var(--grid-gap-width) * -1);
 
-  &::before {
-    content: "";
-    position: absolute;
-    display: block;
-    height: 100%;
-    width: 12px;
-    left: 0;
-    top: 0;
-    z-index: 2;
-    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
-  }
-
+  &::before,
   &::after {
     content: "";
     position: absolute;
     display: block;
     height: 100%;
     width: 12px;
-    right: 0;
     top: 0;
     z-index: 2;
+  }
+
+  &::before {
+    left: 0;
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
+  }
+
+  &::after {
+    right: 0;
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
   }
 }
@@ -109,6 +96,7 @@ export default {
   scrollbar-width: none; /* for firefox */
   padding-left: var(--grid-gap-width);
   padding-right: var(--grid-gap-width);
+  user-select: none;
 
   &::-webkit-scrollbar {
     display: none;

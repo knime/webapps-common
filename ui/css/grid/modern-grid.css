@@ -139,9 +139,9 @@ section section {
   .grid-container {
     flex-wrap: wrap;
 
-    & .grid-item-3,
+    & .grid-item-1,
     & .grid-item-2,
-    & .grid-item-1 {
+    & .grid-item-3 {
       --item-size: 3;
     }
 
@@ -173,6 +173,17 @@ section section {
   .grid-container {
     flex-wrap: wrap;
 
+    & .grid-item-1,
+    & .grid-item-2,
+    & .grid-item-3,
+    & .grid-item-4,
+    & .grid-item-5,
+    & .grid-item-6 {
+      --item-size: 6;
+
+      flex-grow: 1;
+    }
+
     & .grid-item-7,
     & .grid-item-8,
     & .grid-item-9,
@@ -180,17 +191,6 @@ section section {
     & .grid-item-11,
     & .grid-item-12 {
       --item-size: 12;
-    }
-
-    & .grid-item-4,
-    & .grid-item-5,
-    & .grid-item-6,
-    & .grid-item-3,
-    & .grid-item-2,
-    & .grid-item-1 {
-      --item-size: 6;
-
-      flex-grow: 1;
     }
   }
 
