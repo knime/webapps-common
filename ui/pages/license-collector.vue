@@ -19,7 +19,24 @@ export default {
     },
     computed: {
         packages() {
-            return packages.concat(this.additionalPackages).filter((pkg, pos, arr) =>  arr.indexOf(pkg) === pos);
+
+            let allUniquePackages = [];
+
+            packages.concat(this.additionalPackages).forEach(pkg => {
+                const alreadyExists = allUniquePackages.some(
+                    firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
+                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                        firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
+                );
+
+                if (!alreadyExists) {
+                    allUniquePackages.push(pkg);
+                }
+            });
+            
+            // sort packages by name
+            allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
+            return allUniquePackages;
         }
     },
     head() {

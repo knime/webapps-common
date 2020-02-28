@@ -51,14 +51,25 @@ if (!skip) {
 
         // keep only the needed props
         allPackages = allPackages.map(pkg => ({
-            // TODO: WEBP-243 handle licenses with missing text
+            // TODO: WEBP-243 handle licenses with missing text or similar licenses
             name: pkg.name,
             repository: pkg.repository,
             licenseText: pkg.licenseText
         }));
 
-        // remove duplicate packages (could be different versions but same license, etc.)
-        const allUniquePackages = allPackages.filter((pkg, pos, arr) =>  arr.indexOf(pkg) === pos);
+        let allUniquePackages = [];
+
+        allPackages.forEach(pkg => {
+            const alreadyExists = allUniquePackages.some(
+                firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
+                    firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                    firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
+            );
+
+            if (!alreadyExists) {
+                allUniquePackages.push(pkg);
+            }
+        });
 
         // sort packages by name
         allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
