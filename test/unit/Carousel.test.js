@@ -32,10 +32,17 @@ describe('Carousel.vue', () => {
         wrapper.find('.carousel').trigger('dragstart');
         expect(dragStartSpy).toHaveBeenCalled();
 
-        wrapper.find('.carousel').trigger('mousedown');
+        wrapper.find('.carousel').trigger('mousedown', {
+            pageX: 0
+        });
         expect(mouseDownSpy).toHaveBeenCalled();
 
-        wrapper.find('.carousel').trigger('mousemove');
+        const scrollValue = 30;
+
+        wrapper.find({ ref: 'carousel' }).trigger('mousemove', {
+            pageX: -scrollValue
+        });
+        expect(wrapper.vm.$refs.carousel.scrollLeft).toBe(scrollValue);
         expect(mouseMoveSpy).toHaveBeenCalled();
 
         wrapper.find('.carousel').trigger('mouseleave');
