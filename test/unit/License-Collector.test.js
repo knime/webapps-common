@@ -3,6 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import LicenseCollector from '~/ui/pages/license-collector.vue';
 import Description from '~/ui/components/Description.vue';
 
+jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [], { virtual: true });
+
 describe('license-collector.vue', () => {
 
     it('renders', () => {

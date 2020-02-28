@@ -10,7 +10,7 @@
     "lint:js": "eslint --ext .js,.vue .",
     "lint:css": "stylelint '**/*.{css,vue}'",
     "test:unit": "jest",
-    "coverage": "npm run opensourcecredits && jest --coverage",
+    "coverage": "jest --coverage",
     "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
     "package": "npm run --prefix buildtools/ package"
