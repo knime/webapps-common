@@ -1,8 +1,12 @@
 <script>
+import Carousel from './Carousel';
 /**
  * A radio button group that looks like a tab bar
 */
 export default {
+    components: {
+        Carousel
+    },
     props: {
         /**
          * Make the whole tab bar read-only
@@ -139,57 +143,89 @@ export const tabBarMixin = {
 </script>
 
 <template>
-  <div>
-    <label
-      v-for="item in possibleValues"
-      :key="item.value"
-    >
-      <input
-        v-model="selected"
-        :name="name"
-        :value="item.value"
-        :disabled="disabled || item.disabled"
-        type="radio"
-        @change="onChange"
-      >
-      <span>
-        <Component
-          :is="item.icon"
-          v-if="item.icon"
-        />
-        {{ item.label }}
-      </span>
-    </label>
-  </div>
+  <Carousel>
+    <div class="wrapper">
+      <div class="overflow">
+        <label
+          v-for="item in possibleValues"
+          :key="item.value"
+        >
+          <input
+            v-model="selected"
+            :name="name"
+            :value="item.value"
+            :disabled="disabled || item.disabled"
+            type="radio"
+            @change="onChange"
+          >
+          <span>
+            <Component
+              :is="item.icon"
+              v-if="item.icon"
+            />
+            {{ item.label }}
+          </span>
+        </label>
+      </div>
+    </div>
+  </Carousel>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
-  border-bottom: 1px solid var(--theme-color-silver-sand);
-  margin-bottom: 20px;
-  height: 50px;
+.wrapper {
+  width: 100%;
+  position: relative;
+  margin-top: -20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: inline-block;
+
+  & .overflow {
+    height: 55px;
+  }
 }
 
-input[type="radio"] {
-  /* https://a11yproject.com/posts/how-to-hide-content/ */
+>>> .carousel::after {
+  content: "";
+  display: block;
   position: absolute;
+  border-bottom: 1px solid var(--theme-color-silver-sand);
+  left: var(--grid-gap-width);
+  right: var(--grid-gap-width);
+  z-index: 0;
+  bottom: 26px;
+}
+
+
+input[type="radio"] {
+  /* https://accessibility.18f.gov/hidden-content/ */
+  border: 0;
+  clip: rect(0 0 0 0);
   height: 1px;
-  width: 1px;
+  margin: -1px;
   overflow: hidden;
-  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  top: 0; /* top/left prevent right margin mobile safari */
+  left: 0;
 }
 
 span {
+  position: relative;
   font-size: 16px;
   font-weight: 500;
-  margin-right: 20px;
   padding: 0 10px;
   display: inline-block;
   height: 51px;
   line-height: 51px;
   color: var(--theme-color-dove-gray);
+}
+
+label:not(:last-child) {
+  margin-right: 20px;
 }
 
 svg {
@@ -219,12 +255,33 @@ input:not(:disabled) + span:hover {
   }
 }
 
-input:checked:not(:disabled) + span {
-  border-bottom: 3px solid var(--theme-color-masala);
+input:checked:not(:disabled) + span::after {
+  content: "";
+  position: absolute;
+  display: block;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+  border-top: 3px solid var(--theme-color-masala);
+  z-index: 1;
 }
 
 input:not(:checked):not(:disabled) + span {
   cursor: pointer;
 }
+
+@media only screen and (max-width: 900px) {
+  >>> .carousel::after {
+    left: 0;
+    right: 0;
+  }
+
+  @supports (-ms-ime-align: auto) { /* fires only on Edge */
+    div::after {
+      margin-top: 17px;
+    }
+  }
+}
+
 
 </style>

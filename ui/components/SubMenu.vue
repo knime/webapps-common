@@ -1,4 +1,6 @@
 <script>
+const BLUR_TIMEOUT = 200; // ms
+
 export default {
     props: {
         /**
@@ -64,7 +66,11 @@ export default {
          */
         onMenuClick(e) {
             if (e.relatedTarget && e.relatedTarget.className.includes('clickable-item')) {
-                e.currentTarget.focus();
+                let el = e.currentTarget || e.relatedTarget; // Edge needs currentTarget
+                el.focus();
+                setTimeout(() => {
+                    el.blur(); // manually blur to close submenu consistently across browsers
+                }, BLUR_TIMEOUT);
             }
             return true;
         }
