@@ -34,6 +34,6 @@
   --theme-color-error: hsl(357.5, 71.6%, 45.5%); /* #C72128 */
   --theme-color-success: hsl(127.5, 50%, 47.1%); /* #3CB44B */
   --theme-color-info: var(--knime-blue); /* #00243C */
-  --theme-color-running: hsl(206, 70%, 39%); /* #1E6DA8 */
-  --theme-color-action-required: hsl(29, 100%, 60%); /* #FF9632 */
+  --theme-color-running: hsl(205.7, 69.7%, 38.8%); /* #1E6DA8 */
+  --theme-color-action-required: hsl(29.3, 100%, 59.8%); /* #FF9632 */
 }

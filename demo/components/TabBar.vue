@@ -184,6 +184,16 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
+section {
+  & >>> .shadow-wrapper::before {
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+
+  & >>> .shadow-wrapper::after {
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+  }
+}
+
 h4 {
   margin-bottom: 10px;
 }

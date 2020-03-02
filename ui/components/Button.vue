@@ -140,7 +140,6 @@ export default {
   line-height: 19px;
   padding: 12px;
   text-decoration: none;
-  margin-bottom: 10px;
   border: 0;
   cursor: pointer;
   color: var(--theme-color-dove-gray);
@@ -151,7 +150,9 @@ export default {
     height: 18px;
     stroke: var(--theme-color-dove-gray);
     stroke-width: calc(32px / 18);
-    vertical-align: bottom;
+    position: relative;
+    top: -0.11em;
+    vertical-align: middle;
     margin-right: 8px;
   }
 
@@ -165,7 +166,7 @@ export default {
       width: 14px;
       height: 14px;
       stroke-width: calc(32px / 14);
-      vertical-align: text-bottom;
+      top: -0.1em;
     }
 
     &.with-border {
