@@ -161,6 +161,7 @@ export default {
 @media only screen and (max-width: 900px) {
   .plain {
     white-space: normal;
+    word-break: break-word;
   }
 }
 </style>
