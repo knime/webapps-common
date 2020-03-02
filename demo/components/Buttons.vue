@@ -192,6 +192,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
+
 .align-horizontal {
   display: flex;
   align-items: center;
