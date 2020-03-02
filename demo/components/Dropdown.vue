@@ -6,7 +6,6 @@ import code from '!!raw-loader!../../ui/components/forms/Dropdown';
 const codeExample = `<Dropdown
   v-model="selected"
   aria-label="A Dropdown"
-  placeholder="Select stuff here!"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -15,8 +14,7 @@ const codeExample = `<Dropdown
     text: 'Bar'
   }, {
     id: 'baz',
-    text: 'Baz',
-    selectedText: 'Baz!!'
+    text: 'Baz'
   }]"
 />`;
 
@@ -58,7 +56,6 @@ export default {
           <Dropdown
             v-model="selected"
             aria-label="A List"
-            placeholder="Select stuff here!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -67,8 +64,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
@@ -77,7 +73,6 @@ export default {
             v-model="selected"
             aria-label="A limited list"
             size="3"
-            placeholder="Select stuff here vertical!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -113,8 +108,7 @@ export default {
               text: 'Bar 11'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>

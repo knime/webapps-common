@@ -16,7 +16,8 @@
     "package": "npm run --prefix buildtools/ package"
   },
   "dependencies": {
-    "knime-build-tools": "file:buildtools"
+    "knime-build-tools": "file:buildtools",
+    "vue-clickaway": "2.2.2"
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
@@ -50,8 +51,5 @@
     "typeface-roboto": "*",
     "typeface-roboto-mono": "*"
   },
-  "private": true,
-  "dependencies": {
-    "vue-clickaway": "^2.2.2"
-  }
+  "private": true
 }

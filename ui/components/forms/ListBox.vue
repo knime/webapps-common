@@ -76,6 +76,13 @@ export default {
         setSelected(value, index) {
             consola.trace('ListBox setSelected on', value);
             this.selectedIndex = index;
+
+            /**
+             * Fired when the selection changes.
+             *
+             * @event input
+             * @type {String}
+             */
             this.$emit('input', value);
         },
         scrollToCurrent() {
@@ -176,7 +183,7 @@ export default {
         ref="options"
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
@@ -226,10 +233,6 @@ ul[role="listbox"] {
 }
 
 .noselect {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 

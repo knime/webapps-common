@@ -13,16 +13,6 @@ export default {
             default: ''
         },
         /**
-         * Controls the size of the label
-         */
-        labelSize: {
-            type: String,
-            default: 'medium',
-            validator(val) {
-                return ['medium', 'large'].includes(val);
-            }
-        },
-        /**
          * Controls the alignment of the RadioButtons
          */
         alignment: {
@@ -60,10 +50,10 @@ export default {
              * Fired when the radio button value changes.
              *
              * @event input
-             * @type {Boolean}
+             * @type {String}
              */
             let value = $event.target.value;
-            consola.trace('Radiobutton value changed to', value);
+            consola.trace('RadioButton value changed to', value);
             this.$emit('input', value);
         },
         hasSelection() {
@@ -82,7 +72,6 @@ export default {
     <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
-      :class="[labelSize, 'radio-label']"
     >
       <input
         ref="input"
@@ -102,9 +91,11 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.radio-label {
+label {
   position: relative;
-  line-height: 1;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 18px;
   padding: 3px 0 3px 23px;
 
   & input {
@@ -140,9 +131,9 @@ export default {
       box-shadow: inset 0 0 0 4px var(--theme-color-masala);
     }
 
-    /* checked labels are bold */
+    /* checked labels are medium */
     &:checked + span {
-      font-weight: 700;
+      font-weight: 500;
     }
   }
 
@@ -169,25 +160,9 @@ export default {
     background: var(--theme-color-masala);
     box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
   }
-
-  /* label size */
-  &.large {
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 24px;
-    display: block;
-    margin-bottom: 5px;
-    padding-top: 0;
-  }
-
-  &.medium {
-    font-weight: 300;
-    font-size: 14px;
-    line-height: 18px;
-  }
 }
 
-.vertical .radio-label {
+.vertical label {
   display: block;
 }
 
@@ -195,12 +170,13 @@ export default {
   display: flex;
   flex-wrap: wrap;
 
-  & .radio-label {
+  & label {
     display: block;
-    padding-right: 3px;
     min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
+
+    &:not(:last-of-type) {
+      padding-right: 12px;
+    }
   }
 }
-
-
 </style>

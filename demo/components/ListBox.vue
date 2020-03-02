@@ -6,7 +6,6 @@ import code from '!!raw-loader!../../ui/components/forms/ListBox';
 const codeExample = `<ListBox
   v-model="selected"
   aria-label="List"
-  placeholder="Select stuff here!"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -15,8 +14,7 @@ const codeExample = `<ListBox
     text: 'Bar'
   }, {
     id: 'baz',
-    text: 'Baz',
-    selectedText: 'Baz!!'
+    text: 'Baz'
   }]"
 />`;
 
@@ -49,7 +47,7 @@ export default {
             A list of choices the user must choose one of them, so it emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>. It can have a <code>size</code> which
             defines the visible items. Keyboard navigation works (<code>Up</code>/<code>Down</code> and
-            <code>Home</code>/<code>End</code>). It is fully compatible with the <code>RadioButtons</code> component.
+            <code>Home</code>/<code>End</code>).
           </p>
         </div>
       </div>
@@ -58,7 +56,6 @@ export default {
           <ListBox
             v-model="selected"
             aria-label="A List"
-            placeholder="Select stuff here!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -67,8 +64,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
@@ -77,7 +73,6 @@ export default {
             v-model="selected"
             aria-label="A limited list"
             :size="3"
-            placeholder="Select stuff here vertical!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -119,8 +114,7 @@ export default {
               text: 'Bar 12'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
