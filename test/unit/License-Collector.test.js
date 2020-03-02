@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import LicenseCollector from '~/ui/pages/license-collector.vue';
+import OpenSourceCredits from '~/ui/components/OpenSourceCredits.vue';
 import Description from '~/ui/components/Description.vue';
 
 jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [], { virtual: true });
@@ -8,7 +8,7 @@ jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [], { v
 describe('license-collector.vue', () => {
 
     it('renders', () => {
-        const wrapper = shallowMount(LicenseCollector);
+        const wrapper = shallowMount(OpenSourceCredits);
         wrapper.setData({ title: 'test Title' });
 
         expect(wrapper.find(Description).exists()).toBe(true);
