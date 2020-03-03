@@ -26,7 +26,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: 'bar'
+            selected: 'bar',
+            placeholderModel: ''
         };
     },
     computed: {
@@ -114,6 +115,81 @@ export default {
         </div>
         <div class="grid-item-2">
           selected id: {{ selected }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>
+            Placeholder and Error (<code>isValid=false</code>) states:
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="placeholderModel"
+            placeholder="Placeholder…"
+            aria-label="A List"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+          />
+        </div>
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="placeholderModel"
+            placeholder="Placeholder…"
+            :is-valid="false"
+            aria-label="A limited list"
+            size="3"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            },{
+              id: 'bar2',
+              text: 'Bar 2'
+            },{
+              id: 'bar3',
+              text: 'Bar 3'
+            }, {
+              id: 'bar4',
+              text: 'Bar 4'
+            }, {
+              id: 'bar5',
+              text: 'Bar 5'
+            }, {
+              id: 'bar6',
+              text: 'Bar 6'
+            }, {
+              id: 'bar7',
+              text: 'Bar 8'
+            }, {
+              id: 'bar9',
+              text: 'Bar 9'
+            }, {
+              id: 'bar10',
+              text: 'Bar 10'
+            }, {
+              id: 'bar11',
+              text: 'Bar 11'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+          />
+        </div>
+        <div class="grid-item-2">
+          selected id: {{ placeholderModel }}
         </div>
       </div>
     </section>

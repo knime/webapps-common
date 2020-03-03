@@ -47,7 +47,8 @@ export default {
             A list of choices the user must choose one of them, so it emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>. It can have a <code>size</code> which
             defines the visible items. Keyboard navigation works (<code>Up</code>/<code>Down</code> and
-            <code>Home</code>/<code>End</code>).
+            <code>Home</code>/<code>End</code>). Second ListBox is always invalid (<code>isValid=false</code>) and
+            has a scrollbar because it has a size of 3 elements.
           </p>
         </div>
       </div>
@@ -72,6 +73,7 @@ export default {
           <ListBox
             v-model="selected"
             aria-label="A limited list"
+            :is-valid="false"
             :size="3"
             :possible-values="[{
               id: 'foo',

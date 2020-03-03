@@ -28,6 +28,10 @@ export default {
                 return val >= 0;
             }
         },
+        isValid: {
+            default: true,
+            type: Boolean
+        },
         ariaLabel: {
             type: String,
             required: true
@@ -166,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'invalid' : !isValid}">
     <ul
       ref="ul"
       role="listbox"
@@ -196,6 +200,22 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+
+.invalid {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
+}
 
 [role="listbox"] {
   font-size: 14px;

@@ -26,9 +26,17 @@ export default {
             type: String,
             default: ''
         },
+        placeholder: {
+            type: String,
+            default: ''
+        },
         ariaLabel: {
             type: String,
             required: true
+        },
+        isValid: {
+            default: true,
+            type: Boolean
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -183,11 +191,14 @@ export default {
         hasSelection() {
             return this.selectedIndex >= 0;
         },
+        showPlaceholder(value) {
+            return this.displayTextMap.hasOwnProperty(value);
+        },
         displayText(value) {
             if (this.displayTextMap.hasOwnProperty(value)) {
                 return this.displayTextMap[value];
             } else {
-                return `invalid: ${value}`;
+                return this.placeholder;
             }
         },
         getCurrentSelectedId() {
@@ -214,7 +225,7 @@ export default {
 <template>
   <div
     v-on-clickaway="clickAway"
-    :class="['dropdown' , { collapsed: !isExpanded }]"
+    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
   >
     <div
       :id="generateId('button')"
@@ -222,6 +233,7 @@ export default {
       role="button"
       tabindex="0"
       aria-haspopup="listbox"
+      :class="{'placeholder': showPlaceholder}"
       :aria-label="ariaLabel"
       :aria-labelledby="generateId('button')"
       :aria-expanded="isExpanded"
@@ -260,6 +272,22 @@ export default {
 
 .dropdown {
   position: relative;
+
+  &.placeholder {
+    color: var(--theme-color-stone-gray);
+  }
+
+  &.invalid::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
 
   & [role=button] {
     margin: 0;
