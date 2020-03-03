@@ -1,7 +1,8 @@
 # Shared files for web projects with JS, Vue and/or Nuxt
 
 This project contains shared config files, Vue components, CSS files, utilities, etc. that can be used for the frontend
-of all KNIME web projects.
+of all KNIME web projects. It also includes an internal NPM package, knime-build-tools, which contains scripts and functionality
+commonly used in KNIME web projects.
 
 ## Demo
 
@@ -146,6 +147,20 @@ Nesting of CSS rules is supported via [postcss-nesting] following the [CSS Nesti
 ### Theming
 In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in
 `/ui/css/variables`. Since IE11 doesn't support them, theming won't work here; the default theme will be shown.
+
+# knime-build-tools
+
+This interally developed and maintained NPM package is included in the `webapps-common` repository and contains build utilities for various KNIME Web Projects. Because this package is a dependency
+of `webapps-common`, the scripts defined in this package should be defined in `webapps-common/package.json` file using the `--prefix` for easier use from a parent project.
+
+## Tools and Functionality
+
+### 1.) Open Source Credits
+
+`npm run --prefix /webapps-common opensourcecredits`
+
+Used for collecting licenses for parent projects and writing them to a `JSON` file. This file is written to locally to `~webapps-commons/build-tools/opensourcecredits/used-packages.json`.
+ **Note:** this file is untracked by **git** and is only intended to be used during the build step for an application using this script.
 
 
 
