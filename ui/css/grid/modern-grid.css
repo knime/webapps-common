@@ -173,6 +173,9 @@ section section {
   .grid-container {
     flex-wrap: wrap;
 
+    & .grid-item-1,
+    & .grid-item-2,
+    & .grid-item-3,
     & .grid-item-4,
     & .grid-item-5,
     & .grid-item-6,
@@ -184,29 +187,27 @@ section section {
     & .grid-item-12 {
       --item-size: 12;
     }
+  }
 
-    & .grid-item-3,
-    & .grid-item-2,
-    & .grid-item-1 {
-      --item-size: 6;
-
-      flex-grow: 1;
-    }
+  /* There is nothing to either side so we don't need spacing-right at this breakpoint */
+  .grid-container .reset-spacing {
+    width: unset;
   }
 
   .grid-container .spacing-right {
     padding-right: 0;
   }
-
-  .grid-container .reset-spacing {
-    width: unset;
-  }
 }
 
+/* Main grid-item function */
 [class^="grid-item-"] {
   width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
+  max-width: 100%; /* for responsive nested grids the calculation goes somethings above 100%, this prevents this */
 }
 
+/*
+  Nested grid-items
+*/
 .grid-item-11 [class^="grid-item-"] {
   width: calc(var(--item-size) / 11 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
