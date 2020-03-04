@@ -104,22 +104,6 @@ section section {
   --item-size: 12;
 }
 
-/*
- hack for breaking out of the grid system, because sometimes the visual design does not stick to it:
- |    ||    ||    ||    ||    | header
- |    ||    ||    ||   | |    | content
- |    ||    ||    ||    ||    | footer
-
- Notice that in the content area there is a double gap. This can be achieved by using the `spacing-right` class on the
- column left to it. If you want to nest grid items, you have to use `reset-spacing` on the nested grid-container
-*/
-.grid-container .spacing-right {
-  padding-right: var(--grid-gap-width);
-}
-
-.grid-container .reset-spacing {
-  width: calc(100% + var(--grid-gap-width));
-}
 
 @media only screen and (max-width: 1180px) {
   main section,
@@ -188,66 +172,107 @@ section section {
       --item-size: 12;
     }
   }
-
-  /* There is nothing to either side so we don't need spacing-right at this breakpoint */
-  .grid-container .reset-spacing {
-    width: unset;
-  }
-
-  .grid-container .spacing-right {
-    padding-right: 0;
-  }
 }
 
 /* Main grid-item function */
-[class^="grid-item-"] {
+[class^="grid-item-"],
+[class*=" grid-item-"] {
   width: calc(var(--item-size) / 12 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
-  max-width: 100%; /* for responsive nested grids the calculation goes somethings above 100%, this prevents this */
+  max-width: 100%; /* for responsive nested grids the calculation goes sometimes above 100%, this prevents this */
 }
 
 /*
   Nested grid-items
 */
-.grid-item-11 [class^="grid-item-"] {
+.grid-item-11 [class^="grid-item-"],
+.grid-item-11 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 11 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-10 [class^="grid-item-"] {
+.grid-item-10 [class^="grid-item-"],
+.grid-item-10 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 10 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-9 [class^="grid-item-"] {
+.grid-item-9 [class^="grid-item-"],
+.grid-item-9 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 9 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-8 [class^="grid-item-"] {
+.grid-item-8 [class^="grid-item-"],
+.grid-item-8 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 8 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-7 [class^="grid-item-"] {
+.grid-item-7 [class^="grid-item-"],
+.grid-item-7 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 7 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-6 [class^="grid-item-"] {
+.grid-item-6 [class^="grid-item-"],
+.grid-item-6 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 6 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-5 [class^="grid-item-"] {
+.grid-item-5 [class^="grid-item-"],
+.grid-item-5 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 5 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-4 [class^="grid-item-"] {
+.grid-item-4 [class^="grid-item-"],
+.grid-item-4 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 4 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-3 [class^="grid-item-"] {
+.grid-item-3 [class^="grid-item-"],
+.grid-item-3 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 3 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
-.grid-item-2 [class^="grid-item-"] {
+.grid-item-2 [class^="grid-item-"],
+.grid-item-2 [class*=" grid-item-"] {
   width: calc(var(--item-size) / 2 * (100% + var(--grid-gap-width)) - var(--grid-gap-width));
 }
 
 .grid-item-1 .grid-item-1 {
   width: 100%;
+}
+
+/*
+ hack for breaking out of the grid system, because sometimes the visual design does not stick to it:
+ |    ||    ||    ||    ||    | header
+ |    ||    ||    ||   | |    | content
+ |    ||    ||    ||    ||    | footer
+
+ Notice that in the content area there is a double gap. This can be achieved by using the `spacing-right` class on the
+ column left to it. If you want to nest grid items, you have to use `reset-spacing` on the nested grid-container
+*/
+.grid-container .spacing-right {
+  padding-right: var(--grid-gap-width);
+
+  & .reset-spacing {
+    width: calc(100% + var(--grid-gap-width));
+
+    /* Nested grid-items also need a reduced max-width to prevent them getting as wide as their parent */
+    & [class^="grid-item-"],
+    & [class*=" grid-item-"] {
+      max-width: calc(100% - var(--grid-gap-width));
+    }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  /* There is nothing to either side so we don't need spacing-right at this breakpoint */
+  .grid-container .spacing-right {
+    padding-right: 0;
+
+    & .reset-spacing {
+      width: unset;
+
+      & [class^="grid-item-"],
+      & [class*=" grid-item-"] {
+        max-width: 100%;
+      }
+    }
+  }
 }
