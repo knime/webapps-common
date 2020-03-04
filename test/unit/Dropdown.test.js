@@ -281,4 +281,53 @@ describe('Dropdown.vue', () => {
         expect(button.attributes('aria-label')).toBe(ariaLabel);
     });
 
+    it('show placeholder if value is not in possible values', () => {
+        let placeholder = 'my-placeholder';
+        let possibleValues = [{
+            id: 'test1',
+            text: 'test1'
+        }, {
+            id: 'test2',
+            text: 'test2'
+        }, {
+            id: 'test3',
+            text: 'test3'
+        }];
+        const wrapper = mount(Dropdown, {
+            propsData: {
+                possibleValues,
+                value: 'no', // defines start point
+                placeholder,
+                ariaLabel: 'label'
+            }
+        });
+
+        let button = wrapper.find('[role=button]');
+        expect(button.text()).toBe(placeholder);
+    });
+
+    it('show invalid state indicator if isValid is false', () => {
+        let possibleValues = [{
+            id: 'test1',
+            text: 'test1'
+        }, {
+            id: 'test2',
+            text: 'test2'
+        }, {
+            id: 'test3',
+            text: 'test3'
+        }];
+        const wrapper = mount(Dropdown, {
+            propsData: {
+                possibleValues,
+                value: 'no', // defines start point
+                isValid: false,
+                ariaLabel: 'label'
+            }
+        });
+
+        let root = wrapper.find('div');
+        expect(root.classes()).toContain('invalid');
+    });
+
 });

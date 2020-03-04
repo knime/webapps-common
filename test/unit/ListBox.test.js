@@ -16,7 +16,6 @@ describe('ListBox.vue', () => {
                 text: 'test3'
             }],
             value: '',
-            placeholder: '',
             ariaLabel: 'ListBox'
         };
         const wrapper = mount(ListBox, {
@@ -42,7 +41,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: '',
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -67,7 +65,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test2', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -92,7 +89,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test2', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -117,7 +113,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test1', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -143,7 +138,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test3', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -174,7 +168,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test3', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -205,7 +198,6 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test3', // defines start point
-                placeholder: '',
                 ariaLabel: 'ListBox'
             }
         });
@@ -231,13 +223,36 @@ describe('ListBox.vue', () => {
             propsData: {
                 possibleValues,
                 value: 'test3', // defines start point
-                placeholder: '',
                 ariaLabel
             }
         });
 
         let ul = wrapper.find('ul');
         expect(ul.attributes('aria-label')).toBe(ariaLabel);
+    });
+
+    it('sets the invalid state if isValid is false', () => {
+        let possibleValues = [{
+            id: 'test1',
+            text: 'test1'
+        }, {
+            id: 'test2',
+            text: 'test2'
+        }, {
+            id: 'test3',
+            text: 'test3'
+        }];
+        const wrapper = mount(ListBox, {
+            propsData: {
+                possibleValues,
+                value: 'test3', // defines start point
+                isValid: false,
+                ariaLabel: 'label'
+            }
+        });
+
+        let root = wrapper.find('div');
+        expect(root.classes()).toContain('invalid');
     });
 
 });
