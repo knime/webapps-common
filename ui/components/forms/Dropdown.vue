@@ -1,5 +1,6 @@
 <script>
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import Vue from 'vue'
 import { mixin as clickaway } from 'vue-clickaway';
 
 let count = 0;
@@ -142,7 +143,7 @@ export default {
         toggleExpanded() {
             this.isExpanded = !this.isExpanded;
             if (this.isExpanded) {
-                setTimeout(() => this.$refs.ul.focus(), 0);
+                Vue.nextTick(() => this.$refs.ul.focus());
             }
         },
         handleKeyDownList(e)  {
@@ -334,7 +335,7 @@ export default {
   & [role="listbox"] {
     overflow-y: auto;
     position: absolute;
-    z-index: 2;
+    z-index: 20;
     max-height: calc(24px * 7); /* show max 7 items */
     font-size: 14px;
     min-height: 24px;
