@@ -3,22 +3,26 @@ import { mount } from '@vue/test-utils';
 import RadioButtons from '~/ui/components/forms/RadioButtons';
 
 describe('RadioButtons.vue', () => {
-    let possibleValues = [{
-        id: 'test1',
-        text: 'test1'
-    }, {
-        id: 'test2',
-        text: 'test2'
-    }, {
-        id: 'test3',
-        text: 'test3'
-    }, {
-        id: 'test4',
-        text: 'test4'
-    }, {
-        id: 'test5',
-        text: 'test5'
-    }];
+    let possibleValues;
+
+    beforeEach(() => {
+        possibleValues = [{
+            id: 'test1',
+            text: 'test1'
+        }, {
+            id: 'test2',
+            text: 'test2'
+        }, {
+            id: 'test3',
+            text: 'test3'
+        }, {
+            id: 'test4',
+            text: 'test4'
+        }, {
+            id: 'test5',
+            text: 'test5'
+        }];
+    });
 
     it('renders', () => {
         const wrapper = mount(RadioButtons, {

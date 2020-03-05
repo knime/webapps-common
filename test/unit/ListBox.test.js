@@ -3,25 +3,29 @@ import { mount } from '@vue/test-utils';
 import ListBox from '~/ui/components/forms/ListBox';
 
 describe('ListBox.vue', () => {
-    let propsData = {
-        possibleValues: [{
-            id: 'test1',
-            text: 'test1'
-        }, {
-            id: 'test2',
-            text: 'test2'
-        }, {
-            id: 'test3',
-            text: 'test3'
-        }, {
-            id: 'test4',
-            text: 'test4'
-        }, {
-            id: 'test5',
-            text: 'test5'
-        }],
-        ariaLabel: 'Test Label'
-    };
+    let propsData;
+
+    beforeEach(() => {
+        propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'test1'
+            }, {
+                id: 'test2',
+                text: 'test2'
+            }, {
+                id: 'test3',
+                text: 'test3'
+            }, {
+                id: 'test4',
+                text: 'test4'
+            }, {
+                id: 'test5',
+                text: 'test5'
+            }],
+            ariaLabel: 'Test Label'
+        };
+    });
 
     it('renders', () => {
         const wrapper = mount(ListBox, {
