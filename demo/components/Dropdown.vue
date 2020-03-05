@@ -120,7 +120,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <p>
-            Placeholder and Error (<code>isValid=false</code>) states:
+            Placeholder and invalid (<code>isValid=false</code>) states:
           </p>
         </div>
       </div>
