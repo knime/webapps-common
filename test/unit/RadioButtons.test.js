@@ -3,42 +3,38 @@ import { mount } from '@vue/test-utils';
 import RadioButtons from '~/ui/components/forms/RadioButtons';
 
 describe('RadioButtons.vue', () => {
+    let possibleValues = [{
+        id: 'test1',
+        text: 'test1'
+    }, {
+        id: 'test2',
+        text: 'test2'
+    }, {
+        id: 'test3',
+        text: 'test3'
+    }, {
+        id: 'test4',
+        text: 'test4'
+    }, {
+        id: 'test5',
+        text: 'test5'
+    }];
+
     it('renders', () => {
-        let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
-            value: ''
-        };
         const wrapper = mount(RadioButtons, {
-            propsData
+            propsData: {
+                possibleValues
+            }
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('input[type=radio]').length).toBe(propsData.possibleValues.length);
+        expect(wrapper.findAll('input[type=radio]').length).toBe(possibleValues.length);
     });
 
     it('sets the values to the checked value', () => {
         const wrapper = mount(RadioButtons, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
-                value: ''
+                possibleValues
             }
         });
         let newValue = 'test2';
