@@ -16,8 +16,7 @@
     "package": "npm run --prefix buildtools/ package"
   },
   "dependencies": {
-    "knime-build-tools": "file:buildtools",
-    "vue-clickaway": "2.2.2"
+    "knime-build-tools": "file:buildtools"
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
@@ -46,6 +45,7 @@
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
+    "vue-clickaway": "2.2.2",
     "stylelint": "10.x",
     "stylelint-config-standard": "18.x",
     "typeface-roboto": "*",
