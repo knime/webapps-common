@@ -118,9 +118,10 @@ export default {
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-6">
+        <div class="grid-item-12">
           <p>
-            Placeholder and invalid (<code>isValid=false</code>) states:
+            The <code>placeholder</code> will be shown when no <code>value</code> is set.
+            Also it provides an invalid (<code>isValid=false</code>) state.
           </p>
         </div>
       </div>

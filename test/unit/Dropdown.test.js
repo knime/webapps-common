@@ -41,18 +41,29 @@ describe('Dropdown.vue', () => {
         expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('show placeholder if value is not in possible values', () => {
+    it('show placeholder if no value set', () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
-                value: 'no',
                 placeholder
             }
         });
 
         let button = wrapper.find('[role=button]');
         expect(button.text()).toBe(placeholder);
+    });
+
+    it('show invalid value if value is invalid', () => {
+        const wrapper = mount(Dropdown, {
+            propsData: {
+                ...propsData,
+                value: 'no'
+            }
+        });
+
+        let button = wrapper.find('[role=button]');
+        expect(button.text()).toBe('no (invalid)');
     });
 
     it('show invalid state indicator if isValid is false', () => {

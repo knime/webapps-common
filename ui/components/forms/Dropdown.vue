@@ -68,6 +68,9 @@ export default {
         };
     },
     computed: {
+        showPlaceholder() {
+            return !this.value;
+        },
         displayTextMap() {
             let map = {};
             for (let value of this.possibleValues) {
@@ -75,13 +78,19 @@ export default {
             }
             return map;
         },
-        showPlaceholder() {
-            return !this.displayTextMap.hasOwnProperty(this.value);
+        displayText() {
+            if (this.showPlaceholder) {
+                return this.placeholder;
+            } else if (this.displayTextMap.hasOwnProperty(this.value)) {
+                return this.displayTextMap[this.value];
+            } else {
+                return `${this.value} (invalid)`;
+            }
         }
     },
     mounted() {
         // update the selected index on start
-        this.selectedIndex = this.possibleValues.map(x => x.id).indexOf(this.value);
+        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
     },
     methods: {
         isCurrentValue(candidate) {
@@ -195,13 +204,6 @@ export default {
         hasSelection() {
             return this.selectedIndex >= 0;
         },
-        displayText(value) {
-            if (this.displayTextMap.hasOwnProperty(value)) {
-                return this.displayTextMap[value];
-            } else {
-                return this.placeholder;
-            }
-        },
         getCurrentSelectedId() {
             try {
                 return this.possibleValues[this.selectedIndex].id;
@@ -241,7 +243,7 @@ export default {
       @click="toggleExpanded"
       @keydown="handleKeyDownButton"
     >
-      {{ displayText(value) }}
+      {{ displayText }}
       <DropdownIcon class="icon" />
     </div>
     <ul

@@ -71,7 +71,7 @@ export default {
     },
     mounted() {
         // update the selected index on start
-        this.selectedIndex = this.possibleValues.map(x => x.id).indexOf(this.value);
+        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
     },
     methods: {
         isCurrentValue(candidate) {
@@ -170,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'invalid' : !isValid}">
+  <div :class="{ 'invalid': !isValid}">
     <ul
       ref="ul"
       role="listbox"
