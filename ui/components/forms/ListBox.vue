@@ -28,6 +28,10 @@ export default {
                 return val >= 0;
             }
         },
+        isValid: {
+            default: true,
+            type: Boolean
+        },
         ariaLabel: {
             type: String,
             required: true
@@ -67,7 +71,7 @@ export default {
     },
     mounted() {
         // update the selected index on start
-        this.selectedIndex = this.possibleValues.map(x => x.id).indexOf(this.value);
+        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
     },
     methods: {
         isCurrentValue(candidate) {
@@ -76,6 +80,13 @@ export default {
         setSelected(value, index) {
             consola.trace('ListBox setSelected on', value);
             this.selectedIndex = index;
+
+            /**
+             * Fired when the selection changes.
+             *
+             * @event input
+             * @type {String}
+             */
             this.$emit('input', value);
         },
         scrollToCurrent() {
@@ -159,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'invalid': !isValid}">
     <ul
       ref="ul"
       role="listbox"
@@ -176,7 +187,7 @@ export default {
         ref="options"
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
@@ -189,6 +200,22 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
+
+.invalid {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
+}
 
 [role="listbox"] {
   font-size: 14px;
@@ -221,10 +248,6 @@ ul[role="listbox"] {
 }
 
 .noselect {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 

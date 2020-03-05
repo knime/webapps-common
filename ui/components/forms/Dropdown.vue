@@ -1,5 +1,6 @@
 <script>
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import Vue from 'vue';
 import { mixin as clickaway } from 'vue-clickaway';
 
 let count = 0;
@@ -26,9 +27,17 @@ export default {
             type: String,
             default: ''
         },
+        placeholder: {
+            type: String,
+            default: null
+        },
         ariaLabel: {
             type: String,
             required: true
+        },
+        isValid: {
+            default: true,
+            type: Boolean
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -59,17 +68,29 @@ export default {
         };
     },
     computed: {
+        showPlaceholder() {
+            return !this.value;
+        },
         displayTextMap() {
             let map = {};
             for (let value of this.possibleValues) {
                 map[value.id] = value.text;
             }
             return map;
+        },
+        displayText() {
+            if (this.showPlaceholder) {
+                return this.placeholder;
+            } else if (this.displayTextMap.hasOwnProperty(this.value)) {
+                return this.displayTextMap[this.value];
+            } else {
+                return `${this.value} (invalid)`;
+            }
         }
     },
     mounted() {
         // update the selected index on start
-        this.selectedIndex = this.possibleValues.map(x => x.id).indexOf(this.value);
+        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
     },
     methods: {
         isCurrentValue(candidate) {
@@ -78,6 +99,13 @@ export default {
         setSelected(value, index) {
             consola.trace('ListBox setSelected on', value);
             this.selectedIndex = index;
+
+            /**
+             * Fired when the selection changes.
+             *
+             * @event input
+             * @type {String}
+             */
             this.$emit('input', value);
         },
         onOptionClick(value, index) {
@@ -127,7 +155,7 @@ export default {
         toggleExpanded() {
             this.isExpanded = !this.isExpanded;
             if (this.isExpanded) {
-                setTimeout(() => this.$refs.ul.focus(), 0);
+                Vue.nextTick(() => this.$refs.ul.focus());
             }
         },
         handleKeyDownList(e)  {
@@ -176,13 +204,6 @@ export default {
         hasSelection() {
             return this.selectedIndex >= 0;
         },
-        displayText(value) {
-            if (this.displayTextMap.hasOwnProperty(value)) {
-                return this.displayTextMap[value];
-            } else {
-                return `invalid: ${value}`;
-            }
-        },
         getCurrentSelectedId() {
             try {
                 return this.possibleValues[this.selectedIndex].id;
@@ -207,7 +228,7 @@ export default {
 <template>
   <div
     v-on-clickaway="clickAway"
-    :class="['dropdown' , { collapsed: !isExpanded }]"
+    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
   >
     <div
       :id="generateId('button')"
@@ -215,13 +236,14 @@ export default {
       role="button"
       tabindex="0"
       aria-haspopup="listbox"
+      :class="{'placeholder': showPlaceholder}"
       :aria-label="ariaLabel"
       :aria-labelledby="generateId('button')"
       :aria-expanded="isExpanded"
       @click="toggleExpanded"
       @keydown="handleKeyDownButton"
     >
-      {{ displayText(value) }}
+      {{ displayText }}
       <DropdownIcon class="icon" />
     </div>
     <ul
@@ -238,7 +260,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect' : true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id, index)"
       >
@@ -253,6 +275,22 @@ export default {
 
 .dropdown {
   position: relative;
+
+  & .placeholder {
+    color: var(--theme-color-stone-gray);
+  }
+
+  &.invalid::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
 
   & [role=button] {
     margin: 0;
@@ -279,6 +317,7 @@ export default {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
+    stroke: var(--theme-color-masala);
     position: absolute;
     right: 10px;
     top: 11px;
@@ -294,7 +333,7 @@ export default {
   & [role="listbox"] {
     overflow-y: auto;
     position: absolute;
-    z-index: 2;
+    z-index: 20;
     max-height: calc(24px * 7); /* show max 7 items */
     font-size: 14px;
     min-height: 24px;
@@ -324,10 +363,6 @@ export default {
   }
 
   & .noselect {
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
     user-select: none;
   }
 }

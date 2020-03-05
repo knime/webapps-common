@@ -45,13 +45,11 @@
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
+    "vue-clickaway": "2.2.2",
     "stylelint": "10.x",
     "stylelint-config-standard": "18.x",
     "typeface-roboto": "*",
     "typeface-roboto-mono": "*"
   },
-  "private": true,
-  "dependencies": {
-    "vue-clickaway": "^2.2.2"
-  }
+  "private": true
 }

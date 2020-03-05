@@ -6,7 +6,6 @@ import code from '!!raw-loader!../../ui/components/forms/Dropdown';
 const codeExample = `<Dropdown
   v-model="selected"
   aria-label="A Dropdown"
-  placeholder="Select stuff here!"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -15,8 +14,7 @@ const codeExample = `<Dropdown
     text: 'Bar'
   }, {
     id: 'baz',
-    text: 'Baz',
-    selectedText: 'Baz!!'
+    text: 'Baz'
   }]"
 />`;
 
@@ -28,7 +26,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: 'bar'
+            selected: 'bar',
+            placeholderModel: ''
         };
     },
     computed: {
@@ -58,7 +57,6 @@ export default {
           <Dropdown
             v-model="selected"
             aria-label="A List"
-            placeholder="Select stuff here!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -67,8 +65,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
@@ -77,7 +74,6 @@ export default {
             v-model="selected"
             aria-label="A limited list"
             size="3"
-            placeholder="Select stuff here vertical!"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
@@ -113,13 +109,88 @@ export default {
               text: 'Bar 11'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
         <div class="grid-item-2">
           selected id: {{ selected }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            The <code>placeholder</code> will be shown when no <code>value</code> is set.
+            Also it provides an invalid (<code>isValid=false</code>) state.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="placeholderModel"
+            placeholder="Placeholder…"
+            aria-label="A List"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+          />
+        </div>
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="placeholderModel"
+            placeholder="Placeholder…"
+            :is-valid="false"
+            aria-label="A limited list"
+            size="3"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            },{
+              id: 'bar2',
+              text: 'Bar 2'
+            },{
+              id: 'bar3',
+              text: 'Bar 3'
+            }, {
+              id: 'bar4',
+              text: 'Bar 4'
+            }, {
+              id: 'bar5',
+              text: 'Bar 5'
+            }, {
+              id: 'bar6',
+              text: 'Bar 6'
+            }, {
+              id: 'bar7',
+              text: 'Bar 8'
+            }, {
+              id: 'bar9',
+              text: 'Bar 9'
+            }, {
+              id: 'bar10',
+              text: 'Bar 10'
+            }, {
+              id: 'bar11',
+              text: 'Bar 11'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+          />
+        </div>
+        <div class="grid-item-2">
+          selected id: {{ placeholderModel }}
         </div>
       </div>
     </section>

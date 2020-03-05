@@ -52,7 +52,7 @@ export default {
           <h2>TextArea</h2>
           <p>
             Multi-line string input with optional invalid styling.
-            It acts as a form element, so it emits input events and it has a value.
+            It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
           </p>
         </div>
       </div>

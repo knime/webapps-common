@@ -15,7 +15,22 @@ const codeExample = `<RadioButtons
     id: 'baz',
     text: 'Baz'
   }]"
-/>`;
+/>
+<RadioButtons
+  v-model="selected"
+  alignment="vertical"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+/>
+`;
 
 export default {
     components: {
@@ -43,7 +58,7 @@ export default {
         <div class="grid-item-12">
           <h2>RadioButtons</h2>
           <p>
-            A list of choices the user must choose one of them, so it emits an <code>input</code> event
+            A list of choices the user must choose one of. It emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>.
           </p>
         </div>
@@ -60,8 +75,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
@@ -77,8 +91,7 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>

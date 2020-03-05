@@ -45,7 +45,7 @@ export default {
          */
         placeholder: {
             type: String,
-            default: ''
+            default: null
         }
     },
     data() {
@@ -169,6 +169,7 @@ export default {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
+    stroke: var(--theme-color-masala);
     position: absolute;
     right: 10px;
     top: 11px;
