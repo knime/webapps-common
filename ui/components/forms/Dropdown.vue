@@ -29,7 +29,7 @@ export default {
         },
         placeholder: {
             type: String,
-            default: ''
+            default: null
         },
         ariaLabel: {
             type: String,
@@ -74,6 +74,9 @@ export default {
                 map[value.id] = value.text;
             }
             return map;
+        },
+        showPlaceholder() {
+            return !this.displayTextMap.hasOwnProperty(this.value);
         }
     },
     mounted() {
@@ -192,9 +195,6 @@ export default {
         hasSelection() {
             return this.selectedIndex >= 0;
         },
-        showPlaceholder(value) {
-            return this.displayTextMap.hasOwnProperty(value);
-        },
         displayText(value) {
             if (this.displayTextMap.hasOwnProperty(value)) {
                 return this.displayTextMap[value];
@@ -274,7 +274,7 @@ export default {
 .dropdown {
   position: relative;
 
-  &.placeholder {
+  & .placeholder {
     color: var(--theme-color-stone-gray);
   }
 
