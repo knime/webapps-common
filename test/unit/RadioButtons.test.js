@@ -31,6 +31,30 @@ describe('RadioButtons.vue', () => {
         expect(wrapper.findAll('input[type=radio]').length).toBe(possibleValues.length);
     });
 
+    it('renders when possibleValues is empty', () => {
+        expect(mount(RadioButtons).html()).toBeTruthy();
+    });
+
+    it('renders horizontal by default', () => {
+        const wrapper = mount(RadioButtons, {
+            propsData: {
+                possibleValues
+            }
+        });
+        expect(wrapper.props('alignment')).toBe('horizontal');
+        expect(wrapper.find('div').classes()).toContain('horizontal');
+    });
+
+    it('renders vertical', () => {
+        const wrapper = mount(RadioButtons, {
+            propsData: {
+                possibleValues,
+                alignment: 'vertical'
+            }
+        });
+        expect(wrapper.find('div').classes()).toContain('vertical');
+    });
+
     it('sets the values to the checked value', () => {
         const wrapper = mount(RadioButtons, {
             propsData: {
@@ -41,6 +65,17 @@ describe('RadioButtons.vue', () => {
         let input = wrapper.find(`input[value=${newValue}]`);
         input.setChecked(true);
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
+    });
+
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(RadioButtons, {
+            propsData: {
+                possibleValues
+            }
+        });
+        let input = wrapper.find('input[value=test2]');
+        input.element.checked = true; // setChecked does not work in this case
+        expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
 });
