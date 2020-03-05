@@ -102,6 +102,18 @@ describe('Dropdown.vue', () => {
         expect(listbox.isVisible()).toBe(false);
     });
 
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(Dropdown, {
+            propsData
+        });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+
+        let newValueIndex = 1;
+        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
+        input.trigger('click');
+        expect(wrapper.vm.hasSelection()).toBe(true);
+    });
+
     describe('keyboard navigation', () => {
         it('opens and closes the listbox on enter/esc', () => {
             const wrapper = mount(Dropdown, {

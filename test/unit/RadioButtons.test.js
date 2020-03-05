@@ -77,6 +77,8 @@ describe('RadioButtons.vue', () => {
                 possibleValues
             }
         });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+        
         let input = wrapper.find('input[value=test2]');
         input.element.checked = true; // setChecked does not work in this case
         expect(wrapper.vm.hasSelection()).toBe(true);

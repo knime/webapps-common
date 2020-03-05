@@ -67,6 +67,18 @@ describe('ListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toEqual(propsData.possibleValues[newValueIndex].id);
     });
 
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(ListBox, {
+            propsData
+        });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+
+        let newValueIndex = 1;
+        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
+        input.trigger('click');
+        expect(wrapper.vm.hasSelection()).toBe(true);
+    });
+
     describe('keyboard navigation', () => {
         it('sets the values on keydown navigation', () => {
             const wrapper = mount(ListBox, {
