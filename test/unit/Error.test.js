@@ -6,7 +6,7 @@ describe('Error.vue', () => {
     it('renders default', () => {
         const wrapper = shallowMount(Error);
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.find('.error-status').text()).toBe('?');
+        expect(wrapper.find('.error-status').exists()).toBe(false); // use icon instead of text
         expect(wrapper.find('.error-message').text()).toBe('An error occurred. Please try again.');
     });
 
