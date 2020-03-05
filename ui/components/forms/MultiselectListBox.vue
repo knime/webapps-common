@@ -76,7 +76,8 @@ export default {
     },
     computed: {
         ulSizeStyle() {
-            return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}px` } : {};
+            const pxSize = `${this.size * this.optionLineHeight}px`;
+            return this.size > 0 ? { 'max-height': pxSize, 'min-height': pxSize } : {};
         }
     },
     mounted() {
