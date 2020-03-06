@@ -75,9 +75,9 @@ export default {
         };
     },
     computed: {
-        ulSizeStyle() {
+        cssStyleSize() {
             const pxSize = `${this.size * this.optionLineHeight}px`;
-            return this.size > 0 ? { 'max-height': pxSize, 'min-height': pxSize } : {};
+            return this.size > 0 ? { height: pxSize } : {};
         }
     },
     mounted() {
@@ -311,13 +311,15 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'invalid' : !isValid, 'multiselect-list-box': true}">
+  <div
+    :class="{ 'invalid' : !isValid, 'multiselect-list-box': true}"
+    :style="cssStyleSize"
+  >
     <ul
       ref="ul"
       role="listbox"
       tabindex="0"
       :aria-label="ariaLabel"
-      :style="ulSizeStyle"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.prevent.exact="selectAll"
       @keydown.up.prevent.exact="onArrowUp"
@@ -368,6 +370,7 @@ export default {
   flex-direction: column;
 
   & [role="listbox"] {
+    height: 100%;
     flex-grow: 1;
     font-size: 14px;
     min-height: 20px;
