@@ -9,19 +9,19 @@ describe('Dropdown.vue', () => {
         propsData = {
             possibleValues: [{
                 id: 'test1',
-                text: 'test1'
+                text: 'Text 1'
             }, {
                 id: 'test2',
-                text: 'test2'
+                text: 'Text 2'
             }, {
                 id: 'test3',
-                text: 'test3'
+                text: 'Text 3'
             }, {
                 id: 'test4',
-                text: 'test4'
+                text: 'Text 4'
             }, {
                 id: 'test5',
-                text: 'test5'
+                text: 'Text 5'
             }],
             ariaLabel: 'Test Label'
         };
@@ -45,16 +45,22 @@ describe('Dropdown.vue', () => {
         expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('shows placeholder if no value set', () => {
+    it('shows value text or placeholder if no or empty value set', () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
-                placeholder
+                placeholder,
+                value: 'test3'
             }
         });
 
         let button = wrapper.find('[role=button]');
+        expect(button.text()).toBe('Text 3');
+
+        wrapper.setProps({ value: null });
+        expect(button.text()).toBe(placeholder);
+        wrapper.setProps({ value: '' });
         expect(button.text()).toBe(placeholder);
     });
 
@@ -82,7 +88,7 @@ describe('Dropdown.vue', () => {
         expect(root.classes()).toContain('invalid');
     });
 
-    it('opens the listbox on click of button and sets the values to the clicked value', () => {
+    it('opens the listbox on click of button and emits event for clicked value', () => {
         const wrapper = mount(Dropdown, {
             propsData
         });

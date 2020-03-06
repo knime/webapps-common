@@ -8,19 +8,19 @@ describe('RadioButtons.vue', () => {
     beforeEach(() => {
         possibleValues = [{
             id: 'test1',
-            text: 'test1'
+            text: 'Text 1'
         }, {
             id: 'test2',
-            text: 'test2'
+            text: 'Text 2'
         }, {
             id: 'test3',
-            text: 'test3'
+            text: 'Text 3'
         }, {
             id: 'test4',
-            text: 'test4'
+            text: 'Text 4'
         }, {
             id: 'test5',
-            text: 'test5'
+            text: 'Text 5'
         }];
     });
 
@@ -32,7 +32,12 @@ describe('RadioButtons.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('input[type=radio]').length).toBe(possibleValues.length);
+
+        let labels = wrapper.findAll('label');
+        expect(labels.length).toBe(possibleValues.length);
+        possibleValues.forEach((value, i) => {
+            expect(labels.at(i).text()).toContain(value.text);
+        });
     });
 
     it('renders when possibleValues is empty', () => {
@@ -59,7 +64,26 @@ describe('RadioButtons.vue', () => {
         expect(wrapper.find('div').classes()).toContain('vertical');
     });
 
-    it('sets the values to the checked value', () => {
+    it('renders selected value', () => {
+        let value = 'test3';
+        const wrapper = mount(RadioButtons, {
+            propsData: {
+                possibleValues,
+                value
+            }
+        });
+
+        let radioInputs = wrapper.findAll('input[type=radio]');
+        possibleValues.forEach((option, i) => {
+            if (option.id === value) {
+                expect(radioInputs.at(i).element.checked).toBeTruthy();
+            } else {
+                expect(radioInputs.at(i).element.checked).not.toBeTruthy();
+            }
+        });
+    });
+
+    it('emits event for selected value', () => {
         const wrapper = mount(RadioButtons, {
             propsData: {
                 possibleValues
@@ -78,7 +102,7 @@ describe('RadioButtons.vue', () => {
             }
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
-        
+
         let input = wrapper.find('input[value=test2]');
         input.element.checked = true; // setChecked does not work in this case
         expect(wrapper.vm.hasSelection()).toBe(true);

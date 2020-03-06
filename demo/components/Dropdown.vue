@@ -120,7 +120,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
-            The <code>placeholder</code> will be shown when no <code>value</code> is set.
+            The <code>placeholder</code> will be shown when no or empty <code>value</code> is set.
             Also it provides an invalid (<code>isValid=false</code>) state.
           </p>
         </div>

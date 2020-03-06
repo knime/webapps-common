@@ -9,19 +9,19 @@ describe('ListBox.vue', () => {
         propsData = {
             possibleValues: [{
                 id: 'test1',
-                text: 'test1'
+                text: 'Text 1'
             }, {
                 id: 'test2',
-                text: 'test2'
+                text: 'Text 2'
             }, {
                 id: 'test3',
-                text: 'test3'
+                text: 'Text 3'
             }, {
                 id: 'test4',
-                text: 'test4'
+                text: 'Text 4'
             }, {
                 id: 'test5',
-                text: 'test5'
+                text: 'Text 5'
             }],
             ariaLabel: 'Test Label'
         };
@@ -33,7 +33,32 @@ describe('ListBox.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('li[role=option]').length).toBe(propsData.possibleValues.length);
+
+        let options = wrapper.findAll('li[role=option]');
+        expect(options.length).toBe(propsData.possibleValues.length);
+        propsData.possibleValues.forEach((value, i) => {
+            expect(options.at(i).text()).toContain(value.text);
+        });
+    });
+
+    it('renders selected value', () => {
+        let value = 'test3';
+        const wrapper = mount(ListBox, {
+            propsData: {
+                ...propsData,
+                value
+            }
+        });
+
+        let options = wrapper.findAll('li[role=option]');
+        propsData.possibleValues.forEach((option, i) => {
+            let classes = options.at(i).classes();
+            if (option.id === value) {
+                expect(classes).toContain('focused');
+            } else {
+                expect(classes).not.toContain('focused');
+            }
+        });
     });
 
     it('sets the correct aria-* attributes', () => {
@@ -57,7 +82,7 @@ describe('ListBox.vue', () => {
         expect(root.classes()).toContain('invalid');
     });
 
-    it('sets the values to the clicked value', () => {
+    it('emits event for clicked value', () => {
         const wrapper = mount(ListBox, {
             propsData
         });
