@@ -1,5 +1,9 @@
 import { mount } from '@vue/test-utils';
 
+jest.mock('vue-clickaway', () => ({
+    mixin: {}
+}), { virtual: true });
+
 import Dropdown from '~/ui/components/forms/Dropdown';
 
 describe('Dropdown.vue', () => {
