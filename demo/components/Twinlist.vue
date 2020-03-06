@@ -66,7 +66,7 @@ export default {
             inside of the lists see <code>MultiselectListBox</code>. With <code>Doubleclick</code> the items can also
             be moved between the lists.
           </p>
-        </div>s
+        </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
