@@ -66,7 +66,7 @@ export default {
           <h2>InputField</h2>
           <p>
             Single line string input with optional icon and validity styling.
-            It acts as a form element, so it emits input events and it has a value.
+            It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
           </p>
         </div>
       </div>
