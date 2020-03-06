@@ -25,6 +25,7 @@ import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
 import Multiselect from '../components/Multiselect';
+import OpenSourceCredits from '../components/OpenSourceCredits';
 
 export default {
     components: {
@@ -51,7 +52,8 @@ export default {
         TextArea,
         NumberInput,
         Checkbox,
-        Multiselect
+        Multiselect,
+        OpenSourceCredits
     }
 };
 </script>
@@ -94,6 +96,7 @@ export default {
     <NumberInput />
     <Checkbox />
     <Multiselect />
+    <OpenSourceCredits />
   </main>
 </template>
 

@@ -12,8 +12,7 @@
     "test:unit": "jest",
     "coverage": "jest --coverage",
     "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
-    "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
-    "package": "npm run --prefix buildtools/ package"
+    "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
     "knime-build-tools": "file:buildtools"

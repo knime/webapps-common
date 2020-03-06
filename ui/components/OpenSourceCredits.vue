@@ -2,11 +2,31 @@
 import packages from '../../buildtools/opensourcecredits/used-packages.json';
 import Description from '../components/Description';
 
+/**
+ * This component displays a list of npm packages to be used on a credits/licenses
+ * page. Each item in the list is displayed as the name of an npm package and can
+ * be expanded to show the licenses text as well as a link to the remote repository
+ * where the package is maintained. If the project uses additional npm packages, they
+ * can be provided as a prop, where they will be de-duplicated before being displayed.
+ *
+ * It requires an additional build step to be run to generate the used-packages.json
+ * file. For additional information @see file:webapps-common/buildtools.
+ */
 export default {
     components: {
         Description
     },
     props: {
+        /**
+         * Additional packages may be provided for display. The packages (provided in an array)
+         * will be combined with the packages imported from the `packages` import. They will
+         * be sorted and de-duplicated before being displayed.
+         *
+         * The packages should be the correct format when provided as a prop. For information
+         * @see file:webapps-common/buildtools/opensourcecredits/collect-packages-format.json
+         *
+         * Additionally, packages can have a `repository` property with a URL to their source.
+         */
         additionalPackages: {
             type: Array,
             default: () => []
@@ -19,14 +39,14 @@ export default {
     },
     computed: {
         packages() {
-
+          
             let allUniquePackages = [];
 
             packages.concat(this.additionalPackages).forEach(pkg => {
                 const alreadyExists = allUniquePackages.some(
                     firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
-                        firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
+                    firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                    firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
                 );
 
                 if (!alreadyExists) {
