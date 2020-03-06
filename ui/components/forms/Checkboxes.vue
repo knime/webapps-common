@@ -90,20 +90,17 @@ export default {
 
 <template>
   <div :class="['checkboxes', alignment]">
-    <div
-      class="options"
+    <Checkbox
+      v-for="item of possibleValues"
+      ref="boxes"
+      :key="`checkboxes-${item.id}`"
+      :value="value.indexOf(item.id) > -1"
+      :title="item.text"
+      class="box"
+      @input="onInput(item.id, $event)"
     >
-      <Checkbox
-        v-for="item of possibleValues"
-        ref="boxes"
-        :key="`checkboxes-${item.id}`"
-        :value="value.indexOf(item.id) > -1"
-        class="boxes"
-        @input="onInput(item.id, $event)"
-      >
-        {{ item.text }}
-      </Checkbox>
-    </div>
+      {{ item.text }}
+    </Checkbox>
   </div>
 </template>
 
@@ -111,18 +108,24 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .checkboxes {
-  & .boxes {
-    margin-right: 5px;
+  overflow: hidden;
 
-    /* default and vertical style */
-    display: block;
-  }
-
-  /* use flexbox for horizontal */
-  &.horizontal .options {
+  &.horizontal {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+
+    /* padding for horizontal */
+    & >>> label:not(:last-of-type) {
+      padding-right: 12px;
+    }
+  }
+
+  /* root of Checkbox which is a <label> */
+  & .box {
+    /* display block makes it vertical by default */
+    display: block;
+    overflow: hidden;
   }
 }
 

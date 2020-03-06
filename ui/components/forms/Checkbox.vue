@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-  <label :class="labelSize">
+  <label :class="['checkbox', labelSize]">
     <input
       ref="input"
       :checked="value"
@@ -52,7 +52,9 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-label {
+/* if you consider removing this class: don't!
+   selector specifity requires it for container system used in page-builder */
+.checkbox {
   position: relative;
   line-height: 1;
   padding: 3px 0 3px 26px;
@@ -60,6 +62,13 @@ label {
   & input {
     opacity: 0;
     position: absolute;
+
+    & + span {
+      display: inline-block;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     & + span::before { /* □ */
       border: 1px solid var(--theme-color-stone-gray);
@@ -113,6 +122,7 @@ label {
   }
 
   /* label size */
+
   &.large {
     font-weight: 700;
     font-size: 16px;
@@ -133,6 +143,7 @@ label {
   }
 
   /* artificial outline for focus as we don't use the native input element */
+
   & input:focus + span::before,
   & input:checked:focus + span::before { /* □ */
     outline: 1px dotted;
