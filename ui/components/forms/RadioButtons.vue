@@ -94,6 +94,7 @@ export default {
 .radio-buttons {
   & label {
     position: relative;
+    display: block;
     font-weight: 300;
     font-size: 14px;
     line-height: 18px;
