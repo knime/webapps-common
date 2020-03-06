@@ -11,7 +11,12 @@
     "lint:css": "stylelint '**/*.{css,vue}'",
     "test:unit": "jest",
     "coverage": "jest --coverage",
-    "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\""
+    "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
+    "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
+    "package": "npm run --prefix buildtools/ package"
+  },
+  "dependencies": {
+    "knime-build-tools": "file:buildtools"
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
