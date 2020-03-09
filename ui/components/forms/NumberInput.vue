@@ -242,7 +242,7 @@ div {
 
   & input {
     font-size: 13px;
-    font-weight: 300;
+    font-weight: 500;
     color: var(--theme-color-masala);
     letter-spacing: inherit;
     line-height: 18px;
@@ -264,7 +264,7 @@ div {
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand);
+      background-color: var(--theme-color-porcelain);
     }
   }
 
@@ -297,10 +297,9 @@ div {
     height: 19px;
     padding-left: 10px;
     padding-right: 9px;
-    background-color: var(--theme-color-white);
 
     &:hover {
-      background-color: var(--theme-color-silver-sand);
+      background-color: var(--theme-color-porcelain);
     }
 
     & svg {

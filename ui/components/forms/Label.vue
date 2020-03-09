@@ -26,8 +26,8 @@ export default {
 
 .label-text {
   font-weight: 700;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 24px;
   display: block;
   margin-bottom: 5px;
 }

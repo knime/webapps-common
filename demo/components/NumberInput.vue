@@ -1,7 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import NumberInput from '../../ui/components/forms/NumberInput';
-import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/NumberInput';
 
 const codeExample = `Integer (step-size = 1)
@@ -39,8 +38,7 @@ const codeExample = `Integer (step-size = 1)
 export default {
     components: {
         NumberInput,
-        CodeExample,
-        Label
+        CodeExample
     },
     data() {
         return {
@@ -98,42 +96,39 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label text="Integer (step-size = 1)">
-            <NumberInput
-              ref="input1"
-              v-model="inputValue1"
-              :min="min"
-              :max="max"
-              :is-valid="isValid1"
-              type="integer"
-              title="I am the integer"
-              @input="validate1"
-            />
-          </Label>
-          <Label text="Double (step-size = .1)">
-            <NumberInput
-              ref="input2"
-              v-model="inputValue2"
-              :min="min"
-              :max="max"
-              :is-valid="isValid2"
-              type="double"
-              title="I am the double"
-              @input="validate2"
-            />
-          </Label>
-          <Label :text="input3Text">
-            <NumberInput
-              ref="input3"
-              v-model="inputValue3"
-              :min="min"
-              :max="max"
-              :is-valid="isValid3"
-              type="integer"
-              title="My starting value is invalid"
-              @input="validate3"
-            />
-          </Label>
+          Integer (step-size = 1)
+          <NumberInput
+            ref="input1"
+            v-model="inputValue1"
+            :min="min"
+            :max="max"
+            :is-valid="isValid1"
+            type="integer"
+            title="I am the integer"
+            @input="validate1"
+          />
+          Double (step-size = .1)
+          <NumberInput
+            ref="input2"
+            v-model="inputValue2"
+            :min="min"
+            :max="max"
+            :is-valid="isValid2"
+            type="double"
+            title="I am the double"
+            @input="validate2"
+          />
+          {{ input3Text }}
+          <NumberInput
+            ref="input3"
+            v-model="inputValue3"
+            :min="min"
+            :max="max"
+            :is-valid="isValid3"
+            type="integer"
+            title="My starting value is invalid"
+            @input="validate3"
+          />
         </div>
         <div class="grid-item-2">
           Integer: {{ inputValue1 }}

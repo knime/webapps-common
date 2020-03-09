@@ -315,7 +315,7 @@ export default {
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-silver-sand);
+    background: var(--theme-color-porcelain);
   }
 
   & .icon {
@@ -346,9 +346,8 @@ export default {
     max-width: 50vw;
     padding: 8px 0;
     margin: 0;
-    margin-top: -1px;
     background: var(--theme-color-white);
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
+    box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
   }
 
   & [role="listbox"]:focus {
@@ -365,7 +364,7 @@ export default {
   }
 
   & [role="option"]:hover {
-    background: var(--theme-color-silver-sand);
+    background: var(--theme-color-porcelain);
   }
 
   & [role="option"].focused {

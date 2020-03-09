@@ -98,7 +98,7 @@ div {
 
 input {
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 500;
   color: var(--theme-color-masala);
   line-height: 18px;
   height: 40px;
@@ -110,6 +110,7 @@ input {
 
   &::placeholder {
     color: var(--theme-color-dove-gray);
+    font-weight: 300;
   }
 
   &:disabled {
@@ -123,7 +124,7 @@ input {
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-silver-sand);
+    background-color: var(--theme-color-porcelain);
   }
 
   &.with-icon {
