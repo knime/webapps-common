@@ -116,7 +116,7 @@ export default {
                 return;
             }
             // enable inverse mode on ctrl key
-            if (e.ctrlKey) {
+            if (e.ctrlKey || e.metaKey) {
                 this.draggingInverseMode = true;
             }
             let index = e.target.getAttribute('data-option-index');
@@ -143,7 +143,17 @@ export default {
             this.draggingStartIndex = -1;
             this.draggingInverseMode = false;
         },
-        handleClick(value, index) {
+        handleClick($event, value, index) {
+            $event.preventDefault();
+            if ($event.metaKey || $event.ctrlKey) {
+                this.handleCtrlClick(value, index);
+                return; // end here
+            }
+            if ($event.shiftKey) {
+                this.handleShiftClick(value, index);
+                return; // end here
+            }
+            // regular click
             if (!this.multiselectByClick) {
                 this.selectedValues = [];
             }
@@ -348,9 +358,7 @@ export default {
           'noselect' :true
         }"
         :aria-selected="isCurrentValue(item.id)"
-        @click.exact="handleClick(item.id, index)"
-        @click.ctrl="handleCtrlClick(item.id, index)"
-        @click.shift="handleShiftClick(item.id, index)"
+        @click="handleClick($event, item.id, index)"
         @dblclick.shift="handleShiftDblClick(item.id, index)"
         @dblclick.exact="handleDblClick(item.id, index)"
       >
