@@ -12,8 +12,7 @@
     "test:unit": "jest",
     "coverage": "jest --coverage",
     "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
-    "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
-    "package": "npm run --prefix buildtools/ package"
+    "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
     "knime-build-tools": "file:buildtools"
@@ -45,6 +44,7 @@
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
+    "vue-clickaway": "2.2.2",
     "stylelint": "10.x",
     "stylelint-config-standard": "18.x",
     "typeface-roboto": "*",

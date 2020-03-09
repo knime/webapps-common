@@ -24,7 +24,11 @@ import InputField from '../components/InputField';
 import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
+import RadioButtons from '../components/RadioButtons';
+import ListBox from '../components/ListBox';
+import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
+import OpenSourceCredits from '../components/OpenSourceCredits';
 
 export default {
     components: {
@@ -51,7 +55,11 @@ export default {
         TextArea,
         NumberInput,
         Checkbox,
-        Multiselect
+        RadioButtons,
+        ListBox,
+        Dropdown,
+        Multiselect,
+        OpenSourceCredits
     }
 };
 </script>
@@ -93,7 +101,11 @@ export default {
     <TextArea />
     <NumberInput />
     <Checkbox />
+    <RadioButtons />
+    <ListBox />
+    <Dropdown />
     <Multiselect />
+    <OpenSourceCredits />
   </main>
 </template>
 

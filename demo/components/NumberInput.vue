@@ -89,8 +89,8 @@ export default {
           <p>
             Numeric input field with either type double or integer to set the step size. Spinner controls
             allow the user to increment the value with the mouse or keyboard. It acts as a form
-            element, so it emits input events and it has a value. It also has a valid and invalid
-            state for styling purposes.
+            element, so it emits <code>input</code> events and it has a <code>value</code>. It also has a valid and
+            invalid state for styling purposes.
           </p>
         </div>
       </div>

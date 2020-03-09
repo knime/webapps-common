@@ -5,25 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const outFile = path.resolve(__dirname, 'used-packages.json');
 const semver = require('semver');
-const consola = require('consola');
-
-let currentDir = __dirname;
-let parentPkgPath, hasParentPkg;
-
-while (!hasParentPkg) {
-    currentDir = path.resolve(currentDir, '..');
-    parentPkgPath = path.resolve(currentDir, 'package.json');
-    if (fs.existsSync(parentPkgPath)) {
-        if (!currentDir.includes('webapps-common')) {
-            hasParentPkg = true;
-            break;
-        }
-    }
-    if (currentDir === '/') {
-        consola.warn('Warning: License collection could not detect parent package!');
-        break;
-    }
-}
+const pkgUp = require('pkg-up');
+// find the package.json file path of the webapps-common parent project
+const parentPkgPath = pkgUp.sync({ cwd: '../..' });
+const parentRoot = path.resolve(parentPkgPath, '..');
 
 const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
@@ -36,7 +21,7 @@ if (!skip) {
 
     // collect all used production packages and their licenses
     const options = {
-        start: currentDir,
+        start: parentRoot,
         production: true,
         onlyAllow: config.onlyAllow.join(';'),
         excludePackages: config.excludePackages.join(';'),
