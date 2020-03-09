@@ -89,11 +89,12 @@ export default {
         }
     },
     created() {
+        // eslint-disable-next-line no-magic-numbers
         this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
     },
     methods: {
         // eslint-disable-next-line no-magic-numbers
-        debounce(callback, wait = 250) {
+        debounce(callback, wait) {
             let timer;
             let lastCall = 0;
             return (...args) => {
@@ -168,8 +169,13 @@ export default {
         },
         handleClick($event, value, index) {
             $event.preventDefault();
-            if ($event.metaKey || $event.ctrlKey) {
+            if ($event.metaKey) {
+                // mac requires debouncing
                 this.debouncedHandleCtrlClick(value, index);
+                return; // end here
+            }
+            if ($event.ctrlKey) {
+                this.handleCtrlClick(value, index);
                 return; // end here
             }
             if ($event.shiftKey) {

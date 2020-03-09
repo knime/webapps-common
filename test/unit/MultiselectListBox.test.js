@@ -126,6 +126,32 @@ describe('MultiselectListBox.vue', () => {
         wrapper.findAll('[role=option]').at(3).trigger('click', { ctrlKey: true });
         wrapper.findAll('[role=option]').at(1).trigger('click', { ctrlKey: true });
         await wrapper.vm.$nextTick();
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
+    });
+
+    it('add item by meta (command) click', async () => {
+        const wrapper = mount(MultiselectListBox, {
+            propsData: {
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'Test 1'
+                }, {
+                    id: 'test2',
+                    text: 'Test 2'
+                }, {
+                    id: 'test3',
+                    text: 'Test 3'
+                }, {
+                    id: 'test4',
+                    text: 'Test 4'
+                }],
+                value: ['test1'],
+                ariaLabel: 'A Label'
+            }
+        });
+        wrapper.findAll('[role=option]').at(3).trigger('click', { metaKey: true });
+        wrapper.findAll('[role=option]').at(1).trigger('click', { metaKey: true });
+        await wrapper.vm.$nextTick();
         // test2 got debounced
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4']);
     });
