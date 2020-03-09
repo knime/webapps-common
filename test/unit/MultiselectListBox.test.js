@@ -49,7 +49,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.vm.$data.currentKeyNavIndex).toBe(2);
     });
 
-    it('select item by click', async () => {
+    it('selects item by click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -63,7 +63,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test4']);
     });
 
-    it('select item by shift click', async () => {
+    it('selects item by shift click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -77,7 +77,7 @@ describe('MultiselectListBox.vue', () => {
     });
 
 
-    it('add item by ctrl click', async () => {
+    it('adds item by ctrl click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -91,10 +91,10 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
     });
 
-    it('add item by meta (command) click', async () => {
+    it('adds item by meta (command) click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues:,
+                possibleValues,
                 value: ['test1'],
                 ariaLabel: 'A Label'
             }
@@ -107,7 +107,7 @@ describe('MultiselectListBox.vue', () => {
     });
 
 
-    it('select item by key up', async () => {
+    it('selects item by key up', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -120,7 +120,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2']);
     });
 
-    it('select item by key up with shift', async () => {
+    it('selects item by key up with shift', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -133,7 +133,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
     });
 
-    it('select item by key down', async () => {
+    it('selects item by key down', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -146,7 +146,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test4']);
     });
 
-    it('select item by key down with shift', async () => {
+    it('selects item by key down with shift', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -159,7 +159,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3', 'test4']);
     });
 
-    it('select first item by HOME key', async () => {
+    it('selects first item by HOME key', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -172,7 +172,7 @@ describe('MultiselectListBox.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1']);
     });
 
-    it('select last item by END key', async () => {
+    it('selects last item by END key', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
@@ -190,7 +190,7 @@ describe('MultiselectListBox.vue', () => {
         expect(emitted[emitted.length - 1][0]).toStrictEqual(['test4']);
     });
 
-    it('select view mouse move (drag)', async () => {
+    it('selects multiple elements on mouse move while mouse down (drag)', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
                 possibleValues,
