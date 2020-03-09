@@ -74,7 +74,7 @@ label {
     }
 
     & + span::before:hover { /* □ */
-      background: var(--theme-color-porcelain);
+      background: var(--theme-color-silver-sand);
     }
 
     &:checked + span::before { /* □ */
@@ -95,14 +95,10 @@ label {
       height: 5px;
       border-width: 0 0 1.5px 1.5px;
     }
-
-    &:checked + span {
-      font-weight: 500;
-    }
   }
 
   &:hover input + span::before { /* □ */
-    background: var(--theme-color-porcelain);
+    background: var(--theme-color-silver-sand);
   }
 
   &:hover input + span::after { /* ✓ */
@@ -133,7 +129,7 @@ label {
      is there https://caniuse.com/#feat=css-focus-visible */
   & input:focus + span::before,
   & input:checked:focus + span::before { /* □ */
-    background: var(--theme-color-porcelain);
+    background: var(--theme-color-silver-sand);
   }
 
   & input:checked:focus + span::after { /* ✓ */

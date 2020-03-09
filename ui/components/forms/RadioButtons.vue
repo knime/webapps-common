@@ -131,35 +131,30 @@ export default {
         content: '';
         box-shadow: inset 0 0 0 4px var(--theme-color-masala);
       }
-
-      /* checked labels are medium */
-      &:checked + span {
-        font-weight: 500;
-      }
     }
 
     /* keyboard focus; :focus-visible would be better once browser support
          is there https://caniuse.com/#feat=css-focus-visible */
     & input:focus + span::before { /* ◯ */
-      background: var(--theme-color-porcelain);
+      background: var(--theme-color-silver-sand);
     }
 
     /* hover state */
     &:hover input + span::before { /* ◯ */
-      background: var(--theme-color-porcelain);
+      background: var(--theme-color-silver-sand);
     }
 
     /* keyboard focus; :focus-visible would be better once browser support
        is there https://caniuse.com/#feat=css-focus-visible */
     & input:checked:focus + span::before { /* 🔘 */
       background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
+      box-shadow: inset 0 0 0 4px var(--theme-color-silver-sand);
     }
 
     /* hover state  checked */
     &:hover input:checked + span::before { /* 🔘 */
       background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
+      box-shadow: inset 0 0 0 4px var(--theme-color-silver-sand);
     }
   }
 
