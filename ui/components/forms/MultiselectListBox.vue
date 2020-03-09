@@ -89,7 +89,7 @@ export default {
         }
     },
     created() {
-        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 150);
+        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
     },
     methods: {
         // eslint-disable-next-line no-magic-numbers
