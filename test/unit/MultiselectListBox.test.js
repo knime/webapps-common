@@ -4,18 +4,28 @@ import { mount } from '@vue/test-utils';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 
 describe('MultiselectListBox.vue', () => {
+
+    let possibleValues;
+
+    beforeEach(() => {
+        possibleValues = [{
+            id: 'test1',
+            text: 'Test 1'
+        }, {
+            id: 'test2',
+            text: 'Test 2'
+        }, {
+            id: 'test3',
+            text: 'Test 3'
+        }, {
+            id: 'test4',
+            text: 'Test 4'
+        }];
+    });
+
     it('renders', () => {
         let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
+            possibleValues,
             value: [],
             ariaLabel: 'A Label'
         };
@@ -30,19 +40,7 @@ describe('MultiselectListBox.vue', () => {
     it('sets the currentKeyNavIndex to the last selected value', () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test1', 'test3'],
                 ariaLabel: 'A Label'
             }
@@ -54,19 +52,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test1', 'test3'],
                 ariaLabel: 'A Label'
             }
@@ -80,19 +66,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by shift click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test3'],
                 ariaLabel: 'A Label'
             }
@@ -106,19 +80,7 @@ describe('MultiselectListBox.vue', () => {
     it('add item by ctrl click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test1'],
                 ariaLabel: 'A Label'
             }
@@ -132,19 +94,7 @@ describe('MultiselectListBox.vue', () => {
     it('add item by meta (command) click', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues:,
                 value: ['test1'],
                 ariaLabel: 'A Label'
             }
@@ -160,19 +110,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by key up', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test3'],
                 ariaLabel: 'A Label'
             }
@@ -185,19 +123,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by key up with shift', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test3'],
                 ariaLabel: 'A Label'
             }
@@ -210,19 +136,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by key down', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test3'],
                 ariaLabel: 'A Label'
             }
@@ -235,19 +149,7 @@ describe('MultiselectListBox.vue', () => {
     it('select item by key down with shift', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test3'],
                 ariaLabel: 'A Label'
             }
@@ -260,19 +162,7 @@ describe('MultiselectListBox.vue', () => {
     it('select first item by HOME key', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: ['test2'],
                 ariaLabel: 'A Label'
             }
@@ -285,19 +175,7 @@ describe('MultiselectListBox.vue', () => {
     it('select last item by END key', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: [],
                 ariaLabel: 'A Label'
             }
@@ -315,19 +193,7 @@ describe('MultiselectListBox.vue', () => {
     it('select view mouse move (drag)', async () => {
         const wrapper = mount(MultiselectListBox, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Test 1'
-                }, {
-                    id: 'test2',
-                    text: 'Test 2'
-                }, {
-                    id: 'test3',
-                    text: 'Test 3'
-                }, {
-                    id: 'test4',
-                    text: 'Test 4'
-                }],
+                possibleValues,
                 value: [],
                 ariaLabel: 'A Label'
             }

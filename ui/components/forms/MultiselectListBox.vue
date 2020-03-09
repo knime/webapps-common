@@ -93,7 +93,6 @@ export default {
         this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
     },
     methods: {
-        // eslint-disable-next-line no-magic-numbers
         debounce(callback, wait) {
             let timer;
             let lastCall = 0;
