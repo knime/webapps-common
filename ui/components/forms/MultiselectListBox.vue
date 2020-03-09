@@ -88,7 +88,30 @@ export default {
             this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
         }
     },
+    created() {
+        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 150);
+    },
     methods: {
+        // eslint-disable-next-line no-magic-numbers
+        debounce(callback, wait = 250) {
+            let timer;
+            let lastCall = 0;
+            return (...args) => {
+                clearTimeout(timer);
+                const now = Date.now();
+                const timeFromLastCall = now - lastCall;
+
+                if (timeFromLastCall > wait) {
+                    lastCall = now;
+                    callback(...args);
+                } else {
+                    timer = setTimeout(() => {
+                        lastCall = now;
+                        callback(...args);
+                    }, wait);
+                }
+            };
+        },
         isCurrentValue(candidate) {
             return this.value.includes(candidate);
         },
@@ -146,7 +169,7 @@ export default {
         handleClick($event, value, index) {
             $event.preventDefault();
             if ($event.metaKey || $event.ctrlKey) {
-                this.handleCtrlClick(value, index);
+                this.debouncedHandleCtrlClick(value, index);
                 return; // end here
             }
             if ($event.shiftKey) {
