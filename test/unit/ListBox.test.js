@@ -3,25 +3,29 @@ import { mount } from '@vue/test-utils';
 import ListBox from '~/ui/components/forms/ListBox';
 
 describe('ListBox.vue', () => {
-    let propsData = {
-        possibleValues: [{
-            id: 'test1',
-            text: 'test1'
-        }, {
-            id: 'test2',
-            text: 'test2'
-        }, {
-            id: 'test3',
-            text: 'test3'
-        }, {
-            id: 'test4',
-            text: 'test4'
-        }, {
-            id: 'test5',
-            text: 'test5'
-        }],
-        ariaLabel: 'Test Label'
-    };
+    let propsData;
+
+    beforeEach(() => {
+        propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text 1'
+            }, {
+                id: 'test2',
+                text: 'Text 2'
+            }, {
+                id: 'test3',
+                text: 'Text 3'
+            }, {
+                id: 'test4',
+                text: 'Text 4'
+            }, {
+                id: 'test5',
+                text: 'Text 5'
+            }],
+            ariaLabel: 'Test Label'
+        };
+    });
 
     it('renders', () => {
         const wrapper = mount(ListBox, {
@@ -29,7 +33,32 @@ describe('ListBox.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('li[role=option]').length).toBe(propsData.possibleValues.length);
+
+        let options = wrapper.findAll('li[role=option]');
+        expect(options.length).toBe(propsData.possibleValues.length);
+        propsData.possibleValues.forEach((value, i) => {
+            expect(options.at(i).text()).toContain(value.text);
+        });
+    });
+
+    it('renders selected value', () => {
+        let value = 'test3';
+        const wrapper = mount(ListBox, {
+            propsData: {
+                ...propsData,
+                value
+            }
+        });
+
+        let options = wrapper.findAll('li[role=option]');
+        propsData.possibleValues.forEach((option, i) => {
+            let classes = options.at(i).classes();
+            if (option.id === value) {
+                expect(classes).toContain('focused');
+            } else {
+                expect(classes).not.toContain('focused');
+            }
+        });
     });
 
     it('sets the correct aria-* attributes', () => {
@@ -53,7 +82,7 @@ describe('ListBox.vue', () => {
         expect(root.classes()).toContain('invalid');
     });
 
-    it('sets the values to the clicked value', () => {
+    it('emits event for clicked value', () => {
         const wrapper = mount(ListBox, {
             propsData
         });
@@ -61,6 +90,18 @@ describe('ListBox.vue', () => {
         let input = wrapper.findAll('li[role=option]').at(newValueIndex);
         input.trigger('click');
         expect(wrapper.emitted().input[0][0]).toEqual(propsData.possibleValues[newValueIndex].id);
+    });
+
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(ListBox, {
+            propsData
+        });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+
+        let newValueIndex = 1;
+        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
+        input.trigger('click');
+        expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
     describe('keyboard navigation', () => {

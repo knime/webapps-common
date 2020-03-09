@@ -1,27 +1,35 @@
 import { mount } from '@vue/test-utils';
 
+jest.mock('vue-clickaway', () => ({
+    mixin: {}
+}), { virtual: true });
+
 import Dropdown from '~/ui/components/forms/Dropdown';
 
 describe('Dropdown.vue', () => {
-    let propsData = {
-        possibleValues: [{
-            id: 'test1',
-            text: 'test1'
-        }, {
-            id: 'test2',
-            text: 'test2'
-        }, {
-            id: 'test3',
-            text: 'test3'
-        }, {
-            id: 'test4',
-            text: 'test4'
-        }, {
-            id: 'test5',
-            text: 'test5'
-        }],
-        ariaLabel: 'Test Label'
-    };
+    let propsData;
+
+    beforeEach(() => {
+        propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text 1'
+            }, {
+                id: 'test2',
+                text: 'Text 2'
+            }, {
+                id: 'test3',
+                text: 'Text 3'
+            }, {
+                id: 'test4',
+                text: 'Text 4'
+            }, {
+                id: 'test5',
+                text: 'Text 5'
+            }],
+            ariaLabel: 'Test Label'
+        };
+    });
 
     it('renders', () => {
         const wrapper = mount(Dropdown, {
@@ -41,16 +49,22 @@ describe('Dropdown.vue', () => {
         expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('shows placeholder if no value set', () => {
+    it('shows value text or placeholder if no or empty value set', () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
-                placeholder
+                placeholder,
+                value: 'test3'
             }
         });
 
         let button = wrapper.find('[role=button]');
+        expect(button.text()).toBe('Text 3');
+
+        wrapper.setProps({ value: null });
+        expect(button.text()).toBe(placeholder);
+        wrapper.setProps({ value: '' });
         expect(button.text()).toBe(placeholder);
     });
 
@@ -78,7 +92,7 @@ describe('Dropdown.vue', () => {
         expect(root.classes()).toContain('invalid');
     });
 
-    it('opens the listbox on click of button and sets the values to the clicked value', () => {
+    it('opens the listbox on click of button and emits event for clicked value', () => {
         const wrapper = mount(Dropdown, {
             propsData
         });
@@ -96,6 +110,18 @@ describe('Dropdown.vue', () => {
 
         // listbox closed
         expect(listbox.isVisible()).toBe(false);
+    });
+
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(Dropdown, {
+            propsData
+        });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+
+        let newValueIndex = 1;
+        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
+        input.trigger('click');
+        expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
     describe('keyboard navigation', () => {
