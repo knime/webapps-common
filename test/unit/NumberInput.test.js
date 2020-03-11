@@ -12,8 +12,6 @@ describe('NumberInput.vue', () => {
             min: 0,
             max: 20,
             title: 'knime',
-            inputClasses: '',
-            isValid: true,
             type: 'double'
         };
 
