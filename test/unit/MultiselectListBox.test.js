@@ -34,12 +34,16 @@ describe('MultiselectListBox.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('[role=option]').length).toBe(propsData.possibleValues.length);
+
+        let options = wrapper.findAll('[role=option]');
+        expect(options.length).toBe(propsData.possibleValues.length);
+        propsData.possibleValues.forEach((value, i) => {
+            expect(options.at(i).text()).toContain(value.text);
+        });
     });
 
     it('renders with default possibleValues', () => {
         let propsData = {
-            value: [],
             ariaLabel: 'A Label'
         };
         const wrapper = mount(MultiselectListBox, {
@@ -244,6 +248,20 @@ describe('MultiselectListBox.vue', () => {
     });
 
     describe('methods and events', () => {
+
+        it('validation of possibleValues', () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    ariaLabel: 'A Label'
+                }
+            });
+
+            const propPossibleValues = wrapper.vm.$options.props.possibleValues;
+            expect(propPossibleValues.required).toBeFalsy();
+            expect(propPossibleValues.type).toBe(Array);
+            expect(propPossibleValues.validator && propPossibleValues.validator('str')).toBeFalsy();
+            expect(propPossibleValues.validator && propPossibleValues.validator([])).toBeTruthy();
+        });
 
         it('clearSelection', () => {
             const wrapper = mount(MultiselectListBox, {
