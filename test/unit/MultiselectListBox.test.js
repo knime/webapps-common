@@ -128,11 +128,19 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
+
+            // wait 300ms to get debounce code executed (and tested)
+            let promise = new Promise((resolve, reject) => {
+                setTimeout(() => resolve(), 300);
+            });
+
             wrapper.findAll('[role=option]').at(3).trigger('click', { metaKey: true });
             wrapper.findAll('[role=option]').at(1).trigger('click', { metaKey: true });
-            await wrapper.vm.$nextTick();
-            // test2 got debounced
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4']);
+
+            // do the wait
+            await promise;
+
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
         });
     });
 
@@ -245,8 +253,8 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
+            expect(wrapper.vm.hasSelection()).toStrictEqual(true);
             wrapper.vm.clearSelection();
-
             expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         });
 

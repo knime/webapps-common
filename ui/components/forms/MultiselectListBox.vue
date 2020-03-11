@@ -312,9 +312,6 @@ export default {
         onArrowRight() {
             this.$emit('keyArrowRight', this.selectedValues);
         },
-        onActivation() {
-            this.$emit('activated', this.selectedValues);
-        },
         selectAll() {
             this.setSelected(this.possibleValues.map(x => x.id));
         },
@@ -368,8 +365,6 @@ export default {
       @keydown.right.prevent.exact="onArrowRight"
       @keydown.home.prevent.exact="onHomeKey"
       @keydown.end.prevent.exact="onEndKey"
-      @keydown.space.prevent.exact="onActivation"
-      @keydown.enter.prevent.exact="onActivation"
       @mousedown="startDrag"
       @mousemove="onDrag"
     >
