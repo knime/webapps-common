@@ -247,31 +247,18 @@ section section {
  Notice that in the content area there is a double gap. This can be achieved by using the `spacing-right` class on the
  column left to it. If you want to nest grid items, you have to use `reset-spacing` on the nested grid-container
 */
-.grid-container .spacing-right {
-  padding-right: var(--grid-gap-width);
-
-  & .reset-spacing {
-    width: calc(100% + var(--grid-gap-width));
-
-    /* Nested grid-items also need a reduced max-width to prevent them getting as wide as their parent */
-    & [class^="grid-item-"],
-    & [class*=" grid-item-"] {
-      max-width: calc(100% - var(--grid-gap-width));
-    }
-  }
-}
-
-@media only screen and (max-width: 900px) {
-  /* There is nothing to either side so we don't need spacing-right at this breakpoint */
+@media only screen and (min-width: 901px) {
   .grid-container .spacing-right {
-    padding-right: 0;
+    padding-right: var(--grid-gap-width);
 
     & .reset-spacing {
-      width: unset;
+      width: calc(100% + var(--grid-gap-width));
+
+      /* Nested grid-items also need a reduced max-width to prevent them getting as wide as their parent */
 
       & [class^="grid-item-"],
       & [class*=" grid-item-"] {
-        max-width: 100%;
+        max-width: calc(100% - var(--grid-gap-width));
       }
     }
   }
