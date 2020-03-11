@@ -22,6 +22,7 @@ describe('Checkbox.vue', () => {
             }
         });
         expect(wrapper.find('input').element.checked).toBe(true);
+        expect(wrapper.vm.isChecked()).toBe(true);
     });
 
     it('emits input events', () => {
