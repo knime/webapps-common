@@ -104,9 +104,9 @@ section {
 }
 
 .card {
-  min-width: 350px;
+  min-width: 400px;
   height: 200px;
-  margin: 10px;
+  margin-right: 10px;
 }
 
 .card1 {

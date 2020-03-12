@@ -28,6 +28,7 @@ import RadioButtons from '../components/RadioButtons';
 import ListBox from '../components/ListBox';
 import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
+import OpenSourceCredits from '../components/OpenSourceCredits';
 
 export default {
     components: {
@@ -57,7 +58,8 @@ export default {
         RadioButtons,
         ListBox,
         Dropdown,
-        Multiselect
+        Multiselect,
+        OpenSourceCredits
     }
 };
 </script>
@@ -103,6 +105,7 @@ export default {
     <ListBox />
     <Dropdown />
     <Multiselect />
+    <OpenSourceCredits />
   </main>
 </template>
 
