@@ -135,7 +135,7 @@ h6 {
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-silver-sand);
+    background: var(--theme-color-silver-sand-semi);
   }
 }
 

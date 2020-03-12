@@ -186,7 +186,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="wrapper">
     <span
       v-if="!isValid"
       class="invalid-marker"
@@ -199,7 +199,7 @@ export default {
       :min="min"
       :max="max"
       :step="stepSize"
-      :class="inputClassList"
+      :class="['input', inputClassList]"
       @input="onInput"
     >
     <span
@@ -224,9 +224,10 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
+.wrapper {
   position: relative;
   width: 100%;
+  border: 1px solid var(--theme-color-stone-gray);
 
   /* remove browser spinners FF */
   & input[type='number'] {
@@ -240,19 +241,20 @@ div {
     margin: 0;
   }
 
-  & input {
+  & .input {
     font-size: 13px;
     font-weight: 300;
     color: var(--theme-color-masala);
     letter-spacing: inherit;
     line-height: 18px;
     height: 40px;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 0;
     margin: 0;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
-    width: 100%;
+    width: calc(100% - 32px);
     outline: none;
+    background-color: transparent;
 
     &:focus {
       border-color: var(--theme-color-masala);
@@ -264,7 +266,7 @@ div {
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand);
+      background-color: var(--theme-color-silver-sand-semi);
     }
   }
 
@@ -280,27 +282,25 @@ div {
   }
 
   & .increase {
-    top: 1px;
     transform: scaleY(-1);
   }
 
   & .decrease {
-    bottom: 1px;
+    bottom: 0;
   }
 
   & .increase,
   & .decrease {
     position: absolute;
     z-index: 1;
-    right: 1px;
     width: 32px;
-    height: 19px;
+    height: 20px;
     padding-left: 10px;
     padding-right: 9px;
-    background-color: var(--theme-color-white);
+    background-color: transparent;
 
     &:hover {
-      background-color: var(--theme-color-silver-sand);
+      background-color: var(--theme-color-silver-sand-semi);
     }
 
     & svg {

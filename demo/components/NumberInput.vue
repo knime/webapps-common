@@ -164,7 +164,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-.inputs >>> * {
+>>> label > div {
   margin-bottom: 5px;
 }
 </style>

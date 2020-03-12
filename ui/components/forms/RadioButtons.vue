@@ -136,12 +136,12 @@ export default {
     /* keyboard focus; :focus-visible would be better once browser support
          is there https://caniuse.com/#feat=css-focus-visible */
     & input:focus + span::before { /* ◯ */
-      background: var(--theme-color-silver-sand);
+      background: var(--theme-color-silver-sand-semi);
     }
 
     /* hover state */
     &:hover input + span::before { /* ◯ */
-      background: var(--theme-color-silver-sand);
+      background: var(--theme-color-silver-sand-semi);
     }
 
     /* keyboard focus; :focus-visible would be better once browser support

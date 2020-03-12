@@ -107,6 +107,7 @@ input {
   width: 100%;
   border: 1px solid var(--theme-color-stone-gray);
   outline: none;
+  background-color: transparent;
 
   &::placeholder {
     color: var(--theme-color-dove-gray);
@@ -123,7 +124,7 @@ input {
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-silver-sand);
+    background-color: var(--theme-color-silver-sand-semi);
   }
 
   &.with-icon {

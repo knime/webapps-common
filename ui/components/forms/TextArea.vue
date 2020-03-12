@@ -86,7 +86,7 @@ div {
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand);
+      background-color: var(--theme-color-silver-sand-semi);
     }
   }
 

@@ -238,7 +238,7 @@ export default {
 }
 
 [role="option"]:hover {
-  background: var(--theme-color-silver-sand);
+  background: var(--theme-color-silver-sand-semi);
 }
 
 [role="option"].focused {
