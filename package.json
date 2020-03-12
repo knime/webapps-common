@@ -44,6 +44,7 @@
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
+    "vue-clickaway": "2.2.2",
     "stylelint": "10.x",
     "stylelint-config-standard": "18.x",
     "typeface-roboto": "*",

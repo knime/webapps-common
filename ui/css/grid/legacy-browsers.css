@@ -7,7 +7,7 @@
  Only screens larger than 1180px are supported
  */
 
-@media only screen and (min-width: 1180px) {
+@media only screen and (min-width: 1181px) {
   .grid-item-12 {
     width: 100%;
   }

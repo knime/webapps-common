@@ -43,7 +43,7 @@ You should follow these steps
     }
     ```
 
-    This is required for importing assets via `<img src="â€¦">` in Vue templates and `url("â€¦")` in CSS.
+    This is required for importing assets via `<img src="…">` in Vue templates and `url("…")` in CSS.
 
 ### Vue
 
@@ -51,7 +51,7 @@ This project contains shared CSS files and Vue components.
 
 Depending on the use case, you must follow a different syntax to import the common files:
 
-#### `~/webapps-common/â€¦`
+#### `~/webapps-common/…`
 
 This can be used when importing js files or SVG images into a `.vue` file:
 
@@ -66,7 +66,7 @@ The Vue components expect that the app provides the following:
 - Vue and Consola compatible to the versions defined in [`package.json`](package.json)
 - global `window.consola` instance for logging
 
-#### `~webapps-common/â€¦`
+#### `~webapps-common/…`
 
 This is used for loading resources in templates or CSS:
 
@@ -96,12 +96,12 @@ This syntax can be used for importing CSS files from within other CSS files:
 
 |                 | `~/webapps-common/` | `~webapps-common/` | `webapps-common/` |
 | --------------- |:-------------------:|:------------------:|:-----------------:|
-| import Vue      | âœ…                   | âœ…                  |                   |
-| import JS       | âœ…                   | âœ…                  | (no Babel)        |
-| import SVG      | âœ…                   |                    |                   |
-| `<img src="â€¦">` |                     | âœ…                  |                   |
-| CSS `url()`     |                     | âœ…                  |                   |
-| CSS `@import`   | (not for fonts)     |                    | âœ…                 |
+| import Vue      | ✅                   | ✅                  |                   |
+| import JS       | ✅                   | ✅                  | (no Babel)        |
+| import SVG      | ✅                   |                    |                   |
+| `<img src="…">` |                     | ✅                  |                   |
+| CSS `url()`     |                     | ✅                  |                   |
+| CSS `@import`   | (not for fonts)     |                    | ✅                 |
 
 
 

@@ -81,7 +81,6 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-
 button {
   position: relative;
   padding: 0;

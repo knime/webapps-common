@@ -24,6 +24,9 @@ import InputField from '../components/InputField';
 import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
+import RadioButtons from '../components/RadioButtons';
+import ListBox from '../components/ListBox';
+import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
 import OpenSourceCredits from '../components/OpenSourceCredits';
 
@@ -52,6 +55,9 @@ export default {
         TextArea,
         NumberInput,
         Checkbox,
+        RadioButtons,
+        ListBox,
+        Dropdown,
         Multiselect,
         OpenSourceCredits
     }
@@ -95,6 +101,9 @@ export default {
     <TextArea />
     <NumberInput />
     <Checkbox />
+    <RadioButtons />
+    <ListBox />
+    <Dropdown />
     <Multiselect />
     <OpenSourceCredits />
   </main>
