@@ -1,6 +1,7 @@
 <script>
 import packages from '../../buildtools/opensourcecredits/used-packages.json';
 import Description from '../components/Description';
+import ArrowNextIcon from '../assets/img/icons/arrow-next.svg?inline';
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses
@@ -14,7 +15,8 @@ import Description from '../components/Description';
  */
 export default {
     components: {
-        Description
+        Description,
+        ArrowNextIcon
     },
     props: {
         /**
@@ -64,6 +66,14 @@ export default {
             title: this.title,
             meta: [{ name: 'robots', content: 'noindex,nofollow' }]
         };
+    },
+    methods: {
+        toggleDetails(index) {
+            let el = this.$refs[`pkg_${index}`][0];
+            let expanded = el.getAttribute('aria-expanded') === 'true';
+            el.setAttribute('aria-expanded', (!expanded).toString());
+            el.parentElement.parentElement.className =  expanded ? 'package' : 'package open';
+        }
     }
 };
 </script>
@@ -82,25 +92,33 @@ export default {
             and acknowledge their work. Here we list all components which may be contained in portions in this web
             application. Please refer to the individual component source for detailed information."
           />
-          <ul>
-            <li
+          <dl>
+            <div
               v-for="(pkg, index) of packages"
               :key="index"
+              class="package"
             >
-              <details>
-                <summary>{{ pkg.name }}</summary>
-                <div>
-                  <a
-                    v-if="pkg.repository && pkg.repository.length"
-                    :href="pkg.repository"
-                  >
-                    source
-                  </a>
-                  <pre>{{ pkg.licenseText }}</pre>
-                </div>
-              </details>
-            </li>
-          </ul>
+              <dt>
+                <button
+                  :ref="`pkg_${index}`"
+                  aria-expanded="false"
+                  @click="() => toggleDetails(index)"
+                >
+                  <ArrowNextIcon />
+                  {{ pkg.name }}
+                </button>
+              </dt>
+              <dd class="details">
+                <a
+                  v-if="pkg.repository && pkg.repository.length"
+                  :href="pkg.repository"
+                >
+                  source
+                </a>
+                <pre>{{ pkg.licenseText }}</pre>
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
     </section>
@@ -116,12 +134,49 @@ section:not(:first-child) {
   padding-bottom: 55px;
 }
 
-summary {
-  cursor: pointer;
-  display: inline;
+dl {
+  padding-left: 40px;
+
+  & .package {
+    &.open {
+      & svg {
+        transform: rotate(90deg);
+      }
+
+      & .details {
+        display: block;
+      }
+    }
+
+    & button {
+      font-weight: 300;
+      border: none;
+      background-color: transparent;
+
+      &:active {
+          color: inherit;
+      }
+
+      & svg {
+        position: relative;
+        top: 3px;
+        height: 16px;
+        width: 16px;
+        transition: transform 0.2s ease-in-out;
+      }
+    }
+
+    & .details {
+      display: none;
+    }
+  }
 }
 
-ul {
+dt {
+  cursor: pointer;
+}
+
+dl {
   list-style: none;
 }
 </style>
