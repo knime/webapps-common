@@ -108,11 +108,10 @@ label {
   /* label size */
   &.large {
     font-weight: 700;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 13px;
+    line-height: 18px;
     display: block;
     margin-bottom: 5px;
-    padding-top: 0;
 
     & input:checked + span {
       font-weight: inherit;
