@@ -99,6 +99,7 @@ export default {
               <dt>
                 <button
                   aria-expanded="false"
+                  tabindex="0"
                   @click="toggleDetails"
                 >
                   <ArrowNextIcon />
@@ -108,6 +109,7 @@ export default {
               <dd class="details">
                 <a
                   v-if="pkg.repository && pkg.repository.length"
+                  tabindex="0"
                   :href="pkg.repository"
                 >
                   source
