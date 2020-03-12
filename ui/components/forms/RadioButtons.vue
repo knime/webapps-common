@@ -147,14 +147,26 @@ export default {
     /* keyboard focus; :focus-visible would be better once browser support
        is there https://caniuse.com/#feat=css-focus-visible */
     & input:checked:focus + span::before { /* 🔘 */
-      background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-silver-sand);
+      box-shadow: unset;
+      background: radial-gradient(
+        ellipse at center,
+        var(--theme-color-masala) 0%,
+        var(--theme-color-masala) 25%,
+        var(--theme-color-silver-sand-semi) 26%,
+        var(--theme-color-silver-sand-semi) 100%
+      );
     }
 
     /* hover state  checked */
     &:hover input:checked + span::before { /* 🔘 */
-      background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-silver-sand);
+      box-shadow: unset;
+      background: radial-gradient(
+        ellipse at center,
+        var(--theme-color-masala) 0%,
+        var(--theme-color-masala) 25%,
+        var(--theme-color-silver-sand-semi) 26%,
+        var(--theme-color-silver-sand-semi) 100%
+      );
     }
   }
 
