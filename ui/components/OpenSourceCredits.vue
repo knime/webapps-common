@@ -68,11 +68,10 @@ export default {
         };
     },
     methods: {
-        toggleDetails(index) {
-            let el = this.$refs[`pkg_${index}`][0];
-            let expanded = el.getAttribute('aria-expanded') === 'true';
-            el.setAttribute('aria-expanded', (!expanded).toString());
-            el.parentElement.parentElement.className =  expanded ? 'package' : 'package open';
+        toggleDetails(e) {
+            let expanded = e.target.getAttribute('aria-expanded') === 'true';
+            e.target.setAttribute('aria-expanded', (!expanded).toString());
+            e.target.parentElement.parentElement.className = !expanded && 'open';
         }
     }
 };
@@ -96,13 +95,11 @@ export default {
             <div
               v-for="(pkg, index) of packages"
               :key="index"
-              class="package"
             >
               <dt>
                 <button
-                  :ref="`pkg_${index}`"
                   aria-expanded="false"
-                  @click="() => toggleDetails(index)"
+                  @click="toggleDetails"
                 >
                   <ArrowNextIcon />
                   {{ pkg.name }}
@@ -136,47 +133,40 @@ section:not(:first-child) {
 
 dl {
   padding-left: 40px;
+  list-style: none;
 
-  & .package {
-    &.open {
-      & svg {
-        transform: rotate(90deg);
-      }
+  & .details {
+    display: none;
+  }
 
-      & .details {
-        display: block;
-      }
+  & button {
+    cursor: pointer;
+    font-weight: 300;
+    border: none;
+    background-color: transparent;
+
+    &:active {
+      color: inherit;
     }
 
-    & button {
-      font-weight: 300;
-      border: none;
-      background-color: transparent;
+    & svg {
+      position: relative;
+      top: 3px;
+      height: 16px;
+      width: 16px;
+      transition: transform 0.2s ease-in-out;
+      pointer-events: none;
+    }
+  }
 
-      &:active {
-          color: inherit;
-      }
-
-      & svg {
-        position: relative;
-        top: 3px;
-        height: 16px;
-        width: 16px;
-        transition: transform 0.2s ease-in-out;
-      }
+  & .open {
+    & svg {
+      transform: rotate(90deg);
     }
 
     & .details {
-      display: none;
+      display: block;
     }
   }
-}
-
-dt {
-  cursor: pointer;
-}
-
-dl {
-  list-style: none;
 }
 </style>
