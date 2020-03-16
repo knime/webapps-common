@@ -10,7 +10,8 @@ module.exports = {
     excludePackages: [
         'webapps-common@0.0.0',
         'knime-build-tools@0.0.0',
-        'webpack-external-import@0.3.0-beta.0' // licensed under GPL-3 but not included in the production app
+        'webpack-external-import@0.3.0-beta.0', // licensed under GPL-3 but not included in the production app
+        'webpack-external-import@1.1.3' // licensed under GPL-3 but not included in the production app
     ],
 
     // manually add packages to the credits, e.g.:
