@@ -106,6 +106,7 @@ export default {
       & + span {
         display: inline-block;
         width: 100%;
+        color: var(--theme-color-masala);
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -133,9 +134,7 @@ export default {
       }
     }
 
-    /* keyboard focus; :focus-visible would be better once browser support
-         is there https://caniuse.com/#feat=css-focus-visible */
-    & input:focus + span::before { /* ◯ */
+    & input:hover + span::before { /* ◯ */
       background: var(--theme-color-silver-sand-semi);
     }
 
@@ -144,9 +143,7 @@ export default {
       background: var(--theme-color-silver-sand-semi);
     }
 
-    /* keyboard focus; :focus-visible would be better once browser support
-       is there https://caniuse.com/#feat=css-focus-visible */
-    & input:checked:focus + span::before { /* 🔘 */
+    & input:checked:hover + span::before { /* 🔘 */
       box-shadow: unset;
       background: radial-gradient(
         ellipse at center,

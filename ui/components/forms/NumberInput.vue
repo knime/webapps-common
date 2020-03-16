@@ -256,7 +256,7 @@ export default {
     outline: none;
     background-color: transparent;
 
-    &:focus {
+    &:hover {
       border-color: var(--theme-color-masala);
     }
 
@@ -310,9 +310,7 @@ export default {
     }
   }
 
-  & .increase:focus,
   & .increase:active,
-  & .decrease:focus,
   & .decrease:active {
     color: var(--theme-color-white);
     background-color: var(--theme-color-masala);

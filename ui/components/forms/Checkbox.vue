@@ -52,7 +52,9 @@ export default {
 label {
   position: relative;
   line-height: 1;
-  padding: 3px 0 3px 26px;
+  padding: 3px 0 3px 24px;
+  font-size: 13px;
+  color: var(--theme-color-masala);
 
   & input {
     opacity: 0;
@@ -108,7 +110,6 @@ label {
   /* label size */
   &.large {
     font-weight: 700;
-    font-size: 13px;
     line-height: 18px;
     display: block;
     margin-bottom: 5px;
@@ -120,18 +121,15 @@ label {
 
   &.medium {
     font-weight: 300;
-    font-size: 14px;
     line-height: 18px;
   }
 
-  /* keyboard focus; :focus-visible would be better once browser support
-     is there https://caniuse.com/#feat=css-focus-visible */
-  & input:focus + span::before,
-  & input:checked:focus + span::before { /* □ */
+  & input:hover + span::before,
+  & input:checked:hover + span::before { /* □ */
     background: var(--theme-color-silver-sand-semi);
   }
 
-  & input:checked:focus + span::after { /* ✓ */
+  & input:checked:hover + span::after { /* ✓ */
     border-color: var(--theme-color-masala);
   }
 }

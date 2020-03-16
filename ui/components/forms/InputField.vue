@@ -119,7 +119,7 @@ input {
   }
 
   /* active */
-  &:focus {
+  &:hover {
     border-color: var(--theme-color-masala);
   }
 

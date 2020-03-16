@@ -305,7 +305,7 @@ export default {
     text-overflow: ellipsis;
   }
 
-  & [role=button]:focus {
+  & [role=button]:hover {
     border-color: var(--theme-color-masala);
     outline: none;
   }
@@ -351,7 +351,7 @@ export default {
     box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
   }
 
-  & [role="listbox"]:focus {
+  & [role="listbox"]:hover {
     outline: none;
     border-color: var(--theme-color-masala);
   }
@@ -362,6 +362,7 @@ export default {
     padding: 0 10px 0 10px;
     line-height: 24px;
     position: relative;
+    color: var(--theme-color-masala);
   }
 
   & [role="option"]:hover {

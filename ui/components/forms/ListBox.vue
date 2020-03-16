@@ -226,7 +226,7 @@ export default {
   border: 1px solid var(--theme-color-stone-gray);
 }
 
-[role="listbox"]:focus {
+[role="listbox"]:hover {
   outline: none;
   border-color: var(--theme-color-masala);
 }
@@ -235,6 +235,7 @@ export default {
   display: block;
   padding: 0 10px 0 10px;
   position: relative;
+  color: var(--theme-color-masala);
 }
 
 [role="option"]:hover {

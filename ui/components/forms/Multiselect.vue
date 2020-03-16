@@ -125,6 +125,7 @@ h6 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--theme-color-masala);
 }
 
 .multiselect {
