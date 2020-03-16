@@ -41,21 +41,21 @@ export default {
     },
     computed: {
         packages() {
-          
+
             let allUniquePackages = [];
 
             packages.concat(this.additionalPackages).forEach(pkg => {
                 const alreadyExists = allUniquePackages.some(
                     firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                    firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
-                    firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
+                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                        firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
                 );
 
                 if (!alreadyExists) {
                     allUniquePackages.push(pkg);
                 }
             });
-            
+
             // sort packages by name
             allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
             return allUniquePackages;
@@ -71,7 +71,7 @@ export default {
         toggleDetails(e) {
             let expanded = e.target.getAttribute('aria-expanded') === 'true';
             e.target.setAttribute('aria-expanded', (!expanded).toString());
-            e.target.parentElement.parentElement.className = !expanded && 'open';
+            e.target.parentElement.parentElement.classList[expanded ? 'remove' : 'add']('open');
         }
     }
 };
@@ -91,32 +91,30 @@ export default {
             and acknowledge their work. Here we list all components which may be contained in portions in this web
             application. Please refer to the individual component source for detailed information."
           />
-          <dl>
-            <div
-              v-for="(pkg, index) of packages"
-              :key="index"
-            >
-              <dt>
-                <button
-                  aria-expanded="false"
-                  tabindex="0"
-                  @click="toggleDetails"
-                >
-                  <ArrowNextIcon />
-                  {{ pkg.name }}
-                </button>
-              </dt>
-              <dd class="details">
-                <a
-                  v-if="pkg.repository && pkg.repository.length"
-                  tabindex="0"
-                  :href="pkg.repository"
-                >
-                  source
-                </a>
-                <pre>{{ pkg.licenseText }}</pre>
-              </dd>
-            </div>
+          <dl
+            v-for="(pkg, index) of packages"
+            :key="index"
+          >
+            <dt>
+              <button
+                aria-expanded="false"
+                tabindex="0"
+                @click="toggleDetails"
+              >
+                <ArrowNextIcon />
+                {{ pkg.name }}
+              </button>
+            </dt>
+            <dd class="details">
+              <a
+                v-if="pkg.repository && pkg.repository.length"
+                tabindex="0"
+                :href="pkg.repository"
+              >
+                source
+              </a>
+              <pre>{{ pkg.licenseText }}</pre>
+            </dd>
           </dl>
         </div>
       </div>
@@ -161,7 +159,7 @@ dl {
     }
   }
 
-  & .open {
+  &.open {
     & svg {
       transform: rotate(90deg);
     }
