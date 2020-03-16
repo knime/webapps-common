@@ -61,12 +61,6 @@ export default {
             return allUniquePackages;
         }
     },
-    head() {
-        return {
-            title: this.title,
-            meta: [{ name: 'robots', content: 'noindex,nofollow' }]
-        };
-    },
     methods: {
         toggleDetails(e) {
             let expanded = e.target.getAttribute('aria-expanded') === 'true';
