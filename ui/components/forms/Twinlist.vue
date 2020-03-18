@@ -278,12 +278,16 @@ export default {
 
   & .buttons {
     flex: 0 0 30px;
-    cursor: pointer;
-    margin: 41px 0 14px;
+    align-items: center;
+    justify-content: center;
+    margin: 40px 0 14px;
+    display: flex;
+    flex-direction: column;
   }
 
   & [role="button"] {
     text-align: center;
+    cursor: pointer;
     width: 30px;
     height: 24px;
     display: block;
