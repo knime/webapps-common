@@ -170,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'invalid': !isValid}">
+  <div :class="{ 'listBox': true, 'invalid': !isValid}">
     <ul
       ref="ul"
       role="listbox"
@@ -187,6 +187,7 @@ export default {
         ref="options"
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
+        :title="item.text"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
@@ -201,54 +202,60 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.invalid {
-  position: relative;
+.listBox {
+  & .invalid {
+    position: relative;
 
-  &::before {
-    content: '';
-    position: absolute;
-    width: 3px;
-    left: 0;
-    margin: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 10;
-    background-color: var(--theme-color-error);
+    &::before {
+      content: '';
+      position: absolute;
+      width: 3px;
+      left: 0;
+      margin: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+      background-color: var(--theme-color-error);
+    }
   }
-}
 
-[role="listbox"] {
-  font-size: 14px;
-  min-height: 20px;
-  padding: 0;
-  margin: 0;
-  background: var(--theme-color-white);
-  border: 1px solid var(--theme-color-stone-gray);
-}
+  & [role="listbox"] {
+    font-size: 14px;
+    min-height: 20px;
+    padding: 0;
+    margin: 0;
+    background: var(--theme-color-white);
+    border: 1px solid var(--theme-color-stone-gray);
+  }
 
-[role="option"] {
-  display: block;
-  padding: 0 10px 0 10px;
-  position: relative;
-}
+  & [role="option"] {
+    display: block;
+    padding: 0 10px 0 10px;
+    position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 
-[role="option"]:hover {
-  background: var(--theme-color-porcelain);
-}
+  & [role="option"]:hover {
+    background: var(--theme-color-porcelain);
+  }
 
-[role="option"].focused {
-  background: var(--theme-color-masala);
-  color: var(--theme-color-white);
-}
+  & [role="option"].focused {
+    background: var(--theme-color-masala);
+    color: var(--theme-color-white);
+  }
 
-/* this selector is required to override some * rules which interfere - so do not simplify */
-ul[role="listbox"] {
-  overflow-y: auto;
-  position: relative;
-}
+  /* this selector is required to override some * rules which interfere - so do not simplify */
 
-.noselect {
-  user-select: none;
+  & ul[role="listbox"] {
+    overflow-y: auto;
+    position: relative;
+  }
+
+  & .noselect {
+    user-select: none;
+  }
 }
 
 </style>
