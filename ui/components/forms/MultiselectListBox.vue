@@ -374,6 +374,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
+        :title="item.text"
         :data-option-index="index"
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{
@@ -429,6 +430,9 @@ export default {
     display: block;
     padding: 0 10px 0 10px;
     position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   & [role="option"]:hover {
