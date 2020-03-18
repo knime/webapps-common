@@ -15,7 +15,7 @@ describe('Checkboxes.vue', () => {
             }, {
                 id: 'test3',
                 text: 'test3'
-            }],
+            }]
         };
         const wrapper = mount(Checkboxes, {
             propsData
