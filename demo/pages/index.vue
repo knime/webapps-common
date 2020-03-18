@@ -31,7 +31,7 @@ import Multiselect from '../components/Multiselect';
 import MultiselectListBox from '../components/MultiselectListBox';
 import Checkboxes from '../components/Checkboxes';
 import Twinlist from '../components/Twinlist';
-
+import OpenSourceCredits from '../components/OpenSourceCredits';
 
 export default {
     components: {
@@ -64,7 +64,8 @@ export default {
         Multiselect,
         MultiselectListBox,
         Checkboxes,
-        Twinlist
+        Twinlist,
+        OpenSourceCredits
     }
 };
 </script>
@@ -113,6 +114,7 @@ export default {
     <MultiselectListBox />
     <Checkboxes />
     <Twinlist />
+    <OpenSourceCredits />
   </main>
 </template>
 

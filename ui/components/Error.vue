@@ -160,7 +160,7 @@ svg {
   font-size: 22px;
   font-weight: 300;
   line-height: 33px;
-  margin-bottom: 40px;
+  margin-bottom: 100px;
   margin-top: -10px;
 }
 </style>
