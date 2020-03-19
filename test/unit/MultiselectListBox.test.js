@@ -239,7 +239,7 @@ describe('MultiselectListBox.vue', () => {
             wrapper.find('[role=listbox]').trigger('keydown.end');
             await wrapper.vm.$nextTick();
             // NOTE:
-            // this seems to generate more then one input event even if it shouldn't
+            // this seems to generate more than one input event even if it shouldn't
             // they keydown.end seems to trigger keydown.home and then keydown.end - nobody really knows why.
             // this sems to only happen with home and end keys
             let emitted = wrapper.emitted().input;
@@ -327,7 +327,6 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().doubleClickShift[0][0]).toStrictEqual(['test1', 'test2']);
         });
-
 
     });
 
