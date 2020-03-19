@@ -95,7 +95,6 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3', 'test4']);
         });
 
-
         it('adds item to selected while holding ctrl key', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
@@ -122,7 +121,6 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2']);
         });
-
 
         it('adds items to selected while holding meta (mac: command) key', async () => {
             const wrapper = mount(MultiselectListBox, {
