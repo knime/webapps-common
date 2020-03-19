@@ -22,7 +22,11 @@ describe('Checkboxes.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll(Checkbox).length).toBe(propsData.possibleValues.length);
+        let checkboxes = wrapper.findAll(Checkbox);
+        propsData.possibleValues.forEach((value, i) => {
+            expect(checkboxes.at(i).text()).toContain(value.text);
+        });
+        expect(checkboxes.length).toBe(propsData.possibleValues.length);
         expect(wrapper.vm.hasSelection()).toBe(false);
     });
 
@@ -31,24 +35,28 @@ describe('Checkboxes.vue', () => {
             propsData: {
                 possibleValues: [{
                     id: 'test1',
-                    text: 'test1'
+                    text: 'Checkbox 1'
                 }, {
                     id: 'test2',
-                    text: 'test2'
+                    text: 'Checkbox 2'
                 }, {
                     id: 'test3',
-                    text: 'test3'
+                    text: 'Checkbox 3'
                 }],
                 value: ['test1']
             }
         });
-        let input = wrapper.findAll(Checkbox).at(1);
-        // test check
-        input.vm.onInput({ target: { checked: true } });
+        // current value
+        expect(wrapper.findAll(Checkbox).at(0).props('value')).toBe(true);
+
+        let checkboxTest2 = wrapper.findAll(Checkbox).at(1);
+
+        // check the Checkbox 'test'2
+        checkboxTest2.vm.onInput({ target: { checked: true } });
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2']);
 
-        // test uncheck
-        input.vm.onInput({ target: { checked: false } });
+        // test uncheck 'test2'
+        checkboxTest2.vm.onInput({ target: { checked: false } });
         expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1']);
     });
 
