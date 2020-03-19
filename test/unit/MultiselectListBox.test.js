@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils';
 
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 
+jest.useFakeTimers();
+
 describe('MultiselectListBox.vue', () => {
 
     let possibleValues;
@@ -122,7 +124,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2']);
         });
 
-        it('adds items to selected while holding meta (mac: command) key', async () => {
+        it('adds items to selected while holding meta (mac: command) key', () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -131,16 +133,10 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
 
-            // wait 300ms to get debounce code executed (and tested)
-            let promise = new Promise((resolve, reject) => {
-                setTimeout(() => resolve(), 300);
-            });
-
             wrapper.findAll('[role=option]').at(3).trigger('click', { metaKey: true });
             wrapper.findAll('[role=option]').at(1).trigger('click', { metaKey: true });
 
-            // do the wait
-            await promise;
+            jest.runAllTimers();
 
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
         });
