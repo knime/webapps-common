@@ -170,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'listBox': true, 'invalid': !isValid}">
+  <div :class="['listBox', { 'invalid': !isValid }]">
     <ul
       ref="ul"
       role="listbox"
@@ -230,7 +230,7 @@ export default {
 
   & [role="option"] {
     display: block;
-    padding: 0 10px 0 10px;
+    padding: 0 10px;
     position: relative;
     text-overflow: ellipsis;
     overflow: hidden;
