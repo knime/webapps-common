@@ -318,7 +318,6 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().doubleClickShift[0][0]).toStrictEqual(['test1', 'test2']);
         });
-
     });
 
     describe('drag', () => {
@@ -348,6 +347,23 @@ describe('MultiselectListBox.vue', () => {
             // select
             wrapper.findAll('[role=option]').at(1).trigger('mousedown', { ctrlKey: true });
             wrapper.findAll('[role=option]').at(3).trigger('mousemove', { ctrlKey: true });
+            wrapper.vm.onStopDrag();
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1']);
+        });
+
+        it('deselects multiple elements on mouse move while mouse down (drag) with meta/cmd down', async () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: ['test1', 'test2', 'test3'],
+                    ariaLabel: 'A Label'
+                }
+            });
+            // select
+            wrapper.findAll('[role=option]').at(1).trigger('mousedown', { metaKey: true });
+            wrapper.findAll('[role=option]').at(3).trigger('mousemove', { metaKey: true });
             wrapper.vm.onStopDrag();
             await wrapper.vm.$nextTick();
 
