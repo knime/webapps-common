@@ -38,12 +38,12 @@ export default {
         labelLeft: {
             type: String,
             required: true,
-            default: 'Possible Values'
+            default: 'Possible values'
         },
         labelRight: {
             type: String,
             required: true,
-            default: 'Selected Values'
+            default: 'Selected values'
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
