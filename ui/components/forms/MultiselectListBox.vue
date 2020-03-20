@@ -88,6 +88,9 @@ export default {
             this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
         }
     },
+    destroyed() {
+        window.removeEventListener('mouseup', this.onStopDrag);
+    },
     created() {
         // eslint-disable-next-line no-magic-numbers
         this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
