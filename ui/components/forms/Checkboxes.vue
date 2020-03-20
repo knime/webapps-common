@@ -28,7 +28,7 @@ export default {
             }
         },
         /**
-         * Controls the alignment of the RadioButtons
+         * Controls the alignment
          */
         alignment: {
             type: String,
@@ -43,13 +43,6 @@ export default {
         value: {
             type: Array,
             default: () => []
-        },
-        /**
-         * placeholder to be displayed when nothing is selected
-         */
-        placeholder: {
-            type: String,
-            default: ''
         }
     },
     data() {
