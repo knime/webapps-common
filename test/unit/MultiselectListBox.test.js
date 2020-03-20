@@ -352,7 +352,7 @@ describe('MultiselectListBox.vue', () => {
             // select
             wrapper.findAll('[role=option]').at(1).trigger('mousedown', { ctrlKey: true });
             wrapper.findAll('[role=option]').at(3).trigger('mousemove', { ctrlKey: true });
-            wrapper.vm.stopDrag();
+            wrapper.vm.onStopDrag();
             await wrapper.vm.$nextTick();
 
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1']);

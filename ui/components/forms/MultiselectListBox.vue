@@ -81,7 +81,7 @@ export default {
         }
     },
     mounted() {
-        window.addEventListener('mouseup', this.stopDrag);
+        window.addEventListener('mouseup', this.onStopDrag);
         // set key nav index to last value
         if (this.value.length > 0) {
             let lastItem = this.value[this.value.length - 1];
@@ -133,7 +133,7 @@ export default {
             let end = firstIndex > secondIndex ? firstIndex : secondIndex;
             return this.possibleValues.slice(start, end + 1).map(x => x.id);
         },
-        startDrag(e) {
+        onStartDrag(e) {
             // do not start drag if we press shift
             if (e.shiftKey) {
                 return;
@@ -162,7 +162,7 @@ export default {
                 this.setSelected(sectionValues);
             }
         },
-        stopDrag(e) {
+        onStopDrag(e) {
             this.draggingStartIndex = -1;
             this.draggingInverseMode = false;
         },
@@ -312,7 +312,8 @@ export default {
         onArrowRight() {
             this.$emit('keyArrowRight', this.selectedValues);
         },
-        selectAll() {
+        onCtrlA() {
+            // select all
             this.setSelected(this.possibleValues.map(x => x.id));
         },
         hasSelection() {
@@ -356,7 +357,7 @@ export default {
       tabindex="0"
       :aria-label="ariaLabel"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
-      @keydown.ctrl.a.prevent.exact="selectAll"
+      @keydown.ctrl.a.prevent.exact="onCtrlA"
       @keydown.up.prevent.exact="onArrowUp"
       @keydown.down.prevent.exact="onArrowDown"
       @keydown.shift.up.prevent.exact="onArrowUpShift"
@@ -365,7 +366,7 @@ export default {
       @keydown.right.prevent.exact="onArrowRight"
       @keydown.home.prevent.exact="onHomeKey"
       @keydown.end.prevent.exact="onEndKey"
-      @mousedown="startDrag"
+      @mousedown="onStartDrag"
       @mousemove="onDrag"
     >
       <li
