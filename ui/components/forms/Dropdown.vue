@@ -346,6 +346,11 @@ export default {
     box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
   }
 
+  & [role="listbox"]:focus {
+    outline: none;
+    border-color: var(--theme-color-masala);
+  }
+
   & [role="option"] {
     display: inline-block;
     width: 100%;
