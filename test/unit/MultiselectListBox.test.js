@@ -69,7 +69,6 @@ describe('MultiselectListBox.vue', () => {
     });
 
     describe('mouse click', () => {
-
         it('selects item on click', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
@@ -143,7 +142,6 @@ describe('MultiselectListBox.vue', () => {
     });
 
     describe('keyboard navigation', () => {
-
         it('selects all by CTRL+a', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
@@ -234,15 +232,14 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
             // NOTE:
             // this seems to generate more than one input event even if it shouldn't
-            // they keydown.end seems to trigger keydown.home and then keydown.end - nobody really knows why.
-            // this sems to only happen with home and end keys
+            // the keydown.end seems to trigger keydown.home and then keydown.end - nobody really knows why.
+            // this seems to only happen with home and end keys
             let emitted = wrapper.emitted().input;
             expect(emitted[emitted.length - 1][0]).toStrictEqual(['test4']);
         });
     });
 
     describe('methods and events', () => {
-
         it('validation of possibleValues', () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
@@ -325,7 +322,6 @@ describe('MultiselectListBox.vue', () => {
     });
 
     describe('drag', () => {
-
         it('selects multiple elements on mouse move while mouse down (drag)', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
