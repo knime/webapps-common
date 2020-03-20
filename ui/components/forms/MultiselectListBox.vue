@@ -92,6 +92,8 @@ export default {
         window.removeEventListener('mouseup', this.onStopDrag);
     },
     created() {
+        // the mac emits the click event  multiple times when the metaKey (cmd/command) is hold
+        // this does not work well with the toggling of selected items, therefore we debounce it
         // eslint-disable-next-line no-magic-numbers
         this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
     },
