@@ -78,6 +78,7 @@ div {
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     border: 1px solid var(--theme-color-stone-gray);
+    outline: none;
     display: block;
 
     &:hover {

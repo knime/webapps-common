@@ -106,6 +106,7 @@ input {
   border-radius: 0;
   width: 100%;
   border: 1px solid var(--theme-color-stone-gray);
+  outline: none;
   background-color: transparent;
 
   &::placeholder {

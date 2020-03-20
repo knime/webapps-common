@@ -253,6 +253,7 @@ export default {
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     width: calc(100% - 32px);
+    outline: none;
     background-color: transparent;
 
     &:hover {
