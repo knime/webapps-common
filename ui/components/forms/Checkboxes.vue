@@ -45,11 +45,6 @@ export default {
             default: () => []
         }
     },
-    data() {
-        return {
-            collapsed: true
-        };
-    },
     methods: {
         onInput(value, toggled) {
             let checkedValue = Array.from(this.value);
