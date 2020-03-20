@@ -111,60 +111,60 @@ export default {
             this.clearSelections();
             this.$emit('input', this.chosenValues);
         },
-        moveRightButtonClick() {
+        onMoveRightButtonClick() {
             this.moveRight();
         },
-        moveAllRightButtonClick() {
+        onMoveAllRightButtonClick() {
             this.moveRight(this.leftItems.map(x => x.id));
         },
-        moveAllRightButtonKey(e) {
+        onMoveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
-                this.moveAllRightButtonClick();
+                this.onMoveAllRightButtonClick();
             }
         },
-        moveRightButtonKey(e) {
+        onMoveRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
                 this.moveRight();
             }
         },
-        moveLeftButtonClick() {
+        onMoveLeftButtonClick() {
             this.moveLeft();
         },
-        moveAllLeftButtonClick() {
+        onMoveAllLeftButtonClick() {
             this.moveLeft(this.rightItems.map(x => x.id));
         },
-        moveLeftButtonKey(e) {
+        onMoveLeftButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
                 this.moveLeft();
             }
         },
-        moveAllLeftButtonKey(e) {
+        onMoveAllLeftButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
-                this.moveAllLeftButtonClick();
+                this.onMoveAllLeftButtonClick();
             }
         },
-        leftListBoxDoubleClick(item) {
+        onLeftListBoxDoubleClick(item) {
             this.moveRight([item]);
         },
-        leftListBoxShiftDoubleClick(items) {
+        onLeftListBoxShiftDoubleClick(items) {
             this.moveRight(items);
         },
-        rightListBoxDoubleClick(item) {
+        onRightListBoxDoubleClick(item) {
             this.moveLeft([item]);
         },
-        rightListBoxShiftDoubleClick(items) {
+        onRightListBoxShiftDoubleClick(items) {
             this.moveLeft(items);
         },
-        leftInput(value) {
+        onLeftInput(value) {
             this.selectedLeft = value;
         },
-        rightInput(value) {
+        onRightInput(value) {
             this.selectedRight = value;
         },
-        keyRightArrow() {
+        onKeyRightArrow() {
             this.moveRight();
         },
-        keyLeftArrow() {
+        onKeyLeftArrow() {
             this.moveLeft();
         },
         hasSelection() {
@@ -186,10 +186,10 @@ export default {
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="labelLeft"
-        @doubleClickOnItem="leftListBoxDoubleClick"
-        @doubleClickShift="leftListBoxShiftDoubleClick"
-        @keyArrowRight="keyRightArrow"
-        @input="leftInput"
+        @doubleClickOnItem="onLeftListBoxDoubleClick"
+        @doubleClickShift="onLeftListBoxShiftDoubleClick"
+        @keyArrowRight="onKeyRightArrow"
+        @input="onLeftInput"
       />
     </div>
     <div class="buttons">
@@ -197,8 +197,8 @@ export default {
         ref="moveRight"
         role="button"
         tabindex="0"
-        @click="moveRightButtonClick"
-        @keydown="moveRightButtonKey"
+        @click="onMoveRightButtonClick"
+        @keydown="onMoveRightButtonKey"
       >
         <ArrowNextIcon class="icon" />
       </div>
@@ -206,8 +206,8 @@ export default {
         ref="moveAllRight"
         role="button"
         tabindex="0"
-        @click="moveAllRightButtonClick"
-        @keydown="moveAllRightButtonKey"
+        @click="onMoveAllRightButtonClick"
+        @keydown="onMoveAllRightButtonKey"
       >
         <ArrowNextDoubleIcon class="icon" />
       </div>
@@ -215,8 +215,8 @@ export default {
         ref="moveLeft"
         role="button"
         tabindex="0"
-        @click="moveLeftButtonClick"
-        @keydown="moveLeftButtonKey"
+        @click="onMoveLeftButtonClick"
+        @keydown="onMoveLeftButtonKey"
       >
         <ArrowPrevIcon class="icon" />
       </div>
@@ -224,8 +224,8 @@ export default {
         ref="moveAllLeft"
         role="button"
         tabindex="0"
-        @click="moveAllLeftButtonClick"
-        @keydown="moveAllLeftButtonKey"
+        @click="onMoveAllLeftButtonClick"
+        @keydown="onMoveAllLeftButtonKey"
       >
         <ArrowPrevDoubleIcon class="icon" />
       </div>
@@ -239,10 +239,10 @@ export default {
         :possible-values="rightItems"
         :size="size"
         :aria-label="labelRight"
-        @doubleClickOnItem="rightListBoxDoubleClick"
-        @doubleClickShift="rightListBoxShiftDoubleClick"
-        @keyArrowLeft="keyLeftArrow"
-        @input="rightInput"
+        @doubleClickOnItem="onRightListBoxDoubleClick"
+        @doubleClickShift="onRightListBoxShiftDoubleClick"
+        @keyArrowLeft="onKeyLeftArrow"
+        @input="onRightInput"
       />
     </div>
   </div>
