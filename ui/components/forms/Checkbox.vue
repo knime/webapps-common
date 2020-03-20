@@ -122,7 +122,6 @@ export default {
   }
 
   /* label size */
-
   &.large {
     font-weight: 700;
     font-size: 16px;
@@ -143,7 +142,6 @@ export default {
   }
 
   /* artificial outline for focus as we don't use the native input element */
-
   & input:focus + span::before,
   & input:checked:focus + span::before { /* □ */
     outline: 1px dotted;
