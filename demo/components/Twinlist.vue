@@ -6,8 +6,8 @@ import code from '!!raw-loader!../../ui/components/forms/Twinlist';
 const codeExample = `<Twinlist
   v-model="selected"
   :size="4"
-  aria-label-left="Select stuff here"
-  aria-label-right="The selected stuff"
+  label-left="Select stuff here"
+  label-right="The selected stuff"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -73,8 +73,8 @@ export default {
           <Twinlist
             v-model="selected"
             :size="4"
-            aria-label-left="Select stuff here"
-            aria-label-right="The selected stuff"
+            label-left="Select stuff here"
+            label-right="The selected stuff"
             :possible-values="[{
               id: 'foo',
               text: 'Foo'
