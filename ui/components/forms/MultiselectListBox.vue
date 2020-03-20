@@ -1,5 +1,6 @@
 <script>
 let count = 0;
+const CLICK_META_KEY_TIMEOUT = 250; // ms
 
 export default {
     props: {
@@ -94,8 +95,7 @@ export default {
     created() {
         // the mac emits the click event  multiple times when the metaKey (cmd/command) is hold
         // this does not work well with the toggling of selected items, therefore we debounce it
-        // eslint-disable-next-line no-magic-numbers
-        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, 250);
+        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, CLICK_META_KEY_TIMEOUT);
     },
     methods: {
         debounce(callback, wait) {
