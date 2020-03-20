@@ -17,8 +17,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -48,8 +48,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -79,8 +79,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: [],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -111,8 +111,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test2', 'test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -141,8 +141,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: [],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -174,8 +174,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test2', 'test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -204,8 +204,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: [],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -233,8 +233,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test2', 'test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -261,8 +261,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: [],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -294,8 +294,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test2', 'test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -324,8 +324,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: [],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -353,8 +353,8 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }],
             value: ['test2', 'test3'],
-            ariaLabelLeft: 'Choose',
-            ariaLabelRight: 'The value'
+            labelLeft: 'Choose',
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData

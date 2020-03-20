@@ -35,12 +35,12 @@ export default {
             default: true,
             type: Boolean
         },
-        ariaLabelLeft: {
+        labelLeft: {
             type: String,
             required: true,
             default: 'Possible Values'
         },
-        ariaLabelRight: {
+        labelRight: {
             type: String,
             required: true,
             default: 'Selected Values'
@@ -177,7 +177,7 @@ export default {
 <template>
   <div class="twinlist">
     <div class="list">
-      <div class="title">{{ ariaLabelLeft }}</div>
+      <div class="title">{{ labelLeft }}</div>
       <MultiselectListBox
         ref="left"
         :size="size"
@@ -185,7 +185,7 @@ export default {
         :value="selectedLeft"
         :is-valid="isValid"
         :possible-values="leftItems"
-        :aria-label="ariaLabelLeft"
+        :aria-label="labelLeft"
         @doubleClickOnItem="leftListBoxDoubleClick"
         @doubleClickShift="leftListBoxShiftDoubleClick"
         @keyArrowRight="keyRightArrow"
@@ -231,14 +231,14 @@ export default {
       </div>
     </div>
     <div class="list">
-      <div class="title">{{ ariaLabelRight }}</div>
+      <div class="title">{{ labelRight }}</div>
       <MultiselectListBox
         ref="right"
         class="listBox"
         :value="selectedRight"
         :possible-values="rightItems"
         :size="size"
-        :aria-label="ariaLabelRight"
+        :aria-label="labelRight"
         @doubleClickOnItem="rightListBoxDoubleClick"
         @doubleClickShift="rightListBoxShiftDoubleClick"
         @keyArrowLeft="keyLeftArrow"
