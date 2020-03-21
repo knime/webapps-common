@@ -4,6 +4,7 @@ import CodeExample from './demo/CodeExample';
 import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg?inline';
 import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
 import svgWithTitle from '../../ui/util/svgWithTitle';
+import InputField from '../../ui/components/forms/InputField';
 
 const codeExample1 = `<script>
 import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
@@ -117,13 +118,15 @@ export default {
         FolderIcon,
         ListNumbersIconWithTip: svgWithTitle(ListNumbersIcon, 'This is a list with numbers'),
         ImagePreviews,
-        CodeExample
+        CodeExample,
+        InputField
     },
     data() {
         return {
             codeExample1,
             codeExample2,
-            codeExampleTooltip
+            codeExampleTooltip,
+            iconFilterTerm: ''
         };
     },
     computed: {
@@ -133,6 +136,9 @@ export default {
                 name: x.replace('./', ''),
                 src: components(x)
             }));
+        },
+        filteredIcons() {
+            return this.icons.filter(icon => icon.name.includes(this.iconFilterTerm));
         }
     }
 };
@@ -144,8 +150,14 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h2>Icons</h2>
+          <InputField
+            v-model="iconFilterTerm"
+            class="filterIconsInput"
+            type="text"
+            placeholder="Filter Icons"
+          />
           <ImagePreviews
-            :images="icons"
+            :images="filteredIcons"
             width="60px"
             height="60px"
           />
@@ -174,6 +186,11 @@ export default {
 
 >>> .wrapper {
   margin: 0 -20px;
+}
+
+.filterIconsInput {
+  width: 400px;
+  margin-bottom: 30px;
 }
 
 svg {
