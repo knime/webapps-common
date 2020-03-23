@@ -353,7 +353,7 @@ export default {
 
 <template>
   <div
-    :class="{ 'invalid' : !isValid, 'multiselect-list-box': true}"
+    :class="['multiselect-list-box', { 'invalid' : !isValid}]"
     :style="cssStyleSize"
   >
     <ul

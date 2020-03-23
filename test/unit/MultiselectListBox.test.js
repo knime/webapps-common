@@ -44,6 +44,22 @@ describe('MultiselectListBox.vue', () => {
         });
     });
 
+    it('isValid causes invalid style', () => {
+        let propsData = {
+            possibleValues,
+            value: [],
+            ariaLabel: 'A Label',
+            isValid: false
+        };
+        const wrapper = mount(MultiselectListBox, {
+            propsData
+        });
+        let root = wrapper.find('.multiselect-list-box');
+        expect(root.classes()).toContain('invalid');
+        wrapper.setProps({ isValid: true });
+        expect(root.classes()).not.toContain('invalid');
+    });
+
     it('renders with default possibleValues', () => {
         let propsData = {
             ariaLabel: 'A Label'

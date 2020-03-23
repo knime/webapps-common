@@ -25,6 +25,7 @@ describe('Twinlist.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
+        expect(wrapper.vm.hasSelection()).toBe(true);
         expect(wrapper.findAll(MultiselectListBox).length).toBe(2);
         expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.possibleValues.length).toBe(2);
         expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.possibleValues).toStrictEqual(
@@ -33,6 +34,26 @@ describe('Twinlist.vue', () => {
                 text: 'test3'
             }]
         );
+    });
+
+    it('isValid causes invalid style on left box', () => {
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'test1'
+            }],
+            value: [],
+            labelLeft: 'Choose',
+            labelRight: 'The value',
+            isValid: false
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        let left = wrapper.find({ ref: 'left' });
+        expect(left.vm.isValid).toBe(false);
+        wrapper.setProps({ isValid: true });
+        expect(left.vm.isValid).toBe(true);
     });
 
     it('adds to value on double click', async () => {
