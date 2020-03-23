@@ -56,35 +56,91 @@ describe('Twinlist.vue', () => {
         expect(left.vm.isValid).toBe(true);
     });
 
-    it('adds to value on double click', async () => {
-        let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
-            value: ['test3'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
-        };
-        const wrapper = mount(Twinlist, {
-            propsData
+    describe('doubleclick', () => {
+        let propsData;
+        beforeEach(() => {
+            propsData = {
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
+                value: ['test3'],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            };
         });
 
-        let boxes = wrapper.findAll(MultiselectListBox);
-        let left = boxes.at(0);
-        let right = boxes.at(1);
-        left.vm.$emit('doubleClickOnItem', 'test2', 1);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
-        expect(right.vm.$props.possibleValues).toStrictEqual([
-            propsData.possibleValues[1], propsData.possibleValues[2]
-        ]);
+        it('adds to value on double click in left box', async () => {
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+            left.vm.$emit('doubleClickOnItem', 'test2', 1);
+            await wrapper.vm.$nextTick();
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(right.vm.$props.possibleValues).toStrictEqual([
+                propsData.possibleValues[1], propsData.possibleValues[2]
+            ]);
+        });
+
+        it('adds values on shift double click in left box', async () => {
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+            left.vm.$emit('doubleClickShift', ['test1', 'test2']);
+            await wrapper.vm.$nextTick();
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(right.vm.$props.possibleValues).toStrictEqual([
+                propsData.possibleValues[0], propsData.possibleValues[1], propsData.possibleValues[2]
+            ]);
+        });
+
+        it('removes from value on double click in right box', async () => {
+            propsData.value = ['test2', 'test3'];
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+            right.vm.$emit('doubleClickOnItem', 'test2', 1);
+            await wrapper.vm.$nextTick();
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(left.vm.$props.possibleValues).toStrictEqual([
+                propsData.possibleValues[0], propsData.possibleValues[1]
+            ]);
+        });
+
+        it('removes from values on shift double click in right box', async () => {
+            propsData.value = ['test1', 'test2', 'test3'];
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+            right.vm.$emit('doubleClickShift', ['test1', 'test2']);
+            await wrapper.vm.$nextTick();
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(left.vm.$props.possibleValues).toStrictEqual([
+                propsData.possibleValues[0], propsData.possibleValues[1]
+            ]);
+        });
     });
 
     it('moves selected values to right on right arrow key', async () => {
