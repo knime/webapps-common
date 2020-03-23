@@ -4,18 +4,24 @@ import Twinlist from '~/ui/components/forms/Twinlist';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 
 describe('Twinlist.vue', () => {
+
+    let defaultPossibleValues;
+    beforeEach(() => {
+        defaultPossibleValues = [{
+            id: 'test1',
+            text: 'Text 1'
+        }, {
+            id: 'test2',
+            text: 'Text 2'
+        }, {
+            id: 'test3',
+            text: 'Text 3'
+        }];
+    });
+
     it('renders', () => {
         let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
+            possibleValues: defaultPossibleValues,
             value: ['test3'],
             labelLeft: 'Choose',
             labelRight: 'The value'
@@ -29,10 +35,7 @@ describe('Twinlist.vue', () => {
         expect(wrapper.findAll(MultiselectListBox).length).toBe(2);
         expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.possibleValues.length).toBe(2);
         expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.possibleValues).toStrictEqual(
-            [{
-                id: 'test3',
-                text: 'test3'
-            }]
+            [defaultPossibleValues[2]]
         );
     });
 
@@ -60,16 +63,7 @@ describe('Twinlist.vue', () => {
         let propsData;
         beforeEach(() => {
             propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: ['test3'],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -145,16 +139,7 @@ describe('Twinlist.vue', () => {
 
     it('moves selected values to right on right arrow key', async () => {
         let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
+            possibleValues: defaultPossibleValues,
             value: [],
             labelLeft: 'Choose',
             labelRight: 'The value'
@@ -177,16 +162,7 @@ describe('Twinlist.vue', () => {
 
     it('moves selected values to left on left arrow key', async () => {
         let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
+            possibleValues: defaultPossibleValues,
             value: ['test2', 'test3'],
             labelLeft: 'Choose',
             labelRight: 'The value'
@@ -207,16 +183,7 @@ describe('Twinlist.vue', () => {
 
     it('moves selected values to right on move button click', async () => {
         let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }, {
-                id: 'test2',
-                text: 'test2'
-            }, {
-                id: 'test3',
-                text: 'test3'
-            }],
+            possibleValues: defaultPossibleValues,
             value: [],
             labelLeft: 'Choose',
             labelRight: 'The value'
@@ -240,16 +207,7 @@ describe('Twinlist.vue', () => {
     describe('controls', () => {
         it('moves selected values to left on move button click', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -270,16 +228,7 @@ describe('Twinlist.vue', () => {
 
         it('move all values to right on all button click', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: [],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -298,16 +247,7 @@ describe('Twinlist.vue', () => {
 
         it('move all values to left on all button click', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -326,16 +266,7 @@ describe('Twinlist.vue', () => {
 
         it('moves selected values to right on move button enter', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: [],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -358,16 +289,7 @@ describe('Twinlist.vue', () => {
 
         it('moves selected values to left on move button enter', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -388,16 +310,7 @@ describe('Twinlist.vue', () => {
 
         it('move all values to right on all button enter', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: [],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
@@ -416,16 +329,7 @@ describe('Twinlist.vue', () => {
 
         it('move all values to left on all button enter', async () => {
             let propsData = {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
+                possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
                 labelLeft: 'Choose',
                 labelRight: 'The value'
