@@ -152,5 +152,6 @@ svg {
   position: absolute;
   left: 12px;
   top: 10px;
+  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
 }
 </style>
