@@ -418,6 +418,11 @@ export default {
     margin: 0;
     background: var(--theme-color-white);
     border: 1px solid var(--theme-color-stone-gray);
+
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
   }
 
   &.invalid {

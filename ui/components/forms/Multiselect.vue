@@ -152,6 +152,11 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--theme-color-masala);
+
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
   }
 
   &:not(.collapsed) [role=button] {
@@ -183,7 +188,7 @@ export default {
     padding: 5px 10px;
     margin-top: -1px;
     background: var(--theme-color-white);
-    box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
+    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
 
     & .boxes {
       display: block;
