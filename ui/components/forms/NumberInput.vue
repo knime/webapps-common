@@ -204,16 +204,16 @@ export default {
     >
     <span
       class="increase"
-      @mousedown="(e) => mouseEvent(e, 'increase')"
-      @mouseup="(e) => mouseEvent(e, 'increase')"
+      @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
+      @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseleave="(e) => mouseEvent(e, 'increase')"
     >
       <ArrowIcon />
     </span>
     <span
       class="decrease"
-      @mousedown="(e) => mouseEvent(e, 'decrease')"
-      @mouseup="(e) => mouseEvent(e, 'decrease')"
+      @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
+      @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseleave="(e) => mouseEvent(e, 'decrease')"
     >
       <ArrowIcon />
