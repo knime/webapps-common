@@ -199,7 +199,7 @@ export default {
       :min="min"
       :max="max"
       :step="stepSize"
-      :class="['input', inputClassList]"
+      :class="inputClassList"
       @input="onInput"
     >
     <span
@@ -245,7 +245,7 @@ export default {
     margin: 0;
   }
 
-  & .input {
+  & input {
     font-size: 13px;
     font-weight: 300;
     color: var(--theme-color-masala);

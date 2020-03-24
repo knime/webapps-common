@@ -81,6 +81,10 @@ div {
     outline: none;
     display: block;
 
+    &::placeholder {
+      color: var(--theme-color-dove-gray);
+    }
+
     &:focus {
       border-color: var(--theme-color-masala);
     }
