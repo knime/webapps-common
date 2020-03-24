@@ -303,11 +303,11 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
 
-  & [role=button]:hover {
-    border-color: var(--theme-color-masala);
-    outline: none;
+    &:focus {
+      border-color: var(--theme-color-masala);
+      outline: none;
+    }
   }
 
   &:not(.collapsed) [role=button] {
@@ -348,12 +348,12 @@ export default {
     margin: 0;
     margin-top: -1px;
     background: var(--theme-color-white);
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
-  }
+    box-shadow: 0 1px 5px 0 var(--theme-color-gray-dark);
 
-  & [role="listbox"]:hover {
-    outline: none;
-    border-color: var(--theme-color-masala);
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
   }
 
   & [role="option"] {
@@ -363,20 +363,19 @@ export default {
     line-height: 24px;
     position: relative;
     color: var(--theme-color-masala);
-  }
 
-  & [role="option"]:hover {
-    background: var(--theme-color-silver-sand-semi);
-  }
+    &:hover {
+      background: var(--theme-color-silver-sand-semi);
+    }
 
-  & [role="option"].focused {
-    background: var(--theme-color-masala);
-    color: var(--theme-color-white);
+    &.focused {
+      background: var(--theme-color-masala);
+      color: var(--theme-color-white);
+    }
   }
 
   & .noselect {
     user-select: none;
   }
 }
-
 </style>

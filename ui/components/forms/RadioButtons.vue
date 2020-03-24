@@ -111,7 +111,8 @@ export default {
         text-overflow: ellipsis;
       }
 
-      & + span::before { /* ◯ */
+      /* ◯ */
+      & + span::before {
         border: 1px solid var(--theme-color-stone-gray);
         display: inline-block;
         content: '';
@@ -126,44 +127,30 @@ export default {
         text-align: center;
       }
 
-      &:checked + span::before { /* 🔘 */
-        background: var(--theme-color-white);
-        border-color: var(--theme-color-masala);
-        content: '';
-        box-shadow: inset 0 0 0 4px var(--theme-color-masala);
+      &:hover + span::before {
+        background: var(--theme-color-silver-sand-semi);
       }
-    }
 
-    & input:hover + span::before { /* ◯ */
-      background: var(--theme-color-silver-sand-semi);
-    }
+      &:checked { /* 🔘 */
+        & + span::before {
+          background: var(--theme-color-white);
+          border-color: var(--theme-color-masala);
+          content: '';
+          box-shadow: inset 0 0 0 4px var(--theme-color-masala);
+        }
 
-    /* hover state */
-    &:hover input + span::before { /* ◯ */
-      background: var(--theme-color-silver-sand-semi);
-    }
-
-    & input:checked:hover + span::before { /* 🔘 */
-      box-shadow: unset;
-      background: radial-gradient(
-        ellipse at center,
-        var(--theme-color-masala) 0%,
-        var(--theme-color-masala) 25%,
-        var(--theme-color-silver-sand-semi) 26%,
-        var(--theme-color-silver-sand-semi) 100%
-      );
-    }
-
-    /* hover state  checked */
-    &:hover input:checked + span::before { /* 🔘 */
-      box-shadow: unset;
-      background: radial-gradient(
-        ellipse at center,
-        var(--theme-color-masala) 0%,
-        var(--theme-color-masala) 25%,
-        var(--theme-color-silver-sand-semi) 26%,
-        var(--theme-color-silver-sand-semi) 100%
-      );
+        &:hover + span::before {
+          box-shadow: unset;
+          background: radial-gradient(
+            ellipse at center,
+            var(--theme-color-masala) 0%,
+            var(--theme-color-masala) 25%,
+            var(--theme-color-silver-sand-semi) 26%,
+            var(--theme-color-silver-sand-semi) 100%
+          );
+          border-color: var(--theme-color-stone-gray);
+        }
+      }
     }
   }
 

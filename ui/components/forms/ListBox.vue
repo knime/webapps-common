@@ -224,11 +224,11 @@ export default {
   margin: 0;
   background: var(--theme-color-white);
   border: 1px solid var(--theme-color-stone-gray);
-}
 
-[role="listbox"]:hover {
-  outline: none;
-  border-color: var(--theme-color-masala);
+  &:focus {
+    outline: none;
+    border-color: var(--theme-color-masala);
+  }
 }
 
 [role="option"] {
@@ -236,15 +236,15 @@ export default {
   padding: 0 10px 0 10px;
   position: relative;
   color: var(--theme-color-masala);
-}
 
-[role="option"]:hover {
-  background: var(--theme-color-silver-sand-semi);
-}
+  &:hover {
+    background: var(--theme-color-silver-sand-semi);
+  }
 
-[role="option"].focused {
-  background: var(--theme-color-masala);
-  color: var(--theme-color-white);
+  &.focused {
+    background: var(--theme-color-masala);
+    color: var(--theme-color-white);
+  }
 }
 
 /* this selector is required to override some * rules which interfere - so do not simplify */
@@ -256,5 +256,4 @@ ul[role="listbox"] {
 .noselect {
   user-select: none;
 }
-
 </style>

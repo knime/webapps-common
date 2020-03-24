@@ -229,6 +229,10 @@ export default {
   width: 100%;
   border: 1px solid var(--theme-color-stone-gray);
 
+  &:focus-within {
+    border-color: var(--theme-color-masala);
+  }
+
   /* remove browser spinners FF */
   & input[type='number'] {
     -moz-appearance: textfield;
@@ -255,10 +259,6 @@ export default {
     width: calc(100% - 32px);
     outline: none;
     background-color: transparent;
-
-    &:hover {
-      border-color: var(--theme-color-masala);
-    }
 
     /* css3 invalid state */
     &:invalid {
@@ -297,7 +297,6 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
-    background-color: transparent;
 
     &:hover {
       background-color: var(--theme-color-silver-sand-semi);

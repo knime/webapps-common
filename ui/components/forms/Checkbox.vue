@@ -75,37 +75,55 @@ label {
       top: 4.5px;
     }
 
-    & + span::before:hover { /* □ */
-      background: var(--theme-color-silver-sand-semi);
+    &:checked {
+      /* □ */
+      & + span::before { /* default */
+        border-color: var(--theme-color-masala);
+        background: var(--theme-color-masala);
+      }
+
+      &:focus + span::before {
+        background: var(--theme-color-white);
+      }
+
+      &:hover + span::before {
+        border-color: var(--theme-color-stone-gray);
+        background: var(--theme-color-silver-sand-semi);
+      }
+
+      /* ✓ */
+      & + span::after { /* default */
+        content: '';
+        position: absolute;
+        display: block;
+        transform: translate(0.3em, 0.35em) rotate(-45deg);
+        left: -1px;
+        top: 4px;
+        width: 8px;
+        height: 5px;
+        border-style: solid;
+        border-width: 0 0 1.3px 1.3px;
+        border-color: var(--theme-color-white);
+      }
+
+      &:hover + span::after,
+      &:focus + span::after {
+        border-color: var(--theme-color-masala);
+      }
     }
 
-    &:checked + span::before { /* □ */
-      background: var(--theme-color-masala);
-      border-color: var(--theme-color-masala);
-      content: '';
-    }
+    &:not(:checked) {
+      /* □ */
+      &:hover + span::before {
+        background: var(--theme-color-silver-sand-semi);
+      }
 
-    &:checked + span::after { /* ✓ */
-      content: '';
-      position: absolute;
-      display: block;
-      border: solid var(--theme-color-white);
-      transform: translate(0.2em, 0.35em) rotate(-45deg);
-      left: -1px;
-      top: 2.5px;
-      width: 10px;
-      height: 5px;
-      border-width: 0 0 1.5px 1.5px;
+      &:focus:not(:hover) + span::before {
+        border-color: var(--theme-color-masala);
+      }
     }
   }
 
-  &:hover input + span::before { /* □ */
-    background: var(--theme-color-silver-sand-semi);
-  }
-
-  &:hover input + span::after { /* ✓ */
-    border-color: var(--theme-color-masala);
-  }
 
   /* label size */
   &.large {
@@ -122,15 +140,6 @@ label {
   &.medium {
     font-weight: 300;
     line-height: 18px;
-  }
-
-  & input:hover + span::before,
-  & input:checked:hover + span::before { /* □ */
-    background: var(--theme-color-silver-sand-semi);
-  }
-
-  & input:checked:hover + span::after { /* ✓ */
-    border-color: var(--theme-color-masala);
   }
 }
 </style>

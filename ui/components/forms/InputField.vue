@@ -118,8 +118,7 @@ input {
     opacity: 0.5;
   }
 
-  /* active */
-  &:hover {
+  &:focus {
     border-color: var(--theme-color-masala);
   }
 

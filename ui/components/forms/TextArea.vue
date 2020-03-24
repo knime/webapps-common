@@ -81,7 +81,7 @@ div {
     outline: none;
     display: block;
 
-    &:hover {
+    &:focus {
       border-color: var(--theme-color-masala);
     }
 
