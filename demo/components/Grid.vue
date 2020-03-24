@@ -76,7 +76,13 @@ export default {
             Grid items will be grouped together equally to fit the scheme.
           </p>
           <figure>
-            <figcaption class="h7" role="heading" aria-level="7">Grid item sizes at given resolution</figcaption>
+            <figcaption
+              class="h7"
+              role="heading"
+              aria-level="7"
+            >
+              Grid item sizes at given resolution
+            </figcaption>
             <table>
               <tbody>
                 <tr>

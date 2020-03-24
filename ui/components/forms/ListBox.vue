@@ -226,27 +226,28 @@ export default {
     margin: 0;
     background: var(--theme-color-white);
     border: 1px solid var(--theme-color-stone-gray);
+
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
   }
 
   & [role="option"] {
     display: block;
     padding: 0 10px;
     position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
+    color: var(--theme-color-masala);
 
-  & [role="option"]:hover {
-    background: var(--theme-color-porcelain);
-  }
+    &:hover {
+      background: var(--theme-color-silver-sand-semi);
+    }
 
-  & [role="option"].focused {
-    background: var(--theme-color-masala);
-    color: var(--theme-color-white);
+    &.focused {
+      background: var(--theme-color-masala);
+      color: var(--theme-color-white);
+    }
   }
-
-  /* this selector is required to override some * rules which interfere - so do not simplify */
 
   & ul[role="listbox"] {
     overflow-y: auto;
@@ -257,5 +258,4 @@ export default {
     user-select: none;
   }
 }
-
 </style>

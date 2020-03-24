@@ -107,11 +107,13 @@ export default {
       & + span {
         display: inline-block;
         width: 100%;
+        color: var(--theme-color-masala);
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      & + span::before { /* ◯ */
+      /* ◯ */
+      & + span::before {
         border: 1px solid var(--theme-color-stone-gray);
         display: inline-block;
         content: '';
@@ -126,41 +128,30 @@ export default {
         text-align: center;
       }
 
-      &:checked + span::before { /* 🔘 */
-        background: var(--theme-color-white);
-        border-color: var(--theme-color-masala);
-        content: '';
-        box-shadow: inset 0 0 0 4px var(--theme-color-masala);
+      &:hover + span::before {
+        background: var(--theme-color-silver-sand-semi);
       }
 
-      /* checked labels are medium */
-      &:checked + span {
-        font-weight: 500;
+      &:checked { /* 🔘 */
+        & + span::before {
+          background: var(--theme-color-white);
+          border-color: var(--theme-color-masala);
+          content: '';
+          box-shadow: inset 0 0 0 4px var(--theme-color-masala);
+        }
+
+        &:hover + span::before {
+          box-shadow: unset;
+          background: radial-gradient(
+            ellipse at center,
+            var(--theme-color-masala) 0%,
+            var(--theme-color-masala) 25%,
+            var(--theme-color-silver-sand-semi) 26%,
+            var(--theme-color-silver-sand-semi) 100%
+          );
+          border-color: var(--theme-color-stone-gray);
+        }
       }
-    }
-
-    /* keyboard focus; :focus-visible would be better once browser support
-         is there https://caniuse.com/#feat=css-focus-visible */
-    & input:focus + span::before { /* ◯ */
-      background: var(--theme-color-porcelain);
-    }
-
-    /* hover state */
-    &:hover input + span::before { /* ◯ */
-      background: var(--theme-color-porcelain);
-    }
-
-    /* keyboard focus; :focus-visible would be better once browser support
-       is there https://caniuse.com/#feat=css-focus-visible */
-    & input:checked:focus + span::before { /* 🔘 */
-      background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
-    }
-
-    /* hover state  checked */
-    &:hover input:checked + span::before { /* 🔘 */
-      background: var(--theme-color-masala);
-      box-shadow: inset 0 0 0 4px var(--theme-color-porcelain);
     }
 
     &.vertical label {

@@ -304,6 +304,11 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &:focus {
+      border-color: var(--theme-color-masala);
+      outline: none;
+    }
   }
 
   &:not(.collapsed) [role=button] {
@@ -311,7 +316,7 @@ export default {
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-porcelain);
+    background: var(--theme-color-silver-sand-semi);
   }
 
   & .icon {
@@ -342,13 +347,14 @@ export default {
     width: 100%;
     padding: 8px 0;
     margin: 0;
+    margin-top: -1px;
     background: var(--theme-color-white);
-    box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
-  }
+    box-shadow: 0 1px 5px 0 var(--theme-color-gray-dark);
 
-  & [role="listbox"]:focus {
-    outline: none;
-    border-color: var(--theme-color-masala);
+    &:focus {
+      outline: none;
+      border-color: var(--theme-color-masala);
+    }
   }
 
   & [role="option"] {
@@ -360,20 +366,20 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-  }
+    color: var(--theme-color-masala);
 
-  & [role="option"]:hover {
-    background: var(--theme-color-porcelain);
-  }
+    &:hover {
+      background: var(--theme-color-silver-sand-semi);
+    }
 
-  & [role="option"].focused {
-    background: var(--theme-color-masala);
-    color: var(--theme-color-white);
+    &.focused {
+      background: var(--theme-color-masala);
+      color: var(--theme-color-white);
+    }
   }
 
   & .noselect {
     user-select: none;
   }
 }
-
 </style>

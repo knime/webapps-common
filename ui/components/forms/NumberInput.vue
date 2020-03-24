@@ -186,7 +186,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="wrapper">
     <span
       v-if="!isValid"
       class="invalid-marker"
@@ -204,16 +204,16 @@ export default {
     >
     <span
       class="increase"
-      @mousedown="(e) => mouseEvent(e, 'increase')"
-      @mouseup="(e) => mouseEvent(e, 'increase')"
+      @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
+      @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseleave="(e) => mouseEvent(e, 'increase')"
     >
       <ArrowIcon />
     </span>
     <span
       class="decrease"
-      @mousedown="(e) => mouseEvent(e, 'decrease')"
-      @mouseup="(e) => mouseEvent(e, 'decrease')"
+      @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
+      @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseleave="(e) => mouseEvent(e, 'decrease')"
     >
       <ArrowIcon />
@@ -224,9 +224,14 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
+.wrapper {
   position: relative;
   width: 100%;
+  border: 1px solid var(--theme-color-stone-gray);
+
+  &:focus-within {
+    border-color: var(--theme-color-masala);
+  }
 
   /* remove browser spinners FF */
   & input[type='number'] {
@@ -242,21 +247,18 @@ div {
 
   & input {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 300;
     color: var(--theme-color-masala);
     letter-spacing: inherit;
     line-height: 18px;
     height: 40px;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 0;
     margin: 0;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
-    width: 100%;
+    width: calc(100% - 32px);
     outline: none;
-
-    &:focus {
-      border-color: var(--theme-color-masala);
-    }
+    background-color: transparent;
 
     /* css3 invalid state */
     &:invalid {
@@ -264,7 +266,7 @@ div {
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-porcelain);
+      background-color: var(--theme-color-silver-sand-semi);
     }
   }
 
@@ -280,26 +282,24 @@ div {
   }
 
   & .increase {
-    top: 1px;
     transform: scaleY(-1);
   }
 
   & .decrease {
-    bottom: 1px;
+    bottom: 0;
   }
 
   & .increase,
   & .decrease {
     position: absolute;
     z-index: 1;
-    right: 1px;
     width: 32px;
-    height: 19px;
+    height: 20px;
     padding-left: 10px;
     padding-right: 9px;
 
     &:hover {
-      background-color: var(--theme-color-porcelain);
+      background-color: var(--theme-color-silver-sand-semi);
     }
 
     & svg {
@@ -309,9 +309,7 @@ div {
     }
   }
 
-  & .increase:focus,
   & .increase:active,
-  & .decrease:focus,
   & .decrease:active {
     color: var(--theme-color-white);
     background-color: var(--theme-color-masala);
