@@ -196,7 +196,7 @@ export default {
         handleDblClick(id, index) {
             this.$emit('doubleClickOnItem', id, index);
         },
-        handleShiftDblClick(id, index) {
+        handleShiftDblClick() {
             this.$emit('doubleClickShift', this.selectedValues);
         },
         addToSelection(value) {
@@ -245,7 +245,10 @@ export default {
         scrollToCurrent() {
             let listBoxNode = this.$refs.ul;
             if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-                let element = this.$refs.options[this.currentKeyNavIndex];
+                // Vue does not guarantee the correct oder of $refs arrays defined in v-for.
+                // See: https://github.com/vuejs/vue/issues/4952#issuecomment-280661367
+                // To prevent this bug we use the DOM children of the parent to find the correct element.
+                const element = this.$refs.ul.children[this.currentKeyNavIndex];
                 let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
                 let elementBottom = element.offsetTop + element.offsetHeight;
                 if (elementBottom > scrollBottom) {
@@ -378,7 +381,6 @@ export default {
         v-for="(item, index) of possibleValues"
         :id="generateOptionId(item)"
         :key="`listbox-${item.id}`"
-        ref="options"
         role="option"
         :title="item.text"
         :data-option-index="index"
@@ -389,7 +391,7 @@ export default {
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="handleClick($event, item.id, index)"
-        @dblclick.shift="handleShiftDblClick(item.id, index)"
+        @dblclick.shift="handleShiftDblClick()"
         @dblclick.exact="handleDblClick(item.id, index)"
       >
         {{ item.text }}
