@@ -302,6 +302,16 @@ export default {
       height: 15px;
       stroke-width: calc(32px / 15);
       pointer-events: none;
+      stroke: var(--theme-color-masala);
+    }
+
+    &:focus {
+      background: var(--theme-color-masala);
+      color: var(--theme-color-white);
+
+      & .icon {
+        stroke: var(--theme-color-white);
+      }
     }
 
     &:active {
