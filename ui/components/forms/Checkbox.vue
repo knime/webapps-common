@@ -8,12 +8,12 @@ export default {
         /**
          * Controls the size of the label
          * supported values:
-         * - large (16px font size and always bold)
-         * - medium (default: 14px regular)
+         * - regular
+         * - large
          */
         labelSize: {
             type: String,
-            default: 'medium'
+            default: 'regular'
         }
     },
     methods: {
@@ -51,9 +51,7 @@ export default {
 
 label {
   position: relative;
-  line-height: 1;
   padding: 3px 0 3px 24px;
-  font-size: 13px;
   color: var(--theme-color-masala);
 
   & input {
@@ -72,7 +70,7 @@ label {
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
-      top: 4.5px;
+      top: 3px;
     }
 
     &:checked {
@@ -96,7 +94,7 @@ label {
         content: '';
         position: absolute;
         display: block;
-        transform: translate(0.3em, 0.35em) rotate(-45deg);
+        transform: translate(4px, 2.5px) rotate(-45deg);
         left: -1px;
         top: 4px;
         width: 8px;
@@ -124,22 +122,27 @@ label {
     }
   }
 
-
   /* label size */
-  &.large {
-    font-weight: 700;
-    line-height: 18px;
-    display: block;
-    margin-bottom: 5px;
-
-    & input:checked + span {
-      font-weight: inherit;
-    }
-  }
-
-  &.medium {
+  &.regular {
+    font-size: 13px;
     font-weight: 300;
     line-height: 18px;
+  }
+
+  &.large {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    /* stylelint-disable no-descending-specificity */
+    & input + span::before,
+    & input + span::after { /* ✓ */
+      top: 4.5px;
+    }
+
+    & input + span::after { /* ✓ */
+      transform: translate(4px, 3.5px) rotate(-45deg);
+    }
   }
 }
 </style>
