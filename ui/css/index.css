@@ -22,7 +22,8 @@ svg {
 input[type="text"],
 input[type="search"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="number"] {
   appearance: none;
   border-radius: 0;
 
