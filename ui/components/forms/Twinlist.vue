@@ -181,8 +181,12 @@ export default {
 
 <template>
   <div class="twinlist">
-    <div class="list">
+    <div class="header">
       <div class="title">{{ labelLeft }}</div>
+      <div class="space"></div>
+      <div class="title">{{ labelRight }}</div>
+    </div>
+    <div class="lists">
       <MultiselectListBox
         ref="left"
         :size="size"
@@ -196,47 +200,44 @@ export default {
         @keyArrowRight="onKeyRightArrow"
         @input="onLeftInput"
       />
-    </div>
-    <div class="buttons">
-      <div
-        ref="moveRight"
-        role="button"
-        tabindex="0"
-        @click="onMoveRightButtonClick"
-        @keydown="onMoveRightButtonKey"
-      >
-        <ArrowNextIcon class="icon" />
+      <div class="buttons">
+        <div
+          ref="moveRight"
+          role="button"
+          tabindex="0"
+          @click="onMoveRightButtonClick"
+          @keydown="onMoveRightButtonKey"
+        >
+          <ArrowNextIcon class="icon" />
+        </div>
+        <div
+          ref="moveAllRight"
+          role="button"
+          tabindex="0"
+          @click="onMoveAllRightButtonClick"
+          @keydown="onMoveAllRightButtonKey"
+        >
+          <ArrowNextDoubleIcon class="icon" />
+        </div>
+        <div
+          ref="moveLeft"
+          role="button"
+          tabindex="0"
+          @click="onMoveLeftButtonClick"
+          @keydown="onMoveLeftButtonKey"
+        >
+          <ArrowPrevIcon class="icon" />
+        </div>
+        <div
+          ref="moveAllLeft"
+          role="button"
+          tabindex="0"
+          @click="onMoveAllLeftButtonClick"
+          @keydown="onMoveAllLeftButtonKey"
+        >
+          <ArrowPrevDoubleIcon class="icon" />
+        </div>
       </div>
-      <div
-        ref="moveAllRight"
-        role="button"
-        tabindex="0"
-        @click="onMoveAllRightButtonClick"
-        @keydown="onMoveAllRightButtonKey"
-      >
-        <ArrowNextDoubleIcon class="icon" />
-      </div>
-      <div
-        ref="moveLeft"
-        role="button"
-        tabindex="0"
-        @click="onMoveLeftButtonClick"
-        @keydown="onMoveLeftButtonKey"
-      >
-        <ArrowPrevIcon class="icon" />
-      </div>
-      <div
-        ref="moveAllLeft"
-        role="button"
-        tabindex="0"
-        @click="onMoveAllLeftButtonClick"
-        @keydown="onMoveAllLeftButtonKey"
-      >
-        <ArrowPrevDoubleIcon class="icon" />
-      </div>
-    </div>
-    <div class="list">
-      <div class="title">{{ labelRight }}</div>
       <MultiselectListBox
         ref="right"
         class="listBox"
@@ -259,33 +260,40 @@ export default {
 .twinlist {
   display: flex;
   align-items: stretch;
-
-  & >>> ul[role=listbox] {
-    /* size that the buttons need */
-    min-height: 126px;
-  }
+  flex-direction: column;
 
   & .title {
     font-size: 13px;
   }
 
-  & .list {
-    flex: 3;
+  & .lists,
+  & .header {
     display: flex;
-    max-width: calc(50% - 15px); /* half of buttons */
     align-items: stretch;
-    flex-direction: column;
+    flex-direction: row;
+  }
+
+  & .space,
+  & .buttons {
+    flex: 0 0 30px;
+  }
+
+  & .title,
+  & .listBox {
+    flex: 3 1 auto;
   }
 
   & .listBox {
-    flex-grow: 1;
+    display: flex;
+    max-width: calc(50% - 15px); /* half of buttons */
+    align-items: stretch;
+    flex-direction: row;
   }
 
   & .buttons {
     flex: 0 0 30px;
     align-items: center;
     justify-content: center;
-    margin: 40px 0 14px;
     display: flex;
     flex-direction: column;
   }
