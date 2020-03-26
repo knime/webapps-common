@@ -306,6 +306,7 @@ export default {
     }
 
     &:focus {
+      outline: none;
       background: var(--theme-color-masala);
       color: var(--theme-color-white);
 
