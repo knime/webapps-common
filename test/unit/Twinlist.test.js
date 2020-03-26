@@ -59,7 +59,7 @@ describe('Twinlist.vue', () => {
         expect(left.vm.isValid).toBe(true);
     });
 
-    describe('doubleclick', () => {
+    describe('doubleClick', () => {
         let propsData;
         beforeEach(() => {
             propsData = {

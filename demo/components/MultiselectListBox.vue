@@ -60,11 +60,12 @@ export default {
         <div class="grid-item-12">
           <h2>MultiselectListBox</h2>
           <p>
-            A list box for selecting multiple things. It acts as a form element, so it emits an <code>input</code> event
+            A list box for selecting multiple items. It acts as a form element, so it emits an <code>input</code> event
             when something is (de-)selected, and it has a <code>value</code>. It has keyboard
-            navigation <code>Up</code> <code>Down</code> <code>Home</code> <code>End</code>. It is possible to do
-            multiselect via keyboard with <code>Shift+Up</code> and <code>Shift+Down</code>. Selective multi select is
-            possible by <code>Ctrl+Click</code> or <code>Shift+Click</code>.
+            navigation with <code>Up</code>, <code>Down</code>, <code>Home</code>, <code>End</code>. It is possible to
+            multi select via keyboard with <code>Shift+Up</code> and <code>Shift+Down</code>. Selective multi select
+            is possible by <code>Ctrl+Click</code> or <code>Shift+Click</code>. Also multi select by dragging is
+            supported.
           </p>
         </div>s
       </div>

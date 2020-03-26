@@ -61,9 +61,9 @@ export default {
         <div class="grid-item-12">
           <h2>Twinlist</h2>
           <p>
-            Two list boxes for selecting multiple things. It acts as a form element, so it emits an <code>input</code>
-            event when something is moved to the right side, and it has a <code>value</code>. For keyboard navigation
-            inside of the lists see <code>MultiselectListBox</code>. With <code>Doubleclick</code> the items can also
+            Two list boxes for selecting multiple items. It acts as a form element, so it emits an <code>input</code>
+            event when selection changes, and it has a <code>value</code>. For keyboard navigation
+            inside of the lists see <code>MultiselectListBox</code>. With <code>DoubleClick</code> the items can also
             be moved between the lists.
           </p>
         </div>

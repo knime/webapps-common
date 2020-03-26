@@ -45,7 +45,7 @@ export default {
         <div class="grid-item-12">
           <h2>Multiselect</h2>
           <p>
-            A dropdown for selecting multiple things. It acts as a form element, so it emits an <code>input</code> event
+            A dropdown for selecting multiple items. It acts as a form element, so it emits an <code>input</code> event
             when something is (de-)selected, and it has a <code>value</code>.
           </p>
         </div>
