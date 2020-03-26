@@ -89,6 +89,11 @@ export default {
             return this.chosenValues.map(x => this.possibleValueMap[x]);
         }
     },
+    watch: {
+        value(newValue) {
+            this.chosenValues = newValue;
+        }
+    },
     methods: {
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
