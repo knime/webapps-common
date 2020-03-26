@@ -144,6 +144,7 @@ export default {
   cursor: pointer;
   color: var(--theme-color-dove-gray);
   background-color: transparent;
+  border-radius: 9999px;
 
   & >>> svg {
     width: 18px;
