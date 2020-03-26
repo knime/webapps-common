@@ -113,6 +113,7 @@ export default {
       }
 
       /* ◯ */
+
       & + span::before {
         border: 1px solid var(--theme-color-stone-gray);
         display: inline-block;
@@ -133,6 +134,7 @@ export default {
       }
 
       &:checked { /* 🔘 */
+
         & + span::before {
           background: var(--theme-color-white);
           border-color: var(--theme-color-masala);
@@ -153,24 +155,25 @@ export default {
         }
       }
     }
+  }
 
-    &.vertical label {
+  &.vertical label {
+    display: block;
+  }
+
+  &.horizontal {
+    display: flex;
+    flex-wrap: wrap;
+
+    & label {
       display: block;
-    }
+      min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
 
-    &.horizontal {
-      display: flex;
-      flex-wrap: wrap;
-
-      & label {
-        display: block;
-        min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
-
-        &:not(:last-of-type) {
-          padding-right: 12px;
-        }
+      &:not(:last-of-type) {
+        padding-right: 12px;
       }
     }
   }
 }
+
 </style>
