@@ -46,6 +46,10 @@ export default {
         placeholder: {
             type: String,
             default: null
+        },
+        isValid: {
+            default: true,
+            type: Boolean
         }
     },
     data() {
@@ -103,7 +107,7 @@ export default {
 <template>
   <div
     v-on-clickaway="closeOptions"
-    :class="['multiselect', { collapsed }]"
+    :class="['multiselect', { collapsed, invalid: !isValid }]"
     @keydown.esc.prevent="closeOptions"
   >
     <div
@@ -138,6 +142,18 @@ export default {
 
 .multiselect {
   position: relative;
+
+  &.invalid::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--theme-color-error);
+  }
 
   & [role=button] {
     margin: 0;
@@ -176,14 +192,16 @@ export default {
     right: 10px;
     top: 11px;
     pointer-events: none;
+    transition: transform 0.4s ease-in-out;
   }
 
   &:not(.collapsed) .icon {
-    transform: scale(-1);
+    transform: scaleY(-1);
   }
 
   & .options {
     position: absolute;
+    z-index: 20;
     width: 100%;
     padding: 5px 10px;
     margin-top: -1px;

@@ -23,6 +23,17 @@ describe('Multiselect.vue', () => {
         expect(wrapper.classes()).toContain('multiselect');
     });
 
+    it('shows invalid state indicator if isValid is false', () => {
+        const wrapper = mount(Multiselect, {
+            propsData: {
+                isValid: false
+            }
+        });
+
+        let root = wrapper.find('div');
+        expect(root.classes()).toContain('invalid');
+    });
+
     it('emits input events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
