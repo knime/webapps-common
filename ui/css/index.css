@@ -22,8 +22,12 @@ svg {
 input[type="text"],
 input[type="search"],
 input[type="password"],
-input[type="email"] {
-  -webkit-appearance: none;
+input[type="email"],
+input[type="number"] {
   appearance: none;
   border-radius: 0;
+
+  &::-ms-clear { /* IE11 / legacy Edge only */
+    display: none;
+  }
 }
