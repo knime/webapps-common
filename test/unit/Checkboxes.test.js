@@ -4,8 +4,10 @@ import Checkboxes from '~/ui/components/forms/Checkboxes';
 import Checkbox from '~/ui/components/forms/Checkbox';
 
 describe('Checkboxes.vue', () => {
-    it('renders', () => {
-        let propsData = {
+    let propsData;
+
+    beforeEach(() => {
+        propsData = {
             possibleValues: [{
                 id: 'test1',
                 text: 'test1'
@@ -17,6 +19,9 @@ describe('Checkboxes.vue', () => {
                 text: 'test3'
             }]
         };
+    });
+
+    it('renders', () => {
         const wrapper = mount(Checkboxes, {
             propsData
         });
@@ -27,37 +32,38 @@ describe('Checkboxes.vue', () => {
             expect(checkboxes.at(i).text()).toContain(value.text);
         });
         expect(checkboxes.length).toBe(propsData.possibleValues.length);
-        expect(wrapper.vm.hasSelection()).toBe(false);
     });
 
     it('sets the values to the checked value', () => {
         const wrapper = mount(Checkboxes, {
             propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'Checkbox 1'
-                }, {
-                    id: 'test2',
-                    text: 'Checkbox 2'
-                }, {
-                    id: 'test3',
-                    text: 'Checkbox 3'
-                }],
+                ...propsData,
                 value: ['test1']
             }
         });
         // current value
         expect(wrapper.findAll(Checkbox).at(0).props('value')).toBe(true);
+        expect(wrapper.vm.hasSelection()).toBe(true);
 
         let checkboxTest2 = wrapper.findAll(Checkbox).at(1);
 
-        // check the Checkbox 'test'2
+        // check the Checkbox 'test2'
         checkboxTest2.vm.onInput({ target: { checked: true } });
         expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2']);
 
         // test uncheck 'test2'
         checkboxTest2.vm.onInput({ target: { checked: false } });
         expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1']);
+    });
+
+    it('provides a valid hasSelection method', () => {
+        const wrapper = mount(Checkboxes, {
+            propsData
+        });
+        expect(wrapper.vm.hasSelection()).toBe(false);
+
+        wrapper.setProps({ value: ['test1'] });
+        expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
     it('validation of possibleValues', () => {
