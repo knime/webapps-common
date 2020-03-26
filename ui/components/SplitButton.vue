@@ -13,6 +13,7 @@ div {
   & >>> .button {
     position: relative;
     margin-bottom: 0;
+    border-radius: 9999px 0 0 9999px;
 
     &::after {
       content: '';
@@ -36,6 +37,8 @@ div {
   }
 
   & >>> .submenu {
+    border-radius: 0 9999px 9999px 0;
+
     & .submenu-toggle {
       width: 32px;
       display: flex;
