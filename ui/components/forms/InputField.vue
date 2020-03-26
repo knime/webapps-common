@@ -61,7 +61,7 @@ export default {
             if (!this.pattern) {
                 return true;
             }
-            const matches = value.match(this.pattern);
+            const matches = value.match(`^(?:${this.pattern})$`);
             return matches !== null && matches[0] === value;
         }
     }
