@@ -291,11 +291,12 @@ export default {
   }
 
   & [role="button"] {
-    text-align: center;
     cursor: pointer;
     width: 30px;
     height: 24px;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     user-select: none;
 
     &:hover {
