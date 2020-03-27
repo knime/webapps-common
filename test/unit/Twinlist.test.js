@@ -61,7 +61,9 @@ describe('Twinlist.vue', () => {
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(Twinlist, {
             propsData: {
-                possibleValues: defaultPossibleValues
+                possibleValues: defaultPossibleValues,
+                labelLeft: 'Choose',
+                labelRight: 'The value'
             }
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
@@ -191,7 +193,7 @@ describe('Twinlist.vue', () => {
         expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
     });
-    
+
     describe('controls', () => {
         it('moves selected values to right on move button click', async () => {
             let propsData = {
