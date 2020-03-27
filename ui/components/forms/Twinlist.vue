@@ -261,6 +261,7 @@ export default {
   display: flex;
   align-items: stretch;
   flex-direction: column;
+  --button-bar-width: 30px;
 
   & .title {
     font-size: 13px;
@@ -275,7 +276,7 @@ export default {
 
   & .space,
   & .buttons {
-    flex: 0 0 30px;
+    flex: 0 0 var(--button-bar-width);
   }
 
   & .title,
@@ -285,7 +286,7 @@ export default {
 
   & .listBox {
     display: flex;
-    max-width: calc(50% - 15px); /* half of buttons */
+    max-width: calc(50% - (var(--button-bar-width) / 2));
     align-items: stretch;
     flex-direction: row;
   }
