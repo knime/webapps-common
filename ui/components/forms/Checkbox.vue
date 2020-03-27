@@ -55,6 +55,7 @@ export default {
 /* if you consider removing this class: don't!
    selector specifity requires it for container system used in page-builder */
 .checkbox {
+  display: flex;
   position: relative;
   padding: 3px 0 3px 24px;
   color: var(--theme-color-masala);
@@ -64,10 +65,10 @@ export default {
     position: absolute;
 
     & + span {
-      display: inline-block;
-      width: 100%;
+      display: block;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     & + span::before { /* □ */
@@ -82,7 +83,7 @@ export default {
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
-      top: 3px;
+      top: 5px; /* based on regular line-height of 18px; container will be 24px (2x3px padding) 24-14=10/2 = 5 */
     }
 
     &:checked {
@@ -108,7 +109,6 @@ export default {
         display: block;
         transform: translate(4px, 2.5px) rotate(-45deg);
         left: -1px;
-        top: 4px;
         width: 8px;
         height: 5px;
         border-style: solid;
@@ -149,7 +149,7 @@ export default {
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
     & input + span::after { /* ✓ */
-      top: 4.5px;
+      top: 6px; /* line height 20px; container 26px (2 x 3px padding) 26-14=12/2=6 */
     }
 
     & input + span::after { /* ✓ */
