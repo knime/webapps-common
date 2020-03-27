@@ -81,6 +81,11 @@ export default {
             return this.size > 0 ? { height: pxSize } : {};
         }
     },
+    watch: {
+        value(newValue) {
+            this.selectedValues = newValue;
+        }
+    },
     mounted() {
         window.addEventListener('mouseup', this.onStopDrag);
         // set key nav index to last value
@@ -89,7 +94,7 @@ export default {
             this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
         }
     },
-    destroyed() {
+    beforeDestroy() {
         window.removeEventListener('mouseup', this.onStopDrag);
     },
     created() {
@@ -458,7 +463,6 @@ export default {
   }
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
-
   & ul[role="listbox"] {
     overflow-y: auto;
     position: relative;

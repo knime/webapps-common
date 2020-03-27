@@ -278,10 +278,23 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            expect(wrapper.vm.hasSelection()).toStrictEqual(true);
             wrapper.vm.clearSelection();
             expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         });
+
+        it('hasSelection', () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: [],
+                    ariaLabel: 'A Label'
+                }
+            });
+            expect(wrapper.vm.hasSelection()).toStrictEqual(false);
+            wrapper.setProps({ value: ['test2', 'test3', 'test4'] });
+            expect(wrapper.vm.hasSelection()).toStrictEqual(true);
+        });
+
 
         it('keyArrowLeft event', async () => {
             const wrapper = mount(MultiselectListBox, {
