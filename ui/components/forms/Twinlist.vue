@@ -183,7 +183,7 @@ export default {
   <div class="twinlist">
     <div class="header">
       <div class="title">{{ labelLeft }}</div>
-      <div class="space"></div>
+      <div class="space" />
       <div class="title">{{ labelRight }}</div>
     </div>
     <div class="lists">
