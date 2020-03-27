@@ -69,6 +69,11 @@ export default {
                 .join(', ');
         }
     },
+    watch: {
+        value(newValue) {
+            this.checkedValue = newValue;
+        }
+    },
     methods: {
         onInput(value, toggled) {
             if (toggled) {
