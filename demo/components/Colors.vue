@@ -27,6 +27,7 @@ export default {
           <div style="--bg: var(--knime-gray-dark); --font: white;">--knime-gray-dark</div>
           <div style="--bg: var(--knime-stone-gray); --font: white;">--knime-stone-gray</div>
           <div style="--bg: var(--knime-silver-sand);">--knime-silver-sand</div>
+          <div style="--bg: var(--knime-silver-sand-semi);">--knime-silver-sand-semi</div>
           <div style="--bg: var(--knime-gray-dark-semi);">--knime-gray-dark-semi</div>
           <div style="--bg: var(--knime-porcelain);">--knime-porcelain</div>
           <div style="--bg: var(--knime-gray-light-semi);">--knime-gray-light-semi</div>

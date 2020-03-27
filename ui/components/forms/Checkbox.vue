@@ -8,12 +8,12 @@ export default {
         /**
          * Controls the size of the label
          * supported values:
-         * - large (16px font size and always bold)
-         * - medium (default: 14px regular)
+         * - regular
+         * - large
          */
         labelSize: {
             type: String,
-            default: 'medium'
+            default: 'regular'
         }
     },
     methods: {
@@ -51,8 +51,8 @@ export default {
 
 label {
   position: relative;
-  line-height: 1;
-  padding: 3px 0 3px 26px;
+  padding: 3px 0 3px 24px;
+  color: var(--theme-color-masala);
 
   & input {
     opacity: 0;
@@ -70,74 +70,79 @@ label {
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
-      top: 4.5px;
+      top: 3px;
     }
 
-    & + span::before:hover { /* □ */
-      background: var(--theme-color-porcelain);
+    &:checked {
+      /* □ */
+      & + span::before { /* default */
+        border-color: var(--theme-color-masala);
+        background: var(--theme-color-masala);
+      }
+
+      &:focus + span::before {
+        background: var(--theme-color-white);
+      }
+
+      &:hover + span::before {
+        border-color: var(--theme-color-stone-gray);
+        background: var(--theme-color-silver-sand-semi);
+      }
+
+      /* ✓ */
+      & + span::after { /* default */
+        content: '';
+        position: absolute;
+        display: block;
+        transform: translate(4px, 2.5px) rotate(-45deg);
+        left: -1px;
+        top: 4px;
+        width: 8px;
+        height: 5px;
+        border-style: solid;
+        border-width: 0 0 1.3px 1.3px;
+        border-color: var(--theme-color-white);
+      }
+
+      &:hover + span::after,
+      &:focus + span::after {
+        border-color: var(--theme-color-masala);
+      }
     }
 
-    &:checked + span::before { /* □ */
-      background: var(--theme-color-masala);
-      border-color: var(--theme-color-masala);
-      content: '';
+    &:not(:checked) {
+      /* □ */
+      &:hover + span::before {
+        background: var(--theme-color-silver-sand-semi);
+      }
+
+      &:focus:not(:hover) + span::before {
+        border-color: var(--theme-color-masala);
+      }
     }
-
-    &:checked + span::after { /* ✓ */
-      content: '';
-      position: absolute;
-      display: block;
-      border: solid var(--theme-color-white);
-      transform: translate(0.2em, 0.35em) rotate(-45deg);
-      left: -1px;
-      top: 2.5px;
-      width: 10px;
-      height: 5px;
-      border-width: 0 0 1.5px 1.5px;
-    }
-
-    &:checked + span {
-      font-weight: 500;
-    }
-  }
-
-  &:hover input + span::before { /* □ */
-    background: var(--theme-color-porcelain);
-  }
-
-  &:hover input + span::after { /* ✓ */
-    border-color: var(--theme-color-masala);
   }
 
   /* label size */
-  &.large {
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 24px;
-    display: block;
-    margin-bottom: 5px;
-    padding-top: 0;
-
-    & input:checked + span {
-      font-weight: inherit;
-    }
-  }
-
-  &.medium {
+  &.regular {
+    font-size: 13px;
     font-weight: 300;
-    font-size: 14px;
     line-height: 18px;
   }
 
-  /* keyboard focus; :focus-visible would be better once browser support
-     is there https://caniuse.com/#feat=css-focus-visible */
-  & input:focus + span::before,
-  & input:checked:focus + span::before { /* □ */
-    background: var(--theme-color-porcelain);
-  }
+  &.large {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
 
-  & input:checked:focus + span::after { /* ✓ */
-    border-color: var(--theme-color-masala);
+    /* stylelint-disable no-descending-specificity */
+    & input + span::before,
+    & input + span::after { /* ✓ */
+      top: 4.5px;
+    }
+
+    & input + span::after { /* ✓ */
+      transform: translate(4px, 3.5px) rotate(-45deg);
+    }
   }
 }
 </style>

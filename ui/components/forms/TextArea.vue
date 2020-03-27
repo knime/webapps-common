@@ -72,7 +72,7 @@ div {
 
   & textarea {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 300;
     color: var(--theme-color-masala);
     line-height: 18px;
     padding: 11px 10px 11px 10px;
@@ -81,16 +81,16 @@ div {
     outline: none;
     display: block;
 
+    &::placeholder {
+      color: var(--theme-color-dove-gray);
+    }
+
     &:focus {
       border-color: var(--theme-color-masala);
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-porcelain);
-    }
-
-    &::placeholder {
-      font-weight: 300;
+      background-color: var(--theme-color-silver-sand-semi);
     }
   }
 

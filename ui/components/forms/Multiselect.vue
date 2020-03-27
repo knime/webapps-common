@@ -118,12 +118,14 @@ h6 {
   border: 1px solid var(--theme-color-stone-gray);
   padding: 10px 38px 10px 10px;
   font-size: 13px;
+  font-weight: 300;
   height: 40px;
   line-height: 19px;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--theme-color-masala);
 }
 
 .multiselect {
@@ -134,7 +136,7 @@ h6 {
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-porcelain);
+    background: var(--theme-color-silver-sand-semi);
   }
 }
 
@@ -157,8 +159,9 @@ h6 {
   position: absolute;
   width: 100%;
   padding: 5px 10px;
+  margin-top: -1px;
   background: var(--theme-color-white);
-  box-shadow: 0 2px 4px 0 var(--theme-color-gray-dark-semi);
+  box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
 
   & .boxes {
     display: block;

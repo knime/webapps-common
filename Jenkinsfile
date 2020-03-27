@@ -34,7 +34,7 @@ timeout(time: 15, unit: 'MINUTES') {
         catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
           retry(3) { // because npm registry sometimes break
             sh '''
-              npm audit
+              npm audit --production
             '''
           }
         }
