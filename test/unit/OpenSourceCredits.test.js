@@ -19,7 +19,7 @@ jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [
         repository: '/',
         licenseText: 'I am a license'
     }
-]);
+], { virtual: true });
 
 describe('OpenSourceCredits.vue', () => {
     let wrapper;
