@@ -1,6 +1,7 @@
 <script>
 import packages from '../../buildtools/opensourcecredits/used-packages.json';
 import Description from '../components/Description';
+import ArrowNextIcon from '../assets/img/icons/arrow-next.svg?inline';
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses
@@ -14,7 +15,8 @@ import Description from '../components/Description';
  */
 export default {
     components: {
-        Description
+        Description,
+        ArrowNextIcon
     },
     props: {
         /**
@@ -39,31 +41,32 @@ export default {
     },
     computed: {
         packages() {
-          
+
             let allUniquePackages = [];
 
             packages.concat(this.additionalPackages).forEach(pkg => {
                 const alreadyExists = allUniquePackages.some(
                     firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                    firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
-                    firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
+                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                        firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
                 );
 
                 if (!alreadyExists) {
                     allUniquePackages.push(pkg);
                 }
             });
-            
+
             // sort packages by name
             allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
             return allUniquePackages;
         }
     },
-    head() {
-        return {
-            title: this.title,
-            meta: [{ name: 'robots', content: 'noindex,nofollow' }]
-        };
+    methods: {
+        toggleDetails(e) {
+            let expanded = e.target.getAttribute('aria-expanded') === 'true';
+            e.target.setAttribute('aria-expanded', (!expanded).toString());
+            e.target.parentElement.parentElement.classList[expanded ? 'remove' : 'add']('open');
+        }
     }
 };
 </script>
@@ -82,25 +85,31 @@ export default {
             and acknowledge their work. Here we list all components which may be contained in portions in this web
             application. Please refer to the individual component source for detailed information."
           />
-          <ul>
-            <li
-              v-for="(pkg, index) of packages"
-              :key="index"
-            >
-              <details>
-                <summary>{{ pkg.name }}</summary>
-                <div>
-                  <a
-                    v-if="pkg.repository && pkg.repository.length"
-                    :href="pkg.repository"
-                  >
-                    source
-                  </a>
-                  <pre>{{ pkg.licenseText }}</pre>
-                </div>
-              </details>
-            </li>
-          </ul>
+          <dl
+            v-for="(pkg, index) of packages"
+            :key="index"
+          >
+            <dt>
+              <button
+                aria-expanded="false"
+                tabindex="0"
+                @click="toggleDetails"
+              >
+                <ArrowNextIcon />
+                {{ pkg.name }}
+              </button>
+            </dt>
+            <dd class="details">
+              <a
+                v-if="pkg.repository && pkg.repository.length"
+                tabindex="0"
+                :href="pkg.repository"
+              >
+                source
+              </a>
+              <pre>{{ pkg.licenseText }}</pre>
+            </dd>
+          </dl>
         </div>
       </div>
     </section>
@@ -116,12 +125,42 @@ section:not(:first-child) {
   padding-bottom: 55px;
 }
 
-summary {
-  cursor: pointer;
-  display: inline;
-}
-
-ul {
+dl {
+  padding-left: 40px;
   list-style: none;
+
+  & .details {
+    display: none;
+  }
+
+  & button {
+    cursor: pointer;
+    font-weight: 300;
+    border: none;
+    background-color: transparent;
+
+    &:active {
+      color: inherit;
+    }
+
+    & svg {
+      position: relative;
+      top: 3px;
+      height: 16px;
+      width: 16px;
+      transition: transform 0.2s ease-in-out;
+      pointer-events: none;
+    }
+  }
+
+  &.open {
+    & svg {
+      transform: rotate(90deg);
+    }
+
+    & .details {
+      display: block;
+    }
+  }
 }
 </style>
