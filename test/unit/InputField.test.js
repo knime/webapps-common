@@ -66,6 +66,26 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate()).toBe(false);
     });
 
+    it('validates unicode pattern', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: 'te%tString!"$<>',
+                pattern: '[\u0000-\u007F]+'
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(true);
+    });
+
+    it('invalidates wrong unicode pattern', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: 'te%tSætring!"$<>',
+                pattern: '[\u0000-\u007F]+'
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(false);
+    });
+
     it('emits input events', () => {
         const wrapper = mount(InputField);
         const newValue = 'new value';
