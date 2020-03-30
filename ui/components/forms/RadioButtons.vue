@@ -103,6 +103,7 @@ export default {
     & input {
       opacity: 0;
       position: absolute;
+      z-index: -1; /* otherwise it might steal hover events */
 
       & + span {
         display: inline-block;
