@@ -238,6 +238,9 @@ export default {
     padding: 0 10px;
     line-height: 22px;
     position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     color: var(--theme-color-masala);
 
     &:hover {
