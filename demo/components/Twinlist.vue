@@ -5,7 +5,6 @@ import code from '!!raw-loader!../../ui/components/forms/Twinlist';
 
 const codeExample = `<Twinlist
   v-model="selected"
-  :size="4"
   label-left="Select stuff here"
   label-right="The selected stuff"
   :possible-values="[{
@@ -72,8 +71,8 @@ export default {
         <div class="grid-item-6">
           <Twinlist
             v-model="selected"
-            :size="4"
-            label-left="Select stuff here"
+            :size="7"
+            label-left="Select from the 7 visible items (size)"
             label-right="The selected stuff"
             :possible-values="[{
               id: 'foo',
@@ -99,6 +98,21 @@ export default {
             }, {
               id: 'baz6',
               text: 'Baz 6'
+            }, {
+              id: 'baz7',
+              text: 'Baz 7'
+            }, {
+              id: 'baz8',
+              text: 'Baz 8'
+            }, {
+              id: 'baz9',
+              text: 'Baz 9'
+            }, {
+              id: 'baz10',
+              text: 'Baz 10'
+            }, {
+              id: 'baz11',
+              text: 'Baz 11'
             }]"
           />
         </div>

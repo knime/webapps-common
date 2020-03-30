@@ -6,6 +6,7 @@ import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg?inline';
 import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg?inline';
 
 const KEY_ENTER = 13;
+const MIN_LIST_SIZE = 5;
 
 export default {
     components: {
@@ -87,6 +88,9 @@ export default {
         },
         rightItems() {
             return this.chosenValues.map(x => this.possibleValueMap[x]);
+        },
+        listSize() {
+            return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
         }
     },
     watch: {
@@ -189,7 +193,7 @@ export default {
     <div class="lists">
       <MultiselectListBox
         ref="left"
-        :size="size"
+        :size="listSize"
         class="listBox"
         :value="selectedLeft"
         :is-valid="isValid"
@@ -243,7 +247,7 @@ export default {
         class="listBox"
         :value="selectedRight"
         :possible-values="rightItems"
-        :size="size"
+        :size="listSize"
         :aria-label="labelRight"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"

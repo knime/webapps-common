@@ -24,7 +24,8 @@ describe('Twinlist.vue', () => {
             possibleValues: defaultPossibleValues,
             value: ['test3'],
             labelLeft: 'Choose',
-            labelRight: 'The value'
+            labelRight: 'The value',
+            size: 3
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -36,6 +37,29 @@ describe('Twinlist.vue', () => {
         expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.possibleValues).toStrictEqual(
             [defaultPossibleValues[2]]
         );
+    });
+
+    it('actual list sizes must be 5 or bigger', () => {
+        let propsData = {
+            possibleValues: defaultPossibleValues,
+            value: ['test1'],
+            labelLeft: 'Choose',
+            labelRight: 'The value',
+            size: 3
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+
+        // defaults to 5 (see Twinlist)
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(5);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(5);
+
+        const bigSize = 12;
+        wrapper.setProps({ size: bigSize });
+
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(bigSize);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(bigSize);
     });
 
     it('isValid causes invalid style on left box', () => {
