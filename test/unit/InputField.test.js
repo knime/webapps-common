@@ -17,7 +17,7 @@ describe('InputField.vue', () => {
         expect(input.element.value).toBe('Test value');
     });
 
-    it('renders invalid state', () => {
+    it('renders invalid style', () => {
         const wrapper = mount(InputField, {
             propsData: {
                 value: 'Test value',

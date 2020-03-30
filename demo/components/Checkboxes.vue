@@ -1,11 +1,10 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Multiselect from '../../ui/components/forms/Multiselect';
-import code from '!!raw-loader!../../ui/components/forms/Multiselect';
+import Checkboxes from '../../ui/components/forms/Checkboxes';
+import code from '!!raw-loader!../../ui/components/forms/Checkboxes';
 
-const codeExample = `<Multiselect
+const codeExample = `<Checkboxes
   v-model="selected"
-  placeholder="Select stuff here!"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -21,13 +20,13 @@ const codeExample = `<Multiselect
 
 export default {
     components: {
-        Multiselect,
+        Checkboxes,
         CodeExample
     },
     data() {
         return {
             codeExample,
-            selected: []
+            selected: ['bar', 'baz']
         };
     },
     computed: {
@@ -43,16 +42,16 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Multiselect</h2>
+          <h2>Checkboxes</h2>
           <p>
-            A dropdown for selecting multiple items. It acts as a form element, so it emits an <code>input</code> event
-            when something is (de-)selected, and it has a <code>value</code>.
+            A list of choices to choose of. It emits an <code>input</code> event
+            when something is selected, and it has a <code>value</code>.
           </p>
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-6">
-          <Multiselect
+        <div class="grid-item-5">
+          <Checkboxes
             v-model="selected"
             placeholder="Select stuff here!"
             :possible-values="[{
@@ -63,12 +62,28 @@ export default {
               text: 'Bar'
             }, {
               id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
+              text: 'Baz'
             }]"
           />
         </div>
-        <div class="grid-item-6">
+        <div class="grid-item-5">
+          <Checkboxes
+            v-model="selected"
+            alignment="vertical"
+            placeholder="Select stuff here vertical!"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+          />
+        </div>
+        <div class="grid-item-2">
           selected ids: {{ selected }}
         </div>
       </div>
@@ -77,7 +92,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Multiselect.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show Checkboxes.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>

@@ -25,7 +25,7 @@ describe('NumberInput.vue', () => {
         expect(wrapper.isVisible()).toBeTruthy();
     });
 
-    it('\'s will change appearance when invalid', () => {
+    it('renders invalid style', () => {
         wrapper.setProps({ isValid: false });
         expect(wrapper.find('.invalid-marker').exists()).toBe(true);
         wrapper.setProps({ isValid: true });

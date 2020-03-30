@@ -28,6 +28,9 @@ import RadioButtons from '../components/RadioButtons';
 import ListBox from '../components/ListBox';
 import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
+import MultiselectListBox from '../components/MultiselectListBox';
+import Checkboxes from '../components/Checkboxes';
+import Twinlist from '../components/Twinlist';
 import OpenSourceCredits from '../components/OpenSourceCredits';
 
 export default {
@@ -59,6 +62,9 @@ export default {
         ListBox,
         Dropdown,
         Multiselect,
+        MultiselectListBox,
+        Checkboxes,
+        Twinlist,
         OpenSourceCredits
     }
 };
@@ -105,6 +111,9 @@ export default {
     <ListBox />
     <Dropdown />
     <Multiselect />
+    <MultiselectListBox />
+    <Checkboxes />
+    <Twinlist />
     <OpenSourceCredits />
   </main>
 </template>

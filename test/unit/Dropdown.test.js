@@ -1,8 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 
 jest.mock('vue-clickaway', () => ({
     mixin: {}
 }), { virtual: true });
+
+const localVue = createLocalVue();
+localVue.directive('onClickaway', () => {});
 
 import Dropdown from '~/ui/components/forms/Dropdown';
 
@@ -33,7 +36,8 @@ describe('Dropdown.vue', () => {
 
     it('renders', () => {
         const wrapper = mount(Dropdown, {
-            propsData
+            propsData,
+            localVue
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
@@ -42,21 +46,23 @@ describe('Dropdown.vue', () => {
 
     it('sets the correct aria-* attributes', () => {
         const wrapper = mount(Dropdown, {
-            propsData
+            propsData,
+            localVue
         });
 
         let button = wrapper.find('[role=button]');
         expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('shows value text or placeholder if no or empty value set', () => {
+    it('renders value text or placeholder if no or empty value set', () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
                 placeholder,
                 value: 'test3'
-            }
+            },
+            localVue
         });
 
         let button = wrapper.find('[role=button]');
@@ -68,24 +74,26 @@ describe('Dropdown.vue', () => {
         expect(button.text()).toBe(placeholder);
     });
 
-    it('shows invalid value if value is invalid', () => {
+    it('renders invalid value if value is invalid', () => {
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
                 value: 'no'
-            }
+            },
+            localVue
         });
 
         let button = wrapper.find('[role=button]');
         expect(button.text()).toBe('no (invalid)');
     });
 
-    it('shows invalid state indicator if isValid is false', () => {
+    it('renders invalid style', () => {
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
                 isValid: false
-            }
+            },
+            localVue
         });
 
         let root = wrapper.find('div');
@@ -94,7 +102,8 @@ describe('Dropdown.vue', () => {
 
     it('opens the listbox on click of button and emits event for clicked value', () => {
         const wrapper = mount(Dropdown, {
-            propsData
+            propsData,
+            localVue
         });
         let newValueIndex = 1;
         let listbox = wrapper.find('[role=listbox]');
@@ -114,7 +123,8 @@ describe('Dropdown.vue', () => {
 
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(Dropdown, {
-            propsData
+            propsData,
+            localVue
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
 
@@ -127,7 +137,8 @@ describe('Dropdown.vue', () => {
     describe('keyboard navigation', () => {
         it('opens and closes the listbox on enter/esc', () => {
             const wrapper = mount(Dropdown, {
-                propsData
+                propsData,
+                localVue
             });
 
             let listbox = wrapper.find('[role=listbox]');
@@ -146,7 +157,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test2' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');
@@ -159,7 +171,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test2' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');
@@ -172,7 +185,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test1' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');
@@ -185,7 +199,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test5' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');
@@ -198,7 +213,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test3' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');
@@ -211,7 +227,8 @@ describe('Dropdown.vue', () => {
                 propsData: {
                     ...propsData,
                     value: 'test3' // defines start point
-                }
+                },
+                localVue
             });
 
             let ul = wrapper.find('ul');

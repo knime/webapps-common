@@ -15,7 +15,7 @@ describe('TextArea.vue', () => {
         expect(textArea.element.value).toBe('Test value');
     });
 
-    it('renders invalid state', () => {
+    it('renders invalid style', () => {
         const wrapper = mount(TextArea, {
             propsData: {
                 value: 'Test value',

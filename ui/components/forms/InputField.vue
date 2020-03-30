@@ -98,7 +98,7 @@ div {
 
 input {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 300;
   color: var(--theme-color-masala);
   line-height: 18px;
   height: 40px;
@@ -107,10 +107,10 @@ input {
   width: 100%;
   border: 1px solid var(--theme-color-stone-gray);
   outline: none;
+  background-color: transparent;
 
   &::placeholder {
     color: var(--theme-color-dove-gray);
-    font-weight: 300;
   }
 
   &:disabled {
@@ -118,13 +118,12 @@ input {
     opacity: 0.5;
   }
 
-  /* active */
   &:focus {
     border-color: var(--theme-color-masala);
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-porcelain);
+    background-color: var(--theme-color-silver-sand-semi);
   }
 
   &.with-icon {
@@ -152,5 +151,6 @@ svg {
   position: absolute;
   left: 12px;
   top: 10px;
+  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
 }
 </style>
