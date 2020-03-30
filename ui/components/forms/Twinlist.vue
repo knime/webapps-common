@@ -22,8 +22,10 @@ export default {
             default: () => []
         },
         /**
-         * Controls the size of the list. Number of visible items (for others user need to scroll)
-         * 0 means all
+         * Controls the size of the list.
+         * Number of visible items (for others user need to scroll)
+         * - 0 means all
+         * - values 1 - 4  are ignored; 5 is minimum
          */
         size: {
             type: Number,
@@ -90,7 +92,7 @@ export default {
             return this.chosenValues.map(x => this.possibleValueMap[x]);
         },
         listSize() {
-            return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
+            return this.size === 0 || this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
         }
     },
     watch: {
