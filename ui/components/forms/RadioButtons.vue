@@ -123,7 +123,7 @@ export default {
         height: 14px;
         border-radius: 100%;
         left: 0;
-        top: 4px;
+        top: 5px;
         position: absolute;
         vertical-align: top;
         cursor: pointer;
