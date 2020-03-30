@@ -239,7 +239,7 @@ describe('Twinlist.vue', () => {
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
-        it('move all values to right on all button click', async () => {
+        it('moves all values to right on all button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
@@ -258,7 +258,7 @@ describe('Twinlist.vue', () => {
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
-        it('move all values to left on all button click', async () => {
+        it('moves all values to left on all button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
@@ -321,7 +321,7 @@ describe('Twinlist.vue', () => {
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
-        it('move all values to right on all button enter', async () => {
+        it('moves all values to right on all button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
@@ -340,7 +340,7 @@ describe('Twinlist.vue', () => {
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
-        it('move all values to left on all button enter', async () => {
+        it('moves all values to left on all button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],

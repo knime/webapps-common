@@ -44,7 +44,7 @@ describe('MultiselectListBox.vue', () => {
         });
     });
 
-    it('isValid causes invalid style', () => {
+    it('renders invalid style', () => {
         let propsData = {
             possibleValues,
             value: [],
@@ -256,7 +256,7 @@ describe('MultiselectListBox.vue', () => {
     });
 
     describe('methods and events', () => {
-        it('validation of possibleValues', () => {
+        it('validates possibleValues', () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     ariaLabel: 'A Label'
@@ -270,7 +270,7 @@ describe('MultiselectListBox.vue', () => {
             expect(propPossibleValues.validator && propPossibleValues.validator([])).toBeTruthy();
         });
 
-        it('clearSelection', () => {
+        it('provides clearSelection method', () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -282,7 +282,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         });
 
-        it('hasSelection', () => {
+        it('provides hasSelection method', () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -296,7 +296,7 @@ describe('MultiselectListBox.vue', () => {
         });
 
 
-        it('keyArrowLeft event', async () => {
+        it('emits keyArrowLeft event', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -309,7 +309,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().keyArrowLeft[0][0]).toStrictEqual(['test3']);
         });
 
-        it('keyArrowRight event', async () => {
+        it('emits keyArrowRight event', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -322,7 +322,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().keyArrowRight[0][0]).toStrictEqual(['test3']);
         });
 
-        it('activated doubleClickOnItem', async () => {
+        it('emits doubleClickOnItem event', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,
@@ -335,7 +335,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().doubleClickOnItem[0][0]).toStrictEqual('test3');
         });
 
-        it('activated doubleClickShift', async () => {
+        it('emits doubleClickShift event', async () => {
             const wrapper = mount(MultiselectListBox, {
                 propsData: {
                     possibleValues,

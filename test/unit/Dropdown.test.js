@@ -54,7 +54,7 @@ describe('Dropdown.vue', () => {
         expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('shows value text or placeholder if no or empty value set', () => {
+    it('renders value text or placeholder if no or empty value set', () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             propsData: {
@@ -74,7 +74,7 @@ describe('Dropdown.vue', () => {
         expect(button.text()).toBe(placeholder);
     });
 
-    it('shows invalid value if value is invalid', () => {
+    it('renders invalid value if value is invalid', () => {
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
@@ -87,7 +87,7 @@ describe('Dropdown.vue', () => {
         expect(button.text()).toBe('no (invalid)');
     });
 
-    it('shows invalid state indicator if isValid is false', () => {
+    it('renders invalid style', () => {
         const wrapper = mount(Dropdown, {
             propsData: {
                 ...propsData,
