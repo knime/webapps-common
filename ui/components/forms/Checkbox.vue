@@ -63,6 +63,7 @@ export default {
   & input {
     opacity: 0;
     position: absolute;
+    z-index: -1; /* otherwise it might steal hover events */
 
     & + span {
       display: block;
@@ -107,7 +108,7 @@ export default {
         content: '';
         position: absolute;
         display: block;
-        transform: translate(4px, 2.5px) rotate(-45deg);
+        transform: translate(4px, 3.5px) rotate(-45deg);
         left: -1px;
         width: 8px;
         height: 5px;
@@ -149,12 +150,9 @@ export default {
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
     & input + span::after { /* ✓ */
-      top: 6px; /* line height 20px; container 26px (2 x 3px padding) 26-14=12/2=6 */
+      top: 6px; /* line height 20px; container 26px (2x3px padding) 26-14=12/2=6 */
     }
-
-    & input + span::after { /* ✓ */
-      transform: translate(4px, 3.5px) rotate(-45deg);
-    }
+    /* stylelint-enable no-descending-specificity */
   }
 }
 
