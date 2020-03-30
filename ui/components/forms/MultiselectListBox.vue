@@ -72,7 +72,7 @@ export default {
             draggingStartIndex: -1,
             draggingInverseMode: false,
             // visual
-            optionLineHeight: 20
+            optionLineHeight: 22
         };
     },
     computed: {
@@ -418,7 +418,7 @@ export default {
     height: 100%;
     flex-grow: 1;
     font-size: 14px;
-    min-height: 20px;
+    min-height: 22px;
     padding: 0;
     margin: 0;
     background: var(--theme-color-white);
@@ -446,7 +446,8 @@ export default {
 
   & [role="option"] {
     display: block;
-    padding: 0 10px 0 10px;
+    padding: 0 10px;
+    line-height: 22px;
     position: relative;
     text-overflow: ellipsis;
     overflow: hidden;

@@ -61,7 +61,7 @@ export default {
     data() {
         return {
             selectedIndex: 0,
-            optionLineHeight: 20
+            optionLineHeight: 22
         };
     },
     computed: {
@@ -221,7 +221,7 @@ export default {
 
   & [role="listbox"] {
     font-size: 14px;
-    min-height: 20px;
+    min-height: 22px;
     padding: 0;
     margin: 0;
     background: var(--theme-color-white);
@@ -236,6 +236,7 @@ export default {
   & [role="option"] {
     display: block;
     padding: 0 10px;
+    line-height: 22px;
     position: relative;
     color: var(--theme-color-masala);
 

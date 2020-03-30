@@ -341,11 +341,11 @@ export default {
     overflow-x: hidden;
     position: absolute;
     z-index: 20;
-    max-height: calc(24px * 7); /* show max 7 items */
+    max-height: calc(22px * 7); /* show max 7 items */
     font-size: 14px;
-    min-height: 24px;
+    min-height: 22px;
     width: 100%;
-    padding: 8px 0;
+    padding: 0;
     margin: 0;
     margin-top: -1px;
     background: var(--theme-color-white);
@@ -358,10 +358,10 @@ export default {
   }
 
   & [role="option"] {
-    display: inline-block;
+    display: block;
     width: 100%;
     padding: 0 10px 0 10px;
-    line-height: 24px;
+    line-height: 22px;
     position: relative;
     text-overflow: ellipsis;
     overflow: hidden;
