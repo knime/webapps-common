@@ -92,7 +92,11 @@ export default {
             return this.chosenValues.map(x => this.possibleValueMap[x]);
         },
         listSize() {
-            return this.size === 0 || this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
+            if (this.size === 0) {
+                // fixed size even when showing all to prevent height jumping when moving items between lists
+                return this.possibleValues.length;
+            }
+            return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
         }
     },
     watch: {
