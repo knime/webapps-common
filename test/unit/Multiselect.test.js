@@ -23,6 +23,17 @@ describe('Multiselect.vue', () => {
         expect(wrapper.classes()).toContain('multiselect');
     });
 
+    it('renders invalid style', () => {
+        const wrapper = mount(Multiselect, {
+            propsData: {
+                isValid: false
+            }
+        });
+
+        let root = wrapper.find('div');
+        expect(root.classes()).toContain('invalid');
+    });
+
     it('emits input events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
@@ -103,6 +114,48 @@ describe('Multiselect.vue', () => {
         expect(wrapper.vm.checkedValue).toHaveLength(1);
         wrapper.vm.onInput('test1', false);
         expect(wrapper.vm.checkedValue).toHaveLength(0);
+    });
+
+    describe('keyboard interaction', () => {
+        it('show options on enter', () => {
+            const wrapper = mount(Multiselect, {
+                propsData: {
+                    possibleValues: [{
+                        id: 'test1',
+                        text: 'test1'
+                    }, {
+                        id: 'test2',
+                        text: 'test2'
+                    }, {
+                        id: 'test3',
+                        text: 'test3'
+                    }]
+                }
+            });
+            let button = wrapper.find('[role=button]');
+            button.trigger('keydown.enter');
+            expect(wrapper.vm.collapsed).toBe(false);
+        });
+        it('hide options on esc', () => {
+            const wrapper = mount(Multiselect, {
+                propsData: {
+                    possibleValues: [{
+                        id: 'test1',
+                        text: 'test1'
+                    }, {
+                        id: 'test2',
+                        text: 'test2'
+                    }, {
+                        id: 'test3',
+                        text: 'test3'
+                    }]
+                }
+            });
+            let button = wrapper.find('[role=button]');
+            wrapper.vm.collapsed = false;
+            button.trigger('keydown.esc');
+            expect(wrapper.vm.collapsed).toBe(true);
+        });
     });
 
     it('uses the title text until options have been selected', () => {

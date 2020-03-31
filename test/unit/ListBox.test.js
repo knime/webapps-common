@@ -70,7 +70,7 @@ describe('ListBox.vue', () => {
         expect(ul.attributes('aria-label')).toBe(propsData.ariaLabel);
     });
 
-    it('sets the invalid state if isValid is false', () => {
+    it('renders invalid style', () => {
         const wrapper = mount(ListBox, {
             propsData: {
                 ...propsData,

@@ -260,6 +260,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
+        :title="item.text"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id, index)"
@@ -337,14 +338,14 @@ export default {
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
   & [role="listbox"] {
     overflow-y: auto;
+    overflow-x: hidden;
     position: absolute;
     z-index: 20;
-    max-height: calc(24px * 7); /* show max 7 items */
+    max-height: calc(22px * 7); /* show max 7 items */
     font-size: 14px;
-    min-height: 24px;
-    min-width: 100%;
-    max-width: 50vw;
-    padding: 8px 0;
+    min-height: 22px;
+    width: 100%;
+    padding: 0;
     margin: 0;
     margin-top: -1px;
     background: var(--theme-color-white);
@@ -357,11 +358,14 @@ export default {
   }
 
   & [role="option"] {
-    display: inline-block;
-    min-width: 100%;
+    display: block;
+    width: 100%;
     padding: 0 10px 0 10px;
-    line-height: 24px;
+    line-height: 22px;
     position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     color: var(--theme-color-masala);
 
     &:hover {
