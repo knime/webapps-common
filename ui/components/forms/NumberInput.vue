@@ -180,6 +180,9 @@ export default {
                 // on 'mouseup' or 'mouseleave' publish change
                 this.changeValue(valueDifference, e);
             }
+        },
+        toggleHover(e) {
+            e.target.classList.toggle('hover');
         }
     }
 };
@@ -201,6 +204,8 @@ export default {
       :step="stepSize"
       :class="inputClassList"
       @input="onInput"
+      @mouseenter="toggleHover"
+      @mouseleave="toggleHover"
     >
     <span
       class="increase"
@@ -264,9 +269,13 @@ export default {
     &:invalid {
       box-shadow: none; /* override default browser styling */
     }
+  }
 
-    &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand-semi);
+  & input.hover {
+    background-color: var(--theme-color-silver-sand-semi);
+
+    &:focus {
+      background-color: transparent;
     }
   }
 
