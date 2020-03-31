@@ -292,11 +292,11 @@ export default {
   & .title,
   & .listBox {
     flex: 3 1 auto;
+    max-width: calc(50% - (var(--button-bar-width) / 2));
   }
 
   & .listBox {
     display: flex;
-    max-width: calc(50% - (var(--button-bar-width) / 2));
     align-items: stretch;
     flex-direction: row;
   }
