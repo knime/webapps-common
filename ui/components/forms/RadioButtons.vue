@@ -94,6 +94,7 @@ export default {
 .radio-buttons {
   & label {
     position: relative;
+    display: block;
     font-weight: 300;
     font-size: 14px;
     line-height: 18px;
@@ -102,6 +103,7 @@ export default {
     & input {
       opacity: 0;
       position: absolute;
+      z-index: -1; /* otherwise it might steal hover events */
 
       & + span {
         display: inline-block;
@@ -112,6 +114,7 @@ export default {
       }
 
       /* ◯ */
+
       & + span::before {
         border: 1px solid var(--theme-color-stone-gray);
         display: inline-block;
@@ -120,7 +123,7 @@ export default {
         height: 14px;
         border-radius: 100%;
         left: 0;
-        top: 4px;
+        top: 5px;
         position: absolute;
         vertical-align: top;
         cursor: pointer;
@@ -132,6 +135,7 @@ export default {
       }
 
       &:checked { /* 🔘 */
+
         & + span::before {
           background: var(--theme-color-white);
           border-color: var(--theme-color-masala);
@@ -172,4 +176,5 @@ export default {
     }
   }
 }
+
 </style>
