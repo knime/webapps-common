@@ -66,6 +66,16 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate()).toBe(false);
     });
 
+    it('validates unicode', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: 'Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off!',
+                pattern: `[\u0000-\uFFFF]*`
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(true);
+    });
+
     it('validates unicode pattern', () => {
         const wrapper = mount(InputField, {
             propsData: {
@@ -84,6 +94,26 @@ describe('InputField.vue', () => {
             }
         });
         expect(wrapper.vm.validate()).toBe(false);
+    });
+
+    it('validates emojis', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: '👌',
+                pattern: `\\p{Emoji_Presentation}+`
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(true);
+    });
+
+    it('validates multiple unicode ranges', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: 'adaሑtest',
+                pattern: `([\u1200-\u12BF]|[\u0000-\u007F])*`
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(true);
     });
 
     it('emits input events', () => {
