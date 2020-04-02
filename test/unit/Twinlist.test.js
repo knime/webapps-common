@@ -52,8 +52,9 @@ describe('Twinlist.vue', () => {
         });
 
         // defaults to 5 (see Twinlist)
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(5);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(5);
+        const defaultListSize = 5;
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
 
         const bigSize = 12;
         wrapper.setProps({ size: bigSize });
