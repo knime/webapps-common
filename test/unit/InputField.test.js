@@ -106,6 +106,16 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate()).toBe(true);
     });
 
+    it('validates placehodlers', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: '2A_% S',
+                pattern: `\\d\\D\\w\\W\\s\\S+`
+            }
+        });
+        expect(wrapper.vm.validate()).toBe(true);
+    });
+
     it('validates multiple unicode ranges', () => {
         const wrapper = mount(InputField, {
             propsData: {
