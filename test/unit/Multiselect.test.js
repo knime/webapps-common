@@ -1,4 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
+
+jest.mock('vue-clickaway', () => ({
+    mixin: {}
+}), { virtual: true });
+
+const localVue = createLocalVue();
+localVue.directive('onClickaway', () => {});
 
 import Multiselect from '~/ui/components/forms/Multiselect';
 
@@ -16,7 +23,8 @@ describe('Multiselect.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }]
-            }
+            },
+            localVue
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
@@ -27,7 +35,8 @@ describe('Multiselect.vue', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
                 isValid: false
-            }
+            },
+            localVue
         });
 
         let root = wrapper.find('div');
@@ -47,7 +56,8 @@ describe('Multiselect.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }]
-            }
+            },
+            localVue
         });
         wrapper.vm.onInput('test1', true);
         expect(wrapper.emitted().input).toBeTruthy();
@@ -66,7 +76,8 @@ describe('Multiselect.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }]
-            }
+            },
+            localVue
         });
         expect(wrapper.vm.collapsed).toBe(true);
         wrapper.vm.toggle();
@@ -88,7 +99,8 @@ describe('Multiselect.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }]
-            }
+            },
+            localVue
         });
         wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
@@ -107,7 +119,8 @@ describe('Multiselect.vue', () => {
                     id: 'test3',
                     text: 'test3'
                 }]
-            }
+            },
+            localVue
         });
         wrapper.vm.onInput('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
@@ -130,7 +143,8 @@ describe('Multiselect.vue', () => {
                         id: 'test3',
                         text: 'test3'
                     }]
-                }
+                },
+                localVue
             });
             let button = wrapper.find('[role=button]');
             button.trigger('keydown.enter');
@@ -149,7 +163,8 @@ describe('Multiselect.vue', () => {
                         id: 'test3',
                         text: 'test3'
                     }]
-                }
+                },
+                localVue
             });
             let button = wrapper.find('[role=button]');
             wrapper.vm.collapsed = false;
@@ -173,7 +188,8 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 placeholder: 'Test Title'
-            }
+            },
+            localVue
         });
         expect(wrapper.vm.optionText).toBe('Test Title');
         wrapper.vm.onInput('test1', true);

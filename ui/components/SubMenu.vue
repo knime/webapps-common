@@ -49,6 +49,13 @@ export default {
             validator(orientation = 'right') {
                 return ['right', 'left', 'top'].includes(orientation);
             }
+        },
+        /**
+         * Disable SubMenu
+         */
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
@@ -79,7 +86,7 @@ export default {
 </script>
 
 <template>
-  <div class="submenu">
+  <div :class="[{ disabled }, 'submenu']">
     <!-- The @click is required by Firefox -->
     <button
       ref="submenu-toggle"
@@ -87,6 +94,7 @@ export default {
       class="submenu-toggle"
       aria-haspopup="true"
       tabindex="0"
+      :disabled="disabled"
       @click="e => { e.currentTarget.focus(); }"
       @blur="onMenuClick"
     >
@@ -202,6 +210,11 @@ ul {
 
 .submenu {
   position: relative;
+
+  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
   &:focus-within ul,
   & .submenu-toggle:focus + ul { /* only for IE/Edge */
