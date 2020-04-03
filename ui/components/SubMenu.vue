@@ -49,6 +49,13 @@ export default {
             validator(orientation = 'right') {
                 return ['right', 'left', 'top'].includes(orientation);
             }
+        },
+        /**
+         * Disable SubMenu
+         */
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -165,7 +172,7 @@ export default {
 <template>
   <div
     ref="submenu"
-    class="submenu"
+    :class="['submenu', { disabled }]"
     @keydown.esc.stop.prevent="closeMenu"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
@@ -181,6 +188,7 @@ export default {
       :title="buttonTitle"
       :class="['submenu-toggle', { expanded }]"
       :aria-expanded="expanded"
+      :disabled="disabled"
       @click.stop.prevent="toggleMenu"
       @keydown.space.stop.prevent="toggleMenu"
       @keydown.enter.self.prevent=""
@@ -305,5 +313,10 @@ ul {
 
 .submenu {
   position: relative;
+
+  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 </style>
