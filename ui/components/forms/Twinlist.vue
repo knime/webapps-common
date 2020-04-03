@@ -87,8 +87,8 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         leftItems() {
-            return [...this.possibleValues, ...[...this.invalidPossibleValues].map(x => this.generateInvalidItem(x))
-            ].filter(x => !this.chosenValues.includes(x.id));
+            const invalidItems = [...this.invalidPossibleValues].map(x => this.generateInvalidItem(x));
+            return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
         },
         rightItems() {
             return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
@@ -114,7 +114,7 @@ export default {
     },
     methods: {
         generateInvalidItem(id) {
-            return { id: id, text: `Invalid: ${id}`, invalid: true };
+            return { id, text: `Invalid: ${id}`, invalid: true };
         },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
