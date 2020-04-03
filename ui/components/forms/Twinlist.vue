@@ -73,6 +73,7 @@ export default {
     data() {
         return {
             chosenValues: this.value,
+            invalidPossibleValues: new Set(),
             selectedRight: [],
             selectedLeft: []
         };
@@ -86,10 +87,14 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         leftItems() {
-            return this.possibleValues.filter(x => !this.chosenValues.includes(x.id));
+            return [...this.possibleValues, ...[...this.invalidPossibleValues].map(x => this.generateInvalidItem(x))
+            ].filter(x => !this.chosenValues.includes(x.id));
         },
         rightItems() {
-            return this.chosenValues.map(x => this.possibleValueMap[x]);
+            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
+        },
+        invalidValues() {
+            return this.chosenValues.filter(x => !this.possibleValueMap[x]);
         },
         listSize() {
             if (this.size === 0) {
@@ -97,6 +102,9 @@ export default {
                 return this.possibleValues.length;
             }
             return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
+        },
+        hasInvalidChosenValues() {
+            return this.rightItems.some(x => x.invalid);
         }
     },
     watch: {
@@ -105,6 +113,9 @@ export default {
         }
     },
     methods: {
+        generateInvalidItem(id) {
+            return { id: id, text: `Invalid: ${id}`, invalid: true };
+        },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
         },
@@ -122,6 +133,9 @@ export default {
         moveLeft(items) {
             // remove all right values from or selectedValues
             items = items || this.selectedRight;
+            // add the invalid items to the possible items
+            let invalidItems = items.filter(x => this.invalidValues.includes(x));
+            invalidItems.forEach(x => this.invalidPossibleValues.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('input', this.chosenValues);
@@ -184,6 +198,9 @@ export default {
         },
         hasSelection() {
             return this.chosenValues.length > 0;
+        },
+        validate() {
+            return !this.hasInvalidChosenValues;
         }
     }
 };
@@ -254,6 +271,7 @@ export default {
         :value="selectedRight"
         :possible-values="rightItems"
         :size="listSize"
+        :is-valid="true"
         :aria-label="labelRight"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"

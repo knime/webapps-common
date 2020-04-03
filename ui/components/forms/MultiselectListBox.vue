@@ -393,6 +393,7 @@ export default {
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :class="{
           'selected': isCurrentValue(item.id),
+          'invalid': item.invalid,
           'noselect' :true
         }"
         :aria-selected="isCurrentValue(item.id)"
@@ -462,6 +463,16 @@ export default {
   & [role="option"].selected {
     background: var(--theme-color-masala);
     color: var(--theme-color-white);
+  }
+
+  /* invalid values */
+  & [role="option"].invalid {
+    color: var(--theme-color-error);
+
+    &.selected {
+      background: var(--theme-color-error);
+      color: var(--theme-color-white);
+    }
   }
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
