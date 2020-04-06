@@ -73,7 +73,7 @@ export default {
     data() {
         return {
             chosenValues: this.value,
-            invalidPossibleValues: new Set(),
+            invalidPossibleValueIds: new Set(),
             selectedRight: [],
             selectedLeft: []
         };
@@ -87,14 +87,14 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         leftItems() {
-            const invalidItems = [...this.invalidPossibleValues].map(x => this.generateInvalidItem(x));
+            const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
             return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
         },
         rightItems() {
             return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
         },
-        invalidValues() {
-            return this.chosenValues.filter(x => !this.possibleValueMap[x]);
+        invalidValueIds() {
+            return this.value.filter(x => !this.possibleValueMap[x]);
         },
         listSize() {
             if (this.size === 0) {
@@ -134,8 +134,8 @@ export default {
             // remove all right values from or selectedValues
             items = items || this.selectedRight;
             // add the invalid items to the possible items
-            let invalidItems = items.filter(x => this.invalidValues.includes(x));
-            invalidItems.forEach(x => this.invalidPossibleValues.add(x));
+            let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
+            invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('input', this.chosenValues);
@@ -144,7 +144,8 @@ export default {
             this.moveRight();
         },
         onMoveAllRightButtonClick() {
-            this.moveRight(this.leftItems.map(x => x.id));
+            // only move valid items
+            this.moveRight(this.leftItems.filter(x => !x.invalid).map(x => x.id));
         },
         onMoveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
