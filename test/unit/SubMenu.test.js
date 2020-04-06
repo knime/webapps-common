@@ -130,4 +130,29 @@ describe('Submenu.vue', () => {
         expect(wrapper.find('.clickable-item').exists()).toBe(true);
         expect(document.activeElement).toBe(button.element);
     });
+
+    it('can be disabled', () => {
+        const id = 'testfoobar543';
+        const items =  [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
+        ];
+        const wrapper = shallowMount(SubMenu, {
+            propsData: {
+                items,
+                id,
+                disabled: true
+            },
+            slots: {
+                default: 'button me'
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        let button = wrapper.find('.submenu-toggle');
+        expect(button.attributes('disabled')).toBeTruthy();
+        wrapper.setProps({ disabled: false });
+        expect(button.attributes('disabled')).toBeFalsy();
+    });
 });
