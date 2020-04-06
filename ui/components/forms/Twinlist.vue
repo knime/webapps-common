@@ -114,7 +114,7 @@ export default {
     },
     methods: {
         generateInvalidItem(id) {
-            return { id, text: `Invalid: ${id}`, invalid: true };
+            return { id, text: `${id} (MISSING)`, invalid: true };
         },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
