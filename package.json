@@ -5,6 +5,7 @@
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
+    "preinstall": "node ./install-subDependencies",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "eslint --ext .js,.vue .",
@@ -13,9 +14,6 @@
     "coverage": "jest --coverage",
     "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
-  },
-  "dependencies": {
-    "knime-build-tools": "file:buildtools"
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",

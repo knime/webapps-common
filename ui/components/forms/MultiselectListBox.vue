@@ -77,7 +77,8 @@ export default {
     },
     computed: {
         cssStyleSize() {
-            const pxSize = `${this.size * this.optionLineHeight}px`;
+            // add two pixel to prevent scrollbar bugs
+            const pxSize = `${this.size * this.optionLineHeight + 2}px`;
             return this.size > 0 ? { height: pxSize } : {};
         }
     },

@@ -41,19 +41,26 @@ describe('Twinlist.vue', () => {
 
     it('actual list sizes must be 5 or bigger', () => {
         let propsData = {
-            possibleValues: defaultPossibleValues,
-            value: ['test1'],
+            possibleValues: [defaultPossibleValues[0]], // one element
+            value: [],
             labelLeft: 'Choose',
-            labelRight: 'The value',
-            size: 3
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
         });
+        const defaultListSize = 5; // see Twinlist.vue
+
+        // with no size set it is still 5 even if we only have one element
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
 
         // defaults to 5 (see Twinlist)
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(5);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(5);
+        const smallListSize = 3;
+        wrapper.setProps({ size: smallListSize });
+
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
 
         const bigSize = 12;
         wrapper.setProps({ size: bigSize });

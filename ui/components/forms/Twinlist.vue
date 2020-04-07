@@ -92,11 +92,10 @@ export default {
             return this.chosenValues.map(x => this.possibleValueMap[x]);
         },
         listSize() {
-            if (this.size === 0) {
-                // fixed size even when showing all to prevent height jumping when moving items between lists
-                return this.possibleValues.length;
-            }
-            return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
+            // fixed size even when showing all to prevent height jumping when moving items between lists
+            const size = this.size === 0 ?  this.possibleValues.length : this.size;
+            // limit size to minimum
+            return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         }
     },
     watch: {
@@ -292,11 +291,11 @@ export default {
   & .title,
   & .listBox {
     flex: 3 1 auto;
+    max-width: calc(50% - (var(--button-bar-width) / 2));
   }
 
   & .listBox {
     display: flex;
-    max-width: calc(50% - (var(--button-bar-width) / 2));
     align-items: stretch;
     flex-direction: row;
   }
