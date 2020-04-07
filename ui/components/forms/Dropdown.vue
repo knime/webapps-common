@@ -299,7 +299,7 @@ export default {
     padding: 10px 38px 10px 10px;
     font-size: 13px;
     height: 40px;
-    line-height: 19px;
+    line-height: 18px;
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
