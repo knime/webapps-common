@@ -47,13 +47,10 @@ export default {
             type: String
         }
     },
-    /**
-     * @returns {Object} clicked should be false to prevent un-
-     *      intended 'mouseup' or 'mouseleave' events.
-     */
     data() {
         return {
-            clicked: false
+            clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
+            hovered: false  // if the input field is currently hovered or not
         };
     },
     /**
@@ -73,6 +70,9 @@ export default {
         },
         inputClassList() {
             let classes = this.inputClasses;
+            if (this.hovered) {
+                classes += ' hover';
+            }
             return classes;
         }
     },
@@ -180,6 +180,9 @@ export default {
                 // on 'mouseup' or 'mouseleave' publish change
                 this.changeValue(valueDifference, e);
             }
+        },
+        toggleHover() {
+            this.hovered = !this.hovered;
         }
     }
 };
@@ -201,6 +204,8 @@ export default {
       :step="stepSize"
       :class="inputClassList"
       @input="onInput"
+      @mouseenter="toggleHover"
+      @mouseleave="toggleHover"
     >
     <span
       class="increase"
@@ -233,19 +238,7 @@ export default {
     border-color: var(--theme-color-masala);
   }
 
-  /* remove browser spinners FF */
   & input[type='number'] {
-    -moz-appearance: textfield;
-  }
-
-  /* remove browser spinners WebKit/Blink */
-  & input[type=number]::-webkit-inner-spin-button,
-  & input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  & input {
     font-size: 13px;
     font-weight: 300;
     color: var(--theme-color-masala);
@@ -260,12 +253,22 @@ export default {
     outline: none;
     background-color: transparent;
 
+    /* remove browser spinners FF */
+    -moz-appearance: textfield;
+
+    /* remove browser spinners WebKit/Blink */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */
     }
 
-    &:hover:not(:focus):not(:disabled) {
+    &.hover:not(:focus) { /* not native :hover because of WEBP-297 */
       background-color: var(--theme-color-silver-sand-semi);
     }
   }
