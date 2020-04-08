@@ -243,11 +243,11 @@ export default {
     font-weight: 300;
     color: var(--theme-color-masala);
     letter-spacing: inherit;
-    line-height: 18px;
     height: 40px;
+    line-height: 40px; /* to center text vertically */
     border: 0;
     margin: 0;
-    padding: 11px 10px 11px 10px;
+    padding: 0 10px;
     border-radius: 0;
     width: calc(100% - 32px);
     outline: none;

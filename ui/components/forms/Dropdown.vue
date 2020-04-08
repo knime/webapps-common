@@ -296,10 +296,10 @@ export default {
   & [role=button] {
     margin: 0;
     border: 1px solid var(--theme-color-stone-gray);
-    padding: 10px 38px 10px 10px;
+    padding: 0 38px 0 10px;
     font-size: 13px;
     height: 40px;
-    line-height: 18px;
+    line-height: 40px; /* to center text vertically */
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
