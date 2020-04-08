@@ -58,6 +58,7 @@ fieldset {
     font-weight: 500;
     font-size: 13px;
     line-height: 18px;
+    margin-bottom: 3px;
   }
 }
 </style>

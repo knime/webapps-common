@@ -30,6 +30,6 @@ export default {
   color: var(--theme-color-masala);
   line-height: 20px;
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 10px;
 }
 </style>
