@@ -416,6 +416,20 @@ export default {
   align-items: stretch;
   flex-direction: column;
 
+  &.invalid {
+    &::before {
+      content: '';
+      position: absolute;
+      width: 3px;
+      left: 0;
+      margin: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 10;
+      background-color: var(--theme-color-error);
+    }
+  }
+
   & [role="listbox"] {
     height: 100%;
     flex-grow: 1;
@@ -432,18 +446,10 @@ export default {
     }
   }
 
-  &.invalid {
-    &::before {
-      content: '';
-      position: absolute;
-      width: 3px;
-      left: 0;
-      margin: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 10;
-      background-color: var(--theme-color-error);
-    }
+  /* this selector is required to override some * rules which interfere - so do not simplify */
+  & ul[role="listbox"] {
+    overflow-y: auto;
+    position: relative;
   }
 
   & [role="option"] {
@@ -454,36 +460,29 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-  }
 
-  & [role="option"]:hover {
-    background: var(--theme-color-porcelain);
-  }
-
-  & [role="option"].selected {
-    background: var(--theme-color-masala);
-    color: var(--theme-color-white);
-  }
-
-  /* invalid values */
-  & [role="option"].invalid {
-    color: var(--theme-color-error);
+    &:hover {
+      background: var(--theme-color-porcelain);
+    }
 
     &.selected {
-      background: var(--theme-color-error);
+      background: var(--theme-color-masala);
       color: var(--theme-color-white);
     }
-  }
 
-  /* this selector is required to override some * rules which interfere - so do not simplify */
-  & ul[role="listbox"] {
-    overflow-y: auto;
-    position: relative;
+    /* invalid values */
+    &.invalid {
+      color: var(--theme-color-error);
+
+      &.selected {
+        background: var(--theme-color-error);
+        color: var(--theme-color-white);
+      }
+    }
   }
 
   & .noselect {
     user-select: none;
   }
 }
-
 </style>
