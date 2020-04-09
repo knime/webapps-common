@@ -1,7 +1,14 @@
 <script>
+import PopupController from '../components/PopupController';
+import Menu from '../components/Menu';
+
 const BLUR_TIMEOUT = 200; // ms
 
 export default {
+    components: {
+        PopupController,
+        Menu
+    },
     props: {
         /**
          * Items to be listed in the menu.
@@ -61,72 +68,50 @@ export default {
     methods: {
         onItemClick(event, item) {
             this.$emit('item-click', event, item, this.id);
-        },
-        /**
-         * Edge loses focus faster then emitting the actual click event, therefore we need to keep the focus on the
-         * submenu when the focus is about to change and only loose it when a click occurs outside of the submenu-items.
-         * To guarantee that this approach is working, the class name 'clickable-item' should only be used
-         * on submenu-items
-         *
-         * @param {Object} e - event object
-         * @returns {Boolean}
-         */
-        onMenuClick(e) {
-            if (e.relatedTarget && e.relatedTarget.className.includes('clickable-item')) {
-                let el = e.currentTarget || e.relatedTarget; // Edge needs currentTarget
-                el.focus();
-                setTimeout(() => {
-                    el.blur(); // manually blur to close submenu consistently across browsers
-                }, BLUR_TIMEOUT);
-            }
-            return true;
         }
     }
 };
 </script>
 
 <template>
-  <div :class="[{ disabled }, 'submenu']">
-    <!-- The @click is required by Firefox -->
-    <button
-      ref="submenu-toggle"
-      :title="buttonTitle"
-      class="submenu-toggle"
-      aria-haspopup="true"
-      tabindex="0"
-      :disabled="disabled"
-      @click="e => { e.currentTarget.focus(); }"
-      @blur="onMenuClick"
-    >
-      <slot />
-    </button>
-    <ul
-      :class="`orient-${orientation}`"
-      aria-label="submenu"
-      role="menu"
-    >
-      <li
-        v-for="(item, index) in items"
-        :key="index"
-        @click="onItemClick($event, item, index)"
+  <PopupController
+    :id="id"
+    :orientation="orientation"
+    :disabled="disabled"
+  >
+    <template #toggle>
+      <button
+        :title="buttonTitle"
+        class="submenu-toggle"
       >
-        <Component
-          :is="item.to ? 'nuxt-link' : 'a'"
-          :to="item.to"
-          :href="item.href || null"
-          tabindex="0"
-          class="clickable-item"
+        <slot />
+      </button>
+    </template>
+    <template #popup>
+      <ul>
+        <li
+          v-for="(item, index) in items"
+          :key="index"
+          @click="onItemClick($event, item, index)"
         >
           <Component
-            :is="item.icon"
-            v-if="item.icon"
-            class="item-icon"
-          />
-          {{ item.text }}
-        </Component>
-      </li>
-    </ul>
-  </div>
+            :is="item.to ? 'nuxt-link' : 'a'"
+            :to="item.to"
+            :href="item.href || null"
+            tabindex="0"
+            class="clickable-item"
+          >
+            <Component
+              :is="item.icon"
+              v-if="item.icon"
+              class="item-icon"
+            />
+            {{ item.text }}
+          </Component>
+        </li>
+      </ul>
+    </template>
+  </PopupController>
 </template>
 
 <style lang="postcss" scoped>
@@ -150,10 +135,7 @@ button {
 }
 
 ul {
-  display: none;
-  position: absolute;
-  right: 0;
-  margin-top: 8px;
+  margin: 0;
   padding: 5px 0;
   background-color: var(--theme-color-white);
   color: var(--theme-color-dove-gray);
@@ -162,18 +144,6 @@ ul {
   font-weight: 500;
   text-align: left;
   list-style-type: none;
-  box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
-  z-index: 1;
-
-  &.orient-left {
-    right: auto;
-    left: 0;
-  }
-
-  &.orient-top {
-    bottom: 18px;
-    right: 10px;
-  }
 
   & a {
     padding: 6px 13px;
@@ -208,17 +178,4 @@ ul {
   }
 }
 
-.submenu {
-  position: relative;
-
-  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  &:focus-within ul,
-  & .submenu-toggle:focus + ul { /* only for IE/Edge */
-    display: block;
-  }
-}
 </style>
