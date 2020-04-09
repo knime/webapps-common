@@ -66,9 +66,6 @@ export default {
         }
     },
     methods: {
-        onItemClick(event, item) {
-            this.$emit('item-click', event, item, this.id);
-        }
     }
 };
 </script>
@@ -87,29 +84,9 @@ export default {
         <slot />
       </button>
     </template>
+
     <template #popup>
-      <ul>
-        <li
-          v-for="(item, index) in items"
-          :key="index"
-          @click="onItemClick($event, item, index)"
-        >
-          <Component
-            :is="item.to ? 'nuxt-link' : 'a'"
-            :to="item.to"
-            :href="item.href || null"
-            tabindex="0"
-            class="clickable-item"
-          >
-            <Component
-              :is="item.icon"
-              v-if="item.icon"
-              class="item-icon"
-            />
-            {{ item.text }}
-          </Component>
-        </li>
-      </ul>
+      <Menu :items="items" />
     </template>
   </PopupController>
 </template>
@@ -131,50 +108,6 @@ button {
   &:hover,
   &:focus {
     outline: none;
-  }
-}
-
-ul {
-  margin: 0;
-  padding: 5px 0;
-  background-color: var(--theme-color-white);
-  color: var(--theme-color-dove-gray);
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  text-align: left;
-  list-style-type: none;
-
-  & a {
-    padding: 6px 13px;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
-
-    & .item-icon {
-      stroke: var(--theme-color-masala);
-      width: 18px;
-      height: 18px;
-      margin-right: 7px;
-    }
-
-    &:active,
-    &:hover,
-    &:focus {
-      outline: none;
-      background-color: var(--theme-color-masala);
-      color: var(--theme-color-white);
-
-      & .item-icon {
-        stroke: var(--theme-color-white);
-
-        & .text {
-          stroke: var(--theme-color-white);
-        }
-      }
-    }
   }
 }
 
