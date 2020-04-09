@@ -55,9 +55,10 @@ fieldset {
 
   /* labels inside of the fieldset look different (smaller) */
   & >>> .label-text {
-    font-weight: 300;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 13px;
     line-height: 18px;
+    margin-bottom: 3px;
   }
 }
 </style>
