@@ -86,6 +86,9 @@ export default {
         possibleValueIds() {
             return this.possibleValues.map(x => x.id);
         },
+        invalidValueIds() {
+            return this.value.filter(x => !this.possibleValueMap[x]);
+        },
         leftItems() {
             const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
             return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
@@ -93,17 +96,11 @@ export default {
         rightItems() {
             return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
         },
-        invalidValueIds() {
-            return this.value.filter(x => !this.possibleValueMap[x]);
-        },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
             const size = this.size === 0 ?  this.possibleValues.length : this.size;
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
-        },
-        hasInvalidChosenValues() {
-            return this.rightItems.some(x => x.invalid);
         }
     },
     watch: {
@@ -200,7 +197,7 @@ export default {
             return this.chosenValues.length > 0;
         },
         validate() {
-            return !this.hasInvalidChosenValues;
+            return !this.rightItems.some(x => x.invalid);
         }
     }
 };
@@ -271,7 +268,6 @@ export default {
         :value="selectedRight"
         :possible-values="rightItems"
         :size="listSize"
-        :is-valid="true"
         :aria-label="labelRight"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"
