@@ -96,7 +96,7 @@ export default {
     position: relative;
     display: block;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 18px;
     padding: 3px 0 3px 23px;
 

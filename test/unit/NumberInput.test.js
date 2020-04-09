@@ -82,4 +82,13 @@ describe('NumberInput.vue', () => {
         wrapper.vm.mouseEvent({}, 'decrease');
         expect(wrapper.vm.getValue()).toBe(10);
     });
+
+    it('applies hover class', () => {
+        const input = wrapper.find('input');
+        expect(input.find('.hover').exists()).toBe(false);
+        input.trigger('mouseenter');
+        expect(input.find('.hover').exists()).toBe(true);
+        input.trigger('mouseleave');
+        expect(input.find('.hover').exists()).toBe(false);
+    });
 });
