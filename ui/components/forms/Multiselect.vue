@@ -220,6 +220,7 @@ export default {
 
     & .boxes {
       display: block;
+      user-select: none;
     }
   }
 }

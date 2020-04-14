@@ -35,7 +35,7 @@ fieldset {
   & > legend {
     font-weight: 700;
     font-size: 16px;
-    line-height: 24px;
+    line-height: 20px;
     margin-bottom: 5px;
     cursor: default;
 
