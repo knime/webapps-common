@@ -38,6 +38,39 @@ describe('Multiselect.vue', () => {
         expect(root.classes()).toContain('invalid');
     });
 
+
+    it('renders placeholder until options have been selected', () => {
+        const wrapper = mount(Multiselect, {
+            propsData: {
+                possibleValues: [{
+                    id: 'test1',
+                    text: 'test1'
+                }, {
+                    id: 'test2',
+                    text: 'test2',
+                    selectedText: 'Test2'
+                }, {
+                    id: 'test3',
+                    text: 'test3'
+                }],
+                placeholder: 'Test Title'
+            },
+            localVue
+        });
+
+        let button = wrapper.find('[role="button"]');
+        expect(button.text()).toBe('Test Title');
+        expect(button.classes()).toContain('placeholder');
+
+        wrapper.vm.onInput('test1', true);
+        expect(button.text()).toBe('test1');
+        expect(button.classes()).not.toContain('placeholder');
+        
+        wrapper.vm.onInput('test2', true);
+        expect(button.text()).toBe('test1, Test2');
+        expect(button.classes()).not.toContain('placeholder');
+    });
+
     it('emits input events', () => {
         const wrapper = mount(Multiselect, {
             propsData: {
@@ -365,30 +398,5 @@ describe('Multiselect.vue', () => {
                 expect(onUpMock).toHaveBeenCalled();
             });
         });
-    });
-
-    it('uses the title text until options have been selected', () => {
-        const wrapper = mount(Multiselect, {
-            propsData: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2',
-                    selectedText: 'Test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }],
-                placeholder: 'Test Title'
-            },
-            localVue
-        });
-        expect(wrapper.vm.optionText).toBe('Test Title');
-        wrapper.vm.onInput('test1', true);
-        expect(wrapper.vm.optionText).toBe('test1');
-        wrapper.vm.onInput('test2', true);
-        expect(wrapper.vm.optionText).toBe('test1, Test2');
     });
 });

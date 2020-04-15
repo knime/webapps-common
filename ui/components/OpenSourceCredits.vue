@@ -165,6 +165,10 @@ dl {
 
     & .details {
       display: block;
+
+      & pre {
+        white-space: pre-wrap;
+      }
     }
   }
 }

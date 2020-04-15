@@ -171,6 +171,7 @@ export default {
       ref="toggle"
       role="button"
       tabindex="0"
+      :class="{ placeholder: !checkedValue.length }"
       @click="toggle"
       @keydown.space.prevent="toggle"
     >
@@ -216,16 +217,20 @@ export default {
   & [role=button] {
     margin: 0;
     border: 1px solid var(--theme-color-stone-gray);
-    padding: 10px 38px 10px 10px;
+    padding: 0 38px 0 10px;
     font-size: 13px;
     font-weight: 300;
     height: 40px;
-    line-height: 19px;
+    line-height: 40px; /* to center text vertically */
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--theme-color-masala);
+
+    &.placeholder {
+      color: var(--theme-color-dove-gray);
+    }
 
     &:focus {
       outline: none;

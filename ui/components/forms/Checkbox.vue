@@ -59,6 +59,7 @@ export default {
   position: relative;
   padding: 3px 0 3px 24px;
   color: var(--theme-color-masala);
+  user-select: none;
 
   & input {
     opacity: 0;
@@ -84,7 +85,8 @@ export default {
     & + span::after { /* ✓ */
       position: absolute;
       left: 0;
-      top: 5px; /* based on regular line-height of 18px; container will be 24px (2x3px padding) 24-14=10/2 = 5 */
+      top: 4px; /* based on regular line-height of 18px; container will be 24px(2x3px padding) 24-14=10/2 = 5-1 = 4
+      to let higher letters appear more centered */
     }
 
     &:checked {
@@ -150,7 +152,7 @@ export default {
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
     & input + span::after { /* ✓ */
-      top: 6px; /* line height 20px; container 26px (2x3px padding) 26-14=12/2=6 */
+      top: 5px; /* line height 20px; container 26px(2x3px padding) 26-14=12/2=6  -1=5 to center higher letters better */
     }
     /* stylelint-enable no-descending-specificity */
   }

@@ -35,29 +35,30 @@ fieldset {
   & > legend {
     font-weight: 700;
     font-size: 16px;
-    line-height: 24px;
-    margin-bottom: 5px;
+    line-height: 20px;
     cursor: default;
 
     & svg {
       margin-right: 0;
       height: 14px;
       width: 14px;
-      stroke-width: calc(32px / 18);
+      stroke-width: calc(32px / 14);
       stroke: var(--theme-color-masala);
       cursor: pointer;
       display: block;
       float: right;
-      margin-top: 5px;
+      margin-top: 3px;
       margin-left: 4px;
     }
   }
 
   /* labels inside of the fieldset look different (smaller) */
   & >>> .label-text {
-    font-weight: 300;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 13px;
     line-height: 18px;
+    margin-top: 10px;
+    margin-bottom: 3px;
   }
 }
 </style>

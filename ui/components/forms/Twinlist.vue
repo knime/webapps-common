@@ -73,6 +73,7 @@ export default {
     data() {
         return {
             chosenValues: this.value,
+            invalidPossibleValueIds: new Set(),
             selectedRight: [],
             selectedLeft: []
         };
@@ -85,18 +86,21 @@ export default {
         possibleValueIds() {
             return this.possibleValues.map(x => x.id);
         },
+        invalidValueIds() {
+            return this.value.filter(x => !this.possibleValueMap[x]);
+        },
         leftItems() {
-            return this.possibleValues.filter(x => !this.chosenValues.includes(x.id));
+            const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
+            return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
         },
         rightItems() {
-            return this.chosenValues.map(x => this.possibleValueMap[x]);
+            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
         },
         listSize() {
-            if (this.size === 0) {
-                // fixed size even when showing all to prevent height jumping when moving items between lists
-                return this.possibleValues.length;
-            }
-            return this.size > MIN_LIST_SIZE ? this.size : MIN_LIST_SIZE;
+            // fixed size even when showing all to prevent height jumping when moving items between lists
+            const size = this.size === 0 ?  this.possibleValues.length : this.size;
+            // limit size to minimum
+            return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         }
     },
     watch: {
@@ -105,6 +109,9 @@ export default {
         }
     },
     methods: {
+        generateInvalidItem(id) {
+            return { id, text: `${id} (MISSING)`, invalid: true };
+        },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
         },
@@ -122,6 +129,9 @@ export default {
         moveLeft(items) {
             // remove all right values from or selectedValues
             items = items || this.selectedRight;
+            // add the invalid items to the possible items
+            let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
+            invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('input', this.chosenValues);
@@ -130,7 +140,8 @@ export default {
             this.moveRight();
         },
         onMoveAllRightButtonClick() {
-            this.moveRight(this.leftItems.map(x => x.id));
+            // only move valid items
+            this.moveRight(this.leftItems.filter(x => !x.invalid).map(x => x.id));
         },
         onMoveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
@@ -184,6 +195,9 @@ export default {
         },
         hasSelection() {
             return this.chosenValues.length > 0;
+        },
+        validate() {
+            return !this.rightItems.some(x => x.invalid);
         }
     }
 };
@@ -274,7 +288,10 @@ export default {
   --button-bar-width: 30px;
 
   & .title {
+    font-weight: 500;
     font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 3px;
   }
 
   & .lists,

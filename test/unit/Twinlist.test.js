@@ -41,18 +41,24 @@ describe('Twinlist.vue', () => {
 
     it('actual list sizes must be 5 or bigger', () => {
         let propsData = {
-            possibleValues: defaultPossibleValues,
-            value: ['test1'],
+            possibleValues: [defaultPossibleValues[0]], // one element
+            value: [],
             labelLeft: 'Choose',
-            labelRight: 'The value',
-            size: 3
+            labelRight: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
         });
+        const defaultListSize = 5; // see Twinlist.vue
+
+        // with no size set it is still 5 even if we only have one element
+        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
+        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
 
         // defaults to 5 (see Twinlist)
-        const defaultListSize = 5;
+        const smallListSize = 3;
+        wrapper.setProps({ size: smallListSize });
+
         expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
         expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
 
@@ -81,6 +87,30 @@ describe('Twinlist.vue', () => {
         expect(left.vm.isValid).toBe(false);
         wrapper.setProps({ isValid: true });
         expect(left.vm.isValid).toBe(true);
+    });
+
+    it('has invalid state if invalid values are selected', () => {
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text'
+            }, {
+                id: 'test2',
+                text: 'Some Text'
+            }],
+            value: ['invalidId', 'test1'],
+            labelLeft: 'Choose',
+            labelRight: 'The value'
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.invalidValueIds).toStrictEqual(['invalidId']);
+
+        // make it valid again
+        wrapper.setProps({ value: ['test1'] });
+        expect(wrapper.vm.validate()).toBe(true);
     });
 
     it('provides a valid hasSelection method', () => {
@@ -281,6 +311,31 @@ describe('Twinlist.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+        });
+
+        it('keeps invalid values on the left side on move all right action', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['invalidId'],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            // move all left to get the invalid left
+            wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
+            expect(left.vm.$props.possibleValues.map(x => x.id)).toContain('invalidId');
+
+            // move all back to right side, but the invalid will not be there
+            wrapper.find({ ref: 'moveAllRight' }).trigger('click');
+            expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(left.vm.$props.possibleValues.map(x => x.id)).toStrictEqual(['invalidId']);
         });
 
         it('moves all values to left on all button click', async () => {
