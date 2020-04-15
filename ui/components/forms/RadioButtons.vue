@@ -92,6 +92,8 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .radio-buttons {
+  user-select: none;
+
   & label {
     position: relative;
     display: block;

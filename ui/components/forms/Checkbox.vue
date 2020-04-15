@@ -59,6 +59,7 @@ export default {
   position: relative;
   padding: 3px 0 3px 24px;
   color: var(--theme-color-masala);
+  user-select: none;
 
   & input {
     opacity: 0;
