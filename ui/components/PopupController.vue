@@ -92,23 +92,6 @@ export default {
   }
 }
 
-.popup-toggle >>> button {
-  display: block;
-  color: inherit;
-  font-weight: inherit;
-  background: transparent;
-  padding: 0;
-  border: 0 none;
-  text-decoration: none;
-  cursor: pointer;
-
-  /* &:active,
-  &:hover,
-  &:focus {
-    outline: none;
-  } */
-}
-
 .popup-content {
   display: none;
   position: absolute;
@@ -138,7 +121,7 @@ export default {
 
   &:focus-within .popup-content,
   & .popup-toggle-container:focus + .popup-content { /* only for IE/Edge */
-    display: block;
+     display: block;
   }
 }
 </style>
