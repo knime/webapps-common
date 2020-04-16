@@ -100,9 +100,9 @@ input {
   font-size: 13px;
   font-weight: 300;
   color: var(--theme-color-masala);
-  line-height: 18px;
   height: 40px;
-  padding: 11px 10px 11px 10px;
+  line-height: 40px; /* to center text vertically */
+  padding: 0 10px;
   border-radius: 0;
   width: 100%;
   border: 1px solid var(--theme-color-stone-gray);

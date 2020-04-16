@@ -154,7 +154,7 @@ ul {
   position: absolute;
   right: 0;
   margin-top: 8px;
-  padding: 5px 0;
+  padding: 0;
   background-color: var(--theme-color-white);
   color: var(--theme-color-dove-gray);
   font-size: 13px;
