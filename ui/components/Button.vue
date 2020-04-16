@@ -236,8 +236,7 @@ export default {
   &.primary:active,
   &.primary:hover,
   &.with-border:active,
-  &.with-border:hover,
-  &.active {
+  &.with-border:hover {
     color: var(--theme-color-white);
     background-color: var(--theme-color-masala);
 
@@ -283,16 +282,17 @@ export default {
 
     & svg {
       margin: 0 8px 0 0;
-      display: inline-block;
-      position: relative;
       top: -0.05em;
+
+      &.toggle-icon {
+        margin: 0 0 0 10px;
+        padding: 2px 0 2px 0;
+      }
     }
 
-    &:not(.active) {
-      &:active,
-      &:hover {
-        background-color: var(--theme-color-silver-sand-semi);
-      }
+    &:active,
+    &:hover {
+      background-color: var(--theme-color-silver-sand-semi);
     }
 
     &.without-text {
@@ -312,10 +312,15 @@ export default {
       font-size: 11px;
       margin-right: 10px;
 
+      & svg.toggle-icon {
+        margin: 0 0 0 8px;
+        padding: 1px 0 1px 0;
+      }
+
       &.without-text {
         padding: 5px;
         min-width: unset;
-        
+
         & svg {
           top: -0.00em;
         }

@@ -4,9 +4,13 @@ import Button from '../../ui/components/Button';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
-import SplitButton from '../../ui/components/SplitButton';
-import SubMenu from '../../ui/components/SubMenu';
-
+import DropdownIcon from '../../ui/assets/img/icons/arrow-dropdown.svg?inline';
+import PopupController from '../../ui/components/PopupController';
+import Menu from '../../ui/components/Menu';
+import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
+import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
+import LeaveIcon from '../../ui/assets/img/icons/leave.svg?inline';
+import HeartIcon from '../../ui/assets/img/icons/heart.svg?inline';
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>
@@ -18,18 +22,39 @@ const codeExample = `<Button>Button</Button>
 <Button><PlayIcon />Button with icon</Button>
 <Button disabled>Button disabled</Button>`;
 
+const subMenuItems = [{
+    href: 'http://apple.com',
+    text: 'Apples',
+    icon: HelpIcon
+}, {
+    href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
+    text: 'Oranges',
+    icon: StarIcon
+},  {
+    to: '/testing-nuxt-link',
+    text: 'Ananas',
+    icon: HeartIcon
+}, {
+    href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
+    text: 'Bananas',
+    icon: LeaveIcon
+}];
+
 export default {
     components: {
         Button,
         MenuOptionsIcon,
         LensIcon,
-        SubMenu,
-        CodeExample
+        DropdownIcon,
+        CodeExample,
+        PopupController,
+        Menu
     },
     data() {
         return {
             buttonCode,
-            codeExample
+            codeExample,
+            subMenuItems
         };
     }
 };
@@ -52,32 +77,39 @@ export default {
 
           <Button function><LensIcon />Function</Button>
           
-          <Button function>Function Menu</Button>
-        </div>
+          <PopupController
+            orientation="left"
+          >
+            <template #toggle>
+              <Button
+                function
+                class="toggle-active"
+              >
+                Function Menu
+                <DropdownIcon class="toggle-icon" />
+              </Button>
+            </template>
+            <template #popup>
+              <Menu :items="subMenuItems" />
+            </template>
+          </PopupController>
 
-        <!-- active function buttons -->
-        <div class="align-horizontal">
-          <Button
-            function
-            without-text
-            active
+          <PopupController
+            orientation="right"
           >
-            <MenuOptionsIcon />
-          </Button>
-
-          <Button
-            function
-            active
-          >
-            <LensIcon />Function
-          </Button>
-          
-          <Button
-            function
-            active
-          >
-            Function Menu
-          </Button>
+            <template #toggle>
+              <Button
+                function
+                without-text
+                class="toggle-active"
+              >
+                <MenuOptionsIcon />
+              </Button>
+            </template>
+            <template #popup>
+              <Menu :items="subMenuItems" />
+            </template>
+          </PopupController>
         </div>
 
         <!-- compact function buttons -->
@@ -100,36 +132,10 @@ export default {
           <Button
             compact
             function
+            class="toggle-active"
           >
             Function Menu
-          </Button>
-        </div>
-
-        <!-- active compact function buttons -->
-        <div class="align-horizontal">
-          <Button
-            active
-            compact
-            function
-            without-text
-          >
-            <MenuOptionsIcon />
-          </Button>
-
-          <Button
-            active
-            compact
-            function
-          >
-            <LensIcon />Function
-          </Button>
-          
-          <Button
-            active
-            compact
-            function
-          >
-            Function Menu
+            <DropdownIcon class="toggle-icon" />
           </Button>
         </div>
 
