@@ -60,20 +60,43 @@ export default {
     },
     data() {
         return {
-            selectedIndex: 0,
+            selectedIndex: -1,
+            invalidPossibleValueIds: [],
             optionLineHeight: 22
         };
     },
     computed: {
         ulSizeStyle() {
             return this.size > 0 ? { 'max-height': `${this.size * this.optionLineHeight}px` } : {};
+        },
+        selectableValues() {
+            return [...this.invalidPossibleValueIds.map(x => this.generateInvalidItem(x)), ...this.possibleValues];
+        }
+    },
+    watch: {
+        value(newValue) {
+            this.updateSelectedIndexAndInvalidValue(newValue);
         }
     },
     mounted() {
-        // update the selected index on start
-        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
+        this.updateSelectedIndexAndInvalidValue(this.value);
     },
     methods: {
+        updateSelectedIndexAndInvalidValue(val) {
+            // update the selected index on start
+            const idx = this.selectableValues.findIndex((item) => item.id === val);
+            // not found? but the value is truthy ?
+            if (idx === -1 && val) {
+                // generate and add invalid value
+                if (!this.invalidPossibleValueIds.includes(val)) {
+                    this.invalidPossibleValueIds.push(val);
+                }
+                // select invalid value
+                this.selectedIndex = this.selectableValues.findIndex((item) => item.id === val);
+            } else {
+                this.selectedIndex = idx;
+            }
+        },
         isCurrentValue(candidate) {
             return this.value === candidate;
         },
@@ -104,10 +127,10 @@ export default {
         },
         onArrowDown() {
             let next = this.selectedIndex + 1;
-            if (next >= this.possibleValues.length) {
+            if (next >= this.selectableValues.length) {
                 return;
             }
-            this.setSelected(this.possibleValues[next].id, next);
+            this.setSelected(this.selectableValues[next].id, next);
             this.scrollToCurrent();
         },
         onArrowUp() {
@@ -115,20 +138,20 @@ export default {
             if (next < 0) {
                 return;
             }
-            this.setSelected(this.possibleValues[next].id, next);
+            this.setSelected(this.selectableValues[next].id, next);
             this.scrollToCurrent();
         },
         onEndKey() {
-            let next = this.possibleValues.length - 1;
-            this.setSelected(this.possibleValues[next].id, next);
+            let next = this.selectableValues.length - 1;
+            this.setSelected(this.selectableValues[next].id, next);
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
             let next = 0;
-            this.setSelected(this.possibleValues[next].id, next);
+            this.setSelected(this.selectableValues[next].id, next);
             this.$refs.ul.scrollTop = 0;
         },
-        handleKeyDown(e)  {
+        handleKeyDown(e) {
             /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
@@ -150,16 +173,21 @@ export default {
         hasSelection() {
             return this.selectedIndex >= 0;
         },
+        validate() {
+            return !this.getCurrentItem().invalid;
+        },
         getCurrentItem() {
-            // does not use value as this might be something different set from outside but not part of possible values
-            try {
-                return this.possibleValues[this.selectedIndex];
-            } catch (e) {
-                return { id: '', text: '' };
-            }
+            return this.selectableValues[this.selectedIndex] || { id: ' ', text: ' ' };
+        },
+        generateInvalidItem(id) {
+            return {
+                id,
+                text: `${id} (MISSING)`,
+                invalid: true
+            };
         },
         generateOptionId(item) {
-            if (!item) {
+            if (!item || !item.id) {
                 return '';
             }
             let cleanId = item.id.replace(/[^\w]/gi, '');
@@ -181,14 +209,14 @@ export default {
       @keydown="handleKeyDown"
     >
       <li
-        v-for="(item, index) of possibleValues"
+        v-for="(item, index) of selectableValues"
         :id="generateOptionId(item)"
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'invalid': item.invalid }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
@@ -203,7 +231,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .listBox {
-  & .invalid {
+  &.invalid {
     position: relative;
 
     &::before {
@@ -250,6 +278,17 @@ export default {
     &.focused {
       background: var(--theme-color-masala);
       color: var(--theme-color-white);
+    }
+
+    /* invalid values */
+
+    &.invalid {
+      color: var(--theme-color-error);
+
+      &.focused {
+        background: var(--theme-color-error);
+        color: var(--theme-color-white);
+      }
     }
   }
 
