@@ -2,7 +2,7 @@
 import Checkbox from '../forms/Checkbox';
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
 
-const BLUR_TIMEOUT = 50;
+const BLUR_TIMEOUT = 1;
 
 export default {
     components: {
@@ -82,12 +82,11 @@ export default {
     },
     methods: {
         /**
-         * Returns the next HTML element from the list of options. If the current focused element is at an end of
-         * the list (either first [0], or last [focusOptions.length - 1]) this method will return the the opposite
-         * end ([focusOptions.length - 1] or [0] respectively).
+         * Returns the next HTML element from the list of items. If the current focused element is at the top or bottom
+         * of the list, this method will return the opposite end.
          *
          * @param {Number} changeInd - the positive or negative index shift for the next element (usually 1 || -1).
-         * @returns {Element} - the next option Element in the list of options.
+         * @returns {Element} - the next option element in the list of options.
          */
         getNextElement(changeInd) {
             return this.focusOptions[this.focusOptions.indexOf(document.activeElement) + changeInd] || (changeInd < 0
@@ -150,7 +149,7 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (this.focusOptions.indexOf(document.activeElement) === -1) {
+                if (!this.focusOptions.includes(document.activeElement)) {
                     this.closeOptions(false);
                 }
             }, BLUR_TIMEOUT);

@@ -1,5 +1,5 @@
 <script>
-const BLUR_TIMEOUT = 50;
+const BLUR_TIMEOUT = 1;
 
 export default {
     props: {
@@ -40,8 +40,7 @@ export default {
             type: String
         },
         /**
-         * Alignment of the submenu with the menu button
-         * left or right. Defaults to 'right'.
+         * Alignment of the submenu with the menu button left or right. Defaults to 'right'.
          */
         orientation: {
             type: String,
@@ -73,12 +72,11 @@ export default {
     },
     methods: {
         /**
-         * Returns the next HTML element from the list of items. If the current focused element is at an end of
-         * the list (either first [0], or last [listItems.length - 1]) this method will return the the opposite
-         * end ([listItems.length - 1] or [0] respectively).
+         * Returns the next HTML element from the list of items. If the current focused element is at the top or bottom
+         * of the list, this method will return the opposite end.
          *
          * @param {Number} changeInd - the positive or negative index shift for the next element (usually 1 || -1).
-         * @returns {Element} - the next option Element in the list of items.
+         * @returns {Element} - the next option element in the list of items.
          */
         getNextElement(changeInd) {
             return this.listItems[this.listItems.indexOf(document.activeElement) + changeInd] || (changeInd < 0
@@ -86,13 +84,9 @@ export default {
                 : this.listItems[0]);
         },
         /**
-         * Handle item click.
-         *
-         * Items can behave as links (either nuxt or native <a>) or
-         * buttons. If button behavior is expected, we want to prevent
-         * bubbling, as well as blur/focus out events. For keyboard
-         * navigation, links and buttons need to be treated differently.
-         * Buttons should react on 'space' and links on 'enter'.
+         * Items can behave as links (either nuxt or native <a>) or buttons. If button behavior is expected, we want to
+         * prevent bubbling, as well as blur/focus out events. For keyboard navigation, links and buttons need to be
+         * treated differently. Buttons should react on 'space' and links on 'enter'.
          *
          * @param {Object} event - browser event.
          * @param {Object} item - submenu item which was clicked.
@@ -112,10 +106,9 @@ export default {
                 if (event.code === 'Space') {
                     return;
                 }
-                /* Handle "Enter" on links. Nuxt-link with `to: { name:
-                'namedRoute' }` do not have an href property and will
-                not automatically react to keyboard events. We must
-                trigger the click to activate the nuxt eventListener. */
+                /* Handle "Enter" on links. Nuxt-link with `to: { name: 'namedRoute' }` do not have an href property
+                and will not automatically react to keyboard events. We must trigger the click to activate the nuxt
+                event listener. */
                 let newEvent = new Event('click');
                 event.target.dispatchEvent(newEvent);
             }
@@ -141,11 +134,11 @@ export default {
         },
         /* Handle focus leaving events.
          *
-         * NOTE: focusout bubbles, so we can use this event to close menu.
+         * NOTE: focusOut bubbles, so we can use this event to close menu.
          */
         onFocusOut() {
             setTimeout(() => {
-                if (this.listItems.indexOf(document.activeElement) === -1) {
+                if (!this.listItems.includes(document.activeElement)) {
                     this.closeMenu(false);
                 }
             }, BLUR_TIMEOUT);
