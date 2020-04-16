@@ -2,8 +2,6 @@
 import PopupController from '../components/PopupController';
 import Menu from '../components/Menu';
 
-const BLUR_TIMEOUT = 200; // ms
-
 export default {
     components: {
         PopupController,
@@ -94,7 +92,7 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-button {
+.submenu-toggle {
   display: block;
   color: inherit;
   font-weight: inherit;

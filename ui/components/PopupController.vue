@@ -61,7 +61,7 @@ export default {
   <div :class="[{ disabled }, 'popup']">
     <!-- The @click is required by Firefox -->
     <div
-      class="popup-toggle"
+      class="popup-toggle-container"
       aria-haspopup="true"
       tabindex="0"
       @click="e => { e.currentTarget.focus(); }"
@@ -82,7 +82,9 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.popup-toggle {
+.popup-toggle-container {
+  height: 100%;
+
   &:active,
   &:hover,
   &:focus {
@@ -135,7 +137,7 @@ export default {
   }
 
   &:focus-within .popup-content,
-  & .popup-toggle:focus + .popup-content { /* only for IE/Edge */
+  & .popup-toggle-container:focus + .popup-content { /* only for IE/Edge */
     display: block;
   }
 }
