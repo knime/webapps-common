@@ -123,5 +123,21 @@ export default {
   & .popup-toggle-container:focus + .popup-content { /* only for IE/Edge */
      display: block;
   }
+
+  &:focus-within .popup-toggle-container,
+  & .popup-toggle-container:focus { /* only for IE/Edge */
+    & >>> .toggle-icon {
+      transform: scaleY(-1);
+    }
+
+    & >>> .toggle-active {
+      color: var(--theme-color-white);
+      background-color: var(--theme-color-masala);
+
+      & svg {
+        stroke: var(--theme-color-white);
+      }
+    }
+  }
 }
 </style>
