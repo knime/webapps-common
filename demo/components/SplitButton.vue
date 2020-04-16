@@ -131,7 +131,7 @@ export default {
               :items="subMenuItems"
               class="submenu"
               button-title="Open my submenu with icons"
-              orientation="left"
+              orientation="right"
             >
               <DropdownIcon />
             </SubMenu>
@@ -158,8 +158,13 @@ h4 {
   &:hover {
     background-color: var(--theme-color-masala);
 
-    & button svg {
-      stroke: var(--theme-color-white);
+    & .toggle-button {
+      background-color: var(--theme-color-masala);
+      color: var(--theme-color-white);
+
+      & svg {
+        stroke: var(--theme-color-white);
+      }
     }
   }
 }

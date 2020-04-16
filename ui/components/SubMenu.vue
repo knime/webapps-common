@@ -77,7 +77,7 @@ export default {
     <template #toggle>
       <button
         :title="buttonTitle"
-        class="submenu-toggle"
+        class="submenu-toggle toggle-button"
       >
         <slot />
       </button>

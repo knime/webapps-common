@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="split-button">
     <slot />
   </div>
 </template>
@@ -7,10 +7,10 @@
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
+.split-button {
   display: inline-flex;
 
-  & >>> .button {
+  & > *:first-child {
     position: relative;
     margin-bottom: 0;
     border-radius: 9999px 0 0 9999px;
@@ -27,8 +27,9 @@ div {
     }
   }
 
+  &:active,
   &:hover,
-  &:focus-within {
+  &:focus-within { /* TODO: good behaviour? */
     & >>> .button {
       &::after {
         display: none;
@@ -36,14 +37,25 @@ div {
     }
   }
 
-  & >>> .submenu {
+  & >>> .popup {
     border-radius: 0 9999px 9999px 0;
 
-    & .submenu-toggle {
+    & .toggle-button {
       width: 32px;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+
+      /* display: block; */
+      color: inherit;
+      font-weight: inherit;
+      background: transparent;
+      padding: 0;
+      border: 0 none;
+      text-decoration: none;
+      cursor: pointer;
+
 
       & svg {
         width: 14px;
@@ -51,11 +63,6 @@ div {
         stroke-width: calc(32px / 14);
         stroke: var(--theme-color-masala);
       }
-    }
-
-    & ul {
-      margin-left: 50%;
-      margin-top: 80%;
     }
   }
 }
