@@ -60,7 +60,7 @@ export default {
     },
     computed: {
         /**
-         * @returns {Array} - HTML elements to use for focus and events.
+         * @returns {Array<Element>} - HTML Elements to use for focus and events.
          */
         focusOptions() {
             return this.$refs.option.map(el => el.$el && el.$el.firstChild);
@@ -82,11 +82,11 @@ export default {
     },
     methods: {
         /**
-         * Returns the next HTML element from the list of items. If the current focused element is at the top or bottom
+         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
          * of the list, this method will return the opposite end.
          *
-         * @param {Number} changeInd - the positive or negative index shift for the next element (usually 1 || -1).
-         * @returns {Element} - the next option element in the list of options.
+         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
+         * @returns {Element} - the next option Element in the list of options.
          */
         getNextElement(changeInd) {
             return this.focusOptions[this.focusOptions.indexOf(document.activeElement) + changeInd] || (changeInd < 0
@@ -120,8 +120,7 @@ export default {
         /**
          * Handle closing the options.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button should
-         *    be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
          * @return {undefined}
          */
         closeOptions(refocusToggle = true) {
@@ -159,12 +158,15 @@ export default {
 </script>
 
 <template>
+  <!-- "@mousedown.prevent.stop" is needed to prevent blur/focus events from being triggered advertently by "mousedown"
+  events bubbling which can quickly and temporarily shift focus to <body>. This lets us reduce the timeout needed. -->
   <div
     :class="['multiselect', { collapsed, invalid: !isValid }]"
     @keydown.esc.stop.prevent="closeOptions"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
     @focusout.stop="onFocusOut"
+    @mousedown.prevent.stop=""
   >
     <div
       ref="toggle"

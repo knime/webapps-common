@@ -64,7 +64,7 @@ export default {
     },
     computed: {
         /**
-         * @returns {Array} - HTML elements to use for focus and events.
+         * @returns {Array<Element>} - HTML Elements to use for focus and events.
          */
         listItems() {
             return this.$refs.listItem.map(el => el.$el || el);
@@ -72,11 +72,11 @@ export default {
     },
     methods: {
         /**
-         * Returns the next HTML element from the list of items. If the current focused element is at the top or bottom
+         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
          * of the list, this method will return the opposite end.
          *
-         * @param {Number} changeInd - the positive or negative index shift for the next element (usually 1 || -1).
-         * @returns {Element} - the next option element in the list of items.
+         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
+         * @returns {Element} - the next option Element in the list of items.
          */
         getNextElement(changeInd) {
             return this.listItems[this.listItems.indexOf(document.activeElement) + changeInd] || (changeInd < 0
@@ -134,7 +134,7 @@ export default {
         },
         /* Handle focus leaving events.
          *
-         * NOTE: focusOut bubbles, so we can use this event to close menu.
+         * NOTE: focusout bubbles, so we can use this event to close menu.
          */
         onFocusOut() {
             setTimeout(() => {
@@ -146,8 +146,7 @@ export default {
         /**
          * Handle closing the menu.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button should
-         *    be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
          * @return {undefined}
          */
         closeMenu(refocusToggle = true) {
