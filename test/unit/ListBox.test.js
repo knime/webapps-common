@@ -81,7 +81,6 @@ describe('ListBox.vue', () => {
         expect(wrapper.vm.validate()).toBe(true);
     });
 
-
     it('renders invalid value', () => {
         let value = 'non-valid';
         const wrapper = mount(ListBox, {
@@ -136,7 +135,6 @@ describe('ListBox.vue', () => {
         });
 
     });
-
 
     it('sets the correct aria-* attributes', () => {
         const wrapper = mount(ListBox, {
