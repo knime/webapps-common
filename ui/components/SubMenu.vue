@@ -113,10 +113,12 @@ export default {
                 event.target.dispatchEvent(newEvent);
             }
             this.$emit('item-click', event, item, this.id);
-            this.closeMenu();
         },
         toggleMenu() {
             this.expanded = !this.expanded;
+            setTimeout(() => {
+                this.$refs['submenu-toggle'].focus();
+            }, BLUR_TIMEOUT);
         },
         /* Handle arrow key "up" events. */
         onUp() {
@@ -156,6 +158,15 @@ export default {
                     this.$refs['submenu-toggle'].focus();
                 }
             }, BLUR_TIMEOUT);
+        },
+        /*
+         * Manually prevents default event bubbling and propagation for methods which fire blur/focusout events that
+         * interfere with the refocusing behavior. This allows the timeout to be set extremely low.
+         */
+        onPreventEvent(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
         }
     }
 };
@@ -169,9 +180,8 @@ export default {
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
     @focusout.stop="onFocusOut"
+    @mousedown="onPreventEvent"
   >
-    <!--"@keydown.enter.self.prevent" needed to silence enter key events which incorrectly fire w/ @click.
-      On native <button> elem, click event cannot be differentiated as enter or click (Vue issue).-->
     <button
       ref="submenu-toggle"
       aria-haspopup="true"
@@ -182,8 +192,7 @@ export default {
       :aria-expanded="expanded"
       :disabled="disabled"
       @click.stop.prevent="toggleMenu"
-      @keydown.space.stop.prevent="toggleMenu"
-      @keydown.enter.self.prevent=""
+      @keydown.enter="onPreventEvent"
     >
       <slot />
     </button>

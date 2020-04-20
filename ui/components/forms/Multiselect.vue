@@ -113,6 +113,9 @@ export default {
         },
         toggle() {
             this.collapsed = !this.collapsed;
+            setTimeout(() => {
+                this.$refs.toggle.focus();
+            }, BLUR_TIMEOUT);
         },
         isChecked(itemId) {
             return this.checkedValue.indexOf(itemId) > -1;
@@ -152,21 +155,28 @@ export default {
                     this.closeOptions(false);
                 }
             }, BLUR_TIMEOUT);
+        },
+        /*
+         * Manually prevents default event bubbling and propagation for mousedown which can fire blur events that
+         * interfere with the refocusing behavior. This allows the timeout to be set extremely low.
+         */
+        onMousedown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
         }
     }
 };
 </script>
 
 <template>
-  <!-- "@mousedown.prevent.stop" is needed to prevent blur/focus events from being triggered advertently by "mousedown"
-  events bubbling which can quickly and temporarily shift focus to <body>. This lets us reduce the timeout needed. -->
   <div
     :class="['multiselect', { collapsed, invalid: !isValid }]"
     @keydown.esc.stop.prevent="closeOptions"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
     @focusout.stop="onFocusOut"
-    @mousedown.prevent.stop
+    @mousedown="onMousedown"
   >
     <div
       ref="toggle"

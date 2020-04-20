@@ -138,7 +138,7 @@ describe('Submenu.vue', () => {
                 expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).toHaveBeenCalled();
+                expect(closeMenuMock).not.toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
                 expect(fakeEvent.stopPropagation).not.toHaveBeenCalled();
@@ -216,7 +216,7 @@ describe('Submenu.vue', () => {
                 expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).toHaveBeenCalled();
+                expect(closeMenuMock).not.toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).toHaveBeenCalled();
                 expect(fakeEvent.stopPropagation).toHaveBeenCalled();
@@ -519,17 +519,6 @@ describe('Submenu.vue', () => {
             closingMenuWrapper.setData({ expanded: true });
             expect(closingMenuWrapper.vm.expanded).toBe(true);
             closingMenuWrapper.find('.submenu-toggle').trigger('click');
-
-            expect(toggleMenuMock).toHaveBeenCalled();
-            expect(closingMenuWrapper.vm.expanded).toBe(false);
-        });
-
-        it('closes menu with space key', () => {
-            let toggleMenuMock = jest.spyOn(closingMenuWrapper.vm, 'toggleMenu');
-            expect(closingMenuWrapper.vm.expanded).toBe(false);
-            closingMenuWrapper.setData({ expanded: true });
-            expect(closingMenuWrapper.vm.expanded).toBe(true);
-            closingMenuWrapper.find('.submenu-toggle').trigger('keydown.space');
 
             expect(toggleMenuMock).toHaveBeenCalled();
             expect(closingMenuWrapper.vm.expanded).toBe(false);
