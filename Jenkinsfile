@@ -7,6 +7,10 @@ def BN = BRANCH_NAME == "master" || BRANCH_NAME.startsWith("releases/") ? BRANCH
 
 library "knime-pipeline@$BN"
 
+properties([
+  buildDiscarder(logRotator(numToKeepStr: '20'))
+])
+
 timeout(time: 15, unit: 'MINUTES') {
   try {
     node('nodejs') {
@@ -18,7 +22,7 @@ timeout(time: 15, unit: 'MINUTES') {
       stage('Checkout Sources') {
         env.lastStage = env.STAGE_NAME
         checkout scm
-      knimetools.reportJIRAIssues()
+        knimetools.reportJIRAIssues()
       }
 
       stage('Install npm Dependencies') {
@@ -68,12 +72,12 @@ timeout(time: 15, unit: 'MINUTES') {
         }
       }
     }
-    
+
   } catch (ex) {
     currentBuild.result = 'FAILED'
     throw ex
   } finally {
     notifications.notifyBuild(currentBuild.result);
   }
-  
+
 }

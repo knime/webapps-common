@@ -84,7 +84,7 @@ describe('Dropdown.vue', () => {
         });
 
         let button = wrapper.find('[role=button]');
-        expect(button.text()).toBe('no (invalid)');
+        expect(button.text()).toBe('no (MISSING)');
     });
 
     it('renders invalid style', () => {
