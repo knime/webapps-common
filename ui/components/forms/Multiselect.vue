@@ -166,7 +166,7 @@ export default {
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
     @focusout.stop="onFocusOut"
-    @mousedown.prevent.stop=""
+    @mousedown.prevent.stop
   >
     <div
       ref="toggle"
