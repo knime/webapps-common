@@ -1,5 +1,6 @@
 import Message from '~/ui/components/Message';
 import Button from '~/ui/components/Button';
+import Collapser from '~/ui/components/Collapser';
 import { shallowMount } from '@vue/test-utils';
 import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
 import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
@@ -7,6 +8,7 @@ import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 
 describe('Message.vue', () => {
     let wrapper;
+    let copyText = jest.fn();
 
     it('renders default', () => {
         wrapper = shallowMount(Message);
@@ -14,6 +16,7 @@ describe('Message.vue', () => {
         expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find(InfoIcon).exists()).toBe(true);
         expect(wrapper.find('span.close').exists()).toBe(true);
+        expect(wrapper.find('.hide-collapser').exists()).toBe(true);
     });
 
     it('renders success', () => {
@@ -81,4 +84,19 @@ describe('Message.vue', () => {
         expect(wrapper.find('.message-count').exists()).toBe(true);
         expect(wrapper.find('.message-count').isVisible()).toBe(true);
     });
+
+    it('renders collapser', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                details: 'test message'
+            }
+        });
+        expect(copyText).not.toHaveBeenCalled();
+        console.log(wrapper.html())
+        wrapper.find('.copy-button').trigger('click');
+        expect(wrapper.emitted('handle-copy')).toBeTruthy();
+        expect(wrapper.find('.hide-collapser').exists()).toBe(false);
+        expect(wrapper.find('#detail-text').text()).toEqual('test message');
+    })
 });

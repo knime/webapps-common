@@ -37,6 +37,8 @@ export default {
       :type="message.type.toLowerCase()"
       :count="message.count"
       :button="message.button"
+      :details="message.details"
+      @copied="$emit('copied')"
       @dismiss="$emit('dismiss', message.id)"
     >
       <Component

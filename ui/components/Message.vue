@@ -1,6 +1,9 @@
 <script>
 import CloseIcon from '../assets/img/icons/close.svg?inline';
+import CopyIcon from '../assets/img/icons/copy.svg?inline';
 import Button from './Button';
+import Collapser from './Collapser';
+import { copyText } from '../../util/copyText';
 
 /**
  * Message banner component with close button
@@ -8,7 +11,9 @@ import Button from './Button';
 export default {
     components: {
         CloseIcon,
-        Button
+        CopyIcon,
+        Button,
+        Collapser
     },
     props: {
         /**
@@ -34,7 +39,16 @@ export default {
         count: {
             type: Number,
             default: 1
+        },
+        details: {
+          type: String,
+          default: ''
         }
+    },
+    computed: {
+      hasNoDetails() {
+        return this.details.length === 0;
+      }
     },
     data() {
         return {
@@ -50,9 +64,14 @@ export default {
              * The embedding component should use this to clean up the instance.
              * Otherwise the message will be visually hidden, but still in memory.
              *
-             * @event success
+             * @event dismiss
              */
             this.$emit('dismiss');
+        },
+        copyMessage() {
+            let text = document.getElementById('detail-text').innerHTML;
+            copyText(text);
+            this.$emit('copied');
         }
     }
 };
@@ -65,6 +84,8 @@ export default {
   >
     <div class="grid-container">
       <em class="grid-item-12">
+        <Collapser :class="[{'hide-collapser': hasNoDetails}, 'collapser']">
+        <template slot="title">
         <!-- @slot Use this slot to add an icon. -->
         <slot name="icon" />
         <span class="message">
@@ -94,13 +115,21 @@ export default {
         >
           <CloseIcon />
         </span>
+        </template>
+        <div class="details">
+          <span id="detail-text">
+            {{details}}Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+          </span>
+          <div class="copy-button" title="Copy to clipboard" @click="copyMessage"><CopyIcon/></div>
+        </div>
+        </Collapser>
       </em>
     </div>
   </section>
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables/colors";
+@import "webapps-common/ui/css/variables";
 
 .message-count {
   padding: 3px 7.5px;
@@ -174,6 +203,8 @@ em {
   & .close {
     display: flex;
     align-items: center;
+    position: absolute;
+    right: 0;
 
     & svg {
       margin-right: 0;
@@ -181,7 +212,106 @@ em {
       width: 18px;
       stroke-width: calc(32px / 18);
       cursor: pointer;
+      top: 5px;
     }
+  }
+}
+
+.collapser {
+  width: 100%;
+
+  & >>> button {
+    display: flex;
+    align-content: center;
+
+    & .dropdown-icon {
+      stroke: var(--theme-color-white);
+      top: 5px;
+      right: 28px;
+    }
+  }
+
+  & >>> .panel {
+    width: 100vw;
+    background-color: var(--theme-color-white);
+    opacity: 0.9;
+    min-height: 50px;
+    max-height: 100px;
+    margin-bottom: -15px;
+    display: flex;
+    align-content: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    margin-left: calc(-3*var(--grid-gap-width));
+    padding-left: calc(3*var(--grid-gap-width));
+    padding-right: calc(3*var(--grid-gap-width));
+    position: relative;
+
+      &::before {
+        content: '';
+        display: block;
+        background: lime;
+        width: 100vw;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        height: auto;
+        left: 0;
+      }
+
+    & .details {
+      display: flex;
+      justify-content: space-between;
+      overflow-y: auto;
+      width: 100%;
+      max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
+
+
+      & #detail-text {
+        display: inline-block;
+        color: var(--theme-color-masala);
+        font-size: 13px;
+        font-weight: 300;
+        line-height: 18px;
+        margin: auto 0;
+        max-width: 66%;
+      }
+
+      & .copy-button{
+        border-radius: 50%;
+        height: 30px;
+        width: 30px;
+        text-align: center;
+        margin-right: 14px; /* line-up with dropdown icon */
+
+        &:hover {
+          background-color: var(--theme-color-silver-sand-semi);
+        }
+
+        & svg {
+          margin: auto;
+          stroke: var(--theme-color-dove-gray);
+          height: 18px;
+          width: 18px;
+          stroke-width: calc(32px / 18);
+          vertical-align: middle;
+          margin-top: 3px;
+        }
+      }
+    }
+  }
+}
+
+.hide-collapser {
+  pointer-events: none;
+
+  & .close {
+    pointer-events: all;
+  }
+
+  & >>> .dropdown-icon {
+    display: none;
   }
 }
 </style>

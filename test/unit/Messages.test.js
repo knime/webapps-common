@@ -18,7 +18,8 @@ const messages = [
         type: 'info',
         button: 'Okay',
         icon: SuccessIcon,
-        id: 3
+        id: 3,
+        details: 'test detail text'
     }
 ];
 
@@ -40,10 +41,13 @@ describe('Messages.vue', () => {
             if (message.icon) {
                 expect(element.find(message.icon).exists()).toBe(true);
             }
+            if (message.details) {
+                expect(element.props('details')).toEqual(message.details);
+            }
             expect(element.text()).toContain(message.message);
         });
     });
-    
+
     it('renders no message when there is no notification', () => {
         wrapper = shallowMount(Messages);
 
