@@ -4,9 +4,7 @@ import Button from '../../ui/components/Button';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
-import SplitButton from '../../ui/components/SplitButton';
-import SubMenu from '../../ui/components/SubMenu';
-
+import DropdownIcon from '../../ui/assets/img/icons/arrow-dropdown.svg?inline';
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>
@@ -23,7 +21,7 @@ export default {
         Button,
         MenuOptionsIcon,
         LensIcon,
-        SubMenu,
+        DropdownIcon,
         CodeExample
     },
     data() {
@@ -52,31 +50,20 @@ export default {
 
           <Button function><LensIcon />Function</Button>
           
-          <Button function>Function Menu</Button>
-        </div>
-
-        <!-- active function buttons -->
-        <div class="align-horizontal">
-          <Button
-            function
-            without-text
-            active
-          >
-            <MenuOptionsIcon />
-          </Button>
-
-          <Button
-            function
-            active
-          >
-            <LensIcon />Function
-          </Button>
           
           <Button
             function
-            active
           >
             Function Menu
+            <DropdownIcon class="toggle-icon" />
+          </Button>
+
+          <Button
+            function
+            class="toggle-active"
+          >
+            Opened Menu
+            <DropdownIcon class="toggle-icon" />
           </Button>
         </div>
 
@@ -94,42 +81,24 @@ export default {
             compact
             function
           >
-            <LensIcon />Function
+            <LensIcon />Compact function
           </Button>
           
           <Button
             compact
             function
           >
-            Function Menu
-          </Button>
-        </div>
-
-        <!-- active compact function buttons -->
-        <div class="align-horizontal">
-          <Button
-            active
-            compact
-            function
-            without-text
-          >
-            <MenuOptionsIcon />
+            compact function menu
+            <DropdownIcon class="toggle-icon" />
           </Button>
 
           <Button
-            active
             compact
             function
+            class="toggle-active"
           >
-            <LensIcon />Function
-          </Button>
-          
-          <Button
-            active
-            compact
-            function
-          >
-            Function Menu
+            opened compact menu
+            <DropdownIcon class="toggle-icon" />
           </Button>
         </div>
 
@@ -153,8 +122,17 @@ export default {
   }
 }
 
-.background {
-  padding: 10px 10px;
-  background: var(--theme-color-masala);
+.toggle-active,
+.button.toggle-active:hover {
+  color: var(--theme-color-white);
+  background-color: var(--theme-color-masala);
+
+  & svg {
+    stroke: var(--theme-color-white);
+
+    &.toggle-icon {
+      transform: scaleY(-1);
+    }
+  }
 }
 </style>
