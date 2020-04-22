@@ -121,7 +121,7 @@ export default {
     :disabled="disabled"
     @click="onClick"
     @keydown.space="onClick"
-    @keydown.enter.self.prevent=""
+    @keydown.enter.self.prevent
   >
     <slot />
   </button>

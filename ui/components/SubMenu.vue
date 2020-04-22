@@ -185,7 +185,6 @@ export default {
     <button
       ref="submenu-toggle"
       aria-haspopup="true"
-      tabindex="0"
       type="button"
       :title="buttonTitle"
       :class="['submenu-toggle', { expanded }]"
