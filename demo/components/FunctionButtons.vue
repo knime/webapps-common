@@ -6,15 +6,14 @@ import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
 import DropdownIcon from '../../ui/assets/img/icons/arrow-dropdown.svg?inline';
 
-const codeExample = `<Button>Button</Button>
-<Button with-border>Button with border</Button>
-<Button with-border on-dark>Button with border on dark</Button>
-<Button primary>Primary button</Button>
-<Button primary on-dark>Primary button on dark</Button>
+const codeExample =
+`<Button function without-text><MenuOptionsIcon /></Button>
+<Button function><LensIcon />Function</Button>
+<Button function>Function Menu<DropdownIcon class="toggle-icon" /></Button>
 
-<Button compact>Button compact</Button>
-<Button><PlayIcon />Button with icon</Button>
-<Button disabled>Button disabled</Button>`;
+<Button compact function without-text><MenuOptionsIcon /></Button>
+<Button compact function><LensIcon />Compact function</Button>
+<Button compact function>Compact function menu<DropdownIcon class="toggle-icon" /></Button>`;
 
 export default {
     components: {
@@ -102,8 +101,7 @@ export default {
           </Button>
         </div>
 
-        <!-- <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample> -->
+        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
       </div>
     </div>
   </section>
