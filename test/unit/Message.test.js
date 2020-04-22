@@ -96,4 +96,30 @@ describe('Message.vue', () => {
         expect(wrapper.find('.show-collapser').exists()).toBe(true);
         expect(wrapper.find('#detail-text').text()).toEqual('test message');
     });
+
+    it('closes', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                count: 2
+            }
+        });
+        expect(wrapper.vm.active).toBe(true);
+        wrapper.find('.close').trigger('click');
+        expect(wrapper.vm.active).toBe(false);
+        expect(wrapper.emitted('dismiss')).toBeTruthy();
+    });
+
+    it('closes on space key', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                count: 2
+            }
+        });
+        expect(wrapper.vm.active).toBe(true);
+        wrapper.find('.close').trigger('keydown.space');
+        expect(wrapper.vm.active).toBe(false);
+        expect(wrapper.emitted('dismiss')).toBeTruthy();
+    });
 });
