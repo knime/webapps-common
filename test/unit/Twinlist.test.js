@@ -1,4 +1,4 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 
 import Twinlist from '~/ui/components/forms/Twinlist';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
@@ -441,35 +441,7 @@ describe('Twinlist.vue', () => {
         });
     });
 
-    it('clears selection of the other side', () => {
-        const mountOptions = {
-            propsData: {
-                possibleValues: defaultPossibleValues,
-                value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
-            },
-            stubs: {
-                MultiselectListBox: {
-                    template: '<div />',
-                    methods: {
-                        clearSelection: jest.fn()
-                    }
-                }
-            }
-        };
-
-        const wrapper = shallowMount(Twinlist, mountOptions);
-
-        let clearSelection = mountOptions.stubs.MultiselectListBox.methods.clearSelection;
-
-        expect(clearSelection).not.toBeCalled();
-        wrapper.vm.onLeftInput(['test1']);
-        wrapper.vm.onRightInput(['test2']);
-        expect(clearSelection).toBeCalledTimes(2);
-    });
-
-    it('clears selection of the other side', () => {
+    it('clears selection of the other side on select', () => {
         const mountOptions = {
             propsData: {
                 possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
