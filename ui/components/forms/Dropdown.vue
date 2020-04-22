@@ -84,7 +84,7 @@ export default {
             } else if (this.displayTextMap.hasOwnProperty(this.value)) {
                 return this.displayTextMap[this.value];
             } else {
-                return `${this.value} (invalid)`;
+                return `${this.value} (MISSING)`;
             }
         }
     },
@@ -296,10 +296,10 @@ export default {
   & [role=button] {
     margin: 0;
     border: 1px solid var(--theme-color-stone-gray);
-    padding: 10px 38px 10px 10px;
+    padding: 0 38px 0 10px;
     font-size: 13px;
     height: 40px;
-    line-height: 19px;
+    line-height: 40px; /* to center text vertically */
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
@@ -328,7 +328,7 @@ export default {
     right: 10px;
     top: 11px;
     pointer-events: none;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.2s ease-in-out;
   }
 
   &:not(.collapsed) .icon {

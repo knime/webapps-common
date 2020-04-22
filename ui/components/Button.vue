@@ -16,11 +16,6 @@ export default {
             type: String,
             default: ''
         },
-        // to pass-trough all other props
-        optionalProps: {
-            type: Object,
-            default: () => ({})
-        },
         /**
          * show button with border
          */
@@ -88,6 +83,10 @@ export default {
     methods: {
         // eslint-disable-next-line consistent-return
         onClick(e) {
+            /* anchor tags can act as buttons without href and space key should work */
+            if (e.code === 'Space' && this.href) {
+                return false;
+            }
             /**
              * Click event. Fired when the button is clicked.
              *
@@ -109,24 +108,33 @@ export default {
     v-if="component === 'nuxt-link'"
     :to="to"
     :class="classes"
-    v-bind="optionalProps"
     :event="preventDefault ? [] : 'click'"
     @click.native="onClick"
   >
     <slot />
   </nuxt-link>
-
-  <Component
-    :is="component"
-    v-else
-    :href="href || null"
+  <!--"@keydown.enter.self.prevent" needed to silence 'enter' key events which incorrectly fire w/ @click.
+    On native <button> elem, click event cannot be differentiated as enter or click (Vue issue). -->
+  <button
+    v-else-if="component === 'button'"
     :class="classes"
-    v-bind="optionalProps"
-    :disabled="component === 'button' ? disabled : null"
+    :disabled="disabled"
     @click="onClick"
+    @keydown.space="onClick"
+    @keydown.enter.self.prevent
   >
     <slot />
-  </Component>
+  </button>
+  <a
+    v-else
+    :href="href"
+    :class="classes"
+    @click="onClick"
+    @keydown.enter="onClick"
+    @keydown.space="onClick"
+  >
+    <slot />
+  </a>
 </template>
 
 <style lang="postcss" scoped>
@@ -180,7 +188,8 @@ export default {
   }
 
   &:active,
-  &:hover {
+  &:hover,
+  &:focus {
     outline: none;
     color: var(--theme-color-masala);
 
@@ -211,7 +220,9 @@ export default {
   &.primary,
   &.with-border {
     &:active,
-    &:hover {
+    &:hover,
+    &:focus {
+      outline: none;
       color: var(--theme-color-white);
       background-color: var(--theme-color-masala);
 
@@ -235,7 +246,9 @@ export default {
     &.primary,
     &.with-border {
       &:active,
-      &:hover {
+      &:hover,
+      &:focus {
+        outline: none;
         background-color: var(--theme-color-white);
         color: var(--theme-color-masala);
 
@@ -246,7 +259,9 @@ export default {
     }
 
     &:active,
-    &:hover {
+    &:hover,
+    &:focus {
+      outline: none;
       background-color: var(--theme-color-white);
     }
   }

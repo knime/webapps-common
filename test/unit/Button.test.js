@@ -88,6 +88,56 @@ describe('Button.vue', () => {
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 
+    it('emits event on space key if button', () => {
+        let wrapper = shallowMount(Button);
+        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
+        wrapper.trigger('keydown.space', {
+            code: 'Space'
+        });
+        expect(onClickSpy).toHaveBeenCalled();
+        expect(wrapper.emitted('click')).toBeTruthy();
+    });
+
+    it('does not emit event on enter key if button', () => {
+        let wrapper = shallowMount(Button);
+        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
+        wrapper.trigger('keydown.enter', {
+            code: 'Enter'
+        });
+        expect(onClickSpy).not.toHaveBeenCalled();
+        expect(wrapper.emitted('click')).toBeFalsy();
+    });
+
+    it('emits event on enter key if link', () => {
+        let wrapper = shallowMount(Button, {
+            propsData: {
+                href: 'testhref',
+                id: 'testId'
+            }
+        });
+        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
+        wrapper.trigger('keydown.enter', {
+            code: 'Enter'
+        });
+        expect(onClickSpy).toHaveBeenCalled();
+        expect(wrapper.emitted('click')).toBeTruthy();
+    });
+
+    it('does not emit event on space key if link', () => {
+        let wrapper = shallowMount(Button, {
+            propsData: {
+                href: 'testhref',
+                id: 'testId'
+            }
+        });
+        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
+        wrapper.trigger('keydown.space', {
+            code: 'Space'
+        });
+        expect(onClickSpy).toHaveBeenCalled();
+        expect(wrapper.emitted('click')).toBeFalsy();
+    });
+
     it('allows preventing default', () => {
         let wrapper = shallowMount(Button, {
             propsData: {

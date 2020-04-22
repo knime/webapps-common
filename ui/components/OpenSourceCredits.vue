@@ -139,10 +139,6 @@ dl {
     border: none;
     background-color: transparent;
 
-    &:active {
-      color: inherit;
-    }
-
     & svg {
       position: relative;
       top: 3px;
@@ -153,6 +149,15 @@ dl {
     }
   }
 
+  & button:active,
+  & button:hover,
+  & button:focus,
+  & >>> a:focus,
+  & >>> a:hover {
+    outline: none;
+    font-weight: 400;
+  }
+
   &.open {
     & svg {
       transform: rotate(90deg);
@@ -160,6 +165,10 @@ dl {
 
     & .details {
       display: block;
+
+      & pre {
+        white-space: pre-wrap;
+      }
     }
   }
 }

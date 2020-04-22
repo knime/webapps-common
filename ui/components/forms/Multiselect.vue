@@ -1,14 +1,14 @@
 <script>
 import Checkbox from '../forms/Checkbox';
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
-import { mixin as clickaway } from 'vue-clickaway';
+
+const BLUR_TIMEOUT = 1;
 
 export default {
     components: {
         Checkbox,
         DropdownIcon
     },
-    mixins: [clickaway],
     props: {
         /**
          * List of possible values. Each item must have an `id` and a `text` property, and optionally a `selectedText`
@@ -59,6 +59,12 @@ export default {
         };
     },
     computed: {
+        /**
+         * @returns {Array<Element>} - HTML Elements to use for focus and events.
+         */
+        focusOptions() {
+            return this.$refs.option.map(el => el.$el && el.$el.firstChild);
+        },
         optionText() {
             if (this.checkedValue.length === 0) {
                 return this.placeholder;
@@ -75,6 +81,18 @@ export default {
         }
     },
     methods: {
+        /**
+         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
+         * of the list, this method will return the opposite end.
+         *
+         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
+         * @returns {Element} - the next option Element in the list of options.
+         */
+        getNextElement(changeInd) {
+            return this.focusOptions[this.focusOptions.indexOf(document.activeElement) + changeInd] || (changeInd < 0
+                ? this.focusOptions[this.focusOptions.length - 1]
+                : this.focusOptions[0]);
+        },
         onInput(value, toggled) {
             if (toggled) {
                 if (this.checkedValue.indexOf(value) === -1) {
@@ -95,15 +113,57 @@ export default {
         },
         toggle() {
             this.collapsed = !this.collapsed;
+            setTimeout(() => {
+                this.$refs.toggle.focus();
+            }, BLUR_TIMEOUT);
         },
         isChecked(itemId) {
             return this.checkedValue.indexOf(itemId) > -1;
         },
-        closeOptions() {
+        /**
+         * Handle closing the options.
+         *
+         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
+         * @return {undefined}
+         */
+        closeOptions(refocusToggle = true) {
             this.collapsed = true;
+            if (refocusToggle) {
+                setTimeout(() => {
+                    this.$refs.toggle.focus();
+                }, BLUR_TIMEOUT);
+            }
         },
-        showOptions() {
-            this.collapsed = false;
+        /* Handle arrow key "up" events. */
+        onUp() {
+            if (document.activeElement === this.$refs.toggle) {
+                return;
+            }
+            this.getNextElement(-1).focus();
+        },
+        /* Handle arrow key "down" events. */
+        onDown() {
+            this.getNextElement(1).focus();
+        },
+        /* Handle focus leaving events.
+         *
+         * NOTE: focusout bubbles, so we can use this event to close options.
+         */
+        onFocusOut() {
+            setTimeout(() => {
+                if (!this.focusOptions.includes(document.activeElement)) {
+                    this.closeOptions(false);
+                }
+            }, BLUR_TIMEOUT);
+        },
+        /*
+         * Manually prevents default event bubbling and propagation for mousedown which can fire blur events that
+         * interfere with the refocusing behavior. This allows the timeout to be set extremely low.
+         */
+        onMousedown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
         }
     }
 };
@@ -111,16 +171,20 @@ export default {
 
 <template>
   <div
-    v-on-clickaway="closeOptions"
     :class="['multiselect', { collapsed, invalid: !isValid }]"
-    @keydown.esc.prevent="closeOptions"
+    @keydown.esc.stop.prevent="closeOptions"
+    @keydown.up.stop.prevent="onUp"
+    @keydown.down.stop.prevent="onDown"
+    @focusout.stop="onFocusOut"
+    @mousedown="onMousedown"
   >
     <div
+      ref="toggle"
       role="button"
       tabindex="0"
+      :class="{ placeholder: !checkedValue.length }"
       @click="toggle"
-      @keydown.esc.prevent="closeOptions"
-      @keydown.enter.prevent="showOptions"
+      @keydown.space.prevent="toggle"
     >
       {{ optionText }}
     </div>
@@ -131,6 +195,7 @@ export default {
     >
       <Checkbox
         v-for="item of possibleValues"
+        ref="option"
         :key="`multiselect-${item.id}`"
         :value="isChecked(item.id)"
         class="boxes"
@@ -163,16 +228,20 @@ export default {
   & [role=button] {
     margin: 0;
     border: 1px solid var(--theme-color-stone-gray);
-    padding: 10px 38px 10px 10px;
+    padding: 0 38px 0 10px;
     font-size: 13px;
     font-weight: 300;
     height: 40px;
-    line-height: 19px;
+    line-height: 40px; /* to center text vertically */
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--theme-color-masala);
+
+    &.placeholder {
+      color: var(--theme-color-dove-gray);
+    }
 
     &:focus {
       outline: none;
@@ -197,7 +266,7 @@ export default {
     right: 10px;
     top: 11px;
     pointer-events: none;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.2s ease-in-out;
   }
 
   &:not(.collapsed) .icon {
