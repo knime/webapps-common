@@ -169,13 +169,14 @@ section {
       flex-grow: 1;
     }
 
-    & svg {
+    & >>> svg {
       width: 22px;
       height: 22px;
       stroke-width: calc(32px / 22);
       stroke: var(--theme-color-white);
       margin-right: 20px;
       flex-shrink: 0;
+      top: 0;
     }
 
     & button.close {
@@ -188,6 +189,9 @@ section {
       outline: none;
       display: flex;
       align-items: center;
+      position: absolute;
+      right: 0;
+      pointer-events: all;
 
       & svg {
         margin-right: 0;
@@ -195,6 +199,7 @@ section {
         width: 18px;
         stroke-width: calc(32px / 18);
         cursor: pointer;
+        top: 5px;
       }
 
       /* hover/focus styles for type error and success */
@@ -240,55 +245,6 @@ section {
   }
 }
 
-em {
-  font-weight: 700;
-  font-style: normal;
-  font-size: 16px;
-  line-height: 24px;
-  padding: 15px 0;
-  display: flex;
-  position: relative;
-  align-items: center;
-  color: var(--theme-color-white);
-
-  & > .message {
-    flex-grow: 1;
-  }
-
-  & >>> svg {
-    width: 22px;
-    height: 22px;
-    stroke-width: calc(32px / 22);
-    stroke: var(--theme-color-white);
-    margin-right: 20px;
-    flex-shrink: 0;
-    top: 0;
-  }
-
-  & button.close {
-    flex-shrink: 0;
-    margin-bottom: 0;
-    margin-left: 10px;
-  }
-
-  & .close {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    right: 0;
-    pointer-events: all;
-
-    & svg {
-      margin-right: 0;
-      height: 18px;
-      width: 18px;
-      stroke-width: calc(32px / 18);
-      cursor: pointer;
-      top: 5px;
-    }
-  }
-}
-
 .collapser {
   width: 100%;
   pointer-events: none;
@@ -317,10 +273,10 @@ em {
     margin-top: 15px;
     padding-top: 10px;
     padding-bottom: 5px;
-    padding-left: calc(3*var(--grid-gap-width));
-    padding-right: calc(3*var(--grid-gap-width));
+    padding-left: calc(3 * var(--grid-gap-width));
+    padding-right: calc(3 * var(--grid-gap-width));
     position: relative;
-    left: calc((100%-100vw)/2);
+    left: calc((100% - 100vw) / 2);
 
     & .details {
       display: flex;
@@ -341,7 +297,7 @@ em {
         max-width: 66%;
       }
 
-      & .copy-button{
+      & .copy-button {
         border-radius: 50%;
         height: 30px;
         width: 30px;
@@ -371,7 +327,7 @@ em {
 
   & >>> button {
     & .dropdown-icon {
-    display: initial;
+      display: initial;
     }
   }
 }
