@@ -1,6 +1,5 @@
 import Message from '~/ui/components/Message';
 import Button from '~/ui/components/Button';
-import Collapser from '~/ui/components/Collapser';
 import { shallowMount } from '@vue/test-utils';
 import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
 import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
@@ -16,7 +15,7 @@ describe('Message.vue', () => {
         expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find(InfoIcon).exists()).toBe(true);
         expect(wrapper.find('span.close').exists()).toBe(true);
-        expect(wrapper.find('.hide-collapser').exists()).toBe(true);
+        expect(wrapper.find('.show-collapser').exists()).toBe(false);
     });
 
     it('renders success', () => {
@@ -93,10 +92,8 @@ describe('Message.vue', () => {
             }
         });
         expect(copyText).not.toHaveBeenCalled();
-        console.log(wrapper.html())
-        wrapper.find('.copy-button').trigger('click');
-        expect(wrapper.emitted('handle-copy')).toBeTruthy();
-        expect(wrapper.find('.hide-collapser').exists()).toBe(false);
+        expect(wrapper.find('.copy-button').exists()).toBe(true);
+        expect(wrapper.find('.show-collapser').exists()).toBe(true);
         expect(wrapper.find('#detail-text').text()).toEqual('test message');
-    })
+    });
 });

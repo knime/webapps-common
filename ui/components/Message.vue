@@ -41,19 +41,19 @@ export default {
             default: 1
         },
         details: {
-          type: String,
-          default: ''
+            type: String,
+            default: ''
         }
-    },
-    computed: {
-      hasNoDetails() {
-        return this.details.length === 0;
-      }
     },
     data() {
         return {
             active: true
         };
+    },
+    computed: {
+        hasDetails() {
+            return this.details.length > 0;
+        }
     },
     methods: {
         onDismiss() {
@@ -71,6 +71,12 @@ export default {
         copyMessage() {
             let text = document.getElementById('detail-text').innerHTML;
             copyText(text);
+            /**
+             * copied event. Fired when the copy button in the detail area is clicked.
+             * The embedding component should use this to notify the user that the message was copied successfully.
+             *
+             * @event copied
+             */
             this.$emit('copied');
         }
     }
@@ -84,44 +90,48 @@ export default {
   >
     <div class="grid-container">
       <em class="grid-item-12">
-        <Collapser :class="[{'hide-collapser': hasNoDetails}, 'collapser']">
-        <template slot="title">
-        <!-- @slot Use this slot to add an icon. -->
-        <slot name="icon" />
-        <span class="message">
-          <!-- @slot Use this slot to add text content (markup). -->
-          <slot />
-          <span
-            v-show="count && count > 1"
-            class="message-count"
-          >
-            {{ '×' + count }}
-          </span>
-        </span>
-        <Button
-          v-if="button"
-          class="close"
-          primary
-          compact
-          on-dark
-          @click="onDismiss"
-        >
-          {{ button }}
-        </Button>
-        <span
-          v-else
-          class="close"
-          @click="onDismiss"
-        >
-          <CloseIcon />
-        </span>
-        </template>
-        <div class="details">
-          <span id="detail-text">
-            {{details}}Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-          </span>
-          <div class="copy-button" title="Copy to clipboard" @click="copyMessage"><CopyIcon/></div>
-        </div>
+        <Collapser :class="[{'show-collapser': hasDetails}, 'collapser']">
+          <template slot="title">
+            <!-- @slot Use this slot to add an icon. -->
+            <slot name="icon" />
+            <span class="message">
+              <!-- @slot Use this slot to add text content (markup). -->
+              <slot />
+              <span
+                v-show="count && count > 1"
+                class="message-count"
+              >
+                {{ '×' + count }}
+              </span>
+            </span>
+            <Button
+              v-if="button"
+              class="close"
+              primary
+              compact
+              on-dark
+              @click="onDismiss"
+            >
+              {{ button }}
+            </Button>
+            <span
+              v-else
+              class="close"
+              @click="onDismiss"
+            >
+              <CloseIcon />
+            </span>
+          </template>
+          <div class="details">
+            <span id="detail-text">
+              {{ details }}
+            </span>
+            <div
+              class="copy-button"
+              title="Copy to clipboard"
+              @click="copyMessage"
+            ><CopyIcon /></div>
+          </div>
         </Collapser>
       </em>
     </div>
@@ -185,13 +195,14 @@ em {
     flex-grow: 1;
   }
 
-  & svg {
+  & >>> svg {
     width: 22px;
     height: 22px;
     stroke-width: calc(32px / 22);
     stroke: var(--theme-color-white);
     margin-right: 20px;
     flex-shrink: 0;
+    top: 0;
   }
 
   & button.close {
@@ -205,6 +216,7 @@ em {
     align-items: center;
     position: absolute;
     right: 0;
+    pointer-events: all;
 
     & svg {
       margin-right: 0;
@@ -219,6 +231,7 @@ em {
 
 .collapser {
   width: 100%;
+  pointer-events: none;
 
   & >>> button {
     display: flex;
@@ -228,6 +241,7 @@ em {
       stroke: var(--theme-color-white);
       top: 5px;
       right: 28px;
+      display: none;
     }
   }
 
@@ -243,28 +257,17 @@ em {
     margin-top: 15px;
     padding-top: 10px;
     padding-bottom: 5px;
-    margin-left: calc(-3*var(--grid-gap-width));
     padding-left: calc(3*var(--grid-gap-width));
     padding-right: calc(3*var(--grid-gap-width));
     position: relative;
-
-      &::before {
-        content: '';
-        display: block;
-        background: lime;
-        width: 100vw;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        height: auto;
-        left: 0;
-      }
+    left: calc((100%-100vw)/2);
 
     & .details {
       display: flex;
       justify-content: space-between;
       overflow-y: auto;
       width: 100%;
+      margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
 
 
@@ -303,15 +306,13 @@ em {
   }
 }
 
-.hide-collapser {
-  pointer-events: none;
+.show-collapser {
+  pointer-events: all;
 
-  & .close {
-    pointer-events: all;
-  }
-
-  & >>> .dropdown-icon {
-    display: none;
+  & >>> button {
+    & .dropdown-icon {
+    display: initial;
+    }
   }
 }
 </style>
