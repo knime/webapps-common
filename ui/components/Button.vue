@@ -285,7 +285,7 @@ export default {
       top: -0.05em;
 
       &.toggle-icon {
-        margin: 0 0 0 10px;
+        margin: 0 -3px 0 6px;
         padding: 2px 0 2px 0;
       }
     }
@@ -313,7 +313,7 @@ export default {
       margin-right: 10px;
 
       & svg.toggle-icon {
-        margin: 0 0 0 8px;
+        margin: 0 -2px 0 5px;
         padding: 1px 0 1px 0;
       }
 
