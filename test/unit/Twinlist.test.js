@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 
 import Twinlist from '~/ui/components/forms/Twinlist';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
@@ -244,6 +244,7 @@ describe('Twinlist.vue', () => {
         let right = boxes.at(1);
         right.vm.setSelected(['test2', 'test3']);
         right.vm.$emit('keyArrowLeft');
+        right.vm.$emit('keyArrowLeft');
         await wrapper.vm.$nextTick();
         expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
@@ -439,4 +440,57 @@ describe('Twinlist.vue', () => {
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
     });
+
+    it('clears selection of the other side', () => {
+        const mountOptions = {
+            propsData: {
+                possibleValues: defaultPossibleValues,
+                value: ['test2', 'test3'],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            },
+            stubs: {
+                MultiselectListBox: {
+                    template: '<div />',
+                    methods: {
+                        clearSelection: jest.fn()
+                    }
+                }
+            }
+        };
+
+        const wrapper = shallowMount(Twinlist, mountOptions);
+
+        let clearSelection = mountOptions.stubs.MultiselectListBox.methods.clearSelection;
+
+        expect(clearSelection).not.toBeCalled();
+        wrapper.vm.onLeftInput(['test1']);
+        wrapper.vm.onRightInput(['test2']);
+        expect(clearSelection).toBeCalledTimes(2);
+    });
+
+    it('clears selection of the other side', () => {
+        const mountOptions = {
+            propsData: {
+                possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
+                value: ['test2', 'test3'],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            }
+        };
+
+        const wrapper = mount(Twinlist, mountOptions);
+
+        let boxes = wrapper.findAll(MultiselectListBox);
+        let left = boxes.at(0);
+        let right = boxes.at(1);
+
+        wrapper.vm.onLeftInput(['test1']);
+        wrapper.vm.onRightInput(['test2']);
+        expect(left.emitted().input[0][0]).toStrictEqual([]);
+
+        wrapper.vm.onLeftInput(['test1', 'test4']);
+        expect(right.emitted().input[0][0]).toStrictEqual([]);
+    });
+
 });
