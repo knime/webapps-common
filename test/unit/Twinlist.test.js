@@ -244,7 +244,6 @@ describe('Twinlist.vue', () => {
         let right = boxes.at(1);
         right.vm.setSelected(['test2', 'test3']);
         right.vm.$emit('keyArrowLeft');
-        right.vm.$emit('keyArrowLeft');
         await wrapper.vm.$nextTick();
         expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
@@ -457,10 +456,17 @@ describe('Twinlist.vue', () => {
         let left = boxes.at(0);
         let right = boxes.at(1);
 
+        // select something on the left
         wrapper.vm.onLeftInput(['test1']);
+        expect(wrapper.vm.$refs.left.value).toStrictEqual(['test1']);
+
+        // select something on the right
         wrapper.vm.onRightInput(['test2']);
+        expect(wrapper.vm.$refs.right.value).toStrictEqual(['test2']);
+        // the left should now be deselecting all
         expect(left.emitted().input[0][0]).toStrictEqual([]);
 
+        // select something on the left, leads to empty on the right
         wrapper.vm.onLeftInput(['test1', 'test4']);
         expect(right.emitted().input[0][0]).toStrictEqual([]);
     });
