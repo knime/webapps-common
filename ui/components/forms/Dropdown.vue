@@ -328,7 +328,7 @@ export default {
     right: 10px;
     top: 11px;
     pointer-events: none;
-    transition: transform 0.4s ease-in-out;
+    transition: transform 0.2s ease-in-out;
   }
 
   &:not(.collapsed) .icon {

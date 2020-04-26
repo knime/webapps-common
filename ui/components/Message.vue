@@ -84,13 +84,16 @@ export default {
           compact
           on-dark
           @click="onDismiss"
+          @keydown.space.stop.prevent="onDismiss"
         >
           {{ button }}
         </Button>
         <span
           v-else
+          tabindex="0"
           class="close"
           @click="onDismiss"
+          @keydown.space.stop.prevent="onDismiss"
         >
           <CloseIcon />
         </span>
@@ -112,12 +115,69 @@ export default {
 section {
   border-bottom: 1px solid var(--theme-color-white);
 
+  & em {
+    font-weight: 700;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    padding: 15px 0;
+    display: flex;
+    position: relative;
+    align-items: center;
+    color: var(--theme-color-white);
+
+    & > .message {
+      flex-grow: 1;
+    }
+
+    & svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: calc(32px / 22);
+      stroke: var(--theme-color-white);
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+
+    & button.close {
+      flex-shrink: 0;
+      margin-bottom: 0;
+      margin-left: 10px;
+    }
+
+    & .close {
+      outline: none;
+      display: flex;
+      align-items: center;
+
+      & svg {
+        margin-right: 0;
+        height: 18px;
+        width: 18px;
+        stroke-width: calc(32px / 18);
+        cursor: pointer;
+      }
+
+      /* hover/focus styles for type error and success */
+      &:hover >>> svg,
+      &:focus >>> svg {
+        filter: drop-shadow(0 0 4px black);
+      }
+    }
+  }
+
   &:last-child {
     border-bottom: 0;
   }
 
   &.info {
     background-color: var(--theme-color-info);
+
+    /* hover/focus styles for type info */
+    & .close:hover >>> svg,
+    & .close:focus >>> svg {
+      filter: drop-shadow(0 0 4px white);
+    }
 
     & .message-count {
       color: var(--theme-color-info);
@@ -137,50 +197,6 @@ section {
 
     & .message-count {
       color: var(--theme-color-success);
-    }
-  }
-}
-
-em {
-  font-weight: 700;
-  font-style: normal;
-  font-size: 16px;
-  line-height: 24px;
-  padding: 15px 0;
-  display: flex;
-  position: relative;
-  align-items: center;
-  color: var(--theme-color-white);
-
-  & > .message {
-    flex-grow: 1;
-  }
-
-  & svg {
-    width: 22px;
-    height: 22px;
-    stroke-width: calc(32px / 22);
-    stroke: var(--theme-color-white);
-    margin-right: 20px;
-    flex-shrink: 0;
-  }
-
-  & button.close {
-    flex-shrink: 0;
-    margin-bottom: 0;
-    margin-left: 10px;
-  }
-
-  & .close {
-    display: flex;
-    align-items: center;
-
-    & svg {
-      margin-right: 0;
-      height: 18px;
-      width: 18px;
-      stroke-width: calc(32px / 18);
-      cursor: pointer;
     }
   }
 }

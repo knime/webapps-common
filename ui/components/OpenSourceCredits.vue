@@ -139,10 +139,6 @@ dl {
     border: none;
     background-color: transparent;
 
-    &:active {
-      color: inherit;
-    }
-
     & svg {
       position: relative;
       top: 3px;
@@ -151,6 +147,15 @@ dl {
       transition: transform 0.2s ease-in-out;
       pointer-events: none;
     }
+  }
+
+  & button:active,
+  & button:hover,
+  & button:focus,
+  & >>> a:focus,
+  & >>> a:hover {
+    outline: none;
+    font-weight: 400;
   }
 
   &.open {
