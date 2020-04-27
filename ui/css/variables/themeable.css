@@ -1,4 +1,41 @@
 :root {
+  /* Header */
+  --header-image: lorem.png;
+  --header-background-color: gradient_color_or_image.png;
+  --header-foreground-color: var(--knime-white);
+
+  /* Headlines */
+  --headlines-5-font-family: 'Roboto Mono';
+  --headlines-5-font-color: var(--knime-masala);
+  --headlines-5-font-weight: 700;
+
+  --headlines-4-font-family: 'Roboto Mono';
+  --headlines-4-font-color: var(--knime-masala);
+  --headlines-4-font-weight: 700;
+
+  --headlines-3-font-family: 'Roboto Mono';
+  --headlines-3-font-color: var(--knime-masala);
+  --headlines-3-font-weight: 700;
+
+  --headlines-2-font-family: 'Roboto Mono';
+  --headlines-2-font-color: var(--knime-masala);
+  --headlines-2-font-weight: 700;
+
+  --headlines-1-font-family: 'Roboto Mono';
+  --headlines-1-font-color: var(--knime-masala);
+  --headlines-1-font-weight: 700;
+
+  /* Text */
+
+  --text-normal-font-family: 'Roboto Mono';
+  --text-normal-color: var(--knime-masala);
+  
+  --text-medium-font-family: 'Roboto Mono';
+  --text-medium-color: var(--knime-masala);
+
+  --text-bold-font-family: 'Roboto Mono';
+  --text-bold-color: var(--knime-masala);
+
   /* Default Button */
   --button-background-color: var(--knime-yellow);
   --button-background-color-hover: var(--knime-masala);
