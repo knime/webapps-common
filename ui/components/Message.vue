@@ -69,8 +69,7 @@ export default {
             this.$emit('dismiss');
         },
         copyMessage() {
-            let text = document.getElementById('detail-text').innerHTML;
-            copyText(text);
+            copyText(this.details);
             /**
              * copied event. Fired when the copy button in the detail area is clicked.
              * The embedding component should use this to notify the user that the message was copied successfully.
@@ -256,13 +255,13 @@ section {
     & .dropdown-icon {
       stroke: var(--theme-color-white);
       top: 5px;
-      right: 28px;
+      right: 13px;
       display: none;
     }
   }
 
   & >>> .panel {
-    width: 100vw;
+    width: calc(100vw - 12px);
     background-color: var(--theme-color-white);
     opacity: 0.9;
     min-height: 50px;
@@ -276,7 +275,7 @@ section {
     padding-left: calc(3 * var(--grid-gap-width));
     padding-right: calc(3 * var(--grid-gap-width));
     position: relative;
-    left: calc((100% - 100vw) / 2);
+    left: calc((100% - 100vw) / 2 + 6px);
 
     & .details {
       display: flex;
@@ -302,7 +301,7 @@ section {
         height: 30px;
         width: 30px;
         text-align: center;
-        margin-right: 14px; /* line-up with dropdown icon */
+        margin-right: 27px; /* line-up with dropdown icon */
 
         &:hover {
           background-color: var(--theme-color-silver-sand-semi);
