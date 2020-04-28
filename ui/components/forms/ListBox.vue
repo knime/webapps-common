@@ -179,7 +179,8 @@ export default {
             return !this.getCurrentItem().invalid;
         },
         getCurrentItem() {
-            return this.selectableValues[this.selectedIndex] || { id: ' ', text: ' ' };
+            // selectedIndex might be -1 if value is null for example, we always return an object here
+            return this.selectableValues[this.selectedIndex] || { id: '', text: '' };
         },
         generateInvalidItem(id) {
             return {
