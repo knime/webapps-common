@@ -182,9 +182,15 @@ export default {
             this.moveLeft(items);
         },
         onLeftInput(value) {
+            if (value.length > 0) {
+                this.$refs.right.clearSelection();
+            }
             this.selectedLeft = value;
         },
         onRightInput(value) {
+            if (value.length > 0) {
+                this.$refs.left.clearSelection();
+            }
             this.selectedRight = value;
         },
         onKeyRightArrow() {
