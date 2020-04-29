@@ -49,20 +49,26 @@ export default {
         onInput(e) {
             this.$emit('input', this.getValue());
         },
-        /**
+        /*
          * checks if value matches the provided pattern
-         * @return {Boolean}
          */
         validate() {
+            let isValid = true;
+            let errorMessage = null;
             const value = this.getValue();
             if (typeof value === 'undefined') {
-                return false;
+                isValid = false;
+                errorMessage = 'Invalid input';
             }
-            if (!this.pattern) {
-                return true;
+            if (this.pattern) {
+                const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
+                let matchingRegex = matches !== null && matches[0] === value;
+                if (!matchingRegex) {
+                    isValid = false;
+                    errorMessage = 'Input does not match the expected pattern';
+                }
             }
-            const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
-            return matches !== null && matches[0] === value;
+            return { isValid,  errorMessage };
         }
     }
 };

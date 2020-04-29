@@ -203,7 +203,12 @@ export default {
             return this.chosenValues.length > 0;
         },
         validate() {
-            return !this.rightItems.some(x => x.invalid);
+            let isValid = !this.rightItems.some(x => x.invalid);
+            let errorMessage;
+            if (!isValid) {
+                errorMessage = 'One or more of the selected items is invalid';
+            }
+            return { isValid, errorMessage };
         }
     }
 };
