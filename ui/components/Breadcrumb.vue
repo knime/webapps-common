@@ -138,7 +138,9 @@ export default {
 
   /* Linked breadcrumb item */
   & a {
-    &:hover {
+    &:hover,
+    &:focus {
+      outline: none;
       color: var(--theme-color-masala);
 
       & svg {
