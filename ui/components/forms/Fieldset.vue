@@ -32,7 +32,7 @@ fieldset {
   outline: none;
   border: none;
 
-  /* required for text ellipsis on checkboxes */
+  /* required for text ellipsis on checkboxes and radiobuttons  */
   min-width: 100% !important; /* fix for Edge Legacy (v12-18); otherwise auto would be sufficient */
   overflow-x: hidden;
 
