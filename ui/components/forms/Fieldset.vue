@@ -32,6 +32,10 @@ fieldset {
   outline: none;
   border: none;
 
+  /* required for text ellipsis on checkboxes */
+  min-width: 100% !important; /* fix for Edge Legacy (v12-18); otherwise auto would be sufficient */
+  overflow-x: hidden;
+
   & > legend {
     font-weight: 700;
     font-size: 16px;
