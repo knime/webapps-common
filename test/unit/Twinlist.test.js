@@ -439,4 +439,36 @@ describe('Twinlist.vue', () => {
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
     });
+
+    it('clears selection of the other side on select', () => {
+        const mountOptions = {
+            propsData: {
+                possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
+                value: ['test2', 'test3'],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            }
+        };
+
+        const wrapper = mount(Twinlist, mountOptions);
+
+        let boxes = wrapper.findAll(MultiselectListBox);
+        let left = boxes.at(0);
+        let right = boxes.at(1);
+
+        // select something on the left
+        wrapper.vm.onLeftInput(['test1']);
+        expect(wrapper.vm.$refs.left.value).toStrictEqual(['test1']);
+
+        // select something on the right
+        wrapper.vm.onRightInput(['test2']);
+        expect(wrapper.vm.$refs.right.value).toStrictEqual(['test2']);
+        // the left should now be deselecting all
+        expect(left.emitted().input[0][0]).toStrictEqual([]);
+
+        // select something on the left, leads to empty on the right
+        wrapper.vm.onLeftInput(['test1', 'test4']);
+        expect(right.emitted().input[0][0]).toStrictEqual([]);
+    });
+
 });

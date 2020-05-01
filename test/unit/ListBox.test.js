@@ -61,6 +61,81 @@ describe('ListBox.vue', () => {
         });
     });
 
+    it('invalidates if invalid value is selected', () => {
+        const value = propsData.possibleValues[0].id;
+        const wrapper = mount(ListBox, {
+            propsData: {
+                ...propsData,
+                value
+            }
+        });
+
+        expect(wrapper.vm.validate()).toBe(true);
+
+        wrapper.setProps({ value: 'non-valid-id' });
+
+        expect(wrapper.vm.validate()).toBe(false);
+
+        wrapper.setProps({ value });
+
+        expect(wrapper.vm.validate()).toBe(true);
+    });
+
+    it('renders invalid value', () => {
+        let value = 'non-valid';
+        const wrapper = mount(ListBox, {
+            propsData: {
+                ...propsData,
+                value
+            }
+        });
+
+        let options = wrapper.findAll('li[role=option]');
+        const selectableValues = [{ id: value }, ...propsData.possibleValues];
+
+        // look for the invalid value
+        wrapper.findAll('li[role=option]');
+        selectableValues.forEach((option, i) => {
+            if (option.id === value) {
+                expect(options.at(i).text().includes(value)).toBeTruthy();
+            }
+        });
+
+        // set to a valid id
+        wrapper.setProps({ value: propsData.possibleValues[0].id });
+
+        // invalid value should still be there
+        wrapper.findAll('li[role=option]');
+        selectableValues.forEach((option, i) => {
+            if (option.id === value) {
+                expect(options.at(i).text().includes(value)).toBeTruthy();
+            }
+        });
+    });
+
+    it('puts invalid class only on invalid values', () => {
+        let value = 'just-not-valid';
+        const wrapper = mount(ListBox, {
+            propsData: {
+                ...propsData,
+                value
+            }
+        });
+
+        let options = wrapper.findAll('li[role=option]');
+        const selectableValues = [{ id: value }, ...propsData.possibleValues];
+
+        selectableValues.forEach((option, i) => {
+            let classes = options.at(i).classes();
+            if (option.id === value) {
+                expect(classes).toContain('invalid');
+            } else {
+                expect(classes).not.toContain('invalid');
+            }
+        });
+
+    });
+
     it('sets the correct aria-* attributes', () => {
         const wrapper = mount(ListBox, {
             propsData
