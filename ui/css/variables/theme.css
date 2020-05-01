@@ -1,0 +1,130 @@
+:root {
+  /* Header */
+  --theme-header-image: lorem.png;
+  --theme-header-background-color: gradient_color_or_image.png;
+  --theme-header-foreground-color: var(--knime-white);
+
+  /* Headlines */
+  --theme-headlines-font-family: 'Roboto, sans-serif';
+  --theme-headlines-font-color: var(--knime-masala);
+  --theme-headlines-font-weight: 700;
+
+  /* Text */
+
+  --theme-text-normal-font-family: 'Roboto, sans-serif';
+  --theme-text-normal-color: var(--knime-masala);
+
+  --theme-text-medium-font-family: 'Roboto, sans-serif';
+  --theme-text-medium-color: var(--knime-masala);
+
+  --theme-text-bold-font-family: 'Roboto, sans-serif';
+  --theme-text-bold-color: var(--knime-masala);
+
+  /* Default Button */
+  --theme-button-background-color: var(--knime-yellow);
+  --theme-button-background-color-hover: var(--knime-masala);
+  --theme-button-background-color-focus: var(--knime-masala);
+  --theme-button-foreground-color: var(--knime-masala);
+  --theme-button-foreground-color-hover: var(--knime-white);
+  --theme-button-foreground-color-focus: var(--knime-white);
+  --theme-button-border-radius: 20px;
+  --theme-button-border-color: var(--knime-yellow);
+  --theme-button-border-color-hover: var(--knime-masala);
+  --theme-button-border-color-focus: var(--knime-masala);
+
+  /* Small Button */
+  --theme-button-small-background-color: var(--knime-yellow);
+  --theme-button-small-background-color-hover: var(--knime-masala);
+  --theme-button-small-background-color-focus: var(--knime-masala);
+  --theme-button-small-foreground-color: var(--knime-masala);
+  --theme-button-small-foreground-color-hover: var(--knime-white);
+  --theme-button-small-foreground-color-focus: var(--knime-white);
+  --theme-button-small-border-radius: 20px;
+  --theme-button-small-border-color: var(--knime-yellow);
+  --theme-button-small-border-color-hover: var(--knime-masala);
+  --theme-button-small-border-color-focus: var(--knime-masala);
+
+  /* Split Button */
+  --theme-button-split-background-color: var(--knime-yellow);
+  --theme-button-split-background-color-hover: var(--knime-masala);
+  --theme-button-split-background-color-focus: var(--knime-masala);
+  --theme-button-split-foreground-color: var(--knime-masala);
+  --theme-button-split-foreground-color-hover: var(--knime-white);
+  --theme-button-split-foreground-color-focus: var(--knime-white);
+  --theme-button-split-border-radius: 20px;
+  --theme-button-split-border-color: var(--knime-yellow);
+  --theme-button-split-border-color-hover: var(--knime-masala);
+  --theme-button-split-border-color-focus: var(--knime-masala);
+
+  /* Dropdown (global) */
+  --theme-dropdown-background-color: transparent;
+  --theme-dropdown-background-color-focus: var(--knime-silver-sand-semi);
+  --theme-dropdown-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-dropdown-background-color-selected: var(--knime-masala);
+  --theme-dropdown-foreground-color: var(--knime-dove-gray);
+  --theme-dropdown-foreground-color-focus: var(--knime-masala);
+  --theme-dropdown-foreground-color-hover: var(--knime-masala);
+  --theme-dropdown-foreground-color-selected: var(--knime-white);
+
+  /* Text links */
+  --theme-text-link-background-color: transparent;
+  --theme-text-link-background-color-hover: var(--knime-masala);
+  --theme-text-link-background-color-focus: var(--knime-masala);
+  --theme-text-link-foreground-color: var(--knime-masala);
+  --theme-text-link-foreground-color-hover: var(--knime-white);
+  --theme-text-link-foreground-color-focus: var(--knime-white);
+
+  /* Tooltip */
+  --theme-tooltip-background-color: var(--knime-masala);
+  --theme-tooltip-foreground-color: var(--knime-white);
+
+  /* Checkbox */
+  --theme-checkbox-border-color: var(--knime-stone-gray);
+  --theme-checkbox-border-color-focus: var(--knime-masala);
+  --theme-checkbox-border-color-hover: var(--knime-stone-gray);
+  --theme-checkbox-border-color-selected: var(--knime-masala);
+  --theme-checkbox-border-color-selected-focus: var(--knime-masala);
+  --theme-checkbox-border-color-selected-hover: var(--knime-stone-gray);
+  --theme-checkbox-background-color: transparent;
+  --theme-checkbox-background-color-focus: var(--knime-white);
+  --theme-checkbox-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-checkbox-background-color-selected: var(--knime-masala);
+  --theme-checkbox-background-color-selected-focus: var(--knime-white);
+  --theme-checkbox-background-color-selected-hover: var(--knime-silver-sand-semi);
+  --theme-checkbox-foreground-color-selected: var(--knime-white);
+  --theme-checkbox-foreground-color-selected-focus: var(--knime-masala);
+  --theme-checkbox-foreground-color-selected-hover: var(--knime-silver-sand-semi);
+
+  /* Selection List */
+  --theme-select-control-background-color: transparent;
+  --theme-select-control-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-select-control-background-color-focus: var(--knime-masala);
+  --theme-select-control-foreground-color: var(--knime-dove-gray);
+  --theme-select-control-foreground-color-hover: var(--knime-masala);
+  --theme-select-control-foreground-color-focus: var(--knime-white);
+
+  /* Radio buttons */
+  --theme-radio-border-color: var(--knime-stone-gray);
+  --theme-radio-border-color-hover: var(--knime-stone-gray);
+  --theme-radio-border-color-selected: var(--knime-masala);
+  --theme-radio-border-color-selected-hover: var(--knime-stone-gray);
+  --theme-radio-background-color: transparent;
+  --theme-radio-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-radio-background-color-selected: var(--knime-masala);
+  --theme-radio-background-color-selected-hover: var(--knime-silver-sand-semi);
+  --theme-radio-foreground-color-selected: var(--knime-white);
+  --theme-radio-foreground-color-selected-hover: var(--knime-masala);
+
+  /* Slider */
+  --theme-slider-border-radius: 9.5px;
+  --theme-slider-border-color: var(--knime-stone-gray);
+  --theme-slider-border-color-hover: var(--knime-stone-gray);
+  --theme-slider-border-color-focus: var(--knime-masala);
+  --theme-slider-border-color-active: var(--knime-masala);
+  --theme-slider-background-color: var(--knime-white);
+  --theme-slider-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-slider-background-color-focus: var(--knime-white);
+  --theme-slider-background-color-active: var(--knime-masala);
+  --theme-slider-bar-radius: 3.5px;
+  --theme-slider-background-color: var(--knime-yellow);
+}
