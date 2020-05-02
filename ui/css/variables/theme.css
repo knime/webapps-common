@@ -1,7 +1,7 @@
 :root {
   /* Header */
-  --theme-header-image: lorem.png;
-  --theme-header-background-color: gradient_color_or_image.png;
+  --theme-header-image: url("../../assets/img/KNIME_Logo_white.svg");
+  --theme-header-background-color: var(--knime-masala);
   --theme-header-foreground-color: var(--knime-white);
 
   /* Headlines */
@@ -10,7 +10,6 @@
   --theme-headlines-font-weight: 700;
 
   /* Text */
-
   --theme-text-normal-font-family: 'Roboto, sans-serif';
   --theme-text-normal-color: var(--knime-masala);
 
