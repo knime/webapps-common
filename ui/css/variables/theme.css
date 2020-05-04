@@ -1,6 +1,5 @@
 :root {
   /* Header */
-  --theme-header-image: url("../../assets/img/KNIME_Logo_white.svg");
   --theme-header-background-color: var(--knime-masala);
   --theme-header-foreground-color: var(--knime-white);
 
