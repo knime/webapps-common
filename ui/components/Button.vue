@@ -57,27 +57,6 @@ export default {
             default: false
         },
         /**
-         * switches style to function button
-         */
-        function: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * changes style of function button without text
-         */
-        withoutText: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches state of function button
-         */
-        active: {
-            type: Boolean,
-            default: false
-        },
-        /**
          * toggle to prevent default click handler
          */
         preventDefault: {
@@ -102,10 +81,7 @@ export default {
                 { 'with-border': this.withBorder },
                 { 'on-dark': this.onDark },
                 { compact: this.compact },
-                { disabled: this.disabled },
-                { function: this.function },
-                { 'without-text': this.withoutText },
-                { active: this.active }
+                { disabled: this.disabled }
             ];
         }
     },
@@ -272,59 +248,6 @@ export default {
     &:active,
     &:hover {
       background-color: var(--theme-color-white);
-    }
-  }
-
-  &.function {
-    padding: 6px 15px;
-    font-size: 13px;
-    line-height: 18px;
-
-    & svg {
-      margin: 0 8px 0 0;
-      top: -0.05em;
-
-      &.toggle-icon {
-        margin: 0 -3px 0 6px;
-        padding: 2px 0 2px 0;
-      }
-    }
-
-    &:active,
-    &:hover {
-      background-color: var(--theme-color-silver-sand-semi);
-    }
-
-    &.without-text {
-      padding: 6px;
-
-      & svg {
-        margin: 0;
-        display: block;
-        position: relative;
-        top: -0.04em;
-      }
-    }
-
-    &.compact {
-      padding: 4px 10px;
-      line-height: 16px;
-      font-size: 11px;
-      margin-right: 10px;
-
-      & svg.toggle-icon {
-        margin: 0 -2px 0 5px;
-        padding: 1px 0 1px 0;
-      }
-
-      &.without-text {
-        padding: 5px;
-        min-width: unset;
-
-        & svg {
-          top: -0.00em;
-        }
-      }
     }
   }
 }

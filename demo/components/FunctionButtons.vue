@@ -1,33 +1,48 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import Button from '../../ui/components/Button';
-import buttonCode from '!!raw-loader!../../ui/components/Button';
+import SubMenu from '../../ui/components/SubMenu';
+import MenuButton from '../../ui/components/MenuButton';
+import menuButtonCode from '!!raw-loader!../../ui/components/MenuButton';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
-import DropdownIcon from '../../ui/assets/img/icons/arrow-dropdown.svg?inline';
+import ArrowsOrderIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
 
 const codeExample =
-`<Button function without-text><MenuOptionsIcon /></Button>
-<Button function><LensIcon />Function</Button>
-<Button function>Function Menu<DropdownIcon class="toggle-icon" /></Button>
-
-<Button compact function without-text><MenuOptionsIcon /></Button>
-<Button compact function><LensIcon />Compact function</Button>
-<Button compact function>Compact function menu<DropdownIcon class="toggle-icon" /></Button>`;
+`<MenuButton function without-text><MenuOptionsIcon /></MenuButton>
+<MenuButton function><LensIcon /><span>Function</span></MenuButton>
+<MenuButton function><span>Function Menu</span><ArrowsOrderIcon /></MenuButton>
+`;
 
 export default {
     components: {
-        Button,
+        MenuButton,
         MenuOptionsIcon,
         LensIcon,
-        DropdownIcon,
-        CodeExample
+        ArrowsOrderIcon,
+        CodeExample,
+        SubMenu
     },
     data() {
         return {
-            buttonCode,
-            codeExample
+            menuButtonCode,
+            codeExample,
+            active: false,
+            subMenuItems: [{
+              href: 'http://apple.com',
+              text: 'Apples',
+            }, {
+              href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
+              text: 'Oranges',
+            },  {
+              to: '/testing-nuxt-link',
+              text: 'Ananas'
+           }]
         };
+    },
+    methods: {
+      onClick() {
+        this.active = true;
+      }
     }
 };
 </script>
@@ -36,69 +51,34 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Function Buttons</h2>
-        
-        <!-- function buttons -->
+        <h2>Function MenuButtons</h2>
+
+        <!-- function menuButtons -->
         <div class="align-horizontal">
-          <Button
-            function
-            without-text
-          >
-            <MenuOptionsIcon />
-          </Button>
-
-          <Button function><LensIcon />Function</Button>
-          
-          
-          <Button
-            function
-          >
-            Function Menu
-            <DropdownIcon class="toggle-icon" />
-          </Button>
-
-          <Button
-            function
-            class="toggle-active"
-          >
-            Opened Menu
-            <DropdownIcon class="toggle-icon" />
-          </Button>
+          <SubMenu :items="subMenuItems" orientation="left">
+            <MenuButton :active="active">
+              <MenuOptionsIcon />
+            </MenuButton>
+          </SubMenu>
         </div>
 
-        <!-- compact function buttons -->
         <div class="align-horizontal">
-          <Button
-            compact
-            function
-            without-text
-          >
-            <MenuOptionsIcon />
-          </Button>
 
-          <Button
-            compact
-            function
-          >
-            <LensIcon />Compact function
-          </Button>
-          
-          <Button
-            compact
-            function
-          >
-            compact function menu
-            <DropdownIcon class="toggle-icon" />
-          </Button>
+          <MenuButton>
+            <span>Sorter</span>
+            <ArrowsOrderIcon />
+          </MenuButton>
 
-          <Button
-            compact
-            function
-            class="toggle-active"
-          >
-            opened compact menu
-            <DropdownIcon class="toggle-icon" />
-          </Button>
+          <MenuButton active>
+            <span>Sorter</span>
+            <ArrowsOrderIcon />
+          </MenuButton>
+
+        </div>
+
+
+        <div class="align-horizontal">
+          <MenuButton function><LensIcon /><span>Function</span></MenuButton>
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
@@ -108,7 +88,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
 
 .align-horizontal {
   display: flex;
@@ -120,17 +99,4 @@ export default {
   }
 }
 
-.toggle-active,
-.button.toggle-active:hover {
-  color: var(--theme-color-white);
-  background-color: var(--theme-color-masala);
-
-  & svg {
-    stroke: var(--theme-color-white);
-
-    &.toggle-icon {
-      transform: scaleY(-1);
-    }
-  }
-}
 </style>
