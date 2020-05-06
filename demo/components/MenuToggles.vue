@@ -108,6 +108,8 @@ export default {
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+        <CodeExample summary="Show MenuToggle.vue source code">{{ menuToggleCode }}</CodeExample>
+
       </div>
     </div>
   </section>
