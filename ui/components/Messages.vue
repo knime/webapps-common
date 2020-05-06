@@ -10,12 +10,20 @@ export default {
     },
     props: {
         /**
-         * Array with message configuration objects supporting the following props:
-         *  - id
-         *  - type (see Message component for supported values)
-         *  - icon (Component)
-         *  - button
-         *  - message
+         * Array with message configuration objects.
+         *
+         * @example
+         * [{
+         *    id
+         *    type (see Message component for supported values)
+         *    icon (Component)
+         *    button (optional button text)
+         *    message (actual message String)
+         *    link: { (optional link that will be displayed after the message)
+         *       text
+         *       href
+         *    }
+         * }]
          */
         messages: {
             type: Array,
@@ -44,6 +52,12 @@ export default {
         slot="icon"
       />
       {{ message.message }}
+      <a
+        v-if="message.link"
+        :href="message.link.href"
+      >
+        {{ ' ' + message.link.text }}
+      </a>
     </Message>
   </transition-group>
 </template>
