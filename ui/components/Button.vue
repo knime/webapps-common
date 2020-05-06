@@ -231,39 +231,39 @@ export default {
         stroke: var(--theme-color-white);
       }
     }
+  }
 
-    &.on-dark {
-      &.with-border {
-        border: 1px solid var(--theme-color-white);
-        background-color: transparent;
-        color: var(--theme-color-white);
+  &.on-dark {
+    &.with-border {
+      border: 1px solid var(--theme-color-white);
+      background-color: transparent;
+      color: var(--theme-color-white);
 
-        & >>> svg {
-          stroke: var(--theme-color-white);
-        }
+      & >>> svg {
+        stroke: var(--theme-color-white);
       }
+    }
 
-      &.primary,
-      &.with-border {
-        &:active,
-        &:hover,
-        &:focus {
-          outline: none;
-          background-color: var(--theme-color-white);
-          color: var(--theme-color-masala);
-
-          & >>> svg {
-            stroke: var(--theme-color-masala);
-          }
-        }
-      }
-
+    &.primary,
+    &.with-border {
       &:active,
       &:hover,
       &:focus {
         outline: none;
         background-color: var(--theme-color-white);
+        color: var(--theme-color-masala);
+
+        & >>> svg {
+          stroke: var(--theme-color-masala);
+        }
       }
+    }
+
+    &:active,
+    &:hover,
+    &:focus {
+      outline: none;
+      background-color: var(--theme-color-white);
     }
   }
 }

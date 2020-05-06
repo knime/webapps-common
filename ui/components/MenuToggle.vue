@@ -1,0 +1,89 @@
+<script>
+/**
+ * This component is supposed to be used inside a <button> element
+ */
+export default {
+      props: {
+         /**
+         * Switches state of function button
+         */
+        active: {
+            type: Boolean,
+            default: false
+        }
+      },
+      computed: {
+        single() {
+          return this.$slots.default.length === 1;
+        }
+      }
+}
+</script>
+
+<template>
+  <div :class="[{single}, {active}]">
+    <slot/>
+  </div>
+</template>
+
+<style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
+
+div {
+  display: inline-block;
+  text-align: center;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 6px 15px;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--theme-color-dove-gray);
+  background-color: transparent;
+  border-radius: 9999px;
+
+  &.single {
+    padding: 6px;
+  }
+
+  /* Space button children items evenly, but not if there's only one element */
+  & > * {
+    margin-left: 8px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+
+  & svg {
+    vertical-align: top;
+    stroke: var(--theme-color-dove-gray);
+    width: 18px;
+    height: 18px;
+    stroke-width: calc(32px / 18);
+  }
+
+  &:hover {
+    color: var(--theme-color-masala);
+    background-color: var(--theme-color-silver-sand-semi);
+
+    & svg {
+      stroke: var(--theme-color-masala);
+    }
+  }
+
+  &.active {
+    color: var(--theme-color-white);
+    background-color: var(--theme-color-masala);
+
+    & svg {
+      stroke: var(--theme-color-white);
+
+      &.toggle-icon {
+        transform: scaleY(-1);
+      }
+    }
+  }
+}
+</style>

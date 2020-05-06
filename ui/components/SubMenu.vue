@@ -116,6 +116,11 @@ export default {
         },
         toggleMenu() {
             this.expanded = !this.expanded;
+            if(this.expanded) {
+              this.$emit('menu-open');
+            } else {
+              this.$emit('menu-close');
+            }
             setTimeout(() => {
                 this.$refs['submenu-toggle'].focus();
             }, BLUR_TIMEOUT);
@@ -152,6 +157,7 @@ export default {
          * @return {undefined}
          */
         closeMenu(refocusToggle = true) {
+            this.$emit('menu-close');
             setTimeout(() => {
                 this.expanded = false;
                 if (refocusToggle) {

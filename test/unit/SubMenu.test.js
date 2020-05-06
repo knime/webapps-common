@@ -19,6 +19,21 @@ describe('Submenu.vue', () => {
         expect(wrapper.find('button').attributes('title')).toBe('test button title');
     });
 
+    it('emits events on clicking the button', () => {
+        const wrapper = shallowMount(SubMenu, {
+            slots: {
+                default: '<svg />click me please <strong>right there</strong>'
+            },
+            propsData: {
+                items: [],
+                buttonTitle: 'test button title'
+            }
+        });
+        wrapper.find('button').trigger('click');
+        wrapper.find('button').trigger('click');
+        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual([ 'menu-open', 'menu-close']);
+    });
+
     it('orients the submenu to the button', () => {
         const wrapper = shallowMount(SubMenu, {
             slots: {
@@ -82,7 +97,7 @@ describe('Submenu.vue', () => {
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
             const id = 'testfoobar543';
-    
+
             const wrapper = shallowMount(SubMenu, {
                 propsData: {
                     items,
@@ -99,7 +114,7 @@ describe('Submenu.vue', () => {
             expect(typeof wrapper.emittedByOrder()[0].args[0]).toBe('object'); // event object
             expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]);
             expect(wrapper.emittedByOrder()[0].args[2]).toEqual(id);
-    
+
             wrapper.findAll('li').at(1).trigger('click');
             expect(typeof wrapper.emittedByOrder()[1].args[0]).toBe('object'); // event object
             expect(wrapper.emittedByOrder()[1].args[1]).toEqual(items[1]);
@@ -113,7 +128,7 @@ describe('Submenu.vue', () => {
                     { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
-        
+
                 const wrapper = mount(SubMenu, {
                     propsData: {
                         items,
@@ -151,7 +166,7 @@ describe('Submenu.vue', () => {
                     { text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
-        
+
                 const wrapper = mount(SubMenu, {
                     propsData: {
                         items,
@@ -191,7 +206,7 @@ describe('Submenu.vue', () => {
                     { text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
-        
+
                 const wrapper = mount(SubMenu, {
                     propsData: {
                         items,
@@ -229,7 +244,7 @@ describe('Submenu.vue', () => {
                     { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
-        
+
                 const wrapper = mount(SubMenu, {
                     propsData: {
                         items,
@@ -293,7 +308,7 @@ describe('Submenu.vue', () => {
                 { text: 'I act like a button' }
             ];
             const id = 'testfoobar543';
-    
+
             const wrapper = shallowMount(SubMenu, {
                 propsData: {
                     items,
@@ -409,9 +424,9 @@ describe('Submenu.vue', () => {
             expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
             arrowKeyNavWrapper.vm.$refs['submenu-toggle'].focus();
             expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.$refs['submenu-toggle']);
-            
+
             arrowKeyNavWrapper.trigger('keydown.up');
-            
+
             expect(document.activeElement).not.toBe(arrowKeyNavWrapper.vm.listItems[0]);
             expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.$refs['submenu-toggle']);
             expect(onUpMock).toHaveBeenCalled();
@@ -480,9 +495,9 @@ describe('Submenu.vue', () => {
             expect(wrapper.vm.listItems.length).toBe(2);
             wrapper.vm.$refs['submenu-toggle'].focus();
             expect(document.activeElement).toBe(wrapper.vm.$refs['submenu-toggle']);
-            
+
             wrapper.trigger('keydown.down');
-            
+
             expect(document.activeElement).not.toBe(wrapper.vm.listItems[0]);
             expect(document.activeElement).toBe(wrapper.vm.$refs['submenu-toggle']);
             expect(onDownMock).toHaveBeenCalled();
@@ -518,8 +533,10 @@ describe('Submenu.vue', () => {
             expect(closingMenuWrapper.vm.expanded).toBe(false);
             closingMenuWrapper.setData({ expanded: true });
             expect(closingMenuWrapper.vm.expanded).toBe(true);
+
             closingMenuWrapper.find('.submenu-toggle').trigger('click');
 
+            expect(closingMenuWrapper.emittedByOrder().map(e => e.name)).toEqual(['menu-close']);
             expect(toggleMenuMock).toHaveBeenCalled();
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });
