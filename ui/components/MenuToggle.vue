@@ -1,6 +1,7 @@
 <script>
 /**
- * This component is supposed to be used inside a <button> element
+ * This component is mostly decorative, but has an active state.
+ * It needs parent components to handle functionality and to trigger the active state.
  */
 export default {
       props: {

@@ -71,8 +71,8 @@ export default {
       <div class="grid-item-12">
         <h2>Menu Toggles</h2>
          <p>
-            Menu toggles have to be used inside a <code>button</code> element.
-            They work well together with the Submenu component.
+            Menu toggles are mostly decorative. They have an active state, which needs to be set by parent
+            components, e.g. a Submenu.
           </p>
         <div class="align-horizontal">
 
