@@ -19,6 +19,16 @@ const messages = [
         button: 'Okay',
         icon: SuccessIcon,
         id: 3
+    }, {
+        message: 'Info of something',
+        type: 'info',
+        button: 'Okay',
+        icon: SuccessIcon,
+        id: 4,
+        link: {
+            text: 'Linked text.',
+            href: 'some_link'
+        }
     }
 ];
 
@@ -70,5 +80,21 @@ describe('Messages.vue', () => {
         expect(wrapper.findAll(Message).at(1).vm.count).toBe(1);
         expect(wrapper.findAll(Message).at(2).find('.message-count').isVisible()).toBe(false);
         expect(wrapper.findAll(Message).at(2).vm.count).toBe(1);
+    });
+
+    it('renders link if specified', () => {
+        wrapper = mount(Messages, {
+            propsData: { messages }
+        });
+
+        for (let i of [0, 1, 2]) {
+            expect(wrapper.findAll(Message).at(i).find('a').exists()).toBe(false);
+        }
+
+        // eslint-disable-next-line no-magic-numbers
+        let link = wrapper.findAll(Message).at(3).find('a');
+        expect(link.exists()).toBe(true);
+        expect(link.text()).toBe('Linked text.');
+        expect(link.attributes('href')).toBe('some_link');
     });
 });
