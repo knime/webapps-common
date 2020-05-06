@@ -67,7 +67,7 @@ export default {
             is possible by <code>Ctrl+Click</code> or <code>Shift+Click</code>. Also multi select by dragging is
             supported.
           </p>
-        </div>s
+        </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
