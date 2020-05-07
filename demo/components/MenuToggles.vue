@@ -1,33 +1,26 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import SubMenu from '../../ui/components/SubMenu';
 import MenuToggle from '../../ui/components/MenuToggle';
 import menuToggleCode from '!!raw-loader!../../ui/components/MenuToggle';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
-import ArrowsOrderIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
+import SorterIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
 
 const codeExample =
 `
-<button>
-  <MenuToggle :active="active">
+  <MenuToggle :active="active1">
     <LensIcon />
     <span>Function</span>
   </MenuToggle>
-</button>
 
-<SubMenu>
-  <MenuToggle :active="active">
+  <MenuToggle :active="active2">
     <MenuOptionsIcon />
   </MenuToggle>
-</SubMenu>
 
-<SubMenu>
-  <MenuToggle :active="active2">
+  <MenuToggle :active="active3">
     <span>Sorter</span>
-    <ArrowsOrderIcon />
+    <SorterIcon />
   </MenuToggle>
-</SubMenu>
 `;
 
 export default {
@@ -35,17 +28,16 @@ export default {
         MenuToggle,
         MenuOptionsIcon,
         LensIcon,
-        ArrowsOrderIcon,
-        CodeExample,
-        SubMenu
+        SorterIcon,
+        CodeExample
     },
     data() {
         return {
             menuToggleCode,
             codeExample,
-            focused0: false,
             active1: false,
             active2: false,
+            active3: false,
             subMenuItems: [{
                 href: 'http://apple.com',
                 text: 'Apples'
@@ -67,10 +59,35 @@ export default {
       <div class="grid-item-12">
         <h2>Menu Toggles</h2>
         <p>
+          The toggle is a button with an active state, e.g. when a dropdown menu is expanded.
+        </p>
+        <p>
+          It's primary use is together with the submenu where it is included, but can also be used standalone.
           Works with an icon &amp; text combination or a single icon.
         </p>
         <div class="align-horizontal">
-          <MenuToggle :active="focused0"><LensIcon /><span>Function</span></MenuToggle>
+          <MenuToggle
+            :active="active1"
+            @click="active1 = !active1"
+          >
+            <LensIcon />
+            <span>Function</span>
+          </MenuToggle>
+
+          <MenuToggle
+            :active="active2"
+            @click="active2 = !active2"
+          >
+            <MenuOptionsIcon />
+          </MenuToggle>
+
+          <MenuToggle
+            :active="active3"
+            @click="active3 = !active3"
+          >
+            <span>Function</span>
+            <SorterIcon />
+          </MenuToggle>
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
