@@ -132,14 +132,14 @@ export default {
         },
         /* Handle arrow key "up" events. */
         onUp() {
-            if (this.orientation !== 'top' && document.activeElement === this.$refs['submenu-toggle']) {
+            if (this.orientation !== 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
                 return;
             }
             this.getNextElement(-1).focus();
         },
         /* Handle arrow key "down" events. */
         onDown() {
-            if (this.orientation === 'top' && document.activeElement === this.$refs['submenu-toggle']) {
+            if (this.orientation === 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
                 return;
             }
             this.getNextElement(1).focus();

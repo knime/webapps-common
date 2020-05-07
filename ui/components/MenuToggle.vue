@@ -1,40 +1,37 @@
 <script>
 /**
- * This component is mostly decorative, but has an active and focused state.
- * It needs parent components to handle functionality and to trigger the states.
- *
  * Works with an icon & text combination or a single icon.
  */
 export default {
-      props: {
-         /**
+    props: {
+        /**
          * Switches state of function button
          */
         active: {
             type: Boolean,
             default: false
         }
-      },
-      computed: {
+    },
+    computed: {
         single() {
-          return this.$slots.default.length === 1;
+            return this.$slots.default.length === 1;
         }
-      },
-      methods: {
+    },
+    methods: {
         focus() {
-          this.$el.focus()
+            this.$el.focus();
         }
-      }
-}
+    }
+};
 </script>
 
 <template>
-    <button
-      ref="toggle"
-      :class="['toggle', {single}, {active}]"
-      v-on="$listeners"
-    >
-    <slot/>
+  <button
+    ref="toggle"
+    :class="['toggle', {single}, {active}]"
+    v-on="$listeners"
+  >
+    <slot />
   </button>
 </template>
 

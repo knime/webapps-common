@@ -9,8 +9,9 @@ describe('MenuToggle.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.is('span')).toBeTruthy();
+        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle']);
+
     });
 
     it('renders a class if props is set', () => {
@@ -22,7 +23,7 @@ describe('MenuToggle.vue', () => {
                 default: ['<span>text</span>', '<svg/>']
             }
         });
-        expect(wrapper.is('span')).toBeTruthy();
+        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'active']);
     });
 
@@ -32,7 +33,7 @@ describe('MenuToggle.vue', () => {
                 default: ['<svg/>']
             }
         });
-        expect(wrapper.is('span')).toBeTruthy();
+        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'single']);
     });
 
@@ -46,7 +47,7 @@ describe('MenuToggle.vue', () => {
                 default: ['<span>text</span>']
             }
         });
-        expect(wrapper.is('span')).toBeTruthy();
+        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'single', 'active']);
     });
 

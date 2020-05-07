@@ -45,7 +45,13 @@ div {
       align-items: center;
       justify-content: center;
 
+      &.active,
+      &:hover {
+        background-color: transparent;
+      }
+
       & svg {
+        padding: 0;
         width: 14px;
         height: 14px;
         stroke-width: calc(32px / 14);
