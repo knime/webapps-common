@@ -5,7 +5,7 @@
 export default {
     props: {
         /**
-         * Switches state of function button
+         * Switches the active style of the component
          */
         active: {
             type: Boolean,
