@@ -217,6 +217,7 @@ h4 {
   }
 
   & >>> .submenu-toggle {
+    height: 100%;
     border-radius: 0;
   }
 }

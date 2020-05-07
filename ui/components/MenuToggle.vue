@@ -46,7 +46,6 @@ export default {
   line-height: 18px;
   padding: 6px 15px;
   text-decoration: none;
-  height: 100%;
   border: 0;
   cursor: pointer;
   color: var(--theme-color-dove-gray);
