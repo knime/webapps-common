@@ -46,6 +46,7 @@ export default {
 <template>
   <nav>
     <SubMenu
+      class="submenu"
       :items="subMenuItems"
       orientation="left"
       button-title="Open my submenu with icons"
@@ -126,6 +127,7 @@ export default {
           <div class="card">
             <span class="menu-name">Normal</span>
             <SubMenu
+              class="submenu"
               :items="subMenuItemsWithoutIcons"
               button-title="Open my submenu"
             >
@@ -136,6 +138,7 @@ export default {
           <div class="card">
             <span class="menu-name">With icons</span>
             <SubMenu
+              class="submenu"
               :items="subMenuItems"
               button-title="Open my submenu with icons"
             >
@@ -146,6 +149,7 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation left</span>
             <SubMenu
+              class="submenu"
               :items="subMenuItems"
               orientation="left"
               button-title="Open my submenu with icons"
@@ -157,6 +161,7 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation top</span>
             <SubMenu
+              class="submenu"
               :items="subMenuItems"
               orientation="top"
               button-title="Open my submenu with icons"
@@ -205,21 +210,14 @@ h4 {
     & svg {
       stroke: var(--theme-color-dove-gray);
     }
+  }
 
-    & >>> .submenu-toggle {
-      display: flex;
-      background-color: var(--theme-color-gray-light-semi);
-    }
+  & .submenu {
+    align-self: stretch;
+  }
 
-    & >>> .submenu-toggle:hover,
-    & >>> .submenu-toggle:focus,
-    &:focus-within >>> .submenu-toggle {
-      background-color: var(--theme-color-masala);
-
-      & svg {
-        stroke: var(--theme-color-white);
-      }
-    }
+  & >>> .submenu-toggle {
+    border-radius: 0;
   }
 }
 </style>

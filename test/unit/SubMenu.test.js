@@ -31,7 +31,7 @@ describe('Submenu.vue', () => {
         });
         wrapper.find('button').trigger('click');
         wrapper.find('button').trigger('click');
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual([ 'menu-open', 'menu-close']);
+        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['open', 'close']);
     });
 
     it('orients the submenu to the button', () => {
@@ -536,7 +536,7 @@ describe('Submenu.vue', () => {
 
             closingMenuWrapper.find('.submenu-toggle').trigger('click');
 
-            expect(closingMenuWrapper.emittedByOrder().map(e => e.name)).toEqual(['menu-close']);
+            expect(closingMenuWrapper.emittedByOrder().map(e => e.name)).toEqual(['close']);
             expect(toggleMenuMock).toHaveBeenCalled();
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });

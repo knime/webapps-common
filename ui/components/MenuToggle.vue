@@ -1,7 +1,7 @@
 <script>
 /**
- * This component is mostly decorative, but has an active state.
- * It needs parent components to handle functionality and to trigger the active state.
+ * This component is mostly decorative, but has an active and focused state.
+ * It needs parent components to handle functionality and to trigger the states.
  *
  * Works with an icon & text combination or a single icon.
  */
@@ -19,20 +19,29 @@ export default {
         single() {
           return this.$slots.default.length === 1;
         }
+      },
+      methods: {
+        focus() {
+          this.$el.focus()
+        }
       }
 }
 </script>
 
 <template>
-  <span :class="[{single}, {active}]">
+    <button
+      ref="toggle"
+      :class="['toggle', {single}, {active}]"
+      v-on="$listeners"
+    >
     <slot/>
-  </span>
+  </button>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-span {
+.toggle {
   display: inline-block;
   text-align: center;
   font-weight: 500;
@@ -40,6 +49,7 @@ span {
   line-height: 18px;
   padding: 6px 15px;
   text-decoration: none;
+  height: 100%;
   border: 0;
   cursor: pointer;
   color: var(--theme-color-dove-gray);
@@ -50,7 +60,7 @@ span {
     padding: 6px;
   }
 
-  /* Space button children items evenly, but not if there's only one element */
+  /* Space button children items evenly except the first one */
   & > * {
     margin-left: 8px;
 
@@ -67,7 +77,9 @@ span {
     stroke-width: calc(32px / 18);
   }
 
+  &:focus,
   &:hover {
+    outline: none;
     color: var(--theme-color-masala);
     background-color: var(--theme-color-silver-sand-semi);
 

@@ -1,7 +1,12 @@
 <script>
+import MenuToggle from './MenuToggle';
+
 const BLUR_TIMEOUT = 1;
 
 export default {
+    components: {
+        MenuToggle
+    },
     props: {
         /**
          * Items to be listed in the menu.
@@ -116,10 +121,10 @@ export default {
         },
         toggleMenu() {
             this.expanded = !this.expanded;
-            if(this.expanded) {
-              this.$emit('menu-open');
+            if (this.expanded) {
+                this.$emit('open');
             } else {
-              this.$emit('menu-close');
+                this.$emit('close');
             }
             setTimeout(() => {
                 this.$refs['submenu-toggle'].focus();
@@ -157,7 +162,7 @@ export default {
          * @return {undefined}
          */
         closeMenu(refocusToggle = true) {
-            this.$emit('menu-close');
+            this.$emit('close');
             setTimeout(() => {
                 this.expanded = false;
                 if (refocusToggle) {
@@ -188,7 +193,7 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onPreventEvent"
   >
-    <button
+    <MenuToggle
       ref="submenu-toggle"
       aria-haspopup="true"
       type="button"
@@ -196,11 +201,12 @@ export default {
       :class="['submenu-toggle', { expanded }]"
       :aria-expanded="expanded"
       :disabled="disabled"
+      :active="expanded"
       @click.stop.prevent="toggleMenu"
       @keydown.enter="onPreventEvent"
     >
       <slot />
-    </button>
+    </MenuToggle>
     <ul
       ref="list"
       aria-label="submenu"
@@ -236,23 +242,6 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
-
-button {
-  display: block;
-  color: inherit;
-  font-weight: inherit;
-  background: transparent;
-  padding: 0;
-  border: 0 none;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:active,
-  &:hover,
-  &:focus {
-    outline: none;
-  }
-}
 
 ul {
   display: none;

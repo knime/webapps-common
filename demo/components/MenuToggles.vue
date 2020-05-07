@@ -43,24 +43,20 @@ export default {
         return {
             menuToggleCode,
             codeExample,
+            focused0: false,
             active1: false,
             active2: false,
             subMenuItems: [{
-              href: 'http://apple.com',
-              text: 'Apples',
+                href: 'http://apple.com',
+                text: 'Apples'
             }, {
-              href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-              text: 'Oranges',
+                href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
+                text: 'Oranges'
             },  {
-              to: '/testing-nuxt-link',
-              text: 'Ananas'
-           }]
+                to: '/testing-nuxt-link',
+                text: 'Ananas'
+            }]
         };
-    },
-    methods: {
-      toggleMenu(mode, id) {
-        this['active' + id] = mode === 'open';
-      }
     }
 };
 </script>
@@ -70,69 +66,22 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <h2>Menu Toggles</h2>
-         <p>
-            Menu toggles are mostly decorative. They have an active state, which needs to be set by parent
-            components, e.g. a Submenu.
-            Works with an icon &amp; text combination or a single icon.
-          </p>
+        <p>
+          Works with an icon &amp; text combination or a single icon.
+        </p>
         <div class="align-horizontal">
-
-          <button>
-            <MenuToggle function><LensIcon /><span>Function</span></MenuToggle>
-          </button>
-
-          <SubMenu
-            class="demo1"
-            :items="subMenuItems"
-            @menu-open="toggleMenu('open', 1)"
-            @menu-close="toggleMenu('close', 1)"
-            orientation="left"
-          >
-            <MenuToggle :active="active1" >
-              <MenuOptionsIcon />
-            </MenuToggle>
-          </SubMenu>
-
-          <SubMenu
-            class="demo2"
-            :items="subMenuItems"
-            @menu-open="toggleMenu('open', 2)"
-            @menu-close="toggleMenu('close', 2)"
-            orientation="left"
-          >
-            <MenuToggle :active="active2">
-              <span>Sorter</span>
-              <ArrowsOrderIcon />
-            </MenuToggle>
-          </SubMenu>
-
+          <MenuToggle :active="focused0"><LensIcon /><span>Function</span></MenuToggle>
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show MenuToggle.vue source code">{{ menuToggleCode }}</CodeExample>
-
       </div>
     </div>
   </section>
 </template>
 
 <style lang="postcss" scoped>
-
-.demo2 >>> ul {
-  margin-top: 0;
-  width: 100%;
-}
-
-/* Native button style reset */
-button {
-  border: none;
-  margin: 0;
-  padding: 0;
-  width: auto;
-  overflow: visible;
-  background: transparent;
-  -webkit-appearance: none;
-}
+@import "webapps-common/ui/css/variables";
 
 .align-horizontal {
   display: flex;
