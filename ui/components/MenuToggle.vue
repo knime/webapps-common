@@ -82,10 +82,6 @@ span {
 
     & svg {
       stroke: var(--theme-color-white);
-
-      &.toggle-icon {
-        transform: scaleY(-1);
-      }
     }
   }
 }
