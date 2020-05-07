@@ -21,7 +21,8 @@ export default {
          *    message (actual message String)
          *    link: { (optional link that will be displayed after the message)
          *       text
-         *       href
+         *       href (external links, will become <a></a>)
+         *       to (internal links, will become <nuxt-link></nuxt-link>)
          *    }
          * }]
          */
@@ -52,12 +53,15 @@ export default {
         slot="icon"
       />
       {{ message.message }}
-      <a
+      <Component
+        :is="message.link.to ? 'nuxt-link' : 'a'"
         v-if="message.link"
-        :href="message.link.href"
+        :to="message.link.to || null"
+        :href="message.link.href || null"
+        class="message-link"
       >
         {{ ' ' + message.link.text }}
-      </a>
+      </Component>
     </Message>
   </transition-group>
 </template>
@@ -71,6 +75,11 @@ export default {
   &.active {
     pointer-events: all;
   }
+}
+
+.message-link {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .messages-enter-active,
