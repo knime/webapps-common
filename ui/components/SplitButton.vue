@@ -13,7 +13,7 @@ div {
   & >>> .button {
     position: relative;
     margin-bottom: 0;
-    border-radius: 9999px 0 0 9999px;
+    border-radius: 9999px 0 0 9999px; /* best way to ensure flexible 1/4 corners */
 
     &::after {
       content: '';
@@ -37,7 +37,7 @@ div {
   }
 
   & >>> .submenu {
-    border-radius: 0 9999px 9999px 0;
+    border-radius: 0 9999px 9999px 0; /* best way to ensure flexible 1/4 corners */
 
     & .submenu-toggle {
       width: 32px;

@@ -2,6 +2,8 @@
 /**
  * This component is mostly decorative, but has an active state.
  * It needs parent components to handle functionality and to trigger the active state.
+ *
+ * Works with an icon & text combination or a single icon.
  */
 export default {
       props: {
@@ -42,7 +44,7 @@ div {
   cursor: pointer;
   color: var(--theme-color-dove-gray);
   background-color: transparent;
-  border-radius: 9999px;
+  border-radius: 9999px; /* best way to ensure pill shaped buttons with flexible 1/4 corners */
 
   &.single {
     padding: 6px;

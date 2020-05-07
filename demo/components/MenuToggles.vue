@@ -73,6 +73,7 @@ export default {
          <p>
             Menu toggles are mostly decorative. They have an active state, which needs to be set by parent
             components, e.g. a Submenu.
+            Works with an icon &amp; text combination or a single icon.
           </p>
         <div class="align-horizontal">
 
