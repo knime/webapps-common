@@ -27,7 +27,6 @@ export default {
 
 <template>
   <button
-    ref="toggle"
     :class="['toggle', {single}, {active}]"
     v-on="$listeners"
   >
