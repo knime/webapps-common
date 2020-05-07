@@ -24,15 +24,15 @@ export default {
 </script>
 
 <template>
-  <div :class="[{single}, {active}]">
+  <span :class="[{single}, {active}]">
     <slot/>
-  </div>
+  </span>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-div {
+span {
   display: inline-block;
   text-align: center;
   font-weight: 500;
