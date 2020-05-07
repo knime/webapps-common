@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 
 import MenuToggle from '~/ui/components/MenuToggle';
 
@@ -23,7 +23,6 @@ describe('MenuToggle.vue', () => {
                 default: ['<span>text</span>', '<svg/>']
             }
         });
-        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'active']);
     });
 
@@ -33,7 +32,6 @@ describe('MenuToggle.vue', () => {
                 default: ['<svg/>']
             }
         });
-        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'single']);
     });
 
@@ -47,8 +45,34 @@ describe('MenuToggle.vue', () => {
                 default: ['<span>text</span>']
             }
         });
-        expect(wrapper.is('button')).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle', 'single', 'active']);
+    });
+
+    it('triggers events', () => {
+        const clicker = jest.fn();
+        const wrapper = mount(MenuToggle, {
+            propsData: {
+                active: true
+            },
+            slots: {
+                default: ['<span>text</span>']
+            },
+            listeners: {
+                click: clicker
+            }
+        });
+        wrapper.trigger('click');
+        expect(clicker).toHaveBeenCalled();
+    });
+
+    it('gets focused when focus method is called', () => {
+        const wrapper = mount(MenuToggle, {
+            slots: {
+                default: ['<span>text</span>']
+            }
+        });
+        wrapper.vm.focus();
+        expect(document.activeElement).toBe(wrapper.vm.$el);
     });
 
 
