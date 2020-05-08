@@ -120,6 +120,7 @@ export default {
               class="close"
               @click="onDismiss"
               @keydown.space.stop.prevent="onDismiss"
+              title="Discard message"
             >
               <CloseIcon />
             </span>
@@ -182,6 +183,14 @@ section {
       flex-shrink: 0;
       margin-bottom: 0;
       margin-left: 10px;
+      display: flex;
+      width: unset;
+    }
+
+    & span.close {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
     }
 
     & .close {
@@ -189,22 +198,22 @@ section {
       display: flex;
       align-items: center;
       position: absolute;
-      right: 0;
+      right: -6px; /* align svg with right border */
       pointer-events: all;
+      text-align: center;
+
+      /* hover/focus styles for type error and success */
+      &:hover,
+      &:focus {
+        background-color: var(--theme-color-silver-sand-semi);
+      }
 
       & svg {
-        margin-right: 0;
+        margin: auto;
         height: 18px;
         width: 18px;
         stroke-width: calc(32px / 18);
         cursor: pointer;
-        top: 5px;
-      }
-
-      /* hover/focus styles for type error and success */
-      &:hover >>> svg,
-      &:focus >>> svg {
-        filter: drop-shadow(0 0 4px black);
       }
     }
   }
@@ -252,16 +261,30 @@ section {
     display: flex;
     align-content: center;
 
-    & .dropdown-icon {
-      stroke: var(--theme-color-white);
-      top: 5px;
-      right: 13px;
-      display: none;
+    & .dropdown {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 13px;
+      top: 0;
+      display: flex;
+      align-items: center;
+
+      &:hover,
+      &:focus {
+        background-color: var(--theme-color-silver-sand-semi);
+      }
+
+      & .dropdown-icon {
+        stroke: var(--theme-color-white);
+        display: none;
+      }
     }
   }
 
   & >>> .panel {
-    width: calc(100vw - 12px);
+    width: 100vw;
+    max-width: 100vw;
     background-color: var(--theme-color-white);
     opacity: 0.9;
     min-height: 50px;
@@ -275,12 +298,12 @@ section {
     padding-left: calc(3 * var(--grid-gap-width));
     padding-right: calc(3 * var(--grid-gap-width));
     position: relative;
-    left: calc((100% - 100vw) / 2 + 6px);
+    left: calc((100% - 100vw) / 2);
 
     & .details {
       display: flex;
       justify-content: space-between;
-      overflow-y: auto;
+      overflow-y: scroll;
       width: 100%;
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
@@ -301,7 +324,7 @@ section {
         height: 30px;
         width: 30px;
         text-align: center;
-        margin-right: 27px; /* line-up with dropdown icon */
+        margin-right: 13px; /* line-up with dropdown icon */
 
         &:hover {
           background-color: var(--theme-color-silver-sand-semi);
@@ -325,8 +348,10 @@ section {
   pointer-events: all;
 
   & >>> button {
-    & .dropdown-icon {
-      display: initial;
+    & .dropdown {
+      & .dropdown-icon {
+        display: initial;
+      }
     }
   }
 }
