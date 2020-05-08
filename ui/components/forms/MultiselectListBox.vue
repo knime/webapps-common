@@ -460,6 +460,7 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    cursor: default; /* edge legacy shows different cursor */
 
     &:hover {
       background: var(--theme-color-porcelain);

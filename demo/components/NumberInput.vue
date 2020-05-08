@@ -4,8 +4,7 @@ import NumberInput from '../../ui/components/forms/NumberInput';
 import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/NumberInput';
 
-const codeExample = `Integer (step-size = 1)
-<NumberInput
+const codeExample = `<NumberInput
   ref="input1"
   v-model="inputValue1"
   :min="min"
