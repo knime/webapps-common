@@ -33,8 +33,6 @@ export default {
           <div style="--bg: var(--knime-gray-light-semi);">--knime-gray-light-semi</div>
           <div style="--bg: var(--knime-gray-ultra-light);">--knime-gray-ultra-light</div>
           <div style="--bg: var(--knime-white);">--knime-white</div>
-          <div style="--bg: var(--knime-blue); --font: white;">--knime-blue</div>
-          <div style="--bg: var(--knime-blue-semi);">--knime-blue-semi</div>
         </div>
         <p>
           To support theming, please always use the <code>--theme-color-x</code> variables instead of directly
