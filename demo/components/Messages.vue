@@ -29,6 +29,16 @@ export default {
                 message: 'Error message',
                 icon: BulbIcon,
                 button: 'Okily Dokily!'
+            }, {
+                id: 4,
+                type: 'error',
+                message: 'Error message.',
+                icon: BulbIcon,
+                link: {
+                    text: 'Some linked text in the error message.',
+                    href: '/', // (for external links)
+                    to: '/' // (for internal links)
+                }
             }]
         };
     },
@@ -71,6 +81,15 @@ export default {
                 message: 'Error message',
                 icon: BulbIcon,
                 button: 'Okily Dokily!'
+            }, {
+                id: 4,
+                type: 'error',
+                message: 'Error message.',
+                icon: BulbIcon,
+                link: {
+                    text: 'Some linked text in the error message.',
+                    href: '/'
+                }
             }]
         };
     },
