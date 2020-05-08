@@ -8,8 +8,7 @@ const codeExample = `<IdleReadyButton
   :show="showMore"
   text="Show more"
   @click="onMore"
-/>
-`;
+/>`;
 
 const pageSize = 4;
 const maxLength = 11;
