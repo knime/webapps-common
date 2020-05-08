@@ -1,13 +1,25 @@
 <script>
+import BaseButton from './BaseButton';
+
 /**
  * Works with an icon & text combination or a single icon.
  */
 export default {
+    components: {
+        BaseButton
+    },
     props: {
         /**
          * Switches the active style of the component
          */
         active: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * Switches off all styles of the component
+         */
+        plain: {
             type: Boolean,
             default: false
         }
@@ -26,12 +38,12 @@ export default {
 </script>
 
 <template>
-  <button
-    :class="['toggle', {single}, {active}]"
+  <BaseButton
+    :class="['toggle', {single}, {active}, {plain}]"
     v-on="$listeners"
   >
-    <slot />
-  </button>
+    <slot/>
+  </BaseButton>
 </template>
 
 <style lang="postcss" scoped>
@@ -56,7 +68,7 @@ export default {
   }
 
   /* Space button children items evenly except the first one */
-  & > * {
+  & >>> > * {
     margin-left: 8px;
 
     &:first-child {
@@ -64,7 +76,7 @@ export default {
     }
   }
 
-  & svg {
+  & >>> svg {
     vertical-align: top;
     stroke: var(--theme-color-dove-gray);
     width: 18px;
@@ -78,7 +90,7 @@ export default {
     color: var(--theme-color-masala);
     background-color: var(--theme-color-silver-sand-semi);
 
-    & svg {
+    & >>> svg {
       stroke: var(--theme-color-masala);
     }
   }
@@ -87,7 +99,7 @@ export default {
     color: var(--theme-color-white);
     background-color: var(--theme-color-masala);
 
-    & svg {
+    & >>> svg {
       stroke: var(--theme-color-white);
     }
   }

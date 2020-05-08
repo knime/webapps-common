@@ -46,7 +46,6 @@ export default {
 <template>
   <nav>
     <SubMenu
-      class="submenu"
       :items="subMenuItems"
       orientation="left"
       button-title="Open my submenu with icons"
@@ -127,7 +126,6 @@ export default {
           <div class="card">
             <span class="menu-name">Normal</span>
             <SubMenu
-              class="submenu"
               :items="subMenuItemsWithoutIcons"
               button-title="Open my submenu"
             >
@@ -138,7 +136,6 @@ export default {
           <div class="card">
             <span class="menu-name">With icons</span>
             <SubMenu
-              class="submenu"
               :items="subMenuItems"
               button-title="Open my submenu with icons"
             >
@@ -149,7 +146,6 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation left</span>
             <SubMenu
-              class="submenu"
               :items="subMenuItems"
               orientation="left"
               button-title="Open my submenu with icons"
@@ -161,7 +157,6 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation top</span>
             <SubMenu
-              class="submenu"
               :items="subMenuItems"
               orientation="top"
               button-title="Open my submenu with icons"

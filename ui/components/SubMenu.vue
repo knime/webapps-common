@@ -55,6 +55,13 @@ export default {
             }
         },
         /**
+         * If the main button should be plain or include some styling.
+         */
+        plainMenuToggle: {
+            type: Boolean,
+            default: false
+        },
+        /**
          * Disable SubMenu
          */
         disabled: {
@@ -202,6 +209,7 @@ export default {
       :aria-expanded="expanded"
       :disabled="disabled"
       :active="expanded"
+      :plain="plainMenuToggle"
       @click.stop.prevent="toggleMenu"
       @keydown.enter="onPreventEvent"
     >

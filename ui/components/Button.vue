@@ -1,21 +1,11 @@
 <script>
+import BaseButton from './BaseButton';
+
 export default {
+    components: {
+        BaseButton
+    },
     props: {
-        /**
-         * If set, the button renders an <a> element instead of a <button> element
-         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
-         */
-        href: {
-            type: String,
-            default: ''
-        },
-        /**
-         * If set, the button renders a <nuxt-link> instead of a <button> element.
-         */
-        to: {
-            type: String,
-            default: ''
-        },
         /**
          * show button with border
          */
@@ -103,38 +93,13 @@ export default {
 </script>
 
 <template>
-  <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
-  <nuxt-link
-    v-if="component === 'nuxt-link'"
-    :to="to"
-    :class="classes"
-    :event="preventDefault ? [] : 'click'"
-    @click.native="onClick"
-  >
-    <slot />
-  </nuxt-link>
-  <!--"@keydown.enter.self.prevent" needed to silence 'enter' key events which incorrectly fire w/ @click.
-    On native <button> elem, click event cannot be differentiated as enter or click (Vue issue). -->
-  <button
-    v-else-if="component === 'button'"
-    :class="classes"
-    :disabled="disabled"
-    @click="onClick"
-    @keydown.space="onClick"
-    @keydown.enter.self.prevent
-  >
-    <slot />
-  </button>
-  <a
-    v-else
-    :href="href"
+  <BaseButton
     :class="classes"
     @click="onClick"
-    @keydown.enter="onClick"
-    @keydown.space="onClick"
+    @keyBoardAction="onClick"
   >
     <slot />
-  </a>
+  </BaseButton>
 </template>
 
 <style lang="postcss" scoped>
