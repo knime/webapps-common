@@ -51,6 +51,10 @@ export default {
                 e.preventDefault();
                 return false;
             }
+        },
+        focus() {
+            /** This can be called from outside via focus on a $ref */
+            this.$el.focus();
         }
     }
 };

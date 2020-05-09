@@ -4,7 +4,7 @@ import MenuToggle from '~/ui/components/MenuToggle';
 import BaseButton from '~/ui/components/BaseButton';
 
 describe('MenuToggle.vue', () => {
-    it('renders a menuToggle', () => {
+    it('renders a MenuToggle', () => {
         const wrapper = shallowMount(MenuToggle, {
             slots: {
                 default: ['<svg/>', '<span>text</span>']

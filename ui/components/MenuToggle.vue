@@ -22,13 +22,6 @@ export default {
         to: {
             type: String,
             default: ''
-        },
-        /**
-         * Switches off all styles of the component
-         */
-        plain: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -48,7 +41,7 @@ export default {
 <template>
   <BaseButton
     :to="to"
-    :class="['toggle', {single}, {active}, {plain}]"
+    :class="['toggle', {single}, {active}]"
     v-on="$listeners"
   >
     <slot />
@@ -58,7 +51,7 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.toggle:not(.plain) {
+.toggle {
   display: inline-block;
   text-align: center;
   font-weight: 500;

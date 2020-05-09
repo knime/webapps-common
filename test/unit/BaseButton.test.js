@@ -1,4 +1,4 @@
-import { shallowMount, RouterLinkStub } from '@vue/test-utils';
+import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import BaseButton from '~/ui/components/BaseButton';
 
 
@@ -112,5 +112,11 @@ describe('BaseButton.vue', () => {
         });
         let button = wrapper.find(RouterLinkStub);
         expect(button.props('event')).toStrictEqual([]);
+    });
+
+    it('gets focused when focus method is called', () => {
+        const wrapper = mount(BaseButton);
+        wrapper.vm.focus();
+        expect(document.activeElement).toBe(wrapper.vm.$el);
     });
 });

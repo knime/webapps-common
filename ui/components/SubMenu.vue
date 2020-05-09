@@ -1,13 +1,26 @@
 <script>
 import MenuToggle from './MenuToggle';
+import BaseButton from './BaseButton';
 
 const BLUR_TIMEOUT = 1;
 
 export default {
     components: {
-        MenuToggle
+        MenuToggle,
+        BaseButton
     },
     props: {
+        /**
+         * The component to be used as the toggle for the menu.
+         * BaseButton offers no styling, in most cases MenuToggle works best.
+         */
+        toggleComponent: {
+            type: String,
+            default: 'MenuToggle',
+            validator(val) {
+                return ['BaseButton', 'MenuToggle'].includes(val);
+            }
+        },
         /**
          * Items to be listed in the menu.
          * Each item has a `text`, optional `icon` and optional `to` / `href` properties, where `to` is for router-links
@@ -200,7 +213,8 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onPreventEvent"
   >
-    <MenuToggle
+    <Component
+      :is="toggleComponent"
       ref="submenu-toggle"
       aria-haspopup="true"
       type="button"
@@ -214,7 +228,7 @@ export default {
       @keydown.enter="onPreventEvent"
     >
       <slot />
-    </MenuToggle>
+    </Component>
     <ul
       ref="list"
       aria-label="submenu"
