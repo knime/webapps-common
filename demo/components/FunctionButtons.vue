@@ -57,12 +57,12 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Menu Toggles</h2>
+        <h2>Function Buttons</h2>
         <p>
-          The toggle is a button with an active state, e.g. when a dropdown menu is expanded.
+          The function button is a button with an optional active state, e.g. when a dropdown menu is expanded.
         </p>
         <p>
-          It's primary use is together with the submenu where it is included, but can also be used standalone.
+          It's primary use is together with the SubMenu component where it is included, but can also be used standalone.
           Works with an icon &amp; text combination or a single icon.
         </p>
         <div class="align-horizontal">
