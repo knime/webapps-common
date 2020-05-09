@@ -10,6 +10,20 @@ describe('Button.vue', () => {
         expect(wrapper.classes()).toEqual(['button']);
     });
 
+    it('forwards props', () => {
+        const wrapper = shallowMount(Button, {
+            propsData: {
+                preventDefault: true,
+                to: 'test-to',
+                href: 'test-href'
+            }
+        });
+        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
+        expect(wrapper.find(BaseButton).props('preventDefault')).toEqual(true);
+        expect(wrapper.find(BaseButton).props('to')).toEqual('test-to');
+        expect(wrapper.find(BaseButton).props('href')).toEqual('test-href');
+    });
+
     it('renders classes according to props', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
