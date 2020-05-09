@@ -15,6 +15,19 @@ describe('FunctionButton.vue', () => {
 
     });
 
+    it('forwards props', () => {
+        const wrapper = shallowMount(FunctionButton, {
+            propsData: {
+                to: 'test-to'
+            },
+            slots: {
+                default: ['<svg/>', '<span>text</span>']
+            }
+        });
+        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
+        expect(wrapper.find(BaseButton).props('to')).toEqual('test-to');
+    });
+
     it('renders a class if props is set', () => {
         const wrapper = shallowMount(FunctionButton, {
             propsData: {
