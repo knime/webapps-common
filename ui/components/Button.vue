@@ -65,15 +65,6 @@ export default {
         }
     },
     computed: {
-        component() {
-            if (this.to) {
-                return 'nuxt-link';
-            } else if (this.href) {
-                return 'a';
-            } else {
-                return 'button';
-            }
-        },
         classes() {
             return [
                 'button',
