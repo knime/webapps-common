@@ -1,24 +1,24 @@
 <script>
-import MenuToggle from './MenuToggle';
+import FunctionButton from './FunctionButton';
 import BaseButton from './BaseButton';
 
 const BLUR_TIMEOUT = 1;
 
 export default {
     components: {
-        MenuToggle,
+        FunctionButton,
         BaseButton
     },
     props: {
         /**
          * The component to be used as the toggle for the menu.
-         * BaseButton offers no styling, in most cases MenuToggle works best.
+         * BaseButton offers no styling, in most cases FunctionButton works best.
          */
         toggleComponent: {
             type: String,
-            default: 'MenuToggle',
+            default: 'FunctionButton',
             validator(val) {
-                return ['BaseButton', 'MenuToggle'].includes(val);
+                return ['BaseButton', 'FunctionButton'].includes(val);
             }
         },
         /**
@@ -70,7 +70,7 @@ export default {
         /**
          * If the main button should be plain or include some styling.
          */
-        plainMenuToggle: {
+        plainFunctionButton: {
             type: Boolean,
             default: false
         },
@@ -223,7 +223,7 @@ export default {
       :aria-expanded="expanded"
       :disabled="disabled"
       :active="expanded"
-      :plain="plainMenuToggle"
+      :plain="plainFunctionButton"
       @click.stop.prevent="toggleMenu"
       @keydown.enter="onPreventEvent"
     >

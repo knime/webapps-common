@@ -32,7 +32,7 @@ import MultiselectListBox from '../components/MultiselectListBox';
 import Checkboxes from '../components/Checkboxes';
 import Twinlist from '../components/Twinlist';
 import OpenSourceCredits from '../components/OpenSourceCredits';
-import MenuToggles from '../components/MenuToggles';
+import FunctionButtons from '../components/FunctionButtons';
 
 export default {
     components: {
@@ -67,7 +67,7 @@ export default {
         Checkboxes,
         Twinlist,
         OpenSourceCredits,
-        MenuToggles
+        FunctionButtons
     }
 };
 </script>
@@ -95,7 +95,7 @@ export default {
     <Icons />
     <Breadcrumb />
     <Buttons />
-    <MenuToggles />
+    <FunctionButtons />
     <SubMenu />
     <SplitButton />
     <IdleReadyButton />

@@ -1,7 +1,7 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
 import SubMenu from '~/ui/components/SubMenu';
-import MenuToggle from '~/ui/components/MenuToggle';
+import FunctionButton from '~/ui/components/FunctionButton';
 import BaseButton from '~/ui/components/BaseButton';
 
 describe('Submenu.vue', () => {
@@ -16,9 +16,9 @@ describe('Submenu.vue', () => {
                 buttonTitle: 'test button title'
             }
         });
-        expect(wrapper.find(MenuToggle).find('svg').exists()).toBeTruthy();
-        expect(wrapper.find(MenuToggle).text()).toContain('click me please right there');
-        expect(wrapper.find(MenuToggle).attributes('title')).toBe('test button title');
+        expect(wrapper.find(FunctionButton).find('svg').exists()).toBeTruthy();
+        expect(wrapper.find(FunctionButton).text()).toContain('click me please right there');
+        expect(wrapper.find(FunctionButton).attributes('title')).toBe('test button title');
     });
 
     it('renders alternative components as a menu toggle', () => {
@@ -47,8 +47,8 @@ describe('Submenu.vue', () => {
                 buttonTitle: 'test button title'
             }
         });
-        wrapper.find(MenuToggle).trigger('click');
-        wrapper.find(MenuToggle).trigger('click');
+        wrapper.find(FunctionButton).trigger('click');
+        wrapper.find(FunctionButton).trigger('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['open', 'close']);
     });
 
@@ -93,7 +93,7 @@ describe('Submenu.vue', () => {
                 NuxtLink: RouterLinkStub
             }
         });
-        expect(wrapper.find(MenuToggle).text()).toContain('button me');
+        expect(wrapper.find(FunctionButton).text()).toContain('button me');
         expect(wrapper.findAll('li').length).toBe(items.length);
 
         // Test texts

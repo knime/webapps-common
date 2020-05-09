@@ -1,11 +1,11 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import MenuToggle from '~/ui/components/MenuToggle';
+import FunctionButton from '~/ui/components/FunctionButton';
 import BaseButton from '~/ui/components/BaseButton';
 
-describe('MenuToggle.vue', () => {
-    it('renders a MenuToggle', () => {
-        const wrapper = shallowMount(MenuToggle, {
+describe('FunctionButton.vue', () => {
+    it('renders a FunctionButton', () => {
+        const wrapper = shallowMount(FunctionButton, {
             slots: {
                 default: ['<svg/>', '<span>text</span>']
             }
@@ -16,7 +16,7 @@ describe('MenuToggle.vue', () => {
     });
 
     it('renders a class if props is set', () => {
-        const wrapper = shallowMount(MenuToggle, {
+        const wrapper = shallowMount(FunctionButton, {
             propsData: {
                 active: true
             },
@@ -28,7 +28,7 @@ describe('MenuToggle.vue', () => {
     });
 
     it('renders a class if it only has one slot child', () => {
-        const wrapper = shallowMount(MenuToggle, {
+        const wrapper = shallowMount(FunctionButton, {
             slots: {
                 default: ['<svg/>']
             }
@@ -37,7 +37,7 @@ describe('MenuToggle.vue', () => {
     });
 
     it('renders a classes if props is set and one child is present', () => {
-        const wrapper = shallowMount(MenuToggle, {
+        const wrapper = shallowMount(FunctionButton, {
             propsData: {
                 active: true
             },
@@ -50,7 +50,7 @@ describe('MenuToggle.vue', () => {
 
     it('triggers events', () => {
         const clicker = jest.fn();
-        const wrapper = mount(MenuToggle, {
+        const wrapper = mount(FunctionButton, {
             propsData: {
                 active: true
             },
@@ -66,7 +66,7 @@ describe('MenuToggle.vue', () => {
     });
 
     it('gets focused when focus method is called', () => {
-        const wrapper = mount(MenuToggle, {
+        const wrapper = mount(FunctionButton, {
             slots: {
                 default: ['<span>text</span>']
             }

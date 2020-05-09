@@ -1,31 +1,31 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import MenuToggle from '../../ui/components/MenuToggle';
-import menuToggleCode from '!!raw-loader!../../ui/components/MenuToggle';
+import FunctionButton from '../../ui/components/FunctionButton';
+import FunctionButtonCode from '!!raw-loader!../../ui/components/FunctionButton';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
 import SorterIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
 
 const codeExample =
 `
-  <MenuToggle :active="active1">
+  <FunctionButton :active="active1">
     <LensIcon />
     <span>Function</span>
-  </MenuToggle>
+  </FunctionButton>
 
-  <MenuToggle :active="active2">
+  <FunctionButton :active="active2">
     <MenuOptionsIcon />
-  </MenuToggle>
+  </FunctionButton>
 
-  <MenuToggle :active="active3">
+  <FunctionButton :active="active3">
     <span>Sorter</span>
     <SorterIcon />
-  </MenuToggle>
+  </FunctionButton>
 `;
 
 export default {
     components: {
-        MenuToggle,
+        FunctionButton,
         MenuOptionsIcon,
         LensIcon,
         SorterIcon,
@@ -33,7 +33,7 @@ export default {
     },
     data() {
         return {
-            menuToggleCode,
+            FunctionButtonCode,
             codeExample,
             active1: false,
             active2: false,
@@ -66,32 +66,32 @@ export default {
           Works with an icon &amp; text combination or a single icon.
         </p>
         <div class="align-horizontal">
-          <MenuToggle
+          <FunctionButton
             :active="active1"
             @click="active1 = !active1"
           >
             <LensIcon />
             <span>Function</span>
-          </MenuToggle>
+          </FunctionButton>
 
-          <MenuToggle
+          <FunctionButton
             :active="active2"
             @click="active2 = !active2"
           >
             <MenuOptionsIcon />
-          </MenuToggle>
+          </FunctionButton>
 
-          <MenuToggle
+          <FunctionButton
             :active="active3"
             @click="active3 = !active3"
           >
             <span>Function</span>
             <SorterIcon />
-          </MenuToggle>
+          </FunctionButton>
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show MenuToggle.vue source code">{{ menuToggleCode }}</CodeExample>
+        <CodeExample summary="Show FunctionButton.vue source code">{{ FunctionButtonCode }}</CodeExample>
       </div>
     </div>
   </section>
