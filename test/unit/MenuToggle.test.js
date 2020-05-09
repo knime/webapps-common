@@ -1,6 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
 import MenuToggle from '~/ui/components/MenuToggle';
+import BaseButton from '~/ui/components/BaseButton';
 
 describe('MenuToggle.vue', () => {
     it('renders a menuToggle', () => {
@@ -9,7 +10,7 @@ describe('MenuToggle.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.is('button')).toBeTruthy();
+        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
         expect(wrapper.classes()).toEqual(['toggle']);
 
     });
@@ -34,7 +35,6 @@ describe('MenuToggle.vue', () => {
         });
         expect(wrapper.classes()).toEqual(['toggle', 'single']);
     });
-
 
     it('renders a classes if props is set and one child is present', () => {
         const wrapper = shallowMount(MenuToggle, {
@@ -74,6 +74,5 @@ describe('MenuToggle.vue', () => {
         wrapper.vm.focus();
         expect(document.activeElement).toBe(wrapper.vm.$el);
     });
-
 
 });

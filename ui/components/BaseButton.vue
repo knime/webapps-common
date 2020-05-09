@@ -15,6 +15,13 @@ export default {
         to: {
             type: String,
             default: ''
+        },
+        /**
+         * toggle to prevent default click handler
+         */
+        preventDefault: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -29,11 +36,21 @@ export default {
         }
     },
     methods: {
-        onClick(event) {
-            this.$emit('click', event);
-        },
-        onKeyboardAction(event) {
-            this.$emit('keyboard-action', event);
+        onClick(e) {
+            /* anchor tags can act as buttons without href and space key should work */
+            if (e.code === 'Space' && this.href) {
+                return false;
+            }
+            /**
+             * Click event. Fired when the button is clicked.
+             *
+             * @event click
+             */
+            this.$emit('click', e);
+            if (this.preventDefault) {
+                e.preventDefault();
+                return false;
+            }
         }
     }
 };
@@ -53,7 +70,7 @@ export default {
   <button
     v-else-if="component === 'button'"
     @click="onClick"
-    @keydown.space="onKeyboardAction"
+    @keydown.space="onClick"
     @keydown.enter.self.prevent
   >
     <slot />
@@ -62,8 +79,8 @@ export default {
     v-else
     :href="href"
     @click="onClick"
-    @keydown.enter="onKeyboardAction"
-    @keydown.space="onKeyboardAction"
+    @keydown.enter="onClick"
+    @keydown.space="onClick"
   >
     <slot />
   </a>

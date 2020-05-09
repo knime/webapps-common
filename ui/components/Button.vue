@@ -7,6 +7,21 @@ export default {
     },
     props: {
         /**
+         * If set, the button renders an <a> element instead of a <button> element
+         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
+         */
+        href: {
+            type: String,
+            default: ''
+        },
+        /**
+         * If set, the button renders a <nuxt-link> instead of a <button> element.
+         */
+        to: {
+            type: String,
+            default: ''
+        },
+        /**
          * show button with border
          */
         withBorder: {
@@ -69,25 +84,6 @@ export default {
                 { disabled: this.disabled }
             ];
         }
-    },
-    methods: {
-        // eslint-disable-next-line consistent-return
-        onClick(e) {
-            /* anchor tags can act as buttons without href and space key should work */
-            if (e.code === 'Space' && this.href) {
-                return false;
-            }
-            /**
-             * Click event. Fired when the button is clicked.
-             *
-             * @event click
-             */
-            this.$emit('click');
-            if (this.preventDefault) {
-                e.preventDefault();
-                return false;
-            }
-        }
     }
 };
 </script>
@@ -95,8 +91,10 @@ export default {
 <template>
   <BaseButton
     :class="classes"
-    @click="onClick"
-    @keyBoardAction="onClick"
+    :preventDefault="preventDefault"
+    :to="to"
+    :href="href"
+    v-on="$listeners"
   >
     <slot />
   </BaseButton>

@@ -17,6 +17,13 @@ export default {
             default: false
         },
         /**
+         * In case it should be a simple nuxt-link, provide this parameter
+         */
+        to: {
+            type: String,
+            default: ''
+        },
+        /**
          * Switches off all styles of the component
          */
         plain: {
@@ -31,6 +38,7 @@ export default {
     },
     methods: {
         focus() {
+            /** This can be called from outside via focus on a $ref */
             this.$el.focus();
         }
     }
@@ -39,17 +47,18 @@ export default {
 
 <template>
   <BaseButton
+    :to="to"
     :class="['toggle', {single}, {active}, {plain}]"
     v-on="$listeners"
   >
-    <slot/>
+    <slot />
   </BaseButton>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.toggle {
+.toggle:not(.plain) {
   display: inline-block;
   text-align: center;
   font-weight: 500;
