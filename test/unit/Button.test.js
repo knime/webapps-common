@@ -1,4 +1,4 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 
 import Button from '~/ui/components/Button';
 import BaseButton from '~/ui/components/BaseButton';

@@ -91,7 +91,7 @@ export default {
 <template>
   <BaseButton
     :class="classes"
-    :preventDefault="preventDefault"
+    :prevent-default="preventDefault"
     :to="to"
     :href="href"
     v-on="$listeners"
