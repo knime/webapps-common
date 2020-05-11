@@ -36,8 +36,8 @@ export default {
                 icon: BulbIcon,
                 link: {
                     text: 'Some linked text in the error message.',
-                    href: '/', // (for external links)
-                    to: '/' // (for internal links)
+                    href: 'https://www.knime.com/', // for external links
+                    // to: '/login' // for internal links
                 }
             }]
         };
@@ -87,8 +87,8 @@ export default {
                 message: 'Error message.',
                 icon: BulbIcon,
                 link: {
-                    text: 'Some linked text in the error message.',
-                    href: '/'
+                    text: 'With appended link.',
+                    href: 'https://www.knime.com/'
                 }
             }]
         };
