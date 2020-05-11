@@ -301,6 +301,7 @@ section {
     left: calc((100% - 100vw) / 2);
 
     & .details {
+      min-width: var(--grid-min-width);
       display: flex;
       justify-content: space-between;
       overflow-y: scroll;
@@ -324,7 +325,7 @@ section {
         height: 30px;
         width: 30px;
         text-align: center;
-        margin-right: 13px; /* line-up with dropdown icon */
+        margin-right: 15px; /* line-up with dropdown icon */
 
         &:hover {
           background-color: var(--theme-color-silver-sand-semi);
@@ -354,5 +355,14 @@ section {
       }
     }
   }
+}
+
+@media only screen and (max-width: 1180px) {
+.collapser{
+  & >>> .panel {
+    padding-left: var(--grid-gap-width);
+    padding-right: var(--grid-gap-width);
+  }
+}
 }
 </style>
