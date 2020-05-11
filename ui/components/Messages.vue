@@ -10,12 +10,21 @@ export default {
     },
     props: {
         /**
-         * Array with message configuration objects supporting the following props:
-         *  - id
-         *  - type (see Message component for supported values)
-         *  - icon (Component)
-         *  - button
-         *  - message
+         * Array with message configuration objects.
+         *
+         * @example
+         * [{
+         *    id
+         *    type (see Message component for supported values)
+         *    icon (Component)
+         *    button (optional button text)
+         *    message (actual message String)
+         *    link: { (optional link that will be displayed after the message)
+         *       text
+         *       href (external links, will become <a></a>)
+         *       to (internal links, will become <nuxt-link></nuxt-link>)
+         *    }
+         * }]
          */
         messages: {
             type: Array,
@@ -44,6 +53,15 @@ export default {
         slot="icon"
       />
       {{ message.message }}
+      <Component
+        :is="message.link.to ? 'nuxt-link' : 'a'"
+        v-if="message.link"
+        :to="message.link.to || null"
+        :href="message.link.href || null"
+        class="message-link"
+      >
+        {{ ' ' + message.link.text }}
+      </Component>
     </Message>
   </transition-group>
 </template>
@@ -57,6 +75,11 @@ export default {
   &.active {
     pointer-events: all;
   }
+}
+
+.message-link {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .messages-enter-active,
