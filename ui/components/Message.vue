@@ -253,6 +253,18 @@ section {
   }
 }
 
+.show-collapser {
+  pointer-events: all;
+
+  & >>> button {
+    & .dropdown {
+      & .dropdown-icon {
+        display: initial;
+      }
+    }
+  }
+}
+
 .collapser {
   width: 100%;
   pointer-events: none;
@@ -345,24 +357,12 @@ section {
   }
 }
 
-.show-collapser {
-  pointer-events: all;
-
-  & >>> button {
-    & .dropdown {
-      & .dropdown-icon {
-        display: initial;
-      }
+@media only screen and (max-width: 1180px) {
+  .collapser {
+    & >>> .panel {
+      padding-left: var(--grid-gap-width);
+      padding-right: var(--grid-gap-width);
     }
   }
-}
-
-@media only screen and (max-width: 1180px) {
-.collapser{
-  & >>> .panel {
-    padding-left: var(--grid-gap-width);
-    padding-right: var(--grid-gap-width);
-  }
-}
 }
 </style>
