@@ -119,7 +119,7 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Sub menu</h2>
+        <h2>SubMenu</h2>
         <p>A button that opens a dropdown menu containing links.</p>
 
         <div class="submenus">
