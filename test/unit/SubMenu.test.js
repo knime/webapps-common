@@ -2,7 +2,6 @@ import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
 import SubMenu from '~/ui/components/SubMenu';
 import FunctionButton from '~/ui/components/FunctionButton';
-import BaseButton from '~/ui/components/BaseButton';
 
 describe('SubMenu.vue', () => {
 
@@ -19,22 +18,6 @@ describe('SubMenu.vue', () => {
         expect(wrapper.find(FunctionButton).find('svg').exists()).toBeTruthy();
         expect(wrapper.find(FunctionButton).text()).toContain('click me please right there');
         expect(wrapper.find(FunctionButton).attributes('title')).toBe('test button title');
-    });
-
-    it('renders alternative components as a menu toggle', () => {
-        const wrapper = shallowMount(SubMenu, {
-            slots: {
-                default: '<svg />click me please <strong>right there</strong>'
-            },
-            propsData: {
-                items: [],
-                buttonTitle: 'test button title',
-                toggleComponent: 'BaseButton'
-            }
-        });
-        expect(wrapper.find(BaseButton).find('svg').exists()).toBeTruthy();
-        expect(wrapper.find(BaseButton).text()).toContain('click me please right there');
-        expect(wrapper.find(BaseButton).attributes('title')).toBe('test button title');
     });
 
     it('orients the submenu to the button', () => {

@@ -1,26 +1,13 @@
 <script>
 import FunctionButton from './FunctionButton';
-import BaseButton from './BaseButton';
 
 const BLUR_TIMEOUT = 1;
 
 export default {
     components: {
-        FunctionButton,
-        BaseButton
+        FunctionButton
     },
     props: {
-        /**
-         * The component to be used as the toggle for the menu.
-         * BaseButton offers no styling, in most cases FunctionButton works best.
-         */
-        toggleComponent: {
-            type: String,
-            default: 'FunctionButton',
-            validator(val) {
-                return ['BaseButton', 'FunctionButton'].includes(val);
-            }
-        },
         /**
          * Items to be listed in the menu.
          * Each item has a `text`, optional `icon` and optional `to` / `href` properties, where `to` is for router-links
@@ -201,8 +188,7 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onPreventEvent"
   >
-    <Component
-      :is="toggleComponent"
+    <FunctionButton
       ref="submenu-toggle"
       aria-haspopup="true"
       type="button"
@@ -215,7 +201,7 @@ export default {
       @keydown.enter="onPreventEvent"
     >
       <slot />
-    </Component>
+    </FunctionButton>
     <ul
       ref="list"
       aria-label="submenu"
