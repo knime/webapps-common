@@ -68,13 +68,6 @@ export default {
             }
         },
         /**
-         * If the main button should be plain or include some styling.
-         */
-        plainFunctionButton: {
-            type: Boolean,
-            default: false
-        },
-        /**
          * Disable SubMenu
          */
         disabled: {
@@ -141,11 +134,6 @@ export default {
         },
         toggleMenu() {
             this.expanded = !this.expanded;
-            if (this.expanded) {
-                this.$emit('open');
-            } else {
-                this.$emit('close');
-            }
             setTimeout(() => {
                 this.$refs['submenu-toggle'].focus();
             }, BLUR_TIMEOUT);
@@ -223,7 +211,6 @@ export default {
       :aria-expanded="expanded"
       :disabled="disabled"
       :active="expanded"
-      :plain="plainFunctionButton"
       @click.stop.prevent="toggleMenu"
       @keydown.enter="onPreventEvent"
     >
