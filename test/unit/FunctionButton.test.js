@@ -11,14 +11,15 @@ describe('FunctionButton.vue', () => {
             }
         });
         expect(wrapper.find(BaseButton).exists()).toBeTruthy();
-        expect(wrapper.classes()).toEqual(['toggle']);
+        expect(wrapper.classes()).toEqual(['function-button']);
 
     });
 
     it('forwards props', () => {
         const wrapper = shallowMount(FunctionButton, {
             propsData: {
-                to: 'test-to'
+                to: 'test-to',
+                href: 'test-to'
             },
             slots: {
                 default: ['<svg/>', '<span>text</span>']
@@ -26,6 +27,7 @@ describe('FunctionButton.vue', () => {
         });
         expect(wrapper.find(BaseButton).exists()).toBeTruthy();
         expect(wrapper.find(BaseButton).props('to')).toEqual('test-to');
+        expect(wrapper.find(BaseButton).props('href')).toEqual('test-to');
     });
 
     it('renders a class if props is set', () => {
@@ -37,7 +39,7 @@ describe('FunctionButton.vue', () => {
                 default: ['<span>text</span>', '<svg/>']
             }
         });
-        expect(wrapper.classes()).toEqual(['toggle', 'active']);
+        expect(wrapper.classes()).toContain('active');
     });
 
     it('renders a class if it only has one slot child', () => {
@@ -46,7 +48,7 @@ describe('FunctionButton.vue', () => {
                 default: ['<svg/>']
             }
         });
-        expect(wrapper.classes()).toEqual(['toggle', 'single']);
+        expect(wrapper.classes()).toContain('single');
     });
 
     it('renders a classes if props is set and one child is present', () => {
@@ -58,7 +60,8 @@ describe('FunctionButton.vue', () => {
                 default: ['<span>text</span>']
             }
         });
-        expect(wrapper.classes()).toEqual(['toggle', 'single', 'active']);
+        expect(wrapper.classes()).toContain('single');
+        expect(wrapper.classes()).toContain('active');
     });
 
     it('triggers events', () => {

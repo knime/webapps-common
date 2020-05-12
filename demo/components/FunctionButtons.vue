@@ -1,7 +1,8 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import FunctionButton from '../../ui/components/FunctionButton';
-import FunctionButtonCode from '!!raw-loader!../../ui/components/FunctionButton';
+import functionButtonCode from '!!raw-loader!../../ui/components/FunctionButton';
+import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
 import SorterIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
@@ -33,7 +34,8 @@ export default {
     },
     data() {
         return {
-            FunctionButtonCode,
+            functionButtonCode,
+            baseButtonCode,
             codeExample,
             active1: false,
             active2: false,
@@ -62,7 +64,7 @@ export default {
           The function button is a button with an optional active state, e.g. when a dropdown menu is expanded.
         </p>
         <p>
-          It's primary use is together with the SubMenu component where it is included, but can also be used standalone.
+          Its primary use is together with the SubMenu component where it is included, but can also be used standalone.
           Works with an icon &amp; text combination or a single icon.
         </p>
         <div class="align-horizontal">
@@ -91,7 +93,8 @@ export default {
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show FunctionButton.vue source code">{{ FunctionButtonCode }}</CodeExample>
+        <CodeExample summary="Show FunctionButton.vue source code">{{ functionButtonCode }}</CodeExample>
+        <CodeExample summary="Show BaseButton.vue source code">{{ baseButtonCode }}</CodeExample>
       </div>
     </div>
   </section>

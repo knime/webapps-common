@@ -2,6 +2,7 @@
 import CodeExample from './demo/CodeExample';
 import Button from '../../ui/components/Button';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
+import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
 
 const codeExample = `<Button>Button</Button>
@@ -23,6 +24,7 @@ export default {
     data() {
         return {
             buttonCode,
+            baseButtonCode,
             codeExample
         };
     }
@@ -186,6 +188,7 @@ export default {
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
+        <CodeExample summary="Show BaseButton.vue source code">{{ baseButtonCode }}</CodeExample>
       </div>
     </div>
   </section>

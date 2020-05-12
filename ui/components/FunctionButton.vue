@@ -10,18 +10,15 @@ export default {
     },
     props: {
         /**
+         * @see {@link BaseButton.vue}
+         */
+
+        /**
          * Switches the active style of the component
          */
         active: {
             type: Boolean,
             default: false
-        },
-        /**
-         * In case it should be a simple nuxt-link, provide this parameter
-         */
-        to: {
-            type: String,
-            default: ''
         }
     },
     computed: {
@@ -31,7 +28,7 @@ export default {
     },
     methods: {
         focus() {
-            /** This can be called from outside via focus on a $ref */
+            // This can be called from outside via focus on a $ref */
             this.$el.focus();
         }
     }
@@ -40,9 +37,9 @@ export default {
 
 <template>
   <BaseButton
-    :to="to"
-    :class="['toggle', {single}, {active}]"
+    :class="['function-button', {single}, {active}]"
     v-on="$listeners"
+    v-bind="$attrs"
   >
     <slot />
   </BaseButton>
@@ -51,7 +48,7 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.toggle {
+.function-button {
   display: inline-block;
   text-align: center;
   font-weight: 500;

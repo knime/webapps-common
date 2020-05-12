@@ -7,20 +7,9 @@ export default {
     },
     props: {
         /**
-         * If set, the button renders an <a> element instead of a <button> element
-         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
+         * @see {@link BaseButton.vue}
          */
-        href: {
-            type: String,
-            default: ''
-        },
-        /**
-         * If set, the button renders a <nuxt-link> instead of a <button> element.
-         */
-        to: {
-            type: String,
-            default: ''
-        },
+
         /**
          * show button with border
          */
@@ -55,13 +44,6 @@ export default {
         disabled: {
             type: Boolean,
             default: false
-        },
-        /**
-         * toggle to prevent default click handler
-         */
-        preventDefault: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -82,10 +64,8 @@ export default {
 <template>
   <BaseButton
     :class="classes"
-    :prevent-default="preventDefault"
-    :to="to"
-    :href="href"
     v-on="$listeners"
+    v-bind="$attrs"
   >
     <slot />
   </BaseButton>
