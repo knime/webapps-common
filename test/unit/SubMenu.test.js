@@ -4,7 +4,7 @@ import SubMenu from '~/ui/components/SubMenu';
 import FunctionButton from '~/ui/components/FunctionButton';
 import BaseButton from '~/ui/components/BaseButton';
 
-describe('Submenu.vue', () => {
+describe('SubMenu.vue', () => {
 
     it('renders the menu toggle', () => {
         const wrapper = shallowMount(SubMenu, {
@@ -35,21 +35,6 @@ describe('Submenu.vue', () => {
         expect(wrapper.find(BaseButton).find('svg').exists()).toBeTruthy();
         expect(wrapper.find(BaseButton).text()).toContain('click me please right there');
         expect(wrapper.find(BaseButton).attributes('title')).toBe('test button title');
-    });
-
-    it('emits events on clicking the button', () => {
-        const wrapper = mount(SubMenu, {
-            slots: {
-                default: '<svg />click me please <strong>right there</strong>'
-            },
-            propsData: {
-                items: [],
-                buttonTitle: 'test button title'
-            }
-        });
-        wrapper.find(FunctionButton).trigger('click');
-        wrapper.find(FunctionButton).trigger('click');
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['open', 'close']);
     });
 
     it('orients the submenu to the button', () => {
@@ -554,7 +539,6 @@ describe('Submenu.vue', () => {
 
             closingMenuWrapper.find('.submenu-toggle').trigger('click');
 
-            expect(closingMenuWrapper.emittedByOrder().map(e => e.name)).toEqual(['close']);
             expect(toggleMenuMock).toHaveBeenCalled();
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });
