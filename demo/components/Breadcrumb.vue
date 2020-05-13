@@ -34,7 +34,7 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Breadcrumbs</h2>
+        <h2>Breadcrumb</h2>
         <Breadcrumb :items="breadcrumbItems" />
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Breadcrumb.vue source code">{{ breadcrumbCode }}</CodeExample>
