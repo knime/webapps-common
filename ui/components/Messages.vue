@@ -53,15 +53,20 @@ export default {
         slot="icon"
       />
       {{ message.message }}
-      <Component
-        :is="message.link.to ? 'nuxt-link' : 'a'"
-        v-if="message.link"
-        :to="message.link.to || null"
-        :href="message.link.href || null"
+      <nuxt-link
+        v-if="message.link && message.link.to"
+        :to="message.link.to"
         class="message-link"
       >
         {{ ' ' + message.link.text }}
-      </Component>
+      </nuxt-link>
+      <a
+        v-else-if="message.link && message.link.href"
+        :href="message.link.href"
+        class="message-link"
+      >
+        {{ ' ' + message.link.text }}
+      </a>
     </Message>
   </transition-group>
 </template>
