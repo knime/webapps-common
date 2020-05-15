@@ -33,37 +33,43 @@ describe('NumberInput.vue', () => {
     });
 
     it('has validate logic to check min/max values', () => {
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
         wrapper.setProps({ value: -5 });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'Input is not inside specified range.', isValid: false }
+        );
         wrapper.setProps({ value: 25 });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'Input is not inside specified range.', isValid: false }
+        );
         wrapper.setProps({ value: 5 });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('has validate logic to check non-numeric values', () => {
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
         wrapper.setProps({ value: 'test' });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual({ errorMessage: 'Input is not a number.', isValid: false });
     });
 
     it('prevents changing value with spinners when result would be invalid', () => {
         expect(wrapper.vm.getValue()).toBe(10);
         wrapper.setProps({ value: -5 });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'Input is not inside specified range.', isValid: false }
+        );
         wrapper.vm.changeValue(-1);
         expect(wrapper.vm.getValue()).toBe(-5);
         wrapper.vm.changeValue(1);
         expect(wrapper.vm.getValue()).toBe(1);
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
         wrapper.setProps({ value: 25 });
         expect(wrapper.vm.validate()).toBe(false);
         wrapper.vm.changeValue(1);
         expect(wrapper.vm.getValue()).toBe(25);
         wrapper.vm.changeValue(-1);
         expect(wrapper.vm.getValue()).toBe(19);
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('increments up and down properly with spinner controls', () => {

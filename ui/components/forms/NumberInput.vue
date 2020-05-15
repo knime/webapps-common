@@ -94,11 +94,18 @@ export default {
             this.$emit('input', this.getValue());
         },
         validate(val) {
+            let isValid = true;
+            let errorMessage;
             let value = typeof val === 'undefined' ? this.getValue() : val;
             if (typeof value !== 'number' || isNaN(value)) {
-                return false;
+                isValid = false;
+                errorMessage = 'Input is not a number.';
             }
-            return this.min <= value && value <= this.max;
+            if (this.min > value || this.max < value) {
+                isValid = false;
+                errorMessage = 'Input is not inside specified range.';
+            }
+            return { isValid, errorMessage: isValid ? null : errorMessage };
         },
         /**
          * Change value updates the actual value of the input field if a valid new value

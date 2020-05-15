@@ -53,7 +53,7 @@ describe('InputField.vue', () => {
                 value: 'b'
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('invalidates non-matching pattern', () => {
@@ -63,7 +63,9 @@ describe('InputField.vue', () => {
                 pattern: '^a'
             }
         });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'Input does not match the expected pattern', isValid: false }
+        );
     });
 
     it('validates unicode', () => {
@@ -73,7 +75,7 @@ describe('InputField.vue', () => {
                 pattern: `[\u0000-\uFFFF]*`
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('validates unicode pattern', () => {
@@ -83,7 +85,7 @@ describe('InputField.vue', () => {
                 pattern: '[\u0000-\u007F]+'
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('invalidates wrong unicode pattern', () => {
@@ -93,7 +95,7 @@ describe('InputField.vue', () => {
                 pattern: '[\u0000-\u007F]+'
             }
         });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate().isValid).toBe(false);
     });
 
     it('validates emojis', () => {
@@ -103,7 +105,7 @@ describe('InputField.vue', () => {
                 pattern: `\\p{Emoji_Presentation}+`
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('validates placehodlers', () => {
@@ -113,7 +115,7 @@ describe('InputField.vue', () => {
                 pattern: `\\d\\D\\w\\W\\s\\S+`
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('validates multiple unicode ranges', () => {
@@ -123,7 +125,7 @@ describe('InputField.vue', () => {
                 pattern: `([\u1200-\u12BF]|[\u0000-\u007F])*`
             }
         });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('emits input events', () => {
