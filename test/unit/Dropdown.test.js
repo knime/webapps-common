@@ -127,10 +127,7 @@ describe('Dropdown.vue', () => {
             localVue
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
-
-        let newValueIndex = 1;
-        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
-        input.trigger('click');
+        wrapper.setProps({ value: 'test2' });
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
 

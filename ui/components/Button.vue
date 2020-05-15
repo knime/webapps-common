@@ -1,21 +1,15 @@
 <script>
+import BaseButton from './BaseButton';
+
 export default {
+    components: {
+        BaseButton
+    },
     props: {
         /**
-         * If set, the button renders an <a> element instead of a <button> element
-         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
+         * @see {@link BaseButton.vue}
          */
-        href: {
-            type: String,
-            default: ''
-        },
-        /**
-         * If set, the button renders a <nuxt-link> instead of a <button> element.
-         */
-        to: {
-            type: String,
-            default: ''
-        },
+
         /**
          * show button with border
          */
@@ -50,25 +44,9 @@ export default {
         disabled: {
             type: Boolean,
             default: false
-        },
-        /**
-         * toggle to prevent default click handler
-         */
-        preventDefault: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
-        component() {
-            if (this.to) {
-                return 'nuxt-link';
-            } else if (this.href) {
-                return 'a';
-            } else {
-                return 'button';
-            }
-        },
         classes() {
             return [
                 'button',
@@ -79,62 +57,18 @@ export default {
                 { disabled: this.disabled }
             ];
         }
-    },
-    methods: {
-        // eslint-disable-next-line consistent-return
-        onClick(e) {
-            /* anchor tags can act as buttons without href and space key should work */
-            if (e.code === 'Space' && this.href) {
-                return false;
-            }
-            /**
-             * Click event. Fired when the button is clicked.
-             *
-             * @event click
-             */
-            this.$emit('click');
-            if (this.preventDefault) {
-                e.preventDefault();
-                return false;
-            }
-        }
     }
 };
 </script>
 
 <template>
-  <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
-  <nuxt-link
-    v-if="component === 'nuxt-link'"
-    :to="to"
+  <BaseButton
     :class="classes"
-    :event="preventDefault ? [] : 'click'"
-    @click.native="onClick"
+    v-on="$listeners"
+    v-bind="$attrs"
   >
     <slot />
-  </nuxt-link>
-  <!--"@keydown.enter.self.prevent" needed to silence 'enter' key events which incorrectly fire w/ @click.
-    On native <button> elem, click event cannot be differentiated as enter or click (Vue issue). -->
-  <button
-    v-else-if="component === 'button'"
-    :class="classes"
-    :disabled="disabled"
-    @click="onClick"
-    @keydown.space="onClick"
-    @keydown.enter.self.prevent
-  >
-    <slot />
-  </button>
-  <a
-    v-else
-    :href="href"
-    :class="classes"
-    @click="onClick"
-    @keydown.enter="onClick"
-    @keydown.space="onClick"
-  >
-    <slot />
-  </a>
+  </BaseButton>
 </template>
 
 <style lang="postcss" scoped>
@@ -152,6 +86,7 @@ export default {
   cursor: pointer;
   color: var(--theme-color-dove-gray);
   background-color: transparent;
+  border-radius: 9999px;  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
 
   & >>> svg {
     width: 18px;

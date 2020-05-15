@@ -29,7 +29,7 @@ export default {
   font-size: 16px;
   color: var(--theme-color-masala);
   line-height: 20px;
-  display: block;
+  display: inline-block;
   margin-bottom: 10px;
 }
 </style>

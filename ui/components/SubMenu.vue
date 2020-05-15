@@ -1,7 +1,12 @@
 <script>
+import FunctionButton from './FunctionButton';
+
 const BLUR_TIMEOUT = 1;
 
 export default {
+    components: {
+        FunctionButton
+    },
     props: {
         /**
          * Items to be listed in the menu.
@@ -122,14 +127,14 @@ export default {
         },
         /* Handle arrow key "up" events. */
         onUp() {
-            if (this.orientation !== 'top' && document.activeElement === this.$refs['submenu-toggle']) {
+            if (this.orientation !== 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
                 return;
             }
             this.getNextElement(-1).focus();
         },
         /* Handle arrow key "down" events. */
         onDown() {
-            if (this.orientation === 'top' && document.activeElement === this.$refs['submenu-toggle']) {
+            if (this.orientation === 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
                 return;
             }
             this.getNextElement(1).focus();
@@ -152,6 +157,7 @@ export default {
          * @return {undefined}
          */
         closeMenu(refocusToggle = true) {
+            this.$emit('close');
             setTimeout(() => {
                 this.expanded = false;
                 if (refocusToggle) {
@@ -182,7 +188,7 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onPreventEvent"
   >
-    <button
+    <FunctionButton
       ref="submenu-toggle"
       aria-haspopup="true"
       type="button"
@@ -190,11 +196,12 @@ export default {
       :class="['submenu-toggle', { expanded }]"
       :aria-expanded="expanded"
       :disabled="disabled"
+      :active="expanded"
       @click.stop.prevent="toggleMenu"
       @keydown.enter="onPreventEvent"
     >
       <slot />
-    </button>
+    </FunctionButton>
     <ul
       ref="list"
       aria-label="submenu"
@@ -230,23 +237,6 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
-
-button {
-  display: block;
-  color: inherit;
-  font-weight: inherit;
-  background: transparent;
-  padding: 0;
-  border: 0 none;
-  text-decoration: none;
-  cursor: pointer;
-
-  &:active,
-  &:hover,
-  &:focus {
-    outline: none;
-  }
-}
 
 ul {
   display: none;

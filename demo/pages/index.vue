@@ -3,33 +3,34 @@ import 'prismjs';
 
 import Fonts from '../components/Fonts';
 import Colors from '../components/Colors';
-import Grid from '../components/Grid';
-import Icons from '../components/Icons';
-import Images from '../components/Images';
-import Breadcrumb from '../components/Breadcrumb';
-import Buttons from '../components/Buttons';
-import SplitButton from '../components/SplitButton';
-import Collapser from '../components/Collapser';
+import Headlines from '../components/Headlines';
 import Description from '../components/Description';
+import Grid from '../components/Grid';
+import Images from '../components/Images';
+import Icons from '../components/Icons';
+import Breadcrumb from '../components/Breadcrumb';
+import Button from '../components/Button';
+import FunctionButton from '../components/FunctionButton';
+import SubMenu from '../components/SubMenu';
+import SplitButton from '../components/SplitButton';
+import IdleReadyButton from '../components/IdleReadyButton';
+import Collapser from '../components/Collapser';
 import TabBar from '../components/TabBar';
 import Carousel from '../components/Carousel';
 import Message from '../components/Message';
 import Messages from '../components/Messages';
-import SubMenu from '../components/SubMenu';
-import Headlines from '../components/Headlines';
-import IdleReadyButton from '../components/IdleReadyButton';
 import Label from '../components/Label';
 import Fieldset from '../components/Fieldset';
 import InputField from '../components/InputField';
 import TextArea from '../components/TextArea';
 import NumberInput from '../components/NumberInput';
 import Checkbox from '../components/Checkbox';
+import Checkboxes from '../components/Checkboxes';
 import RadioButtons from '../components/RadioButtons';
 import ListBox from '../components/ListBox';
 import Dropdown from '../components/Dropdown';
 import Multiselect from '../components/Multiselect';
 import MultiselectListBox from '../components/MultiselectListBox';
-import Checkboxes from '../components/Checkboxes';
 import Twinlist from '../components/Twinlist';
 import OpenSourceCredits from '../components/OpenSourceCredits';
 
@@ -37,33 +38,34 @@ export default {
     components: {
         Fonts,
         Colors,
+        Headlines,
+        Description,
         Grid,
         Images,
+        Icons,
         Breadcrumb,
-        Buttons,
+        Button,
+        FunctionButton,
+        SubMenu,
         SplitButton,
+        IdleReadyButton,
         Collapser,
-        Description,
-        Headlines,
         TabBar,
         Carousel,
-        Icons,
         Message,
         Messages,
-        SubMenu,
-        IdleReadyButton,
         Label,
         Fieldset,
         InputField,
         TextArea,
         NumberInput,
         Checkbox,
+        Checkboxes,
         RadioButtons,
         ListBox,
         Dropdown,
         Multiselect,
         MultiselectListBox,
-        Checkboxes,
         Twinlist,
         OpenSourceCredits
     }
@@ -92,7 +94,8 @@ export default {
     <Images />
     <Icons />
     <Breadcrumb />
-    <Buttons />
+    <Button />
+    <FunctionButton />
     <SubMenu />
     <SplitButton />
     <IdleReadyButton />
@@ -107,12 +110,12 @@ export default {
     <TextArea />
     <NumberInput />
     <Checkbox />
+    <Checkboxes />
     <RadioButtons />
     <ListBox />
     <Dropdown />
     <Multiselect />
     <MultiselectListBox />
-    <Checkboxes />
     <Twinlist />
     <OpenSourceCredits />
   </main>

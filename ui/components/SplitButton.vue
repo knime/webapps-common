@@ -13,6 +13,7 @@ div {
   & >>> .button {
     position: relative;
     margin-bottom: 0;
+    border-radius: 9999px 0 0 9999px; /* best way to ensure flexible 1/4 corners */
 
     &::after {
       content: '';
@@ -36,13 +37,21 @@ div {
   }
 
   & >>> .submenu {
+    border-radius: 0 9999px 9999px 0; /* best way to ensure flexible 1/4 corners */
+
     & .submenu-toggle {
       width: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
 
+      &.active,
+      &:hover {
+        background-color: transparent;
+      }
+
       & svg {
+        padding: 0;
         width: 14px;
         height: 14px;
         stroke-width: calc(32px / 14);
