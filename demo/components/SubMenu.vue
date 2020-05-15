@@ -119,7 +119,7 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Sub menu</h2>
+        <h2>SubMenu</h2>
         <p>A button that opens a dropdown menu containing links.</p>
 
         <div class="submenus">
@@ -205,21 +205,15 @@ h4 {
     & svg {
       stroke: var(--theme-color-dove-gray);
     }
+  }
 
-    & >>> .submenu-toggle {
-      display: flex;
-      background-color: var(--theme-color-gray-light-semi);
-    }
+  & .submenu {
+    align-self: stretch;
+  }
 
-    & >>> .submenu-toggle:hover,
-    & >>> .submenu-toggle:focus,
-    &:focus-within >>> .submenu-toggle {
-      background-color: var(--theme-color-masala);
-
-      & svg {
-        stroke: var(--theme-color-white);
-      }
-    }
+  & >>> .submenu-toggle {
+    height: 100%;
+    border-radius: 0;
   }
 }
 </style>

@@ -8,8 +8,7 @@ const codeExample = `<IdleReadyButton
   :show="showMore"
   text="Show more"
   @click="onMore"
-/>
-`;
+/>`;
 
 const pageSize = 4;
 const maxLength = 11;
@@ -60,7 +59,7 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Idle-ready button</h2>
+          <h2>IdleReadyButton</h2>
           <p>Button with two states:</p>
           <ul>
             <li>idle (e.g. while loading)</li>

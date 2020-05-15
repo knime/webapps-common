@@ -1,23 +1,27 @@
 import { shallowMount } from '@vue/test-utils';
 
 import Button from '~/ui/components/Button';
+import BaseButton from '~/ui/components/BaseButton';
 
 describe('Button.vue', () => {
     it('renders a button', () => {
         const wrapper = shallowMount(Button);
-        expect(wrapper.is('button')).toBeTruthy();
-        expect(typeof wrapper.attributes().href === 'undefined').toBeTruthy();
+        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
         expect(wrapper.classes()).toEqual(['button']);
     });
 
-    it('renders an anchor tag', () => {
+    it('forwards props', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
-                href: 'testhref'
+                preventDefault: true,
+                to: 'test-to',
+                href: 'test-href'
             }
         });
-        expect(wrapper.is('a')).toBeTruthy();
-        expect(wrapper.attributes('href')).toEqual('testhref');
+        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
+        expect(wrapper.find(BaseButton).props('preventDefault')).toEqual(true);
+        expect(wrapper.find(BaseButton).props('to')).toEqual('test-to');
+        expect(wrapper.find(BaseButton).props('href')).toEqual('test-href');
     });
 
     it('renders classes according to props', () => {
@@ -38,7 +42,7 @@ describe('Button.vue', () => {
                 disabled: true
             }
         });
-        expect(wrapper.attributes('disabled')).toEqual('disabled');
+        expect(wrapper.props('disabled')).toEqual(true);
         expect(wrapper.classes().sort()).toEqual(['button', 'disabled'].sort());
     });
 
@@ -52,104 +56,4 @@ describe('Button.vue', () => {
         expect(wrapper.attributes('id')).toEqual('testId');
     });
 
-    it('has native and generic click handler events', () => {
-        /* Depending on the `to` and `href` attributes, the component renders either a native button or a (nuxt-)link.
-        * To make sure click handlers work with both, we need to set the `@click` or the `@click.native` handler
-        * cf. https://stackoverflow.com/a/41476882/5134084 */
-
-        // test for nuxt-link
-        let wrapper = shallowMount(Button, {
-            propsData: {
-                to: 'route-test'
-            }
-        });
-        expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn.click).toBeDefined();
-
-        // test for a element
-        wrapper = shallowMount(Button, {
-            propsData: {
-                href: 'http://www.test.de'
-            }
-        });
-        expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn).not.toBeDefined();
-
-        // test for button element
-        wrapper = shallowMount(Button);
-        expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn).not.toBeDefined();
-    });
-
-    it('emits events', () => {
-        let wrapper = shallowMount(Button);
-        let button = wrapper.find('button');
-        button.vm.$emit('click');
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
-    });
-
-    it('emits event on space key if button', () => {
-        let wrapper = shallowMount(Button);
-        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
-        wrapper.trigger('keydown.space', {
-            code: 'Space'
-        });
-        expect(onClickSpy).toHaveBeenCalled();
-        expect(wrapper.emitted('click')).toBeTruthy();
-    });
-
-    it('does not emit event on enter key if button', () => {
-        let wrapper = shallowMount(Button);
-        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
-        wrapper.trigger('keydown.enter', {
-            code: 'Enter'
-        });
-        expect(onClickSpy).not.toHaveBeenCalled();
-        expect(wrapper.emitted('click')).toBeFalsy();
-    });
-
-    it('emits event on enter key if link', () => {
-        let wrapper = shallowMount(Button, {
-            propsData: {
-                href: 'testhref',
-                id: 'testId'
-            }
-        });
-        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
-        wrapper.trigger('keydown.enter', {
-            code: 'Enter'
-        });
-        expect(onClickSpy).toHaveBeenCalled();
-        expect(wrapper.emitted('click')).toBeTruthy();
-    });
-
-    it('does not emit event on space key if link', () => {
-        let wrapper = shallowMount(Button, {
-            propsData: {
-                href: 'testhref',
-                id: 'testId'
-            }
-        });
-        let onClickSpy = jest.spyOn(wrapper.vm, 'onClick');
-        wrapper.trigger('keydown.space', {
-            code: 'Space'
-        });
-        expect(onClickSpy).toHaveBeenCalled();
-        expect(wrapper.emitted('click')).toBeFalsy();
-    });
-
-    it('allows preventing default', () => {
-        let wrapper = shallowMount(Button, {
-            propsData: {
-                preventDefault: true
-            }
-        });
-        let spy = jest.fn();
-        let button = wrapper.find('button');
-        button.trigger('click', {
-            preventDefault: spy
-        });
-        expect(spy).toHaveBeenCalled();
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
-    });
 });
