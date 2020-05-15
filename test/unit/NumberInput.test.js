@@ -64,7 +64,9 @@ describe('NumberInput.vue', () => {
         expect(wrapper.vm.getValue()).toBe(1);
         expect(wrapper.vm.validate().isValid).toBe(true);
         wrapper.setProps({ value: 25 });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'Input is not inside specified range.', isValid: false }
+        );
         wrapper.vm.changeValue(1);
         expect(wrapper.vm.getValue()).toBe(25);
         wrapper.vm.changeValue(-1);

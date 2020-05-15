@@ -95,7 +95,7 @@ export default {
         },
         validate(val) {
             let isValid = true;
-            let errorMessage;
+            let errorMessage = null;
             let value = typeof val === 'undefined' ? this.getValue() : val;
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
@@ -105,7 +105,7 @@ export default {
                 isValid = false;
                 errorMessage = 'Input is not inside specified range.';
             }
-            return { isValid, errorMessage: isValid ? null : errorMessage };
+            return { isValid, errorMessage };
         },
         /**
          * Change value updates the actual value of the input field if a valid new value
@@ -120,7 +120,7 @@ export default {
             /**
              * If value is currently invalid, find the nearest valid value.
              */
-            if (!this.validate(value)) {
+            if (!this.validate(value).isValid) {
                 // use the min if value too low
                 if (value < this.min) {
                     value = this.min;
@@ -143,7 +143,7 @@ export default {
              * '^' increment option when you already have an invalid value that is greater than
              * the max, etc. This mimics native behavior.
              */
-            if (this.validate(parsedVal)) {
+            if (this.validate(parsedVal).isValid) {
                 this.$refs.input.value = parsedVal;
                 this.onInput();
             }
