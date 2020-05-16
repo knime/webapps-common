@@ -118,7 +118,8 @@ export default {
       /* ◯ */
 
       & + span::before {
-        border: 1px solid var(--theme-color-stone-gray);
+        border: 1px solid var(--theme-radio-border-color);
+        background: var(--theme-radio-background-color);
         display: inline-block;
         content: '';
         width: 14px;
@@ -133,28 +134,29 @@ export default {
       }
 
       &:hover + span::before {
-        background: var(--theme-color-silver-sand-semi);
+        border: 1px solid var(--theme-radio-border-color-hover);
+        background: var(--theme-radio-background-color-hover);
       }
 
       &:checked { /* 🔘 */
 
         & + span::before {
-          background: var(--theme-color-white);
-          border-color: var(--theme-color-masala);
+          background: var(--theme-radio-foreground-color-selected);
+          border-color: var(--theme-radio-border-color-selected);
           content: '';
-          box-shadow: inset 0 0 0 4px var(--theme-color-masala);
+          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
         }
 
         &:hover + span::before {
           box-shadow: unset;
           background: radial-gradient(
             ellipse at center,
-            var(--theme-color-masala) 0%,
-            var(--theme-color-masala) 25%,
-            var(--theme-color-silver-sand-semi) 26%,
-            var(--theme-color-silver-sand-semi) 100%
+            var(--theme-radio-foreground-color-selected-hover) 0%,
+            var(--theme-radio-foreground-color-selected-hover) 25%,
+            var(--theme-radio-background-color-selected-hover) 26%,
+            var(--theme-radio-background-color-selected-hover) 100%
           );
-          border-color: var(--theme-color-stone-gray);
+          border-color: var(--theme-radio-border-color-selected-hover);
         }
       }
     }

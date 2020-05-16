@@ -27,7 +27,8 @@ export default {
 .label-text {
   font-weight: 700;
   font-size: 16px;
-  color: var(--theme-color-masala);
+  font-family: var(--theme-text-medium-font-family);
+  color: var(--theme-text-medium-color);
   line-height: 20px;
   display: inline-block;
   margin-bottom: 10px;

@@ -13,7 +13,9 @@ div {
   & >>> .button {
     position: relative;
     margin-bottom: 0;
-    border-radius: 9999px 0 0 9999px; /* best way to ensure flexible 1/4 corners */
+
+    /* best way to ensure flexible 1/4 corners */
+    border-radius: var(--theme-button-split-border-radius) 0 0 var(--theme-button-split-border-radius);
 
     &::after {
       content: '';
@@ -23,7 +25,7 @@ div {
       height: calc(100% - 10px);
       right: 0;
       top: 5px;
-      background-color: var(--theme-color-dove-gray);
+      background-color: var(--theme-button-split-divider-color);
     }
   }
 
@@ -37,7 +39,8 @@ div {
   }
 
   & >>> .submenu {
-    border-radius: 0 9999px 9999px 0; /* best way to ensure flexible 1/4 corners */
+    /* best way to ensure flexible 1/4 corners */
+    border-radius: 0 var(--theme-button-split-border-radius) var(--theme-button-split-border-radius) 0;
 
     & .submenu-toggle {
       width: 32px;
@@ -55,7 +58,7 @@ div {
         width: 14px;
         height: 14px;
         stroke-width: calc(32px / 14);
-        stroke: var(--theme-color-masala);
+        stroke: var(--theme-button-split-foreground-color);
       }
     }
 

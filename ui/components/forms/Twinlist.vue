@@ -340,9 +340,11 @@ export default {
     align-items: center;
     justify-content: center;
     user-select: none;
+    background: var(--theme-select-control-background-color);
+    color: var(--theme-select-control-foreground-color);
 
     &:hover {
-      background: var(--theme-color-porcelain);
+      background: var(--theme-select-control-background-color-hover);
     }
 
     & .icon {
@@ -350,25 +352,25 @@ export default {
       height: 15px;
       stroke-width: calc(32px / 15);
       pointer-events: none;
-      stroke: var(--theme-color-masala);
+      stroke: var(--theme-select-control-foreground-color-hover);
     }
 
     &:focus {
       outline: none;
-      background: var(--theme-color-masala);
-      color: var(--theme-color-white);
+      background: var(--theme-select-control-background-color-focus);
+      color: var(--theme-select-control-foreground-color-focus);
 
       & .icon {
-        stroke: var(--theme-color-white);
+        stroke: var(--theme-select-control-foreground-color-focus);
       }
     }
 
     &:active {
-      background: var(--theme-color-masala);
-      color: var(--theme-color-white);
+      background: var(--theme-select-control-background-color-focus);
+      color: var(--theme-select-control-foreground-color-focus);
 
       & .icon {
-        stroke: var(--theme-color-white);
+        stroke: var(--theme-select-control-foreground-color-focus);
       }
     }
   }

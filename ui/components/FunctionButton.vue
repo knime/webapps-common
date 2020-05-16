@@ -38,8 +38,8 @@ export default {
 <template>
   <BaseButton
     :class="['function-button', {single}, {active}]"
-    v-on="$listeners"
     v-bind="$attrs"
+    v-on="$listeners"
   >
     <slot />
   </BaseButton>

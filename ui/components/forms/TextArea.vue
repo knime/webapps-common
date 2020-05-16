@@ -73,7 +73,8 @@ div {
   & textarea {
     font-size: 13px;
     font-weight: 300;
-    color: var(--theme-color-masala);
+    color: var(--theme-text-normal-color);
+    font-family: var(--theme-text-normal-font-family);
     line-height: 18px;
     padding: 11px 10px 11px 10px;
     border-radius: 0;

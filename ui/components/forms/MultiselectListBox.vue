@@ -461,14 +461,22 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     cursor: default; /* edge legacy shows different cursor */
+    background: var(--theme-dropdown-background-color);
+    color: var(--theme-dropdown-foreground-color);
 
     &:hover {
-      background: var(--theme-color-porcelain);
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
     }
 
     &.selected {
-      background: var(--theme-color-masala);
-      color: var(--theme-color-white);
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
     }
 
     /* invalid values */
@@ -477,7 +485,7 @@ export default {
 
       &.selected {
         background: var(--theme-color-error);
-        color: var(--theme-color-white);
+        color: var(--theme-dropdown-foreground-color-selected);
       }
     }
   }

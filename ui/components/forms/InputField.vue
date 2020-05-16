@@ -99,7 +99,8 @@ div {
 input {
   font-size: 13px;
   font-weight: 300;
-  color: var(--theme-color-masala);
+  color: var(--theme-text-normal-color);
+  font-family: var(--theme-text-normal-font-family);
   height: 40px;
   line-height: 40px; /* to center text vertically */
   padding: 0 10px;

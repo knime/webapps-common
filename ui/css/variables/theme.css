@@ -1,3 +1,5 @@
+@import url('./colors.css');
+
 :root {
   /* Header */
   --theme-header-background-color: var(--knime-masala);
@@ -30,7 +32,7 @@
   --theme-button-foreground-color-hover: var(--knime-white);
   --theme-button-foreground-color-focus: var(--knime-white);
   --theme-button-border-radius: 20px;
-  --theme-button-border-color: var(--knime-yellow);
+  --theme-button-border-color: var(--knime-masala);
   --theme-button-border-color-hover: var(--knime-masala);
   --theme-button-border-color-focus: var(--knime-masala);
 
@@ -41,7 +43,7 @@
   --theme-button-small-foreground-color: var(--knime-masala);
   --theme-button-small-foreground-color-hover: var(--knime-white);
   --theme-button-small-foreground-color-focus: var(--knime-white);
-  --theme-button-small-border-radius: 20px;
+  --theme-button-small-border-radius: 9999px;
   --theme-button-small-border-color: var(--knime-yellow);
   --theme-button-small-border-color-hover: var(--knime-masala);
   --theme-button-small-border-color-focus: var(--knime-masala);
@@ -53,17 +55,18 @@
   --theme-button-split-foreground-color: var(--knime-masala);
   --theme-button-split-foreground-color-hover: var(--knime-white);
   --theme-button-split-foreground-color-focus: var(--knime-white);
-  --theme-button-split-border-radius: 20px;
+  --theme-button-split-border-radius: 9999px;
   --theme-button-split-border-color: var(--knime-yellow);
   --theme-button-split-border-color-hover: var(--knime-masala);
   --theme-button-split-border-color-focus: var(--knime-masala);
+  --theme-button-split-divider-color: var(--knime-dove-gray);
 
   /* Dropdown (global) */
   --theme-dropdown-background-color: transparent;
   --theme-dropdown-background-color-focus: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-hover: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-selected: var(--knime-masala);
-  --theme-dropdown-foreground-color: var(--knime-dove-gray);
+  --theme-dropdown-foreground-color: var(--knime-masala);
   --theme-dropdown-foreground-color-focus: var(--knime-masala);
   --theme-dropdown-foreground-color-hover: var(--knime-masala);
   --theme-dropdown-foreground-color-selected: var(--knime-white);

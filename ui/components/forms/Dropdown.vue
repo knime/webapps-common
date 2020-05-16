@@ -301,6 +301,8 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: var(--theme-text-normal-font-family);
+    color: var(--theme-text-normal-color);
 
     &:focus {
       border-color: var(--theme-color-masala);
@@ -363,15 +365,22 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    color: var(--theme-color-masala);
+    background: var(--theme-theme-dropdown-background-color);
+    color: var(--theme-dropdown-foreground-color);
 
     &:hover {
-      background: var(--theme-color-silver-sand-semi);
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
     }
 
     &.focused {
-      background: var(--theme-color-masala);
-      color: var(--theme-color-white);
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
     }
   }
 
