@@ -48,6 +48,9 @@ export default {
   font-size: 18px;
   line-height: 26px;
   overflow-wrap: break-word;
+  font-family: var(--theme-text-normal-font-family);
+  font-weight: var(--theme-text-normal-font-weight);
+  color: var(--theme-text-normal-font-color);
 
   /*
     possible markup in Node description: a,b,br,h3,h4,hr,i,li,ol,p,pre,sub,sup,table,td,th,tr,tt,u,ul
@@ -60,6 +63,9 @@ export default {
   }
 
   & >>> a {
+    color: var(--theme-text-link-foreground-color);
+    background: var(--theme-text-link-background-color);
+
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
         content: "";
@@ -74,16 +80,26 @@ export default {
       }
     }
 
-    &:hover,
-    &:focus,
-    &:active {
+    &:hover {
       outline: none;
-      color: var(--theme-color-white);
-      background-color: var(--theme-color-masala);
+      color: var(--theme-text-link-foreground-color-hover);
+      background-color: var(--theme-text-link-background-color-hover);
       text-decoration: none;
 
       &::after {
-        background-color: var(--theme-color-white); /* defines icon color */
+        background-color: var(--theme-text-link-foreground-color-hover); /* defines icon color */
+      }
+    }
+
+    &:focus,
+    &:active {
+      outline: none;
+      color: var(--theme-text-link-foreground-color-focus);
+      background-color: var(--theme-text-link-background-color-focus);
+      text-decoration: none;
+
+      &::after {
+        background-color: var(--theme-text-link-foreground-color-focus); /* defines icon color */
       }
     }
   }
@@ -124,6 +140,8 @@ export default {
 
     & th {
       font-weight: 500;
+      font-family: var(--theme-text-medium-font-family);
+      color: var(--theme-text-medium-color);
       border-bottom: solid 2px var(--theme-color-masala);
       text-align: inherit; /* IE11 */
     }

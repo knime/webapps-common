@@ -249,6 +249,7 @@ ul {
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
+  font-family: var(--theme-text-medium-font-family);
   text-align: left;
   list-style-type: none;
   box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);

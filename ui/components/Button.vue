@@ -79,6 +79,7 @@ export default {
   text-align: center;
   font-weight: 500;
   font-size: 16px;
+  font-family: var(--theme-text-medium-font-family);
   line-height: 19px;
   padding: 12px;
   text-decoration: none;
@@ -112,6 +113,48 @@ export default {
 
     & >>> svg {
       stroke: var(--theme-color-masala);
+    }
+  }
+
+  &.compact {
+    padding: 6px 15px;
+    min-width: 50px;
+    font-size: 13px;
+    line-height: 18px;
+    border-radius: var(--theme-button-small-border-border-radius);
+    color: var(--theme-button-small-foreground-color);
+    background: var(--theme-button-small-background-color);
+
+    &:hover {
+      color: var(--theme-button-small-foreground-color-hover);
+      background: var(--theme-button-small-background-color-hover);
+    }
+
+    &:focus,
+    &:active {
+      color: var(--theme-button-small-foreground-color-focus);
+      background: var(--theme-button-small-background-color-focus);
+    }
+
+    & >>> svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: calc(32px / 14);
+      top: -0.1em;
+    }
+
+    &.with-border {
+      padding: 5px 14px;
+      border: 1px solid var(--theme-button-small-border-color);
+
+      &:hover {
+        border-color: var(--theme-button-small-border-color-hover);
+      }
+
+      &:focus,
+      &:active {
+        border-color: var(--theme-button-small-border-color-focus);
+      }
     }
   }
 
@@ -189,48 +232,6 @@ export default {
     &:focus {
       outline: none;
       background-color: var(--theme-color-white);
-    }
-  }
-
-  &.compact {
-    padding: 6px 15px;
-    min-width: 50px;
-    font-size: 13px;
-    line-height: 18px;
-    border-radius: var(--theme-button-small-border-border-radius);
-    color: var(--theme-button-small-foreground-color);
-    background: var(--theme-button-small-background-color);
-
-    &:hover {
-      color: var(--theme-button-small-foreground-color-hover);
-      background: var(--theme-button-small-background-color-hover);
-    }
-
-    &:focus,
-    &:active {
-      color: var(--theme-button-small-foreground-color-focus);
-      background: var(--theme-button-small-background-color-focus);
-    }
-
-    & >>> svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: calc(32px / 14);
-      top: -0.1em;
-    }
-
-    &.with-border {
-      padding: 5px 14px;
-      border: 1px solid var(--theme-button-small-border-color);
-
-      &:hover {
-        border-color: var(--theme-button-small-border-color-hover);
-      }
-
-      &:focus,
-      &:active {
-        border-color: var(--theme-button-small-border-color-focus);
-      }
     }
   }
 }

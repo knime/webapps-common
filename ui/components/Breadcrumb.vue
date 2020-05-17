@@ -71,6 +71,7 @@ export default {
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
+  font-family: var(--theme-text-medium-font-family);
   margin: 0;
   list-style-type: none;
 

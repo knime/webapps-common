@@ -38,6 +38,8 @@ fieldset {
 
   & > legend {
     font-weight: 700;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
     font-size: 16px;
     line-height: 20px;
     cursor: default;
@@ -59,6 +61,8 @@ fieldset {
   /* labels inside of the fieldset look different (smaller) */
   & >>> .label-text {
     font-weight: 500;
+    font-family: var(--theme-text-medium-font-family);
+    color: var(--theme-text-medium-color);
     font-size: 13px;
     line-height: 18px;
     margin-top: 10px;

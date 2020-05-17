@@ -61,6 +61,17 @@
   --theme-button-split-border-color-focus: var(--knime-masala);
   --theme-button-split-divider-color: var(--knime-dove-gray);
 
+  /* Function button */
+  --theme-button-function-border-radius: 9999px;
+  --theme-button-function-background-color: transparent;
+  --theme-button-function-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-button-function-background-color-focus: var(--knime-silver-sand-semi);
+  --theme-button-function-background-color-active: var(--knime-masala);
+  --theme-button-function-foreground-color: var(--knime-dove-gray);
+  --theme-button-function-foreground-color-hover: var(--knime-masala);
+  --theme-button-function-foreground-color-focus: var(--knime-masala);
+  --theme-button-function-foreground-color-active: var(--knime-white);
+
   /* Dropdown (global) */
   --theme-dropdown-background-color: transparent;
   --theme-dropdown-background-color-focus: var(--knime-silver-sand-semi);

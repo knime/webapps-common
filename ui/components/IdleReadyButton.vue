@@ -82,8 +82,9 @@ export default {
   text-align: center;
   font-size: 13px;
   font-weight: 500;
+  font-family: var(--theme-text-medium-font-family);
+  color: var(--theme-text-medium-color);
   min-height: 85px;
-  color: var(--theme-color-masala);
   padding-top: 30px;
 
   & >>> button,

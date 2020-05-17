@@ -148,12 +148,16 @@ export default {
   &.regular {
     font-size: 13px;
     font-weight: 300;
+    font-family: var(--theme-text-normal-font-family);
+    color: var(--theme-text-normal-color);
     line-height: 18px;
   }
 
   &.large {
     font-size: 16px;
     font-weight: 700;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
     line-height: 20px;
 
     /* stylelint-disable no-descending-specificity */

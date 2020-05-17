@@ -295,6 +295,8 @@ export default {
 
   & .title {
     font-weight: 500;
+    font-family: var(--theme-text-medium-font-family);
+    color: var(--theme-text-medium-color);
     font-size: 13px;
     line-height: 18px;
     margin-bottom: 3px;
