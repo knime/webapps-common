@@ -87,7 +87,7 @@ export default {
   cursor: pointer;
   color: var(--theme-color-dove-gray);
   background-color: transparent;
-  border-radius: var(--button-border-radius, 9999px); /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+  border-radius: var(--theme-button-border-radius, 9999px); /* best way to ensure pill shaped buttons with flexible 1/4 corners */
 
   & >>> svg {
     width: 18px;
@@ -121,7 +121,7 @@ export default {
     min-width: 50px;
     font-size: 13px;
     line-height: 18px;
-    border-radius: var(--theme-button-small-border-border-radius);
+    border-radius: var(--theme-button-small-border-radius);
     color: var(--theme-button-small-foreground-color);
     background: var(--theme-button-small-background-color);
 
@@ -169,7 +169,7 @@ export default {
 
   &.with-border {
     border: 1px solid var(--theme-button-border-color);
-    color: var(--theme-theme-button-foreground-color);
+    color: var(--theme-button-foreground-color);
     padding: 11px;
 
     & >>> svg {

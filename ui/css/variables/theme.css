@@ -9,7 +9,7 @@
 
   /* Headlines */
   --theme-headlines-font-family: 'Roboto', sans-serif;
-  --theme-headlines-font-color: var(--knime-masala);
+  --theme-headlines-color: var(--knime-masala);
   --theme-headlines-font-weight: 700;
 
   /* Text */

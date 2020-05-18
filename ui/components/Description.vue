@@ -49,8 +49,7 @@ export default {
   line-height: 26px;
   overflow-wrap: break-word;
   font-family: var(--theme-text-normal-font-family);
-  font-weight: var(--theme-text-normal-font-weight);
-  color: var(--theme-text-normal-font-color);
+  color: var(--theme-text-normal-color);
 
   /*
     possible markup in Node description: a,b,br,h3,h4,hr,i,li,ol,p,pre,sub,sup,table,td,th,tr,tt,u,ul

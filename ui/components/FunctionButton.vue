@@ -111,7 +111,7 @@ export default {
     background-color: var(--theme-button-function-background-color-active);
 
     & >>> svg {
-      stroke: var(--theme-button-foreground-color-active);
+      stroke: var(--theme-button-function-foreground-color-active);
     }
   }
 }

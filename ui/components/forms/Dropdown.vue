@@ -365,7 +365,7 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    background: var(--theme-theme-dropdown-background-color);
+    background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
 
     &:hover {
