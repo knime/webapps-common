@@ -35,14 +35,14 @@
   --theme-button-border-color-focus: var(--knime-masala);
 
   /* Small Button */
-  --theme-button-small-background-color: var(--knime-yellow);
-  --theme-button-small-background-color-hover: var(--knime-masala);
-  --theme-button-small-background-color-focus: var(--knime-masala);
-  --theme-button-small-foreground-color: var(--knime-masala);
-  --theme-button-small-foreground-color-hover: var(--knime-white);
-  --theme-button-small-foreground-color-focus: var(--knime-white);
+  --theme-button-small-background-color: transparent;
+  --theme-button-small-background-color-hover: transparent;
+  --theme-button-small-background-color-focus: transparent;
+  --theme-button-small-foreground-color: var(--knime-stone-gray);
+  --theme-button-small-foreground-color-hover: var(--knime-masala);
+  --theme-button-small-foreground-color-focus: var(--knime-masala);
   --theme-button-small-border-radius: 9999px;
-  --theme-button-small-border-color: var(--knime-yellow);
+  --theme-button-small-border-color: var(--knime-masala);
   --theme-button-small-border-color-hover: var(--knime-masala);
   --theme-button-small-border-color-focus: var(--knime-masala);
 
