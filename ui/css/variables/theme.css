@@ -107,7 +107,7 @@
   --theme-checkbox-background-color-selected-hover: var(--knime-silver-sand-semi);
   --theme-checkbox-foreground-color-selected: var(--knime-white);
   --theme-checkbox-foreground-color-selected-focus: var(--knime-masala);
-  --theme-checkbox-foreground-color-selected-hover: var(--knime-silver-sand-semi);
+  --theme-checkbox-foreground-color-selected-hover: var(--knime-masala);
 
   /* Selection List */
   --theme-select-control-background-color: transparent;
