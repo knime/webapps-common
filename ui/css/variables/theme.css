@@ -1,5 +1,3 @@
-@import url('./colors.css');
-
 :root {
   /* Header */
   --theme-header-background-color: var(--knime-masala);
@@ -10,18 +8,18 @@
   --theme-logo-height: 34px;
 
   /* Headlines */
-  --theme-headlines-font-family: 'Roboto, sans-serif';
+  --theme-headlines-font-family: 'Roboto', sans-serif;
   --theme-headlines-font-color: var(--knime-masala);
   --theme-headlines-font-weight: 700;
 
   /* Text */
-  --theme-text-normal-font-family: 'Roboto, sans-serif';
+  --theme-text-normal-font-family: 'Roboto', sans-serif;
   --theme-text-normal-color: var(--knime-masala);
 
-  --theme-text-medium-font-family: 'Roboto, sans-serif';
+  --theme-text-medium-font-family: 'Roboto', sans-serif;
   --theme-text-medium-color: var(--knime-masala);
 
-  --theme-text-bold-font-family: 'Roboto, sans-serif';
+  --theme-text-bold-font-family: 'Roboto', sans-serif;
   --theme-text-bold-color: var(--knime-masala);
 
   /* Default Button */
