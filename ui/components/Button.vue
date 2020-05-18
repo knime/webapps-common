@@ -87,7 +87,9 @@ export default {
   cursor: pointer;
   color: var(--theme-color-dove-gray);
   background-color: transparent;
-  border-radius: var(--theme-button-border-radius, 9999px); /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+
+  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+  border-radius: var(--theme-button-border-radius, 9999px);
 
   & >>> svg {
     width: 18px;
