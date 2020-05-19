@@ -236,7 +236,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 ul {
   display: none;
@@ -244,7 +244,7 @@ ul {
   right: 0;
   margin-top: 8px;
   padding: 0;
-  background-color: var(--theme-color-white);
+  background-color: var(--knime-white);
   color: var(--theme-dropdown-foreground-color);
   font-size: 13px;
   line-height: 18px;
@@ -252,7 +252,7 @@ ul {
   font-family: var(--theme-text-medium-font-family);
   text-align: left;
   list-style-type: none;
-  box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
+  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
   z-index: 1;
 
   &.expanded {

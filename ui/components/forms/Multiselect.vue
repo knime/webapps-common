@@ -208,7 +208,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .multiselect {
   position: relative;
@@ -227,7 +227,7 @@ export default {
 
   & [role=button] {
     margin: 0;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 1px solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
     font-weight: 300;
@@ -241,28 +241,28 @@ export default {
     color: var(--theme-text-normal-color);
 
     &.placeholder {
-      color: var(--theme-color-dove-gray);
+      color: var(--knime-dove-gray);
     }
 
     &:focus {
       outline: none;
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
   }
 
   &:not(.collapsed) [role=button] {
-    border-color: var(--theme-color-masala);
+    border-color: var(--knime-masala);
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-silver-sand-semi);
+    background: var(--knime-silver-sand-semi);
   }
 
   & .icon {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
-    stroke: var(--theme-color-masala);
+    stroke: var(--knime-masala);
     position: absolute;
     right: 10px;
     top: 11px;
@@ -280,8 +280,8 @@ export default {
     width: 100%;
     padding: 5px 10px;
     margin-top: -1px;
-    background: var(--theme-color-white);
-    box-shadow: 0 1px 4px 0 var(--theme-color-gray-dark-semi);
+    background: var(--knime-white);
+    box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
 
     & .boxes {
       display: block;

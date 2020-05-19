@@ -23,7 +23,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables";
+@import "../../css/variables/webportal-theme.css";
 
 fieldset {
   /* reset default styles */
@@ -49,7 +49,7 @@ fieldset {
       height: 14px;
       width: 14px;
       stroke-width: calc(32px / 14);
-      stroke: var(--theme-color-masala);
+      stroke: var(--knime-masala);
       cursor: pointer;
       display: block;
       float: right;

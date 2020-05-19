@@ -136,8 +136,7 @@ dl {
   & button {
     cursor: pointer;
     font-weight: 300;
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
+    color: var(--theme-color-masala);
     border: none;
     background-color: transparent;
 

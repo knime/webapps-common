@@ -22,7 +22,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables";
+@import "../../css/variables/webportal-theme.css";
 
 .label-text {
   font-weight: 700;

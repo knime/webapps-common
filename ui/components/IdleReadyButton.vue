@@ -82,8 +82,6 @@ export default {
   text-align: center;
   font-size: 13px;
   font-weight: 500;
-  font-family: var(--theme-text-medium-font-family);
-  color: var(--theme-text-medium-color);
   min-height: 85px;
   padding-top: 30px;
 
@@ -106,7 +104,7 @@ export default {
   & button:hover,
   & button:focus,
   & button:active {
-    color: var(--theme-color-white);
+    color: var(--knime-white);
     outline: none;
   }
 }

@@ -89,7 +89,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .radio-buttons {
   user-select: none;
@@ -112,7 +112,7 @@ export default {
       & + span {
         display: inline-block;
         width: 100%;
-        color: var(--theme-color-masala);
+        color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;
       }

@@ -269,13 +269,13 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .dropdown {
   position: relative;
 
   & .placeholder {
-    color: var(--theme-color-stone-gray);
+    color: var(--knime-stone-gray);
   }
 
   &.invalid::before {
@@ -292,7 +292,7 @@ export default {
 
   & [role=button] {
     margin: 0;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 1px solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
     height: 40px;
@@ -305,24 +305,24 @@ export default {
     color: var(--theme-text-normal-color);
 
     &:focus {
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
       outline: none;
     }
   }
 
   &:not(.collapsed) [role=button] {
-    border-color: var(--theme-color-masala);
+    border-color: var(--knime-masala);
   }
 
   &.collapsed:hover {
-    background: var(--theme-color-silver-sand-semi);
+    background: var(--knime-silver-sand-semi);
   }
 
   & .icon {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
-    stroke: var(--theme-color-masala);
+    stroke: var(--knime-masala);
     position: absolute;
     right: 10px;
     top: 11px;
@@ -347,12 +347,12 @@ export default {
     padding: 0;
     margin: 0;
     margin-top: -1px;
-    background: var(--theme-color-white);
-    box-shadow: 0 1px 5px 0 var(--theme-color-gray-dark);
+    background: var(--knime-white);
+    box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
 
     &:focus {
       outline: none;
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
   }
 

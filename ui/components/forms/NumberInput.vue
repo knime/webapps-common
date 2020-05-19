@@ -227,15 +227,15 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .wrapper {
   position: relative;
   width: 100%;
-  border: 1px solid var(--theme-color-stone-gray);
+  border: 1px solid var(--knime-stone-gray);
 
   &:focus-within {
-    border-color: var(--theme-color-masala);
+    border-color: var(--knime-masala);
   }
 
   & input[type='number'] {
@@ -270,7 +270,7 @@ export default {
     }
 
     &.hover:not(:focus) { /* not native :hover because of WEBP-297 */
-      background-color: var(--theme-color-silver-sand-semi);
+      background-color: var(--knime-silver-sand-semi);
     }
   }
 
@@ -303,7 +303,7 @@ export default {
     padding-right: 9px;
 
     &:hover {
-      background-color: var(--theme-color-silver-sand-semi);
+      background-color: var(--knime-silver-sand-semi);
     }
 
     & svg {
@@ -315,11 +315,11 @@ export default {
 
   & .increase:active,
   & .decrease:active {
-    color: var(--theme-color-white);
-    background-color: var(--theme-color-masala);
+    color: var(--knime-white);
+    background-color: var(--knime-masala);
 
     & svg {
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
     }
   }
 }

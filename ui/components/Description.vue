@@ -42,7 +42,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .description {
   font-size: 18px;
@@ -70,7 +70,7 @@ export default {
         content: "";
         mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
         mask-size: cover;
-        background-color: var(--theme-color-masala); /* defines icon color */
+        background-color: var(--knime-masala); /* defines icon color */
         width: 16px;
         height: 16px;
         display: inline-block;
@@ -106,8 +106,8 @@ export default {
   & >>> pre,
   & >>> code, /* in case it will be used in the future since <tt> is deprecated */
   & >>> tt {
-    background-color: var(--theme-color-white);
-    border: 1px solid var(--theme-color-silver-sand);
+    background-color: var(--knime-white);
+    border: 1px solid var(--knime-silver-sand);
     padding: 0 5px;
     font-size: 17px;
   }
@@ -120,7 +120,7 @@ export default {
 
   & >>> hr {
     border: 0;
-    border-top: 1px solid var(--theme-color-silver-sand);
+    border-top: 1px solid var(--knime-silver-sand);
   }
 
   & >>> ul,
@@ -141,7 +141,7 @@ export default {
       font-weight: 500;
       font-family: var(--theme-text-medium-font-family);
       color: var(--theme-text-medium-color);
-      border-bottom: solid 2px var(--theme-color-masala);
+      border-bottom: solid 2px var(--knime-masala);
       text-align: inherit; /* IE11 */
     }
 
@@ -151,13 +151,13 @@ export default {
     }
 
     & td {
-      border-bottom: solid 1px var(--theme-color-masala);
+      border-bottom: solid 1px var(--knime-masala);
     }
 
     & colgroup {
       font-size: 16px;
       font-weight: 700;
-      border-bottom: solid 3px var(--theme-color-masala);
+      border-bottom: solid 3px var(--knime-masala);
     }
   }
 

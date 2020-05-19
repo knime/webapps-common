@@ -89,7 +89,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 div {
   /* icon and marker need pos 0,0 to be the wrapper */
@@ -106,25 +106,25 @@ input {
   padding: 0 10px;
   border-radius: 0;
   width: 100%;
-  border: 1px solid var(--theme-color-stone-gray);
+  border: 1px solid var(--knime-stone-gray);
   outline: none;
   background-color: transparent;
 
   &::placeholder {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
   }
 
   &:disabled {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
     opacity: 0.5;
   }
 
   &:focus {
-    border-color: var(--theme-color-masala);
+    border-color: var(--knime-masala);
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-silver-sand-semi);
+    background-color: var(--knime-silver-sand-semi);
   }
 
   &.with-icon {
@@ -148,7 +148,7 @@ svg {
   width: 18px;
   height: 18px;
   stroke-width: calc(32px / 18);
-  stroke: var(--theme-color-masala);
+  stroke: var(--knime-masala);
   position: absolute;
   left: 12px;
   top: 10px;

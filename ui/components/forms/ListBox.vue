@@ -231,7 +231,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .listBox {
   &.invalid {
@@ -255,12 +255,12 @@ export default {
     min-height: 22px;
     padding: 0;
     margin: 0;
-    background: var(--theme-color-white);
-    border: 1px solid var(--theme-color-stone-gray);
+    background: var(--knime-white);
+    border: 1px solid var(--knime-stone-gray);
 
     &:focus {
       outline: none;
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
   }
 

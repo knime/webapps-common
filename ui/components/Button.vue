@@ -72,7 +72,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 .button {
   display: inline-block;
@@ -85,7 +85,7 @@ export default {
   text-decoration: none;
   border: 0;
   cursor: pointer;
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
   background-color: transparent;
 
   /* best way to ensure pill shaped buttons with flexible 1/4 corners */
@@ -94,7 +94,7 @@ export default {
   & >>> svg {
     width: 18px;
     height: 18px;
-    stroke: var(--theme-color-dove-gray);
+    stroke: var(--knime-dove-gray);
     stroke-width: calc(32px / 18);
     position: relative;
     top: -0.11em;
@@ -111,10 +111,10 @@ export default {
   &:hover,
   &:focus {
     outline: none;
-    color: var(--theme-color-masala);
+    color: var(--knime-masala);
 
     & >>> svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--knime-masala);
     }
   }
 
@@ -161,11 +161,11 @@ export default {
   }
 
   &.primary {
-    color: var(--theme-button-foreground-color, --theme-color-masala);
-    background-color: var(--theme-button-background-color, --theme-color-yellow);
+    color: var(--theme-button-foreground-color, --knime-masala);
+    background-color: var(--theme-button-background-color, --knime-yellow);
 
     & >>> svg {
-      stroke: var(--theme-button-foreground-color, --theme-color-masala);
+      stroke: var(--theme-button-foreground-color, --knime-masala);
     }
   }
 
@@ -183,34 +183,34 @@ export default {
   &.with-border {
     &:hover {
       outline: none;
-      color: var(--theme-button-foreground-color-hover, --theme-color-white);
-      background-color: var(--theme-button-background-color-hover, --theme-color-masala);
+      color: var(--theme-button-foreground-color-hover, --knime-white);
+      background-color: var(--theme-button-background-color-hover, --knime-masala);
 
       & >>> svg {
-        stroke: var(--theme-button-foreground-color-hover, --theme-color-white);
+        stroke: var(--theme-button-foreground-color-hover, --knime-white);
       }
     }
 
     &:active,
     &:focus {
       outline: none;
-      color: var(--theme-button-foreground-color-focus, --theme-color-white);
-      background-color: var(--theme-button-background-color-focus, --theme-color-masala);
+      color: var(--theme-button-foreground-color-focus, --knime-white);
+      background-color: var(--theme-button-background-color-focus, --knime-masala);
 
       & >>> svg {
-        stroke: var(--theme-button-foreground-color-focus, --theme-color-white);
+        stroke: var(--theme-button-foreground-color-focus, --knime-white);
       }
     }
   }
 
   &.on-dark {
     &.with-border {
-      border: 1px solid var(--theme-color-white);
+      border: 1px solid var(--knime-white);
       background-color: transparent;
-      color: var(--theme-color-white);
+      color: var(--knime-white);
 
       & >>> svg {
-        stroke: var(--theme-color-white);
+        stroke: var(--knime-white);
       }
     }
 
@@ -220,11 +220,11 @@ export default {
       &:hover,
       &:focus {
         outline: none;
-        background-color: var(--theme-color-white);
-        color: var(--theme-color-masala);
+        background-color: var(--knime-white);
+        color: var(--knime-masala);
 
         & >>> svg {
-          stroke: var(--theme-color-masala);
+          stroke: var(--knime-masala);
         }
       }
     }
@@ -233,7 +233,7 @@ export default {
     &:hover,
     &:focus {
       outline: none;
-      background-color: var(--theme-color-white);
+      background-color: var(--knime-white);
     }
   }
 }

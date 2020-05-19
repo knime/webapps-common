@@ -65,7 +65,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
+@import "webapps-common/ui/css/variables/webportal-theme.css";
 
 div {
   position: relative;
@@ -78,20 +78,20 @@ div {
     line-height: 18px;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 1px solid var(--knime-stone-gray);
     outline: none;
     display: block;
 
     &::placeholder {
-      color: var(--theme-color-dove-gray);
+      color: var(--knime-dove-gray);
     }
 
     &:focus {
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand-semi);
+      background-color: var(--knime-silver-sand-semi);
     }
   }
 

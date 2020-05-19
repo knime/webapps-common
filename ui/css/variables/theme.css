@@ -134,11 +134,9 @@
   --theme-slider-border-color: var(--knime-stone-gray);
   --theme-slider-border-color-hover: var(--knime-stone-gray);
   --theme-slider-border-color-focus: var(--knime-masala);
-  --theme-slider-border-color-active: var(--knime-masala);
   --theme-slider-foreground-color: var(--knime-white);
   --theme-slider-foreground-color-hover: var(--knime-silver-sand);
-  --theme-slider-foreground-color-focus: var(--knime-white);
-  --theme-slider-foreground-color-active: var(--knime-masala);
+  --theme-slider-foreground-color-focus: var(--knime-masala);
   --theme-slider-bar-radius: 3.5px;
   --theme-slider-background-color: var(--knime-yellow);
 }

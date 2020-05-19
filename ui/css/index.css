@@ -1,5 +1,6 @@
 @import "normalize.css";
 @import "./variables";
+@import "./variables/webportal-theme.css";
 @import "./grid";
 @import "./fonts";
 @import "./headlines";
