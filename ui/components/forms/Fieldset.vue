@@ -56,8 +56,10 @@ fieldset {
     }
   }
 
-  /* labels inside of the fieldset look different (smaller) */
-  & >>> .label-text {
+  /* labels inside of the fieldset look different (smaller)
+     same applies to second level fieldset legends (e.g. for Radiobuttons inside of ValueFilterSelectionWidget) */
+  & >>> .label-text,
+  & > fieldset > legend {
     font-weight: 500;
     font-size: 13px;
     line-height: 18px;
