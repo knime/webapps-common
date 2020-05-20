@@ -63,11 +63,13 @@ export default {
     },
     data() {
         return {
-            selectedIndex: 0,
             isExpanded: false
         };
     },
     computed: {
+        selectedIndex() {
+            return this.possibleValues.map(x => x.id).indexOf(this.value);
+        },
         showPlaceholder() {
             return !this.value;
         },
@@ -88,17 +90,12 @@ export default {
             }
         }
     },
-    mounted() {
-        // update the selected index on start
-        this.selectedIndex = this.possibleValues.findIndex((item) => item.id === this.value);
-    },
     methods: {
         isCurrentValue(candidate) {
             return this.value === candidate;
         },
-        setSelected(value, index) {
+        setSelected(value) {
             consola.trace('ListBox setSelected on', value);
-            this.selectedIndex = index;
 
             /**
              * Fired when the selection changes.
@@ -108,15 +105,15 @@ export default {
              */
             this.$emit('input', value);
         },
-        onOptionClick(value, index) {
-            this.setSelected(value, index);
+        onOptionClick(value) {
+            this.setSelected(value);
             this.isExpanded = false;
             this.$refs.button.focus();
         },
-        scrollToCurrent() {
+        scrollTo(optionIndex) {
             let listBoxNode = this.$refs.ul;
             if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-                let element = this.$refs.options[this.selectedIndex];
+                let element = this.$refs.options[optionIndex];
                 let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
                 let elementBottom = element.offsetTop + element.offsetHeight;
                 if (elementBottom > scrollBottom) {
@@ -131,25 +128,25 @@ export default {
             if (next >= this.possibleValues.length) {
                 return;
             }
-            this.setSelected(this.possibleValues[next].id, next);
-            this.scrollToCurrent();
+            this.setSelected(this.possibleValues[next].id);
+            this.scrollTo(next);
         },
         onArrowUp() {
             let next = this.selectedIndex - 1;
             if (next < 0) {
                 return;
             }
-            this.setSelected(this.possibleValues[next].id, next);
-            this.scrollToCurrent();
+            this.setSelected(this.possibleValues[next].id);
+            this.scrollTo(next);
         },
         onEndKey() {
             let next = this.possibleValues.length - 1;
-            this.setSelected(this.possibleValues[next].id, next);
+            this.setSelected(this.possibleValues[next].id);
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
             let next = 0;
-            this.setSelected(this.possibleValues[next].id, next);
+            this.setSelected(this.possibleValues[next].id);
             this.$refs.ul.scrollTop = 0;
         },
         toggleExpanded() {
@@ -255,7 +252,7 @@ export default {
       @keydown="handleKeyDownList"
     >
       <li
-        v-for="(item, index) of possibleValues"
+        v-for="item of possibleValues"
         :id="generateId('option', item.id)"
         :key="`listbox-${item.id}`"
         ref="options"
@@ -263,7 +260,7 @@ export default {
         :title="item.text"
         :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
         :aria-selected="isCurrentValue(item.id)"
-        @click="onOptionClick(item.id, index)"
+        @click="onOptionClick(item.id)"
       >
         {{ item.text }}
       </li>

@@ -81,7 +81,7 @@ pre[class*="language-"] {
 
 .token.operator,
 .token.punctuation {
-  color: var(--theme-color-blue);
+  color: var(--theme-color-running);
 }
 
 .token.attr-name,
