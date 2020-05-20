@@ -28,6 +28,9 @@ const subMenuItems = [{
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
     icon: LeaveIcon
+}, {
+    text: 'Item without href/to',
+    icon: HelpIcon
 }];
 
 export default {
@@ -87,6 +90,9 @@ const subMenuItems = [{
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
     icon: LeaveIcon
+}, {
+    text: 'Item without href/to',
+    icon: HelpIcon
 }];
 
 export default {
@@ -120,7 +126,7 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <h2>SubMenu</h2>
-        <p>A button that opens a dropdown menu containing links.</p>
+        <p>A button that opens a dropdown menu containing clickable items.</p>
 
         <div class="submenus">
           <div class="card">
