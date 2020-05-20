@@ -64,8 +64,8 @@ export default {
 <template>
   <BaseButton
     :class="classes"
-    v-on="$listeners"
     v-bind="$attrs"
+    v-on="$listeners"
   >
     <slot />
   </BaseButton>
