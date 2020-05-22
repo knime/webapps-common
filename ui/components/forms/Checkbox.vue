@@ -55,13 +55,15 @@ export default {
 /* if you consider removing this class: don't!
    selector specifity requires it for container system used in page-builder */
 .checkbox {
-  display: flex;
+  display: inline-block;
   position: relative;
   padding: 3px 0 3px 24px;
-  color: var(--theme-color-masala);
-  user-select: none;
+  max-width: 100%;
 
   & input {
+    color: var(--theme-color-masala);
+    user-select: none;
+    display: flex;
     opacity: 0;
     position: absolute;
     z-index: -1; /* otherwise it might steal hover events */
