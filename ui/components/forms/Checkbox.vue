@@ -57,7 +57,7 @@ export default {
 .checkbox {
   display: inline-block;
   position: relative;
-  padding: 3px 0 3px 24px;
+  padding: 3px 3px 3px 24px;
   max-width: 100%;
 
   & input {

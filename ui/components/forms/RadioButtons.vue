@@ -96,11 +96,11 @@ export default {
 
   & label {
     position: relative;
-    display: block;
+    display: inline-block;
     font-weight: 300;
     font-size: 13px;
     line-height: 18px;
-    padding: 3px 0 3px 23px;
+    padding: 3px 3px 3px 23px;
 
     & input {
       opacity: 0;
@@ -160,16 +160,11 @@ export default {
     }
   }
 
-  &.vertical label {
-    display: block;
-  }
-
   &.horizontal {
     display: flex;
     flex-wrap: wrap;
 
     & label {
-      display: block;
       min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
 
       &:not(:last-of-type) {
