@@ -118,9 +118,9 @@ export default {
               v-else
               tabindex="0"
               class="close"
+              title="Discard message"
               @click="onDismiss"
               @keydown.space.stop.prevent="onDismiss"
-              title="Discard message"
             >
               <CloseIcon />
             </span>
@@ -253,18 +253,6 @@ section {
   }
 }
 
-.show-collapser {
-  pointer-events: all;
-
-  & >>> button {
-    & .dropdown {
-      & .dropdown-icon {
-        display: initial;
-      }
-    }
-  }
-}
-
 .collapser {
   width: 100%;
   pointer-events: none;
@@ -290,6 +278,18 @@ section {
       & .dropdown-icon {
         stroke: var(--theme-color-white);
         display: none;
+      }
+    }
+  }
+
+  &.show-collapser {
+    pointer-events: all;
+
+    & >>> button {
+      & .dropdown {
+        & .dropdown-icon {
+          display: initial;
+        }
       }
     }
   }
