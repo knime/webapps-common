@@ -134,12 +134,10 @@ describe('SubMenu.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                let closeMenuMock = jest.spyOn(wrapper.vm, 'closeMenu');
                 wrapper.vm.listItems[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).not.toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
                 expect(fakeEvent.stopPropagation).not.toHaveBeenCalled();
@@ -172,12 +170,10 @@ describe('SubMenu.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                let closeMenuMock = jest.spyOn(wrapper.vm, 'closeMenu');
                 wrapper.vm.listItems[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).not.toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeFalsy();
                 expect(fakeEvent.preventDefault).toHaveBeenCalled();
                 expect(fakeEvent.stopPropagation).toHaveBeenCalled();
@@ -212,12 +208,10 @@ describe('SubMenu.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                let closeMenuMock = jest.spyOn(wrapper.vm, 'closeMenu');
                 wrapper.vm.listItems[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).not.toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).toHaveBeenCalled();
                 expect(fakeEvent.stopPropagation).toHaveBeenCalled();
@@ -523,6 +517,18 @@ describe('SubMenu.vue', () => {
             closingMenuWrapper.find('.submenu-toggle').trigger('click');
 
             expect(toggleMenuMock).toHaveBeenCalled();
+            expect(closingMenuWrapper.vm.expanded).toBe(false);
+        });
+
+        it('closes menu on item click', () => {
+            jest.useFakeTimers();
+            let closeMenuMock = jest.spyOn(closingMenuWrapper.vm, 'closeMenu');
+
+            closingMenuWrapper.setData({ expanded: true });
+            closingMenuWrapper.find('ul a').trigger('click');
+
+            jest.runAllTimers();
+            expect(closeMenuMock).toHaveBeenCalled();
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });
 
