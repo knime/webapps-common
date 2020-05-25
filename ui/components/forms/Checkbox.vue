@@ -142,12 +142,22 @@ export default {
     font-size: 13px;
     font-weight: 300;
     line-height: 18px;
+
+    /* keep size for empty checkboxes - sync with line-height */
+    & > span {
+      min-height: 18px;
+    }
   }
 
   &.large {
     font-size: 16px;
     font-weight: 700;
     line-height: 20px;
+
+    /* keep size for empty checkboxes - sync with line-height */
+    & > span {
+      min-height: 20px;
+    }
 
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
