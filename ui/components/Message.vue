@@ -316,7 +316,7 @@ section {
       min-width: var(--grid-min-width);
       display: flex;
       justify-content: space-between;
-      overflow-y: scroll;
+      overflow-y: auto;
       width: 100%;
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
@@ -337,7 +337,7 @@ section {
         height: 30px;
         width: 30px;
         text-align: center;
-        margin-right: 15px; /* line-up with dropdown icon */
+        margin-right: 23px; /* line-up with dropdown icon */
 
         &:hover {
           background-color: var(--theme-color-silver-sand-semi);
