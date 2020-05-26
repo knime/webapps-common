@@ -78,8 +78,8 @@ export default {
           </p>
           <p>
             In addition a message can also contain <code>details</code> which are hidden and only displayed when the
-            collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will copy the
-            detail text and fire the <code>copied</code> event
+            collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will
+            copy the detail text and fire the <code>copied</code> event.
           </p>
         </div>
       </div>
