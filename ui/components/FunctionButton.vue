@@ -49,7 +49,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .function-button {
-  display: inline-block;
+  display: flex;
   text-align: center;
   font-weight: 500;
   font-size: 13px;
@@ -68,10 +68,10 @@ export default {
 
   /* Space button children items evenly except the first one */
   & >>> > * {
-    margin-left: 8px;
+    margin-right: 0;
 
     &:first-child {
-      margin-left: 0;
+      margin-right: 8px;
     }
   }
 
