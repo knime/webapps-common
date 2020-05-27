@@ -62,17 +62,22 @@ export default {
   background-color: transparent;
   border-radius: 9999px; /* best way to ensure pill shaped buttons with flexible 1/4 corners */
 
-  &.single {
-    padding: 6px;
-  }
-
-  /* Space button children items evenly except the first one */
+  /*
+  Add margin to first children, using last-child and first-child to avoid problems in build
+  */
   & >>> > * {
-    margin-right: 0;
-
     &:first-child {
       margin-right: 8px;
     }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+
+  &.single {
+    padding: 6px;
   }
 
   & >>> svg {
