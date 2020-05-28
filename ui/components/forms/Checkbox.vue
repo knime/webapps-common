@@ -139,24 +139,26 @@ export default {
 
   /* label size */
   &.regular {
+    --regular-height: 18px;
+
     font-size: 13px;
     font-weight: 300;
-    line-height: 18px;
+    line-height: var(--regular-height);
 
-    /* keep size for empty checkboxes - sync with line-height */
     & > span {
-      min-height: 18px;
+      min-height: var(--regular-height);
     }
   }
 
   &.large {
+    --large-height: 20px;
+
     font-size: 16px;
     font-weight: 700;
-    line-height: 20px;
+    line-height: var(--large-height);
 
-    /* keep size for empty checkboxes - sync with line-height */
     & > span {
-      min-height: 20px;
+      min-height: var(--large-height);
     }
 
     /* stylelint-disable no-descending-specificity */
