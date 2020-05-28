@@ -76,6 +76,11 @@ export default {
             with the <code>button</code> property. If left out, the widget will show an 'x' icon. Pressing the button or
             the 'x' closes the widget and fires the <code>dismiss</code> event.
           </p>
+          <p>
+            In addition a message can also contain <code>details</code> which are hidden and only displayed when the
+            collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will
+            copy the detail text and fire the <code>copied</code> event.
+          </p>
         </div>
       </div>
     </section>
@@ -97,6 +102,12 @@ export default {
     <Message type="success">
       <CheckIcon slot="icon" />
       This is a success message with an icon
+    </Message>
+    <Message
+      type="error"
+      details="These are details about the error"
+    >
+      This is an error message with details
     </Message>
     <section>
       <div class="grid-container">
