@@ -408,7 +408,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables/webportal-theme.css";
+@import "webapps-common/ui/css/variables";
 
 .multiselect-list-box {
   position: relative; /* required by .invalid::before */

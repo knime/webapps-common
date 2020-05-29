@@ -89,7 +89,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables/webportal-theme.css";
+@import "webapps-common/ui/css/variables";
 
 div {
   /* icon and marker need pos 0,0 to be the wrapper */

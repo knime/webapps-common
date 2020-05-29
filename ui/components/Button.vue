@@ -72,7 +72,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables/webportal-theme.css";
+@import "webapps-common/ui/css/variables";
 
 .button {
   display: inline-block;

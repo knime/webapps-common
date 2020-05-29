@@ -50,7 +50,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables/webportal-theme.css";
+@import "webapps-common/ui/css/variables";
 
 /* if you consider removing this class: don't!
    selector specifity requires it for container system used in page-builder */

@@ -208,7 +208,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "webapps-common/ui/css/variables/webportal-theme.css";
+@import "webapps-common/ui/css/variables";
 
 .multiselect {
   position: relative;
