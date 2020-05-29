@@ -118,6 +118,7 @@ export default {
                 event.target.dispatchEvent(newEvent);
             }
             this.$emit('item-click', event, item, this.id);
+            this.closeMenu();
         },
         toggleMenu() {
             this.expanded = !this.expanded;
@@ -157,7 +158,6 @@ export default {
          * @return {undefined}
          */
         closeMenu(refocusToggle = true) {
-            this.$emit('close');
             setTimeout(() => {
                 this.expanded = false;
                 if (refocusToggle) {

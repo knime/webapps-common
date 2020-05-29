@@ -57,7 +57,9 @@ export default {
     >
       <!-- @slot title slot -->
       <slot name="title" />
-      <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
+      <div class="dropdown">
+        <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
+      </div>
     </button>
     <Transition
       name="expand"
@@ -103,18 +105,24 @@ button {
     margin-left: 4px;
   }
 
-  & .dropdown-icon {
-    width: 18px;
-    height: 18px;
-    stroke-width: calc(32px / 18);
-    stroke: var(--knime-masala);
+  & .dropdown {
+    text-align: center;
     position: absolute;
     top: 20px;
-    right: 20px;
-    transition: transform 0.4s ease-in-out;
+    right: 10px;
 
-    &.flip {
-      transform: scaleY(-1);
+    & .dropdown-icon {
+      margin: auto;
+      width: 18px;
+      height: 18px;
+      stroke-width: calc(32px / 18);
+      stroke: var(--knime-masala);
+      top: 0;
+      transition: transform 0.4s ease-in-out;
+
+      &.flip {
+        transform: scaleY(-1);
+      }
     }
   }
 }

@@ -55,14 +55,16 @@ export default {
 /* if you consider removing this class: don't!
    selector specifity requires it for container system used in page-builder */
 .checkbox {
-  display: flex;
+  display: inline-block;
   position: relative;
-  padding: 3px 0 3px 24px;
-  color: var(--theme-text-normal-color);
-  font-family: var(--theme-text-normal-font-family);
-  user-select: none;
+  padding: 3px 3px 3px 24px;
+  max-width: 100%;
 
   & input {
+    color: var(--theme-text-normal-color);
+    font-family: var(--theme-text-normal-font-family);
+    user-select: none;
+    display: flex;
     opacity: 0;
     position: absolute;
     z-index: -1; /* otherwise it might steal hover events */
@@ -146,19 +148,31 @@ export default {
 
   /* label size */
   &.regular {
-    font-size: 13px;
-    font-weight: 300;
+    --regular-height: 18px;
+
     font-family: var(--theme-text-normal-font-family);
     color: var(--theme-text-normal-color);
-    line-height: 18px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: var(--regular-height);
+
+    & > span {
+      min-height: var(--regular-height);
+    }
   }
 
   &.large {
-    font-size: 16px;
-    font-weight: 700;
+    --large-height: 20px;
+
     font-family: var(--theme-text-bold-font-family);
     color: var(--theme-text-bold-color);
-    line-height: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: var(--large-height);
+
+    & > span {
+      min-height: var(--large-height);
+    }
 
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
