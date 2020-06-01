@@ -95,15 +95,14 @@ export default {
         },
         validate(val) {
             let isValid = true;
-            let errorMessage = null;
+            let errorMessage;
             let value = typeof val === 'undefined' ? this.getValue() : val;
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
-                errorMessage = 'Input is not a number.';
-            }
-            if (this.min > value || this.max < value) {
+                errorMessage = 'Current value is not a number.';
+            } else if (this.min > value || this.max < value) {
                 isValid = false;
-                errorMessage = 'Input is not inside specified range.';
+                errorMessage = 'Current value is outside allowed range.';
             }
             return { isValid, errorMessage };
         },

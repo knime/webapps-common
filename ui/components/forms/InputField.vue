@@ -59,8 +59,7 @@ export default {
             if (typeof value === 'undefined') {
                 isValid = false;
                 errorMessage = 'Invalid input';
-            }
-            if (this.pattern) {
+            } else if (this.pattern) {
                 const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
                 let matchingRegex = matches !== null && matches[0] === value;
                 if (!matchingRegex) {

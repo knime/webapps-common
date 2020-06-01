@@ -204,11 +204,7 @@ export default {
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
-            let errorMessage;
-            if (!isValid) {
-                errorMessage = 'One or more of the selected items is invalid';
-            }
-            return { isValid, errorMessage };
+            return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid' };
         }
     }
 };
