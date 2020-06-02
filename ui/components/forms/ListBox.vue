@@ -176,7 +176,7 @@ export default {
             return this.selectedIndex >= 0;
         },
         validate() {
-            return !this.getCurrentItem().invalid;
+            return { isValid: !this.getCurrentItem().invalid, errorMessage: null };
         },
         getCurrentItem() {
             // selectedIndex might be -1 if value is null for example, we always return an object here
