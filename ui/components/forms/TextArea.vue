@@ -27,6 +27,10 @@ export default {
         inputClasses: {
             default: '',
             type: String
+        },
+        title: {
+            default: null,
+            type: String
         }
     },
     computed: {
@@ -54,6 +58,7 @@ export default {
     />
     <textarea
       ref="input"
+      :title="title"
       :value="value"
       :class="inputClassList"
       :cols="cols"
