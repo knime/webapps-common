@@ -80,7 +80,7 @@ export default {
   font-weight: 500;
   font-size: 16px;
   line-height: 19px;
-  padding: 12px;
+  padding: 12px 30px;
   text-decoration: none;
   border: 0;
   cursor: pointer;
