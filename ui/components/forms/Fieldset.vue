@@ -23,7 +23,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables/webportal-theme.css";
+@import "../../css/variables";
 
 fieldset {
   /* reset default styles */
