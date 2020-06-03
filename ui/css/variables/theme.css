@@ -1,7 +1,9 @@
 :root {
   /* Header */
-  --theme-header-background-color: var(--knime-masala);
+  --theme-header-font-family: 'Roboto', sans-serif;
+  --theme-header-font-weight: 300;
   --theme-header-foreground-color: var(--knime-white);
+  --theme-header-background-color: var(--knime-masala);
 
   /* Headlines */
   --theme-headlines-font-family: 'Roboto', sans-serif;
