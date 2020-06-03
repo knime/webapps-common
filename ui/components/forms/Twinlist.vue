@@ -106,11 +106,14 @@ export default {
     watch: {
         value(newValue) {
             this.chosenValues = newValue;
+        },
+        possibleValues(newPossibleValues) {
+            this.chosenValues = [];
         }
     },
     methods: {
         generateInvalidItem(id) {
-            return { id, text: `${id} (MISSING)`, invalid: true };
+            return { id, text: `(MISSING) ${id}`, invalid: true };
         },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
@@ -204,7 +207,7 @@ export default {
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
-            return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid' };
+            return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         }
     }
 };

@@ -86,7 +86,7 @@ export default {
             } else if (this.displayTextMap.hasOwnProperty(this.value)) {
                 return this.displayTextMap[this.value];
             } else {
-                return `${this.value} (MISSING)`;
+                return `(MISSING) ${this.value}`;
             }
         }
     },
