@@ -1,25 +1,23 @@
 :root {
   /* Header */
-  --theme-header-background-color: var(--knime-masala);
+  --theme-header-font-family: 'Roboto', sans-serif;
+  --theme-header-font-weight: 300;
   --theme-header-foreground-color: var(--knime-white);
-
-  /* Logo */
-  --theme-logo-width: 131px;
-  --theme-logo-height: 34px;
+  --theme-header-background-color: var(--knime-masala);
 
   /* Headlines */
-  --theme-headlines-font-family: 'Roboto, sans-serif';
-  --theme-headlines-font-color: var(--knime-masala);
+  --theme-headlines-font-family: 'Roboto', sans-serif;
+  --theme-headlines-color: var(--knime-masala);
   --theme-headlines-font-weight: 700;
 
   /* Text */
-  --theme-text-normal-font-family: 'Roboto, sans-serif';
+  --theme-text-normal-font-family: 'Roboto', sans-serif;
   --theme-text-normal-color: var(--knime-masala);
 
-  --theme-text-medium-font-family: 'Roboto, sans-serif';
+  --theme-text-medium-font-family: 'Roboto', sans-serif;
   --theme-text-medium-color: var(--knime-masala);
 
-  --theme-text-bold-font-family: 'Roboto, sans-serif';
+  --theme-text-bold-font-family: 'Roboto', sans-serif;
   --theme-text-bold-color: var(--knime-masala);
 
   /* Default Button */
@@ -30,19 +28,19 @@
   --theme-button-foreground-color-hover: var(--knime-white);
   --theme-button-foreground-color-focus: var(--knime-white);
   --theme-button-border-radius: 20px;
-  --theme-button-border-color: var(--knime-yellow);
+  --theme-button-border-color: var(--knime-masala);
   --theme-button-border-color-hover: var(--knime-masala);
   --theme-button-border-color-focus: var(--knime-masala);
 
   /* Small Button */
-  --theme-button-small-background-color: var(--knime-yellow);
-  --theme-button-small-background-color-hover: var(--knime-masala);
-  --theme-button-small-background-color-focus: var(--knime-masala);
-  --theme-button-small-foreground-color: var(--knime-masala);
-  --theme-button-small-foreground-color-hover: var(--knime-white);
-  --theme-button-small-foreground-color-focus: var(--knime-white);
-  --theme-button-small-border-radius: 20px;
-  --theme-button-small-border-color: var(--knime-yellow);
+  --theme-button-small-background-color: transparent;
+  --theme-button-small-background-color-hover: transparent;
+  --theme-button-small-background-color-focus: transparent;
+  --theme-button-small-foreground-color: var(--knime-stone-gray);
+  --theme-button-small-foreground-color-hover: var(--knime-masala);
+  --theme-button-small-foreground-color-focus: var(--knime-masala);
+  --theme-button-small-border-radius: 9999px;
+  --theme-button-small-border-color: var(--knime-masala);
   --theme-button-small-border-color-hover: var(--knime-masala);
   --theme-button-small-border-color-focus: var(--knime-masala);
 
@@ -53,17 +51,29 @@
   --theme-button-split-foreground-color: var(--knime-masala);
   --theme-button-split-foreground-color-hover: var(--knime-white);
   --theme-button-split-foreground-color-focus: var(--knime-white);
-  --theme-button-split-border-radius: 20px;
+  --theme-button-split-border-radius: 9999px;
   --theme-button-split-border-color: var(--knime-yellow);
   --theme-button-split-border-color-hover: var(--knime-masala);
   --theme-button-split-border-color-focus: var(--knime-masala);
+  --theme-button-split-divider-color: var(--knime-dove-gray);
+
+  /* Function button */
+  --theme-button-function-border-radius: 9999px;
+  --theme-button-function-background-color: transparent;
+  --theme-button-function-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-button-function-background-color-focus: var(--knime-silver-sand-semi);
+  --theme-button-function-background-color-active: var(--knime-masala);
+  --theme-button-function-foreground-color: var(--knime-dove-gray);
+  --theme-button-function-foreground-color-hover: var(--knime-masala);
+  --theme-button-function-foreground-color-focus: var(--knime-masala);
+  --theme-button-function-foreground-color-active: var(--knime-white);
 
   /* Dropdown (global) */
   --theme-dropdown-background-color: transparent;
   --theme-dropdown-background-color-focus: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-hover: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-selected: var(--knime-masala);
-  --theme-dropdown-foreground-color: var(--knime-dove-gray);
+  --theme-dropdown-foreground-color: var(--knime-masala);
   --theme-dropdown-foreground-color-focus: var(--knime-masala);
   --theme-dropdown-foreground-color-hover: var(--knime-masala);
   --theme-dropdown-foreground-color-selected: var(--knime-white);
@@ -95,7 +105,7 @@
   --theme-checkbox-background-color-selected-hover: var(--knime-silver-sand-semi);
   --theme-checkbox-foreground-color-selected: var(--knime-white);
   --theme-checkbox-foreground-color-selected-focus: var(--knime-masala);
-  --theme-checkbox-foreground-color-selected-hover: var(--knime-silver-sand-semi);
+  --theme-checkbox-foreground-color-selected-hover: var(--knime-masala);
 
   /* Selection List */
   --theme-select-control-background-color: transparent;
@@ -122,11 +132,9 @@
   --theme-slider-border-color: var(--knime-stone-gray);
   --theme-slider-border-color-hover: var(--knime-stone-gray);
   --theme-slider-border-color-focus: var(--knime-masala);
-  --theme-slider-border-color-active: var(--knime-masala);
-  --theme-slider-background-color: var(--knime-white);
-  --theme-slider-background-color-hover: var(--knime-silver-sand-semi);
-  --theme-slider-background-color-focus: var(--knime-white);
-  --theme-slider-background-color-active: var(--knime-masala);
+  --theme-slider-foreground-color: var(--knime-white);
+  --theme-slider-foreground-color-hover: var(--knime-silver-sand);
+  --theme-slider-foreground-color-focus: var(--knime-masala);
   --theme-slider-bar-radius: 3.5px;
   --theme-slider-background-color: var(--knime-yellow);
 }

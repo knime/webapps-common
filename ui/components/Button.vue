@@ -79,42 +79,27 @@ export default {
   text-align: center;
   font-weight: 500;
   font-size: 16px;
+  font-family: var(--theme-text-medium-font-family);
   line-height: 19px;
   padding: 12px 30px;
   text-decoration: none;
   border: 0;
   cursor: pointer;
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
   background-color: transparent;
-  border-radius: 9999px;  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+
+  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+  border-radius: var(--theme-button-border-radius, 9999px);
 
   & >>> svg {
     width: 18px;
     height: 18px;
-    stroke: var(--theme-color-dove-gray);
+    stroke: var(--knime-dove-gray);
     stroke-width: calc(32px / 18);
     position: relative;
     top: -0.11em;
     vertical-align: middle;
     margin-right: 8px;
-  }
-
-  &.compact {
-    padding: 6px 15px;
-    min-width: 50px;
-    font-size: 13px;
-    line-height: 18px;
-
-    & >>> svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: calc(32px / 14);
-      top: -0.1em;
-    }
-
-    &.with-border {
-      padding: 5px 14px;
-    }
   }
 
   &.disabled { /* via class since <a> elements don't have a native disabled attribute */
@@ -126,55 +111,106 @@ export default {
   &:hover,
   &:focus {
     outline: none;
-    color: var(--theme-color-masala);
+    color: var(--knime-masala);
 
     & >>> svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--knime-masala);
+    }
+  }
+
+  &.compact {
+    padding: 6px 15px;
+    min-width: 50px;
+    font-size: 13px;
+    line-height: 18px;
+    border-radius: var(--theme-button-small-border-radius);
+    color: var(--theme-button-small-foreground-color);
+    background: var(--theme-button-small-background-color);
+
+    &:hover {
+      color: var(--theme-button-small-foreground-color-hover);
+      background: var(--theme-button-small-background-color-hover);
+    }
+
+    &:focus,
+    &:active {
+      color: var(--theme-button-small-foreground-color-focus);
+      background: var(--theme-button-small-background-color-focus);
+    }
+
+    & >>> svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: calc(32px / 14);
+      top: -0.1em;
+    }
+
+    &.with-border {
+      padding: 5px 14px;
+      border: 1px solid var(--theme-button-small-border-color);
+
+      &:hover {
+        border-color: var(--theme-button-small-border-color-hover);
+      }
+
+      &:focus,
+      &:active {
+        border-color: var(--theme-button-small-border-color-focus);
+      }
     }
   }
 
   &.primary {
-    color: var(--theme-color-masala);
-    background-color: var(--theme-color-yellow);
+    color: var(--theme-button-foreground-color, --knime-masala);
+    background-color: var(--theme-button-background-color, --knime-yellow);
 
     & >>> svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--theme-button-foreground-color, --knime-masala);
     }
   }
 
   &.with-border {
-    border: 1px solid var(--theme-color-masala);
-    color: var(--theme-color-masala);
+    border: 1px solid var(--theme-button-border-color);
+    color: var(--theme-button-foreground-color);
     padding: 11px;
 
     & >>> svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--theme-button-foreground-color);
     }
   }
 
   &.primary,
   &.with-border {
-    &:active,
-    &:hover,
-    &:focus {
+    &:hover {
       outline: none;
-      color: var(--theme-color-white);
-      background-color: var(--theme-color-masala);
+      color: var(--theme-button-foreground-color-hover, --knime-white);
+      background-color: var(--theme-button-background-color-hover, --knime-masala);
 
       & >>> svg {
-        stroke: var(--theme-color-white);
+        stroke: var(--theme-button-foreground-color-hover, --knime-white);
+      }
+    }
+
+    &:active,
+    &:focus {
+      outline: none;
+      color: var(--theme-button-foreground-color-focus, --knime-white);
+      background-color: var(--theme-button-background-color-focus, --knime-masala);
+
+      & >>> svg {
+        stroke: var(--theme-button-foreground-color-focus, --knime-white);
       }
     }
   }
 
   &.on-dark {
     &.with-border {
-      border: 1px solid var(--theme-color-white);
+      border: 1px solid var(--knime-white);
       background-color: transparent;
-      color: var(--theme-color-white);
+      color: var(--knime-white);
 
       & >>> svg {
-        stroke: var(--theme-color-white);
+        stroke: var(--knime-white);
       }
     }
 
@@ -184,11 +220,11 @@ export default {
       &:hover,
       &:focus {
         outline: none;
-        background-color: var(--theme-color-white);
-        color: var(--theme-color-masala);
+        background-color: var(--knime-white);
+        color: var(--knime-masala);
 
         & >>> svg {
-          stroke: var(--theme-color-masala);
+          stroke: var(--knime-masala);
         }
       }
     }
@@ -197,7 +233,7 @@ export default {
     &:hover,
     &:focus {
       outline: none;
-      background-color: var(--theme-color-white);
+      background-color: var(--knime-white);
     }
   }
 }

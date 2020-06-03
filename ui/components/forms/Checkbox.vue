@@ -55,13 +55,16 @@ export default {
 /* if you consider removing this class: don't!
    selector specifity requires it for container system used in page-builder */
 .checkbox {
-  display: flex;
+  display: inline-block;
   position: relative;
-  padding: 3px 0 3px 24px;
-  color: var(--theme-color-masala);
-  user-select: none;
+  padding: 3px 3px 3px 24px;
+  max-width: 100%;
 
   & input {
+    color: var(--theme-text-normal-color);
+    font-family: var(--theme-text-normal-font-family);
+    user-select: none;
+    display: flex;
     opacity: 0;
     position: absolute;
     z-index: -1; /* otherwise it might steal hover events */
@@ -74,7 +77,7 @@ export default {
     }
 
     & + span::before { /* □ */
-      border: 1px solid var(--theme-color-stone-gray);
+      border: 1px solid var(--theme-checkbox-border-color);
       display: inline-block;
       content: '';
       width: 14px;
@@ -92,17 +95,18 @@ export default {
     &:checked {
       /* □ */
       & + span::before { /* default */
-        border-color: var(--theme-color-masala);
-        background: var(--theme-color-masala);
+        border-color: var(--theme-checkbox-border-color-selected);
+        background: var(--theme-checkbox-background-color-selected);
       }
 
       &:focus + span::before {
-        background: var(--theme-color-white);
+        border-color: var(--theme-checkbox-border-color-selected-focus);
+        background: var(--theme-checkbox-background-color-selected-focus);
       }
 
       &:hover + span::before {
-        border-color: var(--theme-color-stone-gray);
-        background: var(--theme-color-silver-sand-semi);
+        border-color: var(--theme-checkbox-border-color-selected-hover);
+        background: var(--theme-checkbox-background-color-selected-hover);
       }
 
       /* ✓ */
@@ -116,38 +120,59 @@ export default {
         height: 5px;
         border-style: solid;
         border-width: 0 0 1.3px 1.3px;
-        border-color: var(--theme-color-white);
+        border-color: var(--theme-checkbox-foreground-color-selected);
       }
 
-      &:hover + span::after,
+      &:hover + span::after {
+        border-color: var(--theme-checkbox-foreground-color-selected-hover);
+      }
+
       &:focus + span::after {
-        border-color: var(--theme-color-masala);
+        border-color: var(--theme-checkbox-foreground-color-selected-focus);
       }
     }
 
     &:not(:checked) {
+      background: var(--theme-checkbox-background-color);
+
       /* □ */
       &:hover + span::before {
-        background: var(--theme-color-silver-sand-semi);
+        background: var(--theme-checkbox-background-color-hover);
       }
 
       &:focus:not(:hover) + span::before {
-        border-color: var(--theme-color-masala);
+        border-color: var(--theme-checkbox-background-color-focus);
       }
     }
   }
 
   /* label size */
   &.regular {
+    --regular-height: 18px;
+
+    font-family: var(--theme-text-normal-font-family);
+    color: var(--theme-text-normal-color);
     font-size: 13px;
     font-weight: 300;
-    line-height: 18px;
+    line-height: var(--regular-height);
+
+    & > span {
+      min-height: var(--regular-height);
+    }
   }
 
   &.large {
+    --large-height: 20px;
+
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
     font-size: 16px;
     font-weight: 700;
-    line-height: 20px;
+    line-height: var(--large-height);
+
+    & > span {
+      min-height: var(--large-height);
+    }
 
     /* stylelint-disable no-descending-specificity */
     & input + span::before,

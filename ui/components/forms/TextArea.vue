@@ -27,6 +27,10 @@ export default {
         inputClasses: {
             default: '',
             type: String
+        },
+        title: {
+            default: null,
+            type: String
         }
     },
     computed: {
@@ -54,6 +58,7 @@ export default {
     />
     <textarea
       ref="input"
+      :title="title"
       :value="value"
       :class="inputClassList"
       :cols="cols"
@@ -73,24 +78,25 @@ div {
   & textarea {
     font-size: 13px;
     font-weight: 300;
-    color: var(--theme-color-masala);
+    color: var(--theme-text-normal-color);
+    font-family: var(--theme-text-normal-font-family);
     line-height: 18px;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
-    border: 1px solid var(--theme-color-stone-gray);
+    border: 1px solid var(--knime-stone-gray);
     outline: none;
     display: block;
 
     &::placeholder {
-      color: var(--theme-color-dove-gray);
+      color: var(--knime-dove-gray);
     }
 
     &:focus {
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--theme-color-silver-sand-semi);
+      background-color: var(--knime-silver-sand-semi);
     }
   }
 

@@ -116,7 +116,7 @@ button {
       width: 18px;
       height: 18px;
       stroke-width: calc(32px / 18);
-      stroke: var(--theme-color-masala);
+      stroke: var(--knime-masala);
       top: 0;
       transition: transform 0.4s ease-in-out;
 
