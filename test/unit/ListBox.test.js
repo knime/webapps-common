@@ -70,15 +70,15 @@ describe('ListBox.vue', () => {
             }
         });
 
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
 
         wrapper.setProps({ value: 'non-valid-id' });
 
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate().isValid).toBe(false);
 
         wrapper.setProps({ value });
 
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('renders invalid value', () => {

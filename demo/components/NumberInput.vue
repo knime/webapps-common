@@ -69,13 +69,13 @@ export default {
     },
     methods: {
         validate1() {
-            this.isValid1 = this.$refs.input1.validate();
+            this.isValid1 = this.$refs.input1.validate().isValid;
         },
         validate2() {
-            this.isValid2 = this.$refs.input2.validate();
+            this.isValid2 = this.$refs.input2.validate().isValid;
         },
         validate3() {
-            this.isValid3 = this.$refs.input3.validate();
+            this.isValid3 = this.$refs.input3.validate().isValid;
         }
     }
 };

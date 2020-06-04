@@ -49,20 +49,25 @@ export default {
         onInput(e) {
             this.$emit('input', this.getValue());
         },
-        /**
+        /*
          * checks if value matches the provided pattern
-         * @return {Boolean}
          */
         validate() {
+            let isValid = true;
+            let errorMessage = null;
             const value = this.getValue();
             if (typeof value === 'undefined') {
-                return false;
+                isValid = false;
+                errorMessage = 'Invalid input';
+            } else if (this.pattern) {
+                const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
+                let matchingRegex = matches !== null && matches[0] === value;
+                if (!matchingRegex) {
+                    isValid = false;
+                    errorMessage = 'Input does not match the expected pattern';
+                }
             }
-            if (!this.pattern) {
-                return true;
-            }
-            const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
-            return matches !== null && matches[0] === value;
+            return { isValid,  errorMessage };
         }
     }
 };
@@ -99,31 +104,32 @@ div {
 input {
   font-size: 13px;
   font-weight: 300;
-  color: var(--theme-color-masala);
+  color: var(--theme-text-normal-color);
+  font-family: var(--theme-text-normal-font-family);
   height: 40px;
   line-height: 40px; /* to center text vertically */
   padding: 0 10px;
   border-radius: 0;
   width: 100%;
-  border: 1px solid var(--theme-color-stone-gray);
+  border: 1px solid var(--knime-stone-gray);
   outline: none;
   background-color: transparent;
 
   &::placeholder {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
   }
 
   &:disabled {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
     opacity: 0.5;
   }
 
   &:focus {
-    border-color: var(--theme-color-masala);
+    border-color: var(--knime-masala);
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-color-silver-sand-semi);
+    background-color: var(--knime-silver-sand-semi);
   }
 
   &.with-icon {
@@ -147,7 +153,7 @@ svg {
   width: 18px;
   height: 18px;
   stroke-width: calc(32px / 18);
-  stroke: var(--theme-color-masala);
+  stroke: var(--knime-masala);
   position: absolute;
   left: 12px;
   top: 10px;

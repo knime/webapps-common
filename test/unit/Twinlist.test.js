@@ -105,12 +105,14 @@ describe('Twinlist.vue', () => {
         const wrapper = mount(Twinlist, {
             propsData
         });
-        expect(wrapper.vm.validate()).toBe(false);
+        expect(wrapper.vm.validate()).toStrictEqual(
+            { errorMessage: 'One or more of the selected items is invalid', isValid: false }
+        );
         expect(wrapper.vm.invalidValueIds).toStrictEqual(['invalidId']);
 
         // make it valid again
         wrapper.setProps({ value: ['test1'] });
-        expect(wrapper.vm.validate()).toBe(true);
+        expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('provides a valid hasSelection method', () => {

@@ -83,7 +83,6 @@ export default {
   font-size: 13px;
   font-weight: 500;
   min-height: 85px;
-  color: var(--theme-color-masala);
   padding-top: 30px;
 
   & >>> button,
@@ -105,7 +104,7 @@ export default {
   & button:hover,
   & button:focus,
   & button:active {
-    color: var(--theme-color-white);
+    color: var(--knime-white);
     outline: none;
   }
 }

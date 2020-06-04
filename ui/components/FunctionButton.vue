@@ -49,57 +49,74 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .function-button {
-  display: inline-block;
+  display: flex;
   text-align: center;
   font-weight: 500;
   font-size: 13px;
+  font-family: var(--theme-text-medium-font-family);
   line-height: 18px;
   padding: 6px 15px;
   text-decoration: none;
   border: 0;
   cursor: pointer;
-  color: var(--theme-color-dove-gray);
-  background-color: transparent;
-  border-radius: 9999px; /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+  color: var(--theme-button-function-foreground-color);
+  background-color: var(--theme-button-function-background-color, transparent);
+
+  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+  border-radius: var(--theme-button-function-border-radius, 9999px);
+
+  /*
+  Add margin to first children, using last-child and first-child to avoid problems in build
+  */
+  & >>> > * {
+    &:first-child {
+      margin-right: 8px;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
 
   &.single {
     padding: 6px;
   }
 
-  /* Space button children items evenly except the first one */
-  & >>> > * {
-    margin-left: 8px;
-
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-
   & >>> svg {
     vertical-align: top;
-    stroke: var(--theme-color-dove-gray);
+    stroke: var(--theme-button-function-foreground-color);
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
   }
 
-  &:focus,
   &:hover {
     outline: none;
-    color: var(--theme-color-masala);
-    background-color: var(--theme-color-silver-sand-semi);
+    color: var(--theme-button-function-foreground-color-hover);
+    background-color: var(--theme-button-function-background-color-hover);
 
     & >>> svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--theme-button-function-foreground-color-hover);
+    }
+  }
+
+  &:focus {
+    outline: none;
+    color: var(--theme-button-function-foreground-color-focus);
+    background-color: var(--theme-button-function-background-color-focus);
+
+    & >>> svg {
+      stroke: var(--theme-button-function-foreground-color-focus);
     }
   }
 
   &.active {
-    color: var(--theme-color-white);
-    background-color: var(--theme-color-masala);
+    color: var(--theme-button-function-foreground-color-active);
+    background-color: var(--theme-button-function-background-color-active);
 
     & >>> svg {
-      stroke: var(--theme-color-white);
+      stroke: var(--theme-button-function-foreground-color-active);
     }
   }
 }

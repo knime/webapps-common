@@ -176,7 +176,7 @@ export default {
             return this.selectedIndex >= 0;
         },
         validate() {
-            return !this.getCurrentItem().invalid;
+            return { isValid: !this.getCurrentItem().invalid, errorMessage: null };
         },
         getCurrentItem() {
             // selectedIndex might be -1 if value is null for example, we always return an object here
@@ -255,12 +255,12 @@ export default {
     min-height: 22px;
     padding: 0;
     margin: 0;
-    background: var(--theme-color-white);
-    border: 1px solid var(--theme-color-stone-gray);
+    background: var(--knime-white);
+    border: 1px solid var(--knime-stone-gray);
 
     &:focus {
       outline: none;
-      border-color: var(--theme-color-masala);
+      border-color: var(--knime-masala);
     }
   }
 
@@ -272,15 +272,17 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    color: var(--theme-color-masala);
+    background-color: var(--theme-dropdown-background-color);
+    color: var(--theme-dropdown-foreground-color);
 
     &:hover {
-      background: var(--theme-color-silver-sand-semi);
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
     }
 
     &.focused {
-      background: var(--theme-color-masala);
-      color: var(--theme-color-white);
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
     }
 
     /* invalid values */
@@ -290,7 +292,7 @@ export default {
 
       &.focused {
         background: var(--theme-color-error);
-        color: var(--theme-color-white);
+        color: var(--theme-dropdown-foreground-color-selected);
       }
     }
   }
