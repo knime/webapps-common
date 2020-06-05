@@ -30,7 +30,7 @@ export default {
   font-family: var(--theme-text-bold-font-family);
   color: var(--theme-text-bold-color);
   line-height: 20px;
-  display: inline-block;
+  display: inline;
   margin-bottom: 10px;
 }
 </style>

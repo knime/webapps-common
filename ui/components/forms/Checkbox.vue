@@ -70,7 +70,7 @@ export default {
     z-index: -1; /* otherwise it might steal hover events */
 
     & + span {
-      display: block;
+      display: inline-block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -172,6 +172,7 @@ export default {
 
     & > span {
       min-height: var(--large-height);
+      max-width: 100%;
     }
 
     /* stylelint-disable no-descending-specificity */

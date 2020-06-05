@@ -114,6 +114,7 @@ export default {
     /* display block makes it vertical by default */
     display: block;
     overflow: hidden;
+    width: max-content;
   }
 }
 
