@@ -115,7 +115,7 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('clears it\'s internal state when there is a change in the possible values', () => {
+    it('clears its internal state when there is a change in the possible values', () => {
         let propsData = {
             possibleValues: [{
                 id: 'test1',
@@ -132,11 +132,13 @@ describe('Twinlist.vue', () => {
             propsData
         });
         expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
-        
-        wrapper.setProps({ possibleValues: [{
-            id: 'newValue',
-            text: 'newValue'
-        }] });
+
+        wrapper.setProps({
+            possibleValues: [{
+                id: 'newValue',
+                text: 'newValue'
+            }]
+        });
         expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
