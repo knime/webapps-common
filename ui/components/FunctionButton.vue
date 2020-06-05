@@ -49,7 +49,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .function-button {
-  display: inline-block;
+  display: flex;
   text-align: center;
   font-weight: 500;
   font-size: 13px;
@@ -65,17 +65,22 @@ export default {
   /* best way to ensure pill shaped buttons with flexible 1/4 corners */
   border-radius: var(--theme-button-function-border-radius, 9999px);
 
-  &.single {
-    padding: 6px;
+  /*
+  Add margin to first children, using last-child and first-child to avoid problems in build
+  */
+  & >>> > * {
+    &:first-child {
+      margin-right: 8px;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 
-  /* Space button children items evenly except the first one */
-  & >>> > * {
-    margin-left: 8px;
 
-    &:first-child {
-      margin-left: 0;
-    }
+  &.single {
+    padding: 6px;
   }
 
   & >>> svg {
