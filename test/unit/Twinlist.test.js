@@ -106,13 +106,40 @@ describe('Twinlist.vue', () => {
             propsData
         });
         expect(wrapper.vm.validate()).toStrictEqual(
-            { errorMessage: 'One or more of the selected items is invalid', isValid: false }
+            { errorMessage: 'One or more of the selected items is invalid.', isValid: false }
         );
         expect(wrapper.vm.invalidValueIds).toStrictEqual(['invalidId']);
 
         // make it valid again
         wrapper.setProps({ value: ['test1'] });
         expect(wrapper.vm.validate().isValid).toBe(true);
+    });
+
+    it('clears its internal state when there is a change in the possible values', () => {
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text'
+            }, {
+                id: 'test2',
+                text: 'Some Text'
+            }],
+            value: ['invalidId', 'test1'],
+            labelLeft: 'Choose',
+            labelRight: 'The value'
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
+
+        wrapper.setProps({
+            possibleValues: [{
+                id: 'newValue',
+                text: 'newValue'
+            }]
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
     it('provides a valid hasSelection method', () => {
