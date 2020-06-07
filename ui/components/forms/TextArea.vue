@@ -74,6 +74,7 @@ export default {
 
 div {
   position: relative;
+  display: inline-block;
 
   & textarea {
     font-size: 13px;
@@ -85,7 +86,6 @@ div {
     border-radius: 0;
     border: 1px solid var(--knime-stone-gray);
     outline: none;
-    display: block;
 
     &::placeholder {
       color: var(--knime-dove-gray);
