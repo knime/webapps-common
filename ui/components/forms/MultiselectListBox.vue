@@ -1,4 +1,6 @@
 <script>
+import debounce from '../../../util/debounce';
+
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
 
@@ -101,28 +103,9 @@ export default {
     created() {
         // the mac emits the click event  multiple times when the metaKey (cmd/command) is hold
         // this does not work well with the toggling of selected items, therefore we debounce it
-        this.debouncedHandleCtrlClick = this.debounce(this.handleCtrlClick, CLICK_META_KEY_TIMEOUT);
+        this.debouncedHandleCtrlClick = debounce(this.handleCtrlClick, CLICK_META_KEY_TIMEOUT);
     },
     methods: {
-        debounce(callback, wait) {
-            let timer;
-            let lastCall = 0;
-            return (...args) => {
-                clearTimeout(timer);
-                const now = Date.now();
-                const timeFromLastCall = now - lastCall;
-
-                if (timeFromLastCall > wait) {
-                    lastCall = now;
-                    callback(...args);
-                } else {
-                    timer = setTimeout(() => {
-                        lastCall = now;
-                        callback(...args);
-                    }, wait);
-                }
-            };
-        },
         isCurrentValue(candidate) {
             return this.value.includes(candidate);
         },
