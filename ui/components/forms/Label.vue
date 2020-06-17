@@ -3,16 +3,6 @@ let labelForId = 0;
 /**
  * Default label component
  *
- * Usage:
- * <Label text="label">
- *   <template #default="{ labelForId }">
- *     <input :id="labelForId" type="text">
- *   </template>
- * </Label>
- *
- * Or standalone usage:
- * <Label text="label" :generateId="false" />
- *
  */
 export default {
     props: {

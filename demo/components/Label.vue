@@ -4,14 +4,15 @@ import InputField from '../../ui/components/forms/InputField';
 import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/Label';
 
-const codeExample = `<Label text="Label for a field">
-  <template #default="{ labelForId }">
+const codeExample = `<Label
+  text="Label for a field"
+  v-slot="{ labelForId }"
+>
     <InputField
       :id="labelForId"
       type="text"
       placeholder="I'm a placeholder"
     />
-  </template>
 </Label>`;
 
 export default {
@@ -46,14 +47,15 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Label text="Label for a field">
-            <template #default="{ labelForId }">
-              <InputField
-                :id="labelForId"
-                type="text"
-                placeholder="I'm a placeholder"
-              />
-            </template>
+          <Label
+            v-slot="{ labelForId }"
+            text="Label for a field"
+          >
+            <InputField
+              :id="labelForId"
+              type="text"
+              placeholder="I'm a placeholder"
+            />
           </Label>
         </div>
       </div>
