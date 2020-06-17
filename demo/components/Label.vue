@@ -5,10 +5,13 @@ import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/Label';
 
 const codeExample = `<Label text="Label for a field">
-  <InputField
-    type="text"
-    placeholder="I'm a placeholder"
-  />
+  <template #default="{ labelForId }">
+    <InputField
+      :id="labelForId"
+      type="text"
+      placeholder="I'm a placeholder"
+    />
+  </template>
 </Label>`;
 
 export default {
@@ -44,10 +47,13 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Label text="Label for a field">
-            <InputField
-              type="text"
-              placeholder="I'm a placeholder"
-            />
+            <template #default="{ labelForId }">
+              <InputField
+                :id="labelForId"
+                type="text"
+                placeholder="I'm a placeholder"
+              />
+            </template>
           </Label>
         </div>
       </div>

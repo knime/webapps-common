@@ -203,6 +203,7 @@ export default {
 <template>
   <div :class="['listBox', { 'invalid': !isValid }]">
     <ul
+      :id="id"
       ref="ul"
       role="listbox"
       tabindex="0"

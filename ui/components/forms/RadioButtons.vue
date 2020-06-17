@@ -66,6 +66,7 @@ export default {
 
 <template>
   <div
+    :id="id"
     :class="['radio-buttons', alignment]"
     role="radiogroup"
   >
