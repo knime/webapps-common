@@ -237,8 +237,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
 
     &.placeholder {
       color: var(--knime-dove-gray);
