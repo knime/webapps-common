@@ -44,13 +44,7 @@ export default {
     },
     beforeCreate() {
         labelForId += 1;
-        Object.defineProperties(this, {
-            labelForId: {
-                get() {
-                    return labelForId;
-                }
-            }
-        });
+        this.labelForId = labelForId;
     }
 };
 </script>
