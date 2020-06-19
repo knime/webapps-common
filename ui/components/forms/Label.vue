@@ -2,7 +2,16 @@
 let labelForId = 0;
 /**
  * Default label component
+ * It provides a `labelForId` property that can be used via slot prop destructuring to associate it with a form element
+ * like so:
  *
+ * @example
+ *   <Label v-slot="{ labelForId }">
+ *     <input :id="labelForId">
+ *   </Label>
+ *
+ * Now, the labelForId is guaranteed to be a unique id, and when the `label` HTML element's `for` attribute is the same
+ * as the input's `id`.
  */
 export default {
     props: {
