@@ -394,7 +394,8 @@ export default {
         :class="{
           'selected': isCurrentValue(item.id),
           'invalid': item.invalid,
-          'noselect' :true
+          'noselect' :true,
+          'empty': !Boolean(item.text.trim())
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="handleClick($event, item.id, index)"
@@ -463,6 +464,10 @@ export default {
     cursor: default; /* edge legacy shows different cursor */
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);

@@ -258,7 +258,7 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': !Boolean(item.text.trim()) }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
@@ -367,6 +367,10 @@ export default {
     white-space: nowrap;
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);

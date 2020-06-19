@@ -72,6 +72,7 @@ export default {
     & + span {
       display: inline-block;
       overflow: hidden;
+      min-width: 1em;
       text-overflow: ellipsis;
       white-space: nowrap;
     }

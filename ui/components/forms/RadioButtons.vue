@@ -113,6 +113,7 @@ export default {
       & + span {
         display: inline-block;
         width: 100%;
+        min-width: 1em;
         color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;

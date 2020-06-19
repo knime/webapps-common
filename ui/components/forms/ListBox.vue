@@ -219,7 +219,11 @@ export default {
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'invalid': item.invalid }"
+        :class="{
+          'focused': isCurrentValue(item.id),
+          'noselect': true, 'invalid': item.invalid,
+          'empty': !Boolean(item.text.trim())
+        }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
@@ -274,6 +278,10 @@ export default {
     white-space: nowrap;
     background-color: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);
