@@ -137,11 +137,11 @@ export default {
 
       /* □ */
       &:hover + span::before {
-        background: var(--theme-checkbox-background-color-hover);
+        border-color: var(--theme-checkbox-border-color-hover);
       }
 
       &:focus:not(:hover) + span::before {
-        border-color: var(--theme-checkbox-background-color-focus);
+        border-color: var(--theme-checkbox-border-color-focus);
       }
     }
   }
