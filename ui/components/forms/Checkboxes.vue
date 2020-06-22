@@ -103,9 +103,12 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
 
-    /* padding for horizontal */
-    & >>> label:not(:last-of-type) {
-      padding-right: 12px;
+    & >>> label {
+      text-overflow: ellipsis;
+
+      &:not(:last-of-type) {
+        padding-right: 12px;
+      }
     }
   }
 
@@ -114,6 +117,7 @@ export default {
     /* display block makes it vertical by default */
     display: block;
     overflow: hidden;
+    width: max-content;
   }
 }
 

@@ -86,7 +86,7 @@ export default {
             } else if (this.displayTextMap.hasOwnProperty(this.value)) {
                 return this.displayTextMap[this.value];
             } else {
-                return `${this.value} (MISSING)`;
+                return `(MISSING) ${this.value}`;
             }
         }
     },
@@ -224,6 +224,7 @@ export default {
 
 <template>
   <div
+    :id="id"
     v-on-clickaway="clickAway"
     :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
   >

@@ -5,6 +5,10 @@ export default {
             default: '',
             type: [Number, String]
         },
+        id: {
+            type: String,
+            default: null
+        },
         /**
          * Validity controlled by the parent component to be flexible.
          */
@@ -57,6 +61,7 @@ export default {
       class="invalid-marker"
     />
     <textarea
+      :id="id"
       ref="input"
       :title="title"
       :value="value"
@@ -74,6 +79,8 @@ export default {
 
 div {
   position: relative;
+  display: block;
+  max-width: max-content;
 
   & textarea {
     font-size: 13px;

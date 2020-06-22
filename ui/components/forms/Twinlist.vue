@@ -101,16 +101,31 @@ export default {
             const size = this.size === 0 ?  this.possibleValues.length : this.size;
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
+        },
+        moveAllRightButtonDisabled() {
+            return this.leftItems.length === 0;
+        },
+        moveRightButtonDisabled() {
+            return this.selectedLeft.length === 0;
+        },
+        moveAllLeftButtonDisabled() {
+            return this.rightItems.length === 0;
+        },
+        moveLeftButtonDisabled() {
+            return this.selectedRight.length === 0;
         }
     },
     watch: {
         value(newValue) {
             this.chosenValues = newValue;
+        },
+        possibleValues(newPossibleValues) {
+            this.chosenValues = [];
         }
     },
     methods: {
         generateInvalidItem(id) {
-            return { id, text: `${id} (MISSING)`, invalid: true };
+            return { id, text: `(MISSING) ${id}`, invalid: true };
         },
         compareByOriginalSorting(a, b) {
             return this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b);
@@ -204,7 +219,7 @@ export default {
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
-            return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid' };
+            return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         }
     }
 };
@@ -234,6 +249,7 @@ export default {
       <div class="buttons">
         <div
           ref="moveRight"
+          :class="{ disabled: moveRightButtonDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveRightButtonClick"
@@ -243,6 +259,7 @@ export default {
         </div>
         <div
           ref="moveAllRight"
+          :class="{ disabled: moveAllRightButtonDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllRightButtonClick"
@@ -252,6 +269,7 @@ export default {
         </div>
         <div
           ref="moveLeft"
+          :class="{ disabled: moveLeftButtonDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveLeftButtonClick"
@@ -261,6 +279,7 @@ export default {
         </div>
         <div
           ref="moveAllLeft"
+          :class="{ disabled: moveAllLeftButtonDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllLeftButtonClick"
@@ -374,6 +393,29 @@ export default {
 
       & .icon {
         stroke: var(--theme-select-control-foreground-color-focus);
+      }
+    }
+
+    /* disabled icons */
+    &.disabled {
+      cursor: default;
+      opacity: 0.5;
+      pointer-events: none;
+      background: transparent;
+
+      & .icon {
+        stroke: var(--theme-select-control-foreground-color);
+      }
+
+      &:focus,
+      &:active,
+      &:hover {
+        & .icon {
+          stroke: var(--theme-select-control-foreground-color);
+        }
+
+        background: transparent;
+        color: var(--theme-select-control-foreground-color);
       }
     }
   }
