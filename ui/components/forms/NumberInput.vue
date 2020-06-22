@@ -292,7 +292,7 @@ export default {
     left: -1px;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 
