@@ -366,6 +366,7 @@ export default {
     :style="cssStyleSize"
   >
     <ul
+      :id="id"
       ref="ul"
       role="listbox"
       tabindex="0"

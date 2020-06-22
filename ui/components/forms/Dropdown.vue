@@ -224,6 +224,7 @@ export default {
 
 <template>
   <div
+    :id="id"
     v-on-clickaway="clickAway"
     :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
   >

@@ -4,11 +4,17 @@ import InputField from '../../ui/components/forms/InputField';
 import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/Label';
 
-const codeExample = `<Label text="Label for a field">
-  <InputField
-    type="text"
-    placeholder="I'm a placeholder"
-  />
+const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>
+<Label
+  text="Label for a field"
+  v-slot="{ labelForId }"
+>
+    <!-- The id attribute will be replaced with a generated unique ID --\>
+    <InputField
+      :id="labelForId"
+      type="text"
+      placeholder="I'm a placeholder"
+    />
 </Label>`;
 
 export default {
@@ -43,8 +49,12 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Label text="Label for a field">
+          <Label
+            v-slot="{ labelForId }"
+            text="Label for a field"
+          >
             <InputField
+              :id="labelForId"
               type="text"
               placeholder="I'm a placeholder"
             />

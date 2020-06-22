@@ -43,6 +43,7 @@ fieldset {
     font-size: 16px;
     line-height: 20px;
     cursor: default;
+    margin-bottom: 10px;
 
     & svg {
       margin-right: 0;
@@ -67,8 +68,17 @@ fieldset {
     color: var(--theme-text-medium-color);
     font-size: 13px;
     line-height: 18px;
-    margin-top: 10px;
     margin-bottom: 3px;
+  }
+
+  & >>> .label-wrapper,
+  & > fieldset {
+    margin-top: 10px;
+  }
+
+  /* avoid duplicated margins */
+  & >>> legend + .label-wrapper {
+    margin-top: 0;
   }
 }
 </style>

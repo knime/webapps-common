@@ -66,6 +66,7 @@ export default {
 
 <template>
   <div
+    :id="id"
     :class="['radio-buttons', alignment]"
     role="radiogroup"
   >
@@ -103,6 +104,7 @@ export default {
     font-size: 13px;
     line-height: 18px;
     padding: 3px 3px 3px 23px;
+    max-width: 100%;
     width: max-content;
 
     & input {
