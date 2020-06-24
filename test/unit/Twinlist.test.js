@@ -409,6 +409,58 @@ describe('Twinlist.vue', () => {
             ]);
         });
 
+        it('non applicable buttons are disabled', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: [],
+                labelLeft: 'Choose',
+                labelRight: 'The value'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            const moveRight = wrapper.find({ ref: 'moveRight' });
+            const moveLeft = wrapper.find({ ref: 'moveLeft' });
+            const moveAllLeft = wrapper.find({ ref: 'moveAllLeft' });
+            const moveAllRight = wrapper.find({ ref: 'moveAllRight' });
+
+            // nothing is selected so move selection is disabled
+            expect(moveRight.classes()).toContain('disabled');
+            expect(moveLeft.classes()).toContain('disabled');
+
+            // move all right is possible
+            expect(moveAllRight.classes()).not.toContain('disabled');
+
+            // move all left is not possible as right (the values) is empty
+            expect(moveAllLeft.classes()).toContain('disabled');
+
+            left.vm.setSelected(['test2', 'test3']);
+
+            // now we can move right
+            expect(moveRight.classes()).not.toContain('disabled');
+
+            // move all right
+            wrapper.vm.moveRight(['test1', 'test2', 'test3']);
+
+            // now we can move all to the left (as we have values)
+            expect(moveAllLeft.classes()).not.toContain('disabled');
+
+            // but not the other way around
+            expect(moveAllRight.classes()).toContain('disabled');
+
+            // select something on the right
+            right.vm.setSelected(['test2']);
+
+            // move selected to left is now possible
+            expect(moveLeft.classes()).not.toContain('disabled');
+
+        });
+
         it('moves selected values to left on move button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,

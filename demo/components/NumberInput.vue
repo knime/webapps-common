@@ -5,7 +5,6 @@ import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/NumberInput';
 
 const codeExample = `<NumberInput
-  ref="input1"
   v-model="inputValue1"
   :min="min"
   :max="max"
@@ -15,7 +14,6 @@ const codeExample = `<NumberInput
   @input="validate1"
 />
 <NumberInput
-  ref="input2"
   v-model="inputValue2"
   :min="min"
   :max="max"
@@ -25,7 +23,6 @@ const codeExample = `<NumberInput
   @input="validate2"
 />
 <NumberInput
-  ref="input3"
   v-model="inputValue3"
   :min="min"
   :max="max"
@@ -97,8 +94,12 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label text="Integer (step-size = 1)">
+          <Label
+            v-slot="{ labelForId }"
+            text="Integer (step-size = 1)"
+          >
             <NumberInput
+              :id="labelForId"
               ref="input1"
               v-model="inputValue1"
               :min="min"
@@ -109,8 +110,12 @@ export default {
               @input="validate1"
             />
           </Label>
-          <Label text="Double (step-size = .1)">
+          <Label
+            v-slot="{ labelForId }"
+            text="Double (step-size = .1)"
+          >
             <NumberInput
+              :id="labelForId"
               ref="input2"
               v-model="inputValue2"
               :min="min"
@@ -121,8 +126,12 @@ export default {
               @input="validate2"
             />
           </Label>
-          <Label :text="input3Text">
+          <Label
+            v-slot="{ labelForId }"
+            :text="input3Text"
+          >
             <NumberInput
+              :id="labelForId"
               ref="input3"
               v-model="inputValue3"
               :min="min"

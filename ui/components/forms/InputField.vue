@@ -5,6 +5,10 @@ export default {
             default: '',
             type: [Number, String]
         },
+        id: {
+            type: String,
+            default: null
+        },
         /**
          * validity needs to be controlled by the parent component to be flexible
          */
@@ -81,6 +85,7 @@ export default {
       class="invalid-marker"
     />
     <input
+      :id="id"
       ref="input"
       :value="value"
       :class="inputClassList"

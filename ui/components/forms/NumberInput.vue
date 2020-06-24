@@ -15,6 +15,10 @@ export default {
             default: 0,
             type: Number
         },
+        id: {
+            type: String,
+            default: null
+        },
         min: {
             default: Number.MIN_SAFE_INTEGER,
             type: Number
@@ -201,6 +205,7 @@ export default {
       class="invalid-marker"
     />
     <input
+      :id="id"
       ref="input"
       type="number"
       role="spinButton"

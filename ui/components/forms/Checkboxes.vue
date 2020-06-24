@@ -103,9 +103,12 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
 
-    /* padding for horizontal */
-    & >>> label:not(:last-of-type) {
-      padding-right: 12px;
+    & >>> label {
+      text-overflow: ellipsis;
+
+      &:not(:last-of-type) {
+        padding-right: 12px;
+      }
     }
   }
 
