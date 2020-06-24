@@ -85,8 +85,6 @@ div {
   & textarea {
     font-size: 13px;
     font-weight: 300;
-    color: var(--theme-text-normal-color);
-    font-family: var(--theme-text-normal-font-family);
     line-height: 18px;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
@@ -115,7 +113,7 @@ div {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 }

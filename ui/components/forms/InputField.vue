@@ -109,8 +109,6 @@ div {
 input {
   font-size: 13px;
   font-weight: 300;
-  color: var(--theme-text-normal-color);
-  font-family: var(--theme-text-normal-font-family);
   height: 40px;
   line-height: 40px; /* to center text vertically */
   padding: 0 10px;
@@ -150,7 +148,7 @@ input {
   margin: 0;
   top: 0;
   bottom: 0;
-  z-index: 10;
+  z-index: 1;
   background-color: var(--theme-color-error);
 }
 

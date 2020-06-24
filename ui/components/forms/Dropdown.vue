@@ -287,7 +287,7 @@ export default {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 
@@ -302,8 +302,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
 
     &:focus {
       border-color: var(--knime-masala);

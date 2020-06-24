@@ -61,8 +61,6 @@ export default {
   max-width: 100%;
 
   & input {
-    color: var(--theme-text-normal-color);
-    font-family: var(--theme-text-normal-font-family);
     user-select: none;
     display: flex;
     opacity: 0;
@@ -151,8 +149,6 @@ export default {
   &.regular {
     --regular-height: 18px;
 
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
     font-size: 13px;
     font-weight: 300;
     line-height: var(--regular-height);
