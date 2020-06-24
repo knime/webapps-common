@@ -259,7 +259,7 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': !Boolean(item.text.trim()) }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': item.text.trim() === '' }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >

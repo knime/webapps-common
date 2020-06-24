@@ -223,7 +223,7 @@ export default {
         :class="{
           'focused': isCurrentValue(item.id),
           'noselect': true, 'invalid': item.invalid,
-          'empty': !Boolean(item.text.trim())
+          'empty': item.text.trim() === ''
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
