@@ -103,12 +103,6 @@ export default {
       <CheckIcon slot="icon" />
       This is a success message with an icon
     </Message>
-    <Message
-      type="error"
-      details="These are details about the error"
-    >
-      This is an error message with details
-    </Message>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">

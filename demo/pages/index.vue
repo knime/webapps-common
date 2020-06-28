@@ -18,6 +18,7 @@ import Collapser from '../components/Collapser';
 import TabBar from '../components/TabBar';
 import Carousel from '../components/Carousel';
 import Message from '../components/Message';
+import CollapsibleMessage from '../components/CollapsibleMessage';
 import Messages from '../components/Messages';
 import Label from '../components/Label';
 import Fieldset from '../components/Fieldset';
@@ -53,6 +54,7 @@ export default {
         TabBar,
         Carousel,
         Message,
+        CollapsibleMessage,
         Messages,
         Label,
         Fieldset,
@@ -103,6 +105,7 @@ export default {
     <TabBar />
     <Carousel />
     <Message />
+    <CollapsibleMessage />
     <Messages />
     <Label />
     <Fieldset />

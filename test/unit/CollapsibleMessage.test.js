@@ -1,14 +1,17 @@
-import Message from '~/ui/components/Message';
+import CollapsibleMessage from '~/ui/components/CollapsibleMessage';
 import Button from '~/ui/components/Button';
 import { shallowMount } from '@vue/test-utils';
 import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
 import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
 import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 
-describe('Message.vue', () => {
+describe('CollapsibleMessage.vue', () => {
     let wrapper;
+
+    let copyTextMock = jest.fn();
+
     it('renders default', () => {
-        wrapper = shallowMount(Message);
+        wrapper = shallowMount(CollapsibleMessage);
 
         expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find(InfoIcon).exists()).toBe(true);
@@ -17,7 +20,7 @@ describe('Message.vue', () => {
     });
 
     it('renders success', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'success'
             }
@@ -28,7 +31,7 @@ describe('Message.vue', () => {
     });
 
     it('renders error', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'error'
             }
@@ -40,7 +43,7 @@ describe('Message.vue', () => {
 
     it('renders button', () => {
         let buttonText = 'Okay';
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 button: buttonText
             }
@@ -50,7 +53,7 @@ describe('Message.vue', () => {
     });
 
     it('renders icon', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 icon: WarnIcon
             }
@@ -60,7 +63,7 @@ describe('Message.vue', () => {
     });
 
     it('hides count if message is unique', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'error'
             }
@@ -70,8 +73,8 @@ describe('Message.vue', () => {
         expect(wrapper.find('.message-count').isVisible()).toBe(false);
     });
 
-    it('shows count if message is repeated', () => {
-        wrapper = shallowMount(Message, {
+    it('shows count if collapsibleMessage is repeated', () => {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'error',
                 count: 2
@@ -82,8 +85,27 @@ describe('Message.vue', () => {
         expect(wrapper.find('.message-count').isVisible()).toBe(true);
     });
 
+    it('renders collapser', () => {
+        wrapper = shallowMount(CollapsibleMessage, {
+            propsData: {
+                type: 'error',
+                details: 'test message'
+            },
+            methods: {
+                copyMessage: copyTextMock
+            }
+        });
+        expect(wrapper.find('.copy-button').exists()).toBe(true);
+        expect(wrapper.find('.show-collapser').exists()).toBe(true);
+        expect(wrapper.find('#detail-text').text()).toEqual('test message');
+        wrapper.find('.copy-button').trigger('click');
+
+        expect(copyTextMock).toHaveBeenCalled();
+
+    });
+
     it('closes', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'error',
                 count: 2
@@ -96,7 +118,7 @@ describe('Message.vue', () => {
     });
 
     it('closes on space key', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = shallowMount(CollapsibleMessage, {
             propsData: {
                 type: 'error',
                 count: 2

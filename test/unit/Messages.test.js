@@ -1,6 +1,7 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import Messages from '~/ui/components/Messages.vue';
 import Message from '~/ui/components/Message.vue';
+import CollapsibleMessage from '~/ui/components/CollapsibleMessage.vue';
 import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 
 const messages = [
@@ -18,8 +19,7 @@ const messages = [
         type: 'info',
         button: 'Okay',
         icon: SuccessIcon,
-        id: 3,
-        details: 'test detail text'
+        id: 3
     }
 ];
 
@@ -47,6 +47,20 @@ const linkedMessageTo = {
     }
 };
 
+const messageWithDetails = {
+    message: 'Info of something',
+    type: 'info',
+    button: 'Okay',
+    icon: SuccessIcon,
+    id: 4,
+    link: {
+        text: 'Linked text.',
+        to: 'some_link'
+    },
+    details: 'these are some details',
+    count: 2
+};
+
 describe('Messages.vue', () => {
     let wrapper;
 
@@ -54,6 +68,8 @@ describe('Messages.vue', () => {
         wrapper = shallowMount(Messages, {
             propsData: { messages },
             stubs: {
+                Message,
+                CollapsibleMessage,
                 NuxtLink: RouterLinkStub
             }
         });
@@ -88,6 +104,8 @@ describe('Messages.vue', () => {
         wrapper = shallowMount(Messages, {
             propsData: { messages },
             stubs: {
+                Message,
+                CollapsibleMessage,
                 NuxtLink: RouterLinkStub
             }
         });
@@ -103,6 +121,8 @@ describe('Messages.vue', () => {
         wrapper = mount(Messages, {
             propsData: { messages },
             stubs: {
+                Message,
+                CollapsibleMessage,
                 NuxtLink: RouterLinkStub
             }
         });
@@ -122,6 +142,8 @@ describe('Messages.vue', () => {
         wrapper = mount(Messages, {
             propsData: { messages: messages.concat(linkedMessageHref) },
             stubs: {
+                Message,
+                CollapsibleMessage,
                 NuxtLink: RouterLinkStub
             }
         });
@@ -143,6 +165,8 @@ describe('Messages.vue', () => {
         wrapper = mount(Messages, {
             propsData: { messages: messages.concat(linkedMessageTo) },
             stubs: {
+                Message,
+                CollapsibleMessage,
                 NuxtLink: RouterLinkStub
             }
         });
@@ -157,5 +181,25 @@ describe('Messages.vue', () => {
         expect(link.exists()).toBe(true);
         expect(link.text()).toBe('Linked text.');
         expect(link.props('to')).toBe('some_link');
+    });
+
+    it('renders collapsibleMessage when details present', () => {
+        wrapper = shallowMount(Messages, {
+            propsData: { messages: messages.concat(messageWithDetails) },
+            stubs: {
+                Message,
+                CollapsibleMessage,
+                NuxtLink: RouterLinkStub
+            }
+        });
+        expect(wrapper.find(CollapsibleMessage).exists()).toBe(true);
+
+        // eslint-disable-next-line no-magic-numbers
+        let link = wrapper.find(CollapsibleMessage).find(RouterLinkStub);
+        expect(link.exists()).toBe(true);
+        expect(link.text()).toBe('Linked text.');
+        expect(link.props('to')).toBe('some_link');
+
+        expect(wrapper.find('#detail-text').text()).toEqual('these are some details');
     });
 });
