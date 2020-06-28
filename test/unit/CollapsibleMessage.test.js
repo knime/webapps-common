@@ -96,7 +96,7 @@ describe('CollapsibleMessage.vue', () => {
             }
         });
         expect(wrapper.find('.copy-button').exists()).toBe(true);
-        expect(wrapper.find('.show-collapser').exists()).toBe(true);
+        expect(wrapper.find('.collapser').exists()).toBe(true);
         expect(wrapper.find('#detail-text').text()).toEqual('test message');
         wrapper.find('.copy-button').trigger('click');
 
