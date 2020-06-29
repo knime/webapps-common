@@ -83,7 +83,7 @@ export default {
     :class="type"
   >
     <div class="grid-container">
-      <em class="grid-item-12">
+      <div class="grid-item-12">
         <Collapser class="collapser">
           <template slot="title">
             <!-- @slot Use this slot to add an icon. -->
@@ -128,10 +128,12 @@ export default {
               class="copy-button"
               title="Copy to clipboard"
               @click="copyMessage"
-            ><CopyIcon /></div>
+            >
+              <CopyIcon />
+            </div>
           </div>
         </Collapser>
-      </em>
+      </div>
     </div>
   </section>
 </template>
@@ -149,7 +151,7 @@ export default {
 section {
   border-bottom: 1px solid var(--theme-color-white);
 
-  & em {
+  & .grid-item-12 {
     font-weight: 700;
     font-style: normal;
     font-size: 16px;
@@ -255,7 +257,7 @@ section {
   width: 100%;
   pointer-events: all;
 
-  & >>> button {
+  & >>> .button {
     display: flex;
     align-content: center;
 

@@ -64,7 +64,7 @@ export default {
     :class="type"
   >
     <div class="grid-container">
-      <em class="grid-item-12">
+      <div class="grid-item-12">
         <!-- @slot Use this slot to add an icon. -->
         <slot name="icon" />
         <span class="message">
@@ -98,7 +98,7 @@ export default {
         >
           <CloseIcon />
         </span>
-      </em>
+      </div>
     </div>
   </section>
 </template>
@@ -116,7 +116,7 @@ export default {
 section {
   border-bottom: 1px solid var(--theme-color-white);
 
-  & em {
+  & .grid-item-12 {
     font-weight: 700;
     font-style: normal;
     font-size: 16px;
