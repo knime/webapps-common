@@ -134,11 +134,11 @@ section {
     }
 
     & >>> svg {
-      width: 22px;
-      height: 22px;
-      stroke-width: calc(32px / 22);
+      width: 24px;
+      height: 24px;
+      stroke-width: calc(32px / 24);
       stroke: var(--theme-color-white);
-      margin-right: 20px;
+      margin-right: 10px;
       flex-shrink: 0;
       top: 0;
     }
@@ -166,7 +166,7 @@ section {
       /* hover/focus styles for type error and success */
       &:hover,
       &:focus {
-        background-color: var(--theme-color-silver-sand-semi);
+        background-color: var(--knime-masala-semi);
       }
 
       & svg {
