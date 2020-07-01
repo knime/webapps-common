@@ -22,6 +22,10 @@ const codeExample =
     <span>Sorter</span>
     <SorterIcon />
   </FunctionButton>
+
+  <FunctionButton primary>
+    <MenuOptionsIcon />
+  </FunctionButton>
 `;
 
 export default {
@@ -89,6 +93,12 @@ export default {
           >
             <span>Function</span>
             <SorterIcon />
+          </FunctionButton>
+
+          <FunctionButton
+            primary
+          >
+            <MenuOptionsIcon />
           </FunctionButton>
         </div>
 

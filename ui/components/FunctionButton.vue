@@ -19,6 +19,13 @@ export default {
         active: {
             type: Boolean,
             default: false
+        },
+        /**
+         * switches colors
+         */
+        primary: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -37,7 +44,7 @@ export default {
 
 <template>
   <BaseButton
-    :class="['function-button', {single}, {active}]"
+    :class="['function-button', {single, active, primary}]"
     v-bind="$attrs"
     v-on="$listeners"
   >
@@ -117,6 +124,36 @@ export default {
 
     & >>> svg {
       stroke: var(--theme-button-function-foreground-color-active);
+    }
+  }
+
+  &.primary {
+    color: var(--theme-button-foreground-color, --knime-masala);
+    background-color: var(--theme-button-background-color, --knime-yellow);
+
+    & >>> svg {
+      stroke: var(--theme-button-foreground-color, --knime-masala);
+    }
+
+    &:hover {
+      outline: none;
+      color: var(--theme-button-foreground-color-hover, --knime-white);
+      background-color: var(--theme-button-background-color-hover, --knime-masala);
+
+      & >>> svg {
+        stroke: var(--theme-button-foreground-color-hover, --knime-white);
+      }
+    }
+
+    &:active,
+    &:focus {
+      outline: none;
+      color: var(--theme-button-foreground-color-focus, --knime-white);
+      background-color: var(--theme-button-background-color-focus, --knime-masala);
+
+      & >>> svg {
+        stroke: var(--theme-button-foreground-color-focus, --knime-white);
+      }
     }
   }
 }
