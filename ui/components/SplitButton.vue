@@ -9,8 +9,9 @@
 
 div {
   display: inline-flex;
+  border-radius: var(--theme-button-split-border-radius); /* needed for correct :hover style trigger below */
 
-  & >>> .button {
+  & >>> .button.primary {
     position: relative;
     margin-bottom: 0;
 
