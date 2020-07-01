@@ -101,6 +101,6 @@ describe('FunctionButton.vue', () => {
             }
         });
         expect(wrapper.classes()).toContain('disabled');
-    })
+    });
 
 });
