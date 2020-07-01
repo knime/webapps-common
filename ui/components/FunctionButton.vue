@@ -19,6 +19,10 @@ export default {
         active: {
             type: Boolean,
             default: false
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -37,7 +41,7 @@ export default {
 
 <template>
   <BaseButton
-    :class="['function-button', {single}, {active}]"
+    :class="['function-button', {single}, {active}, {disabled}]"
     v-bind="$attrs"
     v-on="$listeners"
   >
@@ -118,6 +122,11 @@ export default {
     & >>> svg {
       stroke: var(--theme-button-function-foreground-color-active);
     }
+  }
+
+  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 </style>
