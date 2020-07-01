@@ -224,6 +224,7 @@ export default {
 
 <template>
   <div
+    :id="id"
     v-on-clickaway="clickAway"
     :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
   >
@@ -258,7 +259,7 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true }"
+        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': item.text.trim() === '' }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
@@ -286,7 +287,7 @@ export default {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 
@@ -301,8 +302,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
 
     &:focus {
       border-color: var(--knime-masala);
@@ -367,6 +366,10 @@ export default {
     white-space: nowrap;
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);

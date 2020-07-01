@@ -44,6 +44,22 @@ describe('RadioButtons.vue', () => {
         expect(mount(RadioButtons).html()).toBeTruthy();
     });
 
+    it('two render with different name attributes', () => {
+        let w1 = mount(RadioButtons, {
+            propsData: {
+                possibleValues
+            }
+        });
+        let w2 = mount(RadioButtons, {
+            propsData: {
+                possibleValues
+            }
+        });
+
+        expect(w1.vm.count).not.toBe(w2.vm.count);
+        expect(w1.find('input').attributes().name).not.toBe(w2.find('input').attributes().name);
+    });
+
     it('renders horizontal by default', () => {
         const wrapper = mount(RadioButtons, {
             propsData: {

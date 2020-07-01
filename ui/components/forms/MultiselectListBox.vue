@@ -349,6 +349,7 @@ export default {
     :style="cssStyleSize"
   >
     <ul
+      :id="id"
       ref="ul"
       role="listbox"
       tabindex="0"
@@ -377,7 +378,8 @@ export default {
         :class="{
           'selected': isCurrentValue(item.id),
           'invalid': item.invalid,
-          'noselect' :true
+          'noselect' :true,
+          'empty': !Boolean(item.text.trim())
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="handleClick($event, item.id, index)"
@@ -408,7 +410,7 @@ export default {
       margin: 0;
       top: 0;
       bottom: 0;
-      z-index: 10;
+      z-index: 1;
       background-color: var(--theme-color-error);
     }
   }
@@ -446,6 +448,10 @@ export default {
     cursor: default; /* edge legacy shows different cursor */
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);
