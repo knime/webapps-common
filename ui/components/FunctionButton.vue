@@ -41,7 +41,7 @@ export default {
 
 <template>
   <BaseButton
-    :class="['function-button', {single}, {active}, {disabled}]"
+    :class="['function-button', { single, active, disabled }]"
     v-bind="$attrs"
     v-on="$listeners"
   >
