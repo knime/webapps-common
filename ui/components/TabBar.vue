@@ -230,6 +230,7 @@ span {
   color: var(--theme-color-dove-gray);
 
   @media only screen and (max-width: 900px) {
+    padding: 0 7px;
     font-size: 13px;
     height: 41px;
     line-height: 40px;
