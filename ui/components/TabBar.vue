@@ -182,6 +182,12 @@ export const tabBarMixin = {
   padding-bottom: 20px;
   display: inline-block;
 
+  @media only screen and (max-width: 900px) {
+    margin-top: -10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
   & .overflow {
     height: 55px;
   }
@@ -222,10 +228,16 @@ span {
   height: 51px;
   line-height: 51px;
   color: var(--theme-color-dove-gray);
+
+  @media only screen and (max-width: 900px) {
+    font-size: 13px;
+    height: 41px;
+    line-height: 40px;
+  }
 }
 
 label:not(:last-child) {
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 svg {
@@ -236,6 +248,13 @@ svg {
   margin-right: 2px;
   stroke: var(--theme-color-dove-gray);
   stroke-width: calc(32px / 21);
+
+  @media only screen and (max-width: 900px) {
+    vertical-align: -4px;
+    width: 16px;
+    height: 16px;
+    stroke-width: calc(32px / 16);
+  }
 }
 
 input:disabled + span {
