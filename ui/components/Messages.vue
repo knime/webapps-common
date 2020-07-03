@@ -1,14 +1,12 @@
 <script>
 import Message from './Message';
-import CollapsibleMessage from './CollapsibleMessage';
 
 /**
  * Displays multiple stacked messages. If a message is added or removed (e.g. dismissed), a smooth animation is shown.
  */
 export default {
     components: {
-        Message,
-        CollapsibleMessage
+        Message
     },
     props: {
         /**
@@ -42,40 +40,38 @@ export default {
     tag="div"
     name="messages"
   >
-    <template v-for="message in messages">
+    <Message
+      v-for="message in messages"
+      :key="message.id"
+      :type="message.type.toLowerCase()"
+      :count="message.count"
+      :button="message.button"
+      :details="message.details"
+      @copied="$emit('copied')"
+      @dismiss="$emit('dismiss', message.id)"
+    >
       <Component
-        :is="message.details ? 'CollapsibleMessage' : 'Message'"
-        :key="message.id"
-        :type="message.type.toLowerCase()"
-        :count="message.count"
-        :button="message.button"
-        :details="message.details"
-        @copied="$emit('copied')"
-        @dismiss="$emit('dismiss', message.id)"
-      >
-        <Component
-          :is="message.icon"
-          slot="icon"
-        />
-        {{ message.message }}
-        <template v-if="message.link">
-          <nuxt-link
-            v-if="message.link.to"
-            :to="message.link.to"
-            class="message-link"
-          >
-            {{ ' ' + message.link.text }}
-          </nuxt-link>
-          <a
-            v-else-if="message.link.href"
-            :href="message.link.href"
-            class="message-link"
-          >
-            {{ ' ' + message.link.text }}
-          </a>
-        </template>
-      </Component>
-    </template>
+        :is="message.icon"
+        slot="icon"
+      />
+      {{ message.message }}
+      <template v-if="message.link">
+        <nuxt-link
+          v-if="message.link.to"
+          :to="message.link.to"
+          class="message-link"
+        >
+          {{ ' ' + message.link.text }}
+        </nuxt-link>
+        <a
+          v-else-if="message.link.href"
+          :href="message.link.href"
+          class="message-link"
+        >
+          {{ ' ' + message.link.text }}
+        </a>
+      </template>
+    </Message>
   </transition-group>
 </template>
 

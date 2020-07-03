@@ -1,6 +1,9 @@
 <script>
 import CloseIcon from '../assets/img/icons/close.svg?inline';
+import CopyIcon from '../assets/img/icons/copy.svg?inline';
 import Button from './Button';
+import Collapser from './Collapser';
+import { copyText } from '../../util/copyText';
 
 /**
  * Message banner component with close button
@@ -8,7 +11,9 @@ import Button from './Button';
 export default {
     components: {
         CloseIcon,
-        Button
+        CopyIcon,
+        Button,
+        Collapser
     },
     props: {
         /**
@@ -34,12 +39,21 @@ export default {
         count: {
             type: Number,
             default: 1
+        },
+        details: {
+            type: String,
+            default: ''
         }
     },
     data() {
         return {
             active: true
         };
+    },
+    computed: {
+        hasDetails() {
+            return this.details.length > 0;
+        }
     },
     methods: {
         onDismiss() {
@@ -53,6 +67,16 @@ export default {
              * @event dismiss
              */
             this.$emit('dismiss');
+        },
+        copyMessage() {
+            copyText(this.details);
+            /**
+             * copied event. Fired when the copy button in the detail area is clicked.
+             * The embedding component should use this to notify the user that the message was copied successfully.
+             *
+             * @event copied
+             */
+            this.$emit('copied');
         }
     }
 };
@@ -65,39 +89,64 @@ export default {
   >
     <div class="grid-container">
       <div class="grid-item-12">
-        <!-- @slot Use this slot to add an icon. -->
-        <slot name="icon" />
-        <span class="message">
-          <!-- @slot Use this slot to add text content (markup). -->
-          <slot />
-          <span
-            v-show="count && count > 1"
-            class="message-count"
+        <Component
+          :is="hasDetails ? 'Collapser' : 'div'"
+          :class="hasDetails ? 'collapser' : 'banner'"
+        >
+          <Component
+            :is="hasDetails ? 'template' : 'div'"
+            slot="title"
           >
-            {{ '×' + count }}
-          </span>
-        </span>
-        <Button
-          v-if="button"
-          class="close"
-          primary
-          compact
-          on-dark
-          @click="onDismiss"
-          @keydown.space.stop.prevent="onDismiss"
-        >
-          {{ button }}
-        </Button>
-        <span
-          v-else
-          tabindex="0"
-          class="close"
-          title="Discard message"
-          @click="onDismiss"
-          @keydown.space.stop.prevent="onDismiss"
-        >
-          <CloseIcon />
-        </span>
+            <!-- @slot Use this slot to add an icon. -->
+            <slot name="icon" />
+            <span class="message">
+              <!-- @slot Use this slot to add text content (markup). -->
+              <slot />
+              <span
+                v-show="count && count > 1"
+                class="message-count"
+              >
+                {{ '×' + count }}
+              </span>
+            </span>
+            <Button
+              v-if="button"
+              class="close"
+              primary
+              compact
+              on-dark
+              @click="onDismiss"
+              @keydown.space.stop.prevent="onDismiss"
+            >
+              {{ button }}
+            </Button>
+            <span
+              v-else
+              tabindex="0"
+              class="close"
+              title="Discard message"
+              @click="onDismiss"
+              @keydown.space.stop.prevent="onDismiss"
+            >
+              <CloseIcon />
+            </span>
+          </Component>
+          <div
+            v-if="hasDetails"
+            class="details"
+          >
+            <span id="detail-text">
+              {{ details }}
+            </span>
+            <div
+              class="copy-button"
+              title="Copy to clipboard"
+              @click="copyMessage"
+            >
+              <CopyIcon />
+            </div>
+          </div>
+        </Component>
       </div>
     </div>
   </section>
@@ -111,6 +160,14 @@ export default {
   margin-left: 5px;
   background-color: white;
   border-radius: 12px;
+}
+
+.banner {
+  width: 100%;
+
+  & .close {
+    top: 12px;
+  }
 }
 
 section {
@@ -129,6 +186,7 @@ section {
 
     & > .message {
       flex-grow: 1;
+      margin-right: 50px; /* this is set to not interfere with the dropdwon or close button */
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -161,6 +219,9 @@ section {
       outline: none;
       display: flex;
       align-items: center;
+      position: absolute;
+      right: -6px; /* align svg with right border */
+      pointer-events: all;
       text-align: center;
 
       /* hover/focus styles for type error and success */
@@ -210,6 +271,106 @@ section {
 
     & .message-count {
       color: var(--theme-color-success);
+    }
+  }
+}
+
+.collapser {
+  width: 100%;
+  pointer-events: all;
+
+  & >>> .button {
+    display: flex;
+    align-content: center;
+
+    & .dropdown {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 13px;
+      top: 0;
+      display: flex;
+      align-items: center;
+
+      &:hover,
+      &:focus {
+        background-color: var(--knime-masala-semi);
+      }
+
+      & .dropdown-icon {
+        stroke: var(--theme-color-white);
+      }
+    }
+  }
+
+  & >>> .panel {
+    width: 100vw;
+    max-width: 100vw;
+    background-color: var(--theme-color-white);
+    opacity: 0.9;
+    min-height: 50px;
+    max-height: 100px;
+    margin-bottom: -15px;
+    display: flex;
+    align-content: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    padding-left: calc(3 * var(--grid-gap-width));
+    padding-right: calc(3 * var(--grid-gap-width));
+    position: relative;
+    left: calc((100% - 100vw) / 2);
+
+    & .details {
+      min-width: var(--grid-min-width);
+      display: flex;
+      justify-content: space-between;
+      overflow-y: auto;
+      width: 100%;
+      margin: 0 auto;
+      max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
+
+
+      & #detail-text {
+        display: inline-block;
+        color: var(--theme-color-masala);
+        font-size: 13px;
+        font-weight: 300;
+        line-height: 18px;
+        margin: auto 0;
+        max-width: 66%;
+      }
+
+      & .copy-button {
+        border-radius: 50%;
+        height: 30px;
+        width: 30px;
+        text-align: center;
+        margin-right: 23px; /* line-up with dropdown icon */
+
+        &:hover {
+          background-color: var(--theme-color-silver-sand-semi);
+        }
+
+        & svg {
+          margin: auto;
+          stroke: var(--theme-color-dove-gray);
+          height: 18px;
+          width: 18px;
+          stroke-width: calc(32px / 18);
+          vertical-align: middle;
+          margin-top: 3px;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1180px) {
+  .collapser {
+    & >>> .panel {
+      padding-left: var(--grid-gap-width);
+      padding-right: var(--grid-gap-width);
     }
   }
 }
