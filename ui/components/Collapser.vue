@@ -104,6 +104,7 @@ export default {
     margin-right: 4px;
     float: left;
     margin-left: 4px;
+    top: 17px;
   }
 
   & .dropdown {

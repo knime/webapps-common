@@ -199,6 +199,7 @@ section {
       margin-right: 10px;
       flex-shrink: 0;
       top: 0;
+      margin-left: 0;
     }
 
     & button.close {
@@ -304,7 +305,7 @@ section {
   }
 
   & >>> .panel {
-    width: 100vw;
+    width: calc(100vw - 1px); /* workaround for 100vw bug */
     max-width: 100vw;
     background-color: var(--theme-color-white);
     opacity: 0.9;
@@ -319,7 +320,7 @@ section {
     padding-left: calc(3 * var(--grid-gap-width));
     padding-right: calc(3 * var(--grid-gap-width));
     position: relative;
-    left: calc((100% - 100vw) / 2);
+    left: calc((100% - 100vw) / 2 - 5px); /* workaround for 100vw bug */
 
     & .details {
       min-width: var(--grid-min-width);
@@ -329,6 +330,7 @@ section {
       width: 100%;
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
+      padding-left: 17px; /* align with top banner */
 
 
       & #detail-text {
