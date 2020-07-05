@@ -34,7 +34,6 @@ fieldset {
 
   /* required for text ellipsis on checkboxes and radiobuttons  */
   min-width: 100% !important; /* fix for Edge Legacy (v12-18); otherwise auto would be sufficient */
-  overflow-x: hidden;
 
   & > legend {
     font-weight: 700;
