@@ -51,7 +51,8 @@ export default {
 
 <template>
   <div>
-    <button
+    <div
+      class="button"
       :aria-expanded="String(isExpanded)"
       @click="onTrigger"
     >
@@ -60,7 +61,7 @@ export default {
       <div class="dropdown">
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </div>
-    </button>
+    </div>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
@@ -83,7 +84,8 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-button {
+.button {
+  display: inline-block;
   position: relative;
   padding: 0;
   font-size: 18px;
@@ -99,10 +101,10 @@ button {
 
   & svg {
     position: relative;
-    top: 18px;
     margin-right: 4px;
     float: left;
     margin-left: 4px;
+    top: 17px;
   }
 
   & .dropdown {
