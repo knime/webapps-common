@@ -96,6 +96,7 @@ export default {
           <Component
             :is="hasDetails ? 'template' : 'div'"
             slot="title"
+            class="title"
           >
             <!-- @slot Use this slot to add an icon. -->
             <slot name="icon" />
@@ -172,6 +173,7 @@ export default {
 
 section {
   border-bottom: 1px solid var(--theme-color-white);
+  overflow: hidden;
 
   & .grid-item-12 {
     font-weight: 700;
@@ -191,15 +193,18 @@ section {
       text-overflow: ellipsis;
     }
 
+    & .title {
+      display: flex;
+    }
+
     & >>> svg {
       width: 24px;
       height: 24px;
       stroke-width: calc(32px / 24);
       stroke: var(--theme-color-white);
-      margin-right: 10px;
+      margin-right: 20px;
       flex-shrink: 0;
       top: 0;
-      margin-left: 0;
     }
 
     & button.close {
@@ -226,6 +231,7 @@ section {
       text-align: center;
 
       /* hover/focus styles for type error and success */
+
       &:hover,
       &:focus {
         background-color: var(--knime-masala-semi);
@@ -249,6 +255,7 @@ section {
     background-color: var(--theme-color-info);
 
     /* hover/focus styles for type info */
+
     & .close:hover >>> svg,
     & .close:focus >>> svg {
       filter: drop-shadow(0 0 4px white);
@@ -305,7 +312,7 @@ section {
   }
 
   & >>> .panel {
-    width: calc(100vw - 1px); /* workaround for 100vw bug */
+    width: calc(100vw);
     max-width: 100vw;
     background-color: var(--theme-color-white);
     opacity: 0.9;
@@ -320,7 +327,7 @@ section {
     padding-left: calc(3 * var(--grid-gap-width));
     padding-right: calc(3 * var(--grid-gap-width));
     position: relative;
-    left: calc((100% - 100vw) / 2 - 5px); /* workaround for 100vw bug */
+    left: calc((100% - 100vw) / 2);
 
     & .details {
       min-width: var(--grid-min-width);
@@ -330,8 +337,6 @@ section {
       width: 100%;
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
-      padding-left: 17px; /* align with top banner */
-
 
       & #detail-text {
         display: inline-block;
