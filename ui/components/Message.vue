@@ -312,7 +312,7 @@ section {
   }
 
   & >>> .panel {
-    width: calc(100vw);
+    width: 100vw;
     max-width: 100vw;
     background-color: var(--theme-color-white);
     opacity: 0.9;
