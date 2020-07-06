@@ -68,8 +68,8 @@ export default {
     computed: {
         ulSizeStyle() {
             // add two pixel to prevent scrollbar bugs
-            const pxSize = `${this.size * this.optionLineHeight + 2}px`;
-            return this.size > 0 ? { height: pxSize } : { minHeight: `${2 * this.optionLineHeight + 2}px` };
+            const numToPixel = n => `${n * this.optionLineHeight + 2}px`;
+            return this.size > 0 ? { height: numToPixel(this.size) } : { minHeight: numToPixel(2) };
         },
         selectableValues() {
             return [...this.invalidPossibleValueIds.map(x => this.generateInvalidItem(x)), ...this.possibleValues];
