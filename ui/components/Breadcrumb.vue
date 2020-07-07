@@ -81,6 +81,7 @@ export default {
   }
 
   & ul {
+    padding: 0;
     width: 100%;
   }
 
