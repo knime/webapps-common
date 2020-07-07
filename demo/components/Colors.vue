@@ -23,6 +23,7 @@ export default {
         <div class="demo">
           <div style="--bg: var(--knime-yellow);">--knime-yellow</div>
           <div style="--bg: var(--knime-masala); --font: white;">--knime-masala</div>
+          <div style="--bg: var(--knime-masala-semi);">--knime-masala-semi</div>
           <div style="--bg: var(--knime-dove-gray); --font: white;">--knime-dove-gray</div>
           <div style="--bg: var(--knime-gray-dark); --font: white;">--knime-gray-dark</div>
           <div style="--bg: var(--knime-stone-gray); --font: white;">--knime-stone-gray</div>

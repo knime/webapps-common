@@ -91,4 +91,16 @@ describe('FunctionButton.vue', () => {
         expect(document.activeElement).toBe(wrapper.vm.$el);
     });
 
+    it('renders disabled button', () => {
+        const wrapper = mount(FunctionButton, {
+            propsData: {
+                disabled: true
+            },
+            slots: {
+                default: ['<span>text</span>']
+            }
+        });
+        expect(wrapper.classes()).toContain('disabled');
+    });
+
 });

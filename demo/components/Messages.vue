@@ -28,7 +28,8 @@ export default {
                 type: 'error',
                 message: 'Error message',
                 icon: BulbIcon,
-                button: 'Okily Dokily!'
+                button: 'Okily Dokily!',
+                details: 'these are details'
             }, {
                 id: 4,
                 type: 'error',
@@ -86,8 +87,9 @@ export default {
                 type: 'error',
                 message: 'Error message.',
                 icon: BulbIcon,
+                details: 'These are details',
                 link: {
-                    text: 'With appended link.',
+                    text: 'With appended link and details.',
                     href: 'https://www.knime.com/'
                 }
             }]

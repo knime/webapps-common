@@ -4,9 +4,7 @@ export default {
     props: {
         id: {
             type: String,
-            default() {
-                return `RadioButtons-${count++}`;
-            }
+            default: null
         },
         value: {
             type: String,
@@ -44,6 +42,10 @@ export default {
             }
         }
     },
+    beforeCreate() {
+        count += 1;
+        this.count = count;
+    },
     methods: {
         onInput($event) {
             /**
@@ -78,7 +80,7 @@ export default {
         ref="input"
         :checked="(value === item.id)"
         :value="item.id"
-        :name="`radio-${id}`"
+        :name="`wc-radio-${count}`"
         type="radio"
         @change="onInput"
       >
@@ -178,6 +180,12 @@ export default {
       }
     }
   }
+
+  /* stylelint-disable no-descending-specificity */
+  &:focus-within label input + span::before {
+    border: 1px solid var(--theme-radio-border-color-focus);
+  }
+  /* stylelint-enable no-descending-specificity */
 }
 
 </style>

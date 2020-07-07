@@ -7,7 +7,8 @@ import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
 
 describe('Message.vue', () => {
     let wrapper;
-    let copyText = jest.fn();
+
+    let copyTextMock = jest.fn();
 
     it('renders default', () => {
         wrapper = shallowMount(Message);
@@ -15,7 +16,8 @@ describe('Message.vue', () => {
         expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find(InfoIcon).exists()).toBe(true);
         expect(wrapper.find('span.close').exists()).toBe(true);
-        expect(wrapper.find('.show-collapser').exists()).toBe(false);
+        expect(wrapper.find('.collapser').exists()).toBe(false);
+        expect(wrapper.find('.banner').exists()).toBe(true);
     });
 
     it('renders success', () => {
@@ -89,12 +91,18 @@ describe('Message.vue', () => {
             propsData: {
                 type: 'error',
                 details: 'test message'
+            },
+            methods: {
+                copyMessage: copyTextMock
             }
         });
-        expect(copyText).not.toHaveBeenCalled();
         expect(wrapper.find('.copy-button').exists()).toBe(true);
-        expect(wrapper.find('.show-collapser').exists()).toBe(true);
+        expect(wrapper.find('.collapser').exists()).toBe(true);
         expect(wrapper.find('#detail-text').text()).toEqual('test message');
+        wrapper.find('.copy-button').trigger('click');
+
+        expect(copyTextMock).toHaveBeenCalled();
+
     });
 
     it('closes', () => {
