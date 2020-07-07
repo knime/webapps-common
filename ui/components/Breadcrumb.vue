@@ -81,15 +81,14 @@ export default {
   }
 
   & ul {
-    padding: 0;
+    padding: 10px 0;
     width: 100%;
   }
 
   & li {
     position: relative;
-    vertical-align: middle;
+    margin: 5px 0;
     max-width: 100%;
-    height: 100%;
 
     &:not(:last-child) {
       margin-right: 4px;
@@ -98,7 +97,6 @@ export default {
 
   & span,
   & a {
-    padding: 15px 0 15px 3px;
     display: inline-block;
     text-decoration: none;
     vertical-align: top;
@@ -122,8 +120,8 @@ export default {
   }
 
   & .arrow {
-    padding: 19px 0;
     width: 10px;
+    height: 10px;
     margin: 0 4px;
     stroke-width: calc(32px / 10);
     vertical-align: middle;
@@ -142,7 +140,6 @@ export default {
   & a {
     &:hover,
     &:focus {
-      background-color: var(--knime-silver-sand-semi);
       outline: none;
       color: var(--theme-color-masala);
 
