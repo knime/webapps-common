@@ -88,9 +88,16 @@ export default {
     :class="type"
   >
     <div class="grid-container">
-      <em class="grid-item-12">
-        <Collapser :class="[{'show-collapser': hasDetails}, 'collapser']">
-          <template slot="title">
+      <div class="grid-item-12">
+        <Component
+          :is="hasDetails ? 'Collapser' : 'div'"
+          :class="hasDetails ? 'collapser' : 'banner'"
+        >
+          <Component
+            :is="hasDetails ? 'template' : 'div'"
+            slot="title"
+            class="title"
+          >
             <!-- @slot Use this slot to add an icon. -->
             <slot name="icon" />
             <span class="message">
@@ -124,8 +131,11 @@ export default {
             >
               <CloseIcon />
             </span>
-          </template>
-          <div class="details">
+          </Component>
+          <div
+            v-if="hasDetails"
+            class="details"
+          >
             <span id="detail-text">
               {{ details }}
             </span>
@@ -133,10 +143,12 @@ export default {
               class="copy-button"
               title="Copy to clipboard"
               @click="copyMessage"
-            ><CopyIcon /></div>
+            >
+              <CopyIcon />
+            </div>
           </div>
-        </Collapser>
-      </em>
+        </Component>
+      </div>
     </div>
   </section>
 </template>
@@ -151,10 +163,19 @@ export default {
   border-radius: 12px;
 }
 
+.banner {
+  width: 100%;
+
+  & .close {
+    top: 12px;
+  }
+}
+
 section {
   border-bottom: 1px solid var(--theme-color-white);
+  overflow: hidden;
 
-  & em {
+  & .grid-item-12 {
     font-weight: 700;
     font-style: normal;
     font-size: 16px;
@@ -167,12 +188,19 @@ section {
 
     & > .message {
       flex-grow: 1;
+      margin-right: 50px; /* this is set to not interfere with the dropdwon or close button */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    & .title {
+      display: flex;
     }
 
     & >>> svg {
-      width: 22px;
-      height: 22px;
-      stroke-width: calc(32px / 22);
+      width: 24px;
+      height: 24px;
+      stroke-width: calc(32px / 24);
       stroke: var(--theme-color-white);
       margin-right: 20px;
       flex-shrink: 0;
@@ -203,9 +231,10 @@ section {
       text-align: center;
 
       /* hover/focus styles for type error and success */
+
       &:hover,
       &:focus {
-        background-color: var(--theme-color-silver-sand-semi);
+        background-color: var(--knime-masala-semi);
       }
 
       & svg {
@@ -226,6 +255,7 @@ section {
     background-color: var(--theme-color-info);
 
     /* hover/focus styles for type info */
+
     & .close:hover >>> svg,
     & .close:focus >>> svg {
       filter: drop-shadow(0 0 4px white);
@@ -255,9 +285,9 @@ section {
 
 .collapser {
   width: 100%;
-  pointer-events: none;
+  pointer-events: all;
 
-  & >>> button {
+  & >>> .button {
     display: flex;
     align-content: center;
 
@@ -272,24 +302,11 @@ section {
 
       &:hover,
       &:focus {
-        background-color: var(--theme-color-silver-sand-semi);
+        background-color: var(--knime-masala-semi);
       }
 
       & .dropdown-icon {
         stroke: var(--theme-color-white);
-        display: none;
-      }
-    }
-  }
-
-  &.show-collapser {
-    pointer-events: all;
-
-    & >>> button {
-      & .dropdown {
-        & .dropdown-icon {
-          display: initial;
-        }
       }
     }
   }
@@ -320,7 +337,6 @@ section {
       width: 100%;
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
-
 
       & #detail-text {
         display: inline-block;
