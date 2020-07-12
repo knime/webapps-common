@@ -210,7 +210,6 @@ section {
     & button.close {
       flex-shrink: 0;
       margin-bottom: 0;
-      margin-left: 10px;
       display: flex;
       width: unset;
     }
@@ -225,10 +224,14 @@ section {
       outline: none;
       display: flex;
       align-items: center;
-      position: absolute;
+      position: relative;
       right: -6px; /* align svg with right border */
       pointer-events: all;
       text-align: center;
+      top: -3px;
+      align-self: flex-start;
+      float: right;
+      margin-left: auto;
 
       /* hover/focus styles for type error and success */
 
@@ -296,7 +299,7 @@ section {
       height: 30px;
       border-radius: 50%;
       margin-right: 13px;
-      top: 0;
+      top: -3px;
       display: flex;
       align-items: center;
 
