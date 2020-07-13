@@ -274,7 +274,7 @@ export default {
 
   & .options {
     position: absolute;
-    z-index: 20;
+    z-index: 2;
     width: 100%;
     padding: 5px 10px;
     margin-top: -1px;

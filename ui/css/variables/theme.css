@@ -120,6 +120,7 @@
   --theme-radio-border-color-hover: var(--knime-stone-gray);
   --theme-radio-border-color-selected: var(--knime-masala);
   --theme-radio-border-color-selected-hover: var(--knime-stone-gray);
+  --theme-radio-border-color-focus: var(--knime-masala);
   --theme-radio-background-color: transparent;
   --theme-radio-background-color-hover: var(--knime-silver-sand-semi);
   --theme-radio-background-color-selected: var(--knime-masala);

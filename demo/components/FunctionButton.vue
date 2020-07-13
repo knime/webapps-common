@@ -26,6 +26,11 @@ const codeExample =
   <FunctionButton primary>
     <MenuOptionsIcon />
   </FunctionButton>
+  
+  <FunctionButton :disabled="disabled">
+    <span>Disabled Function</span>
+    <SorterIcon />
+  </FunctionButton>
 `;
 
 export default {
@@ -44,6 +49,7 @@ export default {
             active1: false,
             active2: false,
             active3: false,
+            disabled: true,
             subMenuItems: [{
                 href: 'http://apple.com',
                 text: 'Apples'
@@ -65,7 +71,8 @@ export default {
       <div class="grid-item-12">
         <h2>FunctionButton</h2>
         <p>
-          The function button is a button with an optional active state, e.g. when a dropdown menu is expanded.
+          The function button is a button with an optional active state, e.g. when a dropdown menu is expanded and can
+          also be disabled.
         </p>
         <p>
           Its primary use is together with the SubMenu component where it is included, but can also be used standalone.
@@ -94,11 +101,12 @@ export default {
             <span>Function</span>
             <SorterIcon />
           </FunctionButton>
-
-          <FunctionButton
-            primary
-          >
+          <FunctionButton primary>
             <MenuOptionsIcon />
+          </FunctionButton>
+          <FunctionButton :disabled="disabled">
+            <span>Disabled Function</span>
+            <SorterIcon />
           </FunctionButton>
         </div>
 

@@ -336,16 +336,14 @@ export default {
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
   & [role="listbox"] {
     overflow-y: auto;
-    overflow-x: hidden;
     position: absolute;
-    z-index: 20;
+    z-index: 2;
     max-height: calc(22px * 7); /* show max 7 items */
     font-size: 14px;
     min-height: 22px;
     width: 100%;
     padding: 0;
-    margin: 0;
-    margin-top: -1px;
+    margin: -1px 0 1px 0;
     background: var(--knime-white);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
 
