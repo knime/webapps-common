@@ -5,6 +5,10 @@ export default {
             default: '',
             type: [Number, String]
         },
+        id: {
+            type: String,
+            default: null
+        },
         /**
          * Validity controlled by the parent component to be flexible.
          */
@@ -57,6 +61,7 @@ export default {
       class="invalid-marker"
     />
     <textarea
+      :id="id"
       ref="input"
       :title="title"
       :value="value"
@@ -74,18 +79,18 @@ export default {
 
 div {
   position: relative;
-  display: inline-block;
+  display: block;
+  max-width: max-content;
 
   & textarea {
     font-size: 13px;
     font-weight: 300;
-    color: var(--theme-text-normal-color);
-    font-family: var(--theme-text-normal-font-family);
     line-height: 18px;
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     border: 1px solid var(--knime-stone-gray);
     outline: none;
+    display: block;
 
     &::placeholder {
       color: var(--knime-dove-gray);
@@ -108,7 +113,7 @@ div {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 }

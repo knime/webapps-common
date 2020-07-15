@@ -57,12 +57,10 @@ export default {
 .checkbox {
   display: inline-block;
   position: relative;
-  padding: 3px 3px 3px 24px;
+  padding: 3px 0 3px 24px;
   max-width: 100%;
 
   & input {
-    color: var(--theme-text-normal-color);
-    font-family: var(--theme-text-normal-font-family);
     user-select: none;
     display: flex;
     opacity: 0;
@@ -72,6 +70,7 @@ export default {
     & + span {
       display: inline-block;
       overflow: hidden;
+      min-width: 1em;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -137,11 +136,11 @@ export default {
 
       /* □ */
       &:hover + span::before {
-        background: var(--theme-checkbox-background-color-hover);
+        border-color: var(--theme-checkbox-border-color-hover);
       }
 
       &:focus:not(:hover) + span::before {
-        border-color: var(--theme-checkbox-background-color-focus);
+        border-color: var(--theme-checkbox-border-color-focus);
       }
     }
   }
@@ -150,8 +149,6 @@ export default {
   &.regular {
     --regular-height: 18px;
 
-    font-family: var(--theme-text-normal-font-family);
-    color: var(--theme-text-normal-color);
     font-size: 13px;
     font-weight: 300;
     line-height: var(--regular-height);

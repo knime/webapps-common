@@ -88,9 +88,6 @@ export default {
   color: var(--knime-dove-gray);
   background-color: transparent;
 
-  /* best way to ensure pill shaped buttons with flexible 1/4 corners */
-  border-radius: var(--theme-button-border-radius, 9999px);
-
   & >>> svg {
     width: 18px;
     height: 18px;
@@ -123,7 +120,6 @@ export default {
     min-width: 50px;
     font-size: 13px;
     line-height: 18px;
-    border-radius: var(--theme-button-small-border-radius);
     color: var(--theme-button-small-foreground-color);
     background: var(--theme-button-small-background-color);
 
@@ -181,6 +177,13 @@ export default {
 
   &.primary,
   &.with-border {
+    /* best way to ensure pill shaped buttons with flexible 1/4 corners */
+    border-radius: var(--theme-button-border-radius, 9999px);
+
+    &.compact {
+      border-radius: var(--theme-button-small-border-radius);
+    }
+
     &:hover {
       outline: none;
       color: var(--theme-button-foreground-color-hover, --knime-white);

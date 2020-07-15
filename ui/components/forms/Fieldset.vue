@@ -34,7 +34,6 @@ fieldset {
 
   /* required for text ellipsis on checkboxes and radiobuttons  */
   min-width: 100% !important; /* fix for Edge Legacy (v12-18); otherwise auto would be sufficient */
-  overflow-x: hidden;
 
   & > legend {
     font-weight: 700;
@@ -43,6 +42,7 @@ fieldset {
     font-size: 16px;
     line-height: 20px;
     cursor: default;
+    margin-bottom: 10px;
 
     & svg {
       margin-right: 0;
@@ -67,8 +67,17 @@ fieldset {
     color: var(--theme-text-medium-color);
     font-size: 13px;
     line-height: 18px;
-    margin-top: 10px;
     margin-bottom: 3px;
+  }
+
+  & >>> .label-wrapper,
+  & > fieldset {
+    margin-top: 10px;
+  }
+
+  /* avoid duplicated margins */
+  & >>> legend + .label-wrapper {
+    margin-top: 0;
   }
 }
 </style>

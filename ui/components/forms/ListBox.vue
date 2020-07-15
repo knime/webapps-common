@@ -68,8 +68,8 @@ export default {
     computed: {
         ulSizeStyle() {
             // add two pixel to prevent scrollbar bugs
-            const pxSize = `${this.size * this.optionLineHeight + 2}px`;
-            return this.size > 0 ? { height: pxSize } : {};
+            const numToPixel = n => `${n * this.optionLineHeight + 2}px`;
+            return this.size > 0 ? { height: numToPixel(this.size) } : { minHeight: numToPixel(2) };
         },
         selectableValues() {
             return [...this.invalidPossibleValueIds.map(x => this.generateInvalidItem(x)), ...this.possibleValues];
@@ -203,6 +203,7 @@ export default {
 <template>
   <div :class="['listBox', { 'invalid': !isValid }]">
     <ul
+      :id="id"
       ref="ul"
       role="listbox"
       tabindex="0"
@@ -219,7 +220,11 @@ export default {
         role="option"
         :style="{ 'line-height': `${optionLineHeight}px` }"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'invalid': item.invalid }"
+        :class="{
+          'focused': isCurrentValue(item.id),
+          'noselect': true, 'invalid': item.invalid,
+          'empty': item.text.trim() === ''
+        }"
         :aria-selected="isCurrentValue(item.id)"
         @click="setSelected(item.id, index)"
         @focus="setSelected(item.id, index)"
@@ -245,7 +250,7 @@ export default {
       margin: 0;
       top: 0;
       bottom: 0;
-      z-index: 10;
+      z-index: 1;
       background-color: var(--theme-color-error);
     }
   }
@@ -274,6 +279,10 @@ export default {
     white-space: nowrap;
     background-color: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    &.empty {
+      white-space: pre-wrap;
+    }
 
     &:hover {
       background: var(--theme-dropdown-background-color-hover);

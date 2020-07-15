@@ -105,9 +105,9 @@ export default {
     </Message>
     <Message
       type="error"
-      details="These are details about the error"
+      details="Some example detail text"
     >
-      This is an error message with details
+      This is a message with further details
     </Message>
     <section>
       <div class="grid-container">

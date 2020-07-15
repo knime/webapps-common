@@ -15,6 +15,10 @@ export default {
             default: 0,
             type: Number
         },
+        id: {
+            type: String,
+            default: null
+        },
         min: {
             default: Number.MIN_SAFE_INTEGER,
             type: Number
@@ -201,6 +205,7 @@ export default {
       class="invalid-marker"
     />
     <input
+      :id="id"
       ref="input"
       type="number"
       role="spinButton"
@@ -247,11 +252,9 @@ export default {
   & input[type='number'] {
     font-size: 13px;
     font-weight: 300;
-    color: var(--theme-text-normal-color);
-    font-family: var(--theme-text-normal-font-family);
     letter-spacing: inherit;
     height: 40px;
-    line-height: 40px; /* to center text vertically */
+    line-height: normal;
     border: 0;
     margin: 0;
     padding: 0 10px;
@@ -287,7 +290,7 @@ export default {
     left: -1px;
     top: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
     background-color: var(--theme-color-error);
   }
 

@@ -5,6 +5,10 @@ export default {
             default: '',
             type: [Number, String]
         },
+        id: {
+            type: String,
+            default: null
+        },
         /**
          * validity needs to be controlled by the parent component to be flexible
          */
@@ -81,6 +85,7 @@ export default {
       class="invalid-marker"
     />
     <input
+      :id="id"
       ref="input"
       :value="value"
       :class="inputClassList"
@@ -104,10 +109,8 @@ div {
 input {
   font-size: 13px;
   font-weight: 300;
-  color: var(--theme-text-normal-color);
-  font-family: var(--theme-text-normal-font-family);
   height: 40px;
-  line-height: 40px; /* to center text vertically */
+  line-height: normal;
   padding: 0 10px;
   border-radius: 0;
   width: 100%;
@@ -145,7 +148,7 @@ input {
   margin: 0;
   top: 0;
   bottom: 0;
-  z-index: 10;
+  z-index: 1;
   background-color: var(--theme-color-error);
 }
 

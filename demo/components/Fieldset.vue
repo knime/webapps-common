@@ -8,13 +8,21 @@ import code from '!!raw-loader!../../ui/components/forms/Fieldset';
 
 const codeExample = `<Fieldset text="Login">
   <template v-slot:icon><InfoIcon /></template>
-  <Label text="User">
+  <Label
+    v-slot="{ labelForId }"
+    text="User"
+  >
     <InputField
+      :id="labelForId"
       type="text"
     />
   </Label>
-  <Label text="Password">
+  <Label
+    v-slot="{ labelForId }"
+    text="Password"
+  >
     <InputField
+      :id="labelForId"
       type="password"
       value="secret-password"
     />
@@ -58,13 +66,21 @@ export default {
         <div class="grid-item-6">
           <Fieldset text="Login">
             <template v-slot:icon><InfoIcon /></template>
-            <Label text="User">
+            <Label
+              v-slot="{ labelForId }"
+              text="User"
+            >
               <InputField
+                :id="labelForId"
                 type="text"
               />
             </Label>
-            <Label text="Password">
+            <Label
+              v-slot="{ labelForId }"
+              text="Password"
+            >
               <InputField
+                :id="labelForId"
                 type="password"
                 value="secret-password"
               />
