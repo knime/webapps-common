@@ -20,7 +20,7 @@ export default {
          */
         headline: {
             type: String,
-            default: 'Oops!'
+            default: 'Something went wrong!'
         },
         /**
          * Status code specific message.
