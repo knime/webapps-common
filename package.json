@@ -28,7 +28,7 @@
     "jest-transform-stub": "2.0.0",
     "sonar-scanner": "3.1.0",
     "stylelint": "13.6.1",
-    "stylelint-config-standard": "18.3.0",
+    "stylelint-config-standard": "20.0.0",
     "vue": "2.6.11",
     "vue-jest": "3.0.4",
     "vue-template-compiler": "2.6.11"
@@ -43,8 +43,8 @@
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
     "vue-clickaway": "2.2.2",
-    "stylelint": ">= 10.x <= 13.x",
-    "stylelint-config-standard": "18.x",
+    "stylelint": "10.x - 13.x",
+    "stylelint-config-standard": "18.x - 20.x",
     "typeface-roboto": "*",
     "typeface-roboto-mono": "*"
   },
