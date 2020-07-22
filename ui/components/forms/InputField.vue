@@ -110,7 +110,7 @@ input {
   font-size: 13px;
   font-weight: 300;
   height: 40px;
-  line-height: 40px; /* to center text vertically */
+  line-height: normal;
   padding: 0 10px;
   border-radius: 0;
   width: 100%;

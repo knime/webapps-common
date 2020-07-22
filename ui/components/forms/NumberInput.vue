@@ -254,7 +254,7 @@ export default {
     font-weight: 300;
     letter-spacing: inherit;
     height: 40px;
-    line-height: 40px; /* to center text vertically */
+    line-height: normal;
     border: 0;
     margin: 0;
     padding: 0 10px;
