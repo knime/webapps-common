@@ -13,7 +13,7 @@ describe('Collapser.vue', () => {
         });
 
         expect(wrapper.find('svg').exists()).toBeTruthy();
-        expect(wrapper.find('button').exists()).toBeTruthy();
+        expect(wrapper.find('.button').exists()).toBeTruthy();
         expect(wrapper.text()).toContain('another title');
         expect(wrapper.text()).toContain('some test content here');
         expect(wrapper.find('.icon').exists()).toBeFalsy();
@@ -42,7 +42,7 @@ describe('Collapser.vue', () => {
         });
 
         // open collapser
-        wrapper.find('button').trigger('click');
+        wrapper.find('.button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
 
         wrapper.vm.$nextTick(() => {
@@ -53,7 +53,7 @@ describe('Collapser.vue', () => {
             expect(wrapper.find('.panel').attributes('style')).toContain('height');
 
             // close it again
-            wrapper.find('button').trigger('click');
+            wrapper.find('.button').trigger('click');
             wrapper.vm.$nextTick(() => {
                 expect(leaveSpy).toHaveBeenCalled();
                 expect(wrapper.vm.isExpanded).toBeFalsy();
