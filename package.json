@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "consola": "*",
-    "eslint": "5.x",
+    "eslint": "5.x - 7.x",
     "normalize.css": "*",
     "postcss-calc": "*",
     "postcss-css-variables": "*",
