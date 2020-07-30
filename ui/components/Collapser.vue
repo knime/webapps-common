@@ -98,6 +98,7 @@ export default {
   color: inherit; /* Safari needs this */
   width: 100%;
   text-align: left;
+  cursor: pointer;
 
   & svg {
     position: relative;
