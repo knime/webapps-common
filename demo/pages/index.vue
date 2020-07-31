@@ -11,6 +11,7 @@ import Icons from '../components/Icons';
 import Breadcrumb from '../components/Breadcrumb';
 import Button from '../components/Button';
 import FunctionButton from '../components/FunctionButton';
+import FileLink from '../components/FileLink';
 import SubMenu from '../components/SubMenu';
 import SplitButton from '../components/SplitButton';
 import IdleReadyButton from '../components/IdleReadyButton';
@@ -46,6 +47,7 @@ export default {
         Breadcrumb,
         Button,
         FunctionButton,
+        FileLink,
         SubMenu,
         SplitButton,
         IdleReadyButton,
@@ -96,6 +98,7 @@ export default {
     <Breadcrumb />
     <Button />
     <FunctionButton />
+    <FileLink />
     <SubMenu />
     <SplitButton />
     <IdleReadyButton />
