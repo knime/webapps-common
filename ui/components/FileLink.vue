@@ -79,19 +79,6 @@ export default {
     computed: {
         icon() {
             return this.fileType ? `${this.fileType}Icon` : 'fileIcon';
-        },
-        details() {
-            let data = [this.fileType, this.sizeDisplay].filter(x => x).join(', ');
-            if (data) {
-                return `(${data})`;
-            }
-            return null;
-        },
-        sizeDisplay() {
-            if (this.size > 0) {
-                return `${this.size} kb`;
-            }
-            return null;
         }
     },
     methods: {
@@ -103,17 +90,30 @@ export default {
 };
 </script>
 <template>
-  <span class="fileLink">
-    <Component :is="icon" />
-    <a :href="href">{{ text }}</a>
-    <span>{{ details }}</span>
-  </span>
+  <figure class="fileLink">
+    <a
+      :href="href"
+      download
+    ><!--
+      --><Component :is="icon" />{{ text }}<!--
+    --></a>
+    <figcaption v-if="size > 0 || fileType">
+      (<span v-if="fileType">{{ fileType }}</span><span v-if="size > 0">, {{ size }}
+        <abbr title="Kilobyte">kb</abbr></span>)
+    </figcaption>
+  </figure>
 </template>
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
 .fileLink {
+
+  & figcaption {
+    display: inline-block;
+  }
+
   & >>> svg {
+    margin-right: 0.8ch;
     vertical-align: middle;
     stroke: var(--theme-button-function-foreground-color);
     width: 18px;
