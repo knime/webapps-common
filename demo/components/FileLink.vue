@@ -5,12 +5,31 @@ import fileLinkCode from '!!raw-loader!../../ui/components/FileLink';
 
 const codeExample =
 `
-<FileLink href="https://example.com/file.pdf" fileType="pdf" :size="250" text="SomeFile" />
+<FileLink
+  href="https://example.com/file.pdf"
+  file-ext="pdf"
+  mime-type="application/pdf"
+  :size="250"
+  text="SomeFile"
+/>
 
-<FileLink href="https://example.com/x.docx" fileType="docx" text="WordFile" />
+<FileLink
+  href="https://example.com/x.docx"
+  file-ext="docx"
+  text="WordFile"
+/>
 
-<FileLink href="https://example.com/unkown.file" text="Another File" />
+<FileLink
+  href="https://example.com/0342as"
+  file-ext="bin"
+  text="Download Me"
+  file-name="firmware.bin"
+/>
 
+<FileLink
+  href="https://example.com/unkown.file"
+  text="Another File"
+/>
 `;
 
 export default {
@@ -36,11 +55,31 @@ export default {
           The file link is a regular link with support for file icons and size display.
         </p>
         <div>
-          <FileLink href="https://example.com/file.pdf" fileType="pdf" :size="250" text="SomeFile" />
+          <FileLink
+            href="https://example.com/file.pdf"
+            file-ext="pdf"
+            mime-type="application/pdf"
+            :size="250"
+            text="SomeFile"
+          />
 
-          <FileLink href="https://example.com/x.docx" fileType="docx" text="WordFile" />
+          <FileLink
+            href="https://example.com/x.docx"
+            file-ext="docx"
+            text="WordFile"
+          />
 
-          <FileLink href="https://example.com/unkown.file" text="Another File" />
+          <FileLink
+            href="https://example.com/0342as"
+            file-ext="bin"
+            text="Download Me"
+            file-name="firmware.bin"
+          />
+
+          <FileLink
+            href="https://example.com/unkown.file"
+            text="Another File"
+          />
         </div>
 
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>

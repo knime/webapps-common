@@ -37,6 +37,7 @@
     "consola": "*",
     "eslint": "5.x - 7.x",
     "normalize.css": "*",
+    "filesize": "^6.1.0",
     "postcss-calc": "*",
     "postcss-css-variables": "*",
     "postcss-import": "*",

@@ -1,4 +1,5 @@
 <script>
+import filesize from 'filesize';
 // file icons
 import fileIcon from '../assets/img/icons/file-question.svg?inline';
 // file type icons
@@ -58,6 +59,7 @@ export default {
         fileIcon
     },
     props: {
+        /** display text for the download link */
         text: {
             type: String,
             required: true
@@ -66,9 +68,14 @@ export default {
             type: String,
             required: true
         },
-        fileType: {
+        /** extension based file type: exe, txt, zip, docx etc. */
+        fileExt: {
             type: String,
             default: null
+        },
+        mimeType: {
+            type: String,
+            default: 'application/octet-stream'
         },
         /** size in kilobytes */
         size: {
@@ -78,7 +85,24 @@ export default {
     },
     computed: {
         icon() {
-            return this.fileType ? `${this.fileType}Icon` : 'fileIcon';
+            let candidate = `${this.fileExt}Icon`;
+            return this.fileExt && this.$options.components[candidate] ? candidate : 'fileIcon';
+        },
+        humanFileUnitFull() {
+            return filesize(this.size, {
+                output: 'object',
+                fullform: true
+            }).symbol;
+        },
+        humanFileUnit() {
+            return filesize(this.size, {
+                output: 'object'
+            }).symbol;
+        },
+        humanFileSize() {
+            return filesize(this.size, {
+                output: 'object'
+            }).value;
         }
     },
     methods: {
@@ -94,12 +118,15 @@ export default {
     <a
       :href="href"
       download
+      :type="mimeType"
     ><!--
-      --><Component :is="icon" />{{ text }}<!--
+      -->
+      <Component :is="icon" /><!--
+      -->{{ text || 'Download File' }}<!--
     --></a>
-    <figcaption v-if="size > 0 || fileType">
-      (<span v-if="fileType">{{ fileType }}</span><span v-if="size > 0">, {{ size }}
-        <abbr title="Kilobyte">kb</abbr></span>)
+    <figcaption v-if="size > 0 || fileExt">
+      (<span v-if="fileExt">{{ fileExt }}</span><span v-if="size > 0"><span v-if="size > 0 && fileExt">, </span><!--
+      -->{{ humanFileSize }} <abbr :title="humanFileUnitFull">{{ humanFileUnit }}</abbr></span>)
     </figcaption>
   </figure>
 </template>
@@ -107,15 +134,15 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .fileLink {
-
   & figcaption {
     display: inline-block;
+    margin-left: 0.5ch;
   }
 
   & >>> svg {
     margin-right: 0.8ch;
     vertical-align: middle;
-    stroke: var(--theme-button-function-foreground-color);
+    stroke: var(--theme-text-link-foreground-color);
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
