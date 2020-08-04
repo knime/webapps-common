@@ -67,7 +67,8 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .breadcrumb {
-  color: var(--theme-color-dove-gray);
+  color: var(--theme-text-bold-color);
+  font-family: var(--theme-text-bold-font-family);
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
@@ -81,18 +82,14 @@ export default {
   }
 
   & ul {
-    padding: 10px 0;
+    padding: 0;
     width: 100%;
   }
 
   & li {
     position: relative;
-    margin: 5px 0;
+    margin: 0;
     max-width: 100%;
-
-    &:not(:last-child) {
-      margin-right: 4px;
-    }
   }
 
   & span,
@@ -100,11 +97,11 @@ export default {
     display: inline-block;
     text-decoration: none;
     vertical-align: top;
-    padding-right: 4px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     max-width: 100%;
+    padding: 10px 5px;
   }
 
   & svg {
@@ -122,9 +119,11 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
-    margin: 0 4px;
+    margin: 0 5px;
     stroke-width: calc(32px / 10);
     vertical-align: middle;
+    position: relative;
+    top: 9px;
   }
 
   /* Unlinked breadcrumb item */
@@ -142,6 +141,7 @@ export default {
     &:focus {
       outline: none;
       color: var(--theme-color-masala);
+      background-color: var(--knime-silver-sand-semi);
 
       & svg {
         stroke: var(--theme-color-masala);
