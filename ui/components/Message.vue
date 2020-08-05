@@ -68,7 +68,7 @@ export default {
              */
             this.$emit('dismiss');
         },
-        copyMessage() {
+        copyMessage(event) {
             copyText(this.details);
             /**
              * copied event. Fired when the copy button in the detail area is clicked.
@@ -77,6 +77,7 @@ export default {
              * @event copied
              */
             this.$emit('copied');
+            event.target.focus();
         }
     }
 };
@@ -144,8 +145,8 @@ export default {
               class="copy-button"
               title="Copy to clipboard"
               tabindex="0"
-              @click="copyMessage"
-              @keydown="copyMessage"
+              @click="copyMessage($event)"
+              @keydown="copyMessage($event)"
             >
               <CopyIcon />
             </div>
