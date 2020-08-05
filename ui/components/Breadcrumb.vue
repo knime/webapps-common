@@ -106,7 +106,7 @@ export default {
 
   & svg {
     vertical-align: top;
-    stroke: var(--theme-color-dove-gray);
+    stroke: var(--theme-text-bold-color);
   }
 
   & .breadcrumb-icon {
@@ -126,26 +126,12 @@ export default {
     top: 9px;
   }
 
-  /* Unlinked breadcrumb item */
-  & span {
-    color: var(--theme-color-masala);
-
-    & svg {
-      stroke: var(--theme-color-masala);
-    }
-  }
-
   /* Linked breadcrumb item */
   & a {
     &:hover,
     &:focus {
       outline: none;
-      color: var(--theme-color-masala);
       background-color: var(--knime-silver-sand-semi);
-
-      & svg {
-        stroke: var(--theme-color-masala);
-      }
     }
   }
 }
