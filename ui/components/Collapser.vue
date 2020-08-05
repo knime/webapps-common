@@ -1,6 +1,8 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
 
+const KEY_ENTER = 13;
+
 export default {
     components: {
         DropdownIcon
@@ -44,6 +46,12 @@ export default {
         },
         onTrigger(e) {
             this.isExpanded = !this.isExpanded;
+        },
+        handleKeyDown(e) {
+            if (e.keyCode === KEY_ENTER) {
+                this.isExpanded = !this.isExpanded;
+                e.preventDefault();
+            }
         }
     }
 };
@@ -54,7 +62,9 @@ export default {
     <div
       class="button"
       :aria-expanded="String(isExpanded)"
+      tabindex="0"
       @click="onTrigger"
+      @keydown="handleKeyDown"
     >
       <!-- @slot title slot -->
       <slot name="title" />

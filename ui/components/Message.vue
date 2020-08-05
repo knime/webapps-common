@@ -116,6 +116,7 @@ export default {
               primary
               compact
               on-dark
+              tabindex="0"
               @click="onDismiss"
               @keydown.space.stop.prevent="onDismiss"
             >
@@ -142,7 +143,9 @@ export default {
             <div
               class="copy-button"
               title="Copy to clipboard"
+              tabindex="0"
               @click="copyMessage"
+              @keydown="copyMessage"
             >
               <CopyIcon />
             </div>
@@ -303,13 +306,18 @@ section {
       display: flex;
       align-items: center;
 
-      &:hover,
-      &:focus {
+      &:hover {
         background-color: var(--knime-masala-semi);
       }
 
       & .dropdown-icon {
         stroke: var(--theme-color-white);
+      }
+    }
+
+    &:focus { /* whole button gets focus but only dropdown icon is styled */
+      & .dropdown {
+        background-color: var(--knime-masala-semi);
       }
     }
   }
@@ -357,8 +365,10 @@ section {
         width: 30px;
         text-align: center;
         margin-right: 23px; /* line-up with dropdown icon */
+        outline: none;
 
-        &:hover {
+        &:hover,
+        &:focus {
           background-color: var(--theme-color-silver-sand-semi);
         }
 
