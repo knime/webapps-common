@@ -20,6 +20,14 @@ export default {
         items: {
             type: Array,
             default: () => []
+        },
+        /**
+         * Hub and WebPortal are using different breadcrumb hover and focus styles for now
+         * these can be toggled with this property
+         */
+        greyStyle: {
+            type: Boolean,
+            default: false
         }
     }
 };
@@ -28,7 +36,7 @@ export default {
 <template>
   <nav
     v-if="items && items.length"
-    class="breadcrumb"
+    :class="['breadcrumb', {'greyStyle': greyStyle}]"
   >
     <ul>
       <li
@@ -67,7 +75,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .breadcrumb {
-  color: var(--theme-text-bold-color);
+  color: var(--knime-dove-gray);
   font-family: var(--theme-text-bold-font-family);
   font-size: 13px;
   line-height: 18px;
@@ -126,12 +134,38 @@ export default {
     top: 9px;
   }
 
+  /* Unlinked breadcrumb item */
+  & span {
+    color: var(--theme-text-bold-color);
+
+    & svg {
+      stroke: var(--theme-text-bold-color);
+    }
+  }
+
   /* Linked breadcrumb item */
   & a {
     &:hover,
     &:focus {
       outline: none;
-      background-color: var(--knime-silver-sand-semi);
+      color: var(--theme-text-bold-color);
+
+      & svg {
+        stroke: var(--theme-text-bold-color);
+      }
+    }
+  }
+
+  &.greyStyle {
+    color: var(--theme-text-bold-color);
+
+    /* Linked breadcrumb item */
+    & a {
+      &:hover,
+      &:focus {
+        outline: none;
+        background-color: var(--knime-silver-sand-semi);
+      }
     }
   }
 }
