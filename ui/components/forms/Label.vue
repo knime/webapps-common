@@ -79,5 +79,6 @@ export default {
   margin-bottom: 10px;
   text-overflow: ellipsis;
   overflow: hidden;
+  max-width: 100%;
 }
 </style>
