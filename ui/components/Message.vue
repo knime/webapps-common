@@ -43,6 +43,10 @@ export default {
         details: {
             type: String,
             default: ''
+        },
+        dismissable: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -111,7 +115,7 @@ export default {
               </span>
             </span>
             <Button
-              v-if="button"
+              v-if="button && dismissable"
               class="close"
               primary
               compact
@@ -122,7 +126,7 @@ export default {
               {{ button }}
             </Button>
             <span
-              v-else
+              v-else-if="dismissable"
               tabindex="0"
               class="close"
               title="Discard message"
@@ -348,7 +352,7 @@ section {
         font-weight: 300;
         line-height: 18px;
         margin: auto 0;
-        max-width: 66%;
+        max-width: 80%;
       }
 
       & .copy-button {

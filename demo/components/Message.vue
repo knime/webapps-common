@@ -38,9 +38,14 @@ export default {
     <CheckIcon slot="icon" />
     This is a success message with an icon
   </Message>
-  <Message type="transparent">
-    <CheckIcon slot="icon" />
-    This is a transparent message with an icon
+  <Message
+    type="error"
+    details="Some example detail text"
+  >
+    This is a message with further details
+  </Message>
+  <Message :dismissable="false">
+    This is a non-dismissable message
   </Message>
 </template>`;
 
@@ -81,6 +86,11 @@ export default {
             collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will
             copy the detail text and fire the <code>copied</code> event.
           </p>
+          <p>
+            Messages are dismissable by default- meaning users can click to close them. However, for important messages
+            or real time status updates, this functionality can be disabled by setting the <code>dismissable</code>
+            property to <code>false</code>. Don't forget to programmatically clear or remove the message.
+          </p>
         </div>
       </div>
     </section>
@@ -108,6 +118,9 @@ export default {
       details="Some example detail text"
     >
       This is a message with further details
+    </Message>
+    <Message :dismissable="false">
+      This is a non-dismissable message
     </Message>
     <section>
       <div class="grid-container">
