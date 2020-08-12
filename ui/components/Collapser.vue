@@ -1,11 +1,13 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
+import Button from './Button';
 
 const KEY_ENTER = 13;
 
 export default {
     components: {
-        DropdownIcon
+        DropdownIcon,
+        Button
     },
     props: {
         /**
@@ -46,12 +48,6 @@ export default {
         },
         onTrigger(e) {
             this.isExpanded = !this.isExpanded;
-        },
-        handleKeyDown(e) {
-            if (e.keyCode === KEY_ENTER) {
-                this.isExpanded = !this.isExpanded;
-                e.preventDefault();
-            }
         }
     }
 };
@@ -59,19 +55,18 @@ export default {
 
 <template>
   <div>
-    <div
+    <Button
       class="button"
       :aria-expanded="String(isExpanded)"
-      tabindex="0"
       @click="onTrigger"
-      @keydown="handleKeyDown"
+      @keydown.enter.prevent="onTrigger"
     >
       <!-- @slot title slot -->
       <slot name="title" />
       <div class="dropdown">
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </div>
-    </div>
+    </Button>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
@@ -95,7 +90,6 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .button {
-  display: inline-block;
   position: relative;
   padding: 0;
   font-size: 18px;
@@ -110,8 +104,8 @@ export default {
   text-align: left;
   cursor: pointer;
 
-  & svg {
-    position: relative;
+  & >>> svg {
+    position: absolute;
     margin-right: 4px;
     float: left;
     margin-left: 4px;
@@ -121,10 +115,20 @@ export default {
   & .dropdown {
     text-align: center;
     position: absolute;
-    top: 20px;
     right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    top: 13px;
+
+    &:hover {
+      background-color: var(--knime-masala-semi);
+    }
 
     & .dropdown-icon {
+      position: relative;
       margin: auto;
       width: 18px;
       height: 18px;
@@ -137,6 +141,10 @@ export default {
         transform: scaleY(-1);
       }
     }
+  }
+
+  &:focus .dropdown { /* whole button gets focus but only dropdown icon is styled */
+    background-color: var(--knime-masala-semi);
   }
 }
 

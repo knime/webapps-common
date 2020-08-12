@@ -190,11 +190,12 @@ section {
     align-items: center;
     color: var(--theme-color-white);
 
-    & > .message {
+    & .message {
       flex-grow: 1;
       margin-right: 50px; /* this is set to not interfere with the dropdwon or close button */
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 3px;
     }
 
     & .title {
@@ -202,13 +203,14 @@ section {
     }
 
     & >>> svg {
+      position: relative;
       width: 24px;
       height: 24px;
       stroke-width: calc(32px / 24);
       stroke: var(--theme-color-white);
       margin-right: 20px;
       flex-shrink: 0;
-      top: 0;
+      top: 3px;
     }
 
     & button.close {
@@ -232,7 +234,7 @@ section {
       right: -6px; /* align svg with right border */
       pointer-events: all;
       text-align: center;
-      top: -3px;
+      top: 0;
       align-self: flex-start;
       float: right;
       margin-left: auto;
@@ -245,6 +247,8 @@ section {
       }
 
       & svg {
+        position: relative;
+        top: 0px;
         margin: auto;
         height: 18px;
         width: 18px;
@@ -303,7 +307,7 @@ section {
       height: 30px;
       border-radius: 50%;
       margin-right: 13px;
-      top: -3px;
+      top: 0;
       display: flex;
       align-items: center;
 
@@ -313,6 +317,15 @@ section {
 
       & .dropdown-icon {
         stroke: var(--theme-color-white);
+      }
+    }
+
+    &:hover,
+    &:focus {
+      color: var(--knime-white);
+
+      & svg {
+        stroke: var(--knime-white);
       }
     }
 
@@ -356,7 +369,7 @@ section {
         font-size: 13px;
         font-weight: 300;
         line-height: 18px;
-        margin: auto 0;
+        margin: auto 5px;
         max-width: 66%;
       }
 

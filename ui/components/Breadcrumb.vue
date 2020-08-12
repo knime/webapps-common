@@ -22,8 +22,9 @@ export default {
             default: () => []
         },
         /**
-         * Hub and WebPortal are using different breadcrumb hover and focus styles for now
-         * these can be toggled with this property
+         * focus and hover style can be switched by changing this value:
+         * true - darker background, normal font
+         * false - transparent background, bold font
          */
         greyStyle: {
             type: Boolean,
@@ -36,7 +37,7 @@ export default {
 <template>
   <nav
     v-if="items && items.length"
-    :class="['breadcrumb', {'greyStyle': greyStyle}]"
+    :class="['breadcrumb', { greyStyle }]"
   >
     <ul>
       <li
