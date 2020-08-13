@@ -310,6 +310,7 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
+    cursor: pointer;
 
     &:hover {
       background-color: var(--knime-silver-sand-semi);
