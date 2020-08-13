@@ -304,7 +304,7 @@ section {
     & .dropdown {
       width: 30px;
       height: 30px;
-      margin-right: 13px;
+      margin-right: 15px;
       top: 0;
 
       &:hover {
@@ -316,10 +316,9 @@ section {
       }
     }
 
-    &:focus { /* whole button gets focus but only dropdown icon is styled */
-      & .dropdown {
-        background-color: var(--knime-masala-semi);
-      }
+    &:focus .dropdown {
+      /* whole button gets focus but only dropdown icon is styled */
+      background-color: var(--knime-masala-semi);
     }
   }
 

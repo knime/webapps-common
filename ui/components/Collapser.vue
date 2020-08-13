@@ -57,7 +57,7 @@ export default {
     <BaseButton
       class="button"
       :aria-expanded="String(isExpanded)"
-      @click.left="onTrigger"
+      @click.prevent="onTrigger"
     >
       <!-- @slot title slot -->
       <slot name="title" />

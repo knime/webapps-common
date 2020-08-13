@@ -161,12 +161,10 @@ export default {
     color: var(--theme-text-bold-color);
 
     /* Linked breadcrumb item */
-    & a {
-      &:hover,
-      &:focus {
-        outline: none;
-        background-color: var(--knime-silver-sand-semi);
-      }
+    & a:hover,
+    & a:focus, {
+      outline: none;
+      background-color: var(--knime-silver-sand-semi);
     }
   }
 }
