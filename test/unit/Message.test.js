@@ -116,7 +116,7 @@ describe('Message.vue', () => {
                 copyMessage: copyTextMock
             }
         });
-        wrapper.find('.copy-button').trigger('keydown.enter');
+        wrapper.find('.copy-button').trigger('keyup.space');
         expect(copyTextMock).toHaveBeenCalled();
     });
 

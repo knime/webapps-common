@@ -1,13 +1,11 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
-import Button from './Button';
-
-const KEY_ENTER = 13;
+import BaseButton from './BaseButton';
 
 export default {
     components: {
         DropdownIcon,
-        Button
+        BaseButton
     },
     props: {
         /**
@@ -55,18 +53,18 @@ export default {
 
 <template>
   <div>
-    <Button
+    <!-- ".left" needed to prevent firing two events when hitting space -->
+    <BaseButton
       class="button"
       :aria-expanded="String(isExpanded)"
-      @click="onTrigger"
-      @keydown.enter.prevent="onTrigger"
+      @click.left="onTrigger"
     >
       <!-- @slot title slot -->
       <slot name="title" />
       <div class="dropdown">
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </div>
-    </Button>
+    </BaseButton>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
@@ -124,7 +122,7 @@ export default {
     top: 13px;
 
     &:hover {
-      background-color: var(--knime-masala-semi);
+      background-color: var(--theme-button-function-background-color-hover);
     }
 
     & .dropdown-icon {
@@ -144,7 +142,7 @@ export default {
   }
 
   &:focus .dropdown { /* whole button gets focus but only dropdown icon is styled */
-    background-color: var(--knime-masala-semi);
+    background-color: var(--theme-button-function-background-color-focus);
   }
 }
 

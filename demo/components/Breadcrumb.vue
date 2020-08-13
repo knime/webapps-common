@@ -39,7 +39,10 @@ export default {
         <span>Default style:</span>
         <Breadcrumb :items="breadcrumbItems" />
         <span>"greyStyle" enabled:</span>
-        <Breadcrumb :items="breadcrumbItems" greyStyle />
+        <Breadcrumb
+          :items="breadcrumbItems"
+          grey-style
+        />
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Breadcrumb.vue source code">{{ breadcrumbCode }}</CodeExample>
       </div>

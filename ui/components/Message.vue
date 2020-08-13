@@ -117,7 +117,6 @@ export default {
               primary
               compact
               on-dark
-              tabindex="0"
               @click="onDismiss"
               @keydown.space.stop.prevent="onDismiss"
             >
@@ -146,7 +145,7 @@ export default {
               title="Copy to clipboard"
               tabindex="0"
               @click="copyMessage($event)"
-              @keydown="copyMessage($event)"
+              @keyup.space.prevent="copyMessage($event)"
             >
               <CopyIcon />
             </div>
@@ -248,7 +247,7 @@ section {
 
       & svg {
         position: relative;
-        top: 0px;
+        top: 0;
         margin: auto;
         height: 18px;
         width: 18px;
@@ -305,11 +304,8 @@ section {
     & .dropdown {
       width: 30px;
       height: 30px;
-      border-radius: 50%;
       margin-right: 13px;
       top: 0;
-      display: flex;
-      align-items: center;
 
       &:hover {
         background-color: var(--knime-masala-semi);
@@ -317,15 +313,6 @@ section {
 
       & .dropdown-icon {
         stroke: var(--theme-color-white);
-      }
-    }
-
-    &:hover,
-    &:focus {
-      color: var(--knime-white);
-
-      & svg {
-        stroke: var(--knime-white);
       }
     }
 
@@ -393,7 +380,6 @@ section {
           width: 18px;
           stroke-width: calc(32px / 18);
           vertical-align: middle;
-          margin-top: 3px;
         }
       }
     }

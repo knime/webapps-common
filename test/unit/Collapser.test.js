@@ -31,7 +31,6 @@ describe('Collapser.vue', () => {
 
     it('calls transition handlers and expands', done => {
         const triggerSpy = jest.spyOn(Collapser.methods, 'onTrigger');
-        const handleKeyDownSpy = jest.spyOn(Collapser.methods, 'handleKeyDown');
         const enterSpy = jest.spyOn(Collapser.methods, 'onEnter');
         const leaveSpy = jest.spyOn(Collapser.methods, 'onLeave');
 
@@ -54,9 +53,8 @@ describe('Collapser.vue', () => {
             expect(wrapper.find('.panel').attributes('style')).toContain('height');
 
             // close it again
-            wrapper.find('.button').trigger('keydown.enter');
+            wrapper.find('.button').trigger('click');
             wrapper.vm.$nextTick(() => {
-                expect(handleKeyDownSpy).toHaveBeenCalled();
                 expect(leaveSpy).toHaveBeenCalled();
                 expect(wrapper.vm.isExpanded).toBeFalsy();
                 expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
