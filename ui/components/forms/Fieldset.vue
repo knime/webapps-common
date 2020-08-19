@@ -43,6 +43,9 @@ fieldset {
     line-height: 20px;
     cursor: default;
     margin-bottom: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
 
     & svg {
       margin-right: 0;

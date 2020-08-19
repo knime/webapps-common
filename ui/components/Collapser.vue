@@ -1,9 +1,11 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
+import BaseButton from './BaseButton';
 
 export default {
     components: {
-        DropdownIcon
+        DropdownIcon,
+        BaseButton
     },
     props: {
         /**
@@ -51,17 +53,18 @@ export default {
 
 <template>
   <div>
-    <div
+    <!-- ".left" needed to prevent firing two events when hitting space -->
+    <BaseButton
       class="button"
       :aria-expanded="String(isExpanded)"
-      @click="onTrigger"
+      @click.prevent="onTrigger"
     >
       <!-- @slot title slot -->
       <slot name="title" />
       <div class="dropdown">
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </div>
-    </div>
+    </BaseButton>
     <Transition
       name="expand"
       @before-enter="onBeforeEnter"
@@ -85,7 +88,6 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .button {
-  display: inline-block;
   position: relative;
   padding: 0;
   font-size: 18px;
@@ -100,8 +102,8 @@ export default {
   text-align: left;
   cursor: pointer;
 
-  & svg {
-    position: relative;
+  & >>> svg {
+    position: absolute;
     margin-right: 4px;
     float: left;
     margin-left: 4px;
@@ -111,10 +113,20 @@ export default {
   & .dropdown {
     text-align: center;
     position: absolute;
-    top: 20px;
     right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    top: 13px;
+
+    &:hover {
+      background-color: var(--theme-button-function-background-color-hover);
+    }
 
     & .dropdown-icon {
+      position: relative;
       margin: auto;
       width: 18px;
       height: 18px;
@@ -127,6 +139,10 @@ export default {
         transform: scaleY(-1);
       }
     }
+  }
+
+  &:focus .dropdown { /* whole button gets focus but only dropdown icon is styled */
+    background-color: var(--theme-button-function-background-color-focus);
   }
 }
 

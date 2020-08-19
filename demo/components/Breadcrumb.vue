@@ -6,7 +6,7 @@ import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
 const codeExample = `<Breadcrumb :items="[{ text: 'segment without link' },
     { text: 'segment with link', href: '/' },
-    { text: 'segment with icon', icon: FolderIcon }]" />
+    { text: 'segment with icon', icon: FolderIcon }]" greyStyle />
 `;
 
 export default {
@@ -35,7 +35,14 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <h2>Breadcrumb</h2>
+        <p>Breadcrumbs can have different focus/hover styles, these can be toggled via the "greyStyle"-property</p>
+        <span>Default style:</span>
         <Breadcrumb :items="breadcrumbItems" />
+        <span>"greyStyle" enabled:</span>
+        <Breadcrumb
+          :items="breadcrumbItems"
+          grey-style
+        />
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Breadcrumb.vue source code">{{ breadcrumbCode }}</CodeExample>
       </div>

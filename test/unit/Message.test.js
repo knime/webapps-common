@@ -105,6 +105,21 @@ describe('Message.vue', () => {
 
     });
 
+    it('copies text by enter key', () => {
+        jest.clearAllMocks();
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                details: 'test message'
+            },
+            methods: {
+                copyMessage: copyTextMock
+            }
+        });
+        wrapper.find('.copy-button').trigger('keyup.space');
+        expect(copyTextMock).toHaveBeenCalled();
+    });
+
     it('closes', () => {
         wrapper = shallowMount(Message, {
             propsData: {
