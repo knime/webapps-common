@@ -88,21 +88,16 @@ export default {
             let candidate = `${this.fileExt}Icon`;
             return this.fileExt && this.$options.components[candidate] ? candidate : 'fileIcon';
         },
-        humanFileUnitFull() {
-            return filesize(this.size, {
+        humanFileSizeObject() {
+            return filesize.partial({
+                output: 'object'
+            })(this.size);
+        },
+        humanFileSizeUnitFull() {
+            return filesize.partial({
                 output: 'object',
                 fullform: true
-            }).symbol;
-        },
-        humanFileUnit() {
-            return filesize(this.size, {
-                output: 'object'
-            }).symbol;
-        },
-        humanFileSize() {
-            return filesize(this.size, {
-                output: 'object'
-            }).value;
+            })(this.size).symbol;
         }
     },
     methods: {
@@ -114,7 +109,7 @@ export default {
 };
 </script>
 <template>
-  <figure class="fileLink">
+  <figure class="file-link">
     <a
       :href="href"
       download
@@ -126,14 +121,15 @@ export default {
     --></a>
     <figcaption v-if="size > 0 || fileExt">
       (<span v-if="fileExt">{{ fileExt }}</span><span v-if="size > 0"><span v-if="size > 0 && fileExt">, </span><!--
-      -->{{ humanFileSize }} <abbr :title="humanFileUnitFull">{{ humanFileUnit }}</abbr></span>)
+      -->{{ humanFileSizeObject.value }}
+      <abbr :title="humanFileSizeUnitFull">{{ humanFileSizeObject.symbol }}</abbr></span>)
     </figcaption>
   </figure>
 </template>
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.fileLink {
+.file-link {
   & figcaption {
     display: inline-block;
     margin-left: 0.5ch;
