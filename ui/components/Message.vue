@@ -377,6 +377,7 @@ section {
         text-align: center;
         margin-right: 23px; /* line-up with dropdown icon */
         outline: none;
+        cursor: pointer;
 
         &:hover,
         &:focus {
