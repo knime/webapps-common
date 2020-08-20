@@ -106,6 +106,7 @@ export default {
     padding: 3px 3px 3px 23px;
     max-width: 100%;
     width: max-content;
+    cursor: pointer;
 
     & input {
       opacity: 0;
