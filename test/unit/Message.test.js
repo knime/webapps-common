@@ -108,7 +108,7 @@ describe('Message.vue', () => {
         wrapper = shallowMount(Message, {
             propsData: {
                 type: 'error',
-                dismissable: false
+                showCloseButton: false
             }
         });
         expect(wrapper.vm.active).toBe(true);

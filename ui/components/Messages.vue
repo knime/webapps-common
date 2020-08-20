@@ -47,7 +47,7 @@ export default {
       :count="message.count"
       :button="message.button"
       :details="message.details"
-      :dismissable="message.dismissable"
+      :show-close-button="message.showCloseButton"
       @copied="$emit('copied')"
       @dismiss="$emit('dismiss', message.id)"
     >

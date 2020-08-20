@@ -28,9 +28,18 @@ export default {
             }
         },
         /**
+         * Enable / disable rendering of close button.
+         * Defaults to `true`.
+         */
+        showCloseButton: {
+            type: Boolean,
+            default: true
+        },
+        /**
          * Optional button text.
          * If set, renders a button instead of the 'x' that is used for closing the Message.
          * If left blank, the 'x' is rendered.
+         * This property has no effect if `showCloseButton` is `false`.
          */
         button: {
             type: String,
@@ -43,10 +52,6 @@ export default {
         details: {
             type: String,
             default: ''
-        },
-        dismissable: {
-            type: Boolean,
-            default: true
         }
     },
     data() {
@@ -115,27 +120,29 @@ export default {
                 {{ '×' + count }}
               </span>
             </span>
-            <Button
-              v-if="button && dismissable"
-              class="close"
-              primary
-              compact
-              on-dark
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              {{ button }}
-            </Button>
-            <span
-              v-else-if="dismissable"
-              tabindex="0"
-              class="close"
-              title="Discard message"
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              <CloseIcon />
-            </span>
+            <template v-if="showCloseButton">
+              <Button
+                v-if="button"
+                class="close"
+                primary
+                compact
+                on-dark
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                {{ button }}
+              </Button>
+              <span
+                v-else
+                tabindex="0"
+                class="close"
+                title="Discard message"
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                <CloseIcon />
+              </span>
+            </template>
           </Component>
           <div
             v-if="hasDetails"

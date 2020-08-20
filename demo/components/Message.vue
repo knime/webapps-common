@@ -44,7 +44,7 @@ export default {
   >
     This is a message with further details
   </Message>
-  <Message :dismissable="false">
+  <Message :show-close-button="false">
     This is a non-dismissable message
   </Message>
 </template>`;
@@ -77,19 +77,21 @@ export default {
             You can select them with the <code>type</code> property.
           </p>
           <p>
-            Each message can have an icon in the <code>icon</code> slot, and optionally a button. The button text is set
-            with the <code>button</code> property. If left out, the widget will show an 'x' icon. Pressing the button or
-            the 'x' closes the widget and fires the <code>dismiss</code> event.
+            Each message can have an icon in the <code>icon</code> slot.
+          </p>
+          <p>
+            A message can have an 'x' button (default), or a close button with text, controlled by the
+            <code>button</code> property, or neither, which can be achieved by setting the <code>showCloseButton</code>
+            property to <code>false</code>. In this case the <code>button</code> property has no effect, no controls
+            will be displayed, and you must programmatically dismiss the message.
+          </p>
+          <p>
+            Pressing the button or the 'x' closes the widget and fires the <code>dismiss</code> event.
           </p>
           <p>
             In addition a message can also contain <code>details</code> which are hidden and only displayed when the
             collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will
             copy the detail text and fire the <code>copied</code> event.
-          </p>
-          <p>
-            Messages are dismissable by default- meaning users can click to close them. However, for important messages
-            or real time status updates, this functionality can be disabled by setting the <code>dismissable</code>
-            property to <code>false</code>. Don't forget to programmatically clear or remove the message.
           </p>
         </div>
       </div>
@@ -119,8 +121,8 @@ export default {
     >
       This is a message with further details
     </Message>
-    <Message :dismissable="false">
-      This is a non-dismissable message
+    <Message :show-close-button="false">
+      This is a message without close button
     </Message>
     <section>
       <div class="grid-container">
