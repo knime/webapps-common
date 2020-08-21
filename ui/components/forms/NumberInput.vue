@@ -179,7 +179,7 @@ export default {
                 this.clicked = true;
                 this.spinnerArrowTimeout = setTimeout(() => {
                     this.spinnerArrowInterval = setInterval(() => {
-                        this.changeValue(valueDifference, e);
+                        this.changeValue(valueDifference);
                     }, MOUSE_DOWN_CHANGE_INTERVAL);
                 }, INTERVAL_TIMEOUT_DELAY);
                 return;
@@ -188,7 +188,7 @@ export default {
                 // disable additional events from being fired
                 this.clicked = false;
                 // on 'mouseup' or 'mouseleave' publish change
-                this.changeValue(valueDifference, e);
+                this.changeValue(valueDifference);
             }
         },
         toggleHover() {

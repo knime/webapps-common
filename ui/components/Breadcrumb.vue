@@ -164,7 +164,7 @@ export default {
 
     /* Linked breadcrumb item */
     & a:hover,
-    & a:focus, {
+    & a:focus {
       outline: none;
       background-color: var(--knime-silver-sand-semi);
     }
