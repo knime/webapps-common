@@ -1,6 +1,6 @@
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg stroke="#000" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <clipPath id="lockspacing" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32" fill="#fff">
+    <clipPath id="lockspacing" fill="#fff">
       <path fill="#fff" d="M32 0H0v32h13V20.952L15.023 18a7.595 7.595 0 0115.142 0L32 20.952V0z" />
     </clipPath>
   </defs>
