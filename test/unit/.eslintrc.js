@@ -1,7 +1,8 @@
+let inherited = require('../../ui/components/.eslintrc');
 module.exports = {
+    ...inherited,
     env: {
-        node: true,
+        ...inherited.env,
         jest: true
     }
 };
-

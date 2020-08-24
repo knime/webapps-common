@@ -3,7 +3,7 @@ export default {
     props: {
         /**
          * If set, the button renders an <a> element instead of a <button> element
-         * When used together with `to`, the `href` attribute is passed to <nuxt-link>.
+         * Has no effect when used together with `to`.
          */
         href: {
             type: String,
@@ -11,6 +11,7 @@ export default {
         },
         /**
          * If set, the button renders a <nuxt-link> instead of a <button> element.
+         * Supersedes the `href` property.
          */
         to: {
             type: String,
@@ -49,11 +50,10 @@ export default {
             this.$emit('click', e);
             if (this.preventDefault) {
                 e.preventDefault();
-                return false;
             }
         },
+        // This can be called from outside via focus on a $ref
         focus() {
-            /** This can be called from outside via focus on a $ref */
             this.$el.focus();
         }
     }
