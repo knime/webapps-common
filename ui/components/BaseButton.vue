@@ -25,23 +25,8 @@ export default {
             default: false
         }
     },
-    computed: {
-        component() {
-            if (this.to) {
-                return 'nuxt-link';
-            } else if (this.href) {
-                return 'a';
-            } else {
-                return 'button';
-            }
-        }
-    },
     methods: {
         onClick(e) {
-            /* anchor tags can act as buttons without href and space key should work */
-            if (e.code === 'Space' && this.href) {
-                return false;
-            }
             /**
              * Click event. Fired when the button is clicked.
              *
@@ -62,31 +47,26 @@ export default {
 <template>
   <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
   <nuxt-link
-    v-if="component === 'nuxt-link'"
+    v-if="to"
     :to="to"
     :event="preventDefault ? [] : 'click'"
     @click.native="onClick"
   >
     <slot />
   </nuxt-link>
-  <!--"@keydown.enter.self.prevent" needed to silence 'enter' key events which incorrectly fire w/ @click.
-      On native <button> elem, click event cannot be differentiated as enter or click (Vue issue). -->
-  <button
-    v-else-if="component === 'button'"
-    @click="onClick"
-    @keydown.space="onClick"
-    @keydown.enter.self.prevent
-  >
-    <slot />
-  </button>
+  <!-- Note: @click events also fire on keyboard activation via Enter -->
   <a
-    v-else
+    v-else-if="href"
     :href="href"
     @click="onClick"
-    @keydown.enter="onClick"
-    @keydown.space="onClick"
   >
     <slot />
   </a>
+  <!-- Note: @click events also fire on keyboard activation via Space -->
+  <button
+    v-else
+    @click="onClick"
+  >
+    <slot />
+  </button>
 </template>
-
