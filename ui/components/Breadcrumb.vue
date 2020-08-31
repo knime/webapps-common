@@ -105,17 +105,20 @@ export default {
   & a {
     display: inline-block;
     text-decoration: none;
-    vertical-align: top;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     max-width: 100%;
     padding: 10px 5px;
+    line-height: normal;
+    vertical-align: middle;
   }
 
   & svg {
+    position: relative;
     vertical-align: top;
     stroke: var(--theme-text-bold-color);
+    bottom: 1px;
   }
 
   & .breadcrumb-icon {
@@ -132,7 +135,6 @@ export default {
     stroke-width: calc(32px / 10);
     vertical-align: middle;
     position: relative;
-    top: 9px;
   }
 
   /* Unlinked breadcrumb item */
@@ -162,7 +164,7 @@ export default {
 
     /* Linked breadcrumb item */
     & a:hover,
-    & a:focus, {
+    & a:focus {
       outline: none;
       background-color: var(--knime-silver-sand-semi);
     }

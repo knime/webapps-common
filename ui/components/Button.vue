@@ -157,11 +157,11 @@ export default {
   }
 
   &.primary {
-    color: var(--theme-button-foreground-color, --knime-masala);
-    background-color: var(--theme-button-background-color, --knime-yellow);
+    color: var(--theme-button-foreground-color);
+    background-color: var(--theme-button-background-color);
 
     & >>> svg {
-      stroke: var(--theme-button-foreground-color, --knime-masala);
+      stroke: var(--theme-button-foreground-color);
     }
   }
 
@@ -186,22 +186,22 @@ export default {
 
     &:hover {
       outline: none;
-      color: var(--theme-button-foreground-color-hover, --knime-white);
-      background-color: var(--theme-button-background-color-hover, --knime-masala);
+      color: var(--theme-button-foreground-color-hover);
+      background-color: var(--theme-button-background-color-hover);
 
       & >>> svg {
-        stroke: var(--theme-button-foreground-color-hover, --knime-white);
+        stroke: var(--theme-button-foreground-color-hover);
       }
     }
 
     &:active,
     &:focus {
       outline: none;
-      color: var(--theme-button-foreground-color-focus, --knime-white);
-      background-color: var(--theme-button-background-color-focus, --knime-masala);
+      color: var(--theme-button-foreground-color-focus);
+      background-color: var(--theme-button-background-color-focus);
 
       & >>> svg {
-        stroke: var(--theme-button-foreground-color-focus, --knime-white);
+        stroke: var(--theme-button-foreground-color-focus);
       }
     }
   }

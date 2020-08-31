@@ -102,7 +102,17 @@ describe('Message.vue', () => {
         wrapper.find('.copy-button').trigger('click');
 
         expect(copyTextMock).toHaveBeenCalled();
+    });
 
+    it('renders without close button when not dismissable', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                showCloseButton: false
+            }
+        });
+        expect(wrapper.vm.active).toBe(true);
+        expect(wrapper.find('.close').exists()).toBe(false);
     });
 
     it('copies text by enter key', () => {

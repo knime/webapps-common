@@ -39,7 +39,7 @@ export default {
         Button,
         SubMenu,
         SplitButton,
-        MenuIcon
+        DropdownIcon
     },
     data() {
         return {

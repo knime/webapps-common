@@ -279,6 +279,7 @@ export default {
     white-space: nowrap;
     background-color: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+    cursor: pointer;
 
     &.empty {
       white-space: pre-wrap;

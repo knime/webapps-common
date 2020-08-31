@@ -41,5 +41,10 @@ module.exports = {
     testMatch: [
         '**/test/unit/**/*.test.(js|jsx|ts|tsx)'
     ],
-    setupFiles: ['<rootDir>/test/unit/jest-setup']
+    setupFiles: ['<rootDir>/test/unit/jest-setup'],
+    globals: {
+        'vue-jest': {
+            hideStyleWarn: true
+        }
+    }
 };

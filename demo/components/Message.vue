@@ -38,9 +38,14 @@ export default {
     <CheckIcon slot="icon" />
     This is a success message with an icon
   </Message>
-  <Message type="transparent">
-    <CheckIcon slot="icon" />
-    This is a transparent message with an icon
+  <Message
+    type="error"
+    details="Some example detail text"
+  >
+    This is a message with further details
+  </Message>
+  <Message :show-close-button="false">
+    This is a non-dismissable message
   </Message>
 </template>`;
 
@@ -72,9 +77,16 @@ export default {
             You can select them with the <code>type</code> property.
           </p>
           <p>
-            Each message can have an icon in the <code>icon</code> slot, and optionally a button. The button text is set
-            with the <code>button</code> property. If left out, the widget will show an 'x' icon. Pressing the button or
-            the 'x' closes the widget and fires the <code>dismiss</code> event.
+            Each message can have an icon in the <code>icon</code> slot.
+          </p>
+          <p>
+            A message can have an 'x' button (default), or a close button with text, controlled by the
+            <code>button</code> property, or neither, which can be achieved by setting the <code>showCloseButton</code>
+            property to <code>false</code>. In this case the <code>button</code> property has no effect, no controls
+            will be displayed, and you must programmatically dismiss the message.
+          </p>
+          <p>
+            Pressing the button or the 'x' closes the widget and fires the <code>dismiss</code> event.
           </p>
           <p>
             In addition a message can also contain <code>details</code> which are hidden and only displayed when the
@@ -108,6 +120,9 @@ export default {
       details="Some example detail text"
     >
       This is a message with further details
+    </Message>
+    <Message :show-close-button="false">
+      This is a message without close button
     </Message>
     <section>
       <div class="grid-container">

@@ -31,7 +31,7 @@ export default {
             type: Array
         },
         /**
-         * Identifier for clickhandler
+         * Identifier for click handler
          */
         id: {
             default: '',
@@ -211,9 +211,9 @@ export default {
       <li
         v-for="(item, index) in items"
         :key="index"
-        @click="onItemClick($event, item, index)"
-        @keydown.enter="onItemClick($event, item, index)"
-        @keydown.space="onItemClick($event, item, index)"
+        @click="onItemClick($event, item)"
+        @keydown.enter="onItemClick($event, item)"
+        @keydown.space="onItemClick($event, item)"
       >
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"

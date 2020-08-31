@@ -28,9 +28,18 @@ export default {
             }
         },
         /**
+         * Enable / disable rendering of close button.
+         * Defaults to `true`.
+         */
+        showCloseButton: {
+            type: Boolean,
+            default: true
+        },
+        /**
          * Optional button text.
          * If set, renders a button instead of the 'x' that is used for closing the Message.
          * If left blank, the 'x' is rendered.
+         * This property has no effect if `showCloseButton` is `false`.
          */
         button: {
             type: String,
@@ -111,27 +120,29 @@ export default {
                 {{ '×' + count }}
               </span>
             </span>
-            <Button
-              v-if="button"
-              class="close"
-              primary
-              compact
-              on-dark
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              {{ button }}
-            </Button>
-            <span
-              v-else
-              tabindex="0"
-              class="close"
-              title="Discard message"
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              <CloseIcon />
-            </span>
+            <template v-if="showCloseButton">
+              <Button
+                v-if="button"
+                class="close"
+                primary
+                compact
+                on-dark
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                {{ button }}
+              </Button>
+              <span
+                v-else
+                tabindex="0"
+                class="close"
+                title="Discard message"
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                <CloseIcon />
+              </span>
+            </template>
           </Component>
           <div
             v-if="hasDetails"
@@ -356,7 +367,7 @@ section {
         font-weight: 300;
         line-height: 18px;
         margin: auto 5px;
-        max-width: 66%;
+        max-width: 80%;
       }
 
       & .copy-button {
@@ -366,6 +377,7 @@ section {
         text-align: center;
         margin-right: 23px; /* line-up with dropdown icon */
         outline: none;
+        cursor: pointer;
 
         &:hover,
         &:focus {
