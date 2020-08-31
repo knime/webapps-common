@@ -122,7 +122,7 @@ export default {
     <figcaption v-if="size > 0 || fileExt">
       (<span v-if="fileExt">{{ fileExt }}</span><span v-if="size > 0"><span v-if="size > 0 && fileExt">, </span><!--
       -->{{ humanFileSizeObject.value }}
-      <abbr :title="humanFileSizeUnitFull">{{ humanFileSizeObject.symbol }}</abbr></span>)
+        <abbr :title="humanFileSizeUnitFull">{{ humanFileSizeObject.symbol }}</abbr></span>)
     </figcaption>
   </figure>
 </template>

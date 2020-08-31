@@ -15,6 +15,9 @@
     "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
+  "dependencies": {
+    "filesize": "6.1.0"
+  },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
     "@vue/test-utils": "1.0.0-beta.29",
@@ -37,7 +40,6 @@
     "consola": "*",
     "eslint": "5.x - 7.x",
     "normalize.css": "*",
-    "filesize": "^6.1.0",
     "postcss-calc": "*",
     "postcss-css-variables": "*",
     "postcss-import": "*",
