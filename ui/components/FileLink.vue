@@ -115,12 +115,6 @@ export default {
             }
             return infoText;
         }
-    },
-    methods: {
-        focus() {
-            /** This can be called from outside via focus on a $ref */
-            this.$el.focus();
-        }
     }
 };
 </script>
