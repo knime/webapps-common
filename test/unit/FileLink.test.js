@@ -49,6 +49,20 @@ describe('FileLink.vue', () => {
         expect(wrapper.find('figcaption').text()).toContain('847');
     });
 
+    it('renders with size in Bytes', () => {
+        const wrapper = shallowMount(FileLink, {
+            propsData: {
+                text: 'A Word File',
+                href: 'https://example.com/file.doc',
+                fileExt: 'doc',
+                size: 20
+            }
+        });
+        expect(wrapper.find('abbr').text()).toBe('B');
+        expect(wrapper.find('abbr').attributes('title')).toBe('bytes');
+        expect(wrapper.find('figcaption').text()).toContain('20');
+    });
+
     it('renders with size in Kilobytes', () => {
         const wrapper = shallowMount(FileLink, {
             propsData: {
@@ -63,4 +77,31 @@ describe('FileLink.vue', () => {
         expect(wrapper.find('figcaption').text()).toContain('1.95');
     });
 
+    it('renders with size in Megabytes', () => {
+        const wrapper = shallowMount(FileLink, {
+            propsData: {
+                text: 'A Word File',
+                href: 'https://example.com/file.doc',
+                fileExt: 'doc',
+                size: 2000000
+            }
+        });
+        expect(wrapper.find('abbr').text()).toBe('MB');
+        expect(wrapper.find('abbr').attributes('title')).toBe('megabytes');
+        expect(wrapper.find('figcaption').text()).toContain('1.91');
+    });
+
+    it('renders with size in Gigabytes', () => {
+        const wrapper = shallowMount(FileLink, {
+            propsData: {
+                text: 'A Word File',
+                href: 'https://example.com/file.doc',
+                fileExt: 'doc',
+                size: 2000000000
+            }
+        });
+        expect(wrapper.find('abbr').text()).toBe('GB');
+        expect(wrapper.find('abbr').attributes('title')).toBe('gigabytes');
+        expect(wrapper.find('figcaption').text()).toContain('1.86');
+    });
 });

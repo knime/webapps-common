@@ -71,7 +71,7 @@ export default {
         /** extension based file type: exe, txt, zip, docx etc. */
         fileExt: {
             type: String,
-            default: null
+            default: ''
         },
         mimeType: {
             type: String,
@@ -80,7 +80,7 @@ export default {
         /** size in kilobytes */
         size: {
             type: Number,
-            default: -1
+            default: 0
         }
     },
     computed: {
@@ -98,6 +98,22 @@ export default {
                 output: 'object',
                 fullform: true
             })(this.size).symbol;
+        },
+        hasFileInfo() {
+            return this.size || this.fileExt;
+        },
+        fileInfoText() {
+            let infoText = '';
+            if (!this.hasFileInfo) {
+                return infoText;
+            }
+            if (this.fileExt) {
+                infoText += `${this.fileExt}${this.size ? ', ' : ''}`;
+            }
+            if (this.size) {
+                infoText += this.humanFileSizeObject.value;
+            }
+            return infoText;
         }
     },
     methods: {
@@ -114,15 +130,12 @@ export default {
       :href="href"
       download
       :type="mimeType"
-    ><!--
-      -->
-      <Component :is="icon" /><!--
-      -->{{ text || 'Download File' }}<!--
-    --></a>
-    <figcaption v-if="size > 0 || fileExt">
-      (<span v-if="fileExt">{{ fileExt }}</span><span v-if="size > 0"><span v-if="size > 0 && fileExt">, </span><!--
-      -->{{ humanFileSizeObject.value }}
-        <abbr :title="humanFileSizeUnitFull">{{ humanFileSizeObject.symbol }}</abbr></span>)
+    ><Component :is="icon" />{{ text || 'Download File' }}</a>
+    <figcaption v-if="hasFileInfo">
+      ({{ fileInfoText }}<abbr
+        v-if="size"
+        :title="humanFileSizeUnitFull"
+      >{{ humanFileSizeObject.symbol }}</abbr>)
     </figcaption>
   </figure>
 </template>
