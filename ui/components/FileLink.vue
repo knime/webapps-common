@@ -114,6 +114,19 @@ export default {
                 infoText += this.humanFileSizeObject.value;
             }
             return infoText;
+        },
+        linkHtmlTitle() {
+            let infoText = '';
+            if (this.fileExt) {
+                infoText += `${this.fileExt}${this.size ? ', ' : ''}`;
+            }
+            if (this.size) {
+                infoText += `${this.humanFileSizeObject.value} ${this.humanFileSizeObject.symbol}`;
+            }
+            if (infoText) {
+                return `${this.text} (${infoText})`;
+            }
+            return this.text;
         }
     }
 };
@@ -123,10 +136,11 @@ export default {
     <a
       :href="href"
       download
+      :title="linkHtmlTitle"
       :type="mimeType"
     ><Component :is="icon" />{{ text || 'Download File' }}</a>
     <figcaption v-if="hasFileInfo">
-      ({{ fileInfoText }}<abbr
+      ({{ fileInfoText }}{{ size ? '&nbsp;' : '' }}<abbr
         v-if="size"
         :title="humanFileSizeUnitFull"
       >{{ humanFileSizeObject.symbol }}</abbr>)
@@ -137,6 +151,17 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .file-link {
+  /* figure has browser default margin which is not reset */
+  margin: 0;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  & abbr {
+    cursor: help;
+  }
+
   & figcaption {
     display: inline-block;
     margin-left: 0.5ch;
