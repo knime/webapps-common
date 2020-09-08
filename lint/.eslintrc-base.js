@@ -83,7 +83,7 @@ module.exports = {
         'no-extend-native': 'warn',
         'no-extra-boolean-cast': 'warn',
         'no-extra-label': 'error',
-        'no-extra-parens': ['warn', 'all'],
+        'no-extra-parens': ['warn', 'all', { "nestedBinaryExpressions": false }],
         'no-implicit-coercion': 'warn',
         'no-implied-eval': 'error',
         'no-invalid-this': 'warn',
@@ -213,6 +213,11 @@ module.exports = {
         },
         rules: {
             'no-magic-numbers': 'off'
+        }
+    },{
+        files: ['*.test.js'],
+        rules: {
+            'no-undefined': 'off'
         }
     }]
 };
