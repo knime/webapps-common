@@ -108,25 +108,19 @@ export default {
                 return infoText;
             }
             if (this.fileExt) {
-                infoText += `${this.fileExt}${this.size ? ', ' : ''}`;
+                infoText += this.fileExt;
             }
             if (this.size) {
-                infoText += this.humanFileSizeObject.value;
+                infoText += `, ${this.humanFileSizeObject.value} `;
             }
             return infoText;
         },
         linkHtmlTitle() {
-            let infoText = '';
-            if (this.fileExt) {
-                infoText += `${this.fileExt}${this.size ? ', ' : ''}`;
+            let titleText = this.text;
+            if (this.fileInfoText) {
+                titleText += ` (${this.fileInfoText}${this.size ? this.humanFileSizeObject.symbol : ''})`;
             }
-            if (this.size) {
-                infoText += `${this.humanFileSizeObject.value} ${this.humanFileSizeObject.symbol}`;
-            }
-            if (infoText) {
-                return `${this.text} (${infoText})`;
-            }
-            return this.text;
+            return titleText;
         }
     }
 };
@@ -140,7 +134,7 @@ export default {
       :type="mimeType"
     ><Component :is="icon" />{{ text || 'Download File' }}</a>
     <figcaption v-if="hasFileInfo">
-      ({{ fileInfoText }}{{ size ? '&nbsp;' : '' }}<abbr
+      ({{ fileInfoText }}<abbr
         v-if="size"
         :title="humanFileSizeUnitFull"
       >{{ humanFileSizeObject.symbol }}</abbr>)
