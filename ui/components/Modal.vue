@@ -31,7 +31,7 @@ export default {
          * @returns {undefined}
          */
         onClickAway(e) {
-          if (e.target === this.$refs.overlay) {
+            if (e.target === this.$refs.overlay) {
                 this.$emit('clickAway');
             }
         }
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <template>
-  <FocusTrap :active="active" >
+  <FocusTrap :active="active">
     <div
       :class="['container', { active }]"
       @click="onClickAway"
