@@ -169,5 +169,38 @@ export default {
     height: 18px;
     stroke-width: calc(32px / 18);
   }
+
+  & a {
+    background: var(--theme-text-link-background-color);
+    color: var(--theme-text-link-foreground-color);
+
+    &:hover {
+      background: var(--theme-text-link-background-color-hover);
+      color: var(--theme-text-link-foreground-color-hover);
+
+      & >>> svg {
+        stroke: var(--theme-text-link-foreground-color-hover);
+
+        /* text on file icons use fill in path with class text */
+        & path.text {
+          fill: var(--theme-text-link-foreground-color-hover);
+        }
+      }
+    }
+
+    &:focus {
+      background: var(--theme-text-link-background-color-focus);
+      color: var(--theme-text-link-foreground-color-focus);
+
+      & >>> svg {
+        stroke: var(--theme-text-link-foreground-color-focus);
+
+        /* text on file icons use fill in path with class text */
+        & path.text {
+          fill: var(--theme-text-link-foreground-color-focus);
+        }
+      }
+    }
+  }
 }
 </style>
