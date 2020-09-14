@@ -1,6 +1,9 @@
 <script>
 import { FocusTrap } from 'focus-trap-vue';
 
+// Deactivation delay in milliseconds to let css animation finish
+const DEACTIVATION_DELAY = 200;
+
 /**
  * A reusable component which has an overlay and a slot for content. It contains the styles and animations needed for
  * a smooth, full-size modal capable of replacing `window.alert` or displaying messaging within a container element.
@@ -19,6 +22,25 @@ export default {
         active: {
             type: Boolean,
             default: false
+        }
+    },
+    data() {
+      return {
+        /**
+         * activeWithDelay is to delay the change from active --> inactive in order to let CSS animations finish
+         */
+        activeWithDelay: this.active
+      }
+    },
+    watch: {
+        active(newValue, oldValue) {
+          if(newValue === false) {
+            // delay deactivation to let CSS animations to finish
+            setTimeout(() => this.activeWithDelay = newValue, DEACTIVATION_DELAY);
+          } else {
+            // no delay on activation as CSS animations can kick right in
+            this.activeWithDelay = newValue;
+          }
         }
     },
     methods: {
@@ -40,9 +62,9 @@ export default {
 </script>
 
 <template>
-  <FocusTrap :active="active">
+  <FocusTrap :active="activeWithDelay" v-show="activeWithDelay">
     <div
-      :class="['container', { active }]"
+      class="container"
       @click="onClickAway"
     >
       <transition name="fade">
@@ -102,11 +124,6 @@ export default {
   top: 0;
   height: 100%;
   width: 100%;
-  pointer-events: none;
-
-  &.active {
-    pointer-events: all;
-  }
 }
 
 .overlay {
