@@ -25,22 +25,22 @@ export default {
         }
     },
     data() {
-      return {
-        /**
-         * activeWithDelay is to delay the change from active --> inactive in order to let CSS animations finish
-         */
-        activeWithDelay: this.active
-      }
+        return {
+            /**
+             * activeWithDelay is to delay the change from active --> inactive in order to let CSS animations finish
+             */
+            activeWithDelay: this.active
+        }
     },
     watch: {
         active(newValue, oldValue) {
-          if(newValue === false) {
-            // delay deactivation to let CSS animations to finish
-            setTimeout(() => this.activeWithDelay = newValue, DEACTIVATION_DELAY);
-          } else {
-            // no delay on activation as CSS animations can kick right in
-            this.activeWithDelay = newValue;
-          }
+            if(newValue === false) {
+                // delay deactivation to let CSS animations to finish
+                setTimeout(() => this.activeWithDelay = newValue, DEACTIVATION_DELAY);
+            } else {
+                // no delay on activation as CSS animations can kick right in
+                this.activeWithDelay = newValue;
+            }
         }
     },
     methods: {
