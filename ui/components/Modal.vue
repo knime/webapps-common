@@ -1,9 +1,6 @@
 <script>
 import { FocusTrap } from 'focus-trap-vue';
 
-// Deactivation delay in milliseconds to let css animation finish
-const DEACTIVATION_DELAY = 200;
-
 /**
  * A reusable component which has an overlay and a slot for content. It contains the styles and animations needed for
  * a smooth, full-size modal capable of replacing `window.alert` or displaying messaging within a container element.
@@ -27,23 +24,20 @@ export default {
     data() {
         return {
             /**
-             * activeWithDelay is to delay the change from active --> inactive in order to let CSS animations finish
+             * showModal is to delay the change from active --> inactive in order to let CSS animations finish
              */
-            activeWithDelay: this.active
-        }
-    },
-    watch: {
-        active(newValue, oldValue) {
-            if(newValue === false) {
-                // delay deactivation to let CSS animations to finish
-                setTimeout(() => this.activeWithDelay = newValue, DEACTIVATION_DELAY);
-            } else {
-                // no delay on activation as CSS animations can kick right in
-                this.activeWithDelay = newValue;
-            }
-        }
+            showModal: this.active
+        };
     },
     methods: {
+        onEnterOverlay() {
+            /** Show modal immediatley before overlay transition begins */
+            this.showModal = true;
+        },
+        onAfterLeaveOverlay() {
+            /** Hide modal only after overlay transition ends */
+            this.showModal = false;
+        },
         /**
          * Detects any clicks on the overlay, allowing the modal to be dismissed without having to click a
          * specific button or control.
@@ -53,25 +47,27 @@ export default {
          * @returns {undefined}
          */
         onClickAway(e) {
-            if (e.target === this.$refs.overlay) {
-                this.$emit('clickAway');
-            }
+            this.$emit('clickAway');
         }
     }
 };
 </script>
 
 <template>
-  <FocusTrap :active="activeWithDelay" v-show="activeWithDelay">
-    <div
-      class="container"
-      @click="onClickAway"
-    >
-      <transition name="fade">
+  <FocusTrap
+    v-show="showModal"
+    :active="showModal"
+  >
+    <div class="container">
+      <transition
+        name="fade"
+        @enter="onEnterOverlay"
+        @afterLeave="onAfterLeaveOverlay"
+      >
         <div
           v-if="active"
-          ref="overlay"
           class="overlay"
+          @click="onClickAway"
         />
       </transition>
       <transition name="slide">
@@ -127,7 +123,6 @@ export default {
 }
 
 .overlay {
-  z-index: -1;
   position: fixed;
   top: 0;
   left: 0;
@@ -137,13 +132,14 @@ export default {
 }
 
 .wrapper {
-  font-size: 16px;
+  /** Wrapper is used to center the modal and enable independent transitions from the overlay */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
+  font-size: 16px;
 }
 
 .inner {
