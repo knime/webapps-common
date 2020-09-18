@@ -18,21 +18,36 @@ export default {
          */
         active: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
     data() {
         return {
             /**
-             * showModal is to delay the change from active --> inactive in order to let CSS animations finish
+             * 'showModal' is used separately from 'active' to let CSS animations finish before hiding the modal
              */
             showModal: this.active
         };
     },
+    mounted() {
+      window.addEventListener('keyup', this.onGlobalKeyUp);
+    },
+    destroyed() {
+      window.removeEventListener('keyup', this.onGlobalKeyUp);
+    },
+    watch: {
+      active(newVal) {
+        if(newVal === true) {
+          /* Show modal immediatley when set to active */
+          this.showModal = newVal;
+        }
+      }
+    },
     methods: {
-        onEnterOverlay() {
-            /** Show modal immediatley before overlay transition begins */
-            this.showModal = true;
+        onGlobalKeyUp(e) {
+          if(e.key === 'Escape') {
+            this.onClickAway();
+          }
         },
         onAfterLeaveOverlay() {
             /** Hide modal only after overlay transition ends */
@@ -61,7 +76,6 @@ export default {
     <div class="container">
       <transition
         name="fade"
-        @enter="onEnterOverlay"
         @afterLeave="onAfterLeaveOverlay"
       >
         <div
