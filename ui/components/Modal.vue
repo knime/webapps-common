@@ -18,7 +18,7 @@ export default {
          */
         active: {
             type: Boolean,
-            default: true
+            default: false
         }
     },
     data() {
@@ -46,7 +46,8 @@ export default {
     methods: {
         onGlobalKeyUp(e) {
           if(e.key === 'Escape') {
-            this.onClickAway();
+            consola.trace('Esc key press, closing modal');
+            this.onCancel();
           }
         },
         onAfterLeaveOverlay() {
@@ -54,15 +55,15 @@ export default {
             this.showModal = false;
         },
         /**
-         * Detects any clicks on the overlay, allowing the modal to be dismissed without having to click a
-         * specific button or control.
+         * Detects any clicks on the overlay or the escape key, allowing the modal to be dismissed
+         * without having to click a specific button or control.
          *
          * @param {Object} e - the browser mouse event.
-         * @emits {clickAway} - can be used by parent to close the modal.
+         * @emits {cancel} - can be used by parent to close the modal.
          * @returns {undefined}
          */
-        onClickAway(e) {
-            this.$emit('clickAway');
+        onCancel(e) {
+            this.$emit('cancel');
         }
     }
 };
@@ -73,7 +74,7 @@ export default {
     v-show="showModal"
     :active="showModal"
   >
-    <div class="container">
+    <div class="container" :aria-modal="showModal">
       <transition
         name="fade"
         @afterLeave="onAfterLeaveOverlay"
@@ -81,7 +82,7 @@ export default {
         <div
           v-if="active"
           class="overlay"
-          @click="onClickAway"
+          @click="onCancel"
         />
       </transition>
       <transition name="slide">
@@ -158,5 +159,12 @@ export default {
 
 .inner {
   pointer-events: all;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  width: min(95%, 550px);
+  min-height: 400px;
+  background-color: var(--theme-color-white);
 }
 </style>

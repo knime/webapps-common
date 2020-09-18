@@ -24,6 +24,7 @@ import Label from '../components/Label';
 import ListBox from '../components/ListBox';
 import Message from '../components/Message';
 import Messages from '../components/Messages';
+import Modal from '../components/Modal';
 import Multiselect from '../components/Multiselect';
 import MultiselectListBox from '../components/MultiselectListBox';
 import NumberInput from '../components/NumberInput';
@@ -68,6 +69,7 @@ export default {
         ListBox,
         Message,
         Messages,
+        Modal,
         Multiselect,
         MultiselectListBox,
         NumberInput,
@@ -147,14 +149,15 @@ export default {
     <template v-if="activeTab === 'interactive'">
       <Breadcrumb />
       <Button />
+      <Carousel />
+      <Collapser />
       <FunctionButton />
       <FileLink />
+      <IdleReadyButton />
+      <Modal />
       <SubMenu />
       <SplitButton />
-      <IdleReadyButton />
-      <Collapser />
       <TabBarDemo />
-      <Carousel />
     </template>
     <template v-if="activeTab === 'messages'">
       <Message />
