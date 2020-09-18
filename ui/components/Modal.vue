@@ -29,26 +29,26 @@ export default {
             showModal: this.active
         };
     },
+    watch: {
+        active(newVal) {
+            if (newVal === true) {
+                /* Show modal immediatley when set to active */
+                this.showModal = newVal;
+            }
+        }
+    },
     mounted() {
-      window.addEventListener('keyup', this.onGlobalKeyUp);
+        window.addEventListener('keyup', this.onGlobalKeyUp);
     },
     destroyed() {
-      window.removeEventListener('keyup', this.onGlobalKeyUp);
-    },
-    watch: {
-      active(newVal) {
-        if(newVal === true) {
-          /* Show modal immediatley when set to active */
-          this.showModal = newVal;
-        }
-      }
+        window.removeEventListener('keyup', this.onGlobalKeyUp);
     },
     methods: {
         onGlobalKeyUp(e) {
-          if(e.key === 'Escape') {
-            consola.trace('Esc key press, closing modal');
-            this.onCancel();
-          }
+            if (e.key === 'Escape') {
+                consola.trace('Esc key press, closing modal');
+                this.onCancel();
+            }
         },
         onAfterLeaveOverlay() {
             /** Hide modal only after overlay transition ends */
@@ -74,7 +74,10 @@ export default {
     v-show="showModal"
     :active="showModal"
   >
-    <div class="container" :aria-modal="showModal">
+    <div
+      class="container"
+      :aria-modal="showModal"
+    >
       <transition
         name="fade"
         @afterLeave="onAfterLeaveOverlay"

@@ -69,17 +69,30 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h2>Modal</h2>
-          <p>A <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-          The default slot is used to display content </p>
+          <p>
+            A <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
+            The default slot is used to display content
+          </p>
           <p>The modal dialog has to be positioned by css, see usage example.</p>
-          <Button primary @click="modalActive = true">
+          <Button
+            primary
+            @click="modalActive = true"
+          >
             Trigger modal
           </Button>
-          <Modal :active="modalActive" @cancel="modalActive = false">
+          <Modal
+            :active="modalActive"
+            @cancel="modalActive = false"
+          >
             <h2>This is the modal content</h2>
-            <InputField></InputField>
+            <InputField />
             <p>Can be anything you put in the default slot</p>
-            <Button primary @click="modalActive = false">Close</Button>
+            <Button
+              primary
+              @click="modalActive = false"
+            >
+              Close
+            </Button>
           </Modal>
         </div>
       </div>
