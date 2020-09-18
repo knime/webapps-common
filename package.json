@@ -36,8 +36,8 @@
   "peerDependencies": {
     "consola": "*",
     "eslint": "5.x - 7.x",
-    "focus-trap": "6.0.1",
-    "focus-trap-vue": "0.0.6",
+    "focus-trap": "6.x",
+    "focus-trap-vue": "0.x",
     "normalize.css": "*",
     "postcss-calc": "*",
     "postcss-css-variables": "*",
