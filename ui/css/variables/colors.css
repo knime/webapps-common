@@ -8,6 +8,7 @@
   --knime-porcelain: hsl(200, 10.33%, 94.3%); /* #EFF1F2 */
   --knime-gray-ultra-light: hsl(210, 16.7%, 97.6%); /* #F8F9FA */
   --knime-white: white; /* #FFFFFF */
+  --knime-black: hsl(0, 3%, 12%); /* #201E1E */
 
   --knime-gray-dark-semi: hsla(195, 1.6%, 51.8%, 0.4); /* #82858680 */
   --knime-gray-light-semi: hsla(200, 10%, 94%, 0.4); /* #EFF1F266 */
