@@ -108,12 +108,19 @@ export default {
                 return infoText;
             }
             if (this.fileExt) {
-                infoText += `${this.fileExt}${this.size ? ', ' : ''}`;
+                infoText += this.fileExt;
             }
             if (this.size) {
-                infoText += this.humanFileSizeObject.value;
+                infoText += `, ${this.humanFileSizeObject.value} `;
             }
             return infoText;
+        },
+        linkHtmlTitle() {
+            let titleText = this.text;
+            if (this.fileInfoText) {
+                titleText += ` (${this.fileInfoText}${this.size ? this.humanFileSizeObject.symbol : ''})`;
+            }
+            return titleText;
         }
     }
 };
@@ -123,6 +130,7 @@ export default {
     <a
       :href="href"
       download
+      :title="linkHtmlTitle"
       :type="mimeType"
     ><Component :is="icon" />{{ text || 'Download File' }}</a>
     <figcaption v-if="hasFileInfo">
@@ -137,6 +145,17 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .file-link {
+  /* figure has browser default margin which is not reset */
+  margin: 0;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  & abbr {
+    cursor: help;
+  }
+
   & figcaption {
     display: inline-block;
     margin-left: 0.5ch;
@@ -149,6 +168,39 @@ export default {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18);
+  }
+
+  & a {
+    background: var(--theme-text-link-background-color);
+    color: var(--theme-text-link-foreground-color);
+
+    &:hover {
+      background: var(--theme-text-link-background-color-hover);
+      color: var(--theme-text-link-foreground-color-hover);
+
+      & >>> svg {
+        stroke: var(--theme-text-link-foreground-color-hover);
+
+        /* text on file icons use fill in path with class text */
+        & path.text {
+          fill: var(--theme-text-link-foreground-color-hover);
+        }
+      }
+    }
+
+    &:focus {
+      background: var(--theme-text-link-background-color-focus);
+      color: var(--theme-text-link-foreground-color-focus);
+
+      & >>> svg {
+        stroke: var(--theme-text-link-foreground-color-focus);
+
+        /* text on file icons use fill in path with class text */
+        & path.text {
+          fill: var(--theme-text-link-foreground-color-focus);
+        }
+      }
+    }
   }
 }
 </style>
