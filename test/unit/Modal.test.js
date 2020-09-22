@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Modal from '~/ui/components/Modal.vue';
-jest.mock('focus-trap-vue');
+
+jest.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {
     /* eslint-disable no-global-assign */
@@ -18,7 +19,7 @@ describe('Modal', () => {
 
     it('renders default inactive', () => {
         let wrapper = shallowMount(Modal, {
-            stubs: ['FocusTrap', 'TransitionStub'],
+            stubs: { FocusTrap: true },
             slots: {
                 default: '<p>test</p>'
             },
@@ -30,7 +31,7 @@ describe('Modal', () => {
 
     it('activates and deactivates', () => {
         let wrapper = shallowMount(Modal, {
-            stubs: ['FocusTrap', 'TransitionStub'],
+            stubs: { FocusTrap: true },
             slots: {
                 default: '<p class="content-item">test</p>'
             },
