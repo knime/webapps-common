@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Modal from '~/ui/components/Modal.vue';
+jest.mock('focus-trap-vue');
 
 describe('Modal', () => {
     /* eslint-disable no-global-assign */
