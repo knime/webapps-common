@@ -24,24 +24,21 @@ export default {
     data() {
         return {
             /**
-             * 'showModal' is used separately from 'active' to let CSS animations finish before hiding the modal
+             * 'showContent' is used to animate the modal content separatley
              */
-            showModal: this.active
+            showContent: false
         };
     },
     watch: {
+        // Set and remove global event handlers on modal activation.
+        // Only manual activation is supported.
         active(newVal) {
             if (newVal === true) {
-                /* Show modal immediatley when set to active */
-                this.showModal = newVal;
+                window.addEventListener('keyup', this.onGlobalKeyUp);
+            } else {
+                window.removeEventListener('keyup', this.onGlobalKeyUp);
             }
         }
-    },
-    mounted() {
-        window.addEventListener('keyup', this.onGlobalKeyUp);
-    },
-    destroyed() {
-        window.removeEventListener('keyup', this.onGlobalKeyUp);
     },
     methods: {
         onGlobalKeyUp(e) {
@@ -49,10 +46,6 @@ export default {
                 consola.trace('Esc key press, closing modal');
                 this.onCancel();
             }
-        },
-        onAfterLeaveOverlay() {
-            /** Hide modal only after overlay transition ends */
-            this.showModal = false;
         },
         /**
          * Detects any clicks on the overlay or the escape key, allowing the modal to be dismissed
@@ -70,64 +63,58 @@ export default {
 </script>
 
 <template>
-  <FocusTrap
-    v-show="showModal"
-    :active="showModal"
+  <transition
+    v-if="active"
+    name="fade"
+    @enter="showContent = true"
+    @leave="showContent = false"
   >
-    <div
+    <FocusTrap
+      :active="active"
       class="container"
-      :aria-modal="showModal"
     >
-      <transition
-        name="fade"
-        @afterLeave="onAfterLeaveOverlay"
-      >
+      <div ref="dialog">
         <div
-          v-if="active"
           class="overlay"
           @click="onCancel"
         />
-      </transition>
-      <transition name="slide">
-        <div
-          v-if="active"
-          class="wrapper"
-        >
-          <div class="inner">
-            <slot />
+        <transition name="slide">
+          <div
+            v-if="showContent"
+            class="wrapper"
+          >
+            <div class="inner">
+              <slot />
+            </div>
           </div>
-        </div>
-      </transition>
-    </div>
-  </FocusTrap>
+        </transition>
+      </div>
+    </FocusTrap>
+  </transition>
 </template>
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
 .fade-enter,
-.fade-leave-to,
-.slide-enter,
-.slide-leave-to {
+.fade-leave-to {
   opacity: 0;
 }
 
-.slide-enter {
+.slide-enter,
+.slide-leave-to {
   transform: translateY(25%);
   opacity: 0;
 }
 
+.slide-enter-active,
 .fade-enter-active {
-  transition: all 0.1s ease-out;
-}
-
-.slide-enter-active {
-  transition: all 0.15s ease-out 0.2s;
+  transition: all 0.2s ease-out;
 }
 
 .fade-leave-active,
 .slide-leave-active {
-  transition: all 0.2s ease-in -0.1s;
+  transition: all 0.1s ease-in;
 }
 
 .container {
