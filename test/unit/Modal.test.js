@@ -1,6 +1,4 @@
 import { shallowMount } from '@vue/test-utils';
-import { FocusTrap } from 'focus-trap-vue';
-
 import Modal from '~/ui/components/Modal.vue';
 
 describe('Modal', () => {
@@ -42,7 +40,6 @@ describe('Modal', () => {
         wrapper.setProps({ active: true });
 
         // activate
-        expect(wrapper.find(FocusTrap).exists()).toBeTruthy();
         expect(wrapper.find('.overlay').exists()).toBeTruthy();
         expect(wrapper.find('.content-item').exists()).toBeFalsy();
 
