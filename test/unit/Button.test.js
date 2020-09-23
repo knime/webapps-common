@@ -42,8 +42,7 @@ describe('Button.vue', () => {
                 disabled: true
             }
         });
-        expect(wrapper.props('disabled')).toEqual(true);
-        expect(wrapper.classes().sort()).toEqual(['button', 'disabled'].sort());
+        expect(wrapper.attributes('disabled')).toEqual('true');
     });
 
     it('accepts any optional attribute', () => {

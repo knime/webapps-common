@@ -66,7 +66,7 @@ export default {
   <transition
     v-if="active"
     name="fade"
-    @enter="showContent = true"
+    @after-enter="showContent = true"
     @leave="showContent = false"
   >
     <FocusTrap
@@ -109,7 +109,7 @@ export default {
 
 .slide-enter-active,
 .fade-enter-active {
-  transition: all 0.2s ease-out;
+  transition: all 0.1s ease-out;
 }
 
 .fade-leave-active,
@@ -137,7 +137,7 @@ export default {
 }
 
 .wrapper {
-  /** Wrapper is used to center the modal and enable independent transitions from the overlay */
+  /* Wrapper is used to center the modal and enable independent transitions from the overlay */
   position: fixed;
   top: 0;
   left: 0;
