@@ -71,9 +71,15 @@ export default {
           <h2>Modal</h2>
           <p>
             A <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-            The default slot is used to display content
+            The default slot is used to display content.
           </p>
-          <p>The modal dialog has to be positioned by css, see usage example.</p>
+          <p>The modal offers a cancel event which is triggered by clicking the overlay or by the ESC key.</p>
+          <p>Also on tab, the focus is trapped inside the modal.</p>
+          <p>
+            <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html">
+              See w3c best practices for modal dialogs
+            </a>
+          </p>
           <Button
             primary
             @click="modalActive = true"
