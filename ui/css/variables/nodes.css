@@ -1,0 +1,24 @@
+
+/* This is an auto-generated file.
+ * Do not change manually
+*/
+
+:root {
+  --knime-node-container: hsl(78, 38.7%, 75.7%);
+  --knime-node-component: hsl(200, 5%, 76.5%);
+  --knime-node-learner: hsl(70, 78.3%, 54.9%);
+  --knime-node-loop-end: hsl(188, 63%, 71.4%);
+  --knime-node-loop-start: hsl(188, 63%, 71.4%);
+  --knime-node-manipulator: hsl(50.8, 100%, 50%);
+  --knime-node-other: hsl(24, 46.4%, 67.1%);
+  --knime-node-predictor: hsl(128, 50%, 47.1%);
+  --knime-node-quick-form: hsl(78, 38.7%, 75.7%);
+  --knime-node-scope-end: hsl(305, 27.7%, 46.1%);
+  --knime-node-scope-start: hsl(305, 27.7%, 46.1%);
+  --knime-node-sink: hsl(0, 100%, 64.7%);
+  --knime-node-source: hsl(29, 100%, 59.8%);
+  --knime-node-virtual-in: hsl(0, 0%, 66.7%);
+  --knime-node-virtual-out: hsl(0, 0%, 66.7%);
+  --knime-node-visualizer: hsl(193, 60.9%, 43.1%);
+  --knime-node-metanode: hsl(0, 0%, 53.3%);
+}

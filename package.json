@@ -6,6 +6,8 @@
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
     "preinstall": "node ./install-subDependencies",
+    "generate-css": "node ./ui/colors/generateCSS.js",
+    "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "eslint --ext .js,.vue .",

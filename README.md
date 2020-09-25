@@ -139,9 +139,20 @@ Configuration files are made for Stylelint 10.
 ## Styling and theming
 
 ### CSS tooling and syntax
-All CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
 
-Nesting of CSS rules is supported via [postcss-nesting] following the [CSS Nesting specification] (draft).
+The KNIME color scheme is defined in JavaScript and has to be converted into CSS by running
+
+```sh
+npm run generate-css
+```
+
+This is done automatically on `postinstall`.
+
+Other JS-defined colors are:
+
+- Node Background Colors
+
+All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
 
 
 ### Theming
