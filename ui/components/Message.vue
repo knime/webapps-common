@@ -186,7 +186,7 @@ export default {
 }
 
 section {
-  border-bottom: 1px solid var(--theme-color-white);
+  border-bottom: 1px solid var(--knime-white);
   overflow: hidden;
 
   & .grid-item-12 {
@@ -198,7 +198,7 @@ section {
     display: flex;
     position: relative;
     align-items: center;
-    color: var(--theme-color-white);
+    color: var(--knime-white);
 
     & .message {
       flex-grow: 1;
@@ -217,7 +217,7 @@ section {
       width: 24px;
       height: 24px;
       stroke-width: calc(32px / 24);
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
       margin-right: 20px;
       flex-shrink: 0;
       top: 3px;
@@ -323,7 +323,7 @@ section {
       }
 
       & .dropdown-icon {
-        stroke: var(--theme-color-white);
+        stroke: var(--knime-white);
       }
     }
 
@@ -336,7 +336,7 @@ section {
   & >>> .panel {
     width: 100vw;
     max-width: 100vw;
-    background-color: var(--theme-color-white);
+    background-color: var(--knime-white);
     opacity: 0.9;
     min-height: 50px;
     max-height: 100px;
@@ -362,7 +362,7 @@ section {
 
       & #detail-text {
         display: inline-block;
-        color: var(--theme-color-masala);
+        color: var(--knime-masala);
         font-size: 13px;
         font-weight: 300;
         line-height: 18px;
@@ -381,12 +381,12 @@ section {
 
         &:hover,
         &:focus {
-          background-color: var(--theme-color-silver-sand-semi);
+          background-color: var(--knime-silver-sand-semi);
         }
 
         & svg {
           margin: auto;
-          stroke: var(--theme-color-dove-gray);
+          stroke: var(--knime-dove-gray);
           height: 18px;
           width: 18px;
           stroke-width: calc(32px / 18);
