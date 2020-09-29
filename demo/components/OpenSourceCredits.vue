@@ -51,7 +51,7 @@ export default {
             a link to the source of the project in a compact, expandable list. It can also receive addition
             packages via an <code>additional-packages</code> prop. These are combined with imported packages,
             de-duplicated and sorted for easy viewing.
-            
+
             Designed to be used in combination with the existing header of a page or layout using slots (Optional).
           </p>
         </div>
@@ -92,7 +92,7 @@ export default {
     width: 100%;
 
     & >>> section:last-child {
-      background: var(--theme-color-porcelain);
+      background: var(--knime-porcelain);
     }
   }
 }

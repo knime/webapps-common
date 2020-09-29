@@ -1,6 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample';
-import themeColorsCSS from '!!raw-loader!webapps-common/ui/css/variables/colors.css';
+import colorsCSS from '!!raw-loader!webapps-common/ui/css/variables/knime-colors.css';
 
 export default {
     components: {
@@ -8,7 +8,7 @@ export default {
     },
     computed: {
         themeColorsCSS() {
-            return themeColorsCSS;
+            return colorsCSS;
         }
     }
 };
@@ -35,10 +35,6 @@ export default {
           <div style="--bg: var(--knime-gray-ultra-light);">--knime-gray-ultra-light</div>
           <div style="--bg: var(--knime-white);">--knime-white</div>
         </div>
-        <p>
-          To support theming, please always use the <code>--theme-color-x</code> variables instead of directly
-          referencing the colors.
-        </p>
         <div class="demo">
           <div style="--bg: var(--theme-color-error); --font: white;">--theme-color-error</div>
           <div style="--bg: var(--theme-color-success); --font: white;">--theme-color-success</div>
