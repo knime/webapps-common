@@ -1,22 +1,17 @@
+/* Corporate styleguide:
+* https://knime.sharepoint.com/:f:/r/Shared%20Documents/Marketing/Shared%20Marketing%20Material/Brand%20Assets?csf=1&web=1&e=aM2Tdc
+* https://company-171214.frontify.com/d/ZMQioAZ1xowp/guidelines#/basics/colors (log in to see WIP)
+*/
 module.exports = {
-    /* primary colors */
+    /* primary colors from the corporate styleguide */
     Yellow: 'hsl(50.8, 100%, 50%)', /* #FFD800 */
     Masala: 'hsl(12, 4.2%, 23.3%)', /* #3E3A39 */
     DoveGray: 'hsl(0, 0%, 43.1%)', /* #6E6E6E */
-    GrayDark: 'hsl(195, 1.6%, 51.8%)', /* #828586 */
-    StoneGray: 'hsl(0, 0%, 53.3%)', /* #888888 */
     SilverSand: 'hsl(200, 5%, 76.5%)', /* #C0C4C6 */
     Porcelain: 'hsl(200, 10.33%, 94.3%)', /* #EFF1F2 */
-    GrayUltraLight: 'hsl(210, 16.7%, 97.6%)', /* #F8F9FA */
     White: 'white', /* #FFFFFF */
-    Black: 'hsl(0, 3%, 12%)', /* #201E1E */
 
-    GrayDarkSemi: 'hsla(195, 1.6%, 51.8%, 0.4)', /* #82858680 */
-    GrayLightSemi: 'hsla(200, 10%, 94%, 0.4)', /* #EFF1F266 */
-    MasalaSemi: 'hsla(12, 4.2%, 23.3%, 0.5)', /* #3E3A3980 */
-    SilverSandSemi: 'hsla(200, 5%, 76.5%, 0.5)', /* #C0C4C680 */
-
-    /* secondary colors */
+    /* secondary colors from the corporate styleguide */
     Aquamarine: 'hsl(188, 63%, 71.4%)', /* #88d8e4 */
     AquamarineDark: 'hsl(193, 60.9%, 43.1%)', /* #2b94b1 */
     AquamarineLight: 'hsl(182, 63.3%, 88.2%)', /* #cef3f4 */
@@ -49,5 +44,15 @@ module.exports = {
     StoneLight: 'hsl(220, 4.3%, 86.5%)', /* #dbdcde */
     Wood: 'hsl(24, 46.4%, 67.1%)', /* #d2a384 */
     WoodDark: 'hsl(26, 33%, 35.1%)', /* #77563c */
-    WoodLight: 'hsl(30, 100%, 85.1%)' /* #ffd9b3 */
+    WoodLight: 'hsl(30, 100%, 85.1%)', /* #ffd9b3 */
+
+    /* colors not defined in the corporate styleguide */
+    Black: 'hsl(0, 3%, 12%)', /* #201E1E */
+    StoneGray: 'hsl(0, 0%, 53.3%)', /* #888888 */
+    GrayDark: 'hsl(195, 1.6%, 51.8%)', /* #828586 */
+    GrayUltraLight: 'hsl(210, 16.7%, 97.6%)', /* #F8F9FA */
+    MasalaSemi: 'hsla(12, 4.2%, 23.3%, 0.5)', /* #3E3A3980 */
+    GrayDarkSemi: 'hsla(195, 1.6%, 51.8%, 0.4)', /* #82858680 */
+    SilverSandSemi: 'hsla(200, 5%, 76.5%, 0.5)', /* #C0C4C680 */
+    GrayLightSemi: 'hsla(200, 10%, 94%, 0.4)', /* #EFF1F266 */
 };
