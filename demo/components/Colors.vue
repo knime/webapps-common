@@ -35,6 +35,7 @@ export default {
           <div style="--bg: var(--knime-gray-ultra-light);">--knime-gray-ultra-light</div>
           <div style="--bg: var(--knime-white);">--knime-white</div>
         </div>
+        <p>For these colors please use the --theme-color prefix for now:</p>
         <div class="demo">
           <div style="--bg: var(--theme-color-error); --font: white;">--theme-color-error</div>
           <div style="--bg: var(--theme-color-success); --font: white;">--theme-color-success</div>
