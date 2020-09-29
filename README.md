@@ -146,13 +146,14 @@ The KNIME color scheme is defined in JavaScript and has to be converted into CSS
 npm run generate-css
 ```
 
-This is done automatically on `postinstall`.
+This is done automatically on `npm install`, but needs to be run manually after changing any of the `ui/colors/*` files.
 
 Other JS-defined colors are:
 
 - Node Background Colors
 
-All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
+All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see 
+[`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
 
 
 ### Theming
