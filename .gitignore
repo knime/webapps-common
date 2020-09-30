@@ -87,3 +87,6 @@ dist
 # Ignore knime-build-tools npm & build files
 buildtools/node_modules
 buildtools/opensourcecredits/used-packages.json
+
+# VSCode
+.history/
