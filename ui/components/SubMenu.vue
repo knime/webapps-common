@@ -123,7 +123,9 @@ export default {
         toggleMenu() {
             this.expanded = !this.expanded;
             setTimeout(() => {
-                this.$refs['submenu-toggle'].focus();
+                if (this.$refs['submenu-toggle']) {
+                    this.$refs['submenu-toggle'].focus();
+                }
             }, BLUR_TIMEOUT);
         },
         /* Handle arrow key "up" events. */
@@ -146,7 +148,7 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.listItems.includes(document.activeElement)) {
+                if (this.listItems && !this.listItems.includes(document.activeElement)) {
                     this.closeMenu(false);
                 }
             }, BLUR_TIMEOUT);
@@ -160,7 +162,7 @@ export default {
         closeMenu(refocusToggle = true) {
             setTimeout(() => {
                 this.expanded = false;
-                if (refocusToggle) {
+                if (refocusToggle && this.$refs['submenu-toggle']) {
                     this.$refs['submenu-toggle'].focus();
                 }
             }, BLUR_TIMEOUT);
