@@ -6,6 +6,13 @@ Example usage in Nuxt nuxt.config.js:
     export default {
         build: {
             extend(config) {
+                // remove Nuxt's default svg loader
+                const imgRule = config.module.rules.find(
+                    rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp)$/i)
+                );
+                imgRule.test = /\.(png|jpe?g|gif|webp)$/i;
+
+                // add our svg loader
                 config.module.rules.push(svgConfig);
             }
         }
