@@ -114,7 +114,7 @@ export default {
 
 .top {
   text-align: center;
-  background-color: var(--theme-color-white);
+  background-color: var(--knime-white);
 }
 
 .grid-container {
@@ -137,7 +137,7 @@ svg {
     font: 30px sans-serif;
     font-weight: 300;
     font-size: 18px;
-    fill: var(--theme-color-white);
+    fill: var(--knime-white);
   }
 }
 

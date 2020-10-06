@@ -63,11 +63,11 @@ nav {
   & >>> .submenu-toggle:hover,
   & >>> .submenu-toggle:focus,
   &:focus-within >>> .submenu-toggle {
-    color: var(--theme-color-white);
-    background-color: var(--theme-color-masala);
+    color: var(--knime-white);
+    background-color: var(--knime-masala);
 
     & svg {
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
     }
   }
 }
@@ -197,7 +197,7 @@ h4 {
 .card {
   display: flex;
   align-items: center;
-  box-shadow: 1px 1px 4px 0 var(--theme-color-gray-dark-semi);
+  box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
 }
 
 .submenus {
@@ -209,7 +209,7 @@ h4 {
     margin-right: 20px;
 
     & svg {
-      stroke: var(--theme-color-dove-gray);
+      stroke: var(--knime-dove-gray);
     }
   }
 
