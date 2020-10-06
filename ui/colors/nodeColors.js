@@ -17,5 +17,6 @@ module.exports = {
     Source: knime.Carrot,
     VirtualIn: knime.Stone,
     VirtualOut: knime.Stone,
-    Visualizer: knime.AquamarineDark
+    Visualizer: knime.AquamarineDark,
+    Widget: knime.AquamarineDark
 };
