@@ -5,14 +5,16 @@ const lineLength = 120;
 
 let ecmaVersion = eslint.Linter.version.split('.')[0] <= 5 ? 2019 : 2020;
 
+let parserOptions = {
+    ecmaVersion,
+    sourceType: 'module',
+    parser: 'babel-eslint'
+};
+
 module.exports = {
     root: true,
     extends: ['eslint:recommended'],
-    parserOptions: {
-        ecmaVersion,
-        sourceType: 'module',
-        parser: 'babel-eslint'
-    },
+    parserOptions,
     env: {
         browser: false,
         es6: true
@@ -204,10 +206,8 @@ module.exports = {
     },
     overrides: [{
         files: ['.eslintrc*.js'],
-        parserOptions: {
-            ecmaVersion,
-            sourceType: 'module'
-        },
+        // this is required for .eslintrc-legacy, which overrides parserOptions in root
+        parserOptions: { ...parserOptions },
         env: {
             browser: false,
             node: true
