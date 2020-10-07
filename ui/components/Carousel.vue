@@ -80,12 +80,12 @@ export default {
 
   &::before {
     left: 0;
-    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-porcelain) 100%);
   }
 
   &::after {
     right: 0;
-    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-porcelain) 100%);
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-porcelain) 100%);
   }
 }
 

@@ -28,7 +28,7 @@
 code[class*="language-"],
 pre[class*="language-"] {
   font-weight: normal;
-  color: var(--theme-color-masala);
+  color: var(--knime-masala);
   font-size: 1rem;
   text-align: left;
   white-space: pre;
@@ -46,14 +46,14 @@ pre[class*="language-"] {
 
   &::selection,
   & ::selection {
-    background: var(--theme-color-yellow);
+    background: var(--knime-yellow);
   }
 }
 
 /* Code blocks */
 pre[class*="language-"] {
-  background-color: var(--theme-color-white);
-  box-shadow: 1px 1px 4px 0 var(--theme-color-gray-dark-semi);
+  background-color: var(--knime-white);
+  box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
   padding: 0.4em 0.7em;
   margin: 0.5em 0;
   overflow: auto;
@@ -61,8 +61,8 @@ pre[class*="language-"] {
 
 /* Inline code */
 :not(pre) > code[class*="language-"] {
-  background: var(--theme-color-white);
-  border: 1px solid var(--theme-color-porcelain);
+  background: var(--knime-white);
+  border: 1px solid var(--knime-porcelain);
   padding: 0.1em;
   white-space: normal;
 }
@@ -72,10 +72,10 @@ pre[class*="language-"] {
 .token.doctype,
 .token.boolean,
 .token.cdata {
-  color: var(--theme-color-silver-sand);
+  color: var(--knime-silver-sand);
 
   &::selection {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
   }
 }
 
@@ -103,17 +103,17 @@ pre[class*="language-"] {
 }
 
 .token.atrule .token.rule {
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
 }
 
 .token.selector {
-  color: var(--theme-color-dove-gray);
-  background: var(--theme-color-porcelain);
+  color: var(--knime-dove-gray);
+  background: var(--knime-porcelain);
 }
 
 .token.number,
 .token.function {
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
 }
 
 .token.tag .token:not(.tag) {

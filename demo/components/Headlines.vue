@@ -73,7 +73,7 @@ export default {
 @import "../../ui/css/variables";
 
 .demo {
-  background: var(--theme-color-porcelain);
+  background: var(--knime-porcelain);
 
   & .grid-item-12 {
     padding-bottom: 2em;
