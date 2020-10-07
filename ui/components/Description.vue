@@ -49,6 +49,10 @@ export default {
   line-height: 26px;
   overflow-wrap: break-word;
 
+  @media only screen and (max-width: 900px) {
+    font-size: 16px;
+  }
+
   /*
     possible markup in Node description: a,b,br,h3,h4,hr,i,li,ol,p,pre,sub,sup,table,td,th,tr,tt,u,ul
     see https://bitbucket.org/KNIME/knime-core/src/3207ad3e20e242550d4c775e1af6d69cd521d9fd/org.knime.core/src/eclipse/org/knime/core/node/Node_v3.6.xsd#lines-334

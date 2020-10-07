@@ -22,11 +22,11 @@ const codeExample = `
 /* overwrite shadow color */
   section {
     & >>> .shadow-wrapper::before {
-      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+      background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
     }
 
     & >>> .shadow-wrapper::after {
-      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+      background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
     }
   }
 </style>`;
@@ -86,11 +86,11 @@ export default {
 
 section {
   & >>> .shadow-wrapper::before {
-    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 
   & >>> .shadow-wrapper::after {
-    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--theme-color-white) 100%);
+    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 }
 
@@ -110,14 +110,14 @@ section {
 }
 
 .card1 {
-  background-color: var(--theme-color-dove-gray);
+  background-color: var(--knime-dove-gray);
 }
 
 .card2 {
-  background-color: var(--theme-color-gray-dark-semi);
+  background-color: var(--knime-gray-dark-semi);
 }
 
 .card3 {
-  background-color: var(--theme-color-masala);
+  background-color: var(--knime-masala);
 }
 </style>

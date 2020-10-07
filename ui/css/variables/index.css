@@ -1,3 +1,4 @@
-@import "./colors.css";
+@import "./knime-colors.css";
+@import "./nodes.css";
 @import "./grid.css";
 @import "./theme.css";

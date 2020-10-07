@@ -77,5 +77,8 @@ export default {
   display: block;
   width: max-content;
   margin-bottom: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
 }
 </style>

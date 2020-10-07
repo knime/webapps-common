@@ -346,6 +346,7 @@ export default {
     margin: -1px 0 1px 0;
     background: var(--knime-white);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
+    cursor: pointer;
 
     &:focus {
       outline: none;

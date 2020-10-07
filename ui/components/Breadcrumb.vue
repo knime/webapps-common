@@ -20,6 +20,15 @@ export default {
         items: {
             type: Array,
             default: () => []
+        },
+        /**
+         * focus and hover style can be switched by changing this value:
+         * true - darker background, normal font
+         * false - transparent background, bold font
+         */
+        greyStyle: {
+            type: Boolean,
+            default: false
         }
     }
 };
@@ -28,7 +37,7 @@ export default {
 <template>
   <nav
     v-if="items && items.length"
-    class="breadcrumb"
+    :class="['breadcrumb', { greyStyle }]"
   >
     <ul>
       <li
@@ -67,7 +76,8 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .breadcrumb {
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
+  font-family: var(--theme-text-bold-font-family);
   font-size: 13px;
   line-height: 18px;
   font-weight: 500;
@@ -81,35 +91,34 @@ export default {
   }
 
   & ul {
-    padding: 10px 0;
+    padding: 0;
     width: 100%;
   }
 
   & li {
     position: relative;
-    margin: 5px 0;
+    margin: 0;
     max-width: 100%;
-
-    &:not(:last-child) {
-      margin-right: 4px;
-    }
   }
 
   & span,
   & a {
     display: inline-block;
     text-decoration: none;
-    vertical-align: top;
-    padding-right: 4px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     max-width: 100%;
+    padding: 10px 5px;
+    line-height: normal;
+    vertical-align: middle;
   }
 
   & svg {
+    position: relative;
     vertical-align: top;
-    stroke: var(--theme-color-dove-gray);
+    stroke: var(--theme-text-bold-color);
+    bottom: 1px;
   }
 
   & .breadcrumb-icon {
@@ -122,17 +131,18 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
-    margin: 0 4px;
+    margin: 0 5px;
     stroke-width: calc(32px / 10);
     vertical-align: middle;
+    position: relative;
   }
 
   /* Unlinked breadcrumb item */
   & span {
-    color: var(--theme-color-masala);
+    color: var(--theme-text-bold-color);
 
     & svg {
-      stroke: var(--theme-color-masala);
+      stroke: var(--theme-text-bold-color);
     }
   }
 
@@ -141,11 +151,22 @@ export default {
     &:hover,
     &:focus {
       outline: none;
-      color: var(--theme-color-masala);
+      color: var(--theme-text-bold-color);
 
       & svg {
-        stroke: var(--theme-color-masala);
+        stroke: var(--theme-text-bold-color);
       }
+    }
+  }
+
+  &.greyStyle {
+    color: var(--theme-text-bold-color);
+
+    /* Linked breadcrumb item */
+    & a:hover,
+    & a:focus {
+      outline: none;
+      background-color: var(--knime-silver-sand-semi);
     }
   }
 }

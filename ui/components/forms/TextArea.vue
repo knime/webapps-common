@@ -37,12 +37,6 @@ export default {
             type: String
         }
     },
-    computed: {
-        inputClassList() {
-            let classes = this.inputClasses;
-            return classes;
-        }
-    },
     methods: {
         getValue() {
             return this.$refs.input.value;
@@ -65,7 +59,7 @@ export default {
       ref="input"
       :title="title"
       :value="value"
-      :class="inputClassList"
+      :class="inputClasses"
       :cols="cols"
       :rows="rows"
       :placeholder="placeholder"

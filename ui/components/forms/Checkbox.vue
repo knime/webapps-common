@@ -53,12 +53,13 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 /* if you consider removing this class: don't!
-   selector specifity requires it for container system used in page-builder */
+   selector specificity requires it for container system used in page-builder */
 .checkbox {
   display: inline-block;
   position: relative;
   padding: 3px 0 3px 24px;
   max-width: 100%;
+  cursor: pointer;
 
   & input {
     user-select: none;

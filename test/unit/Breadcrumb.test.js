@@ -10,6 +10,7 @@ describe('Breadcrumb.vue', () => {
             }
         });
         expect(wrapper.html()).toBeTruthy();
+        expect(wrapper.find('.greyStyle').exists()).toBe(false);
     });
 
     it('renders nothing by default', () => {
@@ -60,5 +61,16 @@ describe('Breadcrumb.vue', () => {
             }
         }
         expect(arrows).toBe(3);
+    });
+
+    it('renders grey focus and hover style', () => {
+        let wrapper = mount(Breadcrumb, {
+            propsData: {
+                items: [{ text: 'foo' }],
+                greyStyle: true
+            }
+        });
+
+        expect(wrapper.find('.greyStyle').exists()).toBe(true);
     });
 });

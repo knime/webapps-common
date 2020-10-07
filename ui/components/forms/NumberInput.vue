@@ -179,7 +179,7 @@ export default {
                 this.clicked = true;
                 this.spinnerArrowTimeout = setTimeout(() => {
                     this.spinnerArrowInterval = setInterval(() => {
-                        this.changeValue(valueDifference, e);
+                        this.changeValue(valueDifference);
                     }, MOUSE_DOWN_CHANGE_INTERVAL);
                 }, INTERVAL_TIMEOUT_DELAY);
                 return;
@@ -188,7 +188,7 @@ export default {
                 // disable additional events from being fired
                 this.clicked = false;
                 // on 'mouseup' or 'mouseleave' publish change
-                this.changeValue(valueDifference, e);
+                this.changeValue(valueDifference);
             }
         },
         toggleHover() {
@@ -310,6 +310,7 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
+    cursor: pointer;
 
     &:hover {
       background-color: var(--knime-silver-sand-semi);

@@ -50,7 +50,8 @@ div {
       justify-content: center;
 
       &.active,
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: transparent;
       }
 

@@ -28,9 +28,18 @@ export default {
             }
         },
         /**
+         * Enable / disable rendering of close button.
+         * Defaults to `true`.
+         */
+        showCloseButton: {
+            type: Boolean,
+            default: true
+        },
+        /**
          * Optional button text.
          * If set, renders a button instead of the 'x' that is used for closing the Message.
          * If left blank, the 'x' is rendered.
+         * This property has no effect if `showCloseButton` is `false`.
          */
         button: {
             type: String,
@@ -68,7 +77,7 @@ export default {
              */
             this.$emit('dismiss');
         },
-        copyMessage() {
+        copyMessage(event) {
             copyText(this.details);
             /**
              * copied event. Fired when the copy button in the detail area is clicked.
@@ -77,6 +86,7 @@ export default {
              * @event copied
              */
             this.$emit('copied');
+            event.target.focus();
         }
     }
 };
@@ -110,27 +120,29 @@ export default {
                 {{ '×' + count }}
               </span>
             </span>
-            <Button
-              v-if="button"
-              class="close"
-              primary
-              compact
-              on-dark
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              {{ button }}
-            </Button>
-            <span
-              v-else
-              tabindex="0"
-              class="close"
-              title="Discard message"
-              @click="onDismiss"
-              @keydown.space.stop.prevent="onDismiss"
-            >
-              <CloseIcon />
-            </span>
+            <template v-if="showCloseButton">
+              <Button
+                v-if="button"
+                class="close"
+                primary
+                compact
+                on-dark
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                {{ button }}
+              </Button>
+              <span
+                v-else
+                tabindex="0"
+                class="close"
+                title="Discard message"
+                @click="onDismiss"
+                @keydown.space.stop.prevent="onDismiss"
+              >
+                <CloseIcon />
+              </span>
+            </template>
           </Component>
           <div
             v-if="hasDetails"
@@ -142,7 +154,9 @@ export default {
             <div
               class="copy-button"
               title="Copy to clipboard"
-              @click="copyMessage"
+              tabindex="0"
+              @click="copyMessage($event)"
+              @keyup.space.prevent="copyMessage($event)"
             >
               <CopyIcon />
             </div>
@@ -172,7 +186,7 @@ export default {
 }
 
 section {
-  border-bottom: 1px solid var(--theme-color-white);
+  border-bottom: 1px solid var(--knime-white);
   overflow: hidden;
 
   & .grid-item-12 {
@@ -184,13 +198,14 @@ section {
     display: flex;
     position: relative;
     align-items: center;
-    color: var(--theme-color-white);
+    color: var(--knime-white);
 
-    & > .message {
+    & .message {
       flex-grow: 1;
       margin-right: 50px; /* this is set to not interfere with the dropdwon or close button */
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 3px;
     }
 
     & .title {
@@ -198,13 +213,14 @@ section {
     }
 
     & >>> svg {
+      position: relative;
       width: 24px;
       height: 24px;
       stroke-width: calc(32px / 24);
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
       margin-right: 20px;
       flex-shrink: 0;
-      top: 0;
+      top: 3px;
     }
 
     & button.close {
@@ -228,7 +244,7 @@ section {
       right: -6px; /* align svg with right border */
       pointer-events: all;
       text-align: center;
-      top: -3px;
+      top: 0;
       align-self: flex-start;
       float: right;
       margin-left: auto;
@@ -241,6 +257,8 @@ section {
       }
 
       & svg {
+        position: relative;
+        top: 0;
         margin: auto;
         height: 18px;
         width: 18px;
@@ -297,27 +315,28 @@ section {
     & .dropdown {
       width: 30px;
       height: 30px;
-      border-radius: 50%;
-      margin-right: 13px;
-      top: -3px;
-      display: flex;
-      align-items: center;
+      margin-right: 15px;
+      top: 0;
 
-      &:hover,
-      &:focus {
+      &:hover {
         background-color: var(--knime-masala-semi);
       }
 
       & .dropdown-icon {
-        stroke: var(--theme-color-white);
+        stroke: var(--knime-white);
       }
+    }
+
+    &:focus .dropdown {
+      /* whole button gets focus but only dropdown icon is styled */
+      background-color: var(--knime-masala-semi);
     }
   }
 
   & >>> .panel {
     width: 100vw;
     max-width: 100vw;
-    background-color: var(--theme-color-white);
+    background-color: var(--knime-white);
     opacity: 0.9;
     min-height: 50px;
     max-height: 100px;
@@ -343,12 +362,12 @@ section {
 
       & #detail-text {
         display: inline-block;
-        color: var(--theme-color-masala);
+        color: var(--knime-masala);
         font-size: 13px;
         font-weight: 300;
         line-height: 18px;
-        margin: auto 0;
-        max-width: 66%;
+        margin: auto 5px;
+        max-width: 80%;
       }
 
       & .copy-button {
@@ -357,19 +376,21 @@ section {
         width: 30px;
         text-align: center;
         margin-right: 23px; /* line-up with dropdown icon */
+        outline: none;
+        cursor: pointer;
 
-        &:hover {
-          background-color: var(--theme-color-silver-sand-semi);
+        &:hover,
+        &:focus {
+          background-color: var(--knime-silver-sand-semi);
         }
 
         & svg {
           margin: auto;
-          stroke: var(--theme-color-dove-gray);
+          stroke: var(--knime-dove-gray);
           height: 18px;
           width: 18px;
           stroke-width: calc(32px / 18);
           vertical-align: middle;
-          margin-top: 3px;
         }
       }
     }

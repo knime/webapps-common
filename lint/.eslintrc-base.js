@@ -1,11 +1,15 @@
+const eslint = require('eslint');
+
 const indentationSpaces = 4;
 const lineLength = 120;
+
+let ecmaVersion = eslint.Linter.version.split('.')[0] <= 5 ? 2019 : 2020;
 
 module.exports = {
     root: true,
     extends: ['eslint:recommended'],
     parserOptions: {
-        ecmaVersion: 2018,
+        ecmaVersion,
         sourceType: 'module',
         parser: 'babel-eslint'
     },
@@ -71,14 +75,16 @@ module.exports = {
         'new-cap': 'warn',
         'new-parens': 'error',
         'no-array-constructor': 'warn',
+        'no-async-promise-executor': 'off',
         'no-bitwise': 'warn',
         'no-buffer-constructor': 'error',
+        'no-console': 'error',
         'no-duplicate-imports': 'error',
         'no-empty-function': ['error', { allow: ['arrowFunctions'] }],
         'no-extend-native': 'warn',
         'no-extra-boolean-cast': 'warn',
         'no-extra-label': 'error',
-        'no-extra-parens': ['warn', 'all'],
+        'no-extra-parens': ['warn', 'all', { nestedBinaryExpressions: false }],
         'no-implicit-coercion': 'warn',
         'no-implied-eval': 'error',
         'no-invalid-this': 'warn',
@@ -90,6 +96,7 @@ module.exports = {
             ignoreArrayIndexes: true,
             enforceConst: true
         }],
+        'no-misleading-character-class': 'off',
         'no-mixed-operators': ['warn', { groups: [['&', '|', '^', '~', '<<', '>>', '>>>'], ['&&', '||']] }],
         'no-multiple-empty-lines': ['error', {
             max: 2,
@@ -106,6 +113,7 @@ module.exports = {
         'no-process-env': 'error',
         'no-process-exit': 'warn',
         'no-proto': 'error',
+        'no-prototype-builtins': 'off',
         'no-restricted-globals': ['error', 'event', 'fdescribe'],
         'no-restricted-syntax': ['warn', 'WithStatement', 'SequenceExpression'],
         'no-return-assign': 'error',
@@ -125,6 +133,7 @@ module.exports = {
         'no-unused-vars': ['error', { vars: 'all', args: 'none', ignoreRestSiblings: false }],
         'no-use-before-define': 'error',
         'no-useless-call': 'warn',
+        'no-useless-catch': 'off',
         'no-useless-computed-key': 'error',
         'no-useless-concat': 'warn',
         'no-useless-constructor': 'error',
@@ -161,6 +170,7 @@ module.exports = {
             allowTemplateLiterals: true
         }],
         radix: 'error',
+        'require-atomic-updates': 'off',
         'require-await': 'error',
         'rest-spread-spacing': 'error',
         semi: ['error', 'always'],
@@ -195,7 +205,7 @@ module.exports = {
     overrides: [{
         files: ['.eslintrc*.js'],
         parserOptions: {
-            ecmaVersion: 2018,
+            ecmaVersion,
             sourceType: 'module'
         },
         env: {
@@ -204,6 +214,11 @@ module.exports = {
         },
         rules: {
             'no-magic-numbers': 'off'
+        }
+    }, {
+        files: ['*.test.js'],
+        rules: {
+            'no-undefined': 'off'
         }
     }]
 };

@@ -71,7 +71,7 @@ export default {
         <Description class="grid-item-12">
           <h5>Responsiveness</h5>
           <p>
-            The grid has a responsive design. Threrefore two breakpoints are set. This reduces the number of columns
+            The grid has a responsive design. Therefore two breakpoints are set. This reduces the number of columns
             the consists of to four (at 1180px) and two (at 900px) respectively.
             Grid items will be grouped together equally to fit the scheme.
           </p>

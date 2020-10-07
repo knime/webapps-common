@@ -22,9 +22,12 @@ const codeExample =
     <span>Sorter</span>
     <SorterIcon />
   </FunctionButton>
-  <FunctionButton
-    :disabled="disabled"
-  >
+
+  <FunctionButton primary>
+    <MenuOptionsIcon />
+  </FunctionButton>
+  
+  <FunctionButton :disabled="disabled">
     <span>Disabled Function</span>
     <SorterIcon />
   </FunctionButton>
@@ -98,9 +101,10 @@ export default {
             <span>Function</span>
             <SorterIcon />
           </FunctionButton>
-          <FunctionButton
-            :disabled="disabled"
-          >
+          <FunctionButton primary>
+            <MenuOptionsIcon />
+          </FunctionButton>
+          <FunctionButton :disabled="disabled">
             <span>Disabled Function</span>
             <SorterIcon />
           </FunctionButton>

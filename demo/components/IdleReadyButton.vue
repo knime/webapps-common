@@ -103,7 +103,7 @@ export default {
 @import "../../ui/css/variables";
 
 .demo {
-  background: var(--theme-color-porcelain);
+  background: var(--knime-porcelain);
 
   & .grid-item-12 {
     padding-bottom: 2em;
@@ -117,7 +117,7 @@ export default {
 
   & li {
     height: 30px;
-    background-color: var(--theme-color-white);
+    background-color: var(--knime-white);
     padding: 5px 10px;
     margin-bottom: 5px;
   }

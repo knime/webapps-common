@@ -31,7 +31,7 @@ export default {
             type: Array
         },
         /**
-         * Identifier for clickhandler
+         * Identifier for click handler
          */
         id: {
             default: '',
@@ -123,7 +123,9 @@ export default {
         toggleMenu() {
             this.expanded = !this.expanded;
             setTimeout(() => {
-                this.$refs['submenu-toggle'].focus();
+                if (this.$refs['submenu-toggle']) {
+                    this.$refs['submenu-toggle'].focus();
+                }
             }, BLUR_TIMEOUT);
         },
         /* Handle arrow key "up" events. */
@@ -146,7 +148,7 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.listItems.includes(document.activeElement)) {
+                if (this.listItems && !this.listItems.includes(document.activeElement)) {
                     this.closeMenu(false);
                 }
             }, BLUR_TIMEOUT);
@@ -160,7 +162,7 @@ export default {
         closeMenu(refocusToggle = true) {
             setTimeout(() => {
                 this.expanded = false;
-                if (refocusToggle) {
+                if (refocusToggle && this.$refs['submenu-toggle']) {
                     this.$refs['submenu-toggle'].focus();
                 }
             }, BLUR_TIMEOUT);
@@ -211,9 +213,9 @@ export default {
       <li
         v-for="(item, index) in items"
         :key="index"
-        @click="onItemClick($event, item, index)"
-        @keydown.enter="onItemClick($event, item, index)"
-        @keydown.space="onItemClick($event, item, index)"
+        @click="onItemClick($event, item)"
+        @keydown.enter="onItemClick($event, item)"
+        @keydown.space="onItemClick($event, item)"
       >
         <Component
           :is="item.to ? 'nuxt-link' : 'a'"
