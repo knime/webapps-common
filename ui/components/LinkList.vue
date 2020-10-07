@@ -62,7 +62,7 @@ ul {
   }
 
   & a {
-    color: var(--theme-color-dove-gray);
+    color: var(--knime-dove-gray);
     line-height: 20px;
     text-decoration: none;
     overflow-wrap: break-word;
@@ -71,7 +71,7 @@ ul {
 
     & svg {
       position: absolute;
-      stroke: var(--theme-color-dove-gray);
+      stroke: var(--knime-dove-gray);
       width: var(--icon-size);
       height: var(--icon-size);
       stroke-width: calc(32px / 18);
@@ -82,11 +82,11 @@ ul {
     &:focus,
     &:active {
       outline: none;
-      color: var(--theme-color-masala);
+      color: var(--knime-masala);
       text-decoration: none;
 
       & svg {
-        stroke: var(--theme-color-masala);
+        stroke: var(--knime-masala);
       }
     }
   }
