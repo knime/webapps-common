@@ -136,7 +136,7 @@ dl {
   & button {
     cursor: pointer;
     font-weight: 300;
-    color: var(--theme-color-masala);
+    color: var(--knime-masala);
     border: none;
     background-color: transparent;
 

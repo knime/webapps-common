@@ -65,14 +65,14 @@ export default {
 
 <style lang="postcss" scoped>
 .submenu {
-  background-color: var(--theme-color-yellow);
+  background-color: var(--knime-yellow);
 
   &:focus-within,
   &:hover {
-    background-color: var(--theme-color-masala);
+    background-color: var(--knime-masala);
 
     & button svg {
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
     }
   }
 }
@@ -152,14 +152,14 @@ h4 {
 }
 
 .submenu {
-  background-color: var(--theme-color-yellow);
+  background-color: var(--knime-yellow);
 
   &:focus-within,
   &:hover {
-    background-color: var(--theme-color-masala);
+    background-color: var(--knime-masala);
 
     & button svg {
-      stroke: var(--theme-color-white);
+      stroke: var(--knime-white);
     }
   }
 }

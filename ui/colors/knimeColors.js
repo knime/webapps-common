@@ -54,5 +54,5 @@ module.exports = {
     MasalaSemi: 'hsla(12, 4.2%, 23.3%, 0.5)', /* #3E3A3980 */
     GrayDarkSemi: 'hsla(195, 1.6%, 51.8%, 0.4)', /* #82858680 */
     SilverSandSemi: 'hsla(200, 5%, 76.5%, 0.5)', /* #C0C4C680 */
-    GrayLightSemi: 'hsla(200, 10%, 94%, 0.4)', /* #EFF1F266 */
+    GrayLightSemi: 'hsla(200, 10%, 94%, 0.4)' /* #EFF1F266 */
 };

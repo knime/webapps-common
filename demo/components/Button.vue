@@ -209,6 +209,6 @@ export default {
 
 .background {
   padding: 10px 10px;
-  background: var(--theme-color-masala);
+  background: var(--knime-masala);
 }
 </style>

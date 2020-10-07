@@ -197,7 +197,7 @@ export const tabBarMixin = {
   content: "";
   display: block;
   position: absolute;
-  border-bottom: 1px solid var(--theme-color-silver-sand);
+  border-bottom: 1px solid var(--knime-silver-sand);
   left: var(--grid-gap-width);
   right: var(--grid-gap-width);
   z-index: 0;
@@ -227,7 +227,7 @@ span {
   display: inline-block;
   height: 51px;
   line-height: 51px;
-  color: var(--theme-color-dove-gray);
+  color: var(--knime-dove-gray);
 
   @media only screen and (max-width: 900px) {
     padding: 0 7px;
@@ -247,7 +247,7 @@ svg {
   width: 21px;
   height: 21px;
   margin-right: 2px;
-  stroke: var(--theme-color-dove-gray);
+  stroke: var(--knime-dove-gray);
   stroke-width: calc(32px / 21);
 
   @media only screen and (max-width: 900px) {
@@ -259,19 +259,19 @@ svg {
 }
 
 input:disabled + span {
-  color: var(--theme-color-silver-sand);
+  color: var(--knime-silver-sand);
 
   & svg {
-    stroke: var(--theme-color-silver-sand);
+    stroke: var(--knime-silver-sand);
   }
 }
 
 input:not(:disabled):checked + span,
 input:not(:disabled) + span:hover {
-  color: var(--theme-color-masala);
+  color: var(--knime-masala);
 
   & svg {
-    stroke: var(--theme-color-masala);
+    stroke: var(--knime-masala);
   }
 }
 
@@ -282,7 +282,7 @@ input:checked:not(:disabled) + span::after {
   bottom: 1px;
   left: 0;
   right: 0;
-  border-top: 3px solid var(--theme-color-masala);
+  border-top: 3px solid var(--knime-masala);
   z-index: 1;
 }
 
