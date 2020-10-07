@@ -133,7 +133,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--theme-color-overlay);
+  background-color: var(--knime-black-semi);
 }
 
 .wrapper {
@@ -155,6 +155,6 @@ export default {
   transform: translate(-50%, -50%);
   width: min(95%, 550px);
   min-height: 400px;
-  background-color: var(--theme-color-white);
+  background-color: var(--knime-white);
 }
 </style>
