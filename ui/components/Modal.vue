@@ -1,6 +1,8 @@
 <script>
 import { FocusTrap } from 'focus-trap-vue';
 
+const KEY_ESC = 27;
+
 /**
  * A reusable component which has an overlay and a slot for content. It contains the styles and animations needed for
  * a smooth, full-size modal capable of replacing `window.alert` or displaying messaging within a container element.
@@ -42,7 +44,7 @@ export default {
     },
     methods: {
         onGlobalKeyUp(e) {
-            if (e.key === 'Escape') {
+            if (e.keyCode === KEY_ESC) {
                 consola.trace('ESC key press, closing modal');
                 this.onCancel();
             }
