@@ -156,7 +156,6 @@ export default {
   top: 40%;
   transform: translate(-50%, -50%);
   width: min(95%, 550px);
-  min-height: 400px;
   background-color: var(--knime-white);
 }
 </style>
