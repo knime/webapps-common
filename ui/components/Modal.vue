@@ -24,7 +24,7 @@ export default {
     data() {
         return {
             /**
-             * 'showContent' is used to animate the modal content separatley
+             * 'showContent' is used to animate the modal content separately
              */
             showContent: false
         };
@@ -43,7 +43,7 @@ export default {
     methods: {
         onGlobalKeyUp(e) {
             if (e.key === 'Escape') {
-                consola.trace('Esc key press, closing modal');
+                consola.trace('ESC key press, closing modal');
                 this.onCancel();
             }
         },

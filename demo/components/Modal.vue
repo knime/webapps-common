@@ -70,14 +70,13 @@ export default {
         <div class="grid-item-12">
           <h2>Modal</h2>
           <p>
-            A <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-            The default slot is used to display content.
-          </p>
-          <p>The modal offers a cancel event which is triggered by clicking the overlay or by the ESC key.</p>
-          <p>Also on tab, the focus is trapped inside the modal.</p>
+            Displays the content of the default slot inside a 
+            <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
+            The modal offers a <code>cancel</code> event which is triggered by clicking
+            the overlay or by the ESC key. Also on tab, the focus is trapped inside the modal.</p>
           <p>
             <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html">
-              See w3c best practices for modal dialogs
+              See W3C best practices for modal dialogs.
             </a>
           </p>
           <Button
