@@ -21,9 +21,10 @@
     "filesize": "6.1.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.5.5",
+    "@babel/preset-env": "7.9.0",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "10.0.3",
     "consola": "2.10.1",
     "cross-var": "1.1.0",
     "eslint": "5.16.0",
@@ -40,6 +41,7 @@
   },
   "peerDependencies": {
     "consola": "*",
+    "babel-eslint": "10.x",
     "eslint": "5.x - 7.x",
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
