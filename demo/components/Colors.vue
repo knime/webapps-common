@@ -7,7 +7,7 @@ export default {
         CodeExample
     },
     computed: {
-        themeColorsCSS() {
+        colorsCSS() {
             return colorsCSS;
         }
     }
@@ -105,17 +105,8 @@ export default {
           <div style="--bg: var(--knime-node-widget);">--knime-node-widget</div>
         </div>
 
-        <h4>Theme Colors</h4>
-        <p>The following `--theme` colors should be used in place of '--knime' variables if theming is desired:</p>
-        <div class="demo">
-          <div style="--bg: var(--theme-color-error); --font: white;">--theme-color-error</div>
-          <div style="--bg: var(--theme-color-success); --font: white;">--theme-color-success</div>
-          <div style="--bg: var(--theme-color-info); --font: white;">--theme-color-info</div>
-          <div style="--bg: var(--theme-color-running); --font: white;">--theme-color-running</div>
-          <div style="--bg: var(--theme-color-action-required); --font: white;">--theme-color-action-required</div>
-        </div>
         <!-- eslint-disable-next-line vue/max-attributes-per-line -->
-        <CodeExample summary="Show available color variables" language="css">{{ themeColorsCSS }}</CodeExample>
+        <CodeExample summary="Show available color variables" language="css">{{ colorsCSS }}</CodeExample>
       </div>
     </div>
   </section>
