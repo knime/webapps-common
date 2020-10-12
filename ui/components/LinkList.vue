@@ -1,9 +1,22 @@
 <script>
 import ArrowIcon from '../assets/img/icons/arrow-right.svg?inline';
 
+/**
+ * Renders a list of clickable links displayed with an arrow icon and text
+ *
+ * Example:
+ * -> Google
+ * -> Knime Hub
+*/
 export default {
     components: { ArrowIcon },
     props: {
+        /** @example
+         * [
+         *   { text: 'Google', url: 'https://google.de' },
+         *   { text: 'Knime Hub', url: 'https://hub.knime.com' }
+         * ]
+         * */
         links: {
             type: Array,
             default() { return []; }
@@ -32,16 +45,6 @@ export default {
 
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
-
-@media only screen and (max-width: 900px) {
-  ul {
-    font-size: 13px;
-    line-height: 19px;
-    column-count: 1;
-    --icon-size: 13px;
-    --icon-spacing: 5px;
-  }
-}
 
 ul {
   --icon-size: 18px;
@@ -88,6 +91,21 @@ ul {
       & svg {
         stroke: var(--knime-masala);
       }
+    }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  ul {
+    font-size: 13px;
+    line-height: 19px;
+    column-count: 1;
+    --icon-size: 13px;
+    --icon-spacing: 5px;
+
+    & li svg {
+      top: 3px;
+      stroke-width: calc(32px / 13);
     }
   }
 }
