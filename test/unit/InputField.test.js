@@ -135,4 +135,10 @@ describe('InputField.vue', () => {
         input.setValue(newValue);
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
     });
+
+    it('focusses on focus call', () => {
+        const wrapper = mount(InputField);
+        wrapper.vm.focus();
+        expect(document.activeElement).toEqual(wrapper.find('input').element);
+    });
 });

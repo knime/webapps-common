@@ -53,6 +53,9 @@ export default {
         onInput(e) {
             this.$emit('input', this.getValue());
         },
+        focus() {
+            this.$refs.input.focus();
+        },
         /*
          * checks if value matches the provided pattern
          */
