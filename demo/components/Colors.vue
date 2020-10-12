@@ -86,6 +86,7 @@ export default {
         </p>
         <div class="demo node">
           <div style="--bg: var(--knime-node-component);">--knime-node-component</div>
+          <div style="--bg: var(--knime-node-configuration);">--knime-node-configuration</div>
           <div style="--bg: var(--knime-node-container);">--knime-node-container</div>
           <div style="--bg: var(--knime-node-learner);">--knime-node-learner</div>
           <div style="--bg: var(--knime-node-loop-start);">--knime-node-loop-start</div>
