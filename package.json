@@ -43,6 +43,8 @@
     "consola": "*",
     "babel-eslint": "10.x",
     "eslint": "5.x - 7.x",
+    "focus-trap": "6.x",
+    "focus-trap-vue": "0.x",
     "normalize.css": "*",
     "postcss-calc": "*",
     "postcss-css-variables": "*",

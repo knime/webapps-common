@@ -48,6 +48,7 @@ module.exports = {
 
     /* colors not defined in the corporate styleguide */
     Black: 'hsl(0, 3%, 12%)', /* #201E1E */
+    BlackSemi: 'hsla(0, 3%, 12%, 0.8)', /* #201E1E */
     StoneGray: 'hsl(0, 0%, 53.3%)', /* #888888 */
     GrayDark: 'hsl(195, 1.6%, 51.8%)', /* #828586 */
     GrayUltraLight: 'hsl(210, 16.7%, 97.6%)', /* #F8F9FA */

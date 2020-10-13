@@ -36,7 +36,7 @@ export default {
         extend(config, { isDev, isClient, isServer }) {
             // limit nuxt default image rule to *.gif because we want to handle all others ourselves
             const imgRule = config.module.rules.find(
-                rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp)$/i)
+                rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp|avif)$/i)
             );
             imgRule.test = /\.(gif)$/i;
 

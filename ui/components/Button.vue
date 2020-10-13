@@ -37,13 +37,6 @@ export default {
         compact: {
             type: Boolean,
             default: false
-        },
-        /**
-         * disable button
-         */
-        disabled: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -53,8 +46,7 @@ export default {
                 { primary: this.primary },
                 { 'with-border': this.withBorder },
                 { 'on-dark': this.onDark },
-                { compact: this.compact },
-                { disabled: this.disabled }
+                { compact: this.compact }
             ];
         }
     }
@@ -99,7 +91,7 @@ export default {
     margin-right: 8px;
   }
 
-  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
+  &[disabled] {
     opacity: 0.5;
     pointer-events: none;
   }
