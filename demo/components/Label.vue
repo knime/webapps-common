@@ -6,8 +6,8 @@ import code from '!!raw-loader!../../ui/components/forms/Label';
 
 const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>
 <Label
-  text="Label for a field"
   v-slot="{ labelForId }"
+  text="Label for a field"
 >
     <!-- The id attribute will be replaced with a generated unique ID --\>
     <InputField
@@ -15,6 +15,17 @@ const codeExample = `<!-- The labelForId syntax is used to associate the label w
       type="text"
       placeholder="I'm a placeholder"
     />
+</Label>
+<Label
+  v-slot="{ labelForId }"
+  text="Compact label for a field"
+  compact
+>
+  <InputField
+    :id="labelForId"
+    type="text"
+    placeholder="I'm a placeholder"
+  />
 </Label>`;
 
 export default {
@@ -43,7 +54,7 @@ export default {
         <div class="grid-item-12">
           <h2>Label</h2>
           <p>
-            Labels for form fields.
+            Labels for form fields. Beside their default size, they come with a compact one as well.
           </p>
         </div>
       </div>
@@ -52,6 +63,19 @@ export default {
           <Label
             v-slot="{ labelForId }"
             text="Label for a field"
+          >
+            <InputField
+              :id="labelForId"
+              type="text"
+              placeholder="I'm a placeholder"
+            />
+          </Label>
+        </div>
+        <div class="grid-item-6">
+          <Label
+            v-slot="{ labelForId }"
+            text="Compact label for a field"
+            compact
           >
             <InputField
               :id="labelForId"
