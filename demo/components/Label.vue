@@ -99,3 +99,16 @@ export default {
     </section>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+
+.grid-item-6 {
+  display: flex;
+  align-items: flex-end;
+
+  & > * {
+    flex-grow: 1;
+  }
+}
+
+</style>
