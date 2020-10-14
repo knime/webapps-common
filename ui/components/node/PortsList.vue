@@ -58,7 +58,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="hasPorts">
+  <div v-if="hasPorts" class="ports-list">
     <PortsListItem
       v-if="inPorts.length"
       :ports="inPorts"

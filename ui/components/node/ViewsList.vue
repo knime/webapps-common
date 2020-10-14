@@ -27,14 +27,13 @@ export default {
       v-for="(view, index) in views"
       :key="index"
     >
-      <h6 v-if="view.interactive">
-        <InteractiveIcon class="interactive" />Interactive
+      <h6>
+        <InteractiveIcon v-if="view.interactive" class="interactive" />
+        <StandardIcon v-else />
+        <span>{{ view.interactive ? 'Interactive' : 'Standard' }}</span>
       </h6>
-      <h6 v-else>
-        <StandardIcon />Standard
-      </h6>
-
-      <div>
+      
+      <div class="content">
         <span class="name">{{ view.name }}</span>
         <Description
           :text="view.description"
@@ -66,7 +65,7 @@ h6 {
   margin: 20px 30px;
 }
 
-div {
+.content {
   flex: 1;
   padding: 0;
   margin-top: 22px;
