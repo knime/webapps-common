@@ -1,10 +1,13 @@
 <script>
+import PortIcon2 from './PortIcon2';
+
 const portSize = 9;
 const bgSize = 32;
 
-const strokeWidth = 1.4; // can be adjusted without breaking anything
-
 export default {
+    components: {
+        PortIcon2
+    },
     props: {
         color: {
             type: String,
@@ -33,16 +36,10 @@ export default {
     },
     data() {
         return {
-            strokeWidth
+            portSize
         };
     },
     computed: {
-        strokeColor() {
-            return `#${this.color}`;
-        },
-        fillColor() {
-            return this.optional ? 'none' : this.strokeColor;
-        },
         // top edge of port icon relative to 32x32 background
         yPosition() {
             /* eslint-disable no-magic-numbers */
@@ -56,25 +53,14 @@ export default {
             let delta = (bgSize - totalHeight) / 2;
             return (spacing + portSize) * this.index + delta;
         },
-        path() {
+        translatedType() {
             switch (this.dataType) {
-            case 'Data': {
-                // triangle
-                // y and d are chosen so the triangle (including strokeWidth) fits precisely in the 9x9 port
-                const d = Math.sqrt(5) / 2;
-                const y = d / 2 + 1 / 4;
-                return `M${strokeWidth / 2},${strokeWidth * y}v${portSize - 2 * strokeWidth * y}` +
-                  `L${portSize - strokeWidth * d},${portSize / 2}z`;
-            }
-            case 'Flow Variable': {
-                // circle
-                const r = (portSize - strokeWidth) / 2;
-                return `M${strokeWidth / 2},4.5a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 -${2 * r},0`;
-            }
-            default:
-                // square
-                return `M${strokeWidth / 2},${strokeWidth / 2}v${portSize - strokeWidth}` +
-                  `h${portSize - strokeWidth}v-${portSize - strokeWidth}z`;
+                case 'Data':
+                    return 'table';
+                case 'Flow Variable':
+                    return 'flowVariable';
+                default:
+                    return 'other';
             }
         }
     }
@@ -82,11 +68,10 @@ export default {
 </script>
 
 <template>
-  <path
-    :fill="fillColor"
-    :stroke="strokeColor"
-    :d="path"
-    :transform="autoAlign ? `translate(0, ${yPosition})` : null"
-    :stroke-width="strokeWidth"
-  />
+    <PortIcon2 
+        :color="'#' + color"
+        :filled="!optional"
+        :dataType="translatedType"
+        :transform="`translate(${portSize / 2}, ${(autoAlign ? yPosition : 0) + portSize / 2})`"
+    />
 </template>
