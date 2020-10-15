@@ -1,5 +1,6 @@
 <script>
-import PortIcon from './PortIcon';
+import PortIcon from './PortIcon2';
+import backgroundFillColors from '../../colors/nodeColors';
 
 const backgroundPaths = {
     // paths extracted from
@@ -12,31 +13,6 @@ const backgroundPaths = {
     ScopeStart: 'M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0L32,0l-4,15.9L32,32H2.8C1.3,32,0,30.7,0,29.2z',
     VirtualIn: 'M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H6.5L0,25.9l5.2-10L0.7,7.2L6.5,0l22.7,0C30.7,0,32,1.3,32,2.8z',
     VirtualOut: 'M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0L32,0l-5.8,7.2l4.5,8.7l-5.2,10L32,32H2.8C1.3,32,0,30.7,0,29.2z'
-};
-
-//TODO: use defined colors
-const backgroundFillColors = {
-    // colors extracted from
-    // https://bitbucket.org/KNIME/knime-workbench/src/bb437123743b220db34e39e4ffd887a307276ff8/org.knime.workbench.editor/icons/node/*.svg
-    default: '#DC2C87', // "unknown"
-    Component: '#BDBEBE', // "subnode"
-    Learner: '#C3D03B',
-    LoopEnd: '#88D8EA',
-    LoopStart: '#88D8EA',
-    Manipulator: '#FFD104',
-    Other: '#D2A384',
-    Predictor: '#4EAF75',
-    Container: '#CBD9A9',
-    Configuration: '#CBD9A9',
-    QuickForm: '#CBD9A9',
-    ScopeEnd: '#92548D',
-    ScopeStart: '#92548D',
-    Sink: '#E64E4F',
-    Source: '#F1933B',
-    VirtualIn: '#9D9D9D',
-    VirtualOut: '#9B9A9A',
-    Visualizer: '#4BA1BF',
-    Widget: '#4BA1BF'
 };
 
 /**
@@ -57,6 +33,7 @@ export default {
             return `data:image/png;base64,${url}`;
         }
     },
+    /** Hub-Format of Ports expected */
     props: {
         /**
          * Type of node; determines the background color.
@@ -115,6 +92,9 @@ export default {
         };
     },
     computed: {
+        unknownNodeColor() {
+            return '#DC2C87'; // "unknown"
+        },
         backgroundPath() {
             return backgroundPaths[this.nodeType] || backgroundPaths.default;
         },
@@ -123,7 +103,7 @@ export default {
             if (this.isComponent) {
                 return backgroundFillColors.Component;
             }
-            return backgroundFillColors[this.nodeType] || backgroundFillColors.default;
+            return backgroundFillColors[this.nodeType] || this.unknownNodeColor;
         },
         innerFill() {
             // Nodes have no inner fill
@@ -131,6 +111,39 @@ export default {
                 return null;
             }
             return backgroundFillColors[this.nodeType];
+        }
+    },
+    methods: {
+        // top edge of port icon relative to 32x32 background
+        yPortShift(index, total) {
+            const portSize = 9;
+            const bgSize = 32;
+
+            /* eslint-disable no-magic-numbers */
+            let spacing = 1;
+            if (total === 2) {
+                spacing = 6;
+            } else if (total === 3) {
+                spacing = 2;
+            }
+
+            let totalHeight = total * portSize + (total - 1) * spacing;
+            let delta = (bgSize - totalHeight) / 2;
+            return (spacing + portSize) * index + delta + portSize / 2;
+        },
+        /** 
+         * PortIcon uses types 'table', 'flowVariable', any other
+         * Deprecated types from Hub 'Data', 'Flow Variable', any other
+        */
+        translatePortType(dataType) {
+            switch (dataType) {
+                case 'Data':
+                    return 'table';
+                case 'Flow Variable':
+                    return 'flowVariable';
+                default:
+                    return 'other';
+            }
         }
     }
 };
@@ -148,26 +161,24 @@ export default {
       :fill="innerFill"
       transform="translate(16 16) scale(.75) translate(-16 -16)"
     />
-    <g transform="translate(-9.5)">
+    <g transform="translate(-5)">
       <PortIcon
         v-for="(port, index) in inPorts"
         :key="index"
-        :color="port.color"
-        :optional="port.optional"
-        :data-type="port.dataType"
-        :index="index"
-        :total="inPorts.length"
+        :color="`#${port.color}`"
+        :filled="!port.optional"
+        :data-type="translatePortType(port.dataType)"
+        :transform="`translate(0, ${ yPortShift(index, inPorts.length) })`"
       />
     </g>
-    <g transform="translate(32.5)">
+    <g transform="translate(37)">
       <PortIcon
         v-for="(port, index) in outPorts"
         :key="index"
-        :color="port.color"
-        :optional="port.optional"
-        :data-type="port.dataType"
-        :index="index"
-        :total="outPorts.length"
+        :color="`#${port.color}`"
+        :filled="!port.optional"
+        :data-type="translatePortType(port.dataType)"
+        :transform="`translate(0, ${ yPortShift(index, outPorts.length) })`"
       />
     </g>
     <g

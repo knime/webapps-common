@@ -1,6 +1,5 @@
 <script>
-
-import PortIcon from './PortIcon';
+import PortIcon from './PortIcon2';
 import Description from '../Description';
 
 export default {
@@ -9,6 +8,7 @@ export default {
         PortIcon
     },
     props: {
+        /** Hub-Format expected */
         ports: {
             type: Array,
             default: () => []
@@ -16,6 +16,22 @@ export default {
         title: {
             type: String,
             default: 'Input ports'
+        }
+    },
+    methods: {
+        /** 
+         * PortIcon uses types 'table', 'flowVariable', any other
+         * Deprecated types from Hub 'Data', 'Flow Variable', any other
+        */
+        translatePortType(dataType) {
+            switch (dataType) {
+                case 'Data':
+                    return 'table';
+                case 'Flow Variable':
+                    return 'flowVariable';
+                default:
+                    return 'other';
+            }
         }
     }
 };
@@ -30,16 +46,15 @@ export default {
         :key="index"
       >
         <svg
-          viewBox="0 0 10 9"
+          viewBox="-4.5 -4.5 9 9"
           width="12"
           height="12"
         >
           <title>{{ port.name || port.dataType }}</title>
           <PortIcon
-            :color="port.color"
-            :optional="port.optional"
-            :data-type="port.dataType"
-            :auto-align="false"
+            :color="`#${port.color}`"
+            :filled="!port.optional"
+            :data-type="translatePortType(port.dataType)"
           />
         </svg>
         <span class="type">Type: {{ port.dataType }}</span>

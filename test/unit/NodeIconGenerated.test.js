@@ -1,7 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 
 import NodeIconGenerated from '../../ui/components/node/NodeIconGenerated';
-import PortIcon from '../../ui/components/node/PortIcon';
+import PortIcon from '../../ui/components/node/PortIcon2';
+import nodeColors from '../../ui/colors/nodeColors';
 
 describe('NodeIconGenerated.vue', () => {
     it('renders', () => {
@@ -18,7 +19,7 @@ describe('NodeIconGenerated.vue', () => {
 
         expect(wrapper.findAll('svg > path').length).toBe(1);
 
-        expect(wrapper.find('svg > path').attributes('fill')).toBe('#4EAF75');
+        expect(wrapper.find('svg > path').attributes('fill')).toBe(nodeColors.Predictor);
         expect(wrapper.find('svg > path').attributes('d')).toBe('M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0l26.3,0C30.7,0,32,1.3' +
             ',32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H2.8C1.3,32,0,30.7,0,29.2z');
 
@@ -27,7 +28,7 @@ describe('NodeIconGenerated.vue', () => {
                 nodeType: 'ScopeEnd'
             }
         });
-        expect(wrapper.find('svg > path').attributes('fill')).toBe('#92548D');
+        expect(wrapper.find('svg > path').attributes('fill')).toBe(nodeColors.ScopeEnd);
         expect(wrapper.find('svg > path').attributes('d')).toBe(
             'M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H4L0,16.1L4,0l25.2,0C30.7,0,32,1.3,32,2.8z'
         );
@@ -52,42 +53,36 @@ describe('NodeIconGenerated.vue', () => {
         const wrapper = shallowMount(NodeIconGenerated, {
             propsData: {
                 inPorts: [{
-                    color: 'red',
+                    color: '000',
                     optional: true,
-                    dataType: 'foo'
+                    dataType: 'Flow Variable'
                 }],
                 outPorts: [{
-                    color: 'blue',
+                    color: 'fff',
                     optional: false,
-                    dataType: 'bar'
+                    dataType: 'Data'
                 }, {
-                    color: 'green',
+                    color: '888',
                     optional: true,
-                    dataType: 'baz'
+                    dataType: 'XYZ'
                 }]
             }
         });
         let portIcons = wrapper.findAll(PortIcon);
         expect(portIcons.at(0).props()).toMatchObject({
-            color: 'red',
-            optional: true,
-            dataType: 'foo',
-            index: 0,
-            total: 1
+            color: '#000',
+            filled: false,
+            dataType: 'flowVariable',
         });
         expect(portIcons.at(1).props()).toMatchObject({
-            color: 'blue',
-            optional: false,
-            dataType: 'bar',
-            index: 0,
-            total: 2
+            color: '#fff',
+            filled: true,
+            dataType: 'table',
         });
         expect(portIcons.at(2).props()).toMatchObject({
-            color: 'green',
-            optional: true,
-            dataType: 'baz',
-            index: 1,
-            total: 2
+            color: '#888',
+            filled: false,
+            dataType: 'other',
         });
     });
 
@@ -115,8 +110,8 @@ describe('NodeIconGenerated.vue', () => {
 
         expect(wrapper.findAll('svg > path').length).toBe(2);
 
-        expect(wrapper.findAll('svg > path').at(0).attributes('fill')).toBe('#BDBEBE');
-        expect(wrapper.findAll('svg > path').at(1).attributes('fill')).toBe('#4BA1BF');
+        expect(wrapper.findAll('svg > path').at(0).attributes('fill')).toBe(nodeColors.Component);
+        expect(wrapper.findAll('svg > path').at(1).attributes('fill')).toBe(nodeColors.Visualizer);
 
     });
 
