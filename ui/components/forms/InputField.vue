@@ -53,6 +53,9 @@ export default {
         onInput(e) {
             this.$emit('input', this.getValue());
         },
+        focus() {
+            this.$refs.input.focus();
+        },
         /*
          * checks if value matches the provided pattern
          */
@@ -150,6 +153,7 @@ input {
   bottom: 0;
   z-index: 1;
   background-color: var(--theme-color-error);
+  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
 }
 
 svg {
