@@ -3,6 +3,9 @@
  * Fieldset for elements that contain more than one input field
  */
 export default {
+    provide: {
+        compactLabels: true
+    },
     props: {
         text: {
             default: '',
@@ -61,9 +64,7 @@ fieldset {
     }
   }
 
-  /* labels inside of the fieldset look different (smaller) same applies to second level fieldset legends (e.g. for
-    Radiobuttons inside of ValueFilterSelectionWidget) */
-  & >>> .label-text,
+  /* Second level fieldset legends look smaller (e.g. for Radiobuttons inside of ValueFilterSelectionWidget) */
   & > fieldset > legend {
     font-weight: 500;
     font-family: var(--theme-text-medium-font-family);

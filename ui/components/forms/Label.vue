@@ -14,6 +14,11 @@ let labelForId = 0;
  * as the input's `id`.
  */
 export default {
+    inject: {
+        compactLabels: { // provided e.g. by Fieldset.vue
+            default: false
+        }
+    },
     props: {
         generateId: {
             type: Boolean,
@@ -26,6 +31,13 @@ export default {
         text: {
             default: '',
             type: String
+        },
+        /**
+         * smaller font size and margin
+         */
+        compact: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -40,6 +52,9 @@ export default {
                 return `label-${this.labelFor}`;
             }
             return null;
+        },
+        isCompact() {
+            return this.compact || this.compactLabels;
         }
     },
     beforeCreate() {
@@ -54,7 +69,7 @@ export default {
     <label
       :id="labelId"
       :for="labelFor"
-      class="label-text"
+      :class="['label-text', {compact: isCompact}]"
       v-text="text"
     />
     <slot :labelForId="labelFor" />
@@ -80,5 +95,14 @@ export default {
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
+
+  &.compact {
+    font-weight: 500;
+    font-size: 13px;
+    font-family: var(--theme-text-medium-font-family);
+    color: var(--theme-text-medium-color);
+    line-height: 18px;
+    margin-bottom: 3px;
+  }
 }
 </style>
