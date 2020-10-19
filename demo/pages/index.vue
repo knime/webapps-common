@@ -21,6 +21,7 @@ import IdleReadyButton from '../components/IdleReadyButton';
 import Images from '../components/Images';
 import InputField from '../components/InputField';
 import Label from '../components/Label';
+import LinkList from '../components/LinkList';
 import ListBox from '../components/ListBox';
 import Message from '../components/Message';
 import Messages from '../components/Messages';
@@ -67,6 +68,7 @@ export default {
         Images,
         InputField,
         Label,
+        LinkList,
         ListBox,
         Message,
         Messages,
@@ -150,6 +152,7 @@ export default {
     </template>
     <template v-if="activeTab === 'interactive'">
       <Breadcrumb />
+      <LinkList />
       <Button />
       <Carousel />
       <Collapser />
