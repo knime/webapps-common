@@ -1,4 +1,6 @@
 <script>
+import portColors from '../../colors/portColors';
+
 const portSize = 9; //9px
 
 export default {
@@ -6,8 +8,10 @@ export default {
         /** Distuingish between 'table', 'flowVariable' and other types of ports */
         dataType: {
             type: String,
-            default: null
+            default: 'table',
+            validator: (dataType) => ['table', 'flowVariable', 'other'].includes(dataType)
         },
+        /** Format has to be valid for css. Only used by square ports (dataType: 'other') */
         color: {
             type: String,
             default: ''
@@ -31,6 +35,9 @@ export default {
             y3 -= (1 + Math.sqrt(5)) / 4;
 
             return `${x1},${y1} ${x2},${0} ${x1},${y3}`;
+        },
+        portColor() {
+            return portColors[this.dataType] || this.color;
         }
     }
 }
@@ -41,15 +48,15 @@ export default {
     <polygon
       v-if="dataType === 'table'"
       :points="trianglePath"
-      :fill="filled ? color : 'white'"
-      :stroke="color"
+      :fill="filled ? portColor : 'white'"
+      :stroke="portColor"
     />
     <!-- flow variable port -->
     <circle
       v-else-if="dataType === 'flowVariable'"
       :r="portSize / 2 - 0.5"
-      :fill="filled ? color : 'white'"
-      :stroke="color"
+      :fill="filled ? portColor : 'white'"
+      :stroke="portColor"
     />
     <!-- other port -->
     <rect
@@ -58,7 +65,7 @@ export default {
       :height="portSize - 1"
       :x="-portSize / 2 + 0.5"
       :y="-portSize / 2 + 0.5"
-      :fill="filled ? color: 'white'"
-      :stroke="color"
+      :fill="filled ? portColor: 'white'"
+      :stroke="portColor"
     />
 </template>

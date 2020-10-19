@@ -71,17 +71,24 @@ export default {
       class="outports"
       title="Output ports"
     />
-    <PortsListItem
-      v-if="normalizedDynInPorts.length"
-      :ports="normalizedDynInPorts"
-      class="dyninports"
-      title="Dynamic input ports"
-    />
-    <PortsListItem
-      v-if="normalizedDynOutPorts.length"
-      :ports="normalizedDynOutPorts"
-      class="dynoutports"
-      title="Dynamic output ports"
-    />
+    <template v-for="dynPortsGroup in dynInPorts">
+      <PortsListItem
+        class="dynoutports"
+        :key="dynPortsGroup.groupName"
+        :ports="dynPortsGroup.types.map(type => ({...type, name: dynPortsGroup.groupName, description: dynPortsGroup.groupDescription }))"
+        :title="dynPortsGroup.groupName + ' (Dynamic Inport)'"
+        :dynamic-ports="true"
+      />
+    </template> 
+
+    <template v-for="dynPortsGroup in dynOutPorts">
+      <PortsListItem
+        class="dynoutports"
+        :key="dynPortsGroup.groupName"
+        :ports="dynPortsGroup.types.map(type => ({...type, name: dynPortsGroup.groupName, description: dynPortsGroup.groupDescription }))"
+        :title="dynPortsGroup.groupName + ' (Dynamic Outport)'"
+        :dynamic-ports="true"
+      />
+    </template> 
   </div>
 </template>

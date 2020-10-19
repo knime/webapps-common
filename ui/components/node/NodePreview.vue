@@ -22,17 +22,6 @@ export default {
     components: {
         PortIcon
     },
-    filters: {
-        // TODO: This is a workaround for missing "data:" prefix in components.
-        // Can be removed when the backend is fixed AP-13514
-        fixDataUrl(url) {
-            if (/^data:/.test(url)) {
-                return url;
-            }
-            // We assume that only png is allowed when creating a component in AP
-            return `data:image/png;base64,${url}`;
-        }
-    },
     /** Hub-Format of Ports expected */
     props: {
         /**
@@ -75,7 +64,7 @@ export default {
         /**
          * URL of icon that is rendered inside the node. (Possibly `data:` URL)
          */
-        pictogram: {
+        icon: {
             type: String,
             default: ''
         }
@@ -130,20 +119,6 @@ export default {
             let totalHeight = total * portSize + (total - 1) * spacing;
             let delta = (bgSize - totalHeight) / 2;
             return (spacing + portSize) * index + delta + portSize / 2;
-        },
-        /** 
-         * PortIcon uses types 'table', 'flowVariable', any other
-         * Deprecated types from Hub 'Data', 'Flow Variable', any other
-        */
-        translatePortType(dataType) {
-            switch (dataType) {
-                case 'Data':
-                    return 'table';
-                case 'Flow Variable':
-                    return 'flowVariable';
-                default:
-                    return 'other';
-            }
         }
     }
 };
@@ -165,9 +140,9 @@ export default {
       <PortIcon
         v-for="(port, index) in inPorts"
         :key="index"
-        :color="`#${port.color}`"
+        :color="port.color"
         :filled="!port.optional"
-        :data-type="translatePortType(port.dataType)"
+        :data-type="port.dataType"
         :transform="`translate(0, ${ yPortShift(index, inPorts.length) })`"
       />
     </g>
@@ -175,9 +150,9 @@ export default {
       <PortIcon
         v-for="(port, index) in outPorts"
         :key="index"
-        :color="`#${port.color}`"
+        :color="port.color"
         :filled="!port.optional"
-        :data-type="translatePortType(port.dataType)"
+        :data-type="port.dataType"
         :transform="`translate(0, ${ yPortShift(index, outPorts.length) })`"
       />
     </g>
@@ -202,12 +177,12 @@ export default {
       />
     </g>
     <image
-      v-if="pictogram"
+      v-if="icon"
       x="8"
       y="8"
       width="16"
       height="16"
-      :xlink:href="pictogram | fixDataUrl"
+      :xlink:href="icon"
     />
   </svg>
 </template>

@@ -56,22 +56,27 @@ li {
 li {
   background: var(--knime-white);
   display: flex;
+  flex-wrap: wrap;
   margin-bottom: 10px;
+  padding: 20px 30px;
 }
 
 h6 {
   display: block;
-  width: 180px;
-  margin: 20px 30px;
+  flex-basis: 33%;
+  flex-grow: 1;
+  margin-top: 0;
+  margin-bottom: 10px;
+  min-width: 140px;
 }
 
 .content {
-  flex: 1;
+  flex-basis: 66%;
+  flex-grow: 1;
   padding: 0;
-  margin-top: 22px;
-  margin-right: 20px;
 
   & .name {
+    margin-bottom: 10px;
     display: block;
     padding: 0;
     position: relative;
