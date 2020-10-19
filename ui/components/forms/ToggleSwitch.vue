@@ -92,11 +92,11 @@ export default {
       position: absolute;
       display: block;
       content: '';
-      transition: all 0.3s ease;
+      transition: all 0.3s ease, width 0.1s ease-in, left 0.3s cubic-bezier(0.5, 1.3, 0.7, 1);
       width: 14px;
       height: 14px;
       left: 0;
-      border-radius: 100%;
+      border-radius: 9999px;
       background-color: var(--knime-white);
       border: 1px solid var(--knime-dove-gray);
     }
@@ -108,8 +108,28 @@ export default {
       }
 
       & + span::after {
-        transform: translateX(13px);
+        left: 27px;
+        transform: translateX(-100%);
         border-color: var(--knime-masala);
+      }
+    }
+
+    &:hover {
+      & + span::after {
+        background-color: var(--knime-gray-ultra-light);
+      }
+    }
+
+    &:focus {
+      & + span::after {
+        background-color: var(--knime-dove-gray);
+      }
+    }
+
+    &:active {
+      & + span::after {
+        width: 17px;
+        background-color: white;
       }
     }
   }
