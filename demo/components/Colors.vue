@@ -80,7 +80,7 @@ export default {
           <div style="--bg: var(--knime-stone-dark); --font: white;">--knime-stone-dark</div>
         </div>
 
-        <h4>Node Backgorund Colors</h4>
+        <h4>Node Background Colors</h4>
         <p>
           These are aliases for the secondary colors defined above.
         </p>
