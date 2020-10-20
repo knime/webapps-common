@@ -1,5 +1,5 @@
 <script>
-import PortIcon from './PortIcon2';
+import PortIcon from './PortIcon';
 import backgroundFillColors from '../../colors/nodeColors';
 
 const backgroundPaths = {

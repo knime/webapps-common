@@ -28,7 +28,10 @@ export default {
       :key="index"
     >
       <h6>
-        <InteractiveIcon v-if="view.interactive" class="interactive" />
+        <InteractiveIcon
+          v-if="view.interactive"
+          class="interactive"
+        />
         <StandardIcon v-else />
         <span>{{ view.interactive ? 'Interactive' : 'Standard' }}</span>
       </h6>

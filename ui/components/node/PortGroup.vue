@@ -1,5 +1,5 @@
 <script>
-import PortIcon from './PortIcon2';
+import PortIcon from './PortIcon';
 import Description from '../Description';
 
 export default {
@@ -8,7 +8,7 @@ export default {
         PortIcon
     },
     props: {
-        /** 
+        /**
          * Array of Ports
          * Port {
          *   color: String, // css-format
@@ -28,12 +28,20 @@ export default {
             type: String,
             default: 'Input ports'
         },
-        /** If set, rendering is adjusted for dynamic ports */
-        dynamicPorts: {
-            type: Boolean,
-            default: false
+        groupDescription: {
+            type: String,
+            default: null
         }
     },
+    computed: {
+        /**
+         * Decides whether we are rendering static or dynamic ports.
+         * @returns {Boolean} dynamicPorts
+         */
+        dynamicPorts() {
+            return Boolean(this.groupDescription);
+        }
+    }
 };
 </script>
 
@@ -41,11 +49,11 @@ export default {
   <div class="wrapper">
     <h6>{{ title }}</h6>
     <div class="content">
-      <Description 
-          v-if="dynamicPorts && ports[0] && ports[0].description"
-          class="dyn-ports-description"
-          :text="ports[0].description"
-          :render-as-html="true"
+      <Description
+        v-if="dynamicPorts"
+        :text="groupDescription"
+        :render-as-html="true"
+        class="dyn-ports-description"
       />
       <ol>
         <li
@@ -64,12 +72,17 @@ export default {
             />
           </svg>
           <div :class="['port-type', { fat: !dynamicPorts }]">Type: {{ port.typeName }}</div>
-          <div class="port-name" v-if="!dynamicPorts && port.name">{{ port.name }}</div>
+          <div
+            v-if="!dynamicPorts && port.name"
+            class="port-name"
+          >
+            {{ port.name }}
+          </div>
           <Description
-            class="port-description"
             v-if="!dynamicPorts && port.description"
             :text="port.description"
             :render-as-html="true"
+            class="port-description"
           />
         </li>
       </ol>
@@ -84,7 +97,6 @@ export default {
   background: var(--knime-white);
   display: flex;
   flex-wrap: wrap;
-  
   margin-bottom: 10px;
   padding: 20px 30px;
 
@@ -95,7 +107,7 @@ export default {
     padding-right: 10px;
     flex-grow: 1;
   }
-  
+
   & .content {
     flex-basis: 66%;
     flex-grow: 1;
@@ -112,7 +124,7 @@ ol {
   display: block;
   padding: 0;
   margin-top: 0;
-  
+
   & li {
     display: block;
     padding: 0;
@@ -124,7 +136,7 @@ ol {
     & svg {
       position: absolute;
       left: -25px;
-      top: 5px;
+      top: 4px;
     }
 
     & .port-name {

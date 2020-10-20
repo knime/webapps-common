@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
-import PortsList from '../../ui/components/node/PortsList';
-import PortsListItem from '../../ui/components/node/PortsListItem';
+import PortsList from '../../../ui/components/node/PortsList';
+import PortGroup from '../../../ui/components/node/PortGroup';
 
 describe('PortsList.vue', () => {
 
@@ -19,8 +19,8 @@ describe('PortsList.vue', () => {
             }
         });
         expect(wrapper.is('div')).toBeTruthy();
-        expect(wrapper.findAll(PortsListItem).length).toEqual(1);
-        expect(wrapper.find(PortsListItem).props('ports')).toEqual([{ foo: 'bar' }]);
+        expect(wrapper.findAll(PortGroup).length).toEqual(1);
+        expect(wrapper.find(PortGroup).props('ports')).toEqual([{ foo: 'bar' }]);
     });
 
     it('accepts outPorts', () => {
@@ -31,8 +31,8 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        expect(wrapper.findAll(PortsListItem).length).toEqual(1);
-        expect(wrapper.find(PortsListItem).props('ports')).toEqual([{ baz: 'qux' }]);
+        expect(wrapper.findAll(PortGroup).length).toEqual(1);
+        expect(wrapper.find(PortGroup).props('ports')).toEqual([{ baz: 'qux' }]);
     });
 
     it('accepts inPorts and outPorts', () => {
@@ -46,7 +46,7 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        let allPortsListItems = wrapper.findAll(PortsListItem);
+        let allPortsListItems = wrapper.findAll(PortGroup);
         expect(allPortsListItems.length).toEqual(2);
         expect(allPortsListItems.at(0).props('ports')).toEqual([{ foo: 'bar' }]);
         expect(allPortsListItems.at(1).props('ports')).toEqual([{ baz: 'qux' }]);
@@ -71,7 +71,7 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        let allPortsListItems = wrapper.findAll(PortsListItem);
+        let allPortsListItems = wrapper.findAll(PortGroup);
         // eslint-disable-next-line no-magic-numbers
         expect(allPortsListItems.length).toEqual(4);
         expect(allPortsListItems.at(2).props('ports')).toEqual([{ foo: 'bar' }]);

@@ -1,10 +1,10 @@
 <script>
 
-import PortsListItem from './PortsListItem';
+import PortGroup from './PortGroup';
 
 export default {
     components: {
-        PortsListItem
+        PortGroup
     },
     props: {
         inPorts: {
@@ -58,37 +58,40 @@ export default {
 </script>
 
 <template>
-  <div v-if="hasPorts" class="ports-list">
-    <PortsListItem
+  <div
+    v-if="hasPorts"
+    class="ports-list"
+  >
+    <PortGroup
       v-if="inPorts.length"
-      :ports="inPorts"
       class="inports"
       title="Input ports"
+      :ports="inPorts"
     />
-    <PortsListItem
+    <PortGroup
       v-if="outPorts.length"
-      :ports="outPorts"
       class="outports"
       title="Output ports"
+      :ports="outPorts"
     />
     <template v-for="dynPortsGroup in dynInPorts">
-      <PortsListItem
-        class="dynoutports"
+      <PortGroup
         :key="dynPortsGroup.groupName"
-        :ports="dynPortsGroup.types.map(type => ({...type, name: dynPortsGroup.groupName, description: dynPortsGroup.groupDescription }))"
         :title="dynPortsGroup.groupName + ' (Dynamic Inport)'"
-        :dynamic-ports="true"
+        :group-description="dynPortsGroup.groupDescription"
+        :ports="dynPortsGroup.types"
+        class="dyninports"
       />
-    </template> 
+    </template>
 
     <template v-for="dynPortsGroup in dynOutPorts">
-      <PortsListItem
-        class="dynoutports"
+      <PortGroup
         :key="dynPortsGroup.groupName"
-        :ports="dynPortsGroup.types.map(type => ({...type, name: dynPortsGroup.groupName, description: dynPortsGroup.groupDescription }))"
         :title="dynPortsGroup.groupName + ' (Dynamic Outport)'"
-        :dynamic-ports="true"
+        :group-description="dynPortsGroup.groupDescription"
+        :ports="dynPortsGroup.types"
+        class="dynoutports"
       />
-    </template> 
+    </template>
   </div>
 </template>
