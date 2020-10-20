@@ -1,29 +1,6 @@
-@font-face {
-  font-family: 'Roboto Mono';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Roboto Mono Regular'), local('Roboto Mono-Regular'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-400-normal.woff2') format('woff2'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-400-normal.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'Roboto Mono';
-  font-style: normal;
-  font-weight: 500;
-  src: local('Roboto Mono Medium'), local('Roboto Mono-Medium'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-500-normal.woff2') format('woff2'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-500-normal.woff') format('woff');
-}
-
-@font-face {
-  font-family: 'Roboto Mono';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Roboto Mono Bold'), local('Roboto Mono-Bold'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-700-normal.woff2') format('woff2'),
-    url('../../../node_modules/fontsource-roboto-mono/files/roboto-mono-latin-700-normal.woff') format('woff');
-}
+@import "fontsource-roboto-mono/400-normal";
+@import "fontsource-roboto-mono/500-normal";
+@import "fontsource-roboto-mono/700-normal";
 
 code[class*="language-"],
 pre[class*="language-"] {
