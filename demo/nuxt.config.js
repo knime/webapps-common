@@ -7,8 +7,8 @@ export default {
     alias: {
         'webapps-common': path.resolve(__dirname, '..'),
         '../../buildtools/opensourcecredits/used-packages.json': '../../demo/assets/used-packages-mock.json',
-        '../../../node_modules/typeface-roboto': path.resolve(__dirname, 'node_modules', 'typeface-roboto'),
-        '../../../node_modules/typeface-roboto-mono': path.resolve(__dirname, 'node_modules', 'typeface-roboto-mono')
+        '../../../node_modules/fontsource-roboto': path.resolve(__dirname, 'node_modules', 'fontsource-roboto'),
+        '../../../node_modules/fontsource-roboto-mono': path.resolve(__dirname, 'node_modules', 'fontsource-roboto-mono')
     },
     head: {
         title: 'KNIME Web Apps Common Demo',

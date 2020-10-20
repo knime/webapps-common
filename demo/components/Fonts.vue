@@ -9,7 +9,7 @@
             and <a href="https://fonts.google.com/specimen/Roboto+Mono">Roboto Mono</a>.
           </p>
           <p>
-            The npm modules <samp>typeface-roboto</samp> and <samp>typeface-roboto-mono</samp> must be installed for
+            The npm modules <samp>fontsource-roboto</samp> and <samp>fontsource-roboto-mono</samp> must be installed for
             this to work.
           </p>
         </div>
