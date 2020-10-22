@@ -16,35 +16,41 @@ export default {
     },
     mixins: [tabBarMixin],
     props: {
+        /** Passed through to PortsList.vue */
         inPorts: {
             type: Array,
             default: () => []
         },
+        /** Passed through to PortsList.vue */
         outPorts: {
             type: Array,
             default: () => []
         },
+        /** Passed through to PortsList.vue */
         dynInPorts: {
             type: Array,
             default: () => []
         },
+        /** Passed through to PortsList.vue */
         dynOutPorts: {
             type: Array,
             default: () => []
         },
+        /** Passed through to DialogOptions.vue */
         dialogs: {
             type: Array,
             default: () => []
         },
+        /** Passed through to ViewsList.vue */
         views: {
             type: Array,
             default: () => []
         },
+        /** Text that is show if node has neither views, dialogs nor ports */
         emptyText: {
             type: String,
             default: 'This node does not provide any ports, options or views.'
         }
-
     },
     computed: {
         hasPorts() {
