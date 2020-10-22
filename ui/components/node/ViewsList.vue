@@ -109,7 +109,6 @@ svg {
   font-size: 16px;
   line-height: 28px;
   margin-top: 0;
-  margin-bottom: 25px;
 
   @media only screen and (max-width: 900px) {
     font-size: 13px;
