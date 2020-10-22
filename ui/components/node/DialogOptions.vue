@@ -89,7 +89,7 @@ h5 {
 }
 
 li {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .option-field-name {
