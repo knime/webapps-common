@@ -32,7 +32,7 @@ export default {
             type: Array,
             default: () => []
         },
-        dialog: {
+        dialogs: {
             type: Array,
             default: () => []
         },
@@ -61,12 +61,12 @@ export default {
                 value: 'node-dialog-options',
                 label: 'Options',
                 icon: OptionsIcon,
-                disabled: this.dialog.length === 0
+                disabled: this.dialogs.length === 0
             }, {
                 value: 'views',
                 label: 'Views',
                 icon: ViewsIcon,
-                disabled: this.views.length === 0
+                disabled: this.dialogs.length === 0
             }];
         }
     }
@@ -90,7 +90,7 @@ export default {
       />
       <DialogOptions
         v-else-if="activeTab === 'node-dialog-options'"
-        :options="dialog"
+        :options="dialogs"
       />
       <ViewsList
         v-else-if="activeTab === 'views'"

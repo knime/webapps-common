@@ -22,7 +22,7 @@ describe('NodeFeatureList.vue', () => {
                 dynOutPorts: [{
                     dummy: 'dynOutPort'
                 }],
-                dialog: [{
+                dialogs: [{
                     dummy: 'dialog'
                 }],
                 views: [{
@@ -61,7 +61,7 @@ describe('NodeFeatureList.vue', () => {
     it('selects second tab if first is empty', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             propsData: {
-                dialog: [{
+                dialogs: [{
                     dummy: 'dialog'
                 }]
             }
