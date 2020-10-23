@@ -234,6 +234,7 @@ section {
       height: 30px;
       width: 30px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     & .close {

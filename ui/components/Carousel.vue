@@ -66,6 +66,7 @@ export default {
   position: relative;
   margin-left: calc(var(--grid-gap-width) * -1);
   margin-right: calc(var(--grid-gap-width) * -1);
+  z-index: 0; /* create local stacking context */
 
   &::before,
   &::after {

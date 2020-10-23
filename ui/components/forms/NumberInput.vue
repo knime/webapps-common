@@ -292,6 +292,7 @@ export default {
     bottom: 0;
     z-index: 1;
     background-color: var(--theme-color-error);
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 
   & .increase {
