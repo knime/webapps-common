@@ -3,12 +3,14 @@ const eslint = require('eslint');
 const indentationSpaces = 4;
 const lineLength = 120;
 
-let ecmaVersion = eslint.Linter.version.split('.')[0] <= 5 ? 2019 : 2020;
+let eslintVersion = eslint.Linter.version.split('.')[0];
+let ecmaVersion = eslintVersion <= 5 ? 2019 : 2020;
+let parser = eslintVersion < 7 ? 'babel-eslint' : null;
 
 let parserOptions = {
     ecmaVersion,
     sourceType: 'module',
-    parser: 'babel-eslint'
+    parser
 };
 
 module.exports = {

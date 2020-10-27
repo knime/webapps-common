@@ -54,8 +54,8 @@
     "vue-clickaway": "2.2.2",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
-    "typeface-roboto": "*",
-    "typeface-roboto-mono": "*"
+    "fontsource-roboto": "*",
+    "fontsource-roboto-mono": "*"
   },
   "private": true
 }
