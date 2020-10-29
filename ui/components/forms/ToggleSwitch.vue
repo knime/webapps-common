@@ -92,7 +92,7 @@ export default {
       position: absolute;
       display: block;
       content: '';
-      transition: all 0.3s ease, width 0.1s ease-in, left 0.3s cubic-bezier(0.5, 1.3, 0.7, 1);
+      transition: all 0.3s ease, width 0.1s ease-in, left 0.3s ease;
       width: 14px;
       height: 14px;
       left: 0;
