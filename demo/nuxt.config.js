@@ -6,6 +6,7 @@ import path from 'path';
 export default {
     alias: {
         'webapps-common': path.resolve(__dirname, '..'),
+        '../../../node_modules/fontsource-roboto': path.resolve(__dirname, 'node_modules', 'fontsource-roboto'),
         '../../buildtools/opensourcecredits/used-packages.json': '../../demo/assets/used-packages-mock.json'
     },
     head: {
