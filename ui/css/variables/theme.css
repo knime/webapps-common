@@ -149,4 +149,35 @@
   --theme-slider-foreground-color-focus: var(--knime-masala);
   --theme-slider-bar-radius: 3.5px;
   --theme-slider-background-color: var(--knime-yellow);
+
+  /* DateInput */
+  --theme-date-input-box-shadow-color: var(--knime-masala-semi);
+  --theme-date-input-day-content-background: rgba(192, 196, 198, 0.5);
+  --theme-date-input-border-color: var(--knime-stone-gray);
+  --theme-date-input-border-focus-color: var(--knime-masala);
+  --theme-date-input-input-hover-background: var(--knime-silver-sand-semi);
+  --theme-date-input-button-active-color: var(--knime-masala);
+
+  --theme-date-input-accent-100: var(--knime-gray-ultra-light);
+  --theme-date-input-accent-200: var(--knime-gray-light-semi);
+  --theme-date-input-accent-300: var(--knime-silver-sand);
+  --theme-date-input-accent-400: var(--knime-stone-gray);
+  --theme-date-input-accent-500: var(--knime-gray-dark);
+  --theme-date-input-accent-600: var(--knime-masala);
+  --theme-date-input-accent-700: var(--knime-masala);
+  --theme-date-input-accent-800: var(--knime-black-semi);
+  --theme-date-input-accent-900: var(--knime-black);
+
+  --theme-date-input-black: var(--knime-black);
+  --theme-date-input-white: var(--knime-white);
+
+  --theme-date-input-gray-100: var(--theme-date-input-accent-100);
+  --theme-date-input-gray-200: var(--knime-silver-sand-semi); /* arrow hover background color */
+  --theme-date-input-gray-300: var(--theme-date-input-accent-300);
+  --theme-date-input-gray-400: var(--theme-date-input-accent-400);
+  --theme-date-input-gray-500: var(--knime-masala); /* weekday font color */
+  --theme-date-input-gray-600: var(--knime-masala); /* color arrow */
+  --theme-date-input-gray-700: var(--theme-date-input-accent-700);
+  --theme-date-input-gray-800: var(--knime-masala); /* background of month/year popout and font color title */
+  --theme-date-input-gray-900: var(--knime-black-semi); /* hover background of month/year in popout */
 }
