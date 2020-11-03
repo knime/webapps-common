@@ -35,6 +35,7 @@ import SplitButton from '../components/SplitButton';
 import SubMenu from '../components/SubMenu';
 import TabBarDemo from '../components/TabBar';
 import TextArea from '../components/TextArea';
+import ToggleSwitch from '../components/ToggleSwitch';
 import Twinlist from '../components/Twinlist';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar';
 
@@ -82,6 +83,7 @@ export default {
         TabBar,
         TabBarDemo,
         TextArea,
+        ToggleSwitch,
         Twinlist
     },
     mixins: [tabBarMixin],
@@ -179,6 +181,7 @@ export default {
       <Dropdown />
       <Multiselect />
       <MultiselectListBox />
+      <ToggleSwitch />
       <Twinlist />
     </template>
     <template v-if="activeTab === 'other'">
