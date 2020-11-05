@@ -32,13 +32,12 @@ export default {
             nodePreview: {
                 hasDynPorts: true,
                 isComponent: false,
-                type: 'Sink',
+                type: 'Learner',
                 inPorts: [
                     { dataType: 'table' }
                 ],
                 outPorts: [
                     { dataType: 'other', color: '#1eb9dc'  },
-                    { dataType: 'table' },
                     { dataType: 'table', optional: true }
                 ],
                 icon
