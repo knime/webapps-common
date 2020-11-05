@@ -1,8 +1,27 @@
 <script>
-/* eslint-disable max-len */
 import CodeExample from './demo/CodeExample';
 import NodePreview from '../../ui/components/node/NodePreview';
-import code from '!!raw-loader!../../ui/components/node/NodePreview';
+import sourceCode from '!!raw-loader!../../ui/components/node/NodePreview';
+
+const icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiN' +
+    'AqAFJuYmGAoBoonAPEEoBoFilwHNLyeaEMMIEABTUzA2Nh4PooA0Gn12JwN8jc2cZAYWBxoUgBQcwGQnoBiKgEDYGEFF4CGsgIooIgxAKYHOweLT' +
+    'egGE20AkkEGQC+uRzNgApwDDxQiAchFGOpRTMTvGlA0YqqFBmIBIc2wAMelQAFo+n5s6R4kBrKZqFQITR8omYmUMCIaAAD0RELelYkiBgAAAABJR' +
+    'U5ErkJggg==';
+
+const codeExample = `<NodePreview
+  :hasDynPorts="false"
+  isComponent
+  type="Sink"
+  :inPorts="[
+      { dataType: 'table' }
+  ]"
+  :outPorts="[
+      { dataType: 'other', color: '#1eb9dc' },
+      { dataType: 'table' },
+      { dataType: 'table', optional: true }
+  ]"
+  icon="${icon}"
+/>`;
 
 export default {
     components: {
@@ -11,20 +30,7 @@ export default {
     },
     data() {
         return {
-            codeExample: `<NodePreview v-bind="{
-    hasDynPorts: false,
-    isComponent: true,
-    type: 'Sink',
-    inPorts: [
-        { dataType: 'table' }
-    ],
-    outPorts: [
-        { dataType: 'other', color: '#1eb9dc' },
-        { dataType: 'table' },
-        { dataType: 'table', optional: true }
-    ],
-    icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiNAqAFJuYmGAoBoonAPEEoBoFilwHNLyeaEMMIEABTUzA2Nh4PooA0Gn12JwN8jc2cZAYWBxoUgBQcwGQnoBiKgEDYGEFF4CGsgIooIgxAKYHOweLTegGE20AkkEGQC+uRzNgApwDDxQiAchFGOpRTMTvGlA0YqqFBmIBIc2wAMelQAFo+n5s6R4kBrKZqFQITR8omYmUMCIaAAD0RELelYkiBgAAAABJRU5ErkJggg=='
-}" />`,
+            codeExample,
             nodePreview: {
                 hasDynPorts: true,
                 isComponent: false,
@@ -37,7 +43,7 @@ export default {
                     { dataType: 'table' },
                     { dataType: 'table', optional: true }
                 ],
-                icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiNAqAFJuYmGAoBoonAPEEoBoFilwHNLyeaEMMIEABTUzA2Nh4PooA0Gn12JwN8jc2cZAYWBxoUgBQcwGQnoBiKgEDYGEFF4CGsgIooIgxAKYHOweLTegGE20AkkEGQC+uRzNgApwDDxQiAchFGOpRTMTvGlA0YqqFBmIBIc2wAMelQAFo+n5s6R4kBrKZqFQITR8omYmUMCIaAAD0RELelYkiBgAAAABJRU5ErkJggg=='
+                icon
             },
             componentPreview: {
                 hasDynPorts: false,
@@ -51,13 +57,13 @@ export default {
                     { dataType: 'table' },
                     { dataType: 'table', optional: true }
                 ],
-                icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiNAqAFJuYmGAoBoonAPEEoBoFilwHNLyeaEMMIEABTUzA2Nh4PooA0Gn12JwN8jc2cZAYWBxoUgBQcwGQnoBiKgEDYGEFF4CGsgIooIgxAKYHOweLTegGE20AkkEGQC+uRzNgApwDDxQiAchFGOpRTMTvGlA0YqqFBmIBIc2wAMelQAFo+n5s6R4kBrKZqFQITR8omYmUMCIaAAD0RELelYkiBgAAAABJRU5ErkJggg=='
+                icon
             }
         };
     },
     computed: {
-        code() {
-            return code;
+        sourceCode() {
+            return sourceCode;
         }
     }
 };
@@ -74,12 +80,14 @@ export default {
           </p>
         </div>
       </div>
-      <div class="grid-container page-content">
-        <div>
-          <NodePreview v-bind="nodePreview" />
-        </div>
-        <div>
-          <NodePreview v-bind="componentPreview" />
+      <div class="grid-container">
+        <div class="grid-item-12 demo-items">
+          <div>
+            <NodePreview v-bind="nodePreview" />
+          </div>
+          <div>
+            <NodePreview v-bind="componentPreview" />
+          </div>
         </div>
       </div>
     </section>
@@ -87,7 +95,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show NodePreview.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show NodePreview.vue source code">{{ sourceCode }}</CodeExample>
         </div>
       </div>
     </section>
@@ -97,11 +105,12 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.page-content {
+.demo-items {
+  display: flex;
   justify-content: flex-start;
 
   & > div {
-    outline: 2px dotted purple;
+    outline: 1px solid var(--knime-silver-sand);
     margin-right: 20px;
 
     & svg {

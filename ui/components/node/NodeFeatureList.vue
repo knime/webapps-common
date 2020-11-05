@@ -80,7 +80,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="feature-list">
     <TabBar
       :value.sync="activeTab"
       :possible-values="possibleTabValues"
