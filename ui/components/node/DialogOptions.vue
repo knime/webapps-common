@@ -12,18 +12,20 @@ export default {
             type: Array,
             default: () => []
         }
+    },
+    computed: {
+        renderableOptions() {
+            return this.options.filter(option => (option.fields && option.fields.length) || option.sectionDescription);
+        }
     }
 };
 </script>
 
 <template>
-  <div v-if="options.length">
-    <template
-      v-for="(option, index) in options"
-    >
+  <div v-if="renderableOptions.length">
+    <template v-for="(option, index) in renderableOptions">
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
-        v-if="(option.fields && option.fields.length) || option.sectionDescription"
         :key="index"
         :class="['options', { 'with-section' : option.sectionName}]"
         :initially-expanded="options.length === 1"
