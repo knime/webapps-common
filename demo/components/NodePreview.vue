@@ -12,9 +12,7 @@ const codeExample = `<NodePreview
   :hasDynPorts="false"
   isComponent
   type="Sink"
-  :inPorts="[
-      { dataType: 'table' }
-  ]"
+  :inPorts="[{ dataType: 'table' }]"
   :outPorts="[
       { dataType: 'other', color: '#1eb9dc' },
       { dataType: 'table' },

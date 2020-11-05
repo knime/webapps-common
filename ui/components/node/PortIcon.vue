@@ -5,7 +5,7 @@ const portSize = 9; // 9px
 
 export default {
     props: {
-        /** Distuingish between 'table', 'flowVariable' and other types of ports */
+        /** Distinguish between 'table', 'flowVariable' and other types of ports */
         dataType: {
             type: String,
             default: 'table',

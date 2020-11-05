@@ -1,5 +1,4 @@
 <script>
-
 import PortGroup from './PortGroup';
 
 export default {

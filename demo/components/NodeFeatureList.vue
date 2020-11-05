@@ -167,7 +167,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
-          <NodeFeatureList v-bind="nodeFeatues" />
+          <NodeFeatureList v-bind="nodeFeatures" />
         </div>
       </div>
     </section>
