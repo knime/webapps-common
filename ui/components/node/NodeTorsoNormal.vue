@@ -1,6 +1,6 @@
 <script>
 import nodeBackgroundColors from '../../colors/nodeColors';
-import knimeColors from '../../colors/knimeColors';
+import { HibiscusDark as colorHibiscusDark } from '../../colors/knimeColors';
 
 const nodeSize = 32;
 const backgroundPaths = {
@@ -44,7 +44,7 @@ export default {
         },
         backgroundColor() {
             // In case of unknown type, use Hibiscus Dark
-            return nodeBackgroundColors[this.type] || knimeColors.HibiscusDark;
+            return nodeBackgroundColors[this.type] || colorHibiscusDark;
         },
         componentColor() {
             return nodeBackgroundColors.Component;
