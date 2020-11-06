@@ -27,7 +27,7 @@ export default {
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
         :key="index"
-        :class="['options', { 'with-section' : option.sectionName}]"
+        :class="['options', { 'with-section': option.sectionName }]"
         :initially-expanded="options.length === 1"
       >
         <template v-slot:title><h5>{{ option.sectionName }}</h5></template>
