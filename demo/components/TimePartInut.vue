@@ -1,30 +1,52 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import TimePartInput from '../../ui/components/forms/TimePartInput';
+import Label from '../../ui/components/forms/Label';
 import code from '!!raw-loader!../../ui/components/forms/TimePartInput';
 
-const codeExample = `<Checkbox v-model="selected">
-  I want cookies!
-</Checkbox>
-<Checkbox v-model="selectedLarge" label-size="large">
-  I want larger cookies!
-</Checkbox>`;
+const codeExample = `<Label text="Hours">
+  <TimePartInput
+    type="integer"
+    :min="0"
+    :max="23"
+    :min-digits="2"
+    :value="hours"
+    @bounds="hoursBound"
+  />
+</Label>`;
 
 export default {
     components: {
         TimePartInput,
-        CodeExample
+        CodeExample,
+        Label
     },
     data() {
         return {
             codeExample,
-            selected: false,
-            selectedLarge: false
+            hours: 18,
+            minutes: 53,
+            seconds: 22,
+            milliseconds: 320
         };
     },
     computed: {
         code() {
             return code;
+        }
+    },
+    methods: {
+        hoursBound() {
+            this.hours = 0;
+        },
+        minutesBound() {
+            this.minutes = 0;
+        },
+        secondsBound() {
+            this.seconds = 0;
+        },
+        millisecondsBound() {
+            this.milliseconds = 0;
         }
     }
 };
@@ -38,15 +60,57 @@ export default {
           <h2>TimePartInput</h2>
           <p>
             A number input field similar to the NumberInput component but for time units like hours, minutes, seconds
-            and milliseconds. It acts as a form element, so it emits an <code>input</code> event when (de-)selected,
-            and it has a <code>value</code>. The <code>label-size</code> property can be set to <code>large</code> for
-            larger labels.
+            and milliseconds. It acts as a form element, so it emits <code>input</code> events and it has
+            a <code>value</code>. It also has <code>min</code> & <code>max</code> property to set bounds and a
+            <code>bounds</code> event to determine what should happen if a bound is reached.
           </p>
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-6">
-          <TimePartInput />
+        <div class="grid-item-6 inputs">
+          <Label text="Hours">
+            <TimePartInput
+              v-model="hours"
+              type="integer"
+              :min="0"
+              :max="23"
+              :min-digits="2"
+              @bounds="hoursBound"
+            />
+          </Label>
+          <Label text="Minutes">
+            <TimePartInput
+              v-model="minutes"
+              type="integer"
+              :min="0"
+              :max="60"
+              :min-digits="2"
+              @bounds="minutesBound"
+            />
+          </Label>
+          <Label text="Seconds">
+            <TimePartInput
+              v-model="seconds"
+              type="integer"
+              :min="0"
+              :max="60"
+              :min-digits="2"
+              @bounds="secondsBound"
+            />
+          </Label>
+          <Label text="Milliseconds">
+            <TimePartInput
+              v-model="milliseconds"
+              type="integer"
+              :min="0"
+              :max="999"
+              :min-digits="3"
+              @bounds="millisecondsBound"
+            />
+          </Label>
+        </div>
+        <div class="grid-item-4">
+          Time: {{ hours }}h : {{ minutes }}m : {{ seconds }}s : {{ milliseconds }}ms
         </div>
       </div>
     </section>
@@ -60,3 +124,9 @@ export default {
     </section>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.inputs >>> label {
+  margin-top: 15px;
+}
+</style>

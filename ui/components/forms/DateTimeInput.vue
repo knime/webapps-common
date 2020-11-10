@@ -1,9 +1,10 @@
 <script>
 import CalendarIcon from '../../assets/img/icons/calendar.svg?inline';
 import TimePartInput from './TimePartInput';
-import { parse, isAfter, isBefore, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
+import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import updateDate from '../../../util/updateDate';
+import { isBeforeMinDate, isAfterMaxDate } from '../../../util/dateMinMaxCheck';
 import getLocalTimeZone from '../../../util/localTimezone';
 
 /**
@@ -15,7 +16,7 @@ export default {
     components: {
         CalendarIcon,
         TimePartInput,
-        'DatePicker': () => import('v-calendar/lib/components/date-picker.umd') // needed in order for the DatePicker to work
+        DatePicker: () => import('v-calendar/lib/components/date-picker.umd') // needed in order for DatePicker to work
 
     },
     props: {
@@ -40,6 +41,14 @@ export default {
         dateFormat: {
             type: String,
             default: 'yyyy-MM-dd'
+        },
+        /**
+         * Date time format in unicode, only time not date!
+         * @see https://www.unicode.org/reports/tr35/tr35-dates.html#dfst-hour
+         */
+        timeFormat: {
+            type: String,
+            default: 'HH:mm:ss'
         },
         min: {
             default: null,
@@ -133,11 +142,16 @@ export default {
     },
     methods: {
         formatDate(date) {
-            if (this.showTime) {
-                return format(date, `${this.dateFormat} HH:mm:SS`);
-            } else {
-                return format(date, this.dateFormat);
+            // time and date
+            if (this.showTime && this.showDate) {
+                return format(date, `${this.dateFormat} ${this.timeFormat}`);
             }
+            // only time
+            if (this.showTime) {
+                return format(date, this.timeFormat);
+            }
+            // only date
+            return format(date, this.dateFormat);
         },
         emitInput(value) {
             // check min/max
@@ -179,26 +193,10 @@ export default {
             if (!this.min && !this.max) {
                 return true;
             }
-            // check for min if min is given
-            if (this.min) {
-                if (this.showTime) {
-                    this.isBeforeMin = isBefore(date, this.min);
-                } else {
-                    // use same time as base
-                    const base = new Date(0);
-                    this.isBeforeMin = isBefore(updateDate(base, date), updateDate(base, this.min));
-                }
-            }
-            // check for max if min is given
-            if (this.max) {
-                if (this.showTime) {
-                    this.isAfterMax = isAfter(date, this.max);
-                } else {
-                    // use same time base
-                    const base = new Date(0);
-                    this.isAfterMax = isAfter(updateDate(base, date), updateDate(base, this.max));
-                }
-            }
+
+            this.isBeforeMin = isBeforeMinDate(date, this.min, this.showDate, this.showTime);
+            this.isAfterMax = isAfterMaxDate(date, this.max, this.showDate, this.showTime);
+
             if (this.isBeforeMin || this.isAfterMax) {
                 this.invalidValue = date;
                 return false;
@@ -206,6 +204,10 @@ export default {
             return true;
         },
         onTimeHoursBounds(bounds) {
+            // skip this handler if date is not shown
+            if (!this.showDate) {
+                return;
+            }
             if (['min', 'max'].includes(bounds.type)) {
                 this.emitInput(setHours(new Date(this.localValue), bounds.input));
             } else {
@@ -271,12 +273,12 @@ export default {
             if (this.isAfterMax) {
                 isValid = false;
                 // eslint-disable-next-line max-len
-                errorMessage = `${this.formatDate(this.invalidValue)} is after maximum date ${this.formatDate(this.max)}`;
+                errorMessage = `${this.formatDate(this.invalidValue)} is after maximum ${this.formatDate(this.max)}`;
             }
             if (this.isBeforeMin) {
                 isValid = false;
                 // eslint-disable-next-line max-len
-                errorMessage = `${this.formatDate(this.invalidValue)} is before minimum date ${this.formatDate(this.min)}`;
+                errorMessage = `${this.formatDate(this.invalidValue)} is before minimum ${this.formatDate(this.min)}`;
             }
             return {
                 isValid,
@@ -298,38 +300,38 @@ export default {
         class="invalid-marker"
       />
       <client-only>
-      <DatePicker
-        ref="datePicker"
-        :value="localValue"
-        :is-dark="false"
-        color="masala"
-        :popover="{ placement: 'bottom', visibility: 'click'}"
-        :masks="{L: legacyDateFormat}"
-        :max-date="max"
-        :min-date="min"
-        @popoverWillHide="popoverIsVisible = false"
-        @popoverWillShow="popoverIsVisible = true"
-        @input="onDatePickerInput"
-      >
-        <!--Custom Input Slot-->
-        <template v-slot="{ inputValue, inputEvents, hidePopover, togglePopover }">
-          <div>
-            <input
-              :id="id"
-              :value="inputValue"
-              v-on="inputEvents"
-              @change="onTextInputChange($event, hidePopover)"
-              @blur="hidePopover"
-            >
-            <span
-              :class="['button', {'active': popoverIsVisible}]"
-              @click="togglePopover"
-            >
-              <CalendarIcon />
-            </span>
-          </div>
-        </template>
-      </DatePicker>
+        <DatePicker
+          ref="datePicker"
+          :value="localValue"
+          :is-dark="false"
+          color="masala"
+          :popover="{ placement: 'bottom', visibility: 'click'}"
+          :masks="{L: legacyDateFormat}"
+          :max-date="max"
+          :min-date="min"
+          @popoverWillHide="popoverIsVisible = false"
+          @popoverWillShow="popoverIsVisible = true"
+          @input="onDatePickerInput"
+        >
+          <!--Custom Input Slot-->
+          <template v-slot="{ inputValue, inputEvents, hidePopover, togglePopover }">
+            <div>
+              <input
+                :id="id"
+                :value="inputValue"
+                v-on="inputEvents"
+                @change="onTextInputChange($event, hidePopover)"
+                @blur="hidePopover"
+              >
+              <span
+                :class="['button', {'active': popoverIsVisible}]"
+                @click="togglePopover"
+              >
+                <CalendarIcon />
+              </span>
+            </div>
+          </template>
+        </DatePicker>
       </client-only>
     </div>
     <div
