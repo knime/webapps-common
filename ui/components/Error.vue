@@ -43,7 +43,6 @@ export default {
           fill="none"
           stroke-linejoin="round"
           preserveAspectRatio="xMidYMid meet"
-          stroke-miterlimit="10"
         >
           <path
             stroke="#aaaaaa"
