@@ -17,7 +17,9 @@ module.exports = {
     ],
     moduleNameMapper: {
         '\\.(jpg|png)\\?(jpg|webp)': '<rootDir>/test/unit/assets/stub.$2',
-        '\\.svg\\?inline$': '<rootDir>/test/unit/assets/stub.svg',
+        '^@/(.*\\.svg)\\?inline$': '<rootDir>/src/$1',
+        '^~/(.*\\.svg)\\?inline$': '<rootDir>/$1',
+        '^(.*\\.svg)\\?inline$': '$1',
         '\\.svg\\?data$': '<rootDir>/test/unit/assets/stub.data',
         '^vue$': 'vue/dist/vue.common.js',
         '^@/(.*)$': '<rootDir>/src/$1',

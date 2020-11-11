@@ -58,6 +58,7 @@ export default {
   padding: 3px 0 3px 37px;
   max-width: 100%;
   cursor: pointer;
+  vertical-align: middle;
 
   & input {
     user-select: none;
