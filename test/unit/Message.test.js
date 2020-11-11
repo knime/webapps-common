@@ -1,9 +1,7 @@
 import Message from '~/ui/components/Message';
 import Button from '~/ui/components/Button';
 import { shallowMount } from '@vue/test-utils';
-import InfoIcon from '../assets/img/icons/circle-info.svg?inline';
-import WarnIcon from '../assets/img/icons/sign-warning.svg?inline';
-import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
+import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg?inline';
 
 describe('Message.vue', () => {
     let wrapper;
@@ -14,7 +12,6 @@ describe('Message.vue', () => {
         wrapper = shallowMount(Message);
 
         expect(wrapper.classes()).toEqual(['info']);
-        expect(wrapper.find(InfoIcon).exists()).toBe(true);
         expect(wrapper.find('span.close').exists()).toBe(true);
         expect(wrapper.find('.collapser').exists()).toBe(false);
         expect(wrapper.find('.banner').exists()).toBe(true);
@@ -28,7 +25,6 @@ describe('Message.vue', () => {
         });
 
         expect(wrapper.classes()).toEqual(['success']);
-        expect(wrapper.find(SuccessIcon).exists()).toBe(true);
     });
 
     it('renders error', () => {
@@ -39,7 +35,6 @@ describe('Message.vue', () => {
         });
 
         expect(wrapper.classes()).toEqual(['error']);
-        expect(wrapper.find(WarnIcon).exists()).toBe(true);
     });
 
     it('renders button', () => {
@@ -55,7 +50,7 @@ describe('Message.vue', () => {
 
     it('renders icon', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            slots: {
                 icon: WarnIcon
             }
         });
