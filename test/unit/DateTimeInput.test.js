@@ -1,7 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 
 import TimePartInput from '../../ui/components/forms/TimePartInput';
 import DateTimeInput from '../../ui/components/forms/DateTimeInput';
+import DatePicker from 'v-calendar/lib/components/date-picker.umd';
 
 
 import { getDayOfYear, getHours, getMinutes, getSeconds, getMilliseconds, getDate, getMonth, getYear } from 'date-fns';
@@ -31,12 +32,13 @@ describe('DateTimeInput.vue', () => {
 
     describe('renders', () => {
 
-        it('renders with datepicker and time', async () => {
-            const DatePicker = (await import('v-calendar/lib/components/date-picker.umd')).default;
-            let wrapper = mount(DateTimeInput, {
+        it('renders with datepicker and time', () => {
+            let wrapper = shallowMount(DateTimeInput, {
                 ...context,
                 propsData,
-                stubs: DatePicker
+                stubs: {
+                    DatePicker
+                }
             });
             expect(wrapper.html()).toBeTruthy();
             expect(wrapper.isVisible()).toBeTruthy();
@@ -49,7 +51,10 @@ describe('DateTimeInput.vue', () => {
             propsData.showTime = false;
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
             expect(wrapper.html()).toBeTruthy();
             expect(wrapper.isVisible()).toBeTruthy();
@@ -61,7 +66,10 @@ describe('DateTimeInput.vue', () => {
             propsData.showDate = false;
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
             expect(wrapper.html()).toBeTruthy();
             expect(wrapper.isVisible()).toBeTruthy();
@@ -74,7 +82,10 @@ describe('DateTimeInput.vue', () => {
             propsData.showMilliseconds = false;
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
             expect(wrapper.findAll(TimePartInput).length).toBe(2);
         });
@@ -84,6 +95,9 @@ describe('DateTimeInput.vue', () => {
                 ...context,
                 propsData: {
                     value: new Date()
+                },
+                stubs: {
+                    DatePicker
                 }
             });
             expect(wrapper.html()).toBeTruthy();
@@ -98,7 +112,10 @@ describe('DateTimeInput.vue', () => {
         it('updates date on datepicker changes', () => {
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
             const d = new Date('2020-05-05T15:34:25');
             wrapper.find({ ref: 'datePicker' }).vm.$emit('input', d);
@@ -110,7 +127,10 @@ describe('DateTimeInput.vue', () => {
         it('updates date if datepicker emits @input', () => {
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
             const d = new Date('2020-05-05T15:34:25');
             wrapper.find({ ref: 'datePicker' }).vm.$emit('input', d);
@@ -354,7 +374,10 @@ describe('DateTimeInput.vue', () => {
             propsData.showTime = false;
             let wrapper = mount(DateTimeInput, {
                 ...context,
-                propsData
+                propsData,
+                stubs: {
+                    DatePicker
+                }
             });
 
             wrapper.find({ ref: 'datePicker' }).vm.$emit('input', new Date('2020-05-06T09:54:56'));

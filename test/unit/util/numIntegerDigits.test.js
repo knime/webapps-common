@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import numIntegerDigits from '../../util/numIntegerDigits';
+import numIntegerDigits from '~/util/numIntegerDigits';
 
 describe('numIntegerDigits.js', () => {
     it('counts integer places of number', () => {

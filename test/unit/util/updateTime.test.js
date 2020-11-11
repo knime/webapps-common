@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import updateTime from '../../util/updateTime';
+import updateTime from '~/util/updateTime';
 
 describe('updateTime.js', () => {
     it('updates only date part (year, month, day) of a date object', () => {

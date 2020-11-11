@@ -1,4 +1,4 @@
-import { isAfterMaxDate, isBeforeMinDate } from '../../util/dateMinMaxCheck';
+import { isAfterMaxDate, isBeforeMinDate } from '~/util/dateMinMaxCheck';
 
 describe('dateMinMaxCheck.js', () => {
 
