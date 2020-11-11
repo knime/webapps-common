@@ -18,6 +18,8 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
+    "date-fns": "2.16.1",
+    "date-fns-tz": "1.0.12",
     "filesize": "6.1.0"
   },
   "devDependencies": {
@@ -44,8 +46,6 @@
     "babel-eslint": "10.x",
     "consola": "*",
     "core-js": "3.6.5",
-    "date-fns": "2.16.1",
-    "date-fns-tz": "1.0.12",
     "eslint": "5.x - 7.x",
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
