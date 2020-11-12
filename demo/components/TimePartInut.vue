@@ -83,7 +83,7 @@ export default {
               v-model="minutes"
               type="integer"
               :min="0"
-              :max="60"
+              :max="59"
               :min-digits="2"
               @bounds="minutesBound"
             />
@@ -93,7 +93,7 @@ export default {
               v-model="seconds"
               type="integer"
               :min="0"
-              :max="60"
+              :max="59"
               :min-digits="2"
               @bounds="secondsBound"
             />
