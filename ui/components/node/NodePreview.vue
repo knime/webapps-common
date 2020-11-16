@@ -34,11 +34,11 @@ export default {
          *    color: String (css-compatible),
          *    optional: Boolean,
          *    dataType: String,
-         *    ...    
+         *    ...
          * }
-         * 
+         *
          * The port format is further described in
-         * https://bitbucket.org/KNIME/knime-com-shared/src/master/com.knime.gateway.codegen/src-gen/api/web-ui/gateway.yaml 
+         * https://bitbucket.org/KNIME/knime-com-shared/src/master/com.knime.gateway.codegen/src-gen/api/web-ui/gateway.yaml
          */
         inPorts: {
             type: Array,
@@ -92,6 +92,7 @@ export default {
             } else if (total === 3) {
                 spacing = 1.5;
             }
+            /* eslint-enable no-magic-numbers */
 
             let totalHeight = total * portSize + (total - 1) * spacing;
             let delta = (bgSize - totalHeight) / 2;

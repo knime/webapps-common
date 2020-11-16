@@ -14,7 +14,7 @@ export default {
         InteractiveIcon
     },
     props: {
-        /** 
+        /**
          * Array of views
          * View {
          *    interactive: Boolean,

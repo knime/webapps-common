@@ -3,7 +3,7 @@ import Collapser from '../Collapser';
 import Description from '../Description';
 
 /**
- * DialogOptions are part of the NodeFeaureList 
+ * DialogOptions are part of the NodeFeaureList
  * Displays all dialog options of a component or node
  */
 export default {
@@ -12,19 +12,19 @@ export default {
         Description
     },
     props: {
-      /** 
-       * Array of options
-       * 
-       * Option: {
-       *   sectionName: String,
-       *   sectionDescription: String,
-       *   fields: [{
-       *     name: String,
-       *     description: String,
-       *     optional: Boolean
-       *   }]
-       * }
-       */
+        /**
+         * Array of options
+         *
+         * Option: {
+         *   sectionName: String,
+         *   sectionDescription: String,
+         *   fields: [{
+         *     name: String,
+         *     description: String,
+         *     optional: Boolean
+         *   }]
+         * }
+         */
         options: {
             type: Array,
             default: () => []

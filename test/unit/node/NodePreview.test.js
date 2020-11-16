@@ -52,14 +52,14 @@ describe('NodeIconGenerated.vue', () => {
             filled: true,
             dataType: 'table'
         });
-        expect(portIcons.at(1).attributes().transform).toBe('translate(36.5, 8.5)');
+        expect(portIcons.at(1).attributes().transform).toBe('translate(36.5, 5.5)');
 
         expect(portIcons.at(2).props()).toStrictEqual({
             color: '#888',
             filled: false,
             dataType: 'other'
         });
-        expect(portIcons.at(2).attributes().transform).toBe('translate(36.5, 23.5)');
+        expect(portIcons.at(2).attributes().transform).toBe('translate(36.5, 26.5)');
 
     });
 

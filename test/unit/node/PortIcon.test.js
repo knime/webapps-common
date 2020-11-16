@@ -15,7 +15,7 @@ describe('PortIcon', () => {
             }
         });
         expect(wrapper.attributes().stroke).toBe('yellow');
-        expect(wrapper.attributes().fill).toBe('white');
+        expect(wrapper.attributes().fill).toBe('transparent');
     });
 
     it.each([

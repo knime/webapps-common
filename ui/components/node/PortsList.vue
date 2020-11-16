@@ -1,10 +1,10 @@
 <script>
 import PortGroup from './PortGroup';
 
-/** 
+/**
  * Part of NodeFeatureList
  * This components displays information about a node's/component's ports
- * 
+ *
  * It renders two fixed PortGroups for regular Inports and Outports
  * and one PortGroup per dynamic in/out-port, listing all possible types for said port
  */
