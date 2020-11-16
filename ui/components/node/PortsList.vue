@@ -1,6 +1,13 @@
 <script>
 import PortGroup from './PortGroup';
 
+/** 
+ * Part of NodeFeatureList
+ * This components displays information about a node's/component's ports
+ * 
+ * It renders two fixed PortGroups for regular Inports and Outports
+ * and one PortGroup per dynamic in/out-port, listing all possible types for said port
+ */
 export default {
     components: {
         PortGroup
@@ -27,30 +34,6 @@ export default {
         hasPorts() {
             return this.inPorts.length > 0 || this.outPorts.length > 0 || this.dynInPorts.length > 0 ||
             this.dynOutPorts.length > 0;
-        },
-        normalizedDynInPorts() {
-            return this.normalizeDynPorts({ dynPorts: this.dynInPorts });
-        },
-        normalizedDynOutPorts() {
-            return this.normalizeDynPorts({ dynPorts: this.dynOutPorts });
-        }
-    },
-    methods: {
-        normalizeDynPorts({ dynPorts }) {
-            /*
-            In this component dynamic port groups can be displayed the same way as regular port groups.
-            Therefore we normalize the dynamic ports' data format to regular ports' format.
-            */
-
-            return dynPorts.reduce((acc, dynPort) => {
-                const normalizedPorts = dynPort.types.map(type => ({
-                    ...type,
-                    name: dynPort.groupName,
-                    description: dynPort.groupDescription
-                }));
-                return acc.concat(normalizedPorts);
-            }, []);
-
         }
     }
 };
@@ -79,7 +62,6 @@ export default {
         :title="dynPortsGroup.groupName + ' (Dynamic Inport)'"
         :group-description="dynPortsGroup.groupDescription"
         :ports="dynPortsGroup.types"
-        class="dyninports"
       />
     </template>
 
@@ -89,7 +71,6 @@ export default {
         :title="dynPortsGroup.groupName + ' (Dynamic Outport)'"
         :group-description="dynPortsGroup.groupDescription"
         :ports="dynPortsGroup.types"
-        class="dynoutports"
       />
     </template>
   </div>

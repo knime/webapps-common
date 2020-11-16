@@ -2,6 +2,10 @@
 import PortIcon from './PortIcon';
 import Description from '../Description';
 
+/** PortGroups are part of the NodeFeaureList
+ *  A PortGroup is one section that contains several ports and their metadata.
+ *  Examples are "Input ports", "Output ports"
+ */
 export default {
     components: {
         Description,
@@ -23,7 +27,7 @@ export default {
             type: Array,
             default: () => []
         },
-        /** Header title of this Port-Group */
+        /** Header title of this PortGroup */
         title: {
             type: String,
             default: 'Input ports'

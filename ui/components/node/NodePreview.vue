@@ -29,7 +29,16 @@ export default {
             default: false
         },
         /**
-         * List ouf incoming ports as received from API
+         * List of incoming ports as received from API
+         * Port: {
+         *    color: String (css-compatible),
+         *    optional: Boolean,
+         *    dataType: String,
+         *    ...    
+         * }
+         * 
+         * The port format is further described in
+         * https://bitbucket.org/KNIME/knime-com-shared/src/master/com.knime.gateway.codegen/src-gen/api/web-ui/gateway.yaml 
          */
         inPorts: {
             type: Array,
@@ -79,9 +88,9 @@ export default {
             /* eslint-disable no-magic-numbers */
             let spacing = 1;
             if (total === 2) {
-                spacing = 6;
+                spacing = 12;
             } else if (total === 3) {
-                spacing = 2;
+                spacing = 1.5;
             }
 
             let totalHeight = total * portSize + (total - 1) * spacing;

@@ -3,6 +3,10 @@ import Description from '../Description';
 import StandardIcon from '../../assets/img/icons/eye.svg?inline';
 import InteractiveIcon from '../../assets/img/icons/interactive.svg?inline';
 
+/**
+ * ViewsList are part of the NodeFeaureList
+ * Displays a list of views a component or node can produce
+ */
 export default {
     components: {
         Description,
@@ -10,6 +14,14 @@ export default {
         InteractiveIcon
     },
     props: {
+        /** 
+         * Array of views
+         * View {
+         *    interactive: Boolean,
+         *    name: String,
+         *    description: String
+         * }
+         */
         views: {
             type: Array,
             default: () => []

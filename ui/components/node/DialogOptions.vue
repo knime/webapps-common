@@ -2,12 +2,29 @@
 import Collapser from '../Collapser';
 import Description from '../Description';
 
+/**
+ * DialogOptions are part of the NodeFeaureList 
+ * Displays all dialog options of a component or node
+ */
 export default {
     components: {
         Collapser,
         Description
     },
     props: {
+      /** 
+       * Array of options
+       * 
+       * Option: {
+       *   sectionName: String,
+       *   sectionDescription: String,
+       *   fields: [{
+       *     name: String,
+       *     description: String,
+       *     optional: Boolean
+       *   }]
+       * }
+       */
         options: {
             type: Array,
             default: () => []
@@ -15,6 +32,7 @@ export default {
     },
     computed: {
         renderableOptions() {
+            // keep options that have fields or that start a section
             return this.options.filter(option => (option.fields && option.fields.length) || option.sectionDescription);
         }
     }

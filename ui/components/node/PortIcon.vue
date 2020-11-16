@@ -3,9 +3,13 @@ import portColors from '../../colors/portColors';
 
 const portSize = 9; // 9px
 
+/** Draws a Node's port. Either a triangle, circle or square */
 export default {
     props: {
-        /** Distinguish between 'table', 'flowVariable' and other types of ports */
+        /** 
+         * Distinguish between 'table', 'flowVariable' and other types of ports
+         * Determines the shape of the port
+         */
         dataType: {
             type: String,
             default: 'table',

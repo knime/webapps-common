@@ -15,6 +15,7 @@ const backgroundPaths = {
 };
 export const componentBackgroundPortion = 0.75;
 
+/** Draws the Torso (colored rounded rectangle with icon) of a Node or Component */
 export default {
     props: {
         /**
