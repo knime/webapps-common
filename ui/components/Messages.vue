@@ -51,6 +51,7 @@ export default {
       :details="message.details"
       :show-close-button="message.showCloseButton"
       :show-collapser="message.showCollapser"
+      :class="{ 'offset-details': message.icon }"
       @copied="$emit('copied')"
       @dismiss="$emit('dismiss', message.id)"
     >
@@ -75,6 +76,10 @@ export default {
 
   &.active {
     pointer-events: all;
+  }
+
+  & .offset-details >>> .details {
+    padding-left: 47px;
   }
 }
 

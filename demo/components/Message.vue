@@ -83,10 +83,11 @@ export default {
 <Message
   type="info"
   :details="({
-    text: 'Four score and seven years ago...',
+    text: '<-- spacing must be styled from parent component, as the icon is provided via slot and can be' +
+      ' of arbitrary size or composition.',
     link: {
       text: '(read more)',
-      href: 'https://en.wikipedia.org/wiki/Gettysburg_Address#Text_of_the_Gettysburg_Address'
+      href: 'https://www.telerik.com/blogs/understanding-vue-deep-css-selector'
     }
   })"
   :show-collapser="false"
@@ -124,7 +125,8 @@ export default {
             You can select them with the <code>type</code> property.
           </p>
           <p>
-            Each message can have an icon in the <code>icon</code> slot.
+            Each message can have an icon in the <code>icon</code> slot. Note: for spacing of text when using an icon
+            via <code>icon</code> slot, please use the parent component to style the text accordingly.
           </p>
           <p>
             A message can have an 'x' button (default), or a close button with text, controlled by the
@@ -215,10 +217,11 @@ export default {
     <Message
       type="info"
       :details="({
-        text: 'Four score and seven years ago...',
+        text: '<-- spacing must be styled from parent component, as the icon is provided via slot and can be' +
+          ' of arbitrary size or composition.',
         link: {
           text: '(read more)',
-          href: 'https://en.wikipedia.org/wiki/Gettysburg_Address#Text_of_the_Gettysburg_Address'
+          href: 'https://www.telerik.com/blogs/understanding-vue-deep-css-selector'
         }
       })"
       :show-collapser="false"
