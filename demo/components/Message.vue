@@ -2,6 +2,7 @@
 import Message from '../../ui/components/Message';
 import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
 import CheckIcon from '../../ui/assets/img/icons/circle-check.svg?inline';
+import InfoIcon from '../../ui/assets/img/icons/circle-info.svg?inline';
 import CodeExample from './demo/CodeExample';
 import code from '!!raw-loader!../../ui/components/Message';
 
@@ -19,41 +20,87 @@ export default {
 };
 <\/script>
 
-<template>
-  <Message>
-    This is a simple message
-  </Message>
-  <Message>
-    <BulbIcon slot="icon" />
-    This is a simple message with an icon.<br>
-    <a href="#" @click.prevent>It contains markup</a>
-  </Message>
-  <Message
-    type="error"
-    button="Okily Dokily!"
-  >
-    This is an error message with a button
-  </Message>
-  <Message type="success">
-    <CheckIcon slot="icon" />
-    This is a success message with an icon
-  </Message>
-  <Message
-    type="error"
-    details="Some example detail text"
-  >
-    This is a message with further details
-  </Message>
-  <Message :show-close-button="false">
-    This is a non-dismissable message
-  </Message>
-</template>`;
+<Message>
+  This is a simple message
+</Message>
+<Message>
+  <BulbIcon slot="icon" />
+  This is a simple message with an icon.<br>
+  <!-- eslint-disable-next-line vue/max-attributes-per-line -->
+  <a href="#" @click.prevent>It contains markup</a>
+</Message>
+<Message
+  type="error"
+  button="Okily Dokily!"
+>
+  This is an error message with a button
+</Message>
+<Message type="success">
+  <CheckIcon slot="icon" />
+  This is a success message with an icon
+</Message>
+<Message :show-close-button="false">
+  This is a message without close button
+</Message>
+<Message
+  type="error"
+  details="Some example detail text"
+>
+  This is a message with further details
+</Message>
+<Message
+  type="info"
+  :details="({
+    text: 'Some details.',
+    link: {
+      text: 'Some docs.',
+      href: 'https://docs.knime.com'
+    }
+  })"
+>
+  This is a message with a detail link
+</Message>
+<Message
+  type="success"
+  details="Some details"
+  :show-collapser="false"
+>
+  This is a message with a details in the main banner
+</Message>
+<Message
+  type="error"
+  :details="({
+    text: 'Some details.',
+    link: {
+      text: 'Some docs.',
+      href: 'https://docs.knime.com'
+    }
+  })"
+  :show-collapser="false"
+>
+  This is a message with a details and a link in the main banner
+</Message>
+<Message
+  type="info"
+  :details="({
+    text: 'Four score and seven years ago...',
+    link: {
+      text: '(read more)',
+      href: 'https://en.wikipedia.org/wiki/Gettysburg_Address#Text_of_the_Gettysburg_Address'
+    }
+  })"
+  :show-collapser="false"
+>
+  <InfoIcon slot="icon" />
+  This is a message with an icon, details and a link in the main banner
+</Message>`;
 
 export default {
     components: {
         Message,
         BulbIcon,
         CheckIcon,
+        InfoIcon,
         CodeExample
     },
     data() {
@@ -93,6 +140,15 @@ export default {
             collapser button '^' (pointing down) is clicked. It is then possible to click the copy button which will
             copy the detail text and fire the <code>copied</code> event.
           </p>
+          <p>
+            Alternatively, <code>details</code> can be displayed in the main banner section  by setting the
+            <code>showCollapser</code> property to <code>false</code>.
+          </p>
+          <p>
+            Any <code>details</code> can also contain links. These are configured by providing details as an
+            <code>Object</code> (instead of a <code>String</code>) with the <code>link</code> property set. This can be
+            used in combination with any of the other <code>details</code> configuration options.
+          </p>
         </div>
       </div>
     </section>
@@ -115,14 +171,60 @@ export default {
       <CheckIcon slot="icon" />
       This is a success message with an icon
     </Message>
+    <Message :show-close-button="false">
+      This is a message without close button
+    </Message>
     <Message
       type="error"
       details="Some example detail text"
     >
       This is a message with further details
     </Message>
-    <Message :show-close-button="false">
-      This is a message without close button
+    <Message
+      type="info"
+      :details="({
+        text: 'Some details.',
+        link: {
+          text: 'Some docs.',
+          href: 'https://docs.knime.com'
+        }
+      })"
+    >
+      This is a message with a detail link
+    </Message>
+    <Message
+      type="success"
+      details="Some details"
+      :show-collapser="false"
+    >
+      This is a message with a details in the main banner
+    </Message>
+    <Message
+      type="error"
+      :details="({
+        text: 'Some details.',
+        link: {
+          text: 'Some docs.',
+          href: 'https://docs.knime.com'
+        }
+      })"
+      :show-collapser="false"
+    >
+      This is a message with a details and a link in the main banner
+    </Message>
+    <Message
+      type="info"
+      :details="({
+        text: 'Four score and seven years ago...',
+        link: {
+          text: '(read more)',
+          href: 'https://en.wikipedia.org/wiki/Gettysburg_Address#Text_of_the_Gettysburg_Address'
+        }
+      })"
+      :show-collapser="false"
+    >
+      <InfoIcon slot="icon" />
+      This is a message with an icon, details and a link in the main banner
     </Message>
     <section>
       <div class="grid-container">
