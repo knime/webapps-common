@@ -69,4 +69,70 @@ describe('NodeFeatureList.vue', () => {
 
         expect(wrapper.find(TabBar).props('value')).toEqual('node-dialog-options');
     });
+
+    it('disables ports tab if there are no ports', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                dialogs: [{
+                    dummy: 'dialog'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'ports').disabled).toBe(true);
+    });
+
+    it('enables ports tab if there are ports', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                inPorts: [{
+                    dummy: 'port'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'ports').disabled).toBe(false);
+    });
+
+    it('disables views tab if there are no views', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                dialogs: [{
+                    dummy: 'dialog'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'views').disabled).toBe(true);
+    });
+
+    it('enables views tab if there are views', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                views: [{
+                    dummy: 'view'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'views').disabled).toBe(false);
+    });
+
+    it('disables options tab if there are no options', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                views: [{
+                    dummy: 'dialog'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'node-dialog-options').disabled).toBe(true);
+    });
+
+    it('enables views tab if there are views', () => {
+        const wrapper = shallowMount(NodeFeatureList, {
+            propsData: {
+                dialogs: [{
+                    dummy: 'view'
+                }]
+            }
+        });
+        expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'node-dialog-options').disabled).toBe(false);
+    });
 });

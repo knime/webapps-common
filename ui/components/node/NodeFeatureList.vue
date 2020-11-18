@@ -72,7 +72,7 @@ export default {
                 value: 'views',
                 label: 'Views',
                 icon: ViewsIcon,
-                disabled: this.dialogs.length === 0
+                disabled: this.views.length === 0
             }];
         }
     }
