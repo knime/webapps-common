@@ -18,6 +18,8 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
+    "date-fns": "2.16.1",
+    "date-fns-tz": "1.0.12",
     "filesize": "6.1.0"
   },
   "devDependencies": {
@@ -40,8 +42,10 @@
     "vue-template-compiler": "2.6.11"
   },
   "peerDependencies": {
-    "consola": "*",
+    "@popperjs/core": "2.5.4",
     "babel-eslint": "10.x",
+    "consola": "*",
+    "core-js": "3.6.5",
     "eslint": "5.x - 7.x",
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
@@ -55,7 +59,8 @@
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
     "fontsource-roboto": "*",
-    "fontsource-roboto-mono": "*"
+    "fontsource-roboto-mono": "*",
+    "v-calendar": "2.0.1"
   },
   "private": true
 }

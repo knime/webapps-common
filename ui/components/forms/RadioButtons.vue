@@ -84,8 +84,12 @@ export default {
         type="radio"
         @change="onInput"
       >
-      <span :title="item.text">
-        {{ item.text }}
+      <span
+        :title="item.text"
+        :class="{'with-extra-content': item.slot}"
+      >
+        <slot v-if="item.slot" />
+        <template v-else>{{ item.text }}</template>
       </span>
     </label>
   </div>
@@ -120,6 +124,10 @@ export default {
         color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.with-extra-content {
+          margin-top: -6px;
+        }
       }
 
       /* ◯ */
