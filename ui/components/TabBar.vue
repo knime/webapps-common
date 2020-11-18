@@ -181,6 +181,7 @@ export const tabBarMixin = {
   padding-top: 20px;
   padding-bottom: 20px;
   display: inline-block;
+  z-index: 1; /* create local stacking context */
 
   @media only screen and (max-width: 900px) {
     margin-top: -10px;
