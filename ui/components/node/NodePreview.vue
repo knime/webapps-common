@@ -10,7 +10,6 @@ export default {
         PortIcon,
         NodeTorsoNormal
     },
-    /** Hub-Format of Ports expected */
     props: {
         /**
          * Type of node; determines the background color.
@@ -29,7 +28,7 @@ export default {
             default: false
         },
         /**
-         * List of incoming ports as received from API
+         * List of incoming ports
          * Port: {
          *    color: String (css-compatible),
          *    optional: Boolean,
@@ -38,14 +37,14 @@ export default {
          * }
          *
          * The port format is further described in
-         * https://bitbucket.org/KNIME/knime-com-shared/src/master/com.knime.gateway.codegen/src-gen/api/web-ui/gateway.yaml
+         * https://bitbucket.org/KNIME/knime-com-shared/src/master/com.knime.gateway.codegen/src-gen/api/web-ui/gateway.yaml#lines-545
          */
         inPorts: {
             type: Array,
             default: () => []
         },
         /**
-         * List ouf outgoing ports as received from API
+         * List ouf outgoing ports
          */
         outPorts: {
             type: Array,
