@@ -354,6 +354,12 @@ section {
     display: flex;
     align-content: center;
 
+    & .message {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 700;
+    }
+
     & .dropdown {
       width: 30px;
       height: 30px;
