@@ -6,7 +6,7 @@ import code from '!!raw-loader!../../ui/components/LinkList';
 const codeExample = `<LinkList
   :links="[
     { text: 'Google', url: 'https://google.com' },
-    { text: 'Knime Hub', url: 'https://hub.knime.com' }
+    { text: 'KNIME Hub', url: 'https://hub.knime.com' }
   ]"
 />`;
 
@@ -33,16 +33,16 @@ export default {
         <h2>LinkList</h2>
         <p>
           A list of clickable links displayed with an arrow icon and text.
-          On small screens there is on column of links. On larger screens there are two.
+          On small screens there is one column of links. On larger screens there are two.
         </p>
         <LinkList
           :links="[
             { text: 'Google', url: 'https://google.com' },
-            { text: 'Knime Hub', url: 'https://hub.knime.com' }
+            { text: 'KNIME Hub', url: 'https://hub.knime.com' }
           ]"
         />
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Breadcrumb.vue source code">{{ code }}</CodeExample>
+        <CodeExample summary="Show LinkList.vue source code">{{ code }}</CodeExample>
       </div>
     </div>
   </section>

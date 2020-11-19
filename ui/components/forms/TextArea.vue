@@ -73,7 +73,7 @@ export default {
 
 div {
   position: relative;
-  isolation: isolate; /* create local stacking context */
+  isolation: isolate;
   display: block;
   max-width: max-content;
 

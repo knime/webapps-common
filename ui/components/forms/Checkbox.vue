@@ -60,7 +60,7 @@ export default {
   padding: 3px 0 3px 24px;
   max-width: 100%;
   cursor: pointer;
-  isolation: isolate; /* create local stacking context */
+  isolation: isolate;
 
   & input {
     user-select: none;

@@ -242,7 +242,7 @@ export default {
 
 .wrapper {
   position: relative;
-  isolation: isolate; /* create local stacking context */
+  isolation: isolate;
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
 

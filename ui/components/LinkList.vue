@@ -6,7 +6,7 @@ import ArrowIcon from '../assets/img/icons/arrow-right.svg?inline';
  *
  * Example:
  * -> Google
- * -> Knime Hub
+ * -> KNIME Hub
 */
 export default {
     components: { ArrowIcon },
@@ -14,7 +14,7 @@ export default {
         /** @example
          * [
          *   { text: 'Google', url: 'https://google.de' },
-         *   { text: 'Knime Hub', url: 'https://hub.knime.com' }
+         *   { text: 'KNIME Hub', url: 'https://hub.knime.com' }
          * ]
          * */
         links: {

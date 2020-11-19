@@ -397,7 +397,7 @@ export default {
 
 .multiselect-list-box {
   position: relative; /* required by .invalid::before */
-  isolation: isolate; /* create local stacking context */
+  isolation: isolate;
   display: flex;
   align-items: stretch;
   flex-direction: column;

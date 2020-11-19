@@ -55,7 +55,7 @@ export default {
 .toggle {
   display: inline-block;
   position: relative;
-  isolation: isolate; /* create local stacking context */
+  isolation: isolate;
   padding: 3px 0 3px 37px;
   max-width: 100%;
   cursor: pointer;
