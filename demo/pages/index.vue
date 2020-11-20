@@ -8,6 +8,7 @@ import Checkbox from '../components/Checkbox';
 import Checkboxes from '../components/Checkboxes';
 import Collapser from '../components/Collapser';
 import Colors from '../components/Colors';
+import DateTimeInput from '../components/DateTimeInput';
 import Description from '../components/Description';
 import Dropdown from '../components/Dropdown';
 import Fieldset from '../components/Fieldset';
@@ -35,6 +36,8 @@ import SplitButton from '../components/SplitButton';
 import SubMenu from '../components/SubMenu';
 import TabBarDemo from '../components/TabBar';
 import TextArea from '../components/TextArea';
+import TimePartInput from '../components/TimePartInut';
+import ToggleSwitch from '../components/ToggleSwitch';
 import Twinlist from '../components/Twinlist';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar';
 
@@ -54,6 +57,7 @@ export default {
         Checkboxes,
         Collapser,
         Colors,
+        DateTimeInput,
         Description,
         Dropdown,
         Fieldset,
@@ -82,6 +86,8 @@ export default {
         TabBar,
         TabBarDemo,
         TextArea,
+        TimePartInput,
+        ToggleSwitch,
         Twinlist
     },
     mixins: [tabBarMixin],
@@ -175,10 +181,13 @@ export default {
       <Checkbox />
       <Checkboxes />
       <RadioButtons />
+      <DateTimeInput />
+      <TimePartInput />
       <ListBox />
       <Dropdown />
       <Multiselect />
       <MultiselectListBox />
+      <ToggleSwitch />
       <Twinlist />
     </template>
     <template v-if="activeTab === 'other'">

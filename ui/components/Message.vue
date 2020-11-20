@@ -3,6 +3,7 @@ import CloseIcon from '../assets/img/icons/close.svg?inline';
 import CopyIcon from '../assets/img/icons/copy.svg?inline';
 import Button from './Button';
 import Collapser from './Collapser';
+import MessageLink from './MessageLink';
 import { copyText } from '../../util/copyText';
 
 /**
@@ -13,7 +14,8 @@ export default {
         CloseIcon,
         CopyIcon,
         Button,
-        Collapser
+        Collapser,
+        MessageLink
     },
     props: {
         /**
@@ -36,6 +38,18 @@ export default {
             default: true
         },
         /**
+         * Enable / disable collapser for details.
+         * If true, details will be down inside of the collapser content area and accessed by clicking on the
+         * expand icon.
+         * If false, details will be shown in the main message body below the message itself.
+         * This property has no effect if the message does not have details.
+         * Defaults to `true`.
+         */
+        showCollapser: {
+            type: Boolean,
+            default: true
+        },
+        /**
          * Optional button text.
          * If set, renders a button instead of the 'x' that is used for closing the Message.
          * If left blank, the 'x' is rendered.
@@ -50,7 +64,7 @@ export default {
             default: 1
         },
         details: {
-            type: String,
+            type: [String, Object],
             default: ''
         }
     },
@@ -60,8 +74,22 @@ export default {
         };
     },
     computed: {
-        hasDetails() {
-            return this.details.length > 0;
+        detailsText() {
+            let detailsText = this.details;
+            if (detailsText && typeof detailsText !== 'string') {
+                detailsText = this.details.text;
+            }
+            return detailsText;
+        },
+        detailsLink() {
+            if (!this.detailsText) {
+                return false;
+            }
+            // avoid passing a Vue watcher function (which can be picked up a truthy).
+            return this.details.link && this.details.link.text ? this.details.link : false;
+        },
+        showDetailsCollapser() {
+            return this.detailsText && this.showCollapser;
         }
     },
     methods: {
@@ -100,11 +128,11 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <Component
-          :is="hasDetails ? 'Collapser' : 'div'"
-          :class="hasDetails ? 'collapser' : 'banner'"
+          :is="showDetailsCollapser ? 'Collapser' : 'div'"
+          :class="showDetailsCollapser ? 'collapser' : 'banner'"
         >
           <Component
-            :is="hasDetails ? 'template' : 'div'"
+            :is="showDetailsCollapser ? 'template' : 'div'"
             slot="title"
             class="title"
           >
@@ -145,13 +173,18 @@ export default {
             </template>
           </Component>
           <div
-            v-if="hasDetails"
+            v-if="detailsText"
             class="details"
           >
             <span id="detail-text">
-              {{ details }}
+              {{ detailsText }}
+              <MessageLink
+                v-if="detailsLink"
+                :link="detailsLink"
+              />
             </span>
             <div
+              v-if="showCollapser"
               class="copy-button"
               title="Copy to clipboard"
               tabindex="0"
@@ -202,10 +235,18 @@ section {
 
     & .message {
       flex-grow: 1;
-      margin-right: 50px; /* this is set to not interfere with the dropdwon or close button */
+      margin-right: 50px; /* this is set to not interfere with the dropdown or close button */
       overflow: hidden;
       text-overflow: ellipsis;
       margin-top: 3px;
+    }
+
+    & .details {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 18px;
+      margin: auto 0;
     }
 
     & .title {
@@ -313,6 +354,12 @@ section {
     display: flex;
     align-content: center;
 
+    & .message {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 700;
+    }
+
     & .dropdown {
       width: 30px;
       height: 30px;
@@ -367,7 +414,7 @@ section {
         font-size: 13px;
         font-weight: 300;
         line-height: 18px;
-        margin: auto 5px;
+        margin: auto 0;
         max-width: 80%;
       }
 

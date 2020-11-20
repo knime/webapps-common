@@ -1,7 +1,8 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import Messages from '~/ui/components/Messages.vue';
+import MessageLink from '~/ui/components/MessageLink';
 import Message from '~/ui/components/Message.vue';
-import SuccessIcon from '../assets/img/icons/circle-check.svg?inline';
+import SuccessIcon from '~/ui/assets/img/icons/circle-check.svg?inline';
 
 const messages = [
     {
@@ -75,6 +76,7 @@ describe('Messages.vue', () => {
         });
 
         expect(wrapper.find('a').exists()).toBe(false);
+        expect(wrapper.find(MessageLink).exists()).toBe(false);
         expect(wrapper.find(RouterLinkStub).exists()).toBe(false);
     });
 
@@ -96,6 +98,7 @@ describe('Messages.vue', () => {
         expect(wrapper.emitted().dismiss[0]).toEqual([messages[1].id]);
 
         expect(wrapper.find('a').exists()).toBe(false);
+        expect(wrapper.find(MessageLink).exists()).toBe(false);
         expect(wrapper.find(RouterLinkStub).exists()).toBe(false);
     });
 
@@ -115,6 +118,7 @@ describe('Messages.vue', () => {
         expect(wrapper.findAll(Message).at(2).vm.count).toBe(1);
 
         expect(wrapper.find('a').exists()).toBe(false);
+        expect(wrapper.find(MessageLink).exists()).toBe(false);
         expect(wrapper.find(RouterLinkStub).exists()).toBe(false);
     });
 
