@@ -47,7 +47,7 @@ const codeExample = `<NodeFeatureList
     description: 'Select any structure in the table view at the top',
     interactive: true
   }]"
-  :dialogs="[{
+  :options="[{
     fields: [{
       name: 'Neighbor Count',
       description: 'Selects the number of similar neighboring documents you would like to output.',
@@ -117,7 +117,7 @@ const nodeFeatures = {
             'information.',
         interactive: true
     }],
-    dialogs: [{
+    options: [{
         fields: [{
             name: 'Neighbor Count',
             description: 'Selects the number of similar neighboring documents you would like to output.',

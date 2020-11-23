@@ -22,7 +22,7 @@ describe('NodeFeatureList.vue', () => {
                 dynOutPorts: [{
                     dummy: 'dynOutPort'
                 }],
-                dialogs: [{
+                options: [{
                     dummy: 'dialog'
                 }],
                 views: [{
@@ -61,7 +61,7 @@ describe('NodeFeatureList.vue', () => {
     it('selects second tab if first is empty', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             propsData: {
-                dialogs: [{
+                options: [{
                     dummy: 'dialog'
                 }]
             }
@@ -73,7 +73,7 @@ describe('NodeFeatureList.vue', () => {
     it('disables ports tab if there are no ports', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             propsData: {
-                dialogs: [{
+                options: [{
                     dummy: 'dialog'
                 }]
             }
@@ -95,7 +95,7 @@ describe('NodeFeatureList.vue', () => {
     it('disables views tab if there are no views', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             propsData: {
-                dialogs: [{
+                options: [{
                     dummy: 'dialog'
                 }]
             }
@@ -128,7 +128,7 @@ describe('NodeFeatureList.vue', () => {
     it('enables views tab if there are views', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             propsData: {
-                dialogs: [{
+                options: [{
                     dummy: 'view'
                 }]
             }

@@ -37,7 +37,7 @@ export default {
             default: () => []
         },
         /** Passed through to DialogOptions.vue */
-        dialogs: {
+        options: {
             type: Array,
             default: () => []
         },
@@ -46,7 +46,7 @@ export default {
             type: Array,
             default: () => []
         },
-        /** Text that is show if node has neither views, dialogs nor ports */
+        /** Text that is show if node has neither views, options nor ports */
         emptyText: {
             type: String,
             default: 'This node does not provide any ports, options or views.'
@@ -67,7 +67,7 @@ export default {
                 value: 'node-dialog-options',
                 label: 'Options',
                 icon: OptionsIcon,
-                disabled: this.dialogs.length === 0
+                disabled: this.options.length === 0
             }, {
                 value: 'views',
                 label: 'Views',
@@ -96,7 +96,7 @@ export default {
       />
       <DialogOptions
         v-else-if="activeTab === 'node-dialog-options'"
-        :options="dialogs"
+        :options="options"
       />
       <ViewsList
         v-else-if="activeTab === 'views'"
