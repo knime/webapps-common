@@ -38,11 +38,13 @@ export default {
                value: 'all',
                label: 'All',
                icon: null,
+               title: 'everything',
                disabled: false
            }, {
                value: 'nodes',
                label: 'Nodes',
                icon: NodeIcon,
+               title: 'Nodes!',
                disabled: true
            }, {
                value: 'workflows',
@@ -149,6 +151,7 @@ export const tabBarMixin = {
         <label
           v-for="item in possibleValues"
           :key="item.value"
+          :title="item.title"
         >
           <input
             v-model="selected"
