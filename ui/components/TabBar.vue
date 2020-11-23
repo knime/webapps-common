@@ -208,6 +208,10 @@ export const tabBarMixin = {
 }
 
 
+label {
+  position: relative;
+}
+
 input[type="radio"] {
   /* https://accessibility.18f.gov/hidden-content/ */
   border: 0;
