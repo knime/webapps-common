@@ -1,6 +1,6 @@
 import Message from '~/ui/components/Message';
 import Button from '~/ui/components/Button';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg?inline';
 
 describe('Message.vue', () => {
@@ -97,6 +97,59 @@ describe('Message.vue', () => {
         wrapper.find('.copy-button').trigger('click');
 
         expect(copyTextMock).toHaveBeenCalled();
+    });
+
+    it('renders details in banner if showCollapser is false', () => {
+        wrapper = shallowMount(Message, {
+            propsData: {
+                type: 'error',
+                details: 'test message',
+                showCollapser: false
+            }
+        });
+        expect(wrapper.find('.copy-button').exists()).toBe(false);
+        expect(wrapper.find('.collapser').exists()).toBe(false);
+        expect(wrapper.find('#detail-text').text()).toEqual('test message');
+        expect(wrapper.find('.banner').text()).toContain('test message');
+    });
+
+    it('renders detail link', () => {
+        let link = {
+            text: 'go somewhere',
+            href: 'localhost:3000'
+        };
+        wrapper = mount(Message, {
+            propsData: {
+                type: 'error',
+                details: {
+                    text: 'test message',
+                    link
+                }
+            }
+        });
+        expect(wrapper.vm.detailsLink).toStrictEqual(link);
+        expect(wrapper.find('#detail-text').text()).toContain('test message');
+        expect(wrapper.find('.collapser .details a').text()).toEqual('go somewhere');
+    });
+
+    it('renders detail link in banner if showCollapser is false', () => {
+        let link = {
+            text: 'go somewhere',
+            href: 'localhost:3000'
+        };
+        wrapper = mount(Message, {
+            propsData: {
+                type: 'error',
+                details: {
+                    text: 'test message',
+                    link
+                },
+                showCollapser: false
+            }
+        });
+        expect(wrapper.vm.detailsLink).toStrictEqual(link);
+        expect(wrapper.find('#detail-text').text()).toContain('test message');
+        expect(wrapper.find('.banner .details a').text()).toEqual('go somewhere');
     });
 
     it('renders without close button when not dismissable', () => {
