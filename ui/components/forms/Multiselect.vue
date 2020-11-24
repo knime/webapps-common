@@ -203,6 +203,7 @@ export default {
       >
         {{ item.text }}
       </Checkbox>
+      <slot name="selectAction" />
     </div>
   </div>
 </template>

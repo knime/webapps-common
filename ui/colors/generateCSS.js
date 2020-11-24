@@ -9,7 +9,8 @@ const camelToSnake = str => str.replace(/(.?)([A-Z])/g,
 /* ['filename', css variable prefix, output file] */
 const assets = [
     ['knimeColors', '--knime', '../css/variables/knime-colors.css'],
-    ['nodeColors', '--knime-node', '../css/variables/nodes.css']
+    ['nodeColors', '--knime-node', '../css/variables/nodes.css'],
+    ['portColors', '--knime-port', '../css/variables/ports.css']
 ];
 
 for (let [filename, prefix, output] of assets) {
