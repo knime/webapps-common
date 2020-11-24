@@ -29,6 +29,8 @@ import Messages from '../components/Messages';
 import Modal from '../components/Modal';
 import Multiselect from '../components/Multiselect';
 import MultiselectListBox from '../components/MultiselectListBox';
+import NodeFeatureList from '../components/NodeFeatureList';
+import NodePreview from '../components/NodePreview';
 import NumberInput from '../components/NumberInput';
 import OpenSourceCredits from '../components/OpenSourceCredits';
 import RadioButtons from '../components/RadioButtons';
@@ -78,6 +80,8 @@ export default {
         Modal,
         Multiselect,
         MultiselectListBox,
+        NodeFeatureList,
+        NodePreview,
         NumberInput,
         OpenSourceCredits,
         RadioButtons,
@@ -114,8 +118,8 @@ export default {
                 label: 'Forms',
                 icon: CheckboxIcon
             }, {
-                value: 'other',
-                label: 'Other',
+                value: 'widgets',
+                label: 'Widgets',
                 icon: UnknownIcon
             }];
         }
@@ -190,8 +194,10 @@ export default {
       <ToggleSwitch />
       <Twinlist />
     </template>
-    <template v-if="activeTab === 'other'">
+    <template v-if="activeTab === 'widgets'">
       <OpenSourceCredits />
+      <NodePreview />
+      <NodeFeatureList />
     </template>
   </main>
 </template>

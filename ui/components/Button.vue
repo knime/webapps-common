@@ -160,7 +160,6 @@ export default {
   &.with-border {
     border: 1px solid var(--theme-button-border-color);
     color: var(--theme-button-foreground-color);
-    padding: 11px;
 
     & >>> svg {
       stroke: var(--theme-button-foreground-color);
