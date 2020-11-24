@@ -175,11 +175,11 @@ export default {
     display: flex;
     flex-wrap: wrap;
 
-    & label {
+    & div {
       min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
 
       &:not(:last-of-type) {
-        padding-right: 12px;
+        padding-right: 9px;
       }
     }
   }
