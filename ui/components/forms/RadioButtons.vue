@@ -72,26 +72,24 @@ export default {
     :class="['radio-buttons', alignment]"
     role="radiogroup"
   >
-    <label
+    <div
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
+      :class="{'with-extra-content': item.slot}"
     >
-      <input
-        ref="input"
-        :checked="(value === item.id)"
-        :value="item.id"
-        :name="`wc-radio-${count}`"
-        type="radio"
-        @change="onInput"
-      >
-      <span
-        :title="item.text"
-        :class="{'with-extra-content': item.slot}"
-      >
-        <slot v-if="item.slot" />
-        <template v-else>{{ item.text }}</template>
-      </span>
-    </label>
+      <label>
+        <input
+          ref="input"
+          :checked="(value === item.id)"
+          :value="item.id"
+          :name="`wc-radio-${count}`"
+          type="radio"
+          @change="onInput"
+        >
+        <span :title="item.text">{{ item.text }}</span>
+      </label>
+      <slot v-if="item.slot" />
+    </div>
   </div>
 </template>
 
@@ -124,10 +122,6 @@ export default {
         color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;
-
-        &.with-extra-content {
-          margin-top: -6px;
-        }
       }
 
       /* ◯ */
