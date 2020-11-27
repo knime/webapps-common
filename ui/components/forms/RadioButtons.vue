@@ -72,24 +72,20 @@ export default {
     :class="['radio-buttons', alignment]"
     role="radiogroup"
   >
-    <div
+    <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
-      :class="{'with-extra-content': item.slot}"
     >
-      <label>
-        <input
-          ref="input"
-          :checked="(value === item.id)"
-          :value="item.id"
-          :name="`wc-radio-${count}`"
-          type="radio"
-          @change="onInput"
-        >
-        <span :title="item.text">{{ item.text }}</span>
-      </label>
-      <slot v-if="item.slot" />
-    </div>
+      <input
+        ref="input"
+        :checked="(value === item.id)"
+        :value="item.id"
+        :name="`wc-radio-${count}`"
+        type="radio"
+        @change="onInput"
+      >
+      <span :title="item.text">{{ item.text }}</span>
+    </label>
   </div>
 </template>
 
@@ -175,11 +171,11 @@ export default {
     display: flex;
     flex-wrap: wrap;
 
-    & div {
+    & label {
       min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
 
       &:not(:last-of-type) {
-        padding-right: 9px;
+        padding-right: 12px;
       }
     }
   }
