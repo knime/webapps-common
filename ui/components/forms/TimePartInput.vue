@@ -350,6 +350,7 @@ export default {
 
 .wrapper {
   position: relative;
+  isolation: isolate;
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
 

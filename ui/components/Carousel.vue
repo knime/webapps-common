@@ -64,9 +64,9 @@ export default {
 
 .shadow-wrapper {
   position: relative;
+  isolation: isolate;
   margin-left: calc(var(--grid-gap-width) * -1);
   margin-right: calc(var(--grid-gap-width) * -1);
-  isolation: isolate;
 
   &::before,
   &::after {

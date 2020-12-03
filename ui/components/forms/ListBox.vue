@@ -239,20 +239,19 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .listBox {
-  &.invalid {
-    position: relative;
+  position: relative;
+  isolation: isolate;
 
-    &::before {
-      content: '';
-      position: absolute;
-      width: 3px;
-      left: 0;
-      margin: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 1;
-      background-color: var(--theme-color-error);
-    }
+  &.invalid::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    background-color: var(--theme-color-error);
   }
 
   & [role="listbox"] {

@@ -57,10 +57,10 @@ export default {
 .checkbox {
   display: inline-block;
   position: relative;
+  isolation: isolate;
   padding: 3px 0 3px 24px;
   max-width: 100%;
   cursor: pointer;
-  isolation: isolate;
 
   & input {
     user-select: none;
