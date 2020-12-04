@@ -5,7 +5,7 @@ import code from '!!raw-loader!../../ui/components/node/NodeFeatureList';
 
 const codeExample = `<NodeFeatureList
   :in-ports="[{
-    dataType: 'table',
+    type: 'table',
     typeName: 'Table',
     optional: false,
     name: 'Corpus of Documents',
@@ -15,16 +15,16 @@ const codeExample = `<NodeFeatureList
     groupName: 'Captured workflow inputs',
     groupDescription: 'The dynamic inputs of the workflow fragment starting with this node.',
     types: [
-      { dataType: 'table', typeName: 'Table' },
-      { dataType: 'flowVariable', typeName: 'Flow Variable' },
-      { color: '#41be78', dataType: 'other', typeName: 'Image' },
-      { color: '#9b9b9b', dataType: 'other', typeName: 'Distance Measure' },
-      { color: '#1469af', dataType: 'other', typeName: 'PMML' },
-      { color: '#1eb9dc', dataType: 'other', typeName: 'Naive Bayes' },
+      { type: 'table', typeName: 'Table' },
+      { type: 'flowVariable', typeName: 'Flow Variable' },
+      { color: '#41be78', type: 'other', typeName: 'Image' },
+      { color: '#9b9b9b', type: 'other', typeName: 'Distance Measure' },
+      { color: '#1469af', type: 'other', typeName: 'PMML' },
+      { color: '#1eb9dc', type: 'other', typeName: 'Naive Bayes' },
     ]
   }]"
   :out-ports="[{
-    dataType: 'table',
+    type: 'table',
     typeName: 'Table',
     optional: false,
     name: 'Corpus of Documents',
@@ -34,12 +34,12 @@ const codeExample = `<NodeFeatureList
     groupName: 'Captured workflow inputs',
     groupDescription: 'The dynamic inputs of the workflow fragment starting with this node.',
     types: [
-      { dataType: 'table', typeName: 'Table' },
-      { dataType: 'flowVariable', typeName: 'Flow Variable' },
-      { color: '#41be78', dataType: 'other', typeName: 'Image' },
-      { color: '#9b9b9b', dataType: 'other', typeName: 'Distance Measure' },
-      { color: '#1469af', dataType: 'other', typeName: 'PMML' },
-      { color: '#1eb9dc', dataType: 'other', typeName: 'Naive Bayes' },
+      { type: 'table', typeName: 'Table' },
+      { type: 'flowVariable', typeName: 'Flow Variable' },
+      { color: '#41be78', type: 'other', typeName: 'Image' },
+      { color: '#9b9b9b', type: 'other', typeName: 'Distance Measure' },
+      { color: '#1469af', type: 'other', typeName: 'PMML' },
+      { color: '#1eb9dc', type: 'other', typeName: 'Naive Bayes' },
     ]
   }]"
   :views="[{
@@ -58,13 +58,13 @@ const codeExample = `<NodeFeatureList
 
 const nodeFeatures = {
     inPorts: [{
-        dataType: 'table',
+        type: 'table',
         typeName: 'Table',
         optional: false,
         name: 'Corpus of Documents',
         description: 'An input table containing the original corpus with the related document vectors.'
     }, {
-        dataType: 'other',
+        type: 'other',
         color: '#9b9b9b',
         typeName: 'DocumentVectorPortObject',
         optional: true,
@@ -75,16 +75,16 @@ const nodeFeatures = {
         groupName: 'Captured workflow inputs',
         groupDescription: 'The dynamic inputs of the workflow fragment starting with this node.',
         types: [
-            { dataType: 'table', typeName: 'Table' },
-            { dataType: 'flowVariable', typeName: 'Flow Variable' },
-            { color: '#41be78', dataType: 'other', typeName: 'Image' },
-            { color: '#9b9b9b', dataType: 'other', typeName: 'Distance Measure' },
-            { color: '#1469af', dataType: 'other', typeName: 'PMML' },
-            { color: '#1eb9dc', dataType: 'other', typeName: 'Naive Bayes' }
+            { type: 'table', typeName: 'Table' },
+            { type: 'flowVariable', typeName: 'Flow Variable' },
+            { color: '#41be78', type: 'other', typeName: 'Image' },
+            { color: '#9b9b9b', type: 'other', typeName: 'Distance Measure' },
+            { color: '#1469af', type: 'other', typeName: 'PMML' },
+            { color: '#1eb9dc', type: 'other', typeName: 'Naive Bayes' }
         ]
     }],
     outPorts: [{
-        dataType: 'flowVariable',
+        type: 'flowVariable',
         typeName: 'Flow Variable',
         optional: true,
         name: 'Count of Most Similar Documents per Input Document',
@@ -94,14 +94,14 @@ const nodeFeatures = {
         groupName: 'Captured Workflow',
         groupDescription: 'The dynamic outputs of the workflow fragment starting with this node.',
         types: [
-            { color: '#2e992e', typeName: 'Workflow', dataType: 'other' },
-            { color: '#9b9b9b', typeName: 'Distance Measure', dataType: 'other' }
+            { color: '#2e992e', typeName: 'Workflow', type: 'other' },
+            { color: '#9b9b9b', typeName: 'Distance Measure', type: 'other' }
         ]
     }, {
         groupName: 'Second DynOutPortGroup',
         groupDescription: 'The dynamic outputs of the workflow fragment starting with this node.',
         types: [
-            { color: '#1eb9dc', typeName: 'Sota', dataType: 'other' }
+            { color: '#1eb9dc', typeName: 'Sota', type: 'other' }
         ]
     }],
     views: [{

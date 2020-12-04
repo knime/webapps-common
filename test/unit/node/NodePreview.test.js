@@ -26,16 +26,16 @@ describe('NodePreview.vue', () => {
                 inPorts: [{
                     color: '#000',
                     optional: true,
-                    dataType: 'flowVariable'
+                    type: 'flowVariable'
                 }],
                 outPorts: [{
                     color: '#fff',
                     optional: false,
-                    dataType: 'table'
+                    type: 'table'
                 }, {
                     color: '#888',
                     optional: true,
-                    dataType: 'other'
+                    type: 'other'
                 }]
             }
         });
@@ -43,21 +43,21 @@ describe('NodePreview.vue', () => {
         expect(portIcons.at(0).props()).toStrictEqual({
             color: '#000',
             filled: false,
-            dataType: 'flowVariable'
+            type: 'flowVariable'
         });
         expect(portIcons.at(0).attributes().transform).toBe('translate(-4.5, 16)');
 
         expect(portIcons.at(1).props()).toStrictEqual({
             color: '#fff',
             filled: true,
-            dataType: 'table'
+            type: 'table'
         });
         expect(portIcons.at(1).attributes().transform).toBe('translate(36.5, 5.5)');
 
         expect(portIcons.at(2).props()).toStrictEqual({
             color: '#888',
             filled: false,
-            dataType: 'other'
+            type: 'other'
         });
         expect(portIcons.at(2).attributes().transform).toBe('translate(36.5, 26.5)');
 
