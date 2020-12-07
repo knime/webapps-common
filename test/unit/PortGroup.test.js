@@ -15,7 +15,7 @@ describe('PortsListItem.vue', () => {
             ports: [
                 {
                     color: '#cccccc',
-                    dataType: 'table',
+                    type: 'table',
                     typeName: 'Table',
                     optional: true,
                     description: 'Hello world!',
@@ -23,7 +23,7 @@ describe('PortsListItem.vue', () => {
                 },
                 {
                     color: '#abcdef',
-                    dataType: 'flowVariable',
+                    type: 'flowVariable',
                     typeName: 'Flow Variable',
                     optional: false,
                     description: 'Whatever',
@@ -50,14 +50,14 @@ describe('PortsListItem.vue', () => {
             expect(PortIcons.at(0).props()).toStrictEqual({
                 color: '#cccccc',
                 filled: false,
-                dataType: 'table'
+                type: 'table'
             });
             expect(PortIcons.at(1).props()).toStrictEqual({
                 color: '#abcdef',
                 filled: true,
-                dataType: 'flowVariable'
+                type: 'flowVariable'
             });
-            expect(PortIcons.at(2).props().dataType).toBe('table'); // default prop value
+            expect(PortIcons.at(2).props().type).toBe('table'); // default prop value
         });
 
         it('renders Port Names', () => {

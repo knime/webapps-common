@@ -12,11 +12,11 @@ const codeExample = `<NodePreview
   :hasDynPorts="false"
   isComponent
   type="Sink"
-  :inPorts="[{ dataType: 'table' }]"
+  :inPorts="[{ type: 'table' }]"
   :outPorts="[
-      { dataType: 'other', color: '#1eb9dc' },
-      { dataType: 'table' },
-      { dataType: 'table', optional: true }
+      { type: 'other', color: '#1eb9dc' },
+      { type: 'table' },
+      { type: 'table', optional: true }
   ]"
   icon="${icon}"
 />`;
@@ -34,11 +34,11 @@ export default {
                 isComponent: false,
                 type: 'Learner',
                 inPorts: [
-                    { dataType: 'table' }
+                    { type: 'table' }
                 ],
                 outPorts: [
-                    { dataType: 'other', color: '#1eb9dc'  },
-                    { dataType: 'table', optional: true }
+                    { type: 'other', color: '#1eb9dc'  },
+                    { type: 'table', optional: true }
                 ],
                 icon
             },
@@ -47,12 +47,12 @@ export default {
                 isComponent: true,
                 type: 'Sink',
                 inPorts: [
-                    { dataType: 'table' }
+                    { type: 'table' }
                 ],
                 outPorts: [
-                    { dataType: 'other', color: '#1eb9dc' },
-                    { dataType: 'table' },
-                    { dataType: 'table', optional: true }
+                    { type: 'other', color: '#1eb9dc' },
+                    { type: 'table' },
+                    { type: 'table', optional: true }
                 ],
                 icon
             }
