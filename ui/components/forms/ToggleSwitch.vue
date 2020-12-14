@@ -66,7 +66,8 @@ export default {
     display: flex;
     opacity: 0;
     position: absolute;
-    z-index: -1;
+    width: 0;
+    height: 0;
 
     & + span {
       display: inline-flex;

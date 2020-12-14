@@ -76,7 +76,7 @@ export default {
     height: 100%;
     width: 12px;
     top: 0;
-    z-index: 2;
+    z-index: 2; /* shadows should be on top of the content */
   }
 
   &::before {

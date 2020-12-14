@@ -104,11 +104,10 @@ div {
     position: absolute;
     display: block;
     width: 3px;
-    left: -1px;
+    left: 0;
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 1;
     background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
