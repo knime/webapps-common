@@ -17,7 +17,7 @@ export default {
          * Port {
          *   color: String, // css-format
          *   optional: Boolean,
-         *   dataType: String, // on of ['flowVariable', 'table', 'other']
+         *   type: String, // on of ['flowVariable', 'table', 'other']
          *   typeName: String, // human readable data type,
          *   name: String, // name of this port
          *   description: String
@@ -72,7 +72,7 @@ export default {
             <PortIcon
               :color="port.color"
               :filled="!port.optional"
-              :data-type="port.dataType"
+              :type="port.type"
             />
           </svg>
           <div :class="['port-type', { fat: !dynamicPorts }]">Type: {{ port.typeName }}</div>
