@@ -83,10 +83,6 @@ export default {
 <template>
   <div>
     <slot name="icon" />
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
     <input
       :id="id"
       ref="input"
@@ -98,6 +94,10 @@ export default {
       :disabled="disabled"
       @input="onInput"
     >
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
   </div>
 </template>
 

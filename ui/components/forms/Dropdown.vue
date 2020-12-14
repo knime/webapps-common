@@ -279,7 +279,7 @@ export default {
     color: var(--knime-stone-gray);
   }
 
-  &.invalid::before {
+  &.invalid::after {
     content: '';
     position: absolute;
     width: 3px;

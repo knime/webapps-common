@@ -396,14 +396,14 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .multiselect-list-box {
-  position: relative; /* required by .invalid::before */
+  position: relative; /* required by .invalid::after */
   isolation: isolate;
   display: flex;
   align-items: stretch;
   flex-direction: column;
 
   &.invalid {
-    &::before {
+    &::after {
       content: '';
       position: absolute;
       width: 3px;

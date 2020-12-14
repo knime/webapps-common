@@ -295,10 +295,6 @@ export default {
       v-if="showDate"
       class="date-picker"
     >
-      <span
-        v-if="!isValid"
-        class="invalid-marker"
-      />
       <client-only>
         <DatePicker
           ref="datePicker"
@@ -333,6 +329,10 @@ export default {
           </template>
         </DatePicker>
       </client-only>
+      <span
+        v-if="!isValid"
+        class="invalid-marker"
+      />
     </div>
     <div
       v-if="showTime"

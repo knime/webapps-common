@@ -76,7 +76,7 @@ This is used for loading resources in templates or CSS:
 
 ```css
 .foo {
-    mask: url("~webapps-common/ui/assets/img/icons/link-external.svg?data") no-repeat 50% 50%; /* inline SVG as base64 */
+  mask: url("~webapps-common/ui/assets/img/icons/link-external.svg?data") no-repeat 50% 50%; /* inline SVG as base64 */
 }
 ```
 
@@ -155,6 +155,9 @@ Other JS-defined colors are:
 All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see 
 [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
 
+### Stacking order and z-index
+
+Global z-indices can be overwritten by the app by using CSS variables. To see which are available, search for `--z-index-common-` in the code.
 
 ### Theming
 In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in

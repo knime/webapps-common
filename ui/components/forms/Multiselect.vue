@@ -214,7 +214,7 @@ export default {
 .multiselect {
   position: relative;
 
-  &.invalid::before {
+  &.invalid::after {
     content: '';
     position: absolute;
     width: 3px;

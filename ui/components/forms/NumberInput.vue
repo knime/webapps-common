@@ -200,10 +200,6 @@ export default {
 
 <template>
   <div class="wrapper">
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
     <input
       :id="id"
       ref="input"
@@ -218,6 +214,10 @@ export default {
       @mouseenter="toggleHover"
       @mouseleave="toggleHover"
     >
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
     <span
       class="increase"
       @mousedown.prevent="(e) => mouseEvent(e, 'increase')"

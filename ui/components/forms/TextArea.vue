@@ -50,10 +50,6 @@ export default {
 
 <template>
   <div>
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
     <textarea
       :id="id"
       ref="input"
@@ -64,6 +60,10 @@ export default {
       :rows="rows"
       :placeholder="placeholder"
       @input="onInput"
+    />
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
     />
   </div>
 </template>

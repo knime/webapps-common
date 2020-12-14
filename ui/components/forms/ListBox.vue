@@ -242,7 +242,7 @@ export default {
   position: relative;
   isolation: isolate;
 
-  &.invalid::before {
+  &.invalid::after {
     content: '';
     position: absolute;
     width: 3px;
