@@ -32,7 +32,7 @@ export default {
          * Port: {
          *    color: String (css-compatible),
          *    optional: Boolean,
-         *    dataType: String,
+         *    type: String,
          *    ...
          * }
          *
@@ -113,7 +113,7 @@ export default {
       :key="`in-${index}`"
       :color="port.color"
       :filled="!port.optional"
-      :data-type="port.dataType"
+      :type="port.type"
       :transform="`translate(-4.5, ${ yPortShift(index, inPorts.length) })`"
     />
     <PortIcon
@@ -121,7 +121,7 @@ export default {
       :key="`out-${index}`"
       :color="port.color"
       :filled="!port.optional"
-      :data-type="port.dataType"
+      :type="port.type"
       :transform="`translate(36.5, ${ yPortShift(index, outPorts.length) })`"
     />
     <g

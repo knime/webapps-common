@@ -9,14 +9,19 @@ export default {
     props: {
         /**
          * Distinguish between 'table', 'flowVariable' and other types of ports
-         * Determines the shape of the port
+         * Determines the shape of the port:
+         *   table -> triangle
+         *   flowVariable -> circle
+         *   default -> square
          */
-        dataType: {
+        type: {
             type: String,
-            default: 'table',
-            validator: (dataType) => ['table', 'flowVariable', 'other'].includes(dataType)
+            default: 'table'
         },
-        /** Format has to be valid for css. Only used by square ports (dataType: 'other') */
+        /**
+         * Shape fill color. Format has to be valid for css. Only used by square ports.
+         * Tables are always black, flow variables always red.
+         */
         color: {
             type: String,
             default: ''
@@ -42,19 +47,19 @@ export default {
             const d = Math.sqrt(5) / 2;
             const y = d / 2 + 1 / 4;
             /* eslint-enable no-magic-numbers */
-            
+
             // move points towards the center of the triangle according to strokeWidth
             let { strokeWidth } = this;
             x1 += strokeWidth / 2;
             x2 -= strokeWidth * d; /* eslint-disable-line no-magic-numbers */
             y1 += strokeWidth * y; /* eslint-disable-line no-magic-numbers */
             y3 -= strokeWidth * y; /* eslint-disable-line no-magic-numbers */
-            
+
             // draw triangle clock-wise
             return `${x1},${y1} ${x2},${0} ${x1},${y3}`;
         },
         portColor() {
-            return portColors[this.dataType] || this.color;
+            return portColors[this.type] || this.color;
         },
         fillColor() {
             return this.filled ? this.portColor : 'transparent';
@@ -66,7 +71,7 @@ export default {
 <template>
   <!-- data table port -->
   <polygon
-    v-if="dataType === 'table'"
+    v-if="type === 'table'"
     :points="trianglePath"
     :fill="fillColor"
     :stroke="portColor"
@@ -74,7 +79,7 @@ export default {
   />
   <!-- flow variable port -->
   <circle
-    v-else-if="dataType === 'flowVariable'"
+    v-else-if="type === 'flowVariable'"
     :r="portSize / 2 - strokeWidth / 2"
     :fill="fillColor"
     :stroke="portColor"

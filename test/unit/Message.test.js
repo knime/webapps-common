@@ -93,7 +93,7 @@ describe('Message.vue', () => {
         });
         expect(wrapper.find('.copy-button').exists()).toBe(true);
         expect(wrapper.find('.collapser').exists()).toBe(true);
-        expect(wrapper.find('#detail-text').text()).toEqual('test message');
+        expect(wrapper.find('.detail-text').text()).toEqual('test message');
         wrapper.find('.copy-button').trigger('click');
 
         expect(copyTextMock).toHaveBeenCalled();
@@ -109,7 +109,7 @@ describe('Message.vue', () => {
         });
         expect(wrapper.find('.copy-button').exists()).toBe(false);
         expect(wrapper.find('.collapser').exists()).toBe(false);
-        expect(wrapper.find('#detail-text').text()).toEqual('test message');
+        expect(wrapper.find('.detail-text').text()).toEqual('test message');
         expect(wrapper.find('.banner').text()).toContain('test message');
     });
 
@@ -128,7 +128,7 @@ describe('Message.vue', () => {
             }
         });
         expect(wrapper.vm.detailsLink).toStrictEqual(link);
-        expect(wrapper.find('#detail-text').text()).toContain('test message');
+        expect(wrapper.find('.detail-text').text()).toContain('test message');
         expect(wrapper.find('.collapser .details a').text()).toEqual('go somewhere');
     });
 
@@ -148,7 +148,7 @@ describe('Message.vue', () => {
             }
         });
         expect(wrapper.vm.detailsLink).toStrictEqual(link);
-        expect(wrapper.find('#detail-text').text()).toContain('test message');
+        expect(wrapper.find('.detail-text').text()).toContain('test message');
         expect(wrapper.find('.banner .details a').text()).toEqual('go somewhere');
     });
 

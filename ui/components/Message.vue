@@ -176,7 +176,7 @@ export default {
             v-if="detailsText"
             class="details"
           >
-            <span id="detail-text">
+            <span class="detail-text">
               {{ detailsText }}
               <MessageLink
                 v-if="detailsLink"
@@ -408,7 +408,7 @@ section {
       margin: 0 auto;
       max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
 
-      & #detail-text {
+      & .detail-text {
         display: inline-block;
         color: var(--knime-masala);
         font-size: 13px;
