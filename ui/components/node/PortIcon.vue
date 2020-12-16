@@ -9,14 +9,19 @@ export default {
     props: {
         /**
          * Distinguish between 'table', 'flowVariable' and other types of ports
-         * Determines the shape of the port
+         * Determines the shape of the port:
+         *   table -> triangle
+         *   flowVariable -> circle
+         *   default -> square
          */
         type: {
             type: String,
-            default: 'table',
-            validator: (type) => ['table', 'flowVariable', 'other'].includes(type)
+            default: 'table'
         },
-        /** Format has to be valid for css. Only used by square ports (type: 'other') */
+        /**
+         * Shape fill color. Format has to be valid for css. Only used by square ports.
+         * Tables are always black, flow variables always red.
+         */
         color: {
             type: String,
             default: ''
