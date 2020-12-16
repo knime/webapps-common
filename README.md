@@ -157,7 +157,11 @@ All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], 
 
 ### Stacking order and z-index
 
-Global z-indices can be overwritten by the app by using CSS variables. To see which are available, search for `--z-index-common-` in the code.
+Try to avoid setting z-indices since they can lead to stacking conflicts, especially when shared components are used in many different apps. Many times a `z-index` is not needed, e.g. [elements which use `position: absolute;` are stacked on top](Stacking) anyway. Additionally, the local stacking order can be controlled by changing the order in the DOM or using `::after` instead of `::before` pseudo elements.
+
+When the above doesn’t work and you need a `z-index`, think about
+- if you just want to stack things locally. If yes, set `isolation: isolate;` on the parent element so you don’t pollute the global stacking context.
+- if it needs to be in the global context and the code you’re editing is in webapps-common, use a CSS variable with default like `z-index: var(--z-index-common-modal, 100);` so our apps can overwrite it if needed. To see which are available in the shared components, search for `--z-index-common-` in this repository.
 
 ### Theming
 In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in
@@ -176,3 +180,4 @@ see `/buildtools/README.md`
 [CSS Nesting specification]: https://tabatkins.github.io/specs/css-nesting/#nest-selector
 [ESLint config file]: https://eslint.org/docs/user-guide/configuring
 [peer dependencies]: https://docs.npmjs.com/files/package.json#peerdependencies
+[Stacking]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/Stacking_without_z-index
