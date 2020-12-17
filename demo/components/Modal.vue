@@ -44,6 +44,15 @@ export default {
     </Modal>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
+
+.modal {
+  padding: 20px;
+  width: min(95%, 550px); /* optional in case you want to adjust the width */
+}
+</style>
 `;
 
 export default {
@@ -76,7 +85,7 @@ export default {
             the overlay or by the ESC key. Also on tab, the focus is trapped inside the modal.
           </p>
           <p>
-            Currently the implementation is without a header etc. which could be included if needed. For now,
+            Currently the implementation is without styling and a header etc. which could be included if needed. For now,
             please refer to the Modal usage in the Hub for inspiration and see
             <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html">W3C best practices
               for modal dialogs</a>.
@@ -91,15 +100,17 @@ export default {
             :active="modalActive"
             @cancel="modalActive = false"
           >
-            <h2>This is the modal content</h2>
-            <InputField />
-            <p>Can be anything you put in the default slot</p>
-            <Button
-              primary
-              @click="modalActive = false"
-            >
-              Close
-            </Button>
+            <div class="modal">
+              <h2>This is the modal content</h2>
+              <InputField />
+              <p>Can be anything you put in the default slot</p>
+              <Button
+                primary
+                @click="modalActive = false"
+              >
+                Close
+              </Button>
+            </div>
           </Modal>
         </div>
       </div>
@@ -116,8 +127,10 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
 
->>> .inner {
+.modal {
   padding: 20px;
+  width: min(95%, 550px);
 }
 </style>

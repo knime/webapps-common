@@ -150,12 +150,17 @@ export default {
 }
 
 .inner {
-  pointer-events: all;
   position: absolute;
   left: 50%;
   top: 40%;
   transform: translate(-50%, -50%);
-  width: min(95%, 550px);
-  background-color: var(--knime-white);
+  width: 100%;
+
+  & > >>> * {
+    pointer-events: all;
+    margin: auto;
+    width: min(95%, 550px);
+    background-color: var(--knime-white);
+  }
 }
 </style>
