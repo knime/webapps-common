@@ -171,6 +171,8 @@ In the future, custom theming can be supported by overwriting the theme CSS cust
 
 see `/buildtools/README.md`
 
+# SVG-Style-Guidelines
+see [SVG Guideline](documentation/SVG-Style-README.md)
 
 
 
