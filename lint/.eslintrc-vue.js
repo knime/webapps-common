@@ -37,7 +37,7 @@ module.exports = {
             node: true
         }
     }, {
-        files: ['config.js', '*.config.js', '*.conf.js', 'config/**'],
+        files: ['config.js', '*.config.js', '*.conf.js', 'config.mjs', '*.config.mjs', '*.conf.mjs', 'config/**'],
         rules: {
             camelcase: 'off',
             'no-magic-numbers': 'off',
