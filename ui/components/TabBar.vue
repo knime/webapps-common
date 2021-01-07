@@ -184,6 +184,7 @@ export const tabBarMixin = {
   padding-top: 20px;
   padding-bottom: 20px;
   display: inline-block;
+  z-index: 1; /* create local stacking context */
 
   @media only screen and (max-width: 900px) {
     margin-top: -10px;
@@ -203,7 +204,6 @@ export const tabBarMixin = {
   border-bottom: 1px solid var(--knime-silver-sand);
   left: var(--grid-gap-width);
   right: var(--grid-gap-width);
-  z-index: 0;
   bottom: 26px;
 }
 
@@ -290,7 +290,7 @@ input:checked:not(:disabled) + span::after {
   left: 0;
   right: 0;
   border-top: 3px solid var(--knime-masala);
-  z-index: 1;
+  z-index: 1; /* local stacking context because Carousel.vue has isolation: isolate; */
 }
 
 input:not(:checked):not(:disabled) + span {

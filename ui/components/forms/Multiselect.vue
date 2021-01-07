@@ -214,7 +214,7 @@ export default {
 .multiselect {
   position: relative;
 
-  &.invalid::before {
+  &.invalid::after {
     content: '';
     position: absolute;
     width: 3px;
@@ -222,7 +222,6 @@ export default {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 1;
     background-color: var(--theme-color-error);
   }
 
@@ -275,7 +274,7 @@ export default {
 
   & .options {
     position: absolute;
-    z-index: 2;
+    z-index: var(--z-index-common-multiselect-expanded, 2);
     width: 100%;
     padding: 5px 10px;
     margin-top: -1px;

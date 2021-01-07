@@ -67,9 +67,7 @@ export default {
                 isValid = false;
                 errorMessage = 'Invalid input';
             } else if (this.pattern) {
-                const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
-                let matchingRegex = matches !== null && matches[0] === value;
-                if (!matchingRegex) {
+                if (this.$refs.input.validity.patternMismatch) {
                     isValid = false;
                     errorMessage = 'Input does not match the expected pattern';
                 }
@@ -83,10 +81,6 @@ export default {
 <template>
   <div>
     <slot name="icon" />
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
     <input
       :id="id"
       ref="input"
@@ -98,6 +92,10 @@ export default {
       :disabled="disabled"
       @input="onInput"
     >
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
   </div>
 </template>
 
@@ -107,6 +105,7 @@ export default {
 div {
   /* icon and marker need pos 0,0 to be the wrapper */
   position: relative;
+  isolation: isolate;
 }
 
 input {
@@ -147,11 +146,10 @@ input {
   position: absolute;
   display: block;
   width: 3px;
-  left: -1px;
+  left: 0;
   margin: 0;
   top: 0;
   bottom: 0;
-  z-index: 1;
   background-color: var(--theme-color-error);
   pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
 }

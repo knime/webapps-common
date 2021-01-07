@@ -55,6 +55,7 @@ export default {
 .toggle {
   display: inline-block;
   position: relative;
+  isolation: isolate;
   padding: 3px 0 3px 37px;
   max-width: 100%;
   cursor: pointer;
@@ -65,7 +66,8 @@ export default {
     display: flex;
     opacity: 0;
     position: absolute;
-    z-index: -1;
+    width: 0;
+    height: 0;
 
     & + span {
       display: inline-flex;

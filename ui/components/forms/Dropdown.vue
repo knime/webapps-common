@@ -279,7 +279,7 @@ export default {
     color: var(--knime-stone-gray);
   }
 
-  &.invalid::before {
+  &.invalid::after {
     content: '';
     position: absolute;
     width: 3px;
@@ -287,7 +287,6 @@ export default {
     margin: 0;
     top: 0;
     bottom: 0;
-    z-index: 1;
     background-color: var(--theme-color-error);
   }
 
@@ -337,7 +336,7 @@ export default {
   & [role="listbox"] {
     overflow-y: auto;
     position: absolute;
-    z-index: 2;
+    z-index: var(--z-index-common-dropdown-expanded, 2);
     max-height: calc(22px * 7); /* show max 7 items */
     font-size: 14px;
     min-height: 22px;

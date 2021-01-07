@@ -306,10 +306,6 @@ export default {
 
 <template>
   <div class="wrapper">
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
     <input
       :id="id"
       ref="input"
@@ -326,6 +322,10 @@ export default {
       @mouseleave="toggleHover"
       @wheel.prevent="handleWheel"
     >
+    <span
+      v-if="!isValid"
+      class="invalid-marker"
+    />
     <span
       class="increase"
       @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
@@ -350,6 +350,7 @@ export default {
 
 .wrapper {
   position: relative;
+  isolation: isolate;
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
 
@@ -398,7 +399,6 @@ export default {
     left: -1px;
     top: 0;
     bottom: 0;
-    z-index: 1;
     background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
@@ -414,7 +414,6 @@ export default {
   & .increase,
   & .decrease {
     position: absolute;
-    z-index: 1;
     width: 32px;
     height: 20px;
     padding-left: 10px;

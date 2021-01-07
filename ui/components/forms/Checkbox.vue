@@ -57,6 +57,7 @@ export default {
 .checkbox {
   display: inline-block;
   position: relative;
+  isolation: isolate;
   padding: 3px 0 3px 24px;
   max-width: 100%;
   cursor: pointer;
@@ -66,7 +67,8 @@ export default {
     display: flex;
     opacity: 0;
     position: absolute;
-    z-index: -1; /* otherwise it might steal hover events */
+    width: 0;
+    height: 0;
 
     & + span {
       display: inline-block;

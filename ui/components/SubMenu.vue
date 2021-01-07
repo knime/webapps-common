@@ -255,7 +255,7 @@ ul {
   text-align: left;
   list-style-type: none;
   box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
-  z-index: 1;
+  z-index: var(--z-index-common-submenu-expanded, 1);
 
   &.expanded {
     display: block;

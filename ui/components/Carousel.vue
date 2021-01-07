@@ -64,9 +64,9 @@ export default {
 
 .shadow-wrapper {
   position: relative;
+  isolation: isolate;
   margin-left: calc(var(--grid-gap-width) * -1);
   margin-right: calc(var(--grid-gap-width) * -1);
-  z-index: 0; /* create local stacking context */
 
   &::before,
   &::after {
@@ -76,7 +76,7 @@ export default {
     height: 100%;
     width: 12px;
     top: 0;
-    z-index: 2;
+    z-index: 2; /* shadows should be on top of the content */
   }
 
   &::before {

@@ -120,7 +120,7 @@ export default {
 }
 
 .container {
-  z-index: 100;
+  z-index: var(--z-index-common-modal, 100);
   min-height: 50px;
   position: fixed;
   left: 0;
