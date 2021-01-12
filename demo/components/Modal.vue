@@ -1,10 +1,13 @@
 <script>
 import Modal from '../../ui/components/Modal';
+import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
 import Button from '../../ui/components/Button';
 import InputField from '../../ui/components/forms/InputField';
+import RadioButtons from '../../ui/components/forms/RadioButtons';
 import CodeExample from './demo/CodeExample';
 
 import code from '!!raw-loader!../../ui/components/Modal';
+import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal';
@@ -36,6 +39,7 @@ export default {
     <Modal
       :active="modalActive"
       @cancel="modalActive = false"
+      class="modal"
     >
       <h2>This is the modal content</h2>
       <InputField></InputField>
@@ -49,8 +53,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .modal {
-  padding: 20px;
-  width: min(95%, 550px); /* optional in case you want to adjust the width */
+  --modal-width: 550px; /* optional, only needed in case you want to adjust the width */
 }
 </style>
 `;
@@ -58,15 +61,19 @@ export default {
 export default {
     components: {
         Modal,
+        PlayIcon,
         Button,
         InputField,
+        RadioButtons,
         CodeExample
     },
     data() {
         return {
             codeExample,
             code,
-            modalActive: false
+            baseModalCode,
+            modalActive: false,
+            modalStyleType: 'info'
         };
     }
 };
@@ -79,14 +86,15 @@ export default {
         <div class="grid-item-12">
           <h2>Modal</h2>
           <p>
-            Displays the content of the default slot inside a
+            Offers multiple optional slots for content to show inside a
             <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-            The modal offers a <code>cancel</code> event which is triggered by clicking
-            the overlay or by the ESC key. Also on tab, the focus is trapped inside the modal.
+            Multiple styles are supported by the <code>styleType</code> prop.
+            The modal emits a <code>cancel</code> event which is triggered by clicking
+            the overlay, the ESC key or the close button. Also on tab, the focus is trapped inside the modal.
           </p>
           <p>
-            Currently the implementation is without styling and a header etc. which could be included if needed. For now,
-            please refer to the Modal usage in the Hub for inspiration and see
+            For the rare cases where more design freedom is needed, please use the <code>BaseModal</code> component
+            which comes without a header and styled slots. But please be aware of
             <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html">W3C best practices
               for modal dialogs</a>.
           </p>
@@ -96,21 +104,40 @@ export default {
           >
             Trigger modal
           </Button>
+
           <Modal
             :active="modalActive"
+            title="Modal title"
+            class="modal"
             @cancel="modalActive = false"
+            :styleType="modalStyleType"
           >
-            <div class="modal">
-              <h2>This is the modal content</h2>
-              <InputField />
-              <p>Can be anything you put in the default slot</p>
+            <template v-slot:icon><PlayIcon /></template>
+            <template v-slot:notice>
+              <p>This is the notice slot with a list</p>
+              <ul>
+                <li>Cosequence 1</li>
+                <li>Cosequence 1</li>
+              </ul>
+            </template>
+            <template v-slot:confirmation>
+              <p>And this is content in the confirmation slot. Please choose a modal style:</p>
+              <RadioButtons v-model="modalStyleType" :possible-values="[{
+                id: 'info',
+                text: 'info'
+              }, {
+                id: 'warn',
+                text: 'warn'
+              }]"/>
+            </template>
+            <template v-slot:controls>
               <Button
                 primary
                 @click="modalActive = false"
               >
-                Close
+                Accept and close
               </Button>
-            </div>
+            </template>
           </Modal>
         </div>
       </div>
@@ -120,6 +147,7 @@ export default {
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
           <CodeExample summary="Show Modal.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show BaseModal.vue source code">{{ baseModalCode }}</CodeExample>
         </div>
       </div>
     </section>
@@ -130,7 +158,6 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .modal {
-  padding: 20px;
-  width: min(95%, 550px);
+  --modal-width: 550px; /* optional, only needed in case you want to adjust the width */
 }
 </style>
