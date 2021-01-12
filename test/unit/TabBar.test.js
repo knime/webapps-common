@@ -16,6 +16,7 @@ describe('TabBar.vue', () => {
         value: 'nodes',
         label: 'Nodes',
         icon: NodeIcon,
+        title: 'A title',
         disabled: true
     }, {
         value: 'workflows',
@@ -92,6 +93,17 @@ describe('TabBar.vue', () => {
         });
 
         expect(wrapper.findAll('input[disabled="disabled"]')).toHaveLength(2);
+    });
+
+    it('renders titles', () => {
+        let wrapper = shallowMount(TabBar, {
+            propsData: {
+                possibleValues
+            }
+        });
+        let titledInputs = wrapper.findAll('label[title]');
+        expect(titledInputs).toHaveLength(1);
+        expect(titledInputs.at(0).element.title).toBe('A title');
     });
 
 });
