@@ -11,18 +11,21 @@ import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal';
-import InputField from '~/webapps-common/ui/components/InputField';
+import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg?inline';
+import RadioButtons from '~/webapps-common/ui/components/RadioButtons';
 import Button from '~/webapps-common/ui/components/Button';
 
 export default {
     components: {
         Modal,
-        InputField,
+        PlayIcon,
+        RadioButtons,
         Button
     },
     data() {
         return {
-            modalActive: false
+            modalActive: false,
+            modalStyleType: 'info'
         };
     }
 };
@@ -38,13 +41,37 @@ export default {
     </Button>
     <Modal
       :active="modalActive"
-      @cancel="modalActive = false"
+      title="Modal title"
       class="modal"
+      @cancel="modalActive = false"
+      :styleType="modalStyleType"
     >
-      <h2>This is the modal content</h2>
-      <InputField></InputField>
-      <p>Can be anything you put in the default slot</p>
-      <Button primary @click="modalActive = false">Close</Button>
+      <template v-slot:icon><PlayIcon /></template>
+      <template v-slot:notice>
+        <p>This is the notice slot with a list.</p>
+        <ul>
+          <li>Cosequence 1</li>
+          <li>Cosequence 2</li>
+        </ul>
+      </template>
+      <template v-slot:confirmation>
+        <p>And this is content in the confirmation slot. Please choose a modal style:</p>
+        <RadioButtons v-model="modalStyleType" :possible-values="[{
+          id: 'info',
+          text: 'info'
+        }, {
+          id: 'warn',
+          text: 'warn'
+        }]"/>
+      </template>
+      <template v-slot:controls>
+        <Button
+          primary
+          @click="modalActive = false"
+        >
+          Accept and close
+        </Button>
+      </template>
     </Modal>
   </div>
 </template>
@@ -53,7 +80,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .modal {
-  --modal-width: 550px; /* optional, only needed in case you want to adjust the width */
+  --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }
 </style>
 `;
@@ -117,7 +144,7 @@ export default {
               <p>This is the notice slot with a list</p>
               <ul>
                 <li>Cosequence 1</li>
-                <li>Cosequence 1</li>
+                <li>Cosequence 2</li>
               </ul>
             </template>
             <template v-slot:confirmation>
@@ -158,6 +185,6 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .modal {
-  --modal-width: 550px; /* optional, only needed in case you want to adjust the width */
+  --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }
 </style>
