@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Modal from '~/ui/components/Modal.vue';
-import BaseModal from '~/ui/components/BaseModal.vue';
+jest.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {
 
@@ -57,14 +57,28 @@ describe('Modal', () => {
             });
             expect(wrapper.find('.confirmation').text()).toContain('confirmation');
         });
+    });
+
+    describe('BaseModal', () => {
+        let BaseModal = {
+            template: '<div />',
+            props: {
+                active: {
+                    default: false,
+                    type: Boolean
+                }
+            }
+        };
 
         it('passes-through props to BaseModal', () => {
             let wrapper = shallowMount(Modal, {
                 propsData: {
                     active: true
+                },
+                stubs: {
+                    BaseModal
                 }
             });
-
             expect(wrapper.find(BaseModal).props().active).toBeTruthy();
         });
 
@@ -72,6 +86,9 @@ describe('Modal', () => {
             let wrapper = shallowMount(Modal, {
                 listeners: {
                     fakeEvent: jest.fn()
+                },
+                stubs: {
+                    BaseModal
                 }
             });
             expect(wrapper.find(BaseModal).vm.$listeners).toHaveProperty('fakeEvent');
