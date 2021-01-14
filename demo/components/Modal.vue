@@ -2,7 +2,6 @@
 import Modal from '../../ui/components/Modal';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
 import Button from '../../ui/components/Button';
-import InputField from '../../ui/components/forms/InputField';
 import RadioButtons from '../../ui/components/forms/RadioButtons';
 import CodeExample from './demo/CodeExample';
 
@@ -43,8 +42,8 @@ export default {
       :active="modalActive"
       title="Modal title"
       class="modal"
+      :style-type="modalStyleType"
       @cancel="modalActive = false"
-      :styleType="modalStyleType"
     >
       <template v-slot:icon><PlayIcon /></template>
       <template v-slot:notice>
@@ -56,13 +55,16 @@ export default {
       </template>
       <template v-slot:confirmation>
         <p>And this is content in the confirmation slot. Please choose a modal style:</p>
-        <RadioButtons v-model="modalStyleType" :possible-values="[{
-          id: 'info',
-          text: 'info'
-        }, {
-          id: 'warn',
-          text: 'warn'
-        }]"/>
+        <RadioButtons
+          v-model="modalStyleType"
+          :possible-values="[{
+            id: 'info',
+            text: 'info'
+          }, {
+            id: 'warn',
+            text: 'warn'
+          }]"
+        />
       </template>
       <template v-slot:controls>
         <Button
@@ -90,7 +92,6 @@ export default {
         Modal,
         PlayIcon,
         Button,
-        InputField,
         RadioButtons,
         CodeExample
     },
@@ -136,8 +137,8 @@ export default {
             :active="modalActive"
             title="Modal title"
             class="modal"
+            :style-type="modalStyleType"
             @cancel="modalActive = false"
-            :styleType="modalStyleType"
           >
             <template v-slot:icon><PlayIcon /></template>
             <template v-slot:notice>
@@ -149,13 +150,16 @@ export default {
             </template>
             <template v-slot:confirmation>
               <p>And this is content in the confirmation slot. Please choose a modal style:</p>
-              <RadioButtons v-model="modalStyleType" :possible-values="[{
-                id: 'info',
-                text: 'info'
-              }, {
-                id: 'warn',
-                text: 'warn'
-              }]"/>
+              <RadioButtons
+                v-model="modalStyleType"
+                :possible-values="[{
+                  id: 'info',
+                  text: 'info'
+                }, {
+                  id: 'warn',
+                  text: 'warn'
+                }]"
+              />
             </template>
             <template v-slot:controls>
               <Button

@@ -1,4 +1,4 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Modal from '~/ui/components/Modal.vue';
 import BaseModal from '~/ui/components/BaseModal.vue';
 
