@@ -2,7 +2,6 @@
 import Modal from '../../ui/components/Modal';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
 import Button from '../../ui/components/Button';
-import RadioButtons from '../../ui/components/forms/RadioButtons';
 import CodeExample from './demo/CodeExample';
 
 import code from '!!raw-loader!../../ui/components/Modal';
@@ -11,20 +10,17 @@ import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal';
 import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg?inline';
-import RadioButtons from '~/webapps-common/ui/components/RadioButtons';
 import Button from '~/webapps-common/ui/components/Button';
 
 export default {
     components: {
         Modal,
         PlayIcon,
-        RadioButtons,
         Button
     },
     data() {
         return {
-            modalActive: false,
-            modalStyleType: 'info'
+            modalActive: false
         };
     }
 };
@@ -42,37 +38,14 @@ export default {
       :active="modalActive"
       title="Modal title"
       class="modal"
-      :style-type="modalStyleType"
+      style-type="info"
       @cancel="modalActive = false"
     >
       <template v-slot:icon><PlayIcon /></template>
-      <template v-slot:notice>
-        <p>This is the notice slot with a list.</p>
-        <ul>
-          <li>Cosequence 1</li>
-          <li>Cosequence 2</li>
-        </ul>
-      </template>
-      <template v-slot:confirmation>
-        <p>And this is content in the confirmation slot. Please choose a modal style:</p>
-        <RadioButtons
-          v-model="modalStyleType"
-          :possible-values="[{
-            id: 'info',
-            text: 'info'
-          }, {
-            id: 'warn',
-            text: 'warn'
-          }]"
-        />
-      </template>
+      <template v-slot:notice>This is the notice slot.</template>
+      <template v-slot:confirmation>And this is content in the confirmation slot.</template>
       <template v-slot:controls>
-        <Button
-          primary
-          @click="modalActive = false"
-        >
-          Accept and close
-        </Button>
+        <Button @click="modalActive = false">Accept and close</Button>
       </template>
     </Modal>
   </div>
@@ -92,7 +65,6 @@ export default {
         Modal,
         PlayIcon,
         Button,
-        RadioButtons,
         CodeExample
     },
     data() {
@@ -141,26 +113,8 @@ export default {
             @cancel="modalActive = false"
           >
             <template v-slot:icon><PlayIcon /></template>
-            <template v-slot:notice>
-              <p>This is the notice slot with a list</p>
-              <ul>
-                <li>Cosequence 1</li>
-                <li>Cosequence 2</li>
-              </ul>
-            </template>
-            <template v-slot:confirmation>
-              <p>And this is content in the confirmation slot. Please choose a modal style:</p>
-              <RadioButtons
-                v-model="modalStyleType"
-                :possible-values="[{
-                  id: 'info',
-                  text: 'info'
-                }, {
-                  id: 'warn',
-                  text: 'warn'
-                }]"
-              />
-            </template>
+            <template v-slot:notice>This is the notice slot.</template>
+            <template v-slot:confirmation>And this is content in the confirmation slot.</template>
             <template v-slot:controls>
               <Button
                 primary
