@@ -88,7 +88,7 @@ export default {
           <p>
             Offers multiple optional slots for content to show inside a
             <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-            Multiple styles are supported by the <code>styleType</code> prop.
+            Multiple styles are supported by the <code>styleType</code> prop. See source code for possible values.
             The modal emits a <code>cancel</code> event which is triggered by clicking
             the overlay, the ESC key or the close button. Also on tab, the focus is trapped inside the modal.
           </p>

@@ -9,6 +9,8 @@ const KEY_ESC = 27;
  *
  * This component blocks pointer-events with the overlay but emits an event when there is a click away from the modal
  * content; allowing the parent component to minimize or remove the modal as needed.
+ *
+ * Note that the widget width can be set vial the `--modal-width` CSS property, which defaults to `550px`.
  */
 export default {
     components: {
@@ -46,7 +48,7 @@ export default {
         onGlobalKeyUp(e) {
             if (e.keyCode === KEY_ESC) {
                 consola.trace('ESC key press, closing modal');
-                this.onCancel();
+                this.cancel();
             }
         },
         /**
@@ -54,10 +56,16 @@ export default {
          * without having to click a specific button or control.
          *
          * @param {Object} e - the browser mouse event.
+         * @returns {undefined}
+         */
+        onOverlayClick(e) {
+            this.cancel();
+        },
+        /**
          * @emits {cancel} - can be used by parent to close the modal.
          * @returns {undefined}
          */
-        onCancel(e) {
+        cancel() {
             this.$emit('cancel');
         }
     }
@@ -78,7 +86,7 @@ export default {
       <div ref="dialog">
         <div
           class="overlay"
-          @click="onCancel"
+          @click="onOverlayClick"
         />
         <transition name="slide">
           <div

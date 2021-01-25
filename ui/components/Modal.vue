@@ -3,6 +3,9 @@ import BaseModal from './BaseModal';
 import FunctionButton from './FunctionButton';
 import CloseIcon from '../assets/img/icons/close.svg?inline';
 
+/**
+* See demo for documentation
+*/
 export default {
     components: {
         BaseModal,
@@ -31,7 +34,7 @@ export default {
         }
     },
     methods: {
-        onCancel() {
+        onCloserClick() {
             this.$emit('cancel');
         }
     }
@@ -49,7 +52,7 @@ export default {
       <h2>{{ title }}</h2>
       <FunctionButton
         class="closer"
-        @click="onCancel"
+        @click="onCloserClick"
       >
         <CloseIcon />
       </FunctionButton>
@@ -76,7 +79,7 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .modal {
-  --modalPadding: 20px;
+  --modal-padding: 20px;
 
   & >>> strong {
     font-weight: 500;
@@ -94,7 +97,7 @@ export default {
     display: flex;
     color: var(--knime-white);
     max-width: 100%;
-    padding: 0 var(--modalPadding);
+    padding: 0 var(--modal-padding);
     align-items: center;
 
     & h2 {
@@ -135,7 +138,7 @@ export default {
   }
 
   & .notice >>> {
-    padding: var(--modalPadding);
+    padding: var(--modal-padding);
     font-weight: 300;
 
     & p {
@@ -163,7 +166,7 @@ export default {
   }
 
   & .confirmation >>> {
-    padding: var(--modalPadding) var(--modalPadding) 0 var(--modalPadding);
+    padding: var(--modal-padding) var(--modal-padding) 0;
 
     & p {
       font-size: 13px;
@@ -172,7 +175,7 @@ export default {
   }
 
   & .controls {
-    padding: var(--modalPadding);
+    padding: var(--modal-padding);
     display: flex;
     justify-content: space-between;
   }
@@ -190,7 +193,7 @@ export default {
 @media all and (-ms-high-contrast: none) {
   /*  IE11 hack */
   :root {
-    --modalPadding: 24px;
+    --modal-padding: 24px;
   }
 }
 </style>
