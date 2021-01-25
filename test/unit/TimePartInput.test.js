@@ -114,7 +114,7 @@ describe('TimePartInput.vue', () => {
         let wrapper2 = mount(TimePartInput, {
             propsData
         });
-        // formats value on inital render
+        // formats value on initial render
         const inputElement = wrapper2.find({ ref: 'input' }).element;
         expect(inputElement.value).toBe('00011');
         // updates format if prop changes

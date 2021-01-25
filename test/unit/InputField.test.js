@@ -113,7 +113,7 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('validates placehodlers', () => {
+    it('validates placeholders', () => {
         const wrapper = mount(InputField, {
             propsData: {
                 value: '2A_% S',
@@ -141,7 +141,7 @@ describe('InputField.vue', () => {
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
     });
 
-    it('focusses on focus call', () => {
+    it('focuses on focus call', () => {
         const wrapper = mount(InputField);
         wrapper.vm.focus();
         expect(document.activeElement).toEqual(wrapper.find('input').element);
