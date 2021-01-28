@@ -48,7 +48,9 @@ export default {
     v-on="$listeners"
   >
     <div class="header">
-      <slot name="icon" />
+      <span class="header-icon">
+        <slot name="icon" />
+      </span>
       <h2>{{ title }}</h2>
       <FunctionButton
         class="closer"
@@ -93,6 +95,15 @@ export default {
     }
   }
 
+  & .closer {
+    margin-left: auto;
+    margin-right: -6px;
+
+    & >>> svg {
+      stroke: var(--knime-white);
+    }
+  }
+
   & .header {
     display: flex;
     color: var(--knime-white);
@@ -106,9 +117,9 @@ export default {
       line-height: 50px;
     }
 
-    & > >>> svg {
+    & .header-icon >>> svg {
       position: relative;
-      top: -2px;
+      top: 1px;
       margin-right: 10px;
       width: 22px;
       height: 22px;
@@ -178,15 +189,6 @@ export default {
     padding: var(--modal-padding);
     display: flex;
     justify-content: space-between;
-  }
-
-  & .closer {
-    margin-left: auto;
-    margin-right: -6px;
-
-    & >>> svg {
-      stroke: var(--knime-white);
-    }
   }
 }
 
