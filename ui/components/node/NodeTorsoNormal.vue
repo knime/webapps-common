@@ -23,6 +23,7 @@ export default {
     props: {
         /**
          * Node type, e.g. "Learner", "Visualizer"
+         * as defined in org.knime.core.node.NodeFactory.NodeType.
          * Is undefined for MetaNodes
          */
         type: { type: String, default: null },
