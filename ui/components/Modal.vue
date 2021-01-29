@@ -117,14 +117,16 @@ export default {
       line-height: 50px;
     }
 
-    & .header-icon >>> svg {
-      position: relative;
-      top: 1px;
+    & .header-icon {
+      line-height: 0;
       margin-right: 10px;
-      width: 22px;
-      height: 22px;
-      stroke-width: 2.2px;
-      stroke: var(--knime-white);
+
+      & >>> svg {
+        width: 22px;
+        height: 22px;
+        stroke-width: 2.2px;
+        stroke: var(--knime-white);
+      }
     }
   }
 
