@@ -13,3 +13,5 @@ To maintain a consistent structure of the files, SVGs uploaded to this repositor
 - Stroke-miterlimit is not needed in most cases, check if it is needed for your SVG
 - Special case for dots in the SVG. These are made of a line width length 0 and the following attributes:
 `stroke-linecap="round" x1="0" y1="0" x2="0" y2="0"   transform="translate(x, y) scale(1.6)"`
+- The svg header should look like this:
+`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" fill="none" stroke-linejoin="round">`
