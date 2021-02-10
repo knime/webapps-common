@@ -56,16 +56,6 @@ describe('NodeTorsoNormal.vue', () => {
         expect(nodeIcon.html()).toContain('xlink:href=');
     });
 
-    it('renders no icon', () => {
-        let wrapper = doShallowMount({
-            type: 'Learner',
-            kind: 'node',
-            icon: ''
-        });
-        const nodeIcon = wrapper.find('image');
-        expect(nodeIcon.exists()).toBeFalsy();
-    });
-
     it('uses the correct background and path', () => {
         let wrapper = shallowMount(NodeTorsoNormal, {
             propsData: {
