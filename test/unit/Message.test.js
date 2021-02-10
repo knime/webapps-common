@@ -152,7 +152,7 @@ describe('Message.vue', () => {
         expect(wrapper.find('.banner .details a').text()).toEqual('go somewhere');
     });
 
-    it('renders without close button when not dismissable', () => {
+    it('renders without close button when not dismissible', () => {
         wrapper = shallowMount(Message, {
             propsData: {
                 type: 'error',

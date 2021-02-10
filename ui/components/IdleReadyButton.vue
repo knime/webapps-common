@@ -44,6 +44,16 @@ export default {
             default: false
         }
     },
+    computed: {
+        text() {
+            if (this.idle) {
+                return this.idleText;
+            } else if (this.ready) {
+                return this.readyText;
+            }
+            return '';
+        }
+    },
     methods: {
         onClick() {
             this.$emit('click');
@@ -58,19 +68,18 @@ export default {
     class="load-more"
   >
     <client-only>
-      <span v-if="idle">
-        {{ idleText }}
-      </span>
-      <Button
-        v-else-if="ready"
-        compact
-        with-border
-        :disabled="idle"
-        @click="onClick"
-      >
-        <DownIcon v-if="withDownIcon" />
-        {{ readyText }}
-      </Button>
+      <div :class="{ idle }">
+        <Button
+          v-if="ready || idle"
+          compact
+          with-border
+          :disabled="idle"
+          @click="onClick"
+        >
+          {{ text }}
+          <DownIcon v-if="withDownIcon && !idle" />
+        </Button>
+      </div>
     </client-only>
   </div>
 </template>
@@ -79,25 +88,12 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .load-more {
-  text-align: center;
-  font-size: 13px;
-  font-weight: 500;
   min-height: 85px;
   padding-top: 30px;
+  display: flex;
+  justify-content: center;
 
-  & >>> button,
-  & span {
-    min-width: 200px;
-    margin: auto;
-    background-color: transparent;
-    border: none;
-    left: 0;
-    right: 0;
-    display: block;
-    color: inherit;
-  }
-
-  & span {
+  & .idle {
     cursor: progress;
   }
 

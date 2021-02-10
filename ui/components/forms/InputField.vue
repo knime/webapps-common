@@ -67,9 +67,7 @@ export default {
                 isValid = false;
                 errorMessage = 'Invalid input';
             } else if (this.pattern) {
-                const matches = value.match(new RegExp(`^(?:${this.pattern})$`, 'u'));
-                let matchingRegex = matches !== null && matches[0] === value;
-                if (!matchingRegex) {
+                if (this.$refs.input.validity.patternMismatch) {
                     isValid = false;
                     errorMessage = 'Input does not match the expected pattern';
                 }

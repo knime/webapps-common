@@ -88,7 +88,12 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('invalidates wrong unicode pattern', () => {
+    /**
+     * This fails due to bug in jsdom https://github.com/jsdom/jsdom/issues/2494
+     * The bug is fixed with jest 26.5.0 https://github.com/facebook/jest/pull/10578
+     * The test can be reactivated when we upgrade
+     */
+    xit('invalidates wrong unicode pattern', () => {
         const wrapper = mount(InputField, {
             propsData: {
                 value: 'te%tSætring!"$<>',
@@ -108,7 +113,7 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('validates placehodlers', () => {
+    it('validates placeholders', () => {
         const wrapper = mount(InputField, {
             propsData: {
                 value: '2A_% S',
@@ -136,7 +141,7 @@ describe('InputField.vue', () => {
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
     });
 
-    it('focusses on focus call', () => {
+    it('focuses on focus call', () => {
         const wrapper = mount(InputField);
         wrapper.vm.focus();
         expect(document.activeElement).toEqual(wrapper.find('input').element);

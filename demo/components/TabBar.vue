@@ -27,14 +27,17 @@ export default {
             return [{
                 value: 'apples',
                 label: 'Apples',
+                title: 'Click for apples',
                 icon: BulbIcon
             }, {
                 value: 'oranges',
                 label: 'Oranges',
+                title: 'Click for oranges',
                 icon: HelpIcon
             }, {
                 label: 'Bananas (out of stock)',
                 value: 'bananas',
+                title: 'Click for bananas',
                 disabled: true
             }];
         }
@@ -68,10 +71,12 @@ export default {
             return [{
                 value: 'apples',
                 label: 'Apples',
+                title: 'Click for apples',
                 icon: BulbIcon
             }, {
                 value: 'oranges',
                 label: 'Oranges',
+                title: 'Click for oranges',
                 icon: HelpIcon
             }, {
                 label: 'Bananas (out of stock)',
@@ -95,13 +100,16 @@ export default {
 const possibleTabValues = [{
     value: 'apples',
     label: 'Apples',
+    title: 'Click for apples',
     icon: BulbIcon
 }, {
     value: 'oranges',
     label: 'Oranges',
+    title: 'Click for oranges',
     icon: HelpIcon
 }, {
     label: 'Bananas (out of stock)',
+    title: 'Currently no bananas, sorry!',
     value: 'bananas',
     disabled: true
 }];
@@ -129,6 +137,7 @@ export default {
                 ...result[2],
                 disabled: this.bananasDisabled,
                 label: this.bananasDisabled ? 'Bananas (out of stock)' : 'Bananas!',
+                title: this.bananasDisabled ? 'Currently no bananas, sorry!' : 'Click for bananas',
                 icon: this.bananasDisabled ? null : StarIcon
             };
             return [...result];
