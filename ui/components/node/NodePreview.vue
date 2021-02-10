@@ -63,8 +63,7 @@ export default {
          */
         icon: {
             type: String,
-            default: null,
-            validator: url => url.startsWith('data:image/')
+            default: null
         }
     },
     data() {
