@@ -58,8 +58,8 @@
     "vue-clickaway": "2.2.2",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
-    "fontsource-roboto": "*",
-    "fontsource-roboto-mono": "*",
+    "fontsource-roboto": "3.x",
+    "fontsource-roboto-mono": "3.x",
     "v-calendar": "2.0.1"
   },
   "private": true

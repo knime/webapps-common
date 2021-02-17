@@ -158,6 +158,7 @@ export default {
   }
 
   &.with-border {
+    padding: 11px 29px;
     border: 1px solid var(--theme-button-border-color);
     color: var(--theme-button-foreground-color);
 

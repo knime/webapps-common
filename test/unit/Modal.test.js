@@ -1,86 +1,105 @@
 import { shallowMount } from '@vue/test-utils';
 import Modal from '~/ui/components/Modal.vue';
-
 jest.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {
 
     describe('rendering', () => {
-        /* eslint-disable no-global-assign */
-        beforeAll(() => {
-            window.addEventListener = jest.fn();
-            window.removeEventListener = jest.fn();
-        });
 
-        afterAll(() => {
-            delete window.addEventListener;
-            delete window.removeEventListener;
-        });
-        /* eslint-enable no-global-assign */
+        it('renders style type classes', () => {
+            let wrapper = shallowMount(Modal);
+            expect(wrapper.classes()).toContain('info');
 
-        it('renders default inactive', () => {
-            let wrapper = shallowMount(Modal, {
-                stubs: { FocusTrap: true },
-                slots: {
-                    default: '<p>test</p>'
-                },
-                attachToDocument: true
+            wrapper = shallowMount(Modal, {
+                propsData: {
+                    styleType: 'warn'
+                }
             });
-            expect(window.addEventListener).not.toHaveBeenCalled();
-            expect(wrapper.html()).toBeFalsy();
+            expect(wrapper.classes()).toContain('warn');
         });
 
-        it('activates and deactivates', () => {
+        it('renders title, icon and controls', () => {
             let wrapper = shallowMount(Modal, {
-                stubs: { FocusTrap: true },
-                slots: {
-                    default: '<p class="content-item">test</p>'
+                propsData: {
+                    title: 'Modal title'
                 },
-                attachToDocument: true
+                slots: {
+                    icon: '<svg class="icon"></svg>',
+                    controls: '<p>controls</p>'
+                }
             });
 
-            // only manual activation is supported
-            wrapper.setProps({ active: true });
+            expect(wrapper.find('.header h2').text()).toContain('Modal title');
+            expect(wrapper.find('.header svg.icon').exists()).toBeTruthy();
+            expect(wrapper.find('.controls').text()).toContain('controls');
+        });
 
-            // activate
-            expect(wrapper.find('.overlay').exists()).toBeTruthy();
-            expect(wrapper.find('.content-item').exists()).toBeFalsy();
+        it('renders notice (if set)', () => {
+            let wrapper = shallowMount(Modal);
+            expect(wrapper.find('.notice').exists()).toBeFalsy();
 
-            // show content
-            wrapper.setData({ showContent: true });
-            expect(wrapper.find('.content-item').exists()).toBeTruthy();
-            expect(window.addEventListener).toHaveBeenCalled();
+            wrapper = shallowMount(Modal, {
+                slots: {
+                    notice: '<p>notice</p>'
+                }
+            });
+            expect(wrapper.find('.notice').text()).toContain('notice');
+        });
 
-            // hide again
-            wrapper.setProps({ active: false });
-            expect(window.removeEventListener).toHaveBeenCalled();
-            expect(wrapper.html()).toBeFalsy();
+        it('renders confirmation (if set)', () => {
+            let wrapper = shallowMount(Modal);
+            expect(wrapper.find('.confirmation').exists()).toBeFalsy();
+
+            wrapper = shallowMount(Modal, {
+                slots: {
+                    confirmation: '<p>confirmation</p>'
+                }
+            });
+            expect(wrapper.find('.confirmation').text()).toContain('confirmation');
         });
     });
 
-    it('emits cancel event on ESC key', () => {
-        let wrapper = shallowMount(Modal, {
-            stubs: { FocusTrap: true },
-            attachToDocument: true
+    describe('BaseModal', () => {
+        let BaseModal = {
+            template: '<div />',
+            props: {
+                active: {
+                    default: false,
+                    type: Boolean
+                }
+            }
+        };
+
+        it('passes-through props to BaseModal', () => {
+            let wrapper = shallowMount(Modal, {
+                propsData: {
+                    active: true
+                },
+                stubs: {
+                    BaseModal
+                }
+            });
+            expect(wrapper.find(BaseModal).props().active).toBeTruthy();
         });
 
-        // only manual activation is supported
-        wrapper.setProps({ active: true });
-
-        wrapper.trigger('keyup.esc');
-        expect(wrapper.emitted().cancel).toBeTruthy();
+        it('passes-through event listeners to BaseModal', () => {
+            let wrapper = shallowMount(Modal, {
+                listeners: {
+                    fakeEvent: jest.fn()
+                },
+                stubs: {
+                    BaseModal
+                }
+            });
+            expect(wrapper.find(BaseModal).vm.$listeners).toHaveProperty('fakeEvent');
+        });
     });
 
-    it('emits cancel event on overlay click', () => {
-        let wrapper = shallowMount(Modal, {
-            stubs: { FocusTrap: true },
-            attachToDocument: true
-        });
+    it('emits cancel event on close button click', async () => {
+        let wrapper = shallowMount(Modal);
 
-        // only manual activation is supported
-        wrapper.setProps({ active: true });
-
-        wrapper.find('.overlay').trigger('click');
+        expect(wrapper.emitted().cancel).toBeFalsy();
+        await wrapper.find('.header .closer').vm.$emit('click');
         expect(wrapper.emitted().cancel).toBeTruthy();
     });
 
