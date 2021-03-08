@@ -53,6 +53,7 @@ export default {
   width: 100%;
   font-size: 16px;
   box-sizing: border-box;
+  z-index: 999;
 }
 
 .legacy-browser-banner {
@@ -69,7 +70,6 @@ export default {
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
-  pointer-events: all;
   font-weight: 500;
   padding: 15px;
   color: #fff;
@@ -82,6 +82,10 @@ export default {
 
 .legacy-browser-wrapper a {
   font-weight: 500;
+}
+
+template * {
+  pointer-events: all;
 }
 
 </style>
