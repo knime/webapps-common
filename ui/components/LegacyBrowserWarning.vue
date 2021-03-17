@@ -32,7 +32,7 @@ export default {
 <template>
   <div
     v-once
-    class="legacy-browser-banner"
+    class="legacy-browser-warning"
     v-html="banner"
   />
 </template>
@@ -41,7 +41,7 @@ export default {
 /* We allow hex colors to not rely on css variables for old browser */
 /* stylelint-disable color-no-hex */
 
-.legacy-browser-banner template {
+.legacy-browser-warning template {
   /* This is needed as normalize.css usually hides template tags */
   display: block;
 }
