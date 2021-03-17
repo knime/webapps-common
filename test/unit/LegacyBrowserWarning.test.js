@@ -18,7 +18,7 @@ describe('Label.vue', () => {
         expect(wrapper.html()).toContain('<template>');
         expect(wrapper.html()).toContain(propsData.text);
         expect(wrapper.html())
-            .toContain('<a href="https://browser-update.org/update-browser.html">Please update your browser</a>');
+            .toContain('<a href="https://browser-update.org/update-browser.html" rel="noopener">Please update your browser</a>');
     });
 
 });
