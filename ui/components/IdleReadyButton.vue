@@ -76,6 +76,10 @@ export default {
           :disabled="idle"
           @click="onClick"
         >
+          <slot
+            v-if="ready"
+            name="readyIcon"
+          />
           {{ text }}
           <DownIcon v-if="withDownIcon && !idle" />
         </Button>
