@@ -7,9 +7,9 @@ Example usage in Nuxt nuxt.config.js:
         build: {
             extend(config) {
                 // remove Nuxt's default svg loader
-                const imgRule = config.module.rules.find(
-                    rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp|avif)$/i)
-                );
+                const svgRule = config.module.rules.find(rule => String(rule.test).includes('svg'));
+                svgRule.test = new RegExp(String(svgRule.test).replace('svg|', '').replace('|svg'));
+
                 imgRule.test = /\.(png|jpe?g|gif|webp|avif)$/i;
 
                 // add our svg loader
