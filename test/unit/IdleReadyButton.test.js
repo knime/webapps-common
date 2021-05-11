@@ -64,6 +64,16 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.find(DownIcon).exists()).toBeTruthy();
     });
 
+    it('renders border', () => {
+        let wrapper = shallowMount(IdleReadyButton);
+        expect(wrapper.find(Button).attributes('withborder')).toBeDefined();
+
+        wrapper.setProps({
+            withBorder: false
+        });
+        expect(wrapper.find(Button).attributes('withborder')).not.toBeDefined();
+    });
+
     it('emits events', () => {
         let wrapper = mount(IdleReadyButton, {
             propsData: {

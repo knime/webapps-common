@@ -42,6 +42,13 @@ export default {
         withDownIcon: {
             type: Boolean,
             default: false
+        },
+        /**
+         * show button with border
+         */
+        withBorder: {
+            type: Boolean,
+            default: true
         }
     },
     computed: {
@@ -72,10 +79,14 @@ export default {
         <Button
           v-if="ready || idle"
           compact
-          with-border
+          :with-border="withBorder"
           :disabled="idle"
           @click="onClick"
         >
+          <slot
+            v-if="ready"
+            name="readyIcon"
+          />
           {{ text }}
           <DownIcon v-if="withDownIcon && !idle" />
         </Button>
