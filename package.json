@@ -30,7 +30,7 @@
     "consola": "2.10.1",
     "cross-var": "1.1.0",
     "eslint": "5.16.0",
-    "eslint-plugin-vue": "5.2.3",
+    "eslint-plugin-vue": "7.10.0",
     "jest": "24.9.0",
     "jest-junit": "6.4.0",
     "jest-transform-stub": "2.0.0",

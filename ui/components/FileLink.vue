@@ -125,6 +125,7 @@ export default {
     }
 };
 </script>
+
 <template>
   <figure class="file-link">
     <a
@@ -141,6 +142,7 @@ export default {
     </figcaption>
   </figure>
 </template>
+
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 

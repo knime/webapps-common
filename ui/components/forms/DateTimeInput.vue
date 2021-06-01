@@ -310,7 +310,7 @@ export default {
           @input="onDatePickerInput"
         >
           <!--Custom Input Slot-->
-          <template v-slot="{ inputValue, inputEvents, hidePopover, togglePopover }">
+          <template #default="{ inputValue, inputEvents, hidePopover, togglePopover }">
             <div>
               <input
                 :id="id"
