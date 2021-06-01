@@ -27,6 +27,7 @@ module.exports = {
         }],
         'vue/html-closing-bracket-spacing': 'error',
         'vue/multiline-html-element-content-newline': 'error',
+        'vue/padding-line-between-blocks': 'error',
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off'
