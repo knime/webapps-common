@@ -164,6 +164,7 @@ module.exports = {
         }],
         'operator-assignment': 'warn',
         'operator-linebreak': 'error',
+        'padded-blocks': ['error', 'never'],
         'prefer-arrow-callback': 'warn',
         'prefer-promise-reject-errors': 'warn',
         'prefer-rest-params': 'warn',
@@ -221,7 +222,8 @@ module.exports = {
     }, {
         files: ['*.test.js'],
         rules: {
-            'no-undefined': 'off'
+            'no-undefined': 'off',
+            'padded-blocks': 'off'
         }
     }]
 };
