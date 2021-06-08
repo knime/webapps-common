@@ -19,10 +19,6 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
-.tooltip {
-  position: relative;
-}
-
 .text {
   position: absolute;
   top: -12px; /* the height of the arrow */
