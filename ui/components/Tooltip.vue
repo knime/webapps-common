@@ -20,11 +20,16 @@ export default {
 @import "webapps-common/ui/css/variables";
 
 .text {
+  /* hide visually */
+  height: 1px;
+  width: 1px;
+  visibility: hidden;
+
+  /* positioning and styling */
   position: absolute;
   top: -12px; /* the height of the arrow */
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
-  visibility: hidden;
   opacity: 0;
   background-color: var(--knime-masala);
   white-space: nowrap;
@@ -53,15 +58,25 @@ export default {
 
 @media (hover: hover) {
   .tooltip:hover .text {
+    /* show */
+    height: auto;
+    width: auto;
     visibility: visible;
+
+    /* other styles */
     opacity: 1;
     transition: all 250ms cubic-bezier(0.215, 0.61, 0.355, 1) 150ms;
   }
 
   .tooltip:focus-within .text {
+    /* hide visually */
+    height: 1px;
+    width: 1px;
+    visibility: hidden;
+
+    /* other styles */
     transition-delay: 0ms;
     opacity: 0;
-    visibility: hidden;
   }
 }
 
