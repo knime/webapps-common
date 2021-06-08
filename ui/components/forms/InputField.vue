@@ -72,7 +72,7 @@ export default {
                     errorMessage = 'Input does not match the expected pattern';
                 }
             }
-            return { isValid,  errorMessage };
+            return { isValid, errorMessage };
         }
     }
 };

@@ -37,7 +37,7 @@ export default {
                     { type: 'table' }
                 ],
                 outPorts: [
-                    { type: 'other', color: '#1eb9dc'  },
+                    { type: 'other', color: '#1eb9dc' },
                     { type: 'table', optional: true }
                 ],
                 icon

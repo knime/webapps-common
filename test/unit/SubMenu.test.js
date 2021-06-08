@@ -45,7 +45,7 @@ describe('SubMenu.vue', () => {
     });
 
     it('renders the submenu items', () => {
-        const items =  [
+        const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash' },
             { href: 'https://www.linkedin.com', text: 'Linked' },
             { to: '/relative/route', text: 'Everything is relative' }
@@ -77,7 +77,7 @@ describe('SubMenu.vue', () => {
     });
     it('can be disabled', () => {
         const id = 'testfoobar543';
-        const items =  [
+        const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
             { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
         ];
