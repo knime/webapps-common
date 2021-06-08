@@ -38,7 +38,7 @@ export default {
           <Collapser
             class="grid-item-3 collapser"
           >
-            <template v-slot:title>
+            <template #title>
               <h5>Collapser</h5>
             </template>
             <p>Lorem ipsum…</p>
@@ -46,7 +46,7 @@ export default {
           <Collapser
             class="grid-item-3 collapser"
           >
-            <template v-slot:title>
+            <template #title>
               <BulbIcon style="width: 20px; height: 20px;" />
               <h5>Collapser with icon</h5>
             </template>

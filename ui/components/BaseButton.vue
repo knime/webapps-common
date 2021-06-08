@@ -44,6 +44,7 @@ export default {
     }
 };
 </script>
+
 <template>
   <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
   <nuxt-link

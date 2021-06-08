@@ -112,10 +112,10 @@ export default {
             :style-type="modalStyleType"
             @cancel="modalActive = false"
           >
-            <template v-slot:icon><PlayIcon /></template>
-            <template v-slot:notice>This is the notice slot.</template>
-            <template v-slot:confirmation>And this is content in the confirmation slot.</template>
-            <template v-slot:controls>
+            <template #icon><PlayIcon /></template>
+            <template #notice>This is the notice slot.</template>
+            <template #confirmation>And this is content in the confirmation slot.</template>
+            <template #controls>
               <Button
                 primary
                 @click="modalActive = false"
