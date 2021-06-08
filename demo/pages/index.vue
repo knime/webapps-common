@@ -40,6 +40,7 @@ import TabBarDemo from '../components/TabBar';
 import TextArea from '../components/TextArea';
 import TimePartInput from '../components/TimePartInut';
 import ToggleSwitch from '../components/ToggleSwitch';
+import Tooltip from '../components/Tooltip';
 import Twinlist from '../components/Twinlist';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar';
 
@@ -92,6 +93,7 @@ export default {
         TextArea,
         TimePartInput,
         ToggleSwitch,
+        Tooltip,
         Twinlist
     },
     mixins: [tabBarMixin],
@@ -170,6 +172,7 @@ export default {
       <Modal />
       <SubMenu />
       <SplitButton />
+      <Tooltip/>
       <TabBarDemo />
     </template>
     <template v-if="activeTab === 'messages'">
