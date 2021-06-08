@@ -123,5 +123,4 @@ describe('RadioButtons.vue', () => {
         input.element.checked = true; // setChecked does not work in this case
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
-
 });

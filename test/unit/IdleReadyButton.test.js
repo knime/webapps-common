@@ -5,7 +5,6 @@ import Button from '~/ui/components/Button';
 import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg?inline';
 
 describe('IdleReadyButton.vue', () => {
-
     it('doesn’t render when not needed', () => {
         let wrapper = shallowMount(IdleReadyButton, {
             propsData: {
@@ -84,5 +83,4 @@ describe('IdleReadyButton.vue', () => {
         wrapper.find(Button).vm.$emit('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
-
 });

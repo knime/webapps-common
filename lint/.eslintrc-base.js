@@ -21,6 +21,7 @@ module.exports = {
         browser: false,
         es6: true
     },
+    plugins: ['jest-formatting'],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],
@@ -222,8 +223,13 @@ module.exports = {
     }, {
         files: ['*.test.js'],
         rules: {
-            'no-undefined': 'off',
-            'padded-blocks': 'off'
+            'jest-formatting/padding-around-after-all-blocks': 'error',
+            'jest-formatting/padding-around-after-each-blocks': 'error',
+            'jest-formatting/padding-around-before-all-blocks': 'error',
+            'jest-formatting/padding-around-before-each-blocks': 'error',
+            'jest-formatting/padding-around-describe-blocks': 'error',
+            'jest-formatting/padding-around-test-blocks': 'error',
+            'no-undefined': 'off'
         }
     }]
 };

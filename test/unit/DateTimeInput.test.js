@@ -32,7 +32,6 @@ describe('DateTimeInput.vue', () => {
     });
 
     describe('renders', () => {
-
         it('renders with datepicker and time', () => {
             let wrapper = shallowMount(DateTimeInput, {
                 ...context,
@@ -90,11 +89,9 @@ describe('DateTimeInput.vue', () => {
             expect(wrapper.isVisible()).toBeTruthy();
             expect(wrapper.find({ ref: 'datePicker' }).isVisible()).toBeTruthy();
         });
-
     });
 
     describe('updates', () => {
-
         it('updates date on datepicker changes', () => {
             let wrapper = mount(DateTimeInput, {
                 ...context,
@@ -210,11 +207,9 @@ describe('DateTimeInput.vue', () => {
             expect(getMilliseconds(wrapper.emitted().input[0][0])).toStrictEqual(milliseconds);
             expect(getDayOfYear(wrapper.emitted().input[0][0])).toStrictEqual(getDayOfYear(propsData.value));
         });
-
     });
 
     describe('over- and underflow of time values', () => {
-
         it('updates days on overflow of hours', () => {
             let wrapper = mount(DateTimeInput, {
                 ...context,
@@ -297,11 +292,9 @@ describe('DateTimeInput.vue', () => {
             wrapper.find({ ref: 'milliseconds' }).vm.$emit('bounds', { type: 'min', input: -1 });
             expect(wrapper.emitted().input[0][0]).toStrictEqual(new Date('2020-05-03T09:54:54.999'));
         });
-
     });
 
     describe('validates', () => {
-
         it('invalidates values earlier than min date', () => {
             propsData.value = new Date('2020-05-03T09:54:50');
             propsData.min = new Date('2020-05-03T09:54:54');
@@ -418,6 +411,5 @@ describe('DateTimeInput.vue', () => {
             const validation = wrapper.vm.validate();
             expect(validation.isValid).toBeTruthy();
         });
-
     });
 });

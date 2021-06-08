@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import Collapser from '~/ui/components/Collapser';
 
 describe('Collapser.vue', () => {
-
     it('renders content and title', () => {
         const wrapper = mount(Collapser, {
             slots: {
@@ -61,7 +60,5 @@ describe('Collapser.vue', () => {
                 done();
             });
         });
-
     });
-
 });

@@ -198,5 +198,4 @@ describe('TimePartInput.vue', () => {
             value: 0
         });
     });
-
 });

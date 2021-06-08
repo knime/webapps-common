@@ -3,7 +3,6 @@ import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import SubMenu from '~/ui/components/SubMenu';
 
 describe('SubMenu.vue', () => {
-
     describe('clicking submenu items', () => {
         it('emits item-click', () => {
             const items = [
@@ -507,5 +506,4 @@ describe('SubMenu.vue', () => {
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });
     });
-
 });

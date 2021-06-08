@@ -1,7 +1,6 @@
 import truncateString from '~/util/truncateString';
 
 describe('truncateString', () => {
-
     let fixtures = [{
         input: '',
         expected: ''

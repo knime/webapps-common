@@ -4,7 +4,6 @@ import SubMenu from '~/ui/components/SubMenu';
 import FunctionButton from '~/ui/components/FunctionButton';
 
 describe('SubMenu.vue', () => {
-
     it('renders the menu toggle', () => {
         const wrapper = shallowMount(SubMenu, {
             slots: {
@@ -73,8 +72,8 @@ describe('SubMenu.vue', () => {
         expect(wrapper.find(`li:nth-child(1) a`).attributes('href')).toBe(items[0].href);
         expect(wrapper.find(`li:nth-child(2) a`).attributes('href')).toBe(items[1].href);
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
-
     });
+
     it('can be disabled', () => {
         const id = 'testfoobar543';
         const items = [

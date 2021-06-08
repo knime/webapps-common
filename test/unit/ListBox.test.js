@@ -133,7 +133,6 @@ describe('ListBox.vue', () => {
                 expect(classes).not.toContain('invalid');
             }
         });
-
     });
 
     it('sets the correct aria-* attributes', () => {
@@ -259,5 +258,4 @@ describe('ListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toBe('test5');
         });
     });
-
 });

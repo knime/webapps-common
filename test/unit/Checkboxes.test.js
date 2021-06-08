@@ -75,5 +75,4 @@ describe('Checkboxes.vue', () => {
         expect(propPossibleValues.validator && propPossibleValues.validator('str')).toBeFalsy();
         expect(propPossibleValues.validator && propPossibleValues.validator([])).toBeTruthy();
     });
-
 });

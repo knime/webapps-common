@@ -7,7 +7,6 @@ import PortIcon from '../../ui/components/node/PortIcon';
 import Description from '../../ui/components/Description';
 
 describe('PortsListItem.vue', () => {
-
     let propsData, wrapper;
 
     beforeEach(() => {
@@ -116,7 +115,6 @@ describe('PortsListItem.vue', () => {
             expect(PortDescriptions.length).toEqual(1);
 
             expect(PortDescriptions.at(0).props('text')).toEqual('group');
-
         });
     });
 });

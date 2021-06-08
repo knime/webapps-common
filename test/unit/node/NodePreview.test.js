@@ -60,7 +60,6 @@ describe('NodePreview.vue', () => {
             type: 'other'
         });
         expect(portIcons.at(2).attributes().transform).toBe('translate(36.5, 26.5)');
-
     });
 
     it('renders dynamic Ports indicator', () => {
