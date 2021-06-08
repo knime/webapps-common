@@ -107,6 +107,7 @@ module.exports = {
             maxBOF: 0,
             maxEOF: 1
         }],
+        'no-multi-spaces': 'error',
         'no-negated-condition': 'error',
         'no-nested-ternary': 'warn',
         'no-new-func': 'warn',
