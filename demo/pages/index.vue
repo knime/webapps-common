@@ -172,7 +172,7 @@ export default {
       <Modal />
       <SubMenu />
       <SplitButton />
-      <Tooltip/>
+      <Tooltip />
       <TabBarDemo />
     </template>
     <template v-if="activeTab === 'messages'">

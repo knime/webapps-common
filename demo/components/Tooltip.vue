@@ -46,14 +46,14 @@ export default {
           <Tooltip
             text="What you see here is a headline tooltip"
           >
-              <h3 class="demo-line">A headline which magically has now a tooltip</h3>
+            <h3 class="demo-line">A headline which magically has now a tooltip</h3>
           </Tooltip>
         </div>
         <div class="grid-item-6">
           <Tooltip
             text="Compact tooltip for a field"
           >
-            <BrainIcon/>
+            <BrainIcon />
           </Tooltip>
         </div>
       </div>

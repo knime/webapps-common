@@ -4,7 +4,7 @@ import Tooltip from '~/ui/components/Tooltip';
 describe('Tooltip', () => {
     it('renders', () => {
         const wrapper = mount(Tooltip, {
-            propsData:{
+            propsData: {
                 text: 'My text'
             },
             slots: {
