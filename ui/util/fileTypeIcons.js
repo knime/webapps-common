@@ -16,7 +16,7 @@ import exeIcon from '../assets/img/icons/file-zip-exe.svg?inline';
 import txtIcon from '../assets/img/icons/file-text.svg?inline';
 import fileIcon from '../assets/img/icons/file-question.svg?inline';
 
-const icons = {
+export const icons = {
     csvIcon,
     docxIcon,
     htmlIcon,
@@ -34,10 +34,6 @@ const icons = {
     exeIcon,
     txtIcon,
     fileIcon
-};
-
-export default {
-    ...icons
 };
 
 export const isIconExisting = function (iconName) {

@@ -1,10 +1,10 @@
 <script>
 import filesize from 'filesize';
-import * as icons from '../util/fileTypeIcons';
+import { icons } from '../util/fileTypeIcons';
 
 export default {
     components: {
-        ...icons.default
+        ...icons
     },
     props: {
         /** display text for the download link */
