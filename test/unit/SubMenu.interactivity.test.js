@@ -3,10 +3,9 @@ import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import SubMenu from '~/ui/components/SubMenu';
 
 describe('SubMenu.vue', () => {
-
     describe('clicking submenu items', () => {
         it('emits item-click', () => {
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
@@ -37,7 +36,7 @@ describe('SubMenu.vue', () => {
 
         describe('enter key behavior', () => {
             it('clicks links with enter key', () => {
-                const items =  [
+                const items = [
                     { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                     { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
@@ -73,7 +72,7 @@ describe('SubMenu.vue', () => {
             });
 
             it('does not click buttons with enter key', () => {
-                const items =  [
+                const items = [
                     { text: 'Google Slash', randomProp: 'test' },
                     { text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
@@ -111,7 +110,7 @@ describe('SubMenu.vue', () => {
 
         describe('space key behavior', () => {
             it('clicks buttons with space key', () => {
-                const items =  [
+                const items = [
                     { text: 'Google Slash', randomProp: 'test' },
                     { text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
@@ -147,7 +146,7 @@ describe('SubMenu.vue', () => {
             });
 
             it('does not click links with space key', () => {
-                const items =  [
+                const items = [
                     { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                     { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
@@ -191,7 +190,7 @@ describe('SubMenu.vue', () => {
 
         beforeEach(() => {
             const id = 'testfoobar543';
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
@@ -210,7 +209,7 @@ describe('SubMenu.vue', () => {
         });
 
         it('gets next item to focus', () => {
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' },
                 { text: 'I act like a button' }
@@ -343,7 +342,7 @@ describe('SubMenu.vue', () => {
 
         it('focuses first element on key up after expand if orientation top', () => {
             const id = 'testfoobar543';
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
@@ -378,7 +377,7 @@ describe('SubMenu.vue', () => {
 
         it('does not focus first element on key down after expand if orientation top', () => {
             const id = 'testfoobar543';
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
@@ -418,7 +417,7 @@ describe('SubMenu.vue', () => {
 
         beforeEach(() => {
             const id = 'testfoobar543';
-            const items =  [
+            const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
@@ -507,5 +506,4 @@ describe('SubMenu.vue', () => {
             expect(closingMenuWrapper.vm.expanded).toBe(false);
         });
     });
-
 });

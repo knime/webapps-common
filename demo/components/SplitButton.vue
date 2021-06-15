@@ -86,7 +86,7 @@ const subMenuItems = [{
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
     icon: StarIcon
-},  {
+}, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
     icon: HeartIcon

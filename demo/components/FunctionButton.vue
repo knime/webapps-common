@@ -56,7 +56,7 @@ export default {
             }, {
                 href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
                 text: 'Oranges'
-            },  {
+            }, {
                 to: '/testing-nuxt-link',
                 text: 'Ananas'
             }]

@@ -298,7 +298,7 @@ export default {
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
-            let next  = 0;
+            let next = 0;
             this.setSelectedToIndex(next);
             this.currentKeyNavIndex = next;
             this.$refs.ul.scrollTop = 0;

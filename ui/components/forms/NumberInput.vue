@@ -54,7 +54,7 @@ export default {
     data() {
         return {
             clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
-            hovered: false  // if the input field is currently hovered or not
+            hovered: false // if the input field is currently hovered or not
         };
     },
     /**

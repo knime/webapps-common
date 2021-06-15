@@ -21,6 +21,7 @@ module.exports = {
         browser: false,
         es6: true
     },
+    plugins: ['jest-formatting'],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],
@@ -107,6 +108,7 @@ module.exports = {
             maxBOF: 0,
             maxEOF: 1
         }],
+        'no-multi-spaces': 'error',
         'no-negated-condition': 'error',
         'no-nested-ternary': 'warn',
         'no-new-func': 'warn',
@@ -163,6 +165,7 @@ module.exports = {
         }],
         'operator-assignment': 'warn',
         'operator-linebreak': 'error',
+        'padded-blocks': ['error', 'never'],
         'prefer-arrow-callback': 'warn',
         'prefer-promise-reject-errors': 'warn',
         'prefer-rest-params': 'warn',
@@ -220,6 +223,12 @@ module.exports = {
     }, {
         files: ['*.test.js'],
         rules: {
+            'jest-formatting/padding-around-after-all-blocks': 'error',
+            'jest-formatting/padding-around-after-each-blocks': 'error',
+            'jest-formatting/padding-around-before-all-blocks': 'error',
+            'jest-formatting/padding-around-before-each-blocks': 'error',
+            'jest-formatting/padding-around-describe-blocks': 'error',
+            'jest-formatting/padding-around-test-blocks': 'error',
             'no-undefined': 'off'
         }
     }]

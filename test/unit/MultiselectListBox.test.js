@@ -6,7 +6,6 @@ import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 jest.useFakeTimers();
 
 describe('MultiselectListBox.vue', () => {
-
     let possibleValues;
 
     beforeEach(() => {

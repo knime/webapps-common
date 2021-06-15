@@ -53,5 +53,4 @@ describe('OpenSourceCredits.vue', () => {
         expect(details.classes()).not.toContain('open');
         expect(button.attributes('aria-expanded')).toBe('false');
     });
-
 });

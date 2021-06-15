@@ -98,7 +98,7 @@ export default {
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
-            const size = this.size === 0 ?  this.possibleValues.length : this.size;
+            const size = this.size === 0 ? this.possibleValues.length : this.size;
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         },

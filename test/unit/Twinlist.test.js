@@ -4,8 +4,8 @@ import Twinlist from '~/ui/components/forms/Twinlist';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 
 describe('Twinlist.vue', () => {
-
     let defaultPossibleValues;
+
     beforeEach(() => {
         defaultPossibleValues = [{
             id: 'test1',
@@ -158,6 +158,7 @@ describe('Twinlist.vue', () => {
 
     describe('double click', () => {
         let propsData;
+
         beforeEach(() => {
             propsData = {
                 possibleValues: defaultPossibleValues,
@@ -458,7 +459,6 @@ describe('Twinlist.vue', () => {
 
             // move selected to left is now possible
             expect(moveLeft.classes()).not.toContain('disabled');
-
         });
 
         it('moves selected values to left on move button enter', async () => {
@@ -551,5 +551,4 @@ describe('Twinlist.vue', () => {
         wrapper.vm.onLeftInput(['test1', 'test4']);
         expect(right.emitted().input[0][0]).toStrictEqual([]);
     });
-
 });

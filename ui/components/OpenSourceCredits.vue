@@ -41,7 +41,6 @@ export default {
     },
     computed: {
         packages() {
-
             let allUniquePackages = [];
 
             packages.concat(this.additionalPackages).forEach(pkg => {

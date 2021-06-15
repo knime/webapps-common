@@ -233,5 +233,4 @@ describe('Dropdown.vue', () => {
             expect(wrapper.emitted().input[0][0]).toBe('test5');
         });
     });
-
 });

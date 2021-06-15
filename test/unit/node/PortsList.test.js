@@ -4,7 +4,6 @@ import PortsList from '../../../ui/components/node/PortsList';
 import PortGroup from '../../../ui/components/node/PortGroup';
 
 describe('PortsList.vue', () => {
-
     it('renders', () => {
         const wrapper = shallowMount(PortsList);
         expect(wrapper.find(PortsList)).toBeTruthy();
@@ -78,5 +77,4 @@ describe('PortsList.vue', () => {
         // eslint-disable-next-line no-magic-numbers
         expect(allPortsListItems.at(3).props('ports')).toEqual([{ baz: 'qux' }]);
     });
-
 });

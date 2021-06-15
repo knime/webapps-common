@@ -120,6 +120,5 @@ describe('DialogOptions.vue', () => {
         });
         expect(wrapper.find('.options').exists()).toBeFalsy();
     });
-
 });
 

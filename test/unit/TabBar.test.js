@@ -6,7 +6,6 @@ import NodeIcon from '~/ui/assets/img/icons/node.svg?inline';
 import Carousel from '~/ui/components/Carousel';
 
 describe('TabBar.vue', () => {
-
     let possibleValues = [{
         value: 'all',
         label: 'All',
@@ -105,5 +104,4 @@ describe('TabBar.vue', () => {
         expect(titledInputs).toHaveLength(1);
         expect(titledInputs.at(0).element.title).toBe('A title');
     });
-
 });

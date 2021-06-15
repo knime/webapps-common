@@ -4,7 +4,6 @@ import BaseModal from '~/ui/components/BaseModal.vue';
 jest.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('BaseModal', () => {
-
     describe('rendering', () => {
         /* eslint-disable no-global-assign */
         beforeAll(() => {
@@ -83,5 +82,4 @@ describe('BaseModal', () => {
         wrapper.find('.overlay').trigger('click');
         expect(wrapper.emitted().cancel).toBeTruthy();
     });
-
 });

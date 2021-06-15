@@ -1,9 +1,7 @@
 import { isAfterMaxDate, isBeforeMinDate } from '~/util/dateMinMaxCheck';
 
 describe('dateMinMaxCheck.js', () => {
-
     describe('isAfterMaxDate', () => {
-
         it('returns true if date is after max date', () => {
             const date = new Date('2020-10-20T15:12:08');
             const max = new Date('2020-10-19T15:12:08');
@@ -41,11 +39,9 @@ describe('dateMinMaxCheck.js', () => {
             const max2 = new Date('2020-10-20T17:00:00');
             expect(isAfterMaxDate(date2, max2, true, false)).toBe(true);
         });
-
     });
 
     describe('isBeforeMinDate', () => {
-
         it('returns true if date is before min date', () => {
             const min = new Date('2020-10-20T15:12:08');
             const date = new Date('2020-10-19T15:12:08');
