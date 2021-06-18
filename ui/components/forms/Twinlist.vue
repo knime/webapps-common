@@ -120,7 +120,13 @@ export default {
             this.chosenValues = newValue;
         },
         possibleValues(newPossibleValues) {
-            this.chosenValues = [];
+            // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
+            let allValues = newPossibleValues.reduce((arr, valObj) => {
+                arr.push(...Object.values(valObj));
+                return arr;
+            }, []);
+            // Reset chosenValues as subset of original to prevent re-execution from resetting value
+            this.chosenValues = this.chosenValues.filter(item => allValues.includes(item));
         }
     },
     methods: {

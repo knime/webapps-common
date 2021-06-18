@@ -142,6 +142,33 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
+    it('keeps valid state but removes invalid state when there is a change in the possible values', () => {
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text'
+            }, {
+                id: 'test2',
+                text: 'Some Text'
+            }],
+            value: ['invalidId', 'test1'],
+            labelLeft: 'Choose',
+            labelRight: 'The value'
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
+
+        wrapper.setProps({
+            possibleValues: [{
+                id: 'test1',
+                text: 'validValue'
+            }]
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual(['test1']);
+    });
+
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(Twinlist, {
             propsData: {
