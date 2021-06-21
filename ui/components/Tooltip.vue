@@ -65,17 +65,12 @@ export default {
 
     /* other styles */
     opacity: 1;
-    transition: all 250ms cubic-bezier(0.215, 0.61, 0.355, 1) 150ms;
+    transition: opacity 250ms cubic-bezier(0.215, 0.61, 0.355, 1) 150ms;
   }
 
-  .tooltip:focus-within .text {
-    /* hide visually */
-    height: 1px;
-    width: 1px;
-    visibility: hidden;
-
-    /* other styles */
-    transition-delay: 0ms;
+  .expanded:focus-within + .text {
+    /* for expanded popup we hide the tooltip */
+    transition: opacity 150ms ease;
     opacity: 0;
   }
 }
