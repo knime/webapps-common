@@ -19,7 +19,13 @@ export default {
 <style lang="postcss" scoped>
 @import "webapps-common/ui/css/variables";
 
+.tooltip {
+  position: relative;
+}
+
 .text {
+  --arrow-size: 12px;
+
   /* hide visually */
   height: 1px;
   width: 1px;
@@ -27,33 +33,31 @@ export default {
 
   /* positioning and styling */
   position: absolute;
-  top: -12px; /* the height of the arrow */
+  top: calc(var(--arrow-size) * -1);
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
   opacity: 0;
-  background-color: var(--knime-masala);
+  background-color: var(--theme-tooltip-background-color);
   white-space: nowrap;
-  color: var(--knime-white);
+  color: var(--theme-tooltip-foreground-color);
   padding: 6px 10px;
   box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
   border-radius: 1px;
   font-size: 13px;
+  pointer-events: none;
 
+  /* arrow */
   &::after {
-    width: 12px;
-    height: 12px;
+    width: var(--arrow-size);
+    height: var(--arrow-size);
     content: '';
     position: absolute;
     z-index: -1;
     left: 50%;
-    background-color: var(--knime-masala);
+    background-color: var(--theme-tooltip-background-color);
     bottom: 2px;
     transform: translate(-50%, 50%) rotate(135deg);
   }
-}
-
-.tooltip {
-  position: relative;
 }
 
 @media (hover: hover) {
@@ -69,11 +73,9 @@ export default {
   }
 
   .expanded:focus-within + .text {
-    /* for expanded popup we hide the tooltip */
+    /* hide the tooltip when the container has the 'expanded' class, e.g. for popovers */
     transition: opacity 150ms ease;
     opacity: 0;
   }
 }
-
-
 </style>
