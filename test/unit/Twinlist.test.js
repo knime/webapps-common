@@ -142,7 +142,7 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
-    it('keeps valid state but removes invalid state when there is a change in the possible values', () => {
+    it('keeps valid state but removes invalid chosen values when there is a change in the possible values', () => {
         let propsData = {
             possibleValues: [{
                 id: 'test1',
