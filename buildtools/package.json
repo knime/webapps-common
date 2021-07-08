@@ -2,7 +2,7 @@
   "name": "knime-build-tools",
   "version": "0.0.0",
   "description": "Shared build tools for KNIME web applications.",
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN license.txt",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
     "opensourcecredits": "node opensourcecredits/collect-packages",

@@ -1,11 +1,13 @@
-# Shared files for web projects with JS, Vue and/or Nuxt
+# ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME® Webapps-Common
+
+## Shared files for KNIME® web projects with JS, Vue and/or Nuxt
 
 This project contains shared config files, Vue components, CSS files, utilities, etc. that can be used for the frontend
 of all KNIME web projects. It also includes an internal NPM package, knime-build-tools, which contains scripts and functionality
 commonly used in KNIME web projects.
 
 ## Demo
-
+---
 Run
 ```sh
 npm run demo
@@ -14,7 +16,7 @@ npm run demo
 to see the included components.
 
 ## Usage
-
+---
 You should follow these steps
  
 1. include this project as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
@@ -45,13 +47,15 @@ You should follow these steps
 
     This is required for importing assets via `<img src="…">` in Vue templates and `url("…")` in CSS.
 
-### Vue
-
+## Vue
+---
 This project contains shared CSS files and Vue components.
+
+### **Imports**
 
 Depending on the use case, you must follow a different syntax to import the common files:
 
-#### `~/webapps-common/…`
+### `~/webapps-common/…`
 
 This can be used when importing js files or SVG images into a `.vue` file:
 
@@ -66,7 +70,7 @@ The Vue components expect that the app provides the following:
 - Vue and Consola compatible to the versions defined in [`package.json`](package.json)
 - global `window.consola` instance for logging
 
-#### `~webapps-common/…`
+### `~webapps-common/…`
 
 This is used for loading resources in templates or CSS:
 
@@ -82,7 +86,7 @@ This is used for loading resources in templates or CSS:
 
 (this also works for `.js` imports)
 
-#### `webapps-common/`
+### `webapps-common/`
 
 This syntax can be used for importing CSS files from within other CSS files:
 
@@ -92,7 +96,7 @@ This syntax can be used for importing CSS files from within other CSS files:
 
 (the `~/` syntax also works, except for fonts)
 
-#### overview
+### **Summary**
 
 |                 | `~/webapps-common/` | `~webapps-common/` | `webapps-common/` |
 | --------------- |:-------------------:|:------------------:|:-----------------:|
@@ -104,9 +108,8 @@ This syntax can be used for importing CSS files from within other CSS files:
 | CSS `@import`   | (not for fonts)     |                    | ✅                 |
 
 
-
-### ESLint
-
+## ESLint
+---
 Include this in your [ESLint config file]:
 
 ```js
@@ -120,7 +123,7 @@ for legacy views (KNIME AP, ES3), and`.eslintrc-base.js` for other projects.
 
 Configuration files are made for ESLint 5.
 
-### stylelint
+### **stylelint**
 
 Import the config file using
 
@@ -132,13 +135,14 @@ in your `.stylelintrc.js`.
 
 Configuration files are made for Stylelint 10.
 
-### webpack
+### **webpack**
 
 (see inline comments in `webpack/*`)
 
-## Styling and theming
 
-### CSS tooling and syntax
+## Styling
+---
+### **CSS tooling and syntax**
 
 The KNIME color scheme is defined in JavaScript and has to be converted into CSS by running
 
@@ -155,7 +159,7 @@ Other JS-defined colors are:
 All other CSS is written in (future) CSS syntax and pre-processed by [PostCSS], see 
 [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
 
-### Stacking order and z-index
+### **Stacking order and z-index**
 
 Try to avoid setting z-indices since they can lead to stacking conflicts, especially when shared components are used in many different apps. Many times a `z-index` is not needed, e.g. [elements which use `position: absolute;` are stacked on top](Stacking) anyway. Additionally, the local stacking order can be controlled by changing the order in the DOM or using `::after` instead of `::before` pseudo elements.
 
@@ -163,14 +167,17 @@ When the above doesn’t work and you need a `z-index`, think about
 - if you just want to stack things locally. If yes, set `isolation: isolate;` on the parent element so you don’t pollute the global stacking context.
 - if it needs to be in the global context and the code you’re editing is in webapps-common, use a CSS variable with default like `z-index: var(--z-index-common-modal, 100);` so our apps can overwrite it if needed. To see which are available in the shared components, search for `--z-index-common-` in this repository.
 
-### Theming
+## Theming
+---
 In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in
 `/ui/css/variables`. Since IE11 doesn't support them, theming won't work here; the default theme will be shown.
 
 # knime-build-tools
 
-see `/buildtools/README.md`
+A helper module for build specific utilities. For more details, see `/buildtools/README.md`.
 
+# Join the Community!
+* [KNIME Forum](https://forum.knime.com/)
 
 
 
