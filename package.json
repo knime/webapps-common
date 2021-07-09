@@ -2,7 +2,7 @@
   "name": "webapps-common",
   "version": "0.0.0",
   "description": "Shared files for web projects. See README for details.",
-  "license": "SEE LICENSE IN license.txt",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7(SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
     "preinstall": "node ./install-subDependencies",
