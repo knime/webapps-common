@@ -194,10 +194,4 @@ export default {
   }
 }
 
-@media all and (-ms-high-contrast: none) {
-  /*  IE11 hack */
-  :root {
-    --modal-padding: 24px;
-  }
-}
 </style>

@@ -165,7 +165,7 @@ When the above doesn’t work and you need a `z-index`, think about
 
 ### Theming
 In the future, custom theming can be supported by overwriting the theme CSS custom properties defined in
-`/ui/css/variables`. Since IE11 doesn't support them, theming won't work here; the default theme will be shown.
+`/ui/css/variables`.
 
 # knime-build-tools
 

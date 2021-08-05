@@ -23,10 +23,6 @@ input[type="email"],
 input[type="number"] {
   appearance: none;
   border-radius: 0;
-
-  &::-ms-clear { /* IE11 / legacy Edge only */
-    display: none;
-  }
 }
 
 /* For accessibility, it makes sense to sometimes only hide text visually */
