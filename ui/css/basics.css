@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+body {
+  font-family: 'Roboto', sans-serif; /* Overwrite modern-normalize.css */
+}
+
 a {
   color: inherit;
 }
