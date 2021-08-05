@@ -52,7 +52,7 @@
     "eslint": "5.x - 7.x",
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
-    "normalize.css": "*",
+    "modern-normalize.css": "*",
     "postcss-calc": "*",
     "postcss-css-variables": "*",
     "postcss-import": "*",
