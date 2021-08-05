@@ -33,8 +33,8 @@ svg {
 }
 
 /*
-  In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
-  neither does the fallback plugin:
+  This should work as well now as IE11 was dropped:
+
   :root svg {
     width: calc(var(--icon-size) * 1px);
     height: calc(var(--icon-size) * 1px);
@@ -83,8 +83,8 @@ svg {
 }
 
 /*
-  In the future the above syntax could be simplified using CSS variables, but IE11 does not support this, and
-  neither does the fallback plugin:
+  TODO HUB-1985: This should work as well now as IE11 was dropped:
+
   :root svg {
     width: calc(var(--icon-size) * 1px);
     height: calc(var(--icon-size) * 1px);
