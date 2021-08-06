@@ -53,8 +53,6 @@
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
     "modern-normalize.css": "*",
-    "postcss-calc": "*",
-    "postcss-css-variables": "*",
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",

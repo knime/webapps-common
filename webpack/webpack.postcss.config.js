@@ -27,7 +27,6 @@ module.exports = {
     order: 'presetEnvAndCssnanoLast',
     plugins: {
         'postcss-import': {},
-        'postcss-url': {},
-        'postcss-calc': {}
+        'postcss-url': {}
     }
 };
