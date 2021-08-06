@@ -109,8 +109,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .top {
   text-align: center;
   background-color: var(--knime-white);

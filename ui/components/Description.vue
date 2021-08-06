@@ -42,8 +42,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .description {
   font-size: 18px;
   line-height: 26px;

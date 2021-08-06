@@ -60,8 +60,6 @@ export default {
 </template>
 
 <style type="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 ul,
 li {
   margin: 0;

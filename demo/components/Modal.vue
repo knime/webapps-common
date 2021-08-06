@@ -52,8 +52,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }
@@ -140,8 +138,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }

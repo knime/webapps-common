@@ -95,8 +95,6 @@ export default {
 </template>
 
 <style type="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .wrapper {
   background: var(--knime-white);
   display: flex;

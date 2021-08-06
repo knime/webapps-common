@@ -165,8 +165,6 @@ export const tabBarMixin = {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .wrapper {
   width: 100%;
   position: relative;

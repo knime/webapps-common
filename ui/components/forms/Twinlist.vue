@@ -311,8 +311,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .twinlist {
   display: flex;
   align-items: stretch;

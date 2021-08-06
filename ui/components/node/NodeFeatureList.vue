@@ -113,8 +113,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .placeholder {
   font-size: 13px;
   font-weight: 300;

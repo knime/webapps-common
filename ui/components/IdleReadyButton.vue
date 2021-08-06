@@ -96,8 +96,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .load-more {
   min-height: 85px;
   padding-top: 30px;
