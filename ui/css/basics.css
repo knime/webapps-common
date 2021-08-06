@@ -1,9 +1,3 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Roboto', sans-serif; /* Overwrite modern-normalize.css */
 }
