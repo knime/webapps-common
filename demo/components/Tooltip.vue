@@ -39,9 +39,15 @@ export default {
           <p>
             A simple tooltip only for devices with hover capabilities. For others it will be deactivated.
           </p>
+          <p>
+            Note: If the immediate child container of the tooltip has an <code class="language-js">expanded</code>
+            class, the tooltip will be hidden. This is useful for example for popovers (See KNIME Hub project).
+          </p>
         </div>
       </div>
-      <div class="grid-container demo">
+    </section>
+    <section class="demo">
+      <div class="grid-container ">
         <div class="grid-item-6">
           <Tooltip
             text="What you see here is a headline tooltip"
@@ -70,6 +76,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import "webapps-common/ui/css/variables";
 
 .grid-item-6 {
   display: flex;
@@ -83,6 +90,13 @@ svg {
 
 .demo {
   margin-bottom: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: var(--knime-porcelain);
+
+  & .grid-container {
+    align-items: center;
+  }
 }
 
 .demo-line {

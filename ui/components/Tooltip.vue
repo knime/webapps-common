@@ -61,7 +61,7 @@ export default {
 }
 
 @media (hover: hover) {
-  .tooltip:hover .text {
+  .tooltip:hover > .text {
     /* show */
     height: auto;
     width: auto;
