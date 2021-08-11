@@ -90,17 +90,29 @@ export default {
     methods: {
         getValue() {
             let inputValue = this.$refs.input.value;
-            return this.type === 'integer'
-                ? parseInt(inputValue, 10)
-                : parseFloat(inputValue);
+
+            if (this.type === 'integer') {
+                return parseInt(inputValue);
+            }
+            if (inputValue.toUpperCase().includes('E')) {
+                return parseFloat(inputValue).toExponential().toUpperCase();
+            }
+            return parseFloat(inputValue);
         },
         onInput() {
-            this.$emit('input', this.getValue());
+            if (!isNaN(this.getValue())) {
+                this.$emit('input', this.getValue());
+            }
         },
         validate(val) {
             let isValid = true;
-            let errorMessage;
-            let value = typeof val === 'undefined' ? this.getValue() : val;
+            let errorMessage, value;
+            if (typeof val === 'undefined') {
+                // parse value to convert from scientific notation to 'normal' float
+                value = this.type === 'integer' ? this.getValue() : parseFloat(this.getValue());
+            } else {
+                value = val;
+            }
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
                 errorMessage = 'Current value is not a number.';
