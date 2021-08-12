@@ -92,7 +92,7 @@ export default {
             let inputValue = this.$refs.input.value;
 
             if (this.type === 'integer') {
-                return parseInt(inputValue);
+                return parseInt(inputValue, 10);
             }
             if (inputValue.toUpperCase().includes('E')) {
                 return parseFloat(inputValue).toExponential().toUpperCase();
