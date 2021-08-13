@@ -101,33 +101,9 @@ describe('NumberInput.vue', () => {
     });
 
     it('transforms to (standard) scientific notation', () => {
-        wrapper.vm.$refs.input.value = '3e3';
-        expect(wrapper.vm.getValue()).toStrictEqual('3E+3');
-        wrapper.vm.$refs.input.value = '30.833e3';
-        expect(wrapper.vm.getValue()).toStrictEqual('3.0833E+4');
-        wrapper.vm.$refs.input.value = '0.03e-3';
-        expect(wrapper.vm.getValue()).toStrictEqual('3E-5');
-    });
-
-    it('has validate logic to check min/max values in scientific notation', () => {
-        wrapper.vm.$refs.input.value = '3e2';
-        expect(wrapper.vm.validate()).toStrictEqual(
-            { errorMessage: 'Current value is outside allowed range.', isValid: false }
-        );
-        wrapper.vm.$refs.input.value = '-3e2';
-        expect(wrapper.vm.validate()).toStrictEqual(
-            { errorMessage: 'Current value is outside allowed range.', isValid: false }
-        );
-    });
-
-    it('handles invalid scientific notation', () => {
-        wrapper.vm.$refs.input.value = '3e';
-        expect(wrapper.vm.validate()).toStrictEqual(
-            { errorMessage: 'Current value is not a number.', isValid: false }
-        );
-        wrapper.vm.$refs.input.value = 'e';
-        expect(wrapper.vm.validate()).toStrictEqual(
-            { errorMessage: 'Current value is not a number.', isValid: false }
-        );
+        wrapper.setProps({ value: '3e5' });
+        expect(wrapper.vm.getValue()).toStrictEqual(300000);
+        wrapper.setProps({ value: '4.423532523e5' });
+        expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
     });
 });
