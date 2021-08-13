@@ -13,7 +13,14 @@ export default {
     props: {
         value: {
             default: 0,
-            type: Number
+            type: [Number, String],
+            validator(val) {
+                if (typeof val === 'string') {
+                    // possible scientific notation
+                    return val.toLowerCase().includes('e');
+                }
+                return typeof val === 'number';
+            }
         },
         id: {
             type: String,
@@ -54,7 +61,9 @@ export default {
     data() {
         return {
             clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
-            hovered: false // if the input field is currently hovered or not
+            hovered: false, // if the input field is currently hovered or not
+            initialValue: null,
+            localValue: null
         };
     },
     /**
@@ -80,39 +89,33 @@ export default {
             return classes;
         }
     },
+    watch: {
+        value() {
+            this.localValue = this.parseValue(this.value);
+        }
+    },
     mounted() {
         /**
          * This value is the last valid input value for the number input.
          * It is used as a fallback if the user enters invalid values.
          */
-        this.initialValue = this.value;
+        this.localValue = this.parseValue(this.value);
+        this.initialValue = this.localValue;
     },
     methods: {
+        parseValue(value) {
+            return this.type === 'integer' ? parseInt(value, 10) : parseFloat(value);
+        },
         getValue() {
-            let inputValue = this.$refs.input.value;
-
-            if (this.type === 'integer') {
-                return parseInt(inputValue, 10);
-            }
-            if (inputValue.toUpperCase().includes('E')) {
-                return parseFloat(inputValue).toExponential().toUpperCase();
-            }
-            return parseFloat(inputValue);
+            return this.parseValue(this.$refs.input.value);
         },
         onInput() {
-            if (!isNaN(this.getValue())) {
-                this.$emit('input', this.getValue());
-            }
+            this.$emit('input', this.getValue());
         },
         validate(val) {
             let isValid = true;
-            let errorMessage, value;
-            if (typeof val === 'undefined') {
-                // parse value to convert from scientific notation to 'normal' float
-                value = this.type === 'integer' ? this.getValue() : parseFloat(this.getValue());
-            } else {
-                value = val;
-            }
+            let errorMessage;
+            let value = typeof val === 'undefined' ? this.getValue() : this.parseValue(val);
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
                 errorMessage = 'Current value is not a number.';
@@ -217,7 +220,7 @@ export default {
       ref="input"
       type="number"
       role="spinButton"
-      :value="value"
+      :value="localValue"
       :min="min"
       :max="max"
       :step="stepSize"
