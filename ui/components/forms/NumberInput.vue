@@ -90,8 +90,11 @@ export default {
         }
     },
     watch: {
-        value() {
-            this.localValue = this.parseValue(this.value);
+        value: {
+            handler() {
+                this.localValue = this.parseValue(this.value);
+            },
+            immediate: true
         }
     },
     mounted() {
