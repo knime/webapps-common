@@ -80,10 +80,43 @@ export default {
 <style lang="postcss" scoped>
 .modal {
   --modal-padding: 20px;
+  --modal-color-content: var(--theme-color-error-semi);
+  --modal-color-header: var(--theme-color-error);
 
   & >>> strong {
     font-weight: 500;
   }
+
+  & >>> a {
+    color: var(--theme-text-link-foreground-color);
+    background: var(--theme-text-link-background-color);
+
+    @supports (mask: url("") no-repeat 50% 50%) {
+      &[href^="http"]::after {
+        content: "";
+        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+        mask-size: cover;
+        background-color: var(--knime-masala); /* defines icon color */
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: -2px;
+      }
+    }
+
+    &:hover {
+      outline: none;
+      color: var(--theme-text-link-foreground-color-hover);
+      background-color: var(--theme-text-link-background-color-hover);
+      text-decoration: none;
+
+      &::after {
+        background-color: var(--theme-text-link-foreground-color-hover); /* defines icon color */
+      }
+    }
+  }
+
 
   & >>> p {
     margin: 0;
@@ -140,11 +173,11 @@ export default {
 
   &.warn {
     & .header {
-      background: var(--theme-color-error);
+      background: var(--modal-color-header);
     }
 
     & .notice {
-      background-color: var(--theme-color-error-semi);
+      background-color: var(--modal-color-content);
     }
   }
 
