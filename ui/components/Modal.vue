@@ -80,8 +80,8 @@ export default {
 <style lang="postcss" scoped>
 .modal {
   --modal-padding: 20px;
-  --modal-color-content: var(--theme-color-error-semi);
-  --modal-color-header: var(--theme-color-error);
+
+  color: var(--theme-text-link-foreground-color);
 
   & >>> strong {
     font-weight: 500;
@@ -116,7 +116,6 @@ export default {
       }
     }
   }
-
 
   & >>> p {
     margin: 0;
@@ -173,11 +172,11 @@ export default {
 
   &.warn {
     & .header {
-      background: var(--modal-color-header);
+      background: var(--theme-color-error);
     }
 
     & .notice {
-      background-color: var(--modal-color-content);
+      background-color: var(--theme-color-error-semi);
     }
   }
 
