@@ -54,6 +54,8 @@ export default {
 <style lang="postcss" scoped>
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
+  --modal-color-header: var(--theme-color-error); /* optional, defines the color of the header of the modal. Default: var(--theme-color-error) */
+  --modal-color-content: var(--theme-color-error-semi); /* optional, in case the upper content should have background color. Default: var(--theme-color-error-semi) */
 }
 </style>
 `;
