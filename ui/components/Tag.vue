@@ -1,5 +1,4 @@
 <script>
-
 export default {
     props: {
         /**
@@ -11,7 +10,6 @@ export default {
         }
     }
 };
-
 </script>
 
 <template>
@@ -21,8 +19,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .tag {
   border: 1px solid var(--knime-dove-gray);
   margin-right: 5px;
@@ -69,12 +65,10 @@ export default {
   }
 }
 
-
 @media only screen and (max-width: 900px) {
   .tag {
     font-size: 9px;
     line-height: 15px;
   }
 }
-
 </style>

@@ -55,7 +55,7 @@ export default {
                 this.$emit('click', tag);
             }
         },
-        onShowMore(event) {
+        onShowMore() {
             this.displayAll = true;
         }
     }
@@ -87,7 +87,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-
 .wrapper {
   display: flex;
   flex-wrap: wrap;
