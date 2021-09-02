@@ -1,6 +1,14 @@
 <script>
 export default {
     props: {
+        id: {
+            type: String,
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
+        },
         value: {
             type: Boolean,
             default: false
@@ -38,7 +46,9 @@ export default {
 <template>
   <label :class="['checkbox', labelSize]">
     <input
+      :id="id"
       ref="input"
+      :name="name"
       :checked="value"
       type="checkbox"
       @change="onInput"

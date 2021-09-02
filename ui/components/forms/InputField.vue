@@ -9,6 +9,10 @@ export default {
             type: String,
             default: null
         },
+        name: {
+            type: String,
+            default: null
+        },
         /**
          * validity needs to be controlled by the parent component to be flexible
          */
@@ -84,6 +88,7 @@ export default {
     <input
       :id="id"
       ref="input"
+      :name="name"
       :value="value"
       :class="inputClassList"
       :type="type"

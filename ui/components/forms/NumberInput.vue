@@ -26,6 +26,10 @@ export default {
             type: String,
             default: null
         },
+        name: {
+            type: String,
+            default: null
+        },
         min: {
             default: Number.MIN_SAFE_INTEGER,
             type: Number
@@ -221,6 +225,7 @@ export default {
     <input
       :id="id"
       ref="input"
+      :name="name"
       type="number"
       role="spinButton"
       :value="localValue"
