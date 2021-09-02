@@ -83,8 +83,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .page-content {
   outline: 2px dotted purple;
 

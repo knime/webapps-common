@@ -50,8 +50,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 /* if you consider removing this class: don't!
    selector specificity requires it for container system used in page-builder */
 .checkbox {

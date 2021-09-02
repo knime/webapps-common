@@ -100,8 +100,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
-
 .demo {
   background: var(--knime-porcelain);
 

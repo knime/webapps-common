@@ -132,8 +132,6 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre>
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 section.demo {
   background-color: var(--knime-porcelain);
 }

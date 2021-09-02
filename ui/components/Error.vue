@@ -109,8 +109,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .top {
   text-align: center;
   background-color: var(--knime-white);
@@ -118,19 +116,12 @@ export default {
 
 .grid-container {
   justify-content: center;
-  overflow: hidden; /* IE11 */
 }
 
 svg {
   margin-top: 40px;
-  width: 800px; /* IE11 / old Edge */
-  height: 400px; /* IE11 / old Edge */
-
-  @supports not (-ms-ime-align:auto) {
-    /* actual browsers */
-    width: 100%;
-    height: auto;
-  }
+  width: 100%;
+  height: auto;
 
   & .error-status {
     font: 30px sans-serif;

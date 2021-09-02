@@ -85,8 +85,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 h5 {
   padding: 15px 30px;
   margin: 0;

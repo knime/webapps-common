@@ -61,8 +61,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .demo {
   margin-bottom: 10px;
   align-items: flex-start;

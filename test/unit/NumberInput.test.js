@@ -99,4 +99,11 @@ describe('NumberInput.vue', () => {
         input.trigger('mouseleave');
         expect(input.find('.hover').exists()).toBe(false);
     });
+
+    it('transforms to (standard) scientific notation', () => {
+        wrapper.setProps({ value: '3e5' });
+        expect(wrapper.vm.getValue()).toStrictEqual(300000);
+        wrapper.setProps({ value: '4.423532523e5' });
+        expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
+    });
 });

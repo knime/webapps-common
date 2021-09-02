@@ -42,8 +42,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .description {
   font-size: 18px;
   line-height: 26px;
@@ -144,7 +142,6 @@ export default {
       font-family: var(--theme-text-medium-font-family);
       color: var(--theme-text-medium-color);
       border-bottom: solid 2px var(--knime-masala);
-      text-align: inherit; /* IE11 */
     }
 
     & th,

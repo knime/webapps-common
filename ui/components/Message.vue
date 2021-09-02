@@ -201,8 +201,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .message-count {
   padding: 3px 7.5px;
   margin-left: 5px;

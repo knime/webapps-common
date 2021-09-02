@@ -57,8 +57,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .function-button {
   display: flex;
   text-align: center;

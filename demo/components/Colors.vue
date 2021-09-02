@@ -114,13 +114,10 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "webapps-common/ui/css/variables";
-
 .color-list {
   padding: 0;
   list-style: none;
   column-count: 3;
-
 
   & li {
     --bg: none;

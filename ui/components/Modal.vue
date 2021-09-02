@@ -78,13 +78,43 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .modal {
   --modal-padding: 20px;
 
+  color: var(--theme-text-link-foreground-color);
+
   & >>> strong {
     font-weight: 500;
+  }
+
+  & >>> a {
+    color: var(--theme-text-link-foreground-color);
+    background: var(--theme-text-link-background-color);
+
+    @supports (mask: url("") no-repeat 50% 50%) {
+      &[href^="http"]::after {
+        content: "";
+        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+        mask-size: cover;
+        background-color: var(--knime-masala); /* defines icon color */
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: -2px;
+      }
+    }
+
+    &:hover {
+      outline: none;
+      color: var(--theme-text-link-foreground-color-hover);
+      background-color: var(--theme-text-link-background-color-hover);
+      text-decoration: none;
+
+      &::after {
+        background-color: var(--theme-text-link-foreground-color-hover); /* defines icon color */
+      }
+    }
   }
 
   & >>> p {
@@ -194,10 +224,4 @@ export default {
   }
 }
 
-@media all and (-ms-high-contrast: none) {
-  /*  IE11 hack */
-  :root {
-    --modal-padding: 24px;
-  }
-}
 </style>

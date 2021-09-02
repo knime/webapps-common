@@ -50,8 +50,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .toggle {
   display: inline-block;
   position: relative;
