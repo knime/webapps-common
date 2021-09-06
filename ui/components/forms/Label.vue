@@ -77,8 +77,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables";
-
 .label-wrapper {
   margin-top: 0;
 }

@@ -73,8 +73,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .breadcrumb {
   color: var(--knime-dove-gray);
   font-family: var(--theme-text-bold-font-family);

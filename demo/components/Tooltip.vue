@@ -76,8 +76,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .grid-item-6 {
   display: flex;
   align-items: flex-end;

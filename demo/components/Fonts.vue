@@ -40,19 +40,12 @@
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
-
 .demo {
   background: var(--knime-porcelain);
 
   & .grid-item-12 {
     padding: 1em 0;
   }
-}
-
-code,
-samp {
-  font-family: "Roboto Mono", sans-serif;
 }
 
 code {

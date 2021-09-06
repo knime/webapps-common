@@ -26,8 +26,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables";
-
 fieldset {
   /* reset default styles */
   margin: 0;

@@ -37,6 +37,7 @@ import RadioButtons from '../components/RadioButtons';
 import SplitButton from '../components/SplitButton';
 import SubMenu from '../components/SubMenu';
 import TabBarDemo from '../components/TabBar';
+import TagList from '../components/TagList';
 import TextArea from '../components/TextArea';
 import TimePartInput from '../components/TimePartInut';
 import ToggleSwitch from '../components/ToggleSwitch';
@@ -90,6 +91,7 @@ export default {
         SubMenu,
         TabBar,
         TabBarDemo,
+        TagList,
         TextArea,
         TimePartInput,
         ToggleSwitch,
@@ -174,6 +176,7 @@ export default {
       <SplitButton />
       <Tooltip />
       <TabBarDemo />
+      <TagList />
     </template>
     <template v-if="activeTab === 'messages'">
       <Message />
@@ -206,8 +209,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "webapps-common/ui/css/variables";
-
 main {
   margin-bottom: 10em;
 }

@@ -44,8 +44,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 ul {
   --icon-size: 18px;
   --icon-spacing: 6px;

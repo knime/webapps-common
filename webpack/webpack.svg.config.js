@@ -10,8 +10,6 @@ Example usage in Nuxt nuxt.config.js:
                 const svgRule = config.module.rules.find(rule => String(rule.test).includes('svg'));
                 svgRule.test = new RegExp(String(svgRule.test).replace('svg|', '').replace('|svg'));
 
-                imgRule.test = /\.(png|jpe?g|gif|webp|avif)$/i;
-
                 // add our svg loader
                 config.module.rules.push(svgConfig);
             }

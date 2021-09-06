@@ -70,8 +70,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
-
 .demo {
   background: var(--knime-porcelain);
 
@@ -79,5 +77,4 @@ export default {
     padding-bottom: 2em;
   }
 }
-
 </style>

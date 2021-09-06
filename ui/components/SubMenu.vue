@@ -238,8 +238,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 ul {
   display: none;
   position: absolute;

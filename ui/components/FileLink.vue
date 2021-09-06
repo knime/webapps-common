@@ -92,8 +92,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .file-link {
   /* figure has browser default margin which is not reset */
   margin: 0;

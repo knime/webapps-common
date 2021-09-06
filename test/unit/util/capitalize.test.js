@@ -1,4 +1,4 @@
-import { capitalize } from '~/webapps-common/util/capitalize';
+import { capitalize } from '~/util/capitalize';
 
 describe('capitalize', () => {
     it('capitalizes first letter of string', () => {
