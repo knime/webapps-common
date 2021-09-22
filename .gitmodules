@@ -1,0 +1,3 @@
+[submodule "webapps-common"]
+	path = webapps-common
+	url = https://bitbucket.org/KNIME/webapps-common/
