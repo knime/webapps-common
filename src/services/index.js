@@ -1,2 +1,2 @@
 export { KnimeService } from './KnimeService';
-export { JsonDataService } from './JsonDataService';
+export { JSONDataService } from './JSONDataService';

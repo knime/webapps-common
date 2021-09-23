@@ -46,8 +46,15 @@ npm run build
 ```
 
 ## Basic usage of KNIME Service in UI components
-To use KNIME service inside UI component you have to import desired service such as ```JSONDataService```
-and assign settings to initialData received via method provided by selected service.  
+1. Add a submodule in app, where you wish to have access to KNIME service.
+- To do so - run the command below in the root folder of the app where you want to use KNIME service.
+```javascript
+git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service/src/knime-service knime-service
+```
+2. Run ```npm i``` to install all dependencies.
+
+3. To use KNIME service inside UI component you have to import desired service such as ```JSONDataService```
+from ```<path from root>/knime-service/build/``` and assign settings to initialData received via method provided by selected service.  
 ```javascript
 ...
 import { JSONDataService } from '<file location>';

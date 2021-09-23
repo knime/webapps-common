@@ -1,8 +1,4 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-class JsonDataService {
+export class JSONDataService {
     constructor(knimeService) {
         this.knimeService = knimeService;
 
@@ -13,8 +9,7 @@ class JsonDataService {
     getInitialData() {
         return Promise.resolve(typeof this.initData === 'string'
             ? JSON.parse(this.initData)
-            : this.initData);
+            : this.initData
+        );
     }
 }
-
-exports.JsonDataService = JsonDataService;

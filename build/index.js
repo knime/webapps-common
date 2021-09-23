@@ -3,9 +3,9 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var KnimeService = require('./services/KnimeService.js');
-var JsonDataService = require('./services/JsonDataService.js');
+var JSONDataService = require('./services/JSONDataService.js');
 
 
 
 exports.KnimeService = KnimeService.KnimeService;
-exports.JsonDataService = JsonDataService.JsonDataService;
+exports.JSONDataService = JSONDataService.JSONDataService;
