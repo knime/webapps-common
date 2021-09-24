@@ -1,15 +1,13 @@
-# Knime Service for KNIME® Analytics Platform
+# ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME UI Extension Service for KNIME® Analytics Platform
 
-This folder contains the frontend wrapper that implements adapter pattern between data providers (
-back-end services) and data consumers (ui-nodes)
+This folder contains the frontend wrapper that implements adapter pattern between data providers (back-end services) and
+data consumers (e.g. KNIME Views).
 
 ## Development
-<!-- @TODO: write dev readme -->
 
 ### Prerequisites
 
 * Install [Node.js][node], see version in [.nvmrc](.nvmrc).
-* Only for test coverage uploads to SonarQube: you also need [Java]™ 8 or 11.
 
 Newer versions may also work, but have not been tested.
 
@@ -39,29 +37,50 @@ This project contains unit tests written with [jest]. They are run with
 npm run test:unit
 ```
 
+### Linting
+
+```sh
+npm run lint
+```
+
 ## Build production version
 Bundles with rollup into commonjs module
 ```sh
 npm run build
 ```
 
-## Basic usage of KNIME Service in UI components
-1. Add a submodule in app, where you wish to have access to KNIME service.
-- To do so - run the command below in the root folder of the app where you want to use KNIME service.
+## Basic usage in UI components
+1. Add a submodule in app, where you wish to have access to KNIME service. To do so, run the command below in the root folder of the app where you want to use KNIME service.
 ```javascript
 git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service/src/knime-service knime-service
 ```
-2. Run ```npm i``` to install all dependencies.
+1. Run `npm i` to install all dependencies.
 
-3. To use KNIME service inside UI component you have to import desired service such as ```JSONDataService```
-from ```<path from root>/knime-service/build/``` and assign settings to initialData received via method provided by selected service.  
+2. To use the services inside a Vue-based KNIME UI component you have to import and instantiate each desired service with the
+passed `knimeService` instance, e.g.
 ```javascript
 ...
-import { JSONDataService } from '<file location>';
+import { JSONDataService } from 'knime-ui-extension-service';
 ...
+props: {
+    knimeService: {
+        type: Object,
+        required: true,
+        default: null
+    }
+},
 async mounted() {
     const jsonDataService = new JSONDataService(this.knimeService);
-    const initialData = await jsonDataService.getInitialData();
-    this.settings = initialData.settings;
+    this.initialData = await jsonDataService.getInitialData();
 }
 ```
+
+
+# Join the Community!
+* [KNIME Forum](https://forum.knime.com/)
+
+
+[node]: https://nodejs.org/
+[Vue]: https://vuejs.org/
+[Java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
+[jest]: https://jestjs.io/en

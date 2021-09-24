@@ -11,10 +11,8 @@ class JSONDataService {
     }
 
     getInitialData() {
-        return Promise.resolve(typeof this.initData === 'string'
-            ? JSON.parse(this.initData)
-            : this.initData);
+        return Promise.resolve(this.initData);
     }
 }
 
-exports.JsonDataService = JSONDataService;
+exports.JSONDataService = JSONDataService;

@@ -5,3 +5,4 @@ node/
 target/
 coverage/
 webapps-common/
+test/mocks/

@@ -5,7 +5,7 @@ export default {
     input: ['./src/index.js'],
     output: [
         {
-            dir: './build',
+            dir: './dist',
             format: 'cjs',
             sourcemap: false,
             preserveModules: true
@@ -17,7 +17,7 @@ export default {
             targets: [
                 {
                     src: 'package.json',
-                    dest: 'build'
+                    dest: 'dist'
                 }
             ]
         })
