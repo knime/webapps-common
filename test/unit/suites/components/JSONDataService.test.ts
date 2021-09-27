@@ -1,5 +1,6 @@
-import { KnimeService, JSONDataService } from '../../../../src';
-import { extInfo } from '../../../mocks/extInfo';
+import { KnimeService } from '@/services/KnimeService';
+import { JSONDataService } from '@/services/JSONDataService';
+import { extInfo } from '../../mocks/extInfo';
 
 describe('JSONDataService', () => {
     it('Creates data service', () => {

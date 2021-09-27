@@ -1,4 +1,10 @@
-export class JSONDataService {
+import { KnimeService } from 'src';
+
+export class JSONDataService<T = any> {
+    knimeService: KnimeService<T>;
+
+    initData: T;
+
     constructor(knimeService) {
         this.knimeService = knimeService;
         this.initData = null;

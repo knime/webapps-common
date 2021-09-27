@@ -2,8 +2,9 @@ module.exports = {
     presets: [
         [
             '@babel/preset-env',
+            '@babel/preset-typescript',
             {
-                corejs: '2.5',
+                corejs: '3',
                 useBuiltIns: 'entry'
             }
         ]

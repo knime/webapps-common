@@ -1,19 +1,14 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-require('@babel/register');
 
-const config = {
-    entry: ['@babel/polyfill', './src/dev.js'],
-    output: {
-        path: `${__dirname}/public`,
-        filename: 'bundle.js'
-    },
+module.exports = {
+    entry: './src/dev.ts',
     module: {
         rules: [
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: ['babel-loader']
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
             }
         ]
     },
@@ -23,31 +18,18 @@ const config = {
         })
     ],
     resolve: {
-        modules: [
-            path.resolve('./src'),
-            path.resolve('./node_modules')
-        ]
+        extensions: ['.tsx', '.ts', '.js']
+    },
+    output: {
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist')
     },
     devServer: {
-        contentBase: `${__dirname}/public`,
+        static: `${__dirname}/public`,
         compress: true,
         port: 9000,
-        open: true,
-        stats: {
-            assets: false,
-            children: false,
-            chunks: false,
-            chunkModules: false,
-            colors: true,
-            entrypoints: false,
-            hash: false,
-            modules: false,
-            timings: false,
-            version: false
-        }
+        open: true
     },
     watch: false,
     devtool: 'source-map'
 };
-
-module.exports = config;

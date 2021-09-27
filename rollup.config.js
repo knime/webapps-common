@@ -1,8 +1,9 @@
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
-    input: ['./src/index.js'],
+    input: ['./src/index.ts'],
     output: [
         {
             dir: './dist',
@@ -13,6 +14,7 @@ export default {
     ],
     plugins: [
         commonjs(),
+        typescript(),
         copy({
             targets: [
                 {

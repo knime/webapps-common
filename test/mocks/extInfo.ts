@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 export const extInfo = {
     initData: {
         data: null,
