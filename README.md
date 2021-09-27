@@ -52,7 +52,7 @@ npm run build
 ## Basic usage in UI components
 1. Add a submodule in app, where you wish to have access to KNIME service. To do so, run the command below in the root folder of the app where you want to use KNIME service.
 ```javascript
-git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service/src/knime-service knime-service
+git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-ui-extension-service
 ```
 1. Run `npm i` to install all dependencies.
 
