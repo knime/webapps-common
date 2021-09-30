@@ -1,5 +1,5 @@
-import { KnimeService } from '../../../../src';
-import { extInfo } from '../../../mocks/extInfo';
+import { KnimeService } from 'src';
+import { extInfo } from 'test/mocks/extInfo';
 
 describe('KnimeService', () => {
     it('Creates KnimeService', () => {

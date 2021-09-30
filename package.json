@@ -14,9 +14,6 @@
         "test": "npm run test:unit",
         "test:unit": "jest"
     },
-    "dependencies": {
-        "core-js": "^3.6.5"
-    },
     "devDependencies": {
         "@babel/cli": "^7.15.7",
         "@babel/core": "^7.15.5",
@@ -25,10 +22,10 @@
         "@babel/preset-typescript": "^7.15.0",
         "@babel/register": "^7.15.3",
         "@rollup/plugin-commonjs": "^11.1.0",
-        "@rollup/plugin-typescript": "^8.2.5",
         "@types/jest": "^27.0.2",
         "@typescript-eslint/eslint-plugin": "^4.31.2",
         "@typescript-eslint/parser": "^4.31.2",
+        "core-js": "^3.6.5",
         "cross-env": "5.2.0",
         "cross-var": "1.1.0",
         "eslint": "^7.32.0",
@@ -40,6 +37,7 @@
         "jest-junit": "^12.2.0",
         "rollup": "^2.14.0",
         "rollup-plugin-copy": "^3.3.0",
+        "rollup-plugin-ts": "^1.4.7",
         "sonar-scanner": "3.1.0",
         "ts-jest": "^27.0.5",
         "ts-loader": "^9.2.6",

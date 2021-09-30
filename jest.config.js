@@ -1,6 +1,10 @@
 module.exports = {
     testEnvironment: 'jsdom',
     moduleFileExtensions: ['js', 'ts', 'json'],
+    roots: ["<rootDir>"],
+    modulePaths: [
+        "<rootDir>"
+    ],
     transform: {
         '^.+\\.tsx?$': 'ts-jest'
     },
