@@ -6,7 +6,7 @@
     "author": "KNIME AG, Zurich, Switzerland",
     "main": "dist/index.js",
     "scripts": {
-        "build": "rm -rf build && rollup -c ./rollup.config.js",
+        "build": "rm -rf dist && rollup -c ./rollup.config.js",
         "dev": "webpack-dev-server --mode=development --config webpack.config.js",
         "lint": "npm run lint:ts",
         "lint:fix": "eslint --fix --ext .ts .",

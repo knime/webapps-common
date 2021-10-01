@@ -1,4 +1,3 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -20,15 +19,10 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js']
     },
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
     devServer: {
         static: `${__dirname}/public`,
         compress: true,
-        port: 9000,
-        open: true
+        port: 9000
     },
     watch: false,
     devtool: 'source-map'
