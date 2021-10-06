@@ -10,7 +10,7 @@ export class KnimeService<T = any> {
 
     private requestId: number;
 
-    constructor(extInfo) {
+    constructor(extInfo = null) {
         this.extInfo = extInfo;
 
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
@@ -25,7 +25,7 @@ export class KnimeService<T = any> {
 
     callService(method: JSONRpcMethods, serviceType: ServiceTypes, request = '') {
         if (!this.jsonRpcSupported) {
-            throw new Error(`current environment doesn't support window.jsonrpc()`);
+            throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
 
         const jsonRpcRequest = {
@@ -42,6 +42,20 @@ export class KnimeService<T = any> {
             id: this.generateRequestId(),
         };
 
-        return Promise.resolve(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
+        const requestResult = JSON.parse(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
+
+        const { result, error = {} } = requestResult;
+
+        if (result) {
+            return Promise.resolve(JSON.parse(result));
+        }
+
+        return Promise.reject(
+            new Error(
+                `Error code: ${error.code || 'UNKNOWN'}. Message: ${
+                    error.message || 'not provided'
+                }`,
+            ),
+        );
     }
 }

@@ -11,7 +11,7 @@ export class JSONDataService<T = any> {
         this.knimeService = knimeService;
         this.initData = null;
 
-        const { initData } = this.knimeService.extInfo;
+        const initData = this.knimeService.extInfo?.initData || null;
         if (initData) {
             this.initData = typeof initData === 'string' ? JSON.parse(initData) : initData;
         }
