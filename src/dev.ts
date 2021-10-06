@@ -1,7 +1,7 @@
 import { KnimeService, JSONDataService } from './services';
 import { extInfo } from '../test/mocks/extInfo';
 
-(window as any).getNodeViewInfo = () => extInfo;
+window.getNodeViewInfo = () => extInfo;
 
 const knime = new KnimeService({
     nodeId: '123',

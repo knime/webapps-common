@@ -15,5 +15,9 @@ module.exports = {
         sourceType: 'module',
         project: ['./packages/*/tsconfig.json']
     },
-    plugins: ['@typescript-eslint', 'jest']
+    plugins: ['@typescript-eslint', 'jest'],
+    rules: {
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': 'error'
+    }
 };
