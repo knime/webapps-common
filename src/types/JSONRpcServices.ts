@@ -1,3 +1,3 @@
-export enum JSONRpcMethods {
+export enum JSONRpcServices {
     CALL_NODE_VIEW_DATA_SERVICE = 'NodeService.callNodeViewDataService',
 }

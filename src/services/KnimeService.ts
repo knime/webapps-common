@@ -1,7 +1,7 @@
 import { JSON_RPC_VERSION } from 'src/constants';
 import { ExtInfo } from 'src/types/ExtInfo';
-import { JSONRpcMethods } from 'src/types/JSONRpcMethods';
-import { ServiceTypes } from 'src/types/serviceTypes';
+import { JSONRpcServices } from 'src/types/JSONRpcServices';
+import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
 
 export class KnimeService<T = any> {
     extInfo: ExtInfo<T>;
@@ -23,23 +23,23 @@ export class KnimeService<T = any> {
         return this.requestId;
     }
 
-    callService(method: JSONRpcMethods, serviceType: ServiceTypes, request = '') {
+    callService(service: JSONRpcServices, method: ViewDataServiceMethods, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
 
         const jsonRpcRequest = {
             jsonrpc: JSON_RPC_VERSION,
-            method,
+            service,
             params: [
                 // @TODO: awaits backend implementation
                 '', // this.extInfo.projectId,
                 '', // this.extInfo.workflowId,
                 '', // this.extInfo.nodeId,
-                serviceType,
-                request,
+                method,
+                request
             ],
-            id: this.generateRequestId(),
+            id: this.generateRequestId()
         };
 
         const requestResult = JSON.parse(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
@@ -54,8 +54,8 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                }`,
-            ),
+                }`
+            )
         );
     }
 }

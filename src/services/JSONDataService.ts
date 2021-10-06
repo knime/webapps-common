@@ -1,6 +1,6 @@
 import { KnimeService } from 'src';
-import { JSONRpcMethods } from 'src/types/JSONRpcMethods';
-import { ServiceTypes } from 'src/types/serviceTypes';
+import { JSONRpcServices } from 'src/types/JSONRpcServices';
+import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
 
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
@@ -17,11 +17,11 @@ export class JSONDataService<T = any> {
         }
     }
 
-    private callDataService(serviceType: ServiceTypes, request = '') {
+    private callDataService(serviceType: ViewDataServiceMethods, request = '') {
         return this.knimeService.callService(
-            JSONRpcMethods.CALL_NODE_VIEW_DATA_SERVICE,
+            JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             serviceType,
-            request,
+            request
         );
     }
 
@@ -32,16 +32,16 @@ export class JSONDataService<T = any> {
             return Promise.resolve(this.initData);
         }
 
-        return this.callDataService(ServiceTypes.INITIAL_DATA, '');
+        return this.callDataService(ViewDataServiceMethods.INITIAL_DATA, '');
     }
 
     getData() {
         // @TODO: what kind of error handling we suppose here?
-        return this.callDataService(ServiceTypes.DATA, '');
+        return this.callDataService(ViewDataServiceMethods.DATA, '');
     }
 
     // @TODO: should receive some kind of data, stringifyed JSON?
     applyData(/* data */) {
-        return this.callDataService(ServiceTypes.APPLY_DATA, '');
+        return this.callDataService(ViewDataServiceMethods.APPLY_DATA, '');
     }
 }

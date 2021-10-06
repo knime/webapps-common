@@ -35,7 +35,7 @@ describe('JSONDataService', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getInitialData()).resolves.toEqual({
-            settings: extInfo.initData.settings,
+            settings: extInfo.initData.settings
         });
     });
 });

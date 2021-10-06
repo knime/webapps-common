@@ -1,14 +1,16 @@
 import { KnimeService } from 'src';
-import { JSONRpcMethods } from 'src/types/JSONRpcMethods';
-import { ServiceTypes } from 'src/types/serviceTypes';
+import { JSONRpcServices } from 'src/types/JSONRpcServices';
+import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
 import { extInfo } from 'test/mocks/extInfo';
 
 window.jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === JSONRpcMethods.CALL_NODE_VIEW_DATA_SERVICE) {
+    if (request.service === JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
+
+    return null;
 };
 
 describe('KnimeService', () => {
@@ -24,9 +26,9 @@ describe('KnimeService', () => {
         const knime = new KnimeService();
 
         knime.callService(
-            JSONRpcMethods.CALL_NODE_VIEW_DATA_SERVICE,
-            ServiceTypes.INITIAL_DATA,
-            '',
+            JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
+            ViewDataServiceMethods.INITIAL_DATA,
+            ''
         );
     });
 });

@@ -2,58 +2,42 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var index = require('../constants/index.js');
+
 class KnimeService {
-    constructor(extInfo) {
+    constructor(extInfo = null) {
         this.extInfo = extInfo;
+        this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
-}
-/*
-
-// move to static method
-const callDataService = async (serviceType, request) => {
-    if (this.jsonrpcSupported) {
-        let jsonRpcRequest = {
-            jsonrpc: '2.0',
-            method: 'NodeService.callNodeViewDataService',
-            params: [this.extInfo.projectId, this.extInfo.workflowId, this.extInfo.nodeId, serviceType, request],
-            id: this.requestId++;
+    // for now we only need any kind of id, not even unique, later will need unique ones
+    generateRequestId() {
+        this.requestId += 1;
+        return this.requestId;
+    }
+    callService(service, method, request = '') {
+        if (!this.jsonRpcSupported) {
+            throw new Error(`Current environment doesn't support window.jsonrpc()`);
+        }
+        const jsonRpcRequest = {
+            jsonrpc: index.JSON_RPC_VERSION,
+            service,
+            params: [
+                // @TODO: awaits backend implementation
+                '',
+                '',
+                '',
+                method,
+                request,
+            ],
+            id: this.generateRequestId(),
         };
-        return Promise.resolve(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
+        const requestResult = JSON.parse(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
+        const { result, error = {} } = requestResult;
+        if (result) {
+            return Promise.resolve(JSON.parse(result));
+        }
+        return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
     }
 }
-
-export class KnimeService {
-    constructor(extInfo) {
-        this.extInfo = extInfo;
-        this.requestId = 0;
-
-        // TODO check for window.jsonrpc here
-        if (window.jsonrpc) {
-            this.jsonrpcSupported = true;
-        } else {
-            throw new Error(`current environment doesn't support window.jsonrpc()`);
-        }
-
-    }
-
-    getInitialData() { // private
-        // TODO if (this.knimeService.extInfo.hasInitData) {
-        if (this.extInfo.initData) {
-            return Promise.resolve(this.initData);
-        } else {
-            return callDataService('initial_data');
-        }
-     }
-
-    getData(request) { // private
-       return callDataService('data', request);
-    }
-
-    applyData(request) { // private
-        return callDataService('apply_data', request);
-    }
-
-}
- */
 
 exports.KnimeService = KnimeService;
