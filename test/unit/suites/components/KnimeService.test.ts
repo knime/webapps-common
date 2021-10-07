@@ -63,6 +63,4 @@ describe('KnimeService', () => {
             expect(e).toEqual(new Error('Unsupported params'));
         }
     });
-
-    // add throws error tests
 });

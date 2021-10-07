@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['./webapps-common/lint/.eslintrc-base.js'],
+    extends: ['./webapps-common/lint/.eslintrc-vue.js'],
     env: {
         node: true,
         browser: true

@@ -12,7 +12,9 @@
         "lint:fix": "eslint --fix --ext .ts .",
         "lint:ts": "eslint --ext .ts .",
         "test": "npm run test:unit",
-        "test:unit": "jest"
+        "test:unit": "jest",
+        "coverage": "jest --coverage",
+        "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\""
     },
     "devDependencies": {
         "@babel/cli": "^7.15.7",

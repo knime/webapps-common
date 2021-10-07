@@ -6,7 +6,7 @@ export class JSONDataService<T = any> {
 
     private initData: T;
 
-    constructor(knimeService) {
+    constructor(knimeService: KnimeService<T>) {
         this.knimeService = knimeService;
         this.initData = null;
 
@@ -25,8 +25,6 @@ export class JSONDataService<T = any> {
     }
 
     getInitialData() {
-        // @TODO: if (this.extInfo.hasInitData) {
-        // @TODO: how we should prioritize data sources?
         if (this.initData) {
             return Promise.resolve(this.initData);
         }
@@ -35,11 +33,11 @@ export class JSONDataService<T = any> {
     }
 
     getData() {
-        // @TODO: what kind of error handling we suppose here?
+        // TODO: NXT-737 handle errors
         return this.callDataService(ViewDataServiceMethods.DATA, '');
     }
 
-    // @TODO: should receive some kind of data, stringifyed JSON?
+    // TODO: NXTEXT-77 implement apply data
     applyData(/* data */) {
         return this.callDataService(ViewDataServiceMethods.APPLY_DATA, '');
     }

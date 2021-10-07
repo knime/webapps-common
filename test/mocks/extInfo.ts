@@ -1,5 +1,7 @@
 /* eslint-disable no-magic-numbers */
-export const extInfo = {
+import { ExtInfo } from "src/types";
+
+export const extInfo: ExtInfo = {
     initData: {
         data: null,
         settings: {
