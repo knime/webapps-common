@@ -1,6 +1,5 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices } from 'src/types/JSONRpcServices';
-import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
+import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { extInfo } from 'test/mocks/extInfo';
 
 window.jsonrpc = (requestJSON: string) => {

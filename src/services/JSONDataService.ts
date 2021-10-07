@@ -1,6 +1,5 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices } from 'src/types/JSONRpcServices';
-import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
+import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;

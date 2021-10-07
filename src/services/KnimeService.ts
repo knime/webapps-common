@@ -1,7 +1,5 @@
 import { JSON_RPC_VERSION } from 'src/constants';
-import { ExtInfo } from 'src/types/ExtInfo';
-import { JSONRpcServices } from 'src/types/JSONRpcServices';
-import { ViewDataServiceMethods } from 'src/types/ViewDataServiceMethods';
+import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 
 export class KnimeService<T = any> {
     extInfo: ExtInfo<T>;
