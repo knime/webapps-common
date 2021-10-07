@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var JSONRpcServices = require('../types/JSONRpcServices.js');
 var ViewDataServiceMethods = require('../types/ViewDataServiceMethods.js');
 
+// TODO: NXTEXT-80 add JSDoc comments
 class JSONDataService {
     constructor(knimeService) {
         var _a;

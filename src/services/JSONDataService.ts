@@ -1,6 +1,7 @@
 import { KnimeService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 
+// TODO: NXTEXT-80 add JSDoc comments
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
 

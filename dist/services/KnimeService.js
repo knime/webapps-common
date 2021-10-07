@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var index = require('../constants/index.js');
 
+// TODO: NXTEXT-80 add JSDoc comments
 class KnimeService {
     constructor(extInfo = null) {
         this.extInfo = extInfo;
@@ -14,6 +15,7 @@ class KnimeService {
         this.requestId += 1;
         return this.requestId;
     }
+    // TODO: NXTEXT-77 add request types w/ DataService type/interface
     callService(service, method, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);

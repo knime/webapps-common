@@ -1,9 +1,8 @@
 /* eslint-disable no-magic-numbers */
-import { ExtInfo } from "src/types";
+import { ExtInfo } from 'src/types';
 
 export const extInfo: ExtInfo = {
     initData: {
-        data: null,
         settings: {
             xAxis: {},
             yAxis: {},
@@ -40,7 +39,7 @@ export const extInfo: ExtInfo = {
         }
     },
     uicomponent: true,
-    url:
-    'file:///private/var/folders/78/4l57j2_s3tn4y7xyr8t6p6mh0000gn/T/ui_extensions_38368/1995227562/ScatterPlot.umd.min.js',
-    name: 'ScatterPlot'
+    url: 'file:///private/var/folders/78/4l57j2_s3tn4y7xyr8t6p6mh0000gn/T/ui_extensions_38368/1995227562/ScatterPlot.umd.min.js',
+    name: 'ScatterPlot',
+    nodeId: '123'
 };

@@ -1,6 +1,7 @@
 import { JSON_RPC_VERSION } from 'src/constants';
 import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 
+// TODO: NXTEXT-80 add JSDoc comments
 export class KnimeService<T = any> {
     extInfo: ExtInfo<T>;
 
@@ -21,6 +22,7 @@ export class KnimeService<T = any> {
         return this.requestId;
     }
 
+    // TODO: NXTEXT-77 add request types w/ DataService type/interface
     callService(service: JSONRpcServices, method: ViewDataServiceMethods, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
