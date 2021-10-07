@@ -32,6 +32,10 @@ export default {
             default: null,
             type: String
         },
+        autocomplete: {
+            default: null,
+            type: String
+        },
         inputClasses: {
             default: '',
             type: String
@@ -94,6 +98,7 @@ export default {
       :type="type"
       :pattern="pattern"
       :placeholder="placeholder"
+      :autocomplete="autocomplete"
       :disabled="disabled"
       @input="onInput"
     >
