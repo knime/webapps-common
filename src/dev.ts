@@ -1,5 +1,5 @@
-import { KnimeService, JSONDataService } from './services';
-import { extInfo } from '../test/mocks/extInfo';
+import { KnimeService, JSONDataService } from 'src/services';
+import { extInfo } from 'test/mocks/extInfo';
 
 window.getNodeViewInfo = () => extInfo;
 

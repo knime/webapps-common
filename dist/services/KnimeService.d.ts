@@ -1,11 +1,4 @@
-import { JSONRpcServices } from "../types/JSONRpcServices";
-import { ViewDataServiceMethods } from "../types/ViewDataServiceMethods";
-type ExtInfo<T = any> = {
-    uicomponent: boolean;
-    url: string;
-    name: string;
-    initData: T;
-};
+import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from "../index-f4543387";
 declare class KnimeService<T = any> {
     extInfo: ExtInfo<T>;
     private jsonRpcSupported;
@@ -15,4 +8,4 @@ declare class KnimeService<T = any> {
     private generateRequestId;
     callService(service: JSONRpcServices, method: ViewDataServiceMethods, request?: string): Promise<any>;
 }
-export { ExtInfo, KnimeService };
+export { KnimeService };

@@ -40,7 +40,7 @@ export class JSONDataService<T = any> {
     }
 
     // @TODO: should receive some kind of data, stringifyed JSON?
-    applyData(/* data */) {
+    applyData(data) {
         return this.callDataService(ViewDataServiceMethods.APPLY_DATA, '');
     }
 }

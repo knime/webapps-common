@@ -27,9 +27,9 @@ class KnimeService {
                 '',
                 '',
                 method,
-                request,
+                request
             ],
-            id: this.generateRequestId(),
+            id: this.generateRequestId()
         };
         const requestResult = JSON.parse(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
         const { result, error = {} } = requestResult;

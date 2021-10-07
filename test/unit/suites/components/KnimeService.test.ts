@@ -2,14 +2,16 @@ import { KnimeService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { extInfo } from 'test/mocks/extInfo';
 
-window.jsonrpc = (requestJSON: string) => {
+const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
     if (request.service === JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
-    return null;
+    const error: any = new Error('Unsupported params');
+
+    throw error;
 };
 
 describe('KnimeService', () => {
@@ -21,7 +23,22 @@ describe('KnimeService', () => {
         expect(knime.extInfo).toEqual(extInfo);
     });
 
+    it('Throws error if no extInfo provided and jsonrpc unsupported', () => {
+        const knime = new KnimeService();
+        try {
+            knime.callService(
+                JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
+                ViewDataServiceMethods.INITIAL_DATA,
+                ''
+            );
+        } catch (e) {
+            expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
+        }
+    });
+
     it('Calls data service', () => {
+        window.jsonrpc = jsonrpc;
+
         const knime = new KnimeService();
 
         knime.callService(
@@ -30,4 +47,22 @@ describe('KnimeService', () => {
             ''
         );
     });
+
+    it('Throws error if called with unsupported rpc service', () => {
+        window.jsonrpc = jsonrpc;
+
+        const knime = new KnimeService();
+
+        try {
+            knime.callService(
+                'Unsupported.Service' as JSONRpcServices,
+                ViewDataServiceMethods.INITIAL_DATA,
+                ''
+            );
+        } catch (e) {
+            expect(e).toEqual(new Error('Unsupported params'));
+        }
+    });
+
+    // add throws error tests
 });
