@@ -3,7 +3,7 @@ declare class KnimeService<T = any> {
     extInfo: ExtInfo<T>;
     private jsonRpcSupported;
     private requestId;
-    constructor(extInfo?: any);
+    constructor(extInfo?: ExtInfo);
     // for now we only need any kind of id, not even unique, later will need unique ones
     private generateRequestId;
     callService(service: JSONRpcServices, method: ViewDataServiceMethods, request?: string): Promise<any>;

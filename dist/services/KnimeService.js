@@ -22,7 +22,7 @@ class KnimeService {
             jsonrpc: index.JSON_RPC_VERSION,
             service,
             params: [
-                // @TODO: awaits backend implementation
+                // TODO: NXTEXT-77 enable and check compatibility with backend implementation
                 '',
                 '',
                 '',
