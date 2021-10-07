@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
     entry: './src/dev.ts',
@@ -17,7 +18,11 @@ module.exports = {
         })
     ],
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
+        alias: {
+            src: path.resolve(__dirname, 'src'),
+            test: path.resolve(__dirname, 'test')
+        }
     },
     devServer: {
         static: `${__dirname}/public`,
