@@ -21,7 +21,7 @@ class KnimeService {
             '',
             '',
             serviceMethod,
-            request,
+            request
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
         const { result, error = {} } = requestResult;
