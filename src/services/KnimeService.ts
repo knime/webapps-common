@@ -1,5 +1,7 @@
 import { JSON_RPC_VERSION } from 'src/constants';
 import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { createJsonRpcRequest } from 'src/utils';
+import { generateRequestId } from 'src/utils/generateRequestId';
 
 // TODO: NXTEXT-80 add JSDoc comments
 export class KnimeService<T = any> {
@@ -7,43 +9,28 @@ export class KnimeService<T = any> {
 
     private jsonRpcSupported: boolean;
 
-    private requestId: number;
-
     constructor(extInfo: ExtInfo = null) {
         this.extInfo = extInfo;
 
-        this.requestId = 0;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
 
-    // for now we only need any kind of id, not even unique, later will need unique ones
-    private generateRequestId() {
-        this.requestId += 1;
-
-        return this.requestId;
-    }
-
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
-    callService(service: JSONRpcServices, method: ViewDataServiceMethods, request = '') {
+    callService(method: JSONRpcServices, serviceMethod: ViewDataServiceMethods, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
 
-        const jsonRpcRequest = {
-            jsonrpc: JSON_RPC_VERSION,
-            method: service,
-            params: [
-                // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-                '', // this.extInfo.projectId,
-                '', // this.extInfo.workflowId,
-                '', // this.extInfo.nodeId,
-                method,
-                request
-            ],
-            id: this.generateRequestId()
-        };
+        const jsonRpcRequest = createJsonRpcRequest(method, [
+            // TODO: NXTEXT-77 enable and check compatibility with backend implementation
+            '', // this.extInfo.projectId,
+            '', // this.extInfo.workflowId,
+            '', // this.extInfo.nodeId,
+            serviceMethod,
+            request,
+        ]);
 
-        const requestResult = JSON.parse(window.jsonrpc(JSON.stringify(jsonRpcRequest)));
+        const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
 
         const { result, error = {} } = requestResult;
 
@@ -55,8 +42,8 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                }`
-            )
+                }`,
+            ),
         );
     }
 }

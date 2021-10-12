@@ -1,5 +1,6 @@
 import { KnimeService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
 export class JSONDataService<T = any> {
@@ -21,7 +22,7 @@ export class JSONDataService<T = any> {
         return this.knimeService.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             serviceType,
-            request
+            request,
         );
     }
 
@@ -33,9 +34,13 @@ export class JSONDataService<T = any> {
         return this.callDataService(ViewDataServiceMethods.INITIAL_DATA, '');
     }
 
-    getData() {
+    getData({ method = 'getData', params = [] }) {
         // TODO: NXT-737 handle errors
-        return this.callDataService(ViewDataServiceMethods.DATA, '');
+
+        return this.callDataService(
+            ViewDataServiceMethods.DATA,
+            createJsonRpcRequest(method, params),
+        );
     }
 
     // TODO: NXTEXT-77 implement apply data

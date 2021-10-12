@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var JSONRpcServices = require('../types/JSONRpcServices.js');
 var ViewDataServiceMethods = require('../types/ViewDataServiceMethods.js');
+var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
 
 // TODO: NXTEXT-80 add JSDoc comments
 class JSONDataService {
@@ -25,9 +26,9 @@ class JSONDataService {
         }
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.INITIAL_DATA, '');
     }
-    getData() {
+    getData({ method = 'getData', params = [] }) {
         // TODO: NXT-737 handle errors
-        return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.DATA, '');
+        return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.DATA, createJsonRpcRequest.createJsonRpcRequest(method, params));
     }
     // TODO: NXTEXT-77 implement apply data
     applyData( /* data */) {
