@@ -8,6 +8,7 @@ var index = require('../constants/index.js');
 class KnimeService {
     constructor(extInfo = null) {
         this.extInfo = extInfo;
+        this.requestId = 0;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
     // for now we only need any kind of id, not even unique, later will need unique ones
@@ -22,7 +23,7 @@ class KnimeService {
         }
         const jsonRpcRequest = {
             jsonrpc: index.JSON_RPC_VERSION,
-            service,
+            method: service,
             params: [
                 // TODO: NXTEXT-77 enable and check compatibility with backend implementation
                 '',

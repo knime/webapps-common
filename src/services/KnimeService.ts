@@ -12,6 +12,7 @@ export class KnimeService<T = any> {
     constructor(extInfo: ExtInfo = null) {
         this.extInfo = extInfo;
 
+        this.requestId = 0;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
 
@@ -30,7 +31,7 @@ export class KnimeService<T = any> {
 
         const jsonRpcRequest = {
             jsonrpc: JSON_RPC_VERSION,
-            service,
+            method: service,
             params: [
                 // TODO: NXTEXT-77 enable and check compatibility with backend implementation
                 '', // this.extInfo.projectId,
