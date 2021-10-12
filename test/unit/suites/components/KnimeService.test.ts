@@ -5,7 +5,7 @@ import { extInfo } from 'test/mocks/extInfo';
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.service === JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE) {
+    if (request.method === JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
