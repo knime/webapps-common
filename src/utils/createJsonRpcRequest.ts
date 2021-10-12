@@ -4,11 +4,10 @@ import { generateRequestId } from './generateRequestId';
 
 export const createJsonRpcRequest = (
     method: JSONRpcServices | string,
-    params = [],
-) =>
-    JSON.stringify({
-        jsonrpc: JSON_RPC_VERSION,
-        method,
-        params,
-        id: generateRequestId(),
-    });
+    params = []
+) => JSON.stringify({
+    jsonrpc: JSON_RPC_VERSION,
+    method,
+    params,
+    id: generateRequestId()
+});

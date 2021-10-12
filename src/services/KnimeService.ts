@@ -1,7 +1,5 @@
-import { JSON_RPC_VERSION } from 'src/constants';
 import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
-import { generateRequestId } from 'src/utils/generateRequestId';
 
 // TODO: NXTEXT-80 add JSDoc comments
 export class KnimeService<T = any> {
@@ -27,7 +25,7 @@ export class KnimeService<T = any> {
             '', // this.extInfo.workflowId,
             '', // this.extInfo.nodeId,
             serviceMethod,
-            request,
+            request
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
@@ -42,8 +40,8 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                }`,
-            ),
+                }`
+            )
         );
     }
 }

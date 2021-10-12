@@ -22,7 +22,7 @@ export class JSONDataService<T = any> {
         return this.knimeService.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             serviceType,
-            request,
+            request
         );
     }
 
@@ -39,7 +39,7 @@ export class JSONDataService<T = any> {
 
         return this.callDataService(
             ViewDataServiceMethods.DATA,
-            createJsonRpcRequest(method, params),
+            createJsonRpcRequest(method, params)
         );
     }
 
