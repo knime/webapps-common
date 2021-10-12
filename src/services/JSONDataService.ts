@@ -34,13 +34,17 @@ export class JSONDataService<T = any> {
         return this.callDataService(ViewDataServiceMethods.INITIAL_DATA, '');
     }
 
-    getData({ method = 'getData', params = [] }) {
+    getDataByMethodName(method: string, ...params) {
         // TODO: NXT-737 handle errors
 
         return this.callDataService(
             ViewDataServiceMethods.DATA,
             createJsonRpcRequest(method, params)
         );
+    }
+
+    getData(...params) {
+        this.getDataByMethodName('getData', ...params);
     }
 
     // TODO: NXTEXT-77 implement apply data
