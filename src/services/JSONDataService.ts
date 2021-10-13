@@ -44,7 +44,7 @@ export class JSONDataService<T = any> {
     }
 
     getData(...params) {
-        this.getDataByMethodName('getData', ...params);
+        return this.getDataByMethodName('getData', ...params);
     }
 
     // TODO: NXTEXT-77 implement apply data

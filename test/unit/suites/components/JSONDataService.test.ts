@@ -38,4 +38,42 @@ describe('JSONDataService', () => {
             settings: extInfo.initData.settings
         });
     });
+
+    it('getDataByMethodName inner request method should be passed correctly', () => {
+        window.jsonrpc = (requestJSON: string) => {
+            const request = JSON.parse(requestJSON);
+
+            const innerRequest = JSON.parse(request.params[4]);
+
+            return JSON.stringify({ result: JSON.stringify({ methodName: innerRequest.method }) });
+        };
+
+        const knime = new KnimeService();
+        const jsonDataService = new JSONDataService(knime);
+
+        expect(jsonDataService.getDataByMethodName('testMethodName')).resolves.toEqual({
+            methodName: 'testMethodName'
+        });
+    });
+
+    it('getData returns value', () => {
+        window.jsonrpc = (requestJSON: string) => {
+            const request = JSON.parse(requestJSON);
+
+            const innerRequest = JSON.parse(request.params[4]);
+
+            if (innerRequest.method === 'getData') {
+                return JSON.stringify({ result: JSON.stringify({}) });
+            }
+
+            const error: any = new Error('Unsupported params');
+
+            throw error;
+        };
+
+        const knime = new KnimeService();
+        const jsonDataService = new JSONDataService(knime);
+
+        expect(jsonDataService.getData()).resolves.toEqual({});
+    });
 });
