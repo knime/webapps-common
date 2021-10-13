@@ -2,7 +2,7 @@ import { KnimeService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
-// TODO: NXTEXT-80 add JSDoc comments
+// @TODO: NXTEXT-80 add JSDoc comments
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
 
@@ -35,7 +35,7 @@ export class JSONDataService<T = any> {
     }
 
     getDataByMethodName(method: string, ...params) {
-        // TODO: NXT-737 handle errors
+        // @TODO: NXT-737 handle errors
 
         return this.callDataService(
             ViewDataServiceMethods.DATA,
@@ -47,8 +47,7 @@ export class JSONDataService<T = any> {
         return this.getDataByMethodName('getData', ...params);
     }
 
-    // TODO: NXTEXT-77 implement apply data
-    applyData(/* data */) {
-        return this.callDataService(ViewDataServiceMethods.APPLY_DATA, '');
+    registerGetDataToApply(callback: () => any) {
+        this.knimeService.registerGetDataToApply(() => JSON.stringify(callback()));
     }
 }
