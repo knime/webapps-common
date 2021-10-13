@@ -39,7 +39,7 @@ describe('JSONDataService', () => {
         });
     });
 
-    it('getDataByMethodName inner request method should be passed correctly', () => {
+    it('Passes correct method name to inner request with getDataByMethodName method', () => {
         window.jsonrpc = (requestJSON: string) => {
             const request = JSON.parse(requestJSON);
 
@@ -56,7 +56,7 @@ describe('JSONDataService', () => {
         });
     });
 
-    it('getData returns value', () => {
+    it('Returns value with getData method', () => {
         window.jsonrpc = (requestJSON: string) => {
             const request = JSON.parse(requestJSON);
 
