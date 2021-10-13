@@ -5,10 +5,8 @@ declare class JSONDataService<T = any> {
     constructor(knimeService: KnimeService<T>);
     private callDataService;
     getInitialData(): Promise<any>;
-    getData({ method, params }: {
-        method?: string;
-        params?: any[];
-    }): Promise<any>;
+    getDataByMethodName(method: string, ...params: any[]): Promise<any>;
+    getData(...params: any[]): Promise<any>;
     // TODO: NXTEXT-77 implement apply data
     applyData(): Promise<any>;
 }
