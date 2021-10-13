@@ -1,6 +1,7 @@
 const eslint = require('eslint');
 
 const indentationSpaces = 4;
+const jsonIndentationSpaces = 2;
 const lineLength = 120;
 
 let eslintVersion = eslint.Linter.version.split('.')[0];
@@ -15,7 +16,7 @@ let parserOptions = {
 
 module.exports = {
     root: true,
-    extends: ['eslint:recommended'],
+    extends: ['eslint:recommended', 'plugin:jsonc/recommended-with-json'],
     parserOptions,
     env: {
         browser: false,
@@ -230,6 +231,27 @@ module.exports = {
             'jest-formatting/padding-around-describe-blocks': 'error',
             'jest-formatting/padding-around-test-blocks': 'error',
             'no-undefined': 'off'
+        }
+    }, {
+        files: ['*.json'],
+        parser: 'jsonc-eslint-parser',
+        rules: {
+            'jsonc/auto': 'off',
+            'max-len': 'off',
+            'max-depth': 'off',
+            'max-lines': 'off',
+            semi: 'off',
+            'jsonc/indent': ['error', jsonIndentationSpaces],
+            'jsonc/object-curly-newline': ['error', 'always'],
+            'jsonc/array-bracket-spacing': ['error', 'never'],
+            'jsonc/array-bracket-newline': ['error', 'always'],
+            'jsonc/array-element-newline': ['error', 'always'],
+            'jsonc/object-property-newline': ['error'],
+            'jsonc/key-spacing': ['error', {
+                beforeColon: false,
+                afterColon: true,
+                mode: 'strict'
+            }]
         }
     }]
 };
