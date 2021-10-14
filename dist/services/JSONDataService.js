@@ -6,7 +6,7 @@ var JSONRpcServices = require('../types/JSONRpcServices.js');
 var ViewDataServiceMethods = require('../types/ViewDataServiceMethods.js');
 var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
 
-// TODO: NXTEXT-80 add JSDoc comments
+// @TODO: NXTEXT-80 add JSDoc comments
 class JSONDataService {
     constructor(knimeService) {
         var _a;
@@ -27,15 +27,14 @@ class JSONDataService {
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.INITIAL_DATA, '');
     }
     getDataByMethodName(method, ...params) {
-        // TODO: NXT-737 handle errors
+        // @TODO: NXT-737 handle errors
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.DATA, createJsonRpcRequest.createJsonRpcRequest(method, params));
     }
     getData(...params) {
         return this.getDataByMethodName('getData', ...params);
     }
-    // TODO: NXTEXT-77 implement apply data
-    applyData( /* data */) {
-        return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.APPLY_DATA, '');
+    registerGetDataToApply(callback) {
+        this.knimeService.registerGetDataToApply(() => JSON.stringify(callback()));
     }
 }
 

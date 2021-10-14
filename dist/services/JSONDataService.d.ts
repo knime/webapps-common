@@ -7,7 +7,6 @@ declare class JSONDataService<T = any> {
     getInitialData(): Promise<any>;
     getDataByMethodName(method: string, ...params: any[]): Promise<any>;
     getData(...params: any[]): Promise<any>;
-    // TODO: NXTEXT-77 implement apply data
-    applyData(): Promise<any>;
+    registerGetDataToApply(callback: () => any): void;
 }
 export { JSONDataService };

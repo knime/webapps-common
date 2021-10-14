@@ -1,4 +1,4 @@
-// TODO: NXTEXT-80 add JSDoc comments
+// @TODO: NXTEXT-80 add JSDoc comments
 type ExtInfo<T = any> = {
     nodeId: string;
     uicomponent?: boolean;

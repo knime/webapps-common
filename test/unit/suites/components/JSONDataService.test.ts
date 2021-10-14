@@ -2,14 +2,16 @@ import { KnimeService } from 'src/services/KnimeService';
 import { JSONDataService } from 'src/services/JSONDataService';
 import { extInfo, rpcInitialData } from 'test/mocks';
 
-describe('JSONDataService', () => {
+describe('JSONDataService initialization', () => {
     it('Creates data service', () => {
         const knime = new KnimeService(extInfo);
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService).toHaveProperty('getInitialData');
     });
+});
 
+describe('JSONDataService initial_data handling', () => {
     it(`Throws error if environment doesn't support rpc and no extInfo provided`, () => {
         const knime = new KnimeService();
         const jsonDataService = new JSONDataService(knime);
@@ -35,10 +37,12 @@ describe('JSONDataService', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getInitialData()).resolves.toEqual({
-            settings: extInfo.initData.settings
+            settings: extInfo.initData.settings,
         });
     });
+});
 
+describe('JSONDataService getData', () => {
     it('Passes correct method name to inner request with getDataByMethodName method', () => {
         window.jsonrpc = (requestJSON: string) => {
             const request = JSON.parse(requestJSON);
@@ -52,7 +56,7 @@ describe('JSONDataService', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getDataByMethodName('testMethodName')).resolves.toEqual({
-            methodName: 'testMethodName'
+            methodName: 'testMethodName',
         });
     });
 

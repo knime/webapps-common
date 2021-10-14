@@ -1,4 +1,4 @@
-import { KnimeService } from 'src';
+import { KnimeService, JSONDataService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { extInfo } from 'test/mocks/extInfo';
 
@@ -14,7 +14,7 @@ const jsonrpc = (requestJSON: string) => {
     throw error;
 };
 
-describe('KnimeService', () => {
+describe('KnimeService initialization', () => {
     it('Creates KnimeService', () => {
         const knime = new KnimeService(extInfo);
 
@@ -22,14 +22,16 @@ describe('KnimeService', () => {
 
         expect(knime.extInfo).toEqual(extInfo);
     });
+});
 
+describe('KnimeService callService', () => {
     it('Throws error if no extInfo provided and jsonrpc unsupported', () => {
         const knime = new KnimeService();
         try {
             knime.callService(
                 JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
                 ViewDataServiceMethods.INITIAL_DATA,
-                ''
+                '',
             );
         } catch (e) {
             expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
@@ -44,7 +46,7 @@ describe('KnimeService', () => {
         knime.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             ViewDataServiceMethods.INITIAL_DATA,
-            ''
+            '',
         );
     });
 
@@ -57,10 +59,31 @@ describe('KnimeService', () => {
             knime.callService(
                 'Unsupported.Service' as JSONRpcServices,
                 ViewDataServiceMethods.INITIAL_DATA,
-                ''
+                '',
             );
         } catch (e) {
             expect(e).toEqual(new Error('Unsupported params'));
         }
+    });
+});
+
+describe('KnimeService dataToApply', () => {
+    it('Registers callback for retrieving data', () => {
+        const knime = new KnimeService();
+        const jsonDataService = new JSONDataService(knime);
+
+        jsonDataService.registerGetDataToApply(() => {});
+        expect(knime).toHaveProperty('registeredGetDataToApply');
+    });
+
+    it('Gets data with registered callback', () => {
+        const knime = new KnimeService();
+        const jsonDataService = new JSONDataService(knime);
+
+        const testData = { nodeName: 'something' };
+
+        jsonDataService.registerGetDataToApply(() => testData);
+
+        expect(knime.getDataToApply()).resolves.toEqual(JSON.stringify(testData));
     });
 });
