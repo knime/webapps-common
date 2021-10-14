@@ -1,7 +1,7 @@
 import { KnimeService } from "../index";
 declare class JSONDataService<T = any> {
     private knimeService;
-    private initData;
+    private initialData;
     constructor(knimeService: KnimeService<T>);
     private callDataService;
     getInitialData(): Promise<any>;

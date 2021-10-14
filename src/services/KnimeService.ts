@@ -1,14 +1,14 @@
-import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { ExtensionConfig, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
 export class KnimeService<T = any> {
-    extInfo: ExtInfo<T>;
+    extensionConfig: ExtensionConfig<T>;
 
     private jsonRpcSupported: boolean;
 
-    constructor(extInfo: ExtInfo = null) {
-        this.extInfo = extInfo;
+    constructor(extensionConfig: ExtensionConfig = null) {
+        this.extensionConfig = extensionConfig;
 
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
@@ -21,9 +21,9 @@ export class KnimeService<T = any> {
 
         const jsonRpcRequest = createJsonRpcRequest(method, [
             // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-            '', // this.extInfo.projectId,
-            '', // this.extInfo.workflowId,
-            '', // this.extInfo.nodeId,
+            '', // this.extensionConfig.projectId,
+            '', // this.extensionConfig.workflowId,
+            '', // this.extensionConfig.nodeId,
             serviceMethod,
             request
         ]);

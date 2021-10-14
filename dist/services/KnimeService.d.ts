@@ -1,8 +1,8 @@
-import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from "../index-f4543387";
+import { ExtensionConfig, JSONRpcServices, ViewDataServiceMethods } from "../index-ebf00fee";
 declare class KnimeService<T = any> {
-    extInfo: ExtInfo<T>;
+    extensionConfig: ExtensionConfig<T>;
     private jsonRpcSupported;
-    constructor(extInfo?: ExtInfo);
+    constructor(extensionConfig?: ExtensionConfig);
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
     callService(method: JSONRpcServices, serviceMethod: ViewDataServiceMethods, request?: string): Promise<any>;
 }

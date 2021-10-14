@@ -6,8 +6,8 @@ var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
 
 // TODO: NXTEXT-80 add JSDoc comments
 class KnimeService {
-    constructor(extInfo = null) {
-        this.extInfo = extInfo;
+    constructor(extensionConfig = null) {
+        this.extensionConfig = extensionConfig;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
     // TODO: NXTEXT-77 add request types w/ DataService type/interface

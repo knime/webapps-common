@@ -6,15 +6,15 @@ import { createJsonRpcRequest } from 'src/utils';
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
 
-    private initData: T;
+    private initialData: T;
 
     constructor(knimeService: KnimeService<T>) {
         this.knimeService = knimeService;
-        this.initData = null;
+        this.initialData = null;
 
-        const initData = this.knimeService.extInfo?.initData || null;
-        if (initData) {
-            this.initData = typeof initData === 'string' ? JSON.parse(initData) : initData;
+        const initialData = this.knimeService.extensionConfig?.initialData || null;
+        if (initialData) {
+            this.initialData = typeof initialData === 'string' ? JSON.parse(initialData) : initialData;
         }
     }
 
@@ -27,8 +27,8 @@ export class JSONDataService<T = any> {
     }
 
     getInitialData() {
-        if (this.initData) {
-            return Promise.resolve(this.initData);
+        if (this.initialData) {
+            return Promise.resolve(this.initialData);
         }
 
         return this.callDataService(ViewDataServiceMethods.INITIAL_DATA, '');
