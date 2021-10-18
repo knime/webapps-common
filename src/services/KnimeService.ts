@@ -20,10 +20,9 @@ export class KnimeService<T = any> {
         }
 
         const jsonRpcRequest = createJsonRpcRequest(method, [
-            // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-            '', // this.extensionConfig.projectId,
-            '', // this.extensionConfig.workflowId,
-            '', // this.extensionConfig.nodeId,
+            this.extensionConfig.projectId,
+            this.extensionConfig.workflowId,
+            this.extensionConfig.nodeId,
             serviceMethod,
             request
         ]);

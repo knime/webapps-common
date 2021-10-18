@@ -30,6 +30,7 @@ class JSONDataService {
         // TODO: NXT-737 handle errors
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.DATA, createJsonRpcRequest.createJsonRpcRequest(method, params));
     }
+    // TODO this is just a temporary short-cut - see NXT-761
     getData(...params) {
         return this.getDataByMethodName('getData', ...params);
     }

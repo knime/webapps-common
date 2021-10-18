@@ -16,10 +16,9 @@ class KnimeService {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
         const jsonRpcRequest = createJsonRpcRequest.createJsonRpcRequest(method, [
-            // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-            '',
-            '',
-            '',
+            this.extensionConfig.projectId,
+            this.extensionConfig.workflowId,
+            this.extensionConfig.nodeId,
             serviceMethod,
             request
         ]);
