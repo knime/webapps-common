@@ -1,3 +1,4 @@
+import { ExtensionTypes } from './ExtensionTypes';
 import { NodeInfo } from './NodeInfo';
 import { ResourceInfo } from './ResourceInfo';
 
@@ -8,5 +9,6 @@ export type ExtensionConfig<T = any> = {
     workflowId: string;
     resourceInfo: ResourceInfo;
     nodeInfo: NodeInfo;
+    extensionType: ExtensionTypes;
     initialData?: T;
 };

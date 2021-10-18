@@ -1,11 +1,11 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { JSONRpcServices, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE) {
+    if (request.method === JSONRpcServices.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
@@ -27,8 +27,8 @@ describe('KnimeService', () => {
         const knime = new KnimeService();
         try {
             knime.callService(
-                JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
-                ViewDataServiceMethods.INITIAL_DATA,
+                JSONRpcServices.CALL_NODE_DATA_SERVICE,
+                DataServiceTypes.INITIAL_DATA,
                 ''
             );
         } catch (e) {
@@ -42,8 +42,8 @@ describe('KnimeService', () => {
         const knime = new KnimeService();
 
         knime.callService(
-            JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
-            ViewDataServiceMethods.INITIAL_DATA,
+            JSONRpcServices.CALL_NODE_DATA_SERVICE,
+            DataServiceTypes.INITIAL_DATA,
             ''
         );
     });
@@ -56,7 +56,7 @@ describe('KnimeService', () => {
         try {
             knime.callService(
                 'Unsupported.Service' as JSONRpcServices,
-                ViewDataServiceMethods.INITIAL_DATA,
+                DataServiceTypes.INITIAL_DATA,
                 ''
             );
         } catch (e) {

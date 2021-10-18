@@ -1,3 +1,4 @@
 export * from './ExtensionConfig';
 export * from './JSONRpcServices';
-export * from './ViewDataServiceMethods';
+export * from './DataServiceTypes';
+export * from './ExtensionTypes';

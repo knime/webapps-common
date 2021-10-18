@@ -1,4 +1,4 @@
-import { ExtensionConfig, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { ExtensionConfig, JSONRpcServices, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
@@ -14,7 +14,7 @@ export class KnimeService<T = any> {
     }
 
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
-    callService(method: JSONRpcServices, serviceMethod: ViewDataServiceMethods, request = '') {
+    callService(method: JSONRpcServices, serviceType: DataServiceTypes, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -23,7 +23,8 @@ export class KnimeService<T = any> {
             this.extensionConfig.projectId,
             this.extensionConfig.workflowId,
             this.extensionConfig.nodeId,
-            serviceMethod,
+            this.extensionConfig.extensionType,
+            serviceType,
             request
         ]);
 

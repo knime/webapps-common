@@ -1,4 +1,4 @@
 declare enum JSONRpcServices {
-    CALL_NODE_VIEW_DATA_SERVICE = "NodeService.callNodeViewDataService"
+    CALL_NODE_DATA_SERVICE = "NodeService.callNodeDataService"
 }
 export { JSONRpcServices };
