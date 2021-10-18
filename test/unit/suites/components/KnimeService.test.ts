@@ -31,7 +31,7 @@ describe('KnimeService callService', () => {
             knime.callService(
                 JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
                 ViewDataServiceMethods.INITIAL_DATA,
-                '',
+                ''
             );
         } catch (e) {
             expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
@@ -46,7 +46,7 @@ describe('KnimeService callService', () => {
         knime.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             ViewDataServiceMethods.INITIAL_DATA,
-            '',
+            ''
         );
     });
 
@@ -59,7 +59,7 @@ describe('KnimeService callService', () => {
             knime.callService(
                 'Unsupported.Service' as JSONRpcServices,
                 ViewDataServiceMethods.INITIAL_DATA,
-                '',
+                ''
             );
         } catch (e) {
             expect(e).toEqual(new Error('Unsupported params'));

@@ -34,7 +34,9 @@ class KnimeService {
         this.registeredGetDataToApply = callback;
     }
     getDataToApply() {
-        return Promise.resolve(this.registeredGetDataToApply ? this.registeredGetDataToApply() : null);
+        return Promise.resolve(typeof this.registeredGetDataToApply === 'function'
+            ? this.registeredGetDataToApply()
+            : null);
     }
 }
 

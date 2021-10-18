@@ -37,7 +37,7 @@ describe('JSONDataService initial_data handling', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getInitialData()).resolves.toEqual({
-            settings: extInfo.initData.settings,
+            settings: extInfo.initData.settings
         });
     });
 });
@@ -56,8 +56,19 @@ describe('JSONDataService getData', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getDataByMethodName('testMethodName')).resolves.toEqual({
-            methodName: 'testMethodName',
+            methodName: 'testMethodName'
         });
+    });
+
+    it('Calls knime.registerGetDataToApply on registering callback', () => {
+        const knime = new KnimeService();
+        const jsonDataService = new JSONDataService(knime);
+
+        const spy = jest.spyOn(knime, 'registerGetDataToApply');
+
+        jsonDataService.registerGetDataToApply(() => {});
+
+        expect(spy).toHaveBeenCalled();
     });
 
     it('Returns value with getData method', () => {
