@@ -43,6 +43,7 @@ export class JSONDataService<T = any> {
         );
     }
 
+    // TODO this is just a temporary short-cut - see NXT-761
     getData(...params) {
         return this.getDataByMethodName('getData', ...params);
     }
