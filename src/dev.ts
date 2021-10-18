@@ -11,7 +11,7 @@ const knime = new KnimeService({
         id: 'org.knime.base.views.scatterplot.ScatterPlotNodeFactory',
         type: 'VUE_COMPONENT_LIB',
         path: null,
-        url: 'localhost'
+        url: 'http://localhost:4000/ScatterPlot.js'
     },
     nodeInfo: {
         nodeAnnotation: '',
