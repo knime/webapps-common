@@ -242,9 +242,9 @@ module.exports = {
             'max-lines': 'off',
             semi: 'off',
             'jsonc/indent': ['error', jsonIndentationSpaces],
-            'jsonc/object-curly-newline': ['error', 'always'],
+            'jsonc/object-curly-newline': ['error', { minProperties: 1 }],
             'jsonc/array-bracket-spacing': ['error', 'never'],
-            'jsonc/array-bracket-newline': ['error', 'always'],
+            'jsonc/array-bracket-newline': ['error', { minItems: 1 }],
             'jsonc/array-element-newline': ['error', 'always'],
             'jsonc/object-property-newline': ['error'],
             'jsonc/key-spacing': ['error', {
