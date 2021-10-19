@@ -12,15 +12,12 @@ describe('JSONDataService initialization', () => {
 });
 
 describe('JSONDataService initial_data handling', () => {
-    it(`Throws error if environment doesn't support rpc and no extensionConfig provided`, () => {
+    it(`Throws error if environment doesn't support rpc`, () => {
         const knime = new KnimeService();
         const jsonDataService = new JSONDataService(knime);
 
-        try {
-            jsonDataService.getInitialData();
-        } catch (e) {
-            expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
-        }
+        expect(() => jsonDataService.getInitialData())
+            .toThrowError(`Current environment doesn't support window.jsonrpc()`);
     });
 
     it(`Fetches initial_data if it's passed to constructor`, () => {
@@ -32,13 +29,18 @@ describe('JSONDataService initial_data handling', () => {
 
     it('Fetches initial_data via rpc', () => {
         window.jsonrpc = () => rpcInitialData;
+        let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
-        const knime = new KnimeService();
+        const knime = new KnimeService({
+            ...extensionConfig,
+            initialData: null
+        });
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getInitialData()).resolves.toEqual({
             settings: extensionConfig.initialData.settings
         });
+        expect(rpcSpy).toHaveBeenCalled();
     });
 });
 
@@ -51,17 +53,19 @@ describe('JSONDataService getData', () => {
 
             return JSON.stringify({ result: JSON.stringify({ methodName: innerRequest.method }) });
         };
+        let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
-        const knime = new KnimeService();
+        const knime = new KnimeService(extensionConfig);
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getDataByMethodName('testMethodName')).resolves.toEqual({
             methodName: 'testMethodName'
         });
+        expect(rpcSpy).toHaveBeenCalled();
     });
 
     it('Calls knime.registerGetDataToApply on registering callback', () => {
-        const knime = new KnimeService();
+        const knime = new KnimeService(extensionConfig);
         const jsonDataService = new JSONDataService(knime);
 
         const spy = jest.spyOn(knime, 'registerGetDataToApply');
@@ -86,7 +90,7 @@ describe('JSONDataService getData', () => {
             throw error;
         };
 
-        const knime = new KnimeService();
+        const knime = new KnimeService(extensionConfig);
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getData()).resolves.toEqual({});
