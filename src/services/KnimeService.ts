@@ -1,17 +1,19 @@
-import { ExtInfo,
+import {
+    ExtensionConfig,
     JSONRpcServices,
+    ViewDataServiceMethods,
     SelectionServiceMethods,
-    ViewDataServiceMethods } from 'src/types';
+} from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
 export class KnimeService<T = any> {
-    extInfo: ExtInfo<T>;
+    extensionConfig: ExtensionConfig<T>;
 
     private jsonRpcSupported: boolean;
 
-    constructor(extInfo: ExtInfo = null) {
-        this.extInfo = extInfo;
+    constructor(extensionConfig: ExtensionConfig = null) {
+        this.extensionConfig = extensionConfig;
 
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
@@ -20,19 +22,18 @@ export class KnimeService<T = any> {
     callService(
         method: JSONRpcServices,
         serviceMethod: ViewDataServiceMethods | SelectionServiceMethods,
-        request: string | string[]
+        request: string | string[],
     ) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
 
         const jsonRpcRequest = createJsonRpcRequest(method, [
-            // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-            '', // this.extInfo.projectId,
-            '', // this.extInfo.workflowId,
-            '', // this.extInfo.nodeId,
+            this.extensionConfig.projectId,
+            this.extensionConfig.workflowId,
+            this.extensionConfig.nodeId,
             serviceMethod,
-            request || ''
+            request || '',
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
@@ -47,8 +48,8 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                }`
-            )
+                }`,
+            ),
         );
     }
 }

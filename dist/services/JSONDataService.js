@@ -12,18 +12,18 @@ class JSONDataService {
     constructor(knimeService) {
         var _a;
         this.knimeService = knimeService;
-        this.initData = null;
-        const initData = ((_a = this.knimeService.extInfo) === null || _a === void 0 ? void 0 : _a.initData) || null;
-        if (initData) {
-            this.initData = typeof initData === 'string' ? JSON.parse(initData) : initData;
+        this.initialData = null;
+        const initialData = ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) || null;
+        if (initialData) {
+            this.initialData = typeof initialData === 'string' ? JSON.parse(initialData) : initialData;
         }
     }
     callDataService(serviceType, request = '') {
         return this.knimeService.callService(JSONRpcServices.JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE, serviceType, request);
     }
     getInitialData() {
-        if (this.initData) {
-            return Promise.resolve(this.initData);
+        if (this.initialData) {
+            return Promise.resolve(this.initialData);
         }
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.INITIAL_DATA, '');
     }
@@ -31,6 +31,7 @@ class JSONDataService {
         // TODO: NXT-737 handle errors
         return this.callDataService(ViewDataServiceMethods.ViewDataServiceMethods.DATA, createJsonRpcRequest.createJsonRpcRequest(method, params));
     }
+    // TODO this is just a temporary short-cut - see NXT-761
     getData(...params) {
         return this.getDataByMethodName('getData', ...params);
     }

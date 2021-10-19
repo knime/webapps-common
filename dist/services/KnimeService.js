@@ -6,8 +6,8 @@ var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
 
 // TODO: NXTEXT-80 add JSDoc comments
 class KnimeService {
-    constructor(extInfo = null) {
-        this.extInfo = extInfo;
+    constructor(extensionConfig = null) {
+        this.extensionConfig = extensionConfig;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
@@ -16,12 +16,11 @@ class KnimeService {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
         const jsonRpcRequest = createJsonRpcRequest.createJsonRpcRequest(method, [
-            // TODO: NXTEXT-77 enable and check compatibility with backend implementation
-            '',
-            '',
-            '',
+            this.extensionConfig.projectId,
+            this.extensionConfig.workflowId,
+            this.extensionConfig.nodeId,
             serviceMethod,
-            request || ''
+            request || '',
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
         const { result, error = {} } = requestResult;

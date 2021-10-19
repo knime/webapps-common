@@ -1,6 +1,6 @@
 import { KnimeService } from 'src';
 import { JSONRpcServices, ViewDataServiceMethods } from 'src/types';
-import { extInfo } from 'test/mocks/extInfo';
+import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
@@ -16,14 +16,14 @@ const jsonrpc = (requestJSON: string) => {
 
 describe('KnimeService', () => {
     it('Creates KnimeService', () => {
-        const knime = new KnimeService(extInfo);
+        const knime = new KnimeService(extensionConfig);
 
-        expect(knime).toHaveProperty('extInfo');
+        expect(knime).toHaveProperty('extensionConfig');
 
-        expect(knime.extInfo).toEqual(extInfo);
+        expect(knime.extensionConfig).toEqual(extensionConfig);
     });
 
-    it('Throws error if no extInfo provided and jsonrpc unsupported', () => {
+    it('Throws error if no extensionConfig provided and jsonrpc unsupported', () => {
         const knime = new KnimeService();
         try {
             knime.callService(

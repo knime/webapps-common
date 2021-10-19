@@ -1,16 +1,16 @@
 import { KnimeService } from 'src/services/KnimeService';
 import { JSONDataService } from 'src/services/JSONDataService';
-import { extInfo, rpcInitialData } from 'test/mocks';
+import { extensionConfig, rpcInitialData } from 'test/mocks';
 
 describe('JSONDataService', () => {
     it('Creates data service', () => {
-        const knime = new KnimeService(extInfo);
+        const knime = new KnimeService(extensionConfig);
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService).toHaveProperty('getInitialData');
     });
 
-    it(`Throws error if environment doesn't support rpc and no extInfo provided`, () => {
+    it(`Throws error if environment doesn't support rpc and no extensionConfig provided`, () => {
         const knime = new KnimeService();
         const jsonDataService = new JSONDataService(knime);
 
@@ -22,10 +22,10 @@ describe('JSONDataService', () => {
     });
 
     it(`Fetches initial_data if it's passed to constructor`, () => {
-        const knime = new KnimeService(extInfo);
+        const knime = new KnimeService(extensionConfig);
         const jsonDataService = new JSONDataService(knime);
 
-        expect(jsonDataService.getInitialData()).resolves.toEqual(extInfo.initData);
+        expect(jsonDataService.getInitialData()).resolves.toEqual(extensionConfig.initialData);
     });
 
     it('Fetches initial_data via rpc', () => {
@@ -35,7 +35,7 @@ describe('JSONDataService', () => {
         const jsonDataService = new JSONDataService(knime);
 
         expect(jsonDataService.getInitialData()).resolves.toEqual({
-            settings: extInfo.initData.settings
+            settings: extensionConfig.initialData.settings
         });
     });
 
