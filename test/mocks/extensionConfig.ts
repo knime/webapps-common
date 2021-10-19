@@ -1,8 +1,8 @@
 /* eslint-disable no-magic-numbers */
-import { ExtInfo } from 'src/types';
+import { ExtensionConfig } from 'src/types';
 
-export const extInfo: ExtInfo = {
-    initData: {
+export const extensionConfig: ExtensionConfig = {
+    initialData: {
         settings: {
             xAxis: {},
             yAxis: {},
@@ -38,8 +38,20 @@ export const extInfo: ExtInfo = {
             ]
         }
     },
-    uicomponent: true,
-    url: 'file:///private/var/folders/78/4l57j2_s3tn4y7xyr8t6p6mh0000gn/T/ui_extensions_38368/1995227562/ScatterPlot.umd.min.js',
-    name: 'ScatterPlot',
-    nodeId: '123'
+    nodeId: '123',
+    projectId: 'knime workflow',
+    workflowId: 'root:10',
+    resourceInfo: {
+        id: 'org.knime.base.views.scatterplot.ScatterPlotNodeFactory',
+        type: 'VUE_COMPONENT_LIB',
+        path: null,
+        url: 'http://localhost:4000/ScatterPlot.js'
+    },
+    nodeInfo: {
+        nodeAnnotation: '',
+        nodeState: 'executed',
+        nodeErrorMessage: null,
+        nodeWarnMessage: null,
+        nodeName: 'Scatter Plot'
+    }
 };
