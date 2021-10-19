@@ -9,3 +9,4 @@ type ExtInfo<T = any> = {
 export { ExtInfo };
 export * from "./types/JSONRpcServices";
 export * from "./types/ViewDataServiceMethods";
+export * from "./types/SelectionServiceMethods";

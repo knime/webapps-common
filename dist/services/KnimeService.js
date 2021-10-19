@@ -11,7 +11,7 @@ class KnimeService {
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
-    callService(method, serviceMethod, request = '') {
+    callService(method, serviceMethod, request) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -21,7 +21,7 @@ class KnimeService {
             '',
             '',
             serviceMethod,
-            request
+            request || ''
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
         const { result, error = {} } = requestResult;

@@ -1,4 +1,7 @@
-import { ExtInfo, JSONRpcServices, ViewDataServiceMethods } from 'src/types';
+import { ExtInfo,
+    JSONRpcServices,
+    SelectionServiceMethods,
+    ViewDataServiceMethods } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
@@ -14,7 +17,11 @@ export class KnimeService<T = any> {
     }
 
     // TODO: NXTEXT-77 add request types w/ DataService type/interface
-    callService(method: JSONRpcServices, serviceMethod: ViewDataServiceMethods, request = '') {
+    callService(
+        method: JSONRpcServices,
+        serviceMethod: ViewDataServiceMethods | SelectionServiceMethods,
+        request: string | string[]
+    ) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -25,7 +32,7 @@ export class KnimeService<T = any> {
             '', // this.extInfo.workflowId,
             '', // this.extInfo.nodeId,
             serviceMethod,
-            request
+            request || ''
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
