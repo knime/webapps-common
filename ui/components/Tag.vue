@@ -23,8 +23,8 @@ export default {
   border: 1px solid var(--knime-dove-gray);
   margin-right: 5px;
   margin-bottom: 5px;
-  padding: 0 6px;
-  font-size: 10px;
+  padding: 3px 5px;
+  font-size: 14px;
   line-height: 17px;
   display: inline-block;
   font-weight: 500;
