@@ -23,9 +23,9 @@ export class KnimeService<T = any> {
         }
 
         const jsonRpcRequest = createJsonRpcRequest(method, [
-            this.extensionConfig.projectId,
-            this.extensionConfig.workflowId,
-            this.extensionConfig.nodeId,
+            this.extensionConfig?.projectId,
+            this.extensionConfig?.workflowId,
+            this.extensionConfig?.nodeId,
             serviceMethod,
             request
         ]);
