@@ -1,20 +1,31 @@
 import { ExtensionConfig, JSONRpcServices, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
-// TODO: NXTEXT-80 add JSDoc comments
+/** Class represents KnimeService  */
 export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
     private jsonRpcSupported: boolean;
 
+    /**
+     * @param {Object} extensionConfig required param that used to provide basic configuration for
+     * KnimeService. While using Typescript can be called with generic type so it will type initialData
+     * filed of ExtensionConfig
+     */
     constructor(extensionConfig: ExtensionConfig = null) {
         this.extensionConfig = extensionConfig;
 
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
 
-    // TODO: NXTEXT-77 add request types w/ DataService type/interface
-    callService(method: JSONRpcServices, serviceType: DataServiceTypes, request = '') {
+    /**
+     * Generic method to call jsonrpc
+     * @param {string} method jsonrpc service name
+     * @param {string} serviceType exact method of jsonrpc service
+     * @param {string} request request payload
+     * @returns {Promise} rejected or resolved depending on backend response
+     */
+    callService(method: JSONRpcServices, serviceType: DataServiceTypes, request: string) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -25,7 +36,7 @@ export class KnimeService<T = any> {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             serviceType,
-            request
+            request || ''
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
