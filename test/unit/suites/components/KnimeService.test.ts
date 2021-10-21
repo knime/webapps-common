@@ -29,7 +29,7 @@ describe('KnimeService', () => {
             knime.callService(
                 JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
                 ViewDataServiceMethods.INITIAL_DATA,
-                ''
+                '',
             );
         } catch (e) {
             expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
@@ -44,7 +44,7 @@ describe('KnimeService', () => {
         knime.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             ViewDataServiceMethods.INITIAL_DATA,
-            ''
+            '',
         );
     });
 
@@ -57,10 +57,85 @@ describe('KnimeService', () => {
             knime.callService(
                 'Unsupported.Service' as JSONRpcServices,
                 ViewDataServiceMethods.INITIAL_DATA,
-                ''
+                '',
             );
         } catch (e) {
             expect(e).toEqual(new Error('Unsupported params'));
         }
+    });
+});
+
+describe('KnimeService notifications', () => {
+    it('Adds notification callback with addNotificationCallback', () => {
+        const knime = new KnimeService();
+
+        const callback = () => {};
+
+        knime.addNotificationCallback('SelectionEvent', callback);
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
+    });
+
+    // it('Calls onJsonrpcNotification if callbacks added', () => {
+    //     const knime = new KnimeService();
+
+    //     const callback = (val) => {
+    //         console.log(1111);
+    //     };
+
+    //     knime.addNotificationCallback('SelectionEvent', callback);
+
+    //     const spy = jest.spyOn(knime, 'onJsonrpcNotification');
+
+    //     const notification = {
+    //         jsonrpc: '2.0',
+    //         method: 'SelectionEvent',
+    //         params: [
+    //             {
+    //                 projectId: '...',
+    //                 workflowId: '...',
+    //                 nodeId: '...',
+    //                 keys: ['Row01', 'Row02'],
+    //                 mode: 'ADD',
+    //             },
+    //         ],
+    //     };
+
+    //     window.jsonrpcNotification(notification);
+
+    //     expect(spy).toBeCalled();
+    // });
+
+    it('Removes notification callback with removeNotificationCallback', () => {
+        const knime = new KnimeService();
+
+        const callback = () => {};
+
+        knime.addNotificationCallback('SelectionEvent', callback);
+        knime.removeNotificationCallback('SelectionEvent', callback);
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+    });
+
+    it('Resets notification callbacks by type with resetNotificationCallbacksByType', () => {
+        const knime = new KnimeService();
+
+        knime.addNotificationCallback('SelectionEvent', () => {});
+        knime.addNotificationCallback('CustomEvent', () => {});
+        knime.resetNotificationCallbacksByType('SelectionEvent');
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+        expect(knime.notificationCallbacksMap.get('CustomEvent').length === 1);
+    });
+
+    it('Resets all notification callbacks with resetNotificationCallbacks', () => {
+        const knime = new KnimeService();
+
+        knime.addNotificationCallback('SelectionEvent', () => {});
+        knime.addNotificationCallback('CustomEvent', () => {});
+        knime.resetNotificationCallbacksByType('SelectionEvent');
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+        expect(knime.notificationCallbacksMap.get('CustomEvent').length === 0);
     });
 });

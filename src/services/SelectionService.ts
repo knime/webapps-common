@@ -1,5 +1,5 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices, SelectionServiceMethods } from 'src/types';
+import { JSONRpcServices, SelectionServiceMethods, Notification } from 'src/types';
 
 export class SelectionService {
     private knimeService: KnimeService;
@@ -12,7 +12,7 @@ export class SelectionService {
         return this.knimeService.callService(
             JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
             serviceType,
-            request
+            request,
         );
     }
 
@@ -37,7 +37,11 @@ export class SelectionService {
      * @returns {any}
      */
     // eslint-disable-next-line class-methods-use-this
-    registerOnSelectionChangeCallback(callback: () => void) {
-        window.jsonrpcNotification = callback;
+    addOnSelectionChangeCallback(callback: (notification: Notification) => void) {
+        this.knimeService.addNotificationCallback('SelectionEvent', callback);
+    }
+
+    removeOnSelectionChangeCallback(callback: (notification: Notification) => void) {
+        this.knimeService.removeNotificationCallback('SelectionEvent', callback);
     }
 }

@@ -1,7 +1,10 @@
-import { ExtensionConfig,
+import {
+    ExtensionConfig,
     JSONRpcServices,
     ViewDataServiceMethods,
-    SelectionServiceMethods } from 'src/types';
+    SelectionServiceMethods,
+    Notification,
+} from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 // TODO: NXTEXT-80 add JSDoc comments
@@ -10,8 +13,13 @@ export class KnimeService<T = any> {
 
     private jsonRpcSupported: boolean;
 
+    notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
+
     constructor(extensionConfig: ExtensionConfig = null) {
         this.extensionConfig = extensionConfig;
+
+        // should use Map?
+        this.notificationCallbacksMap = new Map();
 
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
@@ -20,7 +28,7 @@ export class KnimeService<T = any> {
     callService(
         method: JSONRpcServices,
         serviceMethod: ViewDataServiceMethods | SelectionServiceMethods,
-        request: string | string[]
+        request: string | string[],
     ) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
@@ -31,7 +39,7 @@ export class KnimeService<T = any> {
             this.extensionConfig?.workflowId,
             this.extensionConfig?.nodeId,
             serviceMethod,
-            request || ''
+            request || '',
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
@@ -46,8 +54,50 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                }`
-            )
+                }`,
+            ),
         );
+    }
+
+    onJsonrpcNotification(notification: Notification) {
+        const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
+
+        callbacks.forEach((cb) => {
+            cb(notification);
+        });
+    }
+
+    addNotificationCallback(
+        notificationType: string,
+        callback: (notification: Notification) => void,
+    ) {
+        if (!window.jsonrpcNotification) {
+            window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
+        }
+
+        this.notificationCallbacksMap.set(notificationType, [
+            ...(this.notificationCallbacksMap.get(notificationType) || []),
+            callback,
+        ]);
+    }
+
+    removeNotificationCallback(
+        notificationType: string,
+        callback: (notification: Notification) => void,
+    ) {
+        this.notificationCallbacksMap.set(
+            notificationType,
+            (this.notificationCallbacksMap.get(notificationType) || []).filter(
+                (cb) => cb !== callback,
+            ),
+        );
+    }
+
+    resetNotificationCallbacksByType(notificationType: string) {
+        this.notificationCallbacksMap.set(notificationType, []);
+    }
+
+    resetNotificationCallbacks() {
+        this.notificationCallbacksMap.clear();
     }
 }
