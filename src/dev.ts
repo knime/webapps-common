@@ -1,5 +1,6 @@
 import { KnimeService, JSONDataService } from 'src/services';
 import { extensionConfig } from 'test/mocks/extensionConfig';
+import { ExtensionTypes } from './types';
 
 window.getNodeViewInfo = () => extensionConfig;
 
@@ -20,7 +21,8 @@ const knime = new KnimeService({
         nodeWarnMessage: null,
         nodeName: 'Scatter Plot'
     },
-    initialData: '{"settings":null}'
+    initialData: '{"settings":null}',
+    extensionType: ExtensionTypes.VIEW
 });
 
 const jsonDataService = new JSONDataService(knime);

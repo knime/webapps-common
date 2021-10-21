@@ -1,7 +1,7 @@
 import { KnimeService } from 'src/services/KnimeService';
 import { JSONDataService } from 'src/services/JSONDataService';
 import { extensionConfig } from 'test/mocks';
-import { DataServiceTypes, JSONRpcServices } from 'src/types';
+import { DataServices, RPCNodeServices } from 'src/types';
 
 
 describe('JSONDataService', () => {
@@ -43,8 +43,8 @@ describe('JSONDataService', () => {
                 settings: extensionConfig.initialData.settings
             });
             expect(serviceSpy).toHaveBeenCalledWith(
-                JSONRpcServices.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.INITIAL_DATA,
                 ''
             );
         });
@@ -58,8 +58,8 @@ describe('JSONDataService', () => {
                 .mockImplementationOnce(() => Promise.resolve({}));
             jsonDataService.getDataByMethodName('getData', {});
             expect(serviceSpy).toHaveBeenCalledWith(
-                JSONRpcServices.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.DATA,
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.DATA,
                 expect.stringContaining('getData')
             );
         });

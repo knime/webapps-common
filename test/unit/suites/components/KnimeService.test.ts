@@ -1,11 +1,11 @@
 import { KnimeService, JSONDataService } from 'src';
-import { JSONRpcServices, DataServiceTypes } from 'src/types';
+import { RPCNodeServices, DataServices } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === JSONRpcServices.CALL_NODE_DATA_SERVICE) {
+    if (request.method === RPCNodeServices.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
@@ -29,8 +29,8 @@ describe('KnimeService', () => {
         it('Throws error if jsonrpc unsupported', () => {
             const knimeService = new KnimeService();
             expect(() => knimeService.callService(
-                JSONRpcServices.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.INITIAL_DATA,
                 ''
             )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
         });
@@ -42,8 +42,8 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService();
 
             expect(() => knimeService.callService(
-                JSONRpcServices.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.INITIAL_DATA,
                 ''
             )).toThrowError(`Cannot read property 'projectId' of null`);
             expect(rpcSpy).not.toHaveBeenCalled();
@@ -56,7 +56,7 @@ describe('KnimeService', () => {
             
             const knimeService = new KnimeService(extensionConfig);
 
-            knimeService.callService(JSONRpcServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '');
+            knimeService.callService(RPCNodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, '');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}');
             delete window.jsonrpc;
@@ -69,8 +69,8 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                'Unsupported.Service' as JSONRpcServices,
-                DataServiceTypes.INITIAL_DATA,
+                'Unsupported.Service' as RPCNodeServices,
+                DataServices.INITIAL_DATA,
                 ''
             )).toThrowError('Unsupported params');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"Unsupported.Service","params":' +

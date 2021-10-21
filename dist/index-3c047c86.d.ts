@@ -48,6 +48,6 @@ type ExtensionConfig<T = any> = {
     initialData?: T;
 };
 export { ExtensionConfig };
-export * from "./types/JSONRpcServices";
-export * from "./types/DataServiceTypes";
+export * from "./types/NodeServices";
+export * from "./types/DataServices";
 export * from "./types/ExtensionTypes";

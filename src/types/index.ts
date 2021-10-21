@@ -1,4 +1,4 @@
 export * from './ExtensionConfig';
-export * from './JSONRpcServices';
-export * from './DataServiceTypes';
+export * from './NodeServices';
+export * from './DataServices';
 export * from './ExtensionTypes';

@@ -1,4 +1,4 @@
-import { ExtensionConfig, JSONRpcServices, DataServiceTypes } from "../index-833c032c";
+import { ExtensionConfig, RPCNodeServices, DataServices } from "../index-3c047c86";
 /** Class represents KnimeService  */
 declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
@@ -29,7 +29,7 @@ declare class KnimeService<T = any> {
      * @param {string} request request payload
      * @returns {Promise} rejected or resolved depending on backend response
      */
-    callService(method: JSONRpcServices, serviceType: DataServiceTypes, request: string): Promise<any>;
+    callService(method: RPCNodeServices, serviceType: DataServices, request: string): Promise<any>;
     registerGetDataToApply(callback: () => any): void;
     getDataToApply(): Promise<any>;
 }

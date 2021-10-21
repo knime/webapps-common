@@ -4,7 +4,6 @@ import { KnimeService } from "../index";
  */
 declare class JSONDataService<T = any> {
     private knimeService;
-    private initialData;
     /**
      * @param {KnimeService} knimeService knimeService instance, used to provide initialData && callService functionality
      */

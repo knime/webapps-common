@@ -1,5 +1,5 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices, DataServiceTypes } from 'src/types';
+import { RPCNodeServices, DataServices } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
@@ -8,19 +8,11 @@ import { createJsonRpcRequest } from 'src/utils';
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
 
-    private initialData: T;
-
     /**
      * @param {KnimeService} knimeService knimeService instance, used to provide initialData && callService functionality
      */
     constructor(knimeService: KnimeService<T>) {
         this.knimeService = knimeService;
-        this.initialData = null;
-
-        const initialData = this.knimeService.extensionConfig?.initialData || null;
-        if (initialData) {
-            this.initialData = typeof initialData === 'string' ? JSON.parse(initialData) : initialData;
-        }
     }
 
     /**
@@ -29,9 +21,9 @@ export class JSONDataService<T = any> {
      * @param {string} request request payload
      * @returns {Promise} rejected or resolved depending on backend response
      */
-    private callDataService(serviceType: DataServiceTypes, request = '') {
+    private callDataService(serviceType: DataServices, request = '') {
         return this.knimeService.callService(
-            JSONRpcServices.CALL_NODE_DATA_SERVICE,
+            RPCNodeServices.CALL_NODE_DATA_SERVICE,
             serviceType,
             request
         );
@@ -41,11 +33,11 @@ export class JSONDataService<T = any> {
      * @returns {Promise} node initial data provided by knime service, or received with window.jsonrpc
      */
     getInitialData() {
-        if (this.initialData) {
-            return Promise.resolve(this.initialData);
+        if (this.knimeService.extensionConfig?.initialData) {
+            return Promise.resolve(this.knimeService.extensionConfig.initialData);
         }
 
-        return this.callDataService(DataServiceTypes.INITIAL_DATA, '');
+        return this.callDataService(DataServices.INITIAL_DATA, '');
     }
 
     /**
@@ -57,7 +49,7 @@ export class JSONDataService<T = any> {
         // @TODO: NXT-737 handle errors
 
         return this.callDataService(
-            DataServiceTypes.DATA,
+            DataServices.DATA,
             createJsonRpcRequest(method, params)
         );
     }
@@ -73,6 +65,6 @@ export class JSONDataService<T = any> {
 
     // TODO: NXTEXT-77 implement apply data
     applyData(/* data */) {
-        return this.callDataService(DataServiceTypes.APPLY_DATA, '');
+        return this.callDataService(DataServices.APPLY_DATA, '');
     }
 }

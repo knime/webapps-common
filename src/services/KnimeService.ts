@@ -1,4 +1,4 @@
-import { ExtensionConfig, JSONRpcServices, DataServiceTypes } from 'src/types';
+import { ExtensionConfig, RPCNodeServices, DataServices } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /** Class represents KnimeService  */
@@ -27,7 +27,7 @@ export class KnimeService<T = any> {
      * @param {string} request request payload
      * @returns {Promise} rejected or resolved depending on backend response
      */
-    callService(method: JSONRpcServices, serviceType: DataServiceTypes, request: string) {
+    callService(method: RPCNodeServices, serviceType: DataServices, request: string) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
