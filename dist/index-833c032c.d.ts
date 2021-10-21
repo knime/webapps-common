@@ -1,3 +1,4 @@
+import { ExtensionTypes } from "./types/ExtensionTypes";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -43,8 +44,10 @@ type ExtensionConfig<T = any> = {
     workflowId: string;
     resourceInfo: ResourceInfo;
     nodeInfo: NodeInfo;
+    extensionType: ExtensionTypes;
     initialData?: T;
 };
 export { ExtensionConfig };
 export * from "./types/JSONRpcServices";
-export * from "./types/ViewDataServiceMethods";
+export * from "./types/DataServiceTypes";
+export * from "./types/ExtensionTypes";

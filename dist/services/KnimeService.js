@@ -10,9 +10,8 @@ class KnimeService {
         this.extensionConfig = extensionConfig;
         this.jsonRpcSupported = window.jsonrpc && typeof window.jsonrpc === 'function';
     }
-    // @TODO: add request types w/ DataService type/interface when request types defined
-    // for now it should be a string
-    callService(method, serviceMethod, request = '') {
+    // TODO: NXTEXT-77 add request types w/ DataService type/interface
+    callService(method, serviceType, request = '') {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -20,7 +19,8 @@ class KnimeService {
             this.extensionConfig.projectId,
             this.extensionConfig.workflowId,
             this.extensionConfig.nodeId,
-            serviceMethod,
+            this.extensionConfig.extensionType,
+            serviceType,
             request
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));

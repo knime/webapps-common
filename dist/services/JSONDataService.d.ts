@@ -9,5 +9,7 @@ declare class JSONDataService<T = any> {
     // TODO this is just a temporary short-cut - see NXT-761
     getData(...params: any[]): Promise<any>;
     registerGetDataToApply(callback: () => any): void;
+    // TODO: NXTEXT-77 implement apply data
+    applyData(): Promise<any>;
 }
 export { JSONDataService };
