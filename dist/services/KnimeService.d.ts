@@ -3,7 +3,7 @@ import { ExtensionConfig, RPCNodeServices, DataServices } from "../index-3c047c8
 declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
     private jsonRpcSupported;
-    private registeredGetDataToApply;
+    private dataGetter;
     /**
      * @param {Object} extensionConfig required param that used to provide basic configuration for
      * KnimeService. While using Typescript can be called with generic type so it will type initialData
@@ -30,7 +30,7 @@ declare class KnimeService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response
      */
     callService(method: RPCNodeServices, serviceType: DataServices, request: string): Promise<any>;
-    registerGetDataToApply(callback: () => any): void;
-    getDataToApply(): Promise<any>;
+    registerDataGetter(callback: () => any): void;
+    getData(): Promise<any>;
 }
 export { KnimeService };

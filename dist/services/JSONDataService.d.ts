@@ -41,11 +41,9 @@ declare class JSONDataService<T = any> {
      * @param {any} params that should be passed to called method
      * @returns {Promise} resolve value depends on called method
      */
-    getDataByMethodName(method: string, ...params: any[]): Promise<any>;
-    // TODO this is just a temporary short-cut - see NXT-761
-    getData(...params: any[]): Promise<any>;
-    registerGetDataToApply(callback: () => any): void;
-    // TODO: NXTEXT-77 implement apply data
+    getData(method: string, ...params: any[]): Promise<any>;
     applyData(): Promise<any>;
+    // should be promise
+    registerDataGetter(callback: () => any): void;
 }
 export { JSONDataService };

@@ -37,7 +37,7 @@ export class JSONDataService<T = any> {
             return Promise.resolve(this.knimeService.extensionConfig.initialData);
         }
 
-        return this.callDataService(DataServices.INITIAL_DATA, '');
+        return this.callDataService(DataServices.INITIAL_DATA);
     }
 
     /**
@@ -45,26 +45,23 @@ export class JSONDataService<T = any> {
      * @param {any} params that should be passed to called method
      * @returns {Promise} resolve value depends on called method
      */
-    getDataByMethodName(method: string, ...params) {
-        // @TODO: NXT-737 handle errors
-
+    getData(method: string, ...params) {
         return this.callDataService(
             DataServices.DATA,
             createJsonRpcRequest(method, params)
         );
     }
 
-    // TODO this is just a temporary short-cut - see NXT-761
-    getData(...params) {
-        return this.getDataByMethodName('getData', ...params);
+    async applyData() {
+        const data = await this.knimeService.getData();
+        return this.callDataService(
+            DataServices.APPLY_DATA,
+            JSON.stringify(data)
+        );
     }
 
-    registerGetDataToApply(callback: () => any) {
-        this.knimeService.registerGetDataToApply(() => JSON.stringify(callback()));
-    }
-
-    // TODO: NXTEXT-77 implement apply data
-    applyData(/* data */) {
-        return this.callDataService(DataServices.APPLY_DATA, '');
+    // should be promise
+    registerDataGetter(callback: () => any) {
+        this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
     }
 }

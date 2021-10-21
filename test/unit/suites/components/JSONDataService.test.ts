@@ -56,30 +56,82 @@ describe('JSONDataService', () => {
             const jsonDataService = new JSONDataService(knimeService);
             let serviceSpy = jest.spyOn(knimeService, 'callService')
                 .mockImplementationOnce(() => Promise.resolve({}));
-            jsonDataService.getDataByMethodName('getData', {});
+            jsonDataService.getData('getData', {});
             expect(serviceSpy).toHaveBeenCalledWith(
                 RPCNodeServices.CALL_NODE_DATA_SERVICE,
                 DataServices.DATA,
                 expect.stringContaining('getData')
             );
         });
+    });
 
-        it('Calls knime.registerGetDataToApply on registering callback', () => {
+    describe('registering a data getter callback', () => {
+        it('Registers a data getter with the KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JSONDataService(knimeService);
 
-            const spy = jest.spyOn(knimeService, 'registerGetDataToApply');
+            const spy = jest.spyOn(knimeService, 'registerDataGetter');
 
-            jsonDataService.registerGetDataToApply(() => {});
+            jsonDataService.registerDataGetter(() => {});
 
             expect(spy).toHaveBeenCalled();
         });
+    });
 
-        it('Returns value with getData method', () => {
-            const knimeService = new KnimeService(extensionConfig);
-            const jsonDataService = new JSONDataService(knimeService);
-            jest.spyOn(knimeService, 'callService').mockImplementation(() => Promise.resolve({}));
-            expect(jsonDataService.getData()).resolves.toEqual({});
+    describe('applyData', () => {
+        const mockData = {
+            item1: true,
+            item2: 10
+        };
+
+        let knimeService, jsonDataService, dataGetter;
+
+        beforeEach(() => {
+            window.jsonrpc = jest.fn(() => '{}');
+            knimeService = new KnimeService(extensionConfig);
+            jsonDataService = new JSONDataService(knimeService);
+            dataGetter = jest.fn(() => Promise.resolve(mockData));
+        });
+
+        afterEach(() => {
+            jest.resetAllMocks();
+            delete window.jsonrpc;
+        });
+
+        it('calls the apply data service when "applyData" is called', async () => {
+            let serviceSpy = jest.spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve('{}'));
+            await jsonDataService.applyData();
+            expect(serviceSpy).toHaveBeenCalledWith(
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.APPLY_DATA,
+                expect.anything()
+            );
+        });
+
+        it('calls a default data getter if none registered', async () => {
+            let serviceSpy = jest.spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve('{}'));
+            await jsonDataService.applyData();
+            expect(serviceSpy).toHaveBeenCalledWith(
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.APPLY_DATA,
+                'null'
+            );
+            expect(dataGetter).not.toHaveBeenCalled();
+        });
+
+        it('calls the registered data getter (if present)', async () => {
+            jsonDataService.registerDataGetter(dataGetter);
+            let serviceSpy = jest.spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve('{}'));
+            await jsonDataService.applyData();
+            expect(serviceSpy).toHaveBeenCalledWith(
+                RPCNodeServices.CALL_NODE_DATA_SERVICE,
+                DataServices.APPLY_DATA,
+                '"{}"'
+            );
+            expect(dataGetter).toHaveBeenCalled();
         });
     });
 });

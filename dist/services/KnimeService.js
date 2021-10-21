@@ -41,12 +41,12 @@ class KnimeService {
         }
         return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
     }
-    registerGetDataToApply(callback) {
-        this.registeredGetDataToApply = callback;
+    registerDataGetter(callback) {
+        this.dataGetter = callback;
     }
-    getDataToApply() {
-        return Promise.resolve(typeof this.registeredGetDataToApply === 'function'
-            ? this.registeredGetDataToApply()
+    getData() {
+        return Promise.resolve(typeof this.dataGetter === 'function'
+            ? this.dataGetter()
             : null);
     }
 }

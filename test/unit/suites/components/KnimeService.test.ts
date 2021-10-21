@@ -26,7 +26,16 @@ describe('KnimeService', () => {
     });
 
     describe('callService', () => {
+        beforeEach(() => {
+            window.jsonrpc = jsonrpc;
+        });
+
+        afterEach(() => {
+            delete window.jsonrpc;
+        });
+
         it('Throws error if jsonrpc unsupported', () => {
+            delete window.jsonrpc;
             const knimeService = new KnimeService();
             expect(() => knimeService.callService(
                 RPCNodeServices.CALL_NODE_DATA_SERVICE,
@@ -36,7 +45,6 @@ describe('KnimeService', () => {
         });
 
         it('Throws error if extension config not provided', () => {
-            window.jsonrpc = jsonrpc;
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new KnimeService();
@@ -47,11 +55,9 @@ describe('KnimeService', () => {
                 ''
             )).toThrowError(`Cannot read property 'projectId' of null`);
             expect(rpcSpy).not.toHaveBeenCalled();
-            delete window.jsonrpc;
         });
 
         it('Calls data service', () => {
-            window.jsonrpc = jsonrpc;
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
             
             const knimeService = new KnimeService(extensionConfig);
@@ -59,11 +65,9 @@ describe('KnimeService', () => {
             knimeService.callService(RPCNodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, '');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}');
-            delete window.jsonrpc;
         });
 
         it('Throws error if called with unsupported rpc service', () => {
-            window.jsonrpc = jsonrpc;
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new KnimeService(extensionConfig);
@@ -75,18 +79,21 @@ describe('KnimeService', () => {
             )).toThrowError('Unsupported params');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"Unsupported.Service","params":' +
                 '["knime workflow","root:10","123","view","initial_data",""],"id":2}');
-            delete window.jsonrpc;
         });
     });
 
-    describe('dataToApply', () => {
+    describe('data getter callback registration', () => {
         it('Registers callback for retrieving data', () => {
             const knimeService = new KnimeService();
             const jsonDataService = new JSONDataService(knimeService);
 
-            jsonDataService.registerGetDataToApply(() => {});
-            expect(knimeService).toHaveProperty('registeredGetDataToApply');
-            delete window.jsonrpc;
+            jsonDataService.registerDataGetter(() => {});
+            expect(knimeService).toHaveProperty('dataGetter');
+        });
+
+        it('Returns default data without registered callback', () => {
+            const knimeService = new KnimeService(extensionConfig);
+            expect(knimeService.getData()).resolves.toEqual(null);
         });
 
         it('Gets data with registered callback', () => {
@@ -96,11 +103,10 @@ describe('KnimeService', () => {
             const testData = { nodeName: 'something' };
             let getDataMock = jest.fn(() => testData);
 
-            jsonDataService.registerGetDataToApply(getDataMock);
+            jsonDataService.registerDataGetter(getDataMock);
 
-            expect(knimeService.getDataToApply()).resolves.toEqual(JSON.stringify(testData));
+            expect(knimeService.getData()).resolves.toEqual(JSON.stringify(testData));
             expect(getDataMock).toHaveBeenCalledTimes(1);
-            delete window.jsonrpc;
         });
     });
 });

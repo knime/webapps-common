@@ -7,7 +7,7 @@ export class KnimeService<T = any> {
 
     private jsonRpcSupported: boolean;
 
-    private registeredGetDataToApply: () => any;
+    private dataGetter: () => any;
 
     /**
      * @param {Object} extensionConfig required param that used to provide basic configuration for
@@ -58,14 +58,14 @@ export class KnimeService<T = any> {
         );
     }
 
-    registerGetDataToApply(callback: () => any) {
-        this.registeredGetDataToApply = callback;
+    registerDataGetter(callback: () => any) {
+        this.dataGetter = callback;
     }
 
-    getDataToApply() {
+    getData() {
         return Promise.resolve(
-            typeof this.registeredGetDataToApply === 'function'
-                ? this.registeredGetDataToApply()
+            typeof this.dataGetter === 'function'
+                ? this.dataGetter()
                 : null
         );
     }
