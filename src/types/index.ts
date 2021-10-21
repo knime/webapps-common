@@ -1,4 +1,4 @@
 export * from './ExtensionConfig';
-export * from './NodeServices';
-export * from './DataServices';
+export * from './ServiceMethods';
+export * from './ServiceTypes';
 export * from './ExtensionTypes';

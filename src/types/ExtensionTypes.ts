@@ -8,5 +8,3 @@ export enum ExtensionTypes {
     DIALOG = 'dialog',
     VIEW = 'view'
 }
-
-export type ExtensionTypeStrings = keyof typeof ExtensionTypes;

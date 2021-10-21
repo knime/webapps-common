@@ -1,66 +1,87 @@
 import { KnimeService } from 'src';
-import { RPCNodeServices, DataServices } from 'src/types';
+import { ServiceMethodTypes, DataService, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
- * Class represents JSONDataService used to fetch data with window.jsonrpc provided by backend in json format
+ * A utility class to interact with JSONDataServices implemented by a UI Extension node.
  */
 export class JSONDataService<T = any> {
     private knimeService: KnimeService<T>;
 
     /**
-     * @param {KnimeService} knimeService knimeService instance, used to provide initialData && callService functionality
+     * @param {KnimeService} knimeService - knimeService instance which is used to communicate with the framework.
      */
     constructor(knimeService: KnimeService<T>) {
         this.knimeService = knimeService;
     }
 
     /**
-     * Calls knimeService callService with defined service type CALL_NODE_DATA_SERVICE
-     * @param {DataServiceTypes} serviceType one of available method names for CALL_NODE_DATA_SERVICE
-     * @param {string} request request payload
-     * @returns {Promise} rejected or resolved depending on backend response
+     * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
+     * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
+     * known service types, {@see DataServiceTypes}.
+     *
+     * @param {DataService} dataService - the target service.
+     * @param {string} [request] - an optional request payload.
+     * @returns {Promise} rejected or resolved depending on backend response.
      */
-    private callDataService(serviceType: DataServices, request = '') {
-        return this.knimeService.callService(
-            RPCNodeServices.CALL_NODE_DATA_SERVICE,
-            serviceType,
-            request
-        );
+    private callDataService(dataService: DataService, request = '') {
+        return this.knimeService.callService(ServiceMethodTypes.CALL_NODE_DATA_SERVICE, dataService, request);
     }
 
     /**
-     * @returns {Promise} node initial data provided by knime service, or received with window.jsonrpc
+     * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
+     * (if it exists) or by fetching the data from the node DataService implementation.
+     *
+     * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
     getInitialData() {
         if (this.knimeService.extensionConfig?.initialData) {
             return Promise.resolve(this.knimeService.extensionConfig.initialData);
         }
 
-        return this.callDataService(DataServices.INITIAL_DATA);
+        return this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
 
     /**
-     * @param {string} method name of method that should be called
-     * @param {any} params that should be passed to called method
-     * @returns {Promise} resolve value depends on called method
+     * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
+     * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
+     * optional parameter will be provided directly to the data service target and can be used to specify the nature of
+     * the data returned.
+     *
+     * @param {Object} params - parameter options.
+     * @param {string} [params.method] - optional target method in the node's DataService implementation
+     *      (default 'getData').
+     * @param {any} [params.options] - optional options that should be passed to called method.
+     * @returns {Promise} rejected or resolved depending on backend response.
      */
-    getData(method: string, ...params) {
+    getData(params: { method?: string, options?: any } = { method: 'getData' }) {
         return this.callDataService(
-            DataServices.DATA,
-            createJsonRpcRequest(method, params)
+            DataServiceTypes.DATA,
+            createJsonRpcRequest(params.method, params.options)
         );
     }
 
+    /**
+     * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
+     * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
+     * default payload of "null" will be sent instead.
+     *
+     * @returns {Promise} rejected or resolved depending on backend response.
+     */
     async applyData() {
         const data = await this.knimeService.getData();
         return this.callDataService(
-            DataServices.APPLY_DATA,
+            DataServiceTypes.APPLY_DATA,
             JSON.stringify(data)
         );
     }
 
-    // should be promise
+    /**
+     * Registers a function with the framework is used to provide the current state of the client-side UI Extension.
+     *
+     * @param {Function} callback - function which provides the current client side state when invoked.
+     * @returns {undefined}
+     */
     registerDataGetter(callback: () => any) {
         this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
     }

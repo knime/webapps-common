@@ -1,7 +1,16 @@
-import { ExtensionConfig, RPCNodeServices, DataServices } from 'src/types';
+import { ExtensionConfig, Service, ServiceMethod } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
-/** Class represents KnimeService  */
+/**
+ * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
+ * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
+ * Analytics Platform) and the registered services.
+ *
+ * To utilize this functionality, services should be registered with an instance of this class, after which their
+ * functionality can be utilized by the UI Extension implementation.
+ *
+ * @template T - the {@type ExtensionConfig} generic type.
+ */
 export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
@@ -10,9 +19,7 @@ export class KnimeService<T = any> {
     private dataGetter: () => any;
 
     /**
-     * @param {Object} extensionConfig required param that used to provide basic configuration for
-     * KnimeService. While using Typescript can be called with generic type so it will type initialData
-     * filed of ExtensionConfig
+     * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
     constructor(extensionConfig: ExtensionConfig = null) {
         this.extensionConfig = extensionConfig;
@@ -21,13 +28,14 @@ export class KnimeService<T = any> {
     }
 
     /**
-     * Generic method to call jsonrpc
-     * @param {string} method jsonrpc service name
-     * @param {string} serviceType exact method of jsonrpc service
-     * @param {string} request request payload
-     * @returns {Promise} rejected or resolved depending on backend response
+     * Generic method to call services provided by the UI Extension node implementation.
+     *
+     * @param {IServiceMethod} method - the framework method to target with this service call.
+     * @param {IService} service - the service which should be called.
+     * @param {string} request - the serialized request payload.
+     * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method: RPCNodeServices, serviceType: DataServices, request: string) {
+    callService(method: ServiceMethod, service: Service<any>, request: string) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }
@@ -37,7 +45,7 @@ export class KnimeService<T = any> {
             this.extensionConfig.workflowId,
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
-            serviceType,
+            service,
             request || ''
         ]);
 
@@ -58,10 +66,26 @@ export class KnimeService<T = any> {
         );
     }
 
+    /**
+     * Register a callback method which returns relevant data to provide when "applying" client-side state
+     * changes to the framework (i.e. when settings change and should be persisted).
+     *
+     * @param {Function} callback - method which returns any data needed by the framework to persist the client-
+     *      side state.
+     * @returns {undefined}
+     */
     registerDataGetter(callback: () => any) {
         this.dataGetter = callback;
     }
 
+    /**
+     * A framework method to get any data which is needed for state persistence. Not intended to be called directly
+     * by a UI Extension implementation, this method is exposed for lifecycle management by the framework.
+     *
+     * @returns {any | null} optionally returns data needed to persist client side state if a
+     *      {@see KnimeService.dataGetter} has been registered. If no data getter is present,
+     *      returns {@type null}.
+     */
     getData() {
         return Promise.resolve(
             typeof this.dataGetter === 'function'

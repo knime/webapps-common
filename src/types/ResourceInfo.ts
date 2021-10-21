@@ -1,4 +1,4 @@
-import { ResourceTypeString } from './ResourceType';
+import { ResourceTypeString } from './ResourceTypes';
 
 /**
  * @property {string} id - unique identifier based on the factory class of the node.
