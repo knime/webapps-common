@@ -1,9 +1,16 @@
 import { KnimeService } from 'src';
 import { JSONRpcServices, SelectionServiceMethods, Notification } from 'src/types';
 
+/**
+ * SelectionService provides methods to handle data selection.
+ * To use it, the relating Java implementation also needs to use the SelectionService.
+ */
 export class SelectionService {
     private knimeService: KnimeService;
 
+    /**
+     * @param {KnimeService} knimeService instance should be provided to use notifications.
+     */
     constructor(knimeService: KnimeService) {
         this.knimeService = knimeService;
     }
@@ -16,31 +23,55 @@ export class SelectionService {
         );
     }
 
+    /**
+     * Adds data to currently selected data set
+     * @param {(string | key)[]} keys will be passed as params to backend SelectionService add selection method
+     * @returns {Promise<Object>} based on backend implementation
+     */
     add(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.ADD, keys);
     }
 
+    /**
+     * Removes data from currently selected data set
+     * @param {(string | key)[]} keys will be passed as params to backend SelectionService remove selection method
+     * @returns {Promise<Object>} based on backend implementation
+     */
     remove(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.REMOVE, keys);
     }
 
+    /**
+     * Replaces current selection with provided data
+     * @param {(string | key)[]} keys will be passed as params to backend SelectionService replace selection method
+     * @returns {Promise<Object>} based on backend implementation
+     */
     replace(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.REPLACE, keys);
     }
 
     /**
-     * @param {function} callback - will be called by backend when data selection happens
-     * @param {Object} jsonRpcResponse - jsonrpc object signature callback will be called with
-     * @param {string} jsonRpcResponse.jsonrpc - version of jsonrpc
-     * @param {string} jsonRpcResponse.method - selection event name that triggered on backend
-     * @param {Object} jsonRpcResponse.params - parameters method called with
-     * @returns {any}
+     * Adds callback that will be triggered on data selection change by backend
+     * @param {function} callback that need to be added. Will be triggered by backend implementation on selection change
+     * @param {Object} response object that backend will trigger callback with
+     * @param {string} response.jsonrpc version of jsonrpc
+     * @param {string} response.method selection event name that triggered on backend
+     * @param {Object} response.params parameters method called with
+     * @returns {void}
      */
-    // eslint-disable-next-line class-methods-use-this
     addOnSelectionChangeCallback(callback: (notification: Notification) => void) {
         this.knimeService.addNotificationCallback('SelectionEvent', callback);
     }
 
+    /**
+     * Removes previously added callback
+     * @param {function} callback that needs to be removed from notifications
+     * @param {Object} response object that backend will trigger callback with
+     * @param {string} response.jsonrpc version of jsonrpc
+     * @param {string} response.method selection event name that triggered on backend
+     * @param {Object} response.params parameters method called with
+     * @returns {void}
+     */
     removeOnSelectionChangeCallback(callback: (notification: Notification) => void) {
         this.knimeService.removeNotificationCallback('SelectionEvent', callback);
     }
