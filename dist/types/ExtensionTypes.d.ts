@@ -8,5 +8,4 @@ declare enum ExtensionTypes {
     DIALOG = "dialog",
     VIEW = "view"
 }
-type ExtensionTypeStrings = keyof typeof ExtensionTypes;
-export { ExtensionTypes, ExtensionTypeStrings };
+export { ExtensionTypes };

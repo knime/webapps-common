@@ -18,13 +18,13 @@ type NodeInfo = {
  * @readonly
  * @enum {string}
  */
-declare const enum ResourceType {
+declare const enum ResourceTypes {
     /** Indicates the resource should be loaded as a complete HTML page. */
     HTML = "HTML",
     /** Indicates the resource is a Vue component and should be treated as a library. */
     VUE_COMPONENT_LIB = "VUE_COMPONENT_LIB"
 }
-type ResourceTypeString = keyof typeof ResourceType;
+type ResourceTypeString = keyof typeof ResourceTypes;
 /**
  * @property {string} id - unique identifier based on the factory class of the node.
  * @property {ResourceType} type - the resource type associated with the extension.
@@ -37,7 +37,22 @@ type ResourceInfo = {
     path?: string;
     url?: string;
 };
-// TODO: NXTEXT-80 add JSDoc comments
+/**
+ * The base configuration of any UI Extension which contains all of the relevant information about the UI Extension
+ * node it references. This information allows the framework to coordinate communication between the frontend
+ * application and the target node in the workflow.
+ *
+ * Optionally, it may also contain the initial data to provide directly to the client-side UI Extension implementation.
+ *
+ * @property {string} nodeId - the id of the node in the workflow.
+ * @property {string} projectId - the project id of the workflow.
+ * @property {string} workflowId - the workflow id.
+ * @property {ResourceInfo} resourceInfo - information regarding the client-side resources for this extension.
+ * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
+ * @property {ExtensionType} extensionType - the type of the extension (effects the api behavior).
+ * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+ * @template T
+ */
 type ExtensionConfig<T = any> = {
     nodeId: string;
     projectId: string;
@@ -48,6 +63,6 @@ type ExtensionConfig<T = any> = {
     initialData?: T;
 };
 export { ExtensionConfig };
-export * from "./types/NodeServices";
-export * from "./types/DataServices";
+export * from "./types/ServiceMethods";
+export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";
