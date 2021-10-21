@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { ExtensionConfig } from 'src/types';
+import { ExtensionConfig, ExtensionTypes } from 'src/types';
 
 export const extensionConfig: ExtensionConfig = {
     initialData: {
@@ -53,5 +53,6 @@ export const extensionConfig: ExtensionConfig = {
         nodeErrorMessage: null,
         nodeWarnMessage: null,
         nodeName: 'Scatter Plot'
-    }
+    },
+    extensionType: ExtensionTypes.VIEW
 };
