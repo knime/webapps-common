@@ -1,4 +1,5 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
+import { ResourceTypes } from "./types/ResourceTypes";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -14,26 +15,14 @@ type NodeInfo = {
     nodeName: string;
 };
 /**
- * Enum for extension resource types.
- * @readonly
- * @enum {string}
- */
-declare const enum ResourceTypes {
-    /** Indicates the resource should be loaded as a complete HTML page. */
-    HTML = "HTML",
-    /** Indicates the resource is a Vue component and should be treated as a library. */
-    VUE_COMPONENT_LIB = "VUE_COMPONENT_LIB"
-}
-type ResourceTypeString = keyof typeof ResourceTypes;
-/**
  * @property {string} id - unique identifier based on the factory class of the node.
- * @property {ResourceType} type - the resource type associated with the extension.
+ * @property {ResourceTypes} type - the resource type associated with the extension.
  * @property {string} [path] - the optional relative path of the resource (for remote resources).
  * @property {string} [url] - the optional absolute url of the resource (for local resources).
  */
 type ResourceInfo = {
     id: string;
-    type: ResourceTypeString;
+    type: ResourceTypes;
     path?: string;
     url?: string;
 };
@@ -49,7 +38,7 @@ type ResourceInfo = {
  * @property {string} workflowId - the workflow id.
  * @property {ResourceInfo} resourceInfo - information regarding the client-side resources for this extension.
  * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
- * @property {ExtensionType} extensionType - the type of the extension (effects the api behavior).
+ * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
  * @template T
  */
@@ -66,3 +55,4 @@ export { ExtensionConfig };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";
+export * from "./types/ResourceTypes";

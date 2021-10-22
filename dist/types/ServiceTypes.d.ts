@@ -1,5 +1,5 @@
 /**
- * Service types for DataServices.
+ * Service types for DataServices implemented by a specific UI Extension node.
  *
  * @enum {string}
  *
@@ -13,9 +13,5 @@ declare enum DataServiceTypes {
 /**
  * Any Service implemented by a specific UI Extension node.
  */
-type Service<T> = T;
-/**
- * A DataService implemented by a specific UI Extension node.
- */
-type DataService = Service<DataServiceTypes>;
-export { DataServiceTypes, Service, DataService };
+type Service = DataServiceTypes | any;
+export { DataServiceTypes, Service };

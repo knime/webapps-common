@@ -16,7 +16,7 @@ declare class JSONDataService<T = any> {
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
      * known service types, {@see DataServiceTypes}.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceTypes} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
@@ -25,7 +25,7 @@ declare class JSONDataService<T = any> {
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
      * known service types, {@see DataServiceTypes}.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceTypes} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
@@ -42,7 +42,7 @@ declare class JSONDataService<T = any> {
      *
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
-    getInitialData(): Promise<any>;
+    initialData(): Promise<any>;
     /**
      * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
@@ -67,7 +67,7 @@ declare class JSONDataService<T = any> {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    getData(params?: {
+    data(params?: {
         method?: string;
         options?: any;
     }): Promise<any>;

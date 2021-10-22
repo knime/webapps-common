@@ -5,6 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var ServiceMethods = require('../types/ServiceMethods.js');
 var ServiceTypes = require('../types/ServiceTypes.js');
 require('../types/ExtensionTypes.js');
+require('../types/ResourceTypes.js');
 var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
 
 /**
@@ -22,12 +23,12 @@ class JSONDataService {
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
      * known service types, {@see DataServiceTypes}.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceTypes} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService.callService(ServiceMethods.ServiceMethodTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService.callService(ServiceMethods.NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
@@ -35,7 +36,7 @@ class JSONDataService {
      *
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
-    getInitialData() {
+    initialData() {
         var _a;
         if ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) {
             return Promise.resolve(this.knimeService.extensionConfig.initialData);
@@ -54,7 +55,7 @@ class JSONDataService {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    getData(params = { method: 'getData' }) {
+    data(params = { method: 'getData' }) {
         return this.callDataService(ServiceTypes.DataServiceTypes.DATA, createJsonRpcRequest.createJsonRpcRequest(params.method, params.options));
     }
     /**

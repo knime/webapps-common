@@ -3,7 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
- * Service types for DataServices.
+ * Service types for DataServices implemented by a specific UI Extension node.
  *
  * @enum {string}
  *

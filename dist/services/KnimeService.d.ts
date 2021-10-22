@@ -1,4 +1,4 @@
-import { ExtensionConfig, Service, ServiceMethod } from "../index-833a4776";
+import { ExtensionConfig, Service, ServiceMethod } from "../index-cf559541";
 /**
  * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
  * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
@@ -23,20 +23,20 @@ declare class KnimeService<T = any> {
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {IServiceMethod} method - the framework method to target with this service call.
-     * @param {IService} service - the service which should be called.
+     * @param {ServiceMethod} method - the framework method to target with this service call.
+     * @param {Service} service - the service which should be called.
      * @param {string} request - the serialized request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {IServiceMethod} method - the framework method to target with this service call.
-     * @param {IService} service - the service which should be called.
+     * @param {ServiceMethod} method - the framework method to target with this service call.
+     * @param {Service} service - the service which should be called.
      * @param {string} request - the serialized request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method: ServiceMethod, service: Service<any>, request: string): Promise<any>;
+    callService(method: ServiceMethod, service: Service, request: string): Promise<any>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).
