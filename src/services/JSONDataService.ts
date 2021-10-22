@@ -1,5 +1,5 @@
 import { KnimeService } from 'src';
-import { ServiceMethodTypes, DataService, DataServiceTypes } from 'src/types';
+import { NodeServiceTypes, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
@@ -20,12 +20,12 @@ export class JSONDataService<T = any> {
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
      * known service types, {@see DataServiceTypes}.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceTypes} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    private callDataService(dataService: DataService, request = '') {
-        return this.knimeService.callService(ServiceMethodTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+    private callDataService(dataService: DataServiceTypes, request = '') {
+        return this.knimeService.callService(NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
     }
 
     /**
@@ -34,7 +34,7 @@ export class JSONDataService<T = any> {
      *
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
-    getInitialData() {
+    initialData() {
         if (this.knimeService.extensionConfig?.initialData) {
             return Promise.resolve(this.knimeService.extensionConfig.initialData);
         }
@@ -54,7 +54,7 @@ export class JSONDataService<T = any> {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    getData(params: { method?: string, options?: any } = { method: 'getData' }) {
+    data(params: { method?: string, options?: any } = { method: 'getData' }) {
         return this.callDataService(
             DataServiceTypes.DATA,
             createJsonRpcRequest(params.method, params.options)

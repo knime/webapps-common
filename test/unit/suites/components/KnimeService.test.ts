@@ -1,11 +1,11 @@
 import { KnimeService, JSONDataService } from 'src';
-import { ServiceMethodTypes, DataServiceTypes } from 'src/types';
+import { NodeServiceTypes, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === ServiceMethodTypes.CALL_NODE_DATA_SERVICE) {
+    if (request.method === NodeServiceTypes.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
@@ -38,7 +38,7 @@ describe('KnimeService', () => {
             delete window.jsonrpc;
             const knimeService = new KnimeService();
             expect(() => knimeService.callService(
-                ServiceMethodTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
@@ -50,7 +50,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService();
 
             expect(() => knimeService.callService(
-                ServiceMethodTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError(`Cannot read property 'projectId' of null`);
@@ -63,7 +63,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             knimeService.callService(
-                ServiceMethodTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             );
@@ -77,12 +77,12 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                'Unsupported.Service' as ServiceMethodTypes,
+                'UnsupportedService.unknownMethod' as NodeServiceTypes,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError('Unsupported params');
-            expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"Unsupported.Service","params":' +
-                '["knime workflow","root:10","123","view","initial_data",""],"id":2}');
+            expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
+                '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}');
         });
     });
 

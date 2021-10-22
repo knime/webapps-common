@@ -30,12 +30,12 @@ export class KnimeService<T = any> {
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {IServiceMethod} method - the framework method to target with this service call.
-     * @param {IService} service - the service which should be called.
+     * @param {ServiceMethod} method - the framework method to target with this service call.
+     * @param {Service} service - the service which should be called.
      * @param {string} request - the serialized request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method: ServiceMethod, service: Service<any>, request: string) {
+    callService(method: ServiceMethod, service: Service, request: string) {
         if (!this.jsonRpcSupported) {
             throw new Error(`Current environment doesn't support window.jsonrpc()`);
         }

@@ -1,6 +1,6 @@
 import { KnimeService, JSONDataService } from 'src/services';
 import { extensionConfig } from 'test/mocks/extensionConfig';
-import { ExtensionTypes } from './types';
+import { ExtensionTypes, ResourceTypes } from './types';
 
 window.getNodeViewInfo = () => extensionConfig;
 
@@ -10,7 +10,7 @@ const knime = new KnimeService({
     workflowId: 'root:10',
     resourceInfo: {
         id: 'org.knime.base.views.scatterplot.ScatterPlotNodeFactory',
-        type: 'VUE_COMPONENT_LIB',
+        type: ResourceTypes.VUE_COMPONENT_LIB,
         path: null,
         url: 'http://localhost:4000/ScatterPlot.js'
     },
@@ -29,7 +29,7 @@ const jsonDataService = new JSONDataService(knime);
 
 const asyncCall = async function () {
     // eslint-disable-next-line no-console
-    console.log(await jsonDataService.getInitialData());
+    console.log(await jsonDataService.initialData());
 };
 
 asyncCall();

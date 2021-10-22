@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { ExtensionConfig, ExtensionTypes } from 'src/types';
+import { ExtensionConfig, ExtensionTypes, ResourceTypes } from 'src/types';
 
 export const extensionConfig: ExtensionConfig = {
     initialData: {
@@ -43,7 +43,7 @@ export const extensionConfig: ExtensionConfig = {
     workflowId: 'root:10',
     resourceInfo: {
         id: 'org.knime.base.views.scatterplot.ScatterPlotNodeFactory',
-        type: 'VUE_COMPONENT_LIB',
+        type: ResourceTypes.VUE_COMPONENT_LIB,
         path: null,
         url: 'http://localhost:4000/ScatterPlot.js'
     },

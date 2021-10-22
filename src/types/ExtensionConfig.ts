@@ -14,7 +14,7 @@ import { ResourceInfo } from './ResourceInfo';
  * @property {string} workflowId - the workflow id.
  * @property {ResourceInfo} resourceInfo - information regarding the client-side resources for this extension.
  * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
- * @property {ExtensionType} extensionType - the type of the extension (effects the api behavior).
+ * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
  * @template T
  */
