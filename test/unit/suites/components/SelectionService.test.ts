@@ -28,21 +28,21 @@ describe('SelectionService methods', () => {
         expect(callService).toBeCalledWith(
             JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceMethods.ADD,
-            params,
+            params
         );
 
         selectionService.remove(params);
         expect(callService).toBeCalledWith(
             JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceMethods.REMOVE,
-            params,
+            params
         );
 
         selectionService.replace(params);
         expect(callService).toBeCalledWith(
             JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceMethods.REPLACE,
-            params,
+            params
         );
     });
 

@@ -45,7 +45,18 @@ type ExtensionConfig<T = any> = {
     nodeInfo: NodeInfo;
     initialData?: T;
 };
-export { ExtensionConfig };
+type Notification = {
+    jsonrpc: string;
+    method: string;
+    params: {
+        projectId: string;
+        workflowId: string;
+        nodeId: string;
+        mode: string;
+    }[];
+    [key: string]: any;
+};
+export { ExtensionConfig, Notification };
 export * from "./types/JSONRpcServices";
 export * from "./types/ViewDataServiceMethods";
 export * from "./types/SelectionServiceMethods";

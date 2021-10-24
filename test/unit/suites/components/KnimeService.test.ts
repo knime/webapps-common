@@ -29,7 +29,7 @@ describe('KnimeService', () => {
             knime.callService(
                 JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
                 ViewDataServiceMethods.INITIAL_DATA,
-                '',
+                ''
             );
         } catch (e) {
             expect(e).toEqual(new Error(`Current environment doesn't support window.jsonrpc()`));
@@ -44,7 +44,7 @@ describe('KnimeService', () => {
         knime.callService(
             JSONRpcServices.CALL_NODE_VIEW_DATA_SERVICE,
             ViewDataServiceMethods.INITIAL_DATA,
-            '',
+            ''
         );
     });
 
@@ -57,7 +57,7 @@ describe('KnimeService', () => {
             knime.callService(
                 'Unsupported.Service' as JSONRpcServices,
                 ViewDataServiceMethods.INITIAL_DATA,
-                '',
+                ''
             );
         } catch (e) {
             expect(e).toEqual(new Error('Unsupported params'));
@@ -66,6 +66,10 @@ describe('KnimeService', () => {
 });
 
 describe('KnimeService notifications', () => {
+    beforeEach(() => {
+        window.jsonrpcNotification = null;
+    });
+
     it('Adds notification callback with addNotificationCallback', () => {
         const knime = new KnimeService();
 
@@ -76,35 +80,31 @@ describe('KnimeService notifications', () => {
         expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
     });
 
-    // it('Calls onJsonrpcNotification if callbacks added', () => {
-    //     const knime = new KnimeService();
+    it('Calls onJsonrpcNotification if callbacks added', () => {
+        const knime = new KnimeService();
 
-    //     const callback = (val) => {
-    //         console.log(1111);
-    //     };
+        const callback = jest.fn(() => {});
 
-    //     knime.addNotificationCallback('SelectionEvent', callback);
+        knime.addNotificationCallback('SelectionEvent', callback);
 
-    //     const spy = jest.spyOn(knime, 'onJsonrpcNotification');
+        const notification = {
+            jsonrpc: '2.0',
+            method: 'SelectionEvent',
+            params: [
+                {
+                    projectId: '...',
+                    workflowId: '...',
+                    nodeId: '...',
+                    keys: ['Row01', 'Row02'],
+                    mode: 'ADD'
+                }
+            ]
+        };
 
-    //     const notification = {
-    //         jsonrpc: '2.0',
-    //         method: 'SelectionEvent',
-    //         params: [
-    //             {
-    //                 projectId: '...',
-    //                 workflowId: '...',
-    //                 nodeId: '...',
-    //                 keys: ['Row01', 'Row02'],
-    //                 mode: 'ADD',
-    //             },
-    //         ],
-    //     };
+        window.jsonrpcNotification(notification);
 
-    //     window.jsonrpcNotification(notification);
-
-    //     expect(spy).toBeCalled();
-    // });
+        expect(callback).toBeCalled();
+    });
 
     it('Removes notification callback with removeNotificationCallback', () => {
         const knime = new KnimeService();

@@ -9,7 +9,7 @@ export class SelectionService {
     private knimeService: KnimeService;
 
     /**
-     * @param {KnimeService} knimeService instance should be provided to use notifications.
+     * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
     constructor(knimeService: KnimeService) {
         this.knimeService = knimeService;
@@ -19,44 +19,41 @@ export class SelectionService {
         return this.knimeService.callService(
             JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
             serviceType,
-            request,
+            request
         );
     }
 
     /**
-     * Adds data to currently selected data set
-     * @param {(string | key)[]} keys will be passed as params to backend SelectionService add selection method
-     * @returns {Promise<Object>} based on backend implementation
+     * Adds data to currently selected data set.
+     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService add selection method
+     * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.ADD, keys);
     }
 
     /**
-     * Removes data from currently selected data set
-     * @param {(string | key)[]} keys will be passed as params to backend SelectionService remove selection method
-     * @returns {Promise<Object>} based on backend implementation
+     * Removes data from currently selected data set.
+     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
+     * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.REMOVE, keys);
     }
 
     /**
-     * Replaces current selection with provided data
-     * @param {(string | key)[]} keys will be passed as params to backend SelectionService replace selection method
-     * @returns {Promise<Object>} based on backend implementation
+     * Replaces current selection with provided data.
+     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
+     * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys: (string | number)[]) {
         return this.callSelectionService(SelectionServiceMethods.REPLACE, keys);
     }
 
     /**
-     * Adds callback that will be triggered on data selection change by backend
-     * @param {function} callback that need to be added. Will be triggered by backend implementation on selection change
-     * @param {Object} response object that backend will trigger callback with
-     * @param {string} response.jsonrpc version of jsonrpc
-     * @param {string} response.method selection event name that triggered on backend
-     * @param {Object} response.params parameters method called with
+     * Adds callback that will be triggered on data selection change by backend.
+     * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
+     * @param {Notification} response - object that backend will trigger callback with.
      * @returns {void}
      */
     addOnSelectionChangeCallback(callback: (notification: Notification) => void) {
@@ -64,12 +61,9 @@ export class SelectionService {
     }
 
     /**
-     * Removes previously added callback
-     * @param {function} callback that needs to be removed from notifications
-     * @param {Object} response object that backend will trigger callback with
-     * @param {string} response.jsonrpc version of jsonrpc
-     * @param {string} response.method selection event name that triggered on backend
-     * @param {Object} response.params parameters method called with
+     * Removes previously added callback.
+     * @param {function} callback - that needs to be removed from notifications.
+     * @param {Notification} response - object that backend will trigger callback with.
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback: (notification: Notification) => void) {
