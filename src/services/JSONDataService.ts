@@ -35,8 +35,9 @@ export class JSONDataService<T = any> {
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
     initialData() {
-        if (this.knimeService.extensionConfig?.initialData) {
-            return Promise.resolve(this.knimeService.extensionConfig.initialData);
+        const initialData = this.knimeService.extensionConfig?.initialData || null;
+        if (initialData) {
+            return Promise.resolve(typeof initialData === 'string' ? JSON.parse(initialData) : initialData);
         }
 
         return this.callDataService(DataServiceTypes.INITIAL_DATA);
@@ -54,10 +55,10 @@ export class JSONDataService<T = any> {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    data(params: { method?: string, options?: any } = { method: 'getData' }) {
+    data(params: { method?: string, options?: any } = {}) {
         return this.callDataService(
             DataServiceTypes.DATA,
-            createJsonRpcRequest(params.method, params.options)
+            createJsonRpcRequest(params.method || 'getData', params.options)
         );
     }
 

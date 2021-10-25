@@ -38,8 +38,9 @@ class JSONDataService {
      */
     initialData() {
         var _a;
-        if ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) {
-            return Promise.resolve(this.knimeService.extensionConfig.initialData);
+        const initialData = ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) || null;
+        if (initialData) {
+            return Promise.resolve(typeof initialData === 'string' ? JSON.parse(initialData) : initialData);
         }
         return this.callDataService(ServiceTypes.DataServiceTypes.INITIAL_DATA);
     }
@@ -55,8 +56,8 @@ class JSONDataService {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    data(params = { method: 'getData' }) {
-        return this.callDataService(ServiceTypes.DataServiceTypes.DATA, createJsonRpcRequest.createJsonRpcRequest(params.method, params.options));
+    data(params = {}) {
+        return this.callDataService(ServiceTypes.DataServiceTypes.DATA, createJsonRpcRequest.createJsonRpcRequest(params.method || 'getData', params.options));
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
