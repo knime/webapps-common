@@ -29,11 +29,13 @@ class KnimeService {
             request || ''
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
-        const { result, error = {} } = requestResult;
-        if (result) {
+        const { result, error } = requestResult;
+        if (!error) {
             return Promise.resolve(JSON.parse(result));
         }
-        return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
+        return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message ||
+            'not provided'} ${!(error.message || error.code) &&
+            JSON.stringify(error, null, 2)}`));
     }
     /**
      * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.

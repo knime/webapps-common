@@ -45,17 +45,17 @@ export class KnimeService<T = any> {
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
 
-        const { result, error = {} } = requestResult;
+        const { result, error } = requestResult;
 
-        if (result) {
-            return Promise.resolve(JSON.parse(result));
+        if (!error) {
+            return Promise.resolve(result ? JSON.parse(result) : null);
         }
 
         return Promise.reject(
             new Error(
-                `Error code: ${error.code || 'UNKNOWN'}. Message: ${
-                    error.message || 'not provided'
-                }`
+                `Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message ||
+                    'not provided'} ${!(error.message || error.code) &&
+                    JSON.stringify(error, null, 2)}`
             )
         );
     }

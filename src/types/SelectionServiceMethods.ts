@@ -1,5 +1,5 @@
 export enum SelectionServiceMethods {
-  ADD = 'add',
-  REMOVE = 'remove',
-  REPLACE = 'replace',
+  ADD = 'ADD',
+  REMOVE = 'REMOVE',
+  REPLACE = 'REPLACE',
 }
