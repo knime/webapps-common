@@ -1,3 +1,3 @@
-import { JSONRpcServices } from "../index-f8554363";
-declare const createJsonRpcRequest: (method: JSONRpcServices | string, params?: any[]) => string;
+import { ServiceMethod } from "../index-fd0d4556";
+declare const createJsonRpcRequest: (method: ServiceMethod | string, params?: any[]) => string;
 export { createJsonRpcRequest };

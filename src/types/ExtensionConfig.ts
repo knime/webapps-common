@@ -1,12 +1,29 @@
+import { ExtensionTypes } from './ExtensionTypes';
 import { NodeInfo } from './NodeInfo';
 import { ResourceInfo } from './ResourceInfo';
 
-// TODO: NXTEXT-80 add JSDoc comments
+/**
+ * The base configuration of any UI Extension which contains all of the relevant information about the UI Extension
+ * node it references. This information allows the framework to coordinate communication between the frontend
+ * application and the target node in the workflow.
+ *
+ * Optionally, it may also contain the initial data to provide directly to the client-side UI Extension implementation.
+ *
+ * @property {string} nodeId - the id of the node in the workflow.
+ * @property {string} projectId - the project id of the workflow.
+ * @property {string} workflowId - the workflow id.
+ * @property {ResourceInfo} resourceInfo - information regarding the client-side resources for this extension.
+ * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
+ * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
+ * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+ * @template T
+ */
 export type ExtensionConfig<T = any> = {
     nodeId: string;
     projectId: string;
     workflowId: string;
     resourceInfo: ResourceInfo;
     nodeInfo: NodeInfo;
+    extensionType: ExtensionTypes;
     initialData?: T;
 };

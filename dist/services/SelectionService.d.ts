@@ -1,5 +1,5 @@
 import { KnimeService } from "../index";
-import { Notification } from "../index-f8554363";
+import { Notification } from "../index-fd0d4556";
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.

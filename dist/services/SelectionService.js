@@ -3,8 +3,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var JSONRpcServices = require('../types/JSONRpcServices.js');
-require('../types/ViewDataServiceMethods.js');
 var SelectionServiceMethods = require('../types/SelectionServiceMethods.js');
+require('../types/ServiceMethods.js');
+require('../types/ServiceTypes.js');
+require('../types/ExtensionTypes.js');
+require('../types/ResourceTypes.js');
 
 /**
  * SelectionService provides methods to handle data selection.
