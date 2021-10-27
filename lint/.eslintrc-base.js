@@ -57,7 +57,11 @@ module.exports = {
         'key-spacing': 'error',
         'keyword-spacing': 'error',
         'linebreak-style': ['error', 'unix'],
-        'lines-between-class-members': 'warn',
+        'lines-between-class-members': [
+            'warn',
+            'always',
+            { exceptAfterSingleLine: true }
+        ],
         'max-depth': 'warn',
         'max-len': ['warn', {
             code: lineLength,
