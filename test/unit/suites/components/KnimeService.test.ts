@@ -53,13 +53,13 @@ describe('KnimeService', () => {
                 NodeServiceTypes.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
-            )).toThrowError(`Cannot read property 'projectId' of null`);
+            )).toThrowError(`Cannot read properties of null (reading 'projectId')`);
             expect(rpcSpy).not.toHaveBeenCalled();
         });
 
         it('Calls data service', () => {
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
-            
+
             const knimeService = new KnimeService(extensionConfig);
 
             knimeService.callService(
