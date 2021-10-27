@@ -54,7 +54,7 @@ export class KnimeService<T = any> {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             service,
-            request || '',
+            request || ''
         ]);
 
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
@@ -69,8 +69,8 @@ export class KnimeService<T = any> {
             new Error(
                 `Error code: ${error.code || 'UNKNOWN'}. Message: ${
                     error.message || 'not provided'
-                } ${!(error.message || error.code) && JSON.stringify(error, null, 2)}`,
-            ),
+                } ${!(error.message || error.code) && JSON.stringify(error, null, 2)}`
+            )
         );
     }
 
@@ -119,15 +119,15 @@ export class KnimeService<T = any> {
      */
     addNotificationCallback(
         notificationType: string,
-        callback: (notification: Notification) => void,
+        callback: (notification: Notification) => void
     ) {
         if (!window.jsonrpcNotification) {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }
 
         this.notificationCallbacksMap.set(notificationType, [
-            ...(this.notificationCallbacksMap.get(notificationType) || []),
-            callback,
+            ...this.notificationCallbacksMap.get(notificationType) || [],
+            callback
         ]);
     }
 
@@ -139,13 +139,13 @@ export class KnimeService<T = any> {
      */
     removeNotificationCallback(
         notificationType: string,
-        callback: (notification: Notification) => void,
+        callback: (notification: Notification) => void
     ) {
         this.notificationCallbacksMap.set(
             notificationType,
             (this.notificationCallbacksMap.get(notificationType) || []).filter(
-                (cb) => cb !== callback,
-            ),
+                (cb) => cb !== callback
+            )
         );
     }
 

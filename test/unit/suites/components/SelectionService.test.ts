@@ -1,5 +1,6 @@
 import { KnimeService, SelectionService } from 'src/services';
 import { JSONRpcServices, SelectionServiceMethods } from 'src/types';
+import { extensionConfig } from 'test/mocks';
 
 window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
 
@@ -17,8 +18,12 @@ describe('SelectionService initialization', () => {
 });
 
 describe('SelectionService methods', () => {
+    beforeEach(() => {
+        window.jsonrpcNotification = null;
+    });
+
     it('Calls selection service add/remove/replace methods with correct params', () => {
-        const knime = new KnimeService();
+        const knime = new KnimeService(extensionConfig);
         const selectionService = new SelectionService(knime);
         const callService = jest.spyOn(knime, 'callService');
 
