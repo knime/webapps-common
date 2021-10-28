@@ -13,6 +13,7 @@ declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
     private jsonRpcSupported;
     private dataGetter;
+    private pendingJsonRpcRequests;
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
@@ -20,6 +21,7 @@ declare class KnimeService<T = any> {
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
     constructor(extensionConfig?: ExtensionConfig);
+    onMessageFromParent(event: MessageEvent): void;
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *

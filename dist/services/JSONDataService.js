@@ -1,12 +1,8 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var ServiceMethods = require('../types/ServiceMethods.js');
-var ServiceTypes = require('../types/ServiceTypes.js');
-require('../types/ExtensionTypes.js');
-require('../types/ResourceTypes.js');
-var createJsonRpcRequest = require('../utils/createJsonRpcRequest.js');
+import { NodeServiceTypes } from '../types/ServiceMethods.js';
+import { DataServiceTypes } from '../types/ServiceTypes.js';
+import '../types/ExtensionTypes.js';
+import '../types/ResourceTypes.js';
+import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
 /**
  * A utility class to interact with JSONDataServices implemented by a UI Extension node.
@@ -28,7 +24,7 @@ class JSONDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService.callService(ServiceMethods.NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService.callService(NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
@@ -42,7 +38,7 @@ class JSONDataService {
         if (initialData) {
             return Promise.resolve(typeof initialData === 'string' ? JSON.parse(initialData) : initialData);
         }
-        return this.callDataService(ServiceTypes.DataServiceTypes.INITIAL_DATA);
+        return this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
     /**
      * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
@@ -57,7 +53,7 @@ class JSONDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     data(params = {}) {
-        return this.callDataService(ServiceTypes.DataServiceTypes.DATA, createJsonRpcRequest.createJsonRpcRequest(params.method || 'getData', params.options));
+        return this.callDataService(DataServiceTypes.DATA, createJsonRpcRequest(params.method || 'getData', params.options));
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
@@ -68,7 +64,7 @@ class JSONDataService {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(ServiceTypes.DataServiceTypes.APPLY_DATA, JSON.stringify(data));
+        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
     }
     /**
      * Registers a function with the framework is used to provide the current state of the client-side UI Extension.
@@ -81,4 +77,4 @@ class JSONDataService {
     }
 }
 
-exports.JSONDataService = JSONDataService;
+export { JSONDataService };

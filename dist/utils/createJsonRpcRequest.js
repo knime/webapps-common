@@ -1,15 +1,11 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var index = require('../constants/index.js');
-var generateRequestId = require('./generateRequestId.js');
+import { JSON_RPC_VERSION } from '../constants/index.js';
+import { generateRequestId } from './generateRequestId.js';
 
 const createJsonRpcRequest = (method, params = []) => JSON.stringify({
-    jsonrpc: index.JSON_RPC_VERSION,
+    jsonrpc: JSON_RPC_VERSION,
     method,
     params,
-    id: generateRequestId.generateRequestId()
+    id: generateRequestId()
 });
 
-exports.createJsonRpcRequest = createJsonRpcRequest;
+export { createJsonRpcRequest };

@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 /**
  * Service types for DataServices implemented by a specific UI Extension node.
  *
@@ -9,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
  *
  * TODO: NXT-761 convert to interfaces which are then members of the <Type>DataService implementations.
  */
-exports.DataServiceTypes = void 0;
+var DataServiceTypes;
 (function (DataServiceTypes) {
     // Returns the initial data as provided by the node implementation. Requires no parameters.
     DataServiceTypes["INITIAL_DATA"] = "initial_data";
@@ -17,4 +13,6 @@ exports.DataServiceTypes = void 0;
     DataServiceTypes["DATA"] = "data";
     // Expects request body to contain the update data to apply/persist/update depending on node implementation.
     DataServiceTypes["APPLY_DATA"] = "apply_data";
-})(exports.DataServiceTypes || (exports.DataServiceTypes = {}));
+})(DataServiceTypes || (DataServiceTypes = {}));
+
+export { DataServiceTypes };

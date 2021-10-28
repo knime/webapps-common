@@ -7,7 +7,7 @@ export default {
     output: [
         {
             dir: './dist',
-            format: 'cjs',
+            format: 'es', // TODO clarify why this is needed to work in iframe base views; in general esmodules are good
             sourcemap: false,
             preserveModules: true
         }
