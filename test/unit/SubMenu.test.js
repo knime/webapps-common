@@ -74,7 +74,7 @@ describe('SubMenu.vue', () => {
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
     });
 
-    it('can be disabled', () => {
+    it('can be disabled', async () => {
         const id = 'testfoobar543';
         const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -95,7 +95,42 @@ describe('SubMenu.vue', () => {
         });
         let button = wrapper.find('.submenu-toggle');
         expect(button.attributes('disabled')).toBeTruthy();
-        wrapper.setProps({ disabled: false });
+        await wrapper.setProps({ disabled: false });
         expect(button.attributes('disabled')).toBeFalsy();
+    });
+
+    it("can display hotkeys", () => {
+        const id = 'testfoobar543';
+        const items = [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
+        ];
+        const wrapper = shallowMount(SubMenu, {
+            propsData: {
+                items,
+                id,
+                showHotkeys: true
+            },
+        });
+        const spans = wrapper.findAll('span')
+        const span = spans.at(1)
+        expect(span.classes('hotkey')).toBe(true)
+    });
+
+    it("doesn't display hotkeys by default", () => {
+        const id = 'testfoobar543';
+        const items = [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
+        ];
+        const wrapper = shallowMount(SubMenu, {
+            propsData: {
+                items,
+                id
+            },
+        });
+        wrapper.findAll('span').wrappers.forEach(item => {
+            expect(item.classes('hotkey').toBe(false))
+        })
     });
 });

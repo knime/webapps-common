@@ -60,6 +60,13 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        /**
+        * Shows a column on the right of each entry filled with item.hotkeyText (if set)
+        */
+        showHotkeys: {
+          type: Boolean,
+          default: false
         }
     },
     data() {
@@ -230,7 +237,11 @@ export default {
             v-if="item.icon"
             class="item-icon"
           />
-          {{ item.text }}
+          <div v-if="showHotkeys" class="label">
+            <span class="text">{{ item.text }}</span>
+            <span class="hotkey">{{ item.hotkeyText }}</span>
+          </div>
+          <template v-else>{{item.text}}</template>
         </Component>
       </li>
     </ul>
@@ -283,6 +294,24 @@ ul {
       height: 18px;
       margin-right: 7px;
     }
+
+    & .label {
+        display: flex;
+        flex: 1;
+        width: 180px;
+
+        & .text {
+          flex: 2 1 100%;
+          display: block;
+        }
+
+        & .hotkey {
+          align-self: flex-end;
+          display: block;
+          flex: 1 1 20%;
+          margin-left: 40px;
+        }
+      }
 
     &:hover {
       outline: none;
