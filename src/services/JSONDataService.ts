@@ -1,5 +1,5 @@
 import { KnimeService } from 'src';
-import { NodeServiceTypes, DataServiceTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
@@ -25,7 +25,7 @@ export class JSONDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     private callDataService(dataService: DataServiceTypes, request = '') {
-        return this.knimeService.callService(NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService.callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request);
     }
 
     /**

@@ -1,5 +1,5 @@
 import { KnimeService } from 'src';
-import { JSONRpcServices, SelectionServiceMethods, Notification } from 'src/types';
+import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -15,10 +15,18 @@ export class SelectionService {
         this.knimeService = knimeService;
     }
 
-    private callSelectionService(serviceType: SelectionServiceMethods, request) {
+    /**
+     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
+     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     *
+     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {string} request - the request payload.
+     * @returns {Promise} rejected or resolved depending on backend response.
+     */
+    private callSelectionService(selectionService: SelectionServiceTypes, request) {
         return this.knimeService.callService(
-            JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
-            serviceType,
+            NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
+            selectionService,
             request
         );
     }
@@ -29,7 +37,7 @@ export class SelectionService {
      * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceMethods.ADD, keys);
+        return this.callSelectionService(SelectionServiceTypes.ADD, keys);
     }
 
     /**
@@ -38,7 +46,7 @@ export class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceMethods.REMOVE, keys);
+        return this.callSelectionService(SelectionServiceTypes.REMOVE, keys);
     }
 
     /**
@@ -47,7 +55,7 @@ export class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceMethods.REPLACE, keys);
+        return this.callSelectionService(SelectionServiceTypes.REPLACE, keys);
     }
 
     /**

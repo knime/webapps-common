@@ -1,4 +1,4 @@
-import { ExtensionConfig, ServiceMethod, Notification, Service } from "../index-fd0d4556";
+import { ExtensionConfig, ServiceMethod, Notification, Service } from "../index-c969ba90";
 /**
  * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
  * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME

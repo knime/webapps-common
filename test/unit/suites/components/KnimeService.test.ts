@@ -1,11 +1,11 @@
 import { KnimeService, JSONDataService } from 'src';
-import { NodeServiceTypes, DataServiceTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === NodeServiceTypes.CALL_NODE_DATA_SERVICE) {
+    if (request.method === NodeServiceMethods.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
@@ -38,7 +38,7 @@ describe('KnimeService', () => {
             delete window.jsonrpc;
             const knimeService = new KnimeService();
             expect(() => knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
@@ -50,7 +50,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService();
 
             expect(() => knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError(`Cannot read properties of null (reading 'projectId')`);
@@ -63,7 +63,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             );
@@ -77,7 +77,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                'UnsupportedService.unknownMethod' as NodeServiceTypes,
+                'UnsupportedService.unknownMethod' as NodeServiceMethods,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             )).toThrowError('Unsupported params');

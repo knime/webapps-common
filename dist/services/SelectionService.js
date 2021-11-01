@@ -2,10 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-var JSONRpcServices = require('../types/JSONRpcServices.js');
-var SelectionServiceMethods = require('../types/SelectionServiceMethods.js');
-require('../types/ServiceMethods.js');
-require('../types/ServiceTypes.js');
+var ServiceMethods = require('../types/ServiceMethods.js');
+var ServiceTypes = require('../types/ServiceTypes.js');
 require('../types/ExtensionTypes.js');
 require('../types/ResourceTypes.js');
 
@@ -20,8 +18,16 @@ class SelectionService {
     constructor(knimeService) {
         this.knimeService = knimeService;
     }
-    callSelectionService(serviceType, request) {
-        return this.knimeService.callService(JSONRpcServices.JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS, serviceType, request);
+    /**
+     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
+     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     *
+     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {string} request - the request payload.
+     * @returns {Promise} rejected or resolved depending on backend response.
+     */
+    callSelectionService(selectionService, request) {
+        return this.knimeService.callService(ServiceMethods.NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request);
     }
     /**
      * Adds data to currently selected data set.
@@ -29,7 +35,7 @@ class SelectionService {
      * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys) {
-        return this.callSelectionService(SelectionServiceMethods.SelectionServiceMethods.ADD, keys);
+        return this.callSelectionService(ServiceTypes.SelectionServiceTypes.ADD, keys);
     }
     /**
      * Removes data from currently selected data set.
@@ -37,7 +43,7 @@ class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys) {
-        return this.callSelectionService(SelectionServiceMethods.SelectionServiceMethods.REMOVE, keys);
+        return this.callSelectionService(ServiceTypes.SelectionServiceTypes.REMOVE, keys);
     }
     /**
      * Replaces current selection with provided data.
@@ -45,7 +51,7 @@ class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys) {
-        return this.callSelectionService(SelectionServiceMethods.SelectionServiceMethods.REPLACE, keys);
+        return this.callSelectionService(ServiceTypes.SelectionServiceTypes.REPLACE, keys);
     }
     /**
      * Adds callback that will be triggered on data selection change by backend.

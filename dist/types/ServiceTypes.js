@@ -3,6 +3,17 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
+ * Selection service types for the `NodeService.selectDataPoints` method.
+ *
+ * @enum {string}
+ */
+exports.SelectionServiceTypes = void 0;
+(function (SelectionServiceTypes) {
+    SelectionServiceTypes["ADD"] = "ADD";
+    SelectionServiceTypes["REMOVE"] = "REMOVE";
+    SelectionServiceTypes["REPLACE"] = "REPLACE";
+})(exports.SelectionServiceTypes || (exports.SelectionServiceTypes = {}));
+/**
  * Service types for DataServices implemented by a specific UI Extension node.
  *
  * @enum {string}

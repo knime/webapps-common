@@ -63,8 +63,6 @@ type Notification = {
     [key: string]: any;
 };
 export { ExtensionConfig, Notification };
-export * from "./types/JSONRpcServices";
-export * from "./types/SelectionServiceMethods";
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

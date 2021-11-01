@@ -1,5 +1,5 @@
 import { KnimeService } from "../index";
-import { Notification } from "../index-fd0d4556";
+import { Notification } from "../index-c969ba90";
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
@@ -13,6 +13,22 @@ declare class SelectionService {
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
     constructor(knimeService: KnimeService);
+    /**
+     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
+     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     *
+     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {string} request - the request payload.
+     * @returns {Promise} rejected or resolved depending on backend response.
+     */
+    /**
+     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
+     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     *
+     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {string} request - the request payload.
+     * @returns {Promise} rejected or resolved depending on backend response.
+     */
     private callSelectionService;
     /**
      * Adds data to currently selected data set.

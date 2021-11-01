@@ -1,5 +1,5 @@
 import { KnimeService, SelectionService } from 'src/services';
-import { JSONRpcServices, SelectionServiceMethods } from 'src/types';
+import { NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
@@ -31,22 +31,22 @@ describe('SelectionService methods', () => {
 
         selectionService.add(params);
         expect(callService).toBeCalledWith(
-            JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
-            SelectionServiceMethods.ADD,
+            NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
+            SelectionServiceTypes.ADD,
             params
         );
 
         selectionService.remove(params);
         expect(callService).toBeCalledWith(
-            JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
-            SelectionServiceMethods.REMOVE,
+            NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
+            SelectionServiceTypes.REMOVE,
             params
         );
 
         selectionService.replace(params);
         expect(callService).toBeCalledWith(
-            JSONRpcServices.CALL_NODE_SELECT_DATA_POINTS,
-            SelectionServiceMethods.REPLACE,
+            NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
+            SelectionServiceTypes.REPLACE,
             params
         );
     });

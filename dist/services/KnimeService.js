@@ -45,7 +45,7 @@ class KnimeService {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             service,
-            request || '',
+            request || ''
         ]);
         const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
         const { result, error } = requestResult;
@@ -98,8 +98,8 @@ class KnimeService {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }
         this.notificationCallbacksMap.set(notificationType, [
-            ...(this.notificationCallbacksMap.get(notificationType) || []),
-            callback,
+            ...this.notificationCallbacksMap.get(notificationType) || [],
+            callback
         ]);
     }
     /**
