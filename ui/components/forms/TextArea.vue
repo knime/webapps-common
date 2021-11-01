@@ -9,6 +9,10 @@ export default {
             type: String,
             default: null
         },
+        name: {
+            type: String,
+            default: null
+        },
         /**
          * Validity controlled by the parent component to be flexible.
          */
@@ -53,6 +57,7 @@ export default {
     <textarea
       :id="id"
       ref="input"
+      :name="name"
       :title="title"
       :value="value"
       :class="inputClasses"
