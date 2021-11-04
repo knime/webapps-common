@@ -1,7 +1,7 @@
 module.exports = {
     overrides: [
         {
-            files: ['*.test.js', '*.test.ts'],
+            files: ['*.js', '*.ts'],
             plugins: ['jest', 'jest-formatting'],
             rules: {
                 'jest-formatting/padding-around-after-all-blocks': 'error',
