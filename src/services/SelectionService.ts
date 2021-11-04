@@ -27,7 +27,7 @@ export class SelectionService {
         return this.knimeService.callService(
             NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
             selectionService,
-            request
+            request,
         );
     }
 
