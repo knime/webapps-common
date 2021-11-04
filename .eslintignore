@@ -3,3 +3,4 @@ dist/
 coverage/
 demo/node_modules/
 buildtools/node_modules/
+package*.json
