@@ -10,7 +10,7 @@
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "audit": "check-audit --production",
-    "lint": "npm run lint:js && lint:json && npm run lint:css",
+    "lint": "npm run lint:js && npm run lint:json && npm run lint:css",
     "lint:js": "eslint --ext .js,.vue .",
     "lint:json": "eslint --ext .json .",
     "lint:css": "stylelint '**/*.{css,vue}'",
