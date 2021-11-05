@@ -1,16 +1,16 @@
-import { KnimeService } from "../index";
+import { IframeKnimeService, ComponentKnimeService } from "../index";
 /**
  * A utility class to interact with JSONDataServices implemented by a UI Extension node.
  */
 declare class JSONDataService<T = any> {
     private knimeService;
     /**
-     * @param {KnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {ComponentKnimeService<T> | IframeKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
      */
     /**
-     * @param {KnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {ComponentKnimeService<T> | IframeKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
      */
-    constructor(knimeService: KnimeService<T>);
+    constructor(knimeService: ComponentKnimeService<T> | IframeKnimeService<T>);
     /**
      * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For

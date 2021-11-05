@@ -1,4 +1,4 @@
-import { ExtensionConfig, Service, ServiceMethod } from "../index-cf559541";
+import { ExtensionConfig, JsonRpcResponse, Service, ServiceMethod } from "../index-efc413bb";
 /**
  * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
  * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
@@ -11,9 +11,7 @@ import { ExtensionConfig, Service, ServiceMethod } from "../index-cf559541";
  */
 declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
-    private jsonRpcSupported;
     private dataGetter;
-    private pendingJsonRpcRequests;
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
@@ -21,7 +19,6 @@ declare class KnimeService<T = any> {
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
     constructor(extensionConfig?: ExtensionConfig);
-    onMessageFromParent(event: MessageEvent): void;
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
@@ -39,6 +36,8 @@ declare class KnimeService<T = any> {
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     callService(method: ServiceMethod, service: Service, request: string): Promise<any>;
+    /* eslint-disable class-methods-use-this */
+    executeServiceCall(jsonRpcRequest: string): Promise<JsonRpcResponse>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).

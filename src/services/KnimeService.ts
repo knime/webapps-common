@@ -1,4 +1,4 @@
-import { ExtensionConfig, Service, ServiceMethod } from 'src/types';
+import { ExtensionConfig, JsonRpcResponse, Service, ServiceMethod } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
@@ -14,63 +14,16 @@ import { createJsonRpcRequest } from 'src/utils';
 export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
-    private jsonRpcSupported: boolean;
-
     private dataGetter: () => any;
-
-    private pendingJsonRpcRequests: Map<Number, any> = new Map();
 
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig: ExtensionConfig = null) {
+    constructor(extensionConfig: ExtensionConfig = null /* windowReference */) {
+        /**
+         *
+         */
         this.extensionConfig = extensionConfig;
-
-        this.jsonRpcSupported = Boolean(window.jsonrpc && typeof window.jsonrpc === 'function');
-
-        const runningInIFrame = Boolean(window.parent && window.parent !== window);
-        if (runningInIFrame) {
-            window.addEventListener('message', this.onMessageFromParent.bind(this));
-            window.parent.postMessage({
-                type: 'knimeUIExtension:ready'
-            }, '*'); // TODO security
-        }
-    }
-
-    onMessageFromParent(event: MessageEvent) {
-        // TODO security check
-        const { data } = event;
-        if (!data.type?.startsWith('knimeUIExtension')) {
-            return;
-        }
-
-        if (data.type === 'knimeUIExtension:init') {
-            this.extensionConfig = event.data.extensionConfig;
-        }
-
-        if (data.type === 'knimeUIExtension:jsonrpcResponse') {
-            const { response } = data;
-            const responseJSON = JSON.parse(response);
-            const { id } = responseJSON;
-            const request = this.pendingJsonRpcRequests.get(id);
-            if (!request) {
-                throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${id}`);
-            }
-            const { result, error = {} } = JSON.parse(responseJSON.result);
-    
-            if (result) {
-                request.resolve(result);
-            } else {
-                request.reject(
-                    new Error(
-                        `Error code: ${error.code || 'UNKNOWN'}. Message: ${
-                            error.message || 'not provided'
-                        }`
-                    )
-                );
-            } 
-            this.pendingJsonRpcRequests.delete(id);
-        }
     }
 
     /**
@@ -81,7 +34,7 @@ export class KnimeService<T = any> {
      * @param {string} request - the serialized request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method: ServiceMethod, service: Service, request: string) {
+    async callService(method: ServiceMethod, service: Service, request: string) {
         const jsonRpcRequest = createJsonRpcRequest(method, [
             this.extensionConfig.projectId,
             this.extensionConfig.workflowId,
@@ -91,34 +44,30 @@ export class KnimeService<T = any> {
             request || ''
         ]);
 
-        if (this.jsonRpcSupported) {
-            const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
+        const { result, error } = await this.executeServiceCall(jsonRpcRequest);
 
-            const { result, error = {} } = requestResult;
-    
-            if (result) {
-                return Promise.resolve(JSON.parse(result));
-            }
-    
+        if (error) {
             return Promise.reject(
                 new Error(
-                    `Error code: ${error.code || 'UNKNOWN'}. Message: ${
-                        error.message || 'not provided'
+                    `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
+                        error?.message || 'not provided'
                     }`
                 )
             );
-        } else {
-            const id = JSON.parse(jsonRpcRequest).id; // TODO find better way
-            const promise = new Promise((resolve, reject) => {
-                this.pendingJsonRpcRequests.set(id, { resolve, reject });
-            });
-            window.parent.postMessage({
-                type: 'knimeUIExtension:jsonrpcRequest',
-                request: jsonRpcRequest
-            }, '*'); // TODO security
-            // TODO handle timeouts: reject promise when there was no response after e.g. 10 seconds
-            return promise;
         }
+
+        // TODO: currently we recive already parsed result from inner jsorpc calls
+        return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
+    }
+
+    /* eslint-disable class-methods-use-this */
+    executeServiceCall(jsonRpcRequest: string) {
+        return new Promise<JsonRpcResponse>((resolve) => {
+            resolve({
+                result: jsonRpcRequest,
+                error: { message: 'Not implemented', code: null }
+            });
+        });
     }
 
     /**
@@ -142,10 +91,6 @@ export class KnimeService<T = any> {
      *      returns {@type null}.
      */
     getData() {
-        return Promise.resolve(
-            typeof this.dataGetter === 'function'
-                ? this.dataGetter()
-                : null
-        );
+        return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
 }

@@ -51,7 +51,14 @@ type ExtensionConfig<T = any> = {
     extensionType: ExtensionTypes;
     initialData?: T;
 };
-export { ExtensionConfig };
+type JsonRpcResponse = {
+    error: {
+        code: string;
+        message: string;
+    };
+    result: string;
+};
+export { ExtensionConfig, JsonRpcResponse };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

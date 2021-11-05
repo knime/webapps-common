@@ -14,45 +14,11 @@ class KnimeService {
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig = null) {
-        this.pendingJsonRpcRequests = new Map();
+    constructor(extensionConfig = null /* windowReference */) {
+        /**
+         *
+         */
         this.extensionConfig = extensionConfig;
-        this.jsonRpcSupported = Boolean(window.jsonrpc && typeof window.jsonrpc === 'function');
-        const runningInIFrame = Boolean(window.parent && window.parent !== window);
-        if (runningInIFrame) {
-            window.addEventListener('message', this.onMessageFromParent.bind(this));
-            window.parent.postMessage({
-                type: 'knimeUIExtension:ready'
-            }, '*'); // TODO security
-        }
-    }
-    onMessageFromParent(event) {
-        var _a;
-        // TODO security check
-        const { data } = event;
-        if (!((_a = data.type) === null || _a === void 0 ? void 0 : _a.startsWith('knimeUIExtension'))) {
-            return;
-        }
-        if (data.type === 'knimeUIExtension:init') {
-            this.extensionConfig = event.data.extensionConfig;
-        }
-        if (data.type === 'knimeUIExtension:jsonrpcResponse') {
-            const { response } = data;
-            const responseJSON = JSON.parse(response);
-            const { id } = responseJSON;
-            const request = this.pendingJsonRpcRequests.get(id);
-            if (!request) {
-                throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${id}`);
-            }
-            const { result, error = {} } = JSON.parse(responseJSON.result);
-            if (result) {
-                request.resolve(result);
-            }
-            else {
-                request.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
-            }
-            this.pendingJsonRpcRequests.delete(id);
-        }
     }
     /**
      * Generic method to call services provided by the UI Extension node implementation.
@@ -62,7 +28,7 @@ class KnimeService {
      * @param {string} request - the serialized request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method, service, request) {
+    async callService(method, service, request) {
         const jsonRpcRequest = createJsonRpcRequest(method, [
             this.extensionConfig.projectId,
             this.extensionConfig.workflowId,
@@ -71,26 +37,21 @@ class KnimeService {
             service,
             request || ''
         ]);
-        if (this.jsonRpcSupported) {
-            const requestResult = JSON.parse(window.jsonrpc(jsonRpcRequest));
-            const { result, error = {} } = requestResult;
-            if (result) {
-                return Promise.resolve(JSON.parse(result));
-            }
-            return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
+        const { result, error } = await this.executeServiceCall(jsonRpcRequest);
+        if (error) {
+            return Promise.reject(new Error(`Error code: ${(error === null || error === void 0 ? void 0 : error.code) || 'UNKNOWN'}. Message: ${(error === null || error === void 0 ? void 0 : error.message) || 'not provided'}`));
         }
-        else {
-            const id = JSON.parse(jsonRpcRequest).id; // TODO find better way
-            const promise = new Promise((resolve, reject) => {
-                this.pendingJsonRpcRequests.set(id, { resolve, reject });
+        // TODO: currently we recive already parsed result from inner jsorpc calls
+        return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
+    }
+    /* eslint-disable class-methods-use-this */
+    executeServiceCall(jsonRpcRequest) {
+        return new Promise((resolve) => {
+            resolve({
+                result: jsonRpcRequest,
+                error: { message: 'Not implemented', code: null }
             });
-            window.parent.postMessage({
-                type: 'knimeUIExtension:jsonrpcRequest',
-                request: jsonRpcRequest
-            }, '*'); // TODO security
-            // TODO handle timeouts: reject promise when there was no response after e.g. 10 seconds
-            return promise;
-        }
+        });
     }
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
@@ -112,9 +73,7 @@ class KnimeService {
      *      returns {@type null}.
      */
     getData() {
-        return Promise.resolve(typeof this.dataGetter === 'function'
-            ? this.dataGetter()
-            : null);
+        return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
 }
 
