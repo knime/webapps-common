@@ -102,7 +102,7 @@ class KnimeService {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }
         this.notificationCallbacksMap.set(notificationType, [
-            ...(this.notificationCallbacksMap.get(notificationType) || []),
+            ...this.notificationCallbacksMap.get(notificationType) || [],
             callback,
         ]);
     }

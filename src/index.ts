@@ -1,8 +1,8 @@
 export {
     ComponentKnimeService,
     JSONDataService,
-    IframeKnimeService,
-    KnimeIFrameAdapter,
+    IFrameKnimeService,
+    IFrameKnimeServiceAdapter,
     SelectionService,
 } from './services';
 

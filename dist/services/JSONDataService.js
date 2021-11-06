@@ -9,7 +9,7 @@ import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
  */
 class JSONDataService {
     /**
-     * @param {ComponentKnimeService<T> | IframeKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {ComponentKnimeService<T> | IFrameKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
      */
     constructor(knimeService) {
         this.knimeService = knimeService;
