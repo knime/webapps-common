@@ -19,7 +19,7 @@ class IFrameKnimeService extends KnimeService {
             return;
         }
         // TODO: fix global rule for switches?
-        /*eslint indent: [2, 4, {"SwitchCase": 1}]*/
+        /* eslint indent: [2, 4, {"SwitchCase": 1}] */
         switch (data.type) {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
                 this.extensionConfig = event.data.payload;
