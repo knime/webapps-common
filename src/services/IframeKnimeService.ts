@@ -3,7 +3,7 @@ import { ExtensionConfig, JsonRpcResponse } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 const REQUEST_TIMEOUT = 10000;
-export class IFrameKnimeService<T> extends KnimeService {
+export class IFrameKnimeService<T = any> extends KnimeService {
     private pendingJsonRpcRequests: Map<Number, any> = new Map();
 
     extensionConfig: ExtensionConfig<T>;

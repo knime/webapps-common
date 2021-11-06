@@ -1,4 +1,4 @@
-import { KnimeService, SelectionService } from 'src/services';
+import { ComponentKnimeService, SelectionService } from 'src/services';
 import { NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
@@ -6,7 +6,7 @@ window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
 
 describe('SelectionService initialization', () => {
     it('Creates selection service', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
         const selectionService = new SelectionService(knime);
 
         expect(selectionService).toHaveProperty('add');
@@ -23,7 +23,7 @@ describe('SelectionService methods', () => {
     });
 
     it('Calls selection service add/remove/replace methods with correct params', () => {
-        const knime = new KnimeService(extensionConfig);
+        const knime = new ComponentKnimeService(extensionConfig);
         const selectionService = new SelectionService(knime);
         const callService = jest.spyOn(knime, 'callService');
 
@@ -52,7 +52,7 @@ describe('SelectionService methods', () => {
     });
 
     it('Adds callback to notification with addOnSelectionChangeCallback', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
         const selectionService = new SelectionService(knime);
 
         const callback = () => {};
@@ -63,7 +63,7 @@ describe('SelectionService methods', () => {
     });
 
     it('Adds jsonrpcNotification callback with addOnSelectionChangeCallback', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
         const selectionService = new SelectionService(knime);
 
         const callback = () => {};
@@ -74,7 +74,7 @@ describe('SelectionService methods', () => {
     });
 
     it('Removes jsonrpcNotification callback with removeOnSelectionChangeCallback', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
         const selectionService = new SelectionService(knime);
 
         const callback = () => {};

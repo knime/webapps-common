@@ -1,6 +1,2 @@
-export { ComponentKnimeService } from "./services/ComponentKnimeService";
-export { JSONDataService } from "./services/JSONDataService";
-export { IFrameKnimeService } from "./services/IFrameKnimeService";
-export { IFrameKnimeServiceAdapter } from "./services/IFrameKnimeServiceAdapter";
-export { SelectionService } from "./services/SelectionService";
+export { ComponentKnimeService, JSONDataService, IFrameKnimeService, IFrameKnimeServiceAdapter, SelectionService } from "./index-d5888073";
 export { UI_EXT_POST_MESSAGE_PREFIX } from "./constants/index";

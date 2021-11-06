@@ -1,6 +1,6 @@
 import { ExtensionConfig, JsonRpcResponse } from "../index-0a8c878e";
 import { KnimeService } from "./KnimeService";
-declare class IFrameKnimeService<T> extends KnimeService {
+declare class IFrameKnimeService<T = any> extends KnimeService {
     private pendingJsonRpcRequests;
     extensionConfig: ExtensionConfig<T>;
     constructor(extensionConfig?: ExtensionConfig);

@@ -1,4 +1,4 @@
-import { KnimeService } from 'src/services/KnimeService';
+import { IFrameKnimeService, ComponentKnimeService } from 'src/services';
 import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 
 /**
@@ -6,12 +6,12 @@ import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/typ
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
 export class SelectionService {
-    private knimeService: KnimeService;
+    private knimeService: IFrameKnimeService | ComponentKnimeService;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
-    constructor(knimeService: KnimeService) {
+    constructor(knimeService: IFrameKnimeService | ComponentKnimeService) {
         this.knimeService = knimeService;
     }
 

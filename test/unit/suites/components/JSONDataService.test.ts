@@ -15,14 +15,6 @@ describe('JSONDataService', () => {
     });
 
     describe('initial_data handling', () => {
-        it(`Throws error if environment doesn't support rpc`, () => {
-            const knimeService = new ComponentKnimeService();
-            const jsonDataService = new JSONDataService(knimeService);
-
-            expect(() => jsonDataService.initialData())
-                .toThrowError(`Current environment doesn't support window.jsonrpc()`);
-        });
-
         it(`Fetches initial_data if it's passed to constructor`, () => {
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JSONDataService(knimeService);

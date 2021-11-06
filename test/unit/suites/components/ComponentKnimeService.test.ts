@@ -1,4 +1,5 @@
-import { KnimeService, JSONDataService } from 'src';
+import { ComponentKnimeService } from 'src/services';
+import { JSONDataService } from 'src';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
@@ -14,10 +15,10 @@ const jsonrpc = (requestJSON: string) => {
     throw error;
 };
 
-describe('KnimeService', () => {
+describe('ComponentKnimeService', () => {
     describe('initialization', () => {
-        it('Creates KnimeService', () => {
-            const knimeService = new KnimeService(extensionConfig);
+        it('Creates ComponentKnimeService', () => {
+            const knimeService = new ComponentKnimeService(extensionConfig);
 
             expect(knimeService).toHaveProperty('extensionConfig');
 
@@ -34,61 +35,57 @@ describe('KnimeService', () => {
             delete window.jsonrpc;
         });
 
-        it('Throws error if jsonrpc unsupported', () => {
-            delete window.jsonrpc;
-            const knimeService = new KnimeService();
-            expect(() => knimeService.callService(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                '',
-            )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
-        });
-
         it('Throws error if extension config not provided', () => {
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
-            const knimeService = new KnimeService();
+            const knimeService = new ComponentKnimeService();
 
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 '',
-            )).toThrowError(`Cannot read properties of null (reading 'projectId')`);
+            )).rejects.toMatchObject({
+                message: `Cannot read properties of null (reading 'projectId')`,
+            });
             expect(rpcSpy).not.toHaveBeenCalled();
         });
 
         it('Calls data service', () => {
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
-            const knimeService = new KnimeService(extensionConfig);
+            const knimeService = new ComponentKnimeService(extensionConfig);
 
             knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 '',
             );
-            expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
-                '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}');
+            expect(rpcSpy).toHaveBeenCalledWith(
+                '{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
+                    '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}',
+            );
         });
 
         it('Throws error if called with unsupported rpc service', () => {
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
-            const knimeService = new KnimeService(extensionConfig);
+            const knimeService = new ComponentKnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                'UnsupportedService.unknownMethod' as NodeServiceMethods,
-                DataServiceTypes.INITIAL_DATA,
-                '',
-            )).toThrowError('Unsupported params');
-            expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
-                '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}');
+                    'UnsupportedService.unknownMethod' as NodeServiceMethods,
+                    DataServiceTypes.INITIAL_DATA,
+                    '',
+            )).rejects.toMatchObject({ message: 'Unsupported params' });
+            expect(rpcSpy).toHaveBeenCalledWith(
+                '{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
+                    '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}',
+            );
         });
     });
 
     describe('data getter callback registration', () => {
         it('Registers callback for retrieving data', () => {
-            const knimeService = new KnimeService();
+            const knimeService = new ComponentKnimeService();
             const jsonDataService = new JSONDataService(knimeService);
 
             jsonDataService.registerDataGetter(() => {});
@@ -96,12 +93,12 @@ describe('KnimeService', () => {
         });
 
         it('Returns default data without registered callback', () => {
-            const knimeService = new KnimeService(extensionConfig);
+            const knimeService = new ComponentKnimeService(extensionConfig);
             expect(knimeService.getData()).resolves.toEqual(null);
         });
 
         it('Gets data with registered callback', () => {
-            const knimeService = new KnimeService(extensionConfig);
+            const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JSONDataService(knimeService);
 
             const testData = { nodeName: 'something' };
@@ -115,13 +112,13 @@ describe('KnimeService', () => {
     });
 });
 
-describe('KnimeService notifications', () => {
+describe('ComponentKnimeService notifications', () => {
     beforeEach(() => {
         window.jsonrpcNotification = null;
     });
 
     it('Adds notification callback with addNotificationCallback', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
 
         const callback = () => {};
 
@@ -131,7 +128,7 @@ describe('KnimeService notifications', () => {
     });
 
     it('Calls onJsonrpcNotification if callbacks added', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
 
         const callback = jest.fn(() => {});
 
@@ -157,7 +154,7 @@ describe('KnimeService notifications', () => {
     });
 
     it('Removes notification callback with removeNotificationCallback', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
 
         const callback = () => {};
 
@@ -168,7 +165,7 @@ describe('KnimeService notifications', () => {
     });
 
     it('Resets notification callbacks by type with resetNotificationCallbacksByType', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
 
         knime.addNotificationCallback('SelectionEvent', () => {});
         knime.addNotificationCallback('CustomEvent', () => {});
@@ -179,7 +176,7 @@ describe('KnimeService notifications', () => {
     });
 
     it('Resets all notification callbacks with resetNotificationCallbacks', () => {
-        const knime = new KnimeService();
+        const knime = new ComponentKnimeService();
 
         knime.addNotificationCallback('SelectionEvent', () => {});
         knime.addNotificationCallback('CustomEvent', () => {});
