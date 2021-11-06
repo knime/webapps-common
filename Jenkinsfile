@@ -11,7 +11,7 @@ properties([
 
 timeout(time: 15, unit: 'MINUTES') {
     try {
-        node('nodejs') {
+        node('nodejs-16') {
             cleanWs()
             checkout scm
             knimetools.reportJIRAIssues()

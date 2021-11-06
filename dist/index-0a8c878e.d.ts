@@ -51,6 +51,17 @@ type ExtensionConfig<T = any> = {
     extensionType: ExtensionTypes;
     initialData?: T;
 };
+type Notification = {
+    jsonrpc: string;
+    method: string;
+    params: {
+        projectId: string;
+        workflowId: string;
+        nodeId: string;
+        mode: string;
+    }[];
+    [key: string]: any;
+};
 type JsonRpcResponse = {
     error: {
         code: string;
@@ -58,7 +69,7 @@ type JsonRpcResponse = {
     };
     result: string;
 };
-export { ExtensionConfig, JsonRpcResponse };
+export { ExtensionConfig, Notification, JsonRpcResponse };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

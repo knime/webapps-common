@@ -27,9 +27,9 @@ export class KnimeIFrameAdapter {
             this.childIframe.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: this.extensionConfig
+                    payload: this.extensionConfig,
                 },
-                '*'
+                '*',
             ); // TODO security
         } else if (event.data.type === `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`) {
             const { request } = event.data;
@@ -37,9 +37,9 @@ export class KnimeIFrameAdapter {
             this.childIframe.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                    payload: response
+                    payload: response,
                 },
-                '*'
+                '*',
             ); // TODO security
         }
     }

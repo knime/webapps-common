@@ -1,4 +1,15 @@
 /**
+ * Selection service types for the `NodeService.selectDataPoints` method.
+ *
+ * @enum {string}
+ */
+var SelectionServiceTypes;
+(function (SelectionServiceTypes) {
+    SelectionServiceTypes["ADD"] = "ADD";
+    SelectionServiceTypes["REMOVE"] = "REMOVE";
+    SelectionServiceTypes["REPLACE"] = "REPLACE";
+})(SelectionServiceTypes || (SelectionServiceTypes = {}));
+/**
  * Service types for DataServices implemented by a specific UI Extension node.
  *
  * @enum {string}
@@ -15,4 +26,4 @@ var DataServiceTypes;
     DataServiceTypes["APPLY_DATA"] = "apply_data";
 })(DataServiceTypes || (DataServiceTypes = {}));
 
-export { DataServiceTypes };
+export { DataServiceTypes, SelectionServiceTypes };

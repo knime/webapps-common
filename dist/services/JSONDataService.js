@@ -1,4 +1,4 @@
-import { NodeServiceTypes } from '../types/ServiceMethods.js';
+import { NodeServiceMethods } from '../types/ServiceMethods.js';
 import { DataServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
@@ -24,7 +24,7 @@ class JSONDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService.callService(NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService.callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration

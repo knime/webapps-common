@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcResponse } from "../index-efc413bb";
+import { ExtensionConfig, JsonRpcResponse } from "../index-0a8c878e";
 import { KnimeService } from "./KnimeService";
 declare class IframeKnimeService<T> extends KnimeService {
     private pendingJsonRpcRequests;

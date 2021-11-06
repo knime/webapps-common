@@ -1,7 +1,7 @@
 import { ComponentKnimeService } from 'src/services/ComponentKnimeService';
 import { JSONDataService } from 'src/services/JSONDataService';
 import { extensionConfig } from 'test/mocks';
-import { DataServiceTypes, NodeServiceTypes } from 'src/types';
+import { DataServiceTypes, NodeServiceMethods } from 'src/types';
 
 
 describe('JSONDataService', () => {
@@ -33,19 +33,19 @@ describe('JSONDataService', () => {
         it('Fetches initial_data via ComponentKnimeService', () => {
             const knimeService = new ComponentKnimeService({
                 ...extensionConfig,
-                initialData: null
+                initialData: null,
             });
             let serviceSpy = jest.spyOn(knimeService, 'callService')
                 .mockImplementation(() => Promise.resolve(extensionConfig.initialData));
             const jsonDataService = new JSONDataService(knimeService);
 
             expect(jsonDataService.initialData()).resolves.toEqual({
-                settings: extensionConfig.initialData.settings
+                settings: extensionConfig.initialData.settings,
             });
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             );
         });
     });
@@ -58,16 +58,16 @@ describe('JSONDataService', () => {
                 .mockImplementationOnce(() => Promise.resolve({}));
             jsonDataService.data();
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
-                expect.stringContaining('getData')
+                expect.stringContaining('getData'),
             );
         });
 
         it('calls data service with options', () => {
             let options = {
                 columns: [1, 2],
-                rows: 500
+                rows: 500,
             };
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JSONDataService(knimeService);
@@ -75,9 +75,9 @@ describe('JSONDataService', () => {
                 .mockImplementationOnce(() => Promise.resolve({}));
             jsonDataService.data({ options });
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
-                expect.stringContaining(JSON.stringify(options))
+                expect.stringContaining(JSON.stringify(options)),
             );
         });
 
@@ -88,9 +88,9 @@ describe('JSONDataService', () => {
                 .mockImplementationOnce(() => Promise.resolve({}));
             jsonDataService.data({ method: 'nextPage' });
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
-                expect.stringContaining('nextPage')
+                expect.stringContaining('nextPage'),
             );
         });
     });
@@ -111,7 +111,7 @@ describe('JSONDataService', () => {
     describe('applyData', () => {
         const mockData = {
             item1: true,
-            item2: 10
+            item2: 10,
         };
 
         let knimeService, jsonDataService, dataGetter;
@@ -133,9 +133,9 @@ describe('JSONDataService', () => {
                 .mockImplementation(() => Promise.resolve('{}'));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                expect.anything()
+                expect.anything(),
             );
         });
 
@@ -144,9 +144,9 @@ describe('JSONDataService', () => {
                 .mockImplementation(() => Promise.resolve('{}'));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                'null'
+                'null',
             );
             expect(dataGetter).not.toHaveBeenCalled();
         });
@@ -157,9 +157,9 @@ describe('JSONDataService', () => {
                 .mockImplementation(() => Promise.resolve('{}'));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                '"{}"'
+                '"{}"',
             );
             expect(dataGetter).toHaveBeenCalled();
         });

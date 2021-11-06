@@ -1,4 +1,4 @@
-import { ExtensionConfig } from "../index-efc413bb";
+import { ExtensionConfig } from "../index-0a8c878e";
 interface KnimeIFrameAdapterOptions {
     childIframe: Window;
     extensionConfig: ExtensionConfig;
