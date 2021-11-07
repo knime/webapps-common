@@ -37,7 +37,7 @@ declare class KnimeService<T = any> {
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     callService(method: ServiceMethod, service: Service, request: string): Promise<any>;
-    /* eslint-disable class-methods-use-this */
+    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     executeServiceCall(jsonRpcRequest: string): Promise<JsonRpcResponse>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state

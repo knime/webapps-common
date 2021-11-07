@@ -49,13 +49,10 @@ class KnimeService {
         // TODO: currently we recive already parsed result from inner jsorpc calls
         return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
     }
-    /* eslint-disable class-methods-use-this */
+    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     executeServiceCall(jsonRpcRequest) {
-        return new Promise((resolve) => {
-            resolve({
-                result: jsonRpcRequest,
-                error: { message: 'Not implemented', code: null },
-            });
+        return new Promise((resolve, reject) => {
+            reject(new Error('Method executeServiceCall should only be used by derived class'));
         });
     }
     /**
@@ -102,7 +99,7 @@ class KnimeService {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }
         this.notificationCallbacksMap.set(notificationType, [
-            ...this.notificationCallbacksMap.get(notificationType) || [],
+            ...(this.notificationCallbacksMap.get(notificationType) || []),
             callback,
         ]);
     }

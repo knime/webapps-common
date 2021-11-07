@@ -68,13 +68,10 @@ export class KnimeService<T = any> {
         return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
     }
 
-    /* eslint-disable class-methods-use-this */
+    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     executeServiceCall(jsonRpcRequest: string) {
-        return new Promise<JsonRpcResponse>((resolve) => {
-            resolve({
-                result: jsonRpcRequest,
-                error: { message: 'Not implemented', code: null },
-            });
+        return new Promise<JsonRpcResponse>((resolve, reject) => {
+            reject(new Error('Method executeServiceCall should only be used by derived class'));
         });
     }
 
@@ -130,7 +127,7 @@ export class KnimeService<T = any> {
         }
 
         this.notificationCallbacksMap.set(notificationType, [
-            ...this.notificationCallbacksMap.get(notificationType) || [],
+            ...(this.notificationCallbacksMap.get(notificationType) || []),
             callback,
         ]);
     }
