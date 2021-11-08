@@ -127,7 +127,7 @@ export class KnimeService<T = any> {
         }
 
         this.notificationCallbacksMap.set(notificationType, [
-            ...(this.notificationCallbacksMap.get(notificationType) || []),
+            ...this.notificationCallbacksMap.get(notificationType) || [],
             callback,
         ]);
     }

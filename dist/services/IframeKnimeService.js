@@ -6,7 +6,8 @@ class IFrameKnimeService extends KnimeService {
     constructor(extensionConfig = null) {
         super(extensionConfig);
         this.pendingJsonRpcRequests = new Map();
-        window.addEventListener('message', this.onMessageReceived.bind(this));
+        this.boundOnMessageReceived = this.onMessageReceived.bind(this);
+        window.addEventListener('message', this.boundOnMessageReceived);
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
         }, '*'); // TODO security
@@ -58,6 +59,9 @@ class IFrameKnimeService extends KnimeService {
             request: jsonRpcRequest,
         }, '*'); // TODO security
         return promise;
+    }
+    destroy() {
+        window.removeEventListener('message', this.boundOnMessageReceived);
     }
 }
 

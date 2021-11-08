@@ -7,10 +7,10 @@ export default {
     output: [
         {
             dir: './dist',
-            format: 'es', // TODO clarify why this is needed to work in iframe base views; in general esmodules are good
+            format: 'es',
             sourcemap: false,
-            preserveModules: true
-        }
+            preserveModules: true,
+        },
     ],
     plugins: [
         commonjs(),
@@ -19,9 +19,9 @@ export default {
             targets: [
                 {
                     src: 'package.json',
-                    dest: 'dist'
-                }
-            ]
-        })
-    ]
+                    dest: 'dist',
+                },
+            ],
+        }),
+    ],
 };

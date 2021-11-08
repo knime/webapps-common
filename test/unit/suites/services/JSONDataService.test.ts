@@ -5,7 +5,7 @@ import { DataServiceTypes, NodeServiceMethods } from 'src/types';
 
 // TODO: test compatibility with iframe service;
 
-describe('JSONDataService', () => {
+xdescribe('JSONDataService', () => {
     describe('initialization', () => {
         it('Creates data service', () => {
             const knimeService = new ComponentKnimeService(extensionConfig);

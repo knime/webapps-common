@@ -8,10 +8,14 @@ export class IFrameKnimeService<T = any> extends KnimeService {
 
     extensionConfig: ExtensionConfig<T>;
 
+    boundOnMessageReceived: any;
+
     constructor(extensionConfig: ExtensionConfig = null) {
         super(extensionConfig);
 
-        window.addEventListener('message', this.onMessageReceived.bind(this));
+        this.boundOnMessageReceived = this.onMessageReceived.bind(this);
+        window.addEventListener('message', this.boundOnMessageReceived);
+
         window.parent.postMessage(
             {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
@@ -90,5 +94,9 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         ); // TODO security
 
         return promise;
+    }
+
+    destroy() {
+        window.removeEventListener('message', this.boundOnMessageReceived);
     }
 }
