@@ -2,7 +2,7 @@ const parentRules = require('./.eslintrc-base').rules;
 
 module.exports = {
     plugins: ['vue'],
-    extends: ['./.eslintrc-base.js', 'plugin:vue/recommended'],
+    extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
     rules: {
         'max-lines': ['warn', Object.assign(parentRules['max-lines'][1], {
             max: 500
@@ -43,6 +43,12 @@ module.exports = {
             camelcase: 'off',
             'no-magic-numbers': 'off',
             'no-process-env': 'off'
+        }
+    }, {
+        // this needs to be done here as the max-lines rule above overrides stuff from eslintrc-base
+        files: ['*.json'],
+        rules: {
+            'max-lines': 'off'
         }
     }]
 };
