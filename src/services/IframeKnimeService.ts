@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
-import { ExtensionConfig, JsonRpcResponse } from 'src/types';
+import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 const REQUEST_TIMEOUT = 10000;
@@ -76,13 +76,20 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         }
     }
 
-    executeServiceCall(jsonRpcRequest) {
-        const id = JSON.parse(jsonRpcRequest).id; // TODO find better way
+    executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
+        let timeoutId;
+
         const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
+            const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 reject(new Error(`Request with id: ${id} rejected due to timeout.`));
             }, REQUEST_TIMEOUT);
+        });
+
+        // clearing reject timeout on promise resolve
+        promise.then(() => {
+            clearTimeout(timeoutId);
         });
 
         window.parent.postMessage(

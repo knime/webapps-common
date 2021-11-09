@@ -53,7 +53,7 @@ class JSONDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     data(params = {}) {
-        return this.callDataService(DataServiceTypes.DATA, createJsonRpcRequest(params.method || 'getData', params.options));
+        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the

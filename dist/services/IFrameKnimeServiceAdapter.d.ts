@@ -1,13 +1,15 @@
-import { ExtensionConfig } from "../index-0a8c878e";
+import { ExtensionConfig } from "../index-af6571f7";
 interface IFrameKnimeServiceAdapterOptions {
-    childIframe: Window;
+    iFrameWindow: Window;
     extensionConfig: ExtensionConfig;
 }
 declare class IFrameKnimeServiceAdapter {
-    childIframe: Window;
+    iFrameWindow: Window;
     extensionConfig: ExtensionConfig;
-    constructor({ childIframe, extensionConfig }: IFrameKnimeServiceAdapterOptions);
-    onMessageFromIFrame(event: any): void;
+    boundOnMessageFromIFrame: any;
+    constructor({ iFrameWindow, extensionConfig }: IFrameKnimeServiceAdapterOptions);
+    checkMessageSource(event: MessageEvent): boolean;
+    onMessageFromIFrame(event: MessageEvent): void;
     destroy(): void;
 }
 export { IFrameKnimeServiceAdapter };

@@ -47,16 +47,21 @@ class IFrameKnimeService extends KnimeService {
         }
     }
     executeServiceCall(jsonRpcRequest) {
-        const id = JSON.parse(jsonRpcRequest).id; // TODO find better way
+        let timeoutId;
         const promise = new Promise((resolve, reject) => {
+            const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 reject(new Error(`Request with id: ${id} rejected due to timeout.`));
             }, REQUEST_TIMEOUT);
         });
+        // clearing reject timeout on promise resolve
+        promise.then(() => {
+            clearTimeout(timeoutId);
+        });
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-            request: jsonRpcRequest,
+            payload: jsonRpcRequest,
         }, '*'); // TODO security
         return promise;
     }

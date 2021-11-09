@@ -4,7 +4,7 @@ import { KnimeService } from './KnimeService';
 export class ComponentKnimeService<T = any> extends KnimeService {
     extensionConfig: ExtensionConfig<T>;
 
-    constructor(extensionConfig: ExtensionConfig = null /* windowReference */) {
+    constructor(extensionConfig: ExtensionConfig = null) {
         super(extensionConfig);
     }
 

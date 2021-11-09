@@ -4,8 +4,6 @@ import { extensionConfig } from 'test/mocks';
 
 window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
 
-// TODO: test compatibility with iframe service;
-
 describe('SelectionService', () => {
     describe('initialization', () => {
         it('Creates selection service', () => {

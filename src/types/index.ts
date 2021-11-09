@@ -5,3 +5,4 @@ export * from './ServiceTypes';
 export * from './ExtensionTypes';
 export * from './ResourceTypes';
 export * from './JsonRpcResponse';
+export * from './JsonRpcRequest';

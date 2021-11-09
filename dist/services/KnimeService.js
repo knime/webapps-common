@@ -14,7 +14,7 @@ class KnimeService {
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig = null /* windowReference */) {
+    constructor(extensionConfig = null) {
         /**
          *
          */
@@ -99,7 +99,7 @@ class KnimeService {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }
         this.notificationCallbacksMap.set(notificationType, [
-            ...(this.notificationCallbacksMap.get(notificationType) || []),
+            ...this.notificationCallbacksMap.get(notificationType) || [],
             callback,
         ]);
     }

@@ -1,4 +1,9 @@
-import { ExtensionConfig, JsonRpcResponse, Service, ServiceMethod, Notification } from 'src/types';
+import { ExtensionConfig,
+    JsonRpcResponse,
+    Service,
+    ServiceMethod,
+    Notification,
+    JsonRpcRequest } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
@@ -21,7 +26,7 @@ export class KnimeService<T = any> {
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig: ExtensionConfig = null /* windowReference */) {
+    constructor(extensionConfig: ExtensionConfig = null) {
         /**
          *
          */
@@ -69,7 +74,7 @@ export class KnimeService<T = any> {
     }
 
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
-    executeServiceCall(jsonRpcRequest: string) {
+    executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
         return new Promise<JsonRpcResponse>((resolve, reject) => {
             reject(new Error('Method executeServiceCall should only be used by derived class'));
         });

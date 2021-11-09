@@ -58,7 +58,7 @@ export class JSONDataService<T = any> {
     data(params: { method?: string, options?: any } = {}) {
         return this.callDataService(
             DataServiceTypes.DATA,
-            createJsonRpcRequest(params.method || 'getData', params.options),
+            JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)),
         );
     }
 

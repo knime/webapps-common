@@ -69,7 +69,13 @@ type JsonRpcResponse = {
     };
     result: string;
 };
-export { ExtensionConfig, Notification, JsonRpcResponse };
+type JsonRpcRequest = {
+    jsonrpc: string;
+    method: any;
+    params: string | string[];
+    id: number;
+};
+export { ExtensionConfig, Notification, JsonRpcResponse, JsonRpcRequest };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

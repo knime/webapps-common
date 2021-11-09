@@ -1,5 +1,5 @@
 import { IFrameKnimeService, ComponentKnimeService } from "../index-d5888073";
-import { Notification } from "../index-0a8c878e";
+import { Notification } from "../index-af6571f7";
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.

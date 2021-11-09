@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcResponse } from "../index-0a8c878e";
+import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 declare class IFrameKnimeService<T = any> extends KnimeService {
     private pendingJsonRpcRequests;
@@ -6,7 +6,7 @@ declare class IFrameKnimeService<T = any> extends KnimeService {
     boundOnMessageReceived: any;
     constructor(extensionConfig?: ExtensionConfig);
     onMessageReceived(event: MessageEvent): void;
-    executeServiceCall(jsonRpcRequest: any): Promise<JsonRpcResponse>;
+    executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
     destroy(): void;
 }
 export { IFrameKnimeService };

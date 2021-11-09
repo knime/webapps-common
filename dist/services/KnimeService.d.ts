@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcResponse, Service, ServiceMethod, Notification } from "../index-0a8c878e";
+import { ExtensionConfig, JsonRpcResponse, Service, ServiceMethod, Notification, JsonRpcRequest } from "../index-af6571f7";
 /**
  * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
  * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
@@ -38,7 +38,7 @@ declare class KnimeService<T = any> {
      */
     callService(method: ServiceMethod, service: Service, request: string): Promise<any>;
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
-    executeServiceCall(jsonRpcRequest: string): Promise<JsonRpcResponse>;
+    executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).

@@ -3,8 +3,6 @@ import { JSONDataService } from 'src/services/JSONDataService';
 import { extensionConfig } from 'test/mocks';
 import { DataServiceTypes, NodeServiceMethods } from 'src/types';
 
-// TODO: test compatibility with iframe service;
-
 describe('JSONDataService', () => {
     describe('initialization', () => {
         it('Creates data service', () => {

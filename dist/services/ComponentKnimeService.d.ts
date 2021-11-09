@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcResponse } from "../index-0a8c878e";
+import { ExtensionConfig, JsonRpcResponse } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 declare class ComponentKnimeService<T = any> extends KnimeService {
     extensionConfig: ExtensionConfig<T>;
