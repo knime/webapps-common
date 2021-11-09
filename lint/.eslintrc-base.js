@@ -22,6 +22,7 @@ module.exports = {
         browser: false,
         es6: true
     },
+    ignorePatterns: ['package*.json'],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],
@@ -53,7 +54,7 @@ module.exports = {
         'handle-callback-err': ['warn', '^err(or)?$'],
         'implicit-arrow-linebreak': 'error',
         indent: ['error', indentationSpaces, {
-            SwitchCase: 0
+            SwitchCase: 1
         }],
         'key-spacing': 'error',
         'keyword-spacing': 'error',

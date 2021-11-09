@@ -46,7 +46,7 @@ export default {
             this.idle = true;
             setTimeout(() => {
                 // simulate async idle
-                this.offset = this.offset + pageSize;
+                this.offset += pageSize;
                 this.idle = false;
             }, 1000);
         }
