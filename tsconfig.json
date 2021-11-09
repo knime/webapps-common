@@ -1,18 +1,27 @@
 {
-    "compilerOptions": {
-        "plugins": [],
-        "declaration": true,
-        "declarationDir": "dist",
-        "module": "esnext",
-        "sourceMap": false,
-        "allowJs": true,
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "rootDirs": ["/"],
-        "baseUrl": "./",
-        "outDir": "dist"
-    },
-    "include": ["src/**/*", "test/**/*"],
-    "exclude": ["node_modules", "webapps-common", "dist"]
+  "compilerOptions": {
+    "plugins": [],
+    "declaration": true,
+    "declarationDir": "dist",
+    "module": "esnext",
+    "sourceMap": false,
+    "allowJs": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "rootDirs": [
+      "/"
+    ],
+    "baseUrl": "./",
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "webapps-common",
+    "dist"
+  ]
 }
