@@ -22,7 +22,7 @@ module.exports = {
         browser: false,
         es6: true
     },
-    ignorePatterns: ['package*.json'],
+    ignorePatterns: ['package*.json', 'audit-resolve.json'],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],
