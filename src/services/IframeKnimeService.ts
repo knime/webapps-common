@@ -88,7 +88,7 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         window.parent.postMessage(
             {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                request: jsonRpcRequest,
+                payload: jsonRpcRequest,
             },
             '*',
         ); // TODO security

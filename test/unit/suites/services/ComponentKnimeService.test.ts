@@ -14,7 +14,7 @@ const jsonrpc = (requestJSON: string) => {
     throw error;
 };
 
-xdescribe('ComponentKnimeService', () => {
+describe('ComponentKnimeService', () => {
     describe('initialization', () => {
         it('Creates ComponentKnimeService', () => {
             const knimeService = new ComponentKnimeService(extensionConfig);

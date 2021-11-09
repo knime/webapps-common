@@ -3,7 +3,7 @@ import { KnimeService } from 'src/services/KnimeService';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
-xdescribe('KnimeService', () => {
+describe('KnimeService', () => {
     describe('initialization', () => {
         it('Creates KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);

@@ -11,18 +11,24 @@ export class IFrameKnimeServiceAdapter {
 
     extensionConfig: ExtensionConfig;
 
+    boundOnMessageFromIFrame: any;
+
     constructor({ childIframe, extensionConfig }: IFrameKnimeServiceAdapterOptions) {
         this.childIframe = childIframe;
         this.extensionConfig = extensionConfig;
 
-        window.addEventListener('message', this.onMessageFromIFrame.bind(this));
+        this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
+        window.addEventListener('message', this.boundOnMessageFromIFrame);
+    }
+
+    checkMessageSource(event) {
+        return event.source !== this.childIframe;
     }
 
     onMessageFromIFrame(event) {
-        if (event.source !== this.childIframe) {
+        if (this.checkMessageSource(event)) {
             return;
         }
-
         const { data } = event;
 
         // TODO: fix global rule for switches?
@@ -39,8 +45,8 @@ export class IFrameKnimeServiceAdapter {
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
                 {
-                    const { request } = event.data;
-                    const response = window.jsonrpc(request); // TODO this won't work in WebPortal
+                    const { payload } = event.data;
+                    const response = window.jsonrpc(payload); // TODO this won't work in WebPortal
                     this.childIframe.postMessage(
                         {
                             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
@@ -57,6 +63,6 @@ export class IFrameKnimeServiceAdapter {
     }
 
     destroy() {
-        window.removeEventListener('message', this.onMessageFromIFrame);
+        window.removeEventListener('message', this.boundOnMessageFromIFrame);
     }
 }

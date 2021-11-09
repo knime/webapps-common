@@ -41,8 +41,8 @@ const onMessageFromIFrame = (event) => {
             break;
         case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
             {
-                const { request } = event.data;
-                const response = window.jsonrpc(request);
+                const { payload } = event.data;
+                const response = window.jsonrpc(payload);
 
                 window.postMessage(
                     {
@@ -79,10 +79,6 @@ describe('IFrameKnimeService', () => {
         });
     });
 
-    beforeEach(() => {
-        testId += 2;
-    });
-
     describe('working with JSONDataService', () => {
         it('Gets data', async () => {
             window.jsonrpc = jsonrpc;
@@ -91,7 +87,6 @@ describe('IFrameKnimeService', () => {
             await sleep();
             const knimeJSONDataService = new JSONDataService(knimeService);
 
-            // knimeService.destroy();
             const result = await knimeJSONDataService.data();
             expect(result).toEqual({ dataArray: [1, 1, 2] });
 

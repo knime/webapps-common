@@ -6,7 +6,7 @@ window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
 
 // TODO: test compatibility with iframe service;
 
-xdescribe('SelectionService', () => {
+describe('SelectionService', () => {
     describe('initialization', () => {
         it('Creates selection service', () => {
             const knime = new ComponentKnimeService();
