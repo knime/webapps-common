@@ -95,6 +95,7 @@ class KnimeService {
      * @returns {void}
      */
     addNotificationCallback(notificationType, callback) {
+        // TODO NXTEXT-114 move to ComponentKnimeService + implement for IFrameKnimeService
         if (!window.jsonrpcNotification) {
             window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
         }

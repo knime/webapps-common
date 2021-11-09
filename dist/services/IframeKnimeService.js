@@ -1,7 +1,6 @@
-import { UI_EXT_POST_MESSAGE_PREFIX } from '../constants/index.js';
+import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from '../constants/index.js';
 import { KnimeService } from './KnimeService.js';
 
-const REQUEST_TIMEOUT = 10000;
 class IFrameKnimeService extends KnimeService {
     constructor(extensionConfig = null) {
         super(extensionConfig);
@@ -10,11 +9,11 @@ class IFrameKnimeService extends KnimeService {
         window.addEventListener('message', this.boundOnMessageReceived);
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
-        }, '*'); // TODO security
+        }, '*'); // TODO NXT-793 security
     }
     onMessageReceived(event) {
         var _a;
-        // TODO security check
+        // TODO NXT-793 security
         const { data } = event;
         if (!((_a = data.type) === null || _a === void 0 ? void 0 : _a.startsWith(UI_EXT_POST_MESSAGE_PREFIX))) {
             return;
@@ -53,7 +52,7 @@ class IFrameKnimeService extends KnimeService {
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
             timeoutId = setTimeout(() => {
                 reject(new Error(`Request with id: ${id} rejected due to timeout.`));
-            }, REQUEST_TIMEOUT);
+            }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
         // clearing reject timeout on promise resolve
         promise.then(() => {
@@ -62,7 +61,7 @@ class IFrameKnimeService extends KnimeService {
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
             payload: jsonRpcRequest,
-        }, '*'); // TODO security
+        }, '*'); // TODO NXT-793 security
         return promise;
     }
     destroy() {
