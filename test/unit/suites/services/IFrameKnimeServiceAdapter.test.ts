@@ -31,7 +31,15 @@ const buildIFrameKnimeServiceAdapter = () => {
     return iFrameKnimeServiceAdapter;
 };
 
-xdescribe('IFrameKnimeServiceAdapter', () => {
+describe('IFrameKnimeServiceAdapter', () => {
+    beforeEach(() => {
+        window.jsonrpc = jsonrpc;
+    });
+
+    afterEach(() => {
+        window.jsonrpc = null;
+    });
+
     describe('initialization', () => {
         it('Creates IFrameKnimeServiceAdapter', () => {
             const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
@@ -48,13 +56,14 @@ xdescribe('IFrameKnimeServiceAdapter', () => {
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
+                    payload: { data: [1, 1, 2] },
                 },
                 '*',
             );
 
             await sleep();
 
-            expect(spy).toBeCalledTimes(1);
+            expect(spy).toBeCalledTimes(2);
 
             iFrameKnimeServiceAdapter.destroy();
         });
@@ -85,13 +94,12 @@ xdescribe('IFrameKnimeServiceAdapter', () => {
 
         it('Calls window.jsonrpc when receives :jsonrpcRequest type event', async () => {
             const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            window.jsonrpc = jsonrpc;
             const spy = jest.spyOn(window, 'jsonrpc');
 
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: JSON.stringify({ requestParams: 'getData' }),
+                    payload: { requestParams: 'getData' },
                 },
                 '*',
             );
@@ -105,13 +113,12 @@ xdescribe('IFrameKnimeServiceAdapter', () => {
 
         it('Posts response back ', async () => {
             const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            window.jsonrpc = jsonrpc;
             const spy = jest.spyOn(window, 'postMessage');
 
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: JSON.stringify({ requestParams: 'getData' }),
+                    payload: { requestParams: 'getData' },
                 },
                 '*',
             );

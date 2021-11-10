@@ -1,9 +1,9 @@
 import { ComponentKnimeService } from 'src/services';
-import { NodeServiceMethods, DataServiceTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes, JsonRpcRequest } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
-const jsonrpc = (requestJSON: string) => {
-    const request = JSON.parse(requestJSON);
+const jsonrpc = (requestJSON: JsonRpcRequest) => {
+    const request = requestJSON;
 
     if (request.method === NodeServiceMethods.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
@@ -59,10 +59,12 @@ describe('ComponentKnimeService', () => {
                 DataServiceTypes.INITIAL_DATA,
                 '',
             );
-            expect(rpcSpy).toHaveBeenCalledWith(
-                '{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
-                    '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}',
-            );
+            expect(rpcSpy).toHaveBeenCalledWith({
+                jsonrpc: '2.0',
+                method: 'NodeService.callNodeDataService',
+                params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
+                id: 1,
+            });
         });
 
         it('Throws error if called with unsupported rpc service', () => {
@@ -75,10 +77,12 @@ describe('ComponentKnimeService', () => {
                     DataServiceTypes.INITIAL_DATA,
                     '',
             )).rejects.toMatchObject({ message: 'Unsupported params' });
-            expect(rpcSpy).toHaveBeenCalledWith(
-                '{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
-                    '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}',
-            );
+            expect(rpcSpy).toHaveBeenCalledWith({
+                jsonrpc: '2.0',
+                method: 'UnsupportedService.unknownMethod',
+                params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
+                id: 2,
+            });
         });
     });
 });

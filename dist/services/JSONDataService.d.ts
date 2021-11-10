@@ -100,4 +100,6 @@ declare class JSONDataService<T = any> {
      */
     registerDataGetter(callback: () => any): void;
 }
+export * from "../utils/generateRequestId";
+export * from "../utils/createJsonRpcRequest";
 export { JSONDataService };

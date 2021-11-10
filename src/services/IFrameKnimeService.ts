@@ -74,19 +74,25 @@ export class IFrameKnimeService<T = any> extends KnimeService {
     }
 
     executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
-        let timeoutId;
+        let rejectTimeoutId;
 
         const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
             const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
-            timeoutId = setTimeout(() => {
-                reject(new Error(`Request with id: ${id} rejected due to timeout.`));
+            rejectTimeoutId = setTimeout(() => {
+                resolve({
+                    error: {
+                        message: `Request with id: ${id} rejected due to timeout.`,
+                        code: 'req-timeout',
+                    },
+                    result: null,
+                });
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
 
         // clearing reject timeout on promise resolve
         promise.then(() => {
-            clearTimeout(timeoutId);
+            clearTimeout(rejectTimeoutId);
         });
 
         window.parent.postMessage(

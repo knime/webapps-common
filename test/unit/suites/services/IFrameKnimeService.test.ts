@@ -1,13 +1,16 @@
-import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
+import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
 import { IFrameKnimeService, JSONDataService } from 'src/services';
 import { JsonRpcRequest, NodeServiceMethods } from 'src/types';
 import { extensionConfig } from 'test/mocks';
+
+jest.setTimeout(UI_EXT_POST_MESSAGE_TIMEOUT + 200);
 
 /* eslint-disable-next-line no-magic-numbers */
 const sleep = async (timeout = 15) => {
     await new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let testId = 0;
 
 const jsonrpc = (requestJSON: JsonRpcRequest) => {
@@ -28,7 +31,6 @@ const jsonrpc = (requestJSON: JsonRpcRequest) => {
 const onMessageFromIFrame = (event) => {
     const { data } = event;
 
-    /* eslint indent: [2, 4, {"SwitchCase": 1}] */
     switch (data.type) {
         case `${UI_EXT_POST_MESSAGE_PREFIX}:ready`:
             window.postMessage(
@@ -59,7 +61,7 @@ const onMessageFromIFrame = (event) => {
     }
 };
 
-xdescribe('IFrameKnimeService', () => {
+describe('IFrameKnimeService', () => {
     beforeEach(() => {
         window.addEventListener('message', onMessageFromIFrame);
     });
@@ -92,23 +94,19 @@ xdescribe('IFrameKnimeService', () => {
 
             knimeService.destroy();
         });
-    });
 
-    describe('working with JSONDataService', () => {
-        it('Gets data', async () => {
-            window.jsonrpc = jsonrpc;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            testId = 4;
-
+        it('Throws error if data request takes too long', async () => {
             const knimeService = new IFrameKnimeService();
             await sleep();
+            window.removeEventListener('message', onMessageFromIFrame);
+
             const knimeJSONDataService = new JSONDataService(knimeService);
-
-            // knimeService.destroy();
-            const result = await knimeJSONDataService.data();
-            expect(result).toEqual({ dataArray: [1, 1, 2] });
-
             knimeService.destroy();
+
+            expect(knimeJSONDataService.data()).rejects.toThrowError(
+                'Request with id: 4 rejected due to timeout.',
+            );
+            await sleep(UI_EXT_POST_MESSAGE_TIMEOUT + 100);
         });
     });
 });

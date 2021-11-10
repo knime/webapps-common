@@ -18,8 +18,6 @@ class IFrameKnimeService extends KnimeService {
         if (!((_a = data.type) === null || _a === void 0 ? void 0 : _a.startsWith(UI_EXT_POST_MESSAGE_PREFIX))) {
             return;
         }
-        // TODO: fix global rule for switches?
-        /* eslint indent: [2, 4, {"SwitchCase": 1}] */
         switch (data.type) {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
                 this.extensionConfig = event.data.payload;
@@ -46,17 +44,23 @@ class IFrameKnimeService extends KnimeService {
         }
     }
     executeServiceCall(jsonRpcRequest) {
-        let timeoutId;
+        let rejectTimeoutId;
         const promise = new Promise((resolve, reject) => {
             const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
-            timeoutId = setTimeout(() => {
-                reject(new Error(`Request with id: ${id} rejected due to timeout.`));
+            rejectTimeoutId = setTimeout(() => {
+                resolve({
+                    error: {
+                        message: `Request with id: ${id} rejected due to timeout.`,
+                        code: 'req-timeout',
+                    },
+                    result: null,
+                });
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
         // clearing reject timeout on promise resolve
         promise.then(() => {
-            clearTimeout(timeoutId);
+            clearTimeout(rejectTimeoutId);
         });
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
