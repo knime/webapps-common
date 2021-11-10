@@ -40,8 +40,8 @@ export default {
         <div class="grid-item-12">
           <h2>TagList</h2>
           <p>
-            Displays a list of tags with support for only showing a maximal number of tags via the <code>numberOfInitialTags</code> prop.
-            Tags can be clickable by enabling the <code>clickable</code> prop.
+            Displays a list of tags with support for only showing a maximal number of tags via the
+            <code>numberOfInitialTags</code> prop. Tags can be clickable by enabling the <code>clickable</code> prop.
           </p>
         </div>
       </div>
