@@ -60,7 +60,7 @@ git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-u
 passed `knimeService` instance, e.g.
 ```javascript
 ...
-import { JSONDataService } from 'knime-ui-extension-service';
+import { JsonDataService } from 'knime-ui-extension-service';
 ...
 props: {
     knimeService: {
@@ -70,7 +70,7 @@ props: {
     }
 },
 async mounted() {
-    const jsonDataService = new JSONDataService(this.knimeService);
+    const jsonDataService = new JsonDataService(this.knimeService);
     this.initialData = await jsonDataService.getInitialData();
 }
 ```

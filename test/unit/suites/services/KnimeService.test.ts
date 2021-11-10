@@ -1,4 +1,4 @@
-import { JSONDataService } from 'src/services';
+import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
@@ -120,7 +120,7 @@ describe('KnimeService', () => {
     describe('data getter callback registration', () => {
         it('Registers callback for retrieving data', () => {
             const knimeService = new KnimeService();
-            const jsonDataService = new JSONDataService(knimeService);
+            const jsonDataService = new JsonDataService(knimeService);
 
             jsonDataService.registerDataGetter(() => {});
             expect(knimeService).toHaveProperty('dataGetter');
@@ -134,7 +134,7 @@ describe('KnimeService', () => {
 
         it('Gets data with registered callback', () => {
             const knimeService = new KnimeService(extensionConfig);
-            const jsonDataService = new JSONDataService(knimeService);
+            const jsonDataService = new JsonDataService(knimeService);
             const testData = { nodeName: 'something' };
             const getDataMock = jest.fn(() => testData);
 

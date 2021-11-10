@@ -1,4 +1,4 @@
-import { KnimeService, JSONDataService } from 'src/services';
+import { KnimeService, JsonDataService } from 'src/services';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 import { ExtensionTypes, ResourceTypes } from './types';
 
@@ -25,7 +25,7 @@ const knime = new KnimeService({
     extensionType: ExtensionTypes.VIEW,
 });
 
-const jsonDataService = new JSONDataService(knime);
+const jsonDataService = new JsonDataService(knime);
 
 const asyncCall = async function () {
     // eslint-disable-next-line no-console

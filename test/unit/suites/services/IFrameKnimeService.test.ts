@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { IFrameKnimeService, JSONDataService } from 'src/services';
+import { IFrameKnimeService, JsonDataService } from 'src/services';
 import { JsonRpcRequest, NodeServiceMethods } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
@@ -81,15 +81,15 @@ describe('IFrameKnimeService', () => {
         });
     });
 
-    describe('working with JSONDataService', () => {
+    describe('working with JsonDataService', () => {
         it('Gets data', async () => {
             window.jsonrpc = jsonrpc;
 
             const knimeService = new IFrameKnimeService();
             await sleep();
-            const knimeJSONDataService = new JSONDataService(knimeService);
+            const knimeJsonDataService = new JsonDataService(knimeService);
 
-            const result = await knimeJSONDataService.data();
+            const result = await knimeJsonDataService.data();
             expect(result).toEqual({ dataArray: [1, 1, 2] });
 
             knimeService.destroy();
@@ -100,10 +100,10 @@ describe('IFrameKnimeService', () => {
             await sleep();
             window.removeEventListener('message', onMessageFromIFrame);
 
-            const knimeJSONDataService = new JSONDataService(knimeService);
+            const knimeJsonDataService = new JsonDataService(knimeService);
             knimeService.destroy();
 
-            expect(knimeJSONDataService.data()).rejects.toThrowError(
+            expect(knimeJsonDataService.data()).rejects.toThrowError(
                 'Request with id: 4 rejected due to timeout.',
             );
             await sleep(UI_EXT_POST_MESSAGE_TIMEOUT + 100);

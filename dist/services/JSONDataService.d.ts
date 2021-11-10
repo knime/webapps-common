@@ -1,8 +1,8 @@
 import { IFrameKnimeService, ComponentKnimeService } from "../index";
 /**
- * A utility class to interact with JSONDataServices implemented by a UI Extension node.
+ * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
-declare class JSONDataService<T = any> {
+declare class JsonDataService<T = any> {
     private knimeService;
     /**
      * @param {ComponentKnimeService<T> | IFrameKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
@@ -100,6 +100,4 @@ declare class JSONDataService<T = any> {
      */
     registerDataGetter(callback: () => any): void;
 }
-export * from "../utils/generateRequestId";
-export * from "../utils/createJsonRpcRequest";
-export { JSONDataService };
+export { JsonDataService };

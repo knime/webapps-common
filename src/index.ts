@@ -1,6 +1,6 @@
 export {
     ComponentKnimeService,
-    JSONDataService,
+    JsonDataService,
     IFrameKnimeService,
     IFrameKnimeServiceAdapter,
     SelectionService,

@@ -3,9 +3,9 @@ import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 
 /**
- * A utility class to interact with JSONDataServices implemented by a UI Extension node.
+ * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
-export class JSONDataService<T = any> {
+export class JsonDataService<T = any> {
     private knimeService: ComponentKnimeService<T> | IFrameKnimeService<T>;
 
     /**

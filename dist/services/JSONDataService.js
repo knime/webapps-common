@@ -5,9 +5,9 @@ import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
 /**
- * A utility class to interact with JSONDataServices implemented by a UI Extension node.
+ * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
-class JSONDataService {
+class JsonDataService {
     /**
      * @param {ComponentKnimeService<T> | IFrameKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
      */
@@ -77,4 +77,4 @@ class JSONDataService {
     }
 }
 
-export { JSONDataService };
+export { JsonDataService };
