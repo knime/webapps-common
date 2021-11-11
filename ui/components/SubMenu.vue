@@ -298,11 +298,9 @@ ul {
     & .label {
         display: flex;
         flex: 1;
-        width: 180px;
 
         & .text {
           flex: 2 1 100%;
-          display: block;
         }
 
         & .hotkey {
