@@ -15,12 +15,20 @@ import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inli
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon
+    icon: HelpIcon,
+    hotkeyText: 'CTRL + A'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon
-},  {
+    icon: StarIcon,
+    hotkeyText: 'CTRL + B'
+}, {
+    href: 'about:blank',
+    text: 'Disabled Item',
+    disabled: true,
+    icon: StarIcon,
+    hotkeyText: 'CTRL + D'
+}, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
     icon: HeartIcon
@@ -77,11 +85,19 @@ nav {
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon
+    icon: HelpIcon,
+    hotkeyText: 'CTRL + A'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon
+    icon: StarIcon,
+    hotkeyText: 'CTRL + B'
+}, {
+    href: 'about:blank',
+    text: 'Disabled Item',
+    disabled: true,
+    icon: StarIcon,
+    hotkeyText: 'CTRL + D'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
@@ -165,6 +181,28 @@ export default {
             <SubMenu
               :items="subMenuItems"
               orientation="top"
+              button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+
+          <div class="card">
+            <span class="menu-name">With hotKeys</span>
+            <SubMenu
+              :items="subMenuItems"
+              :show-hotkeys="true"
+              button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+
+          <div class="card">
+            <span class="menu-name">Disabled submenu</span>
+            <SubMenu
+              :items="subMenuItems"
+              :disabled="true"
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />
