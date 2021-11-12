@@ -14,9 +14,6 @@ describe('MenuItems.vue', () => {
                 ariaLabel: 'label',
                 items
             },
-            slots: {
-                default: 'button me'
-            },
             stubs: {
                 NuxtLink: RouterLinkStub
             }
@@ -32,6 +29,38 @@ describe('MenuItems.vue', () => {
         expect(wrapper.find(`li:nth-child(1) a`).attributes('href')).toBe(items[0].href);
         expect(wrapper.find(`li:nth-child(2) a`).attributes('href')).toBe(items[1].href);
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
+    });
+
+    it('renders with disabled items', () => {
+        const items = [{
+            text: 'Apples',
+            disabled: false,
+            hotkeyText: 'CTRL + A'
+        }, {
+            text: 'Oranges',
+            userData: {
+                storeAction: 'oranges/execute'
+            },
+            disabled: true
+        }, {
+            text: 'Ananas',
+            hotkeyText: 'F9'
+        }];
+        const wrapper = shallowMount(MenuItems, {
+            propsData: {
+                ariaLabel: 'label',
+                items
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        expect(wrapper.html()).toBeTruthy();
+        const menuEntries = wrapper.findAll('.clickable-item');
+        const menuEntry1 = menuEntries.at(1);
+        expect(menuEntry1.classes()).toContain('disabled');
+        expect(menuEntry1.attributes('tabindex')).toBeFalsy();
+        expect(menuEntries.at(0).attributes('tabindex')).toBe('0');
     });
 
     it('can display hotkeys', () => {
@@ -53,7 +82,7 @@ describe('MenuItems.vue', () => {
         expect(span.classes('hotkey')).toBe(true);
     });
 
-    it("doesn't display hotkeys by default", () => {
+    it('doesn\'t display hotkeys by default', () => {
         const id = 'testfoobar543';
         const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },

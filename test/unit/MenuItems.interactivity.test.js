@@ -304,5 +304,32 @@ describe('MenuItems.vue', () => {
             expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
             expect(onUpMock).toHaveBeenCalled();
         });
+
+        it('ignores disabled items on key navigation', () => {
+            const id = 'ignoreId213';
+            const items = [
+                { href: 'https://example.com/slash', text: 'Slash' },
+                { disabled: true, text: 'Disabled Item' },
+                { text: 'Another item' }
+            ];
+            arrowKeyNavWrapper = mount(MenuItems, {
+                propsData: {
+                    ariaLabel: id,
+                    items,
+                    id
+                }
+            });
+            let onMockDown = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowDownKey');
+
+            // eslint-disable-next-line no-magic-numbers
+            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(3);
+            arrowKeyNavWrapper.vm.listItems[0].focus();
+            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
+
+            arrowKeyNavWrapper.trigger('keydown.down');
+
+            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[2]);
+            expect(onMockDown).toHaveBeenCalled();
+        });
     });
 });
