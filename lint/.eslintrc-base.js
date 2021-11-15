@@ -35,7 +35,7 @@ module.exports = {
         'brace-style': ['error', '1tbs', { allowSingleLine: true }],
         camelcase: 'error',
         'class-methods-use-this': 'warn',
-        'comma-dangle': 'warn',
+        'comma-dangle': 'error',
         'comma-spacing': 'error',
         'comma-style': 'error',
         complexity: 'warn',

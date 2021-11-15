@@ -4,8 +4,7 @@ module.exports = {
     plugins: ['@typescript-eslint'],
     rules: {
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': 'error',
-        'comma-dangle': ['warn', 'always-multiline']
+        '@typescript-eslint/no-unused-vars': 'error'
     },
     overrides: [{
         files: ['*.json'],
