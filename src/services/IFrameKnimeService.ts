@@ -28,7 +28,7 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         const { data } = event;
 
         if (!data.type?.startsWith(UI_EXT_POST_MESSAGE_PREFIX)) {
-            return;
+            return null;
         }
 
         switch (data.type) {
@@ -69,8 +69,10 @@ export class IFrameKnimeService<T = any> extends KnimeService {
                 break;
 
             default:
-                break;
+                return false;
         }
+
+        return true;
     }
 
     executeServiceCall(jsonRpcRequest: JsonRpcRequest) {

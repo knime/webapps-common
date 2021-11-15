@@ -1,6 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { IFrameKnimeServiceAdapter } from 'src/services';
-// import { NodeServiceMethods } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 /* eslint-disable-next-line no-magic-numbers */

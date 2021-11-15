@@ -1,112 +1,155 @@
-import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
 import { IFrameKnimeService, JsonDataService } from 'src/services';
-import { JsonRpcRequest, NodeServiceMethods } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
-jest.setTimeout(UI_EXT_POST_MESSAGE_TIMEOUT + 200);
+jest.mock('src/constants', () => ({
+    JSON_RPC_VERSION: '2.0',
+    UI_EXT_POST_MESSAGE_PREFIX: 'prefix',
+    UI_EXT_POST_MESSAGE_TIMEOUT: 10,
+}));
 
-/* eslint-disable-next-line no-magic-numbers */
-const sleep = async (timeout = 15) => {
-    await new Promise((resolve) => setTimeout(resolve, timeout));
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let testId = 0;
-
-const jsonrpc = (requestJSON: JsonRpcRequest) => {
-    const request = requestJSON;
-
-    if (request.method === NodeServiceMethods.CALL_NODE_DATA_SERVICE) {
-        return JSON.stringify({
-            result: JSON.stringify({ result: { dataArray: [1, 1, 2] } }),
-            id: request.id,
-        });
-    }
-
-    const error: any = new Error('Unsupported params');
-
-    throw error;
-};
-
-const onMessageFromIFrame = (event) => {
-    const { data } = event;
-
-    switch (data.type) {
-        case `${UI_EXT_POST_MESSAGE_PREFIX}:ready`:
-            window.postMessage(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: extensionConfig,
-                },
-                '*',
-            );
-            break;
-        case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
-            {
-                const { payload } = event.data;
-                const response = window.jsonrpc(payload);
-
-                window.postMessage(
-                    {
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                        payload: response,
-                    },
-                    '*',
-                );
-            }
-            break;
-
-        default:
-            break;
-    }
-};
+import { UI_EXT_POST_MESSAGE_PREFIX, JSON_RPC_VERSION } from 'src/constants';
 
 describe('IFrameKnimeService', () => {
-    beforeEach(() => {
-        window.addEventListener('message', onMessageFromIFrame);
-    });
-
     afterEach(() => {
-        window.removeEventListener('message', onMessageFromIFrame);
+        jest.restoreAllMocks();
     });
 
     describe('initialization', () => {
-        it('Creates IFrameKnimeService', async () => {
-            const knimeService = new IFrameKnimeService();
-            await sleep();
-            expect(knimeService).toHaveProperty('extensionConfig');
-            expect(knimeService.extensionConfig).toEqual(extensionConfig);
+        it('Creates IFrameKnimeService', () => {
+            let eventListenerSpy = jest.spyOn(window, 'addEventListener');
+            let postSpy = jest.spyOn(window, 'postMessage');
 
-            knimeService.destroy();
-        });
-    });
-
-    describe('working with JsonDataService', () => {
-        it('Gets data', async () => {
-            window.jsonrpc = jsonrpc;
-
-            const knimeService = new IFrameKnimeService();
-            await sleep();
-            const knimeJsonDataService = new JsonDataService(knimeService);
-
-            const result = await knimeJsonDataService.data();
-            expect(result).toEqual({ dataArray: [1, 1, 2] });
-
-            knimeService.destroy();
-        });
-
-        it('Throws error if data request takes too long', async () => {
-            const knimeService = new IFrameKnimeService();
-            await sleep();
-            window.removeEventListener('message', onMessageFromIFrame);
-
-            const knimeJsonDataService = new JsonDataService(knimeService);
-            knimeService.destroy();
-
-            expect(knimeJsonDataService.data()).rejects.toThrowError(
-                'Request with id: 4 rejected due to timeout.',
+            new IFrameKnimeService();
+            expect(eventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
+            expect(postSpy).toHaveBeenCalledWith(
+                {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
+                },
+                '*',
             );
-            await sleep(UI_EXT_POST_MESSAGE_TIMEOUT + 100);
+        });
+
+        it('registers extension config', () => {
+            const knimeService = new IFrameKnimeService();
+            expect(knimeService.extensionConfig).toBe(null);
+            let testMessage = {
+                data: {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
+                    payload: extensionConfig,
+                },
+            };
+
+            knimeService.onMessageReceived(testMessage as MessageEvent);
+            expect(knimeService.extensionConfig).toStrictEqual(extensionConfig);
+        });
+
+        describe('working with services', () => {
+            let knimeService;
+
+            beforeEach(() => {
+                knimeService = new IFrameKnimeService();
+                expect(knimeService.extensionConfig).toBe(null);
+                let testMessage = {
+                    data: {
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
+                        payload: extensionConfig,
+                    },
+                };
+                knimeService.onMessageReceived(testMessage as MessageEvent);
+            });
+
+            it('onMessageReceived returns false if called with unsupported prefix', () => {
+                knimeService = new IFrameKnimeService();
+
+                const spy = jest.spyOn(knimeService, 'onMessageReceived');
+                knimeService.onMessageReceived({
+                    data: {
+                        type: `unsupported_prefix:jsonrpcResponse`,
+                        payload: extensionConfig,
+                    },
+                } as MessageEvent);
+
+                expect(spy).toHaveReturnedWith(null);
+            });
+
+            it('onMessageReceived throws error if called with unsupported type', () => {
+                knimeService = new IFrameKnimeService();
+
+                const spy = jest.spyOn(knimeService, 'onMessageReceived');
+
+                knimeService.onMessageReceived({
+                    data: {
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
+                        payload: extensionConfig,
+                    },
+                } as MessageEvent);
+
+                expect(spy).toHaveReturnedWith(false);
+            });
+
+            it('onMessageReceived with supported prefix and type returns true ', () => {
+                knimeService = new IFrameKnimeService();
+
+                knimeService.executeServiceCall({
+                    id: 2,
+                });
+
+                const spy = jest.spyOn(knimeService, 'onMessageReceived');
+
+                knimeService.onMessageReceived({
+                    data: {
+                        payload: JSON.stringify({
+                            result: JSON.stringify([1, 1, 2]),
+                            id: 2,
+                        }),
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
+                    },
+                } as MessageEvent);
+
+                expect(spy).toHaveReturnedWith(true);
+            });
+
+            it('returns error object if request takes too long', async () => {
+                knimeService = new IFrameKnimeService();
+
+                expect(
+                    await knimeService.executeServiceCall({
+                        id: 2,
+                    }),
+                ).toEqual({
+                    error: {
+                        message: 'Request with id: 2 rejected due to timeout.',
+                        code: 'req-timeout',
+                    },
+                    result: null,
+                });
+            });
+
+            it('executes service calls', () => {
+                let postSpy = jest.spyOn(window, 'postMessage');
+                const knimeJsonDataService = new JsonDataService(knimeService);
+                knimeJsonDataService.data();
+
+                expect(postSpy).toHaveBeenCalledWith(
+                    {
+                        payload: {
+                            id: 2,
+                            jsonrpc: JSON_RPC_VERSION,
+                            method: 'NodeService.callNodeDataService',
+                            params: [
+                                'knime workflow',
+                                'root:10',
+                                '123',
+                                'view',
+                                'data',
+                                '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}',
+                            ],
+                        },
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
+                    },
+                    '*',
+                );
+            });
         });
     });
 });
