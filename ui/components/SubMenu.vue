@@ -65,8 +65,8 @@ export default {
         * Shows a column on the right of each entry filled with item.hotkeyText (if set)
         */
         showHotkeys: {
-          type: Boolean,
-          default: false
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -237,11 +237,14 @@ export default {
             v-if="item.icon"
             class="item-icon"
           />
-          <div v-if="showHotkeys" class="label">
+          <div
+            v-if="showHotkeys"
+            class="label"
+          >
             <span class="text">{{ item.text }}</span>
             <span class="hotkey">{{ item.hotkeyText }}</span>
           </div>
-          <template v-else>{{item.text}}</template>
+          <template v-else>{{ item.text }}</template>
         </Component>
       </li>
     </ul>
