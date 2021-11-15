@@ -117,7 +117,7 @@ describe('SubMenu.vue', () => {
         expect(span.classes('hotkey')).toBe(true);
     });
 
-    it("doesn't display hotkeys by default", () => {
+    it('does not display hotkeys by default', () => {
         const id = 'testfoobar543';
         const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
