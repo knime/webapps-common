@@ -1,14 +1,3 @@
-/* IE 11 doesn't apply font-weight bold automatically to headlines */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h7 {
-  font-weight: 700;
-}
-
 h1 {
   font-size: 60px;
   line-height: 66px;
@@ -45,6 +34,7 @@ h6 {
 
 cf. https://www.w3.org/WAI/GL/wiki/Using_role%3Dheading#Example_2 */
 .h7 {
+  font-weight: 700;
   font-size: 16px;
   line-height: 20px;
 }

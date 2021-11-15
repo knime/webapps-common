@@ -290,12 +290,6 @@ input:not(:checked):not(:disabled) + span {
     left: 0;
     right: 0;
   }
-
-  @supports (-ms-ime-align: auto) { /* fires only on Edge */
-    div::after {
-      margin-top: 17px;
-    }
-  }
 }
 
 

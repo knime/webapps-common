@@ -188,7 +188,7 @@ describe('ListBox.vue', () => {
             });
 
             let ul = wrapper.find('ul');
-            ul.trigger('keydown.down',);
+            ul.trigger('keydown.down');
             expect(wrapper.emitted().input[0][0]).toEqual('test3');
         });
 
