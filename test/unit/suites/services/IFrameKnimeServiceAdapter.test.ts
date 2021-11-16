@@ -44,6 +44,7 @@ describe('IFrameKnimeServiceAdapter', () => {
             const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
 
             expect(iFrameKnimeServiceAdapter).toHaveProperty('extensionConfig');
+            expect(iFrameKnimeServiceAdapter.extensionConfig).toEqual(extensionConfig);
             expect(iFrameKnimeServiceAdapter).toHaveProperty('iFrameWindow');
             iFrameKnimeServiceAdapter.destroy();
         });

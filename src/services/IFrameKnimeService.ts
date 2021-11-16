@@ -2,6 +2,14 @@ import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/con
 import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from 'src/types';
 import { KnimeService } from './KnimeService';
 
+/**
+ * The main API entry point for iframe based UI extensions. Handles all extension side communication
+ * between current window and parent window.
+ *
+ * Parent window communication should be setup with instance of IFrameKnimeServiceAdapter.
+ *
+ * Other services should be initialized with instance of the class.
+ */
 export class IFrameKnimeService<T = any> extends KnimeService {
     private pendingJsonRpcRequests: Map<Number, any> = new Map();
 
@@ -23,6 +31,11 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         ); // TODO NXT-793 security
     }
 
+    /**
+     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
+     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     */
     onMessageReceived(event: MessageEvent) {
         // TODO NXT-793 security
         const { data } = event;
@@ -75,6 +88,11 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         return true;
     }
 
+    /**
+     * Overrides method of KnimeService to implement how request should be processed at iframe environment.
+     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeSerivce callService method.
+     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     */
     executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
         let rejectTimeoutId;
 
@@ -108,6 +126,11 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         return promise;
     }
 
+    /**
+     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * preventing memory leaks and unexpected behavior.
+     * @returns {void}
+     */
     destroy() {
         window.removeEventListener('message', this.boundOnMessageReceived);
     }
