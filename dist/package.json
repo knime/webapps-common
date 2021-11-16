@@ -51,11 +51,6 @@
         "webpack-cli": "^4.8.0",
         "webpack-dev-server": "^4.2.1"
     },
-    "husky": {
-        "hooks": {
-            "pre-push": "npm run lint && npm run test"
-        }
-    },
     "engines": {
         "node": "16.x"
     }
