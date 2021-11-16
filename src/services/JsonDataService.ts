@@ -58,7 +58,7 @@ export class JsonDataService<T = any> {
     data(params: { method?: string, options?: any } = {}) {
         return this.callDataService(
             DataServiceTypes.DATA,
-            JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)),
+            JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
         );
     }
 
@@ -73,7 +73,7 @@ export class JsonDataService<T = any> {
         const data = await this.knimeService.getData();
         return this.callDataService(
             DataServiceTypes.APPLY_DATA,
-            JSON.stringify(data),
+            JSON.stringify(data)
         );
     }
 

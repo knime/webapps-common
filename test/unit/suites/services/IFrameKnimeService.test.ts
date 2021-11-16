@@ -4,7 +4,7 @@ import { extensionConfig } from 'test/mocks';
 jest.mock('src/constants', () => ({
     JSON_RPC_VERSION: '2.0',
     UI_EXT_POST_MESSAGE_PREFIX: 'prefix',
-    UI_EXT_POST_MESSAGE_TIMEOUT: 10,
+    UI_EXT_POST_MESSAGE_TIMEOUT: 10
 }));
 
 import { UI_EXT_POST_MESSAGE_PREFIX, JSON_RPC_VERSION } from 'src/constants';
@@ -23,9 +23,9 @@ describe('IFrameKnimeService', () => {
             expect(eventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
             expect(postSpy).toHaveBeenCalledWith(
                 {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
                 },
-                '*',
+                '*'
             );
         });
 
@@ -35,8 +35,8 @@ describe('IFrameKnimeService', () => {
             let testMessage = {
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: extensionConfig,
-                },
+                    payload: extensionConfig
+                }
             };
 
             knimeService.onMessageReceived(testMessage as MessageEvent);
@@ -52,8 +52,8 @@ describe('IFrameKnimeService', () => {
                 let testMessage = {
                     data: {
                         type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                        payload: extensionConfig,
-                    },
+                        payload: extensionConfig
+                    }
                 };
                 knimeService.onMessageReceived(testMessage as MessageEvent);
             });
@@ -65,8 +65,8 @@ describe('IFrameKnimeService', () => {
                 knimeService.onMessageReceived({
                     data: {
                         type: `unsupported_prefix:jsonrpcResponse`,
-                        payload: extensionConfig,
-                    },
+                        payload: extensionConfig
+                    }
                 } as MessageEvent);
 
                 expect(spy).toHaveReturnedWith(null);
@@ -80,8 +80,8 @@ describe('IFrameKnimeService', () => {
                 knimeService.onMessageReceived({
                     data: {
                         type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
-                        payload: extensionConfig,
-                    },
+                        payload: extensionConfig
+                    }
                 } as MessageEvent);
 
                 expect(spy).toHaveReturnedWith(false);
@@ -91,7 +91,7 @@ describe('IFrameKnimeService', () => {
                 knimeService = new IFrameKnimeService();
 
                 knimeService.executeServiceCall({
-                    id: 2,
+                    id: 2
                 });
 
                 const spy = jest.spyOn(knimeService, 'onMessageReceived');
@@ -100,10 +100,10 @@ describe('IFrameKnimeService', () => {
                     data: {
                         payload: JSON.stringify({
                             result: JSON.stringify([1, 1, 2]),
-                            id: 2,
+                            id: 2
                         }),
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                    },
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
+                    }
                 } as MessageEvent);
 
                 expect(spy).toHaveReturnedWith(true);
@@ -114,14 +114,14 @@ describe('IFrameKnimeService', () => {
 
                 expect(
                     await knimeService.executeServiceCall({
-                        id: 2,
-                    }),
+                        id: 2
+                    })
                 ).toEqual({
                     error: {
                         message: 'Request with id: 2 rejected due to timeout.',
-                        code: 'req-timeout',
+                        code: 'req-timeout'
                     },
-                    result: null,
+                    result: null
                 });
             });
 
@@ -142,12 +142,12 @@ describe('IFrameKnimeService', () => {
                                 '123',
                                 'view',
                                 'data',
-                                '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}',
-                            ],
+                                '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
+                            ]
                         },
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
+                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`
                     },
-                    '*',
+                    '*'
                 );
             });
         });

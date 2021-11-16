@@ -22,8 +22,6 @@ export class ComponentKnimeService<T = any> extends KnimeService {
      */
     /* eslint-disable class-methods-use-this */
     executeServiceCall(jsonRpcRequest) {
-        return new Promise<JsonRpcResponse>((resolve) =>
-            resolve(JSON.parse(window.jsonrpc(jsonRpcRequest))),
-        );
+        return new Promise<JsonRpcResponse>((resolve) => resolve(JSON.parse(window.jsonrpc(jsonRpcRequest))));
     }
 }

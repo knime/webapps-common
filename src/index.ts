@@ -3,7 +3,7 @@ export {
     JsonDataService,
     IFrameKnimeService,
     IFrameKnimeServiceAdapter,
-    SelectionService,
+    SelectionService
 } from './services';
 
 export { UI_EXT_POST_MESSAGE_PREFIX } from './constants';

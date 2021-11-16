@@ -25,9 +25,9 @@ export class IFrameKnimeService<T = any> extends KnimeService {
 
         window.parent.postMessage(
             {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
             },
-            '*',
+            '*'
         ); // TODO NXT-793 security
     }
 
@@ -58,7 +58,7 @@ export class IFrameKnimeService<T = any> extends KnimeService {
 
                     if (!request) {
                         throw new Error(
-                            `Received jsonrpcResponse for non-existing pending request with id ${id}`,
+                            `Received jsonrpcResponse for non-existing pending request with id ${id}`
                         );
                     }
 
@@ -71,8 +71,8 @@ export class IFrameKnimeService<T = any> extends KnimeService {
                             new Error(
                                 `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
                                     error?.message || 'not provided'
-                                }`,
-                            ),
+                                }`
+                            )
                         );
                     }
 
@@ -103,9 +103,9 @@ export class IFrameKnimeService<T = any> extends KnimeService {
                 resolve({
                     error: {
                         message: `Request with id: ${id} rejected due to timeout.`,
-                        code: 'req-timeout',
+                        code: 'req-timeout'
                     },
-                    result: null,
+                    result: null
                 });
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
@@ -118,9 +118,9 @@ export class IFrameKnimeService<T = any> extends KnimeService {
         window.parent.postMessage(
             {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                payload: jsonRpcRequest,
+                payload: jsonRpcRequest
             },
-            '*',
+            '*'
         ); // TODO NXT-793 security
 
         return promise;

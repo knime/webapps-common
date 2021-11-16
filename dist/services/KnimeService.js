@@ -1,12 +1,13 @@
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
 /**
- * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
- * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
- * Analytics Platform) and the registered services.
+ * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
+ * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
  *
- * To utilize this functionality, services should be registered with an instance of this class, after which their
+ * To utilize this functionality, services should be registered with an instance of derived class, after which their
  * functionality can be utilized by the UI Extension implementation.
+ *
+ * Derived classes: IFrameKnimeService - for usage with iframe extensions, ComponentKnimeService for usage with components.
  *
  * @template T - the {@type ExtensionConfig} generic type.
  */
@@ -40,7 +41,7 @@ class KnimeService {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             service,
-            request || '',
+            request || ''
         ]);
         const { result, error } = await this.executeServiceCall(jsonRpcRequest);
         if (error) {
@@ -101,7 +102,7 @@ class KnimeService {
         }
         this.notificationCallbacksMap.set(notificationType, [
             ...this.notificationCallbacksMap.get(notificationType) || [],
-            callback,
+            callback
         ]);
     }
     /**
