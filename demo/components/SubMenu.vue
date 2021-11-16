@@ -82,7 +82,7 @@ const subMenuItems = [{
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
     icon: StarIcon
-},  {
+}, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
     icon: HeartIcon
@@ -179,8 +179,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 h4 {
   margin-bottom: 10px;
 }

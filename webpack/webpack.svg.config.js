@@ -7,10 +7,8 @@ Example usage in Nuxt nuxt.config.js:
         build: {
             extend(config) {
                 // remove Nuxt's default svg loader
-                const imgRule = config.module.rules.find(
-                    rule => String(rule.test) === String(/\.(png|jpe?g|gif|svg|webp)$/i)
-                );
-                imgRule.test = /\.(png|jpe?g|gif|webp)$/i;
+                const svgRule = config.module.rules.find(rule => String(rule.test).includes('svg'));
+                svgRule.test = new RegExp(String(svgRule.test).replace('svg|', '').replace('|svg'));
 
                 // add our svg loader
                 config.module.rules.push(svgConfig);
@@ -38,34 +36,29 @@ module.exports = {
     test: /\.svg$/i,
     oneOf: [{
         resourceQuery: /\?inline$/,
-        use: [
-            {
-                loader: 'vue-svg-loader',
-                options: {
-                    svgo: svgoOptions
-                }
+        use: [{
+            loader: 'vue-svg-loader',
+            options: {
+                svgo: svgoOptions
             }
-        ]
+        }]
     }, {
         resourceQuery: /\?data$/,
-        use: [
-            {
-                loader: 'url-loader'
-            },
-            {
-                loader: 'svgo-loader',
-                options: svgoOptions
-            }
-        ]
+        use: [{
+            loader: 'url-loader'
+        }, {
+            loader: 'svgo-loader',
+            options: svgoOptions
+        }]
     }, {
-        use: [
-            {
-                loader: 'file-loader?name=img/[name].[hash:7].[ext]'
-            },
-            {
-                loader: 'svgo-loader',
-                options: svgoOptions
+        use: [{
+            loader: 'file-loader?name=img/[name].[hash:7].[ext]',
+            options: {
+                esModule: false
             }
-        ]
+        }, {
+            loader: 'svgo-loader',
+            options: svgoOptions
+        }]
     }]
 };

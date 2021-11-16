@@ -9,6 +9,10 @@ export default {
             type: String,
             default: null
         },
+        name: {
+            type: String,
+            default: null
+        },
         /**
          * validity needs to be controlled by the parent component to be flexible
          */
@@ -25,6 +29,10 @@ export default {
             type: String
         },
         placeholder: {
+            default: null,
+            type: String
+        },
+        autocomplete: {
             default: null,
             type: String
         },
@@ -72,7 +80,7 @@ export default {
                     errorMessage = 'Input does not match the expected pattern';
                 }
             }
-            return { isValid,  errorMessage };
+            return { isValid, errorMessage };
         }
     }
 };
@@ -84,11 +92,13 @@ export default {
     <input
       :id="id"
       ref="input"
+      :name="name"
       :value="value"
       :class="inputClassList"
       :type="type"
       :pattern="pattern"
       :placeholder="placeholder"
+      :autocomplete="autocomplete"
       :disabled="disabled"
       @input="onInput"
     >
@@ -100,8 +110,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 div {
   /* icon and marker need pos 0,0 to be the wrapper */
   position: relative;

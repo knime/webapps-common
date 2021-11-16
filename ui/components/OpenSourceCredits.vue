@@ -41,7 +41,6 @@ export default {
     },
     computed: {
         packages() {
-
             let allUniquePackages = [];
 
             packages.concat(this.additionalPackages).forEach(pkg => {
@@ -118,8 +117,6 @@ export default {
 
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 section:not(:first-child) {
   padding-top: 15px;
   padding-bottom: 55px;

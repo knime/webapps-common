@@ -48,7 +48,7 @@ export default {
         :class="['options', { 'with-section': option.sectionName }]"
         :initially-expanded="options.length === 1"
       >
-        <template v-slot:title><h5>{{ option.sectionName }}</h5></template>
+        <template #title><h5>{{ option.sectionName }}</h5></template>
         <Description
           v-if="option.sectionDescription"
           :text="option.sectionDescription"
@@ -85,8 +85,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 h5 {
   padding: 15px 30px;
   margin: 0;

@@ -2,6 +2,7 @@ module.exports = {
     // allowed licenses; others will fail
     onlyAllow: [
         'MIT', 'ISC', 'BSD', 'Apache-2.0', 'CC0-1.0', 'CC-BY-3.0', 'CC-BY-4.0', 'MPL-2.0', 'Public Domain', 'Zlib',
+        'Unlicense',
         'Custom: https://github.com/Rich-Harris/devalue', // nuxtjs dependency with custom license
         'Custom: https://github.com/douglascrockford/JSON-js' // this is actually Public Domain
     ],
@@ -10,6 +11,8 @@ module.exports = {
     excludePackages: [
         'webapps-common@0.0.0',
         'knime-build-tools@0.0.0',
+        'knime-ui-extension-service@1.0.0',
+        '@knime/knime-ui-table@0.1.28',
         'webpack-external-import@0.3.0-beta.0', // licensed under GPL-3 but not included in the production app
         'webpack-external-import@1.1.3' // licensed under GPL-3 but not included in the production app
     ],

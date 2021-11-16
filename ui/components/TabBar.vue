@@ -16,7 +16,7 @@ export default {
             default: false
         },
         /**
-         * Initial value. Should be one of the value attributes in the `possibleValues` prop.
+         * Selected value. Should be one of the value attributes in the `possibleValues` prop.
          */
         value: {
             type: String,
@@ -60,30 +60,20 @@ export default {
                 if (!Array.isArray(items)) {
                     return false;
                 }
-                return !items.includes(item => !item.value);
+                return items.every(item => item.value);
             }
         }
     },
-    data() {
-        return {
-            selected: this.value
-        };
-    },
-    watch: {
-        value(newSelected) {
-            this.selected = newSelected;
-        }
-    },
     methods: {
-        onChange() {
+        onChange(value) {
             /**
              * Update event. Fired when the selection is changed.
              *
              * @event update:value
              * @type {String}
              */
-            consola.trace('TabBar value changed to', this.selected);
-            this.$emit('update:value', this.selected);
+            consola.trace('TabBar value changed to', value);
+            this.$emit('update:value', value);
         }
     }
 };
@@ -154,12 +144,12 @@ export const tabBarMixin = {
           :title="item.title"
         >
           <input
-            v-model="selected"
             :name="name"
             :value="item.value"
             :disabled="disabled || item.disabled"
             type="radio"
-            @change="onChange"
+            :checked="item.value === value"
+            @change="onChange(item.value)"
           >
           <span>
             <Component
@@ -175,8 +165,6 @@ export const tabBarMixin = {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .wrapper {
   width: 100%;
   position: relative;
@@ -301,12 +289,6 @@ input:not(:checked):not(:disabled) + span {
   >>> .carousel::after {
     left: 0;
     right: 0;
-  }
-
-  @supports (-ms-ime-align: auto) { /* fires only on Edge */
-    div::after {
-      margin-top: 17px;
-    }
   }
 }
 

@@ -5,8 +5,6 @@
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 div {
   display: inline-flex;
   border-radius: var(--theme-button-split-border-radius); /* needed for correct :hover style trigger below */

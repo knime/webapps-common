@@ -298,7 +298,7 @@ export default {
             this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
         },
         onHomeKey() {
-            let next  = 0;
+            let next = 0;
             this.setSelectedToIndex(next);
             this.currentKeyNavIndex = next;
             this.$refs.ul.scrollTop = 0;
@@ -393,8 +393,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .multiselect-list-box {
   position: relative; /* required by .invalid::after */
   isolation: isolate;

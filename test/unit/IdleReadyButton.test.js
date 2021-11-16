@@ -5,7 +5,6 @@ import Button from '~/ui/components/Button';
 import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg?inline';
 
 describe('IdleReadyButton.vue', () => {
-
     it('doesn’t render when not needed', () => {
         let wrapper = shallowMount(IdleReadyButton, {
             propsData: {
@@ -64,6 +63,16 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.find(DownIcon).exists()).toBeTruthy();
     });
 
+    it('renders border', () => {
+        let wrapper = shallowMount(IdleReadyButton);
+        expect(wrapper.find(Button).attributes('withborder')).toBeDefined();
+
+        wrapper.setProps({
+            withBorder: false
+        });
+        expect(wrapper.find(Button).attributes('withborder')).not.toBeDefined();
+    });
+
     it('emits events', () => {
         let wrapper = mount(IdleReadyButton, {
             propsData: {
@@ -74,5 +83,4 @@ describe('IdleReadyButton.vue', () => {
         wrapper.find(Button).vm.$emit('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
-
 });

@@ -4,7 +4,6 @@ import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal';
 import nodeColors from '../../../ui/colors/nodeColors';
 
 describe('NodeTorsoNormal.vue', () => {
-
     let doShallowMount = propsData => shallowMount(NodeTorsoNormal, { propsData });
 
     it('sets background color', () => {
@@ -15,6 +14,7 @@ describe('NodeTorsoNormal.vue', () => {
     });
 
     const nodeTypeCases = Object.entries(nodeColors);
+
     it.each(nodeTypeCases)('renders node category "%s" as color "%s"', (type, color) => {
         let wrapper = doShallowMount({
             type

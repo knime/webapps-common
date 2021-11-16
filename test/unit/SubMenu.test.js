@@ -4,7 +4,6 @@ import SubMenu from '~/ui/components/SubMenu';
 import FunctionButton from '~/ui/components/FunctionButton';
 
 describe('SubMenu.vue', () => {
-
     it('renders the menu toggle', () => {
         const wrapper = shallowMount(SubMenu, {
             slots: {
@@ -45,7 +44,7 @@ describe('SubMenu.vue', () => {
     });
 
     it('renders the submenu items', () => {
-        const items =  [
+        const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash' },
             { href: 'https://www.linkedin.com', text: 'Linked' },
             { to: '/relative/route', text: 'Everything is relative' }
@@ -73,11 +72,11 @@ describe('SubMenu.vue', () => {
         expect(wrapper.find(`li:nth-child(1) a`).attributes('href')).toBe(items[0].href);
         expect(wrapper.find(`li:nth-child(2) a`).attributes('href')).toBe(items[1].href);
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
-
     });
+
     it('can be disabled', () => {
         const id = 'testfoobar543';
-        const items =  [
+        const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
             { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
         ];

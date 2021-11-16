@@ -37,7 +37,7 @@ export default {
                     { type: 'table' }
                 ],
                 outPorts: [
-                    { type: 'other', color: '#1eb9dc'  },
+                    { type: 'other', color: '#1eb9dc' },
                     { type: 'table', optional: true }
                 ],
                 icon
@@ -101,8 +101,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .demo-items {
   display: flex;
   justify-content: flex-start;

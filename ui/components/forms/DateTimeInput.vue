@@ -310,7 +310,7 @@ export default {
           @input="onDatePickerInput"
         >
           <!--Custom Input Slot-->
-          <template v-slot="{ inputValue, inputEvents, hidePopover, togglePopover }">
+          <template #default="{ inputValue, inputEvents, hidePopover, togglePopover }">
             <div>
               <input
                 :id="id"
@@ -394,8 +394,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .date-time-input {
   display: flex;
   width: auto;

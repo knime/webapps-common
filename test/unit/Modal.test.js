@@ -3,9 +3,7 @@ import Modal from '~/ui/components/Modal.vue';
 jest.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {
-
     describe('rendering', () => {
-
         it('renders style type classes', () => {
             let wrapper = shallowMount(Modal);
             expect(wrapper.classes()).toContain('info');
@@ -102,5 +100,4 @@ describe('Modal', () => {
         await wrapper.find('.header .closer').vm.$emit('click');
         expect(wrapper.emitted().cancel).toBeTruthy();
     });
-
 });

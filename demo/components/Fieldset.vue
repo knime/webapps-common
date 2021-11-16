@@ -65,7 +65,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Fieldset text="Login">
-            <template v-slot:icon><InfoIcon /></template>
+            <template #icon><InfoIcon /></template>
             <Label
               v-slot="{ labelForId }"
               text="User"

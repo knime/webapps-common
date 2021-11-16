@@ -12,7 +12,6 @@ describe('FunctionButton.vue', () => {
         });
         expect(wrapper.find(BaseButton).exists()).toBeTruthy();
         expect(wrapper.classes()).toEqual(['function-button']);
-
     });
 
     it('forwards props', () => {
@@ -102,5 +101,4 @@ describe('FunctionButton.vue', () => {
         });
         expect(wrapper.classes()).toContain('disabled');
     });
-
 });

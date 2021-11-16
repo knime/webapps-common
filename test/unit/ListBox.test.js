@@ -133,7 +133,6 @@ describe('ListBox.vue', () => {
                 expect(classes).not.toContain('invalid');
             }
         });
-
     });
 
     it('sets the correct aria-* attributes', () => {
@@ -189,7 +188,7 @@ describe('ListBox.vue', () => {
             });
 
             let ul = wrapper.find('ul');
-            ul.trigger('keydown.down',);
+            ul.trigger('keydown.down');
             expect(wrapper.emitted().input[0][0]).toEqual('test3');
         });
 
@@ -259,5 +258,4 @@ describe('ListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toBe('test5');
         });
     });
-
 });

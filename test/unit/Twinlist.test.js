@@ -4,8 +4,8 @@ import Twinlist from '~/ui/components/forms/Twinlist';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
 
 describe('Twinlist.vue', () => {
-
     let defaultPossibleValues;
+
     beforeEach(() => {
         defaultPossibleValues = [{
             id: 'test1',
@@ -142,6 +142,33 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
+    it('keeps valid state but removes invalid chosen values when there is a change in the possible values', () => {
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'Text'
+            }, {
+                id: 'test2',
+                text: 'Some Text'
+            }],
+            value: ['invalidId', 'test1'],
+            labelLeft: 'Choose',
+            labelRight: 'The value'
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
+
+        wrapper.setProps({
+            possibleValues: [{
+                id: 'test1',
+                text: 'validValue'
+            }]
+        });
+        expect(wrapper.vm.chosenValues).toStrictEqual(['test1']);
+    });
+
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(Twinlist, {
             propsData: {
@@ -158,6 +185,7 @@ describe('Twinlist.vue', () => {
 
     describe('double click', () => {
         let propsData;
+
         beforeEach(() => {
             propsData = {
                 possibleValues: defaultPossibleValues,
@@ -458,7 +486,6 @@ describe('Twinlist.vue', () => {
 
             // move selected to left is now possible
             expect(moveLeft.classes()).not.toContain('disabled');
-
         });
 
         it('moves selected values to left on move button enter', async () => {
@@ -551,5 +578,4 @@ describe('Twinlist.vue', () => {
         wrapper.vm.onLeftInput(['test1', 'test4']);
         expect(right.emitted().input[0][0]).toStrictEqual([]);
     });
-
 });

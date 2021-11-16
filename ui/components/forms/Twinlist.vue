@@ -98,7 +98,7 @@ export default {
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
-            const size = this.size === 0 ?  this.possibleValues.length : this.size;
+            const size = this.size === 0 ? this.possibleValues.length : this.size;
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         },
@@ -120,7 +120,13 @@ export default {
             this.chosenValues = newValue;
         },
         possibleValues(newPossibleValues) {
-            this.chosenValues = [];
+            // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
+            let allValues = newPossibleValues.reduce((arr, valObj) => {
+                arr.push(...Object.values(valObj));
+                return arr;
+            }, []);
+            // Reset chosenValues as subset of original to prevent re-execution from resetting value
+            this.chosenValues = this.chosenValues.filter(item => allValues.includes(item));
         }
     },
     methods: {
@@ -305,8 +311,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .twinlist {
   display: flex;
   align-items: stretch;

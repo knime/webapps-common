@@ -1,6 +1,14 @@
 <script>
 export default {
     props: {
+        id: {
+            type: String,
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
+        },
         value: {
             type: Boolean,
             default: false
@@ -38,7 +46,9 @@ export default {
 <template>
   <label :class="['toggle', labelSize]">
     <input
+      :id="id"
       ref="input"
+      :name="name"
       type="checkbox"
       :checked="value"
       @change="onInput"
@@ -50,8 +60,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .toggle {
   display: inline-block;
   position: relative;

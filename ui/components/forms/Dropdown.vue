@@ -155,7 +155,7 @@ export default {
                 Vue.nextTick(() => this.$refs.ul.focus());
             }
         },
-        handleKeyDownList(e)  {
+        handleKeyDownList(e) {
             /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
@@ -270,8 +270,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .dropdown {
   position: relative;
 

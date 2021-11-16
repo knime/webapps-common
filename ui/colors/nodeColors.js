@@ -5,6 +5,7 @@ module.exports = {
     Configuration: knime.Avocado,
     Container: knime.Avocado,
     Learner: knime.MeadowLight,
+    Loop: knime.Aquamarine,
     LoopEnd: knime.Aquamarine,
     LoopStart: knime.Aquamarine,
     Manipulator: knime.Yellow,

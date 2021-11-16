@@ -52,8 +52,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }
@@ -112,10 +110,10 @@ export default {
             :style-type="modalStyleType"
             @cancel="modalActive = false"
           >
-            <template v-slot:icon><PlayIcon /></template>
-            <template v-slot:notice>This is the notice slot.</template>
-            <template v-slot:confirmation>And this is content in the confirmation slot.</template>
-            <template v-slot:controls>
+            <template #icon><PlayIcon /></template>
+            <template #notice>This is the notice slot.</template>
+            <template #confirmation>And this is content in the confirmation slot.</template>
+            <template #controls>
               <Button
                 primary
                 @click="modalActive = false"
@@ -140,8 +138,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
 }

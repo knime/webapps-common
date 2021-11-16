@@ -1,6 +1,14 @@
 <script>
 export default {
     props: {
+        id: {
+            type: String,
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
+        },
         value: {
             type: Boolean,
             default: false
@@ -38,7 +46,9 @@ export default {
 <template>
   <label :class="['checkbox', labelSize]">
     <input
+      :id="id"
       ref="input"
+      :name="name"
       :checked="value"
       type="checkbox"
       @change="onInput"
@@ -50,8 +60,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 /* if you consider removing this class: don't!
    selector specificity requires it for container system used in page-builder */
 .checkbox {

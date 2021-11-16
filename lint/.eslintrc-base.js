@@ -1,6 +1,7 @@
 const eslint = require('eslint');
 
 const indentationSpaces = 4;
+const jsonIndentationSpaces = 2;
 const lineLength = 120;
 
 let eslintVersion = eslint.Linter.version.split('.')[0];
@@ -15,12 +16,13 @@ let parserOptions = {
 
 module.exports = {
     root: true,
-    extends: ['eslint:recommended'],
+    extends: ['eslint:recommended', 'plugin:jsonc/recommended-with-json'],
     parserOptions,
     env: {
         browser: false,
         es6: true
     },
+    ignorePatterns: ['package*.json', 'audit-resolve.json'],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],
@@ -33,7 +35,7 @@ module.exports = {
         'brace-style': ['error', '1tbs', { allowSingleLine: true }],
         camelcase: 'error',
         'class-methods-use-this': 'warn',
-        'comma-dangle': 'warn',
+        'comma-dangle': 'error',
         'comma-spacing': 'error',
         'comma-style': 'error',
         complexity: 'warn',
@@ -52,12 +54,16 @@ module.exports = {
         'handle-callback-err': ['warn', '^err(or)?$'],
         'implicit-arrow-linebreak': 'error',
         indent: ['error', indentationSpaces, {
-            SwitchCase: 0
+            SwitchCase: 1
         }],
         'key-spacing': 'error',
         'keyword-spacing': 'error',
         'linebreak-style': ['error', 'unix'],
-        'lines-between-class-members': 'warn',
+        'lines-between-class-members': [
+            'warn',
+            'always',
+            { exceptAfterSingleLine: true }
+        ],
         'max-depth': 'warn',
         'max-len': ['warn', {
             code: lineLength,
@@ -107,6 +113,7 @@ module.exports = {
             maxBOF: 0,
             maxEOF: 1
         }],
+        'no-multi-spaces': 'error',
         'no-negated-condition': 'error',
         'no-nested-ternary': 'warn',
         'no-new-func': 'warn',
@@ -163,6 +170,7 @@ module.exports = {
         }],
         'operator-assignment': 'warn',
         'operator-linebreak': 'error',
+        'padded-blocks': ['error', 'never'],
         'prefer-arrow-callback': 'warn',
         'prefer-promise-reject-errors': 'warn',
         'prefer-rest-params': 'warn',
@@ -218,9 +226,25 @@ module.exports = {
             'no-magic-numbers': 'off'
         }
     }, {
-        files: ['*.test.js'],
+        files: ['*.json'],
+        parser: 'jsonc-eslint-parser',
         rules: {
-            'no-undefined': 'off'
+            'jsonc/auto': 'off',
+            'max-len': 'off',
+            'max-depth': 'off',
+            'max-lines': 'off',
+            semi: 'off',
+            'jsonc/indent': ['error', jsonIndentationSpaces],
+            'jsonc/object-curly-newline': ['error', { minProperties: 1 }],
+            'jsonc/array-bracket-spacing': ['error', 'never'],
+            'jsonc/array-bracket-newline': ['error', { minItems: 1 }],
+            'jsonc/array-element-newline': ['error', 'always'],
+            'jsonc/object-property-newline': ['error'],
+            'jsonc/key-spacing': ['error', {
+                beforeColon: false,
+                afterColon: true,
+                mode: 'strict'
+            }]
         }
     }]
 };

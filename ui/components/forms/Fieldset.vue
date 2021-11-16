@@ -26,17 +26,12 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "../../css/variables";
-
 fieldset {
   /* reset default styles */
   margin: 0;
   padding: 0;
   outline: none;
   border: none;
-
-  /* required for text ellipsis on checkboxes and radiobuttons  */
-  min-width: 100% !important; /* fix for Edge Legacy (v12-18); otherwise auto would be sufficient */
 
   & > legend {
     font-weight: 700;

@@ -54,5 +54,4 @@ describe('Button.vue', () => {
         });
         expect(wrapper.attributes('id')).toEqual('testId');
     });
-
 });

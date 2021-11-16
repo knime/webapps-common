@@ -39,8 +39,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .wrapper {
   margin: 0 -10px;
 }

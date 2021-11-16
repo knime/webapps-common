@@ -13,7 +13,6 @@ const parentRoot = path.resolve(parentPkgPath, '..');
 const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
 if (!skip) {
-
     // exclude parent package
     const parentPkg = require(parentPkgPath);
     const parentPkgVersion = semver.coerce(parentPkg.version); // licensechecker only accepts semver versions

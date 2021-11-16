@@ -41,10 +41,10 @@ export default {
     data() {
         return {
             codeExample,
-            min: -10,
-            max: 10,
+            min: -10000000,
+            max: 10000000,
             inputValue1: 0,
-            inputValue2: 0,
+            inputValue2: '4.5324526E6',
             inputValue3: -15,
             isValid1: true,
             isValid2: true,

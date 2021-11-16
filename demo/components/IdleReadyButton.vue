@@ -46,7 +46,7 @@ export default {
             this.idle = true;
             setTimeout(() => {
                 // simulate async idle
-                this.offset = this.offset + pageSize;
+                this.offset += pageSize;
                 this.idle = false;
             }, 1000);
         }
@@ -100,8 +100,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-@import "../../ui/css/variables";
-
 .demo {
   background: var(--knime-porcelain);
 

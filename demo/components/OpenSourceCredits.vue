@@ -61,7 +61,7 @@ export default {
           class="license-content"
           :additional-packages="additionalPackages"
         >
-          <template v-slot:header="{ title }">
+          <template #header="{ title }">
             <section class="headline">
               <div class="grid-container">
                 <h2 class="grid-item-12">{{ title = '**Optional slotted header**' }}</h2>
@@ -83,8 +83,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import "webapps-common/ui/css/variables";
-
 .page-content {
   outline: 2px dotted purple;
 
