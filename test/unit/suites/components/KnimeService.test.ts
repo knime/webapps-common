@@ -40,7 +40,7 @@ describe('KnimeService', () => {
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
         });
 
@@ -52,7 +52,7 @@ describe('KnimeService', () => {
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             )).toThrowError(`Cannot read properties of null (reading 'projectId')`);
             expect(rpcSpy).not.toHaveBeenCalled();
         });
@@ -65,7 +65,7 @@ describe('KnimeService', () => {
             knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             );
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}');
@@ -79,7 +79,7 @@ describe('KnimeService', () => {
             expect(() => knimeService.callService(
                 'UnsupportedService.unknownMethod' as NodeServiceMethods,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             )).toThrowError('Unsupported params');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}');
@@ -146,9 +146,9 @@ describe('KnimeService notifications', () => {
                     workflowId: '...',
                     nodeId: '...',
                     keys: ['Row01', 'Row02'],
-                    mode: 'ADD',
-                },
-            ],
+                    mode: 'ADD'
+                }
+            ]
         };
 
         window.jsonrpcNotification(notification);

@@ -4,10 +4,10 @@ import { generateRequestId } from './generateRequestId';
 
 export const createJsonRpcRequest = (
     method: ServiceMethod | string,
-    params = [],
+    params = []
 ) => JSON.stringify({
     jsonrpc: JSON_RPC_VERSION,
     method,
     params,
-    id: generateRequestId(),
+    id: generateRequestId()
 });

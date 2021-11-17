@@ -33,21 +33,21 @@ describe('SelectionService methods', () => {
         expect(callService).toBeCalledWith(
             NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceTypes.ADD,
-            params,
+            params
         );
 
         selectionService.remove(params);
         expect(callService).toBeCalledWith(
             NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceTypes.REMOVE,
-            params,
+            params
         );
 
         selectionService.replace(params);
         expect(callService).toBeCalledWith(
             NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
             SelectionServiceTypes.REPLACE,
-            params,
+            params
         );
     });
 
