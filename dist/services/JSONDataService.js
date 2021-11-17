@@ -28,7 +28,7 @@ class JSONDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService.callService(ServiceMethods.NodeServiceTypes.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService.callService(ServiceMethods.NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration

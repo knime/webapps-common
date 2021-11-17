@@ -1,7 +1,3 @@
 module.exports = {
-    env: {
-        node: true,
-        jest: true
-    }
+    extends: ['../../webapps-common/lint/.eslintrc-jest.js'],
 };
-

@@ -9,7 +9,7 @@ const createJsonRpcRequest = (method, params = []) => JSON.stringify({
     jsonrpc: index.JSON_RPC_VERSION,
     method,
     params,
-    id: generateRequestId.generateRequestId()
+    id: generateRequestId.generateRequestId(),
 });
 
 exports.createJsonRpcRequest = createJsonRpcRequest;

@@ -1,4 +1,4 @@
-import { ExtensionConfig, Service, ServiceMethod } from "../index-cf559541";
+import { ExtensionConfig, ServiceMethod, Notification, Service } from "../index-c969ba90";
 /**
  * The main API entry point for UI Extensions, this class consumes the initial information about a UI Extension
  * (via the {@type ExtensionConfig}) and handles all of the communication between the environment (e.g. KNIME
@@ -13,6 +13,7 @@ declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
     private jsonRpcSupported;
     private dataGetter;
+    notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      */
@@ -71,5 +72,62 @@ declare class KnimeService<T = any> {
      *      returns {@type null}.
      */
     getData(): Promise<any>;
+    /**
+     * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.
+     * @param {Notification} notification - notification object, which is provided by backend implementation.
+     * @returns {void}
+     */
+    /**
+     * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.
+     * @param {Notification} notification - notification object, which is provided by backend implementation.
+     * @returns {void}
+     */
+    private onJsonrpcNotification;
+    /**
+     * Registers callback that will be triggered on received notification.
+     * @param {string} notificationType - notification type that callback should be registered for.
+     * @param {function} callback - callback that should be called on received notification, will be called with {Notification} param
+     * @returns {void}
+     */
+    /**
+     * Registers callback that will be triggered on received notification.
+     * @param {string} notificationType - notification type that callback should be registered for.
+     * @param {function} callback - callback that should be called on received notification, will be called with {Notification} param
+     * @returns {void}
+     */
+    addNotificationCallback(notificationType: string, callback: (notification: Notification) => void): void;
+    /**
+     * Unregisters previously registered callback for notifications.
+     * @param {string} notificationType - notification type that matches registered callback notification type.
+     * @param {function} callback - previously registered callback.
+     * @returns {void}
+     */
+    /**
+     * Unregisters previously registered callback for notifications.
+     * @param {string} notificationType - notification type that matches registered callback notification type.
+     * @param {function} callback - previously registered callback.
+     * @returns {void}
+     */
+    removeNotificationCallback(notificationType: string, callback: (notification: Notification) => void): void;
+    /**
+     * Unregisters all previously registered notification callbacks of provided notification type.
+     * @param {string} notificationType - notification type that matches registered callbacks notification type.
+     * @returns {void}
+     */
+    /**
+     * Unregisters all previously registered notification callbacks of provided notification type.
+     * @param {string} notificationType - notification type that matches registered callbacks notification type.
+     * @returns {void}
+     */
+    resetNotificationCallbacksByType(notificationType: string): void;
+    /**
+     * Unregisters all previously registered notification callbacks of all notifications types.
+     * @returns {void}
+     */
+    /**
+     * Unregisters all previously registered notification callbacks of all notifications types.
+     * @returns {void}
+     */
+    resetNotificationCallbacks(): void;
 }
 export { KnimeService };

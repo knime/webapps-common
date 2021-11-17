@@ -1,11 +1,11 @@
 import { KnimeService, JSONDataService } from 'src';
-import { NodeServiceTypes, DataServiceTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: string) => {
     const request = JSON.parse(requestJSON);
 
-    if (request.method === NodeServiceTypes.CALL_NODE_DATA_SERVICE) {
+    if (request.method === NodeServiceMethods.CALL_NODE_DATA_SERVICE) {
         return JSON.stringify({ result: JSON.stringify({}) });
     }
 
@@ -38,9 +38,9 @@ describe('KnimeService', () => {
             delete window.jsonrpc;
             const knimeService = new KnimeService();
             expect(() => knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             )).toThrowError(`Current environment doesn't support window.jsonrpc()`);
         });
 
@@ -50,9 +50,9 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService();
 
             expect(() => knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             )).toThrowError(`Cannot read properties of null (reading 'projectId')`);
             expect(rpcSpy).not.toHaveBeenCalled();
         });
@@ -63,9 +63,9 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             knimeService.callService(
-                NodeServiceTypes.CALL_NODE_DATA_SERVICE,
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             );
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"NodeService.callNodeDataService",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":1}');
@@ -77,9 +77,9 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                'UnsupportedService.unknownMethod' as NodeServiceTypes,
+                'UnsupportedService.unknownMethod' as NodeServiceMethods,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             )).toThrowError('Unsupported params');
             expect(rpcSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"UnsupportedService.unknownMethod",' +
                 '"params":["knime workflow","root:10","123","view","initial_data",""],"id":2}');
@@ -112,5 +112,80 @@ describe('KnimeService', () => {
             expect(knimeService.getData()).resolves.toEqual(JSON.stringify(testData));
             expect(getDataMock).toHaveBeenCalledTimes(1);
         });
+    });
+});
+
+describe('KnimeService notifications', () => {
+    beforeEach(() => {
+        window.jsonrpcNotification = null;
+    });
+
+    it('Adds notification callback with addNotificationCallback', () => {
+        const knime = new KnimeService();
+
+        const callback = () => {};
+
+        knime.addNotificationCallback('SelectionEvent', callback);
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
+    });
+
+    it('Calls onJsonrpcNotification if callbacks added', () => {
+        const knime = new KnimeService();
+
+        const callback = jest.fn(() => {});
+
+        knime.addNotificationCallback('SelectionEvent', callback);
+
+        const notification = {
+            jsonrpc: '2.0',
+            method: 'SelectionEvent',
+            params: [
+                {
+                    projectId: '...',
+                    workflowId: '...',
+                    nodeId: '...',
+                    keys: ['Row01', 'Row02'],
+                    mode: 'ADD',
+                },
+            ],
+        };
+
+        window.jsonrpcNotification(notification);
+
+        expect(callback).toBeCalled();
+    });
+
+    it('Removes notification callback with removeNotificationCallback', () => {
+        const knime = new KnimeService();
+
+        const callback = () => {};
+
+        knime.addNotificationCallback('SelectionEvent', callback);
+        knime.removeNotificationCallback('SelectionEvent', callback);
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+    });
+
+    it('Resets notification callbacks by type with resetNotificationCallbacksByType', () => {
+        const knime = new KnimeService();
+
+        knime.addNotificationCallback('SelectionEvent', () => {});
+        knime.addNotificationCallback('CustomEvent', () => {});
+        knime.resetNotificationCallbacksByType('SelectionEvent');
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+        expect(knime.notificationCallbacksMap.get('CustomEvent').length === 1);
+    });
+
+    it('Resets all notification callbacks with resetNotificationCallbacks', () => {
+        const knime = new KnimeService();
+
+        knime.addNotificationCallback('SelectionEvent', () => {});
+        knime.addNotificationCallback('CustomEvent', () => {});
+        knime.resetNotificationCallbacksByType('SelectionEvent');
+
+        expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
+        expect(knime.notificationCallbacksMap.get('CustomEvent').length === 0);
     });
 });
