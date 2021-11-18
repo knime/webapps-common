@@ -9,8 +9,8 @@ export default {
             dir: './dist',
             format: 'es',
             sourcemap: false,
-            preserveModules: true,
-        },
+            preserveModules: true
+        }
     ],
     plugins: [
         commonjs(),
@@ -19,9 +19,9 @@ export default {
             targets: [
                 {
                     src: 'package.json',
-                    dest: 'dist',
-                },
-            ],
-        }),
-    ],
+                    dest: 'dist'
+                }
+            ]
+        })
+    ]
 };

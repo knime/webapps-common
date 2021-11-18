@@ -4,12 +4,12 @@ module.exports = {
     roots: ['<rootDir>'],
     modulePaths: ['<rootDir>'],
     transform: {
-        '^.+\\.tsx?$': 'ts-jest',
+        '^.+\\.tsx?$': 'ts-jest'
     },
     transformIgnorePatterns: ['/node_modules/'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/test/$1',
-        '^~/(.*)$': '<rootDir>/$1',
+        '^~/(.*)$': '<rootDir>/$1'
     },
     reporters: ['default', ['jest-junit', { outputDirectory: './coverage' }]],
     coverageReporters: ['lcov', 'text'],
@@ -20,15 +20,15 @@ module.exports = {
         '!**/*.config.js',
         '!.eslintrc*.js',
         '!**/.eslintrc*.js',
-        '!<rootDir>/test/unit/test-util',
+        '!<rootDir>/test/unit/test-util'
     ],
     coveragePathIgnorePatterns: [
         '^<rootDir>/(coverage|dist|test|target|node_modules|bin|webapps-common|src/dev)/',
-        '^<rootDir>/src/(main.ts|dev.ts)',
+        '^<rootDir>/src/(main.ts|dev.ts)'
     ],
     watchPathIgnorePatterns: ['^<rootDir>/(coverage|dist|target|node_modules|bin|webapps-common)/'],
     testURL: 'http://test.example/',
     testMatch: ['<rootDir>/test/unit/suites/**/*.test.ts'],
     watchPlugins: [],
-    setupFiles: ['<rootDir>/test/unit/jest-setup'],
+    setupFiles: ['<rootDir>/test/unit/jest-setup']
 };

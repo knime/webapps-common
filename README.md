@@ -80,10 +80,19 @@ npm run build
 ```javascript
 git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-ui-extension-service
 ```
-1. Run `npm i` to install all dependencies.
+2. Run `npm i` to install all dependencies.
+3. Instantiate and use desired services as shown below
 
-2. To use the services inside a Vue-based KNIME UI component you have to import and instantiate each desired service with the
-passed `knimeService` instance, e.g.
+### Usage in an IFrame-based KNIME UI component
+```javascript
+import { IFrameKnimeService, JsonDataService } from 'knime-ui-extension-service';
+this.knimeService = new IFrameKnimeService();
+this.knimeJSONDataService = new JsonDataService(this.knimeService);
+this.initialData = await this.knimeJSONDataService.initialData();
+```
+
+### Usage in a Vue-based KNIME UI component
+In this case, the `knimeService` instance is already passed as a prop and doesn't need to be instantiated, e.g.
 ```javascript
 ...
 import { JsonDataService } from 'knime-ui-extension-service';
