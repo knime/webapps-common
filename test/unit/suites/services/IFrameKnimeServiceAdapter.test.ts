@@ -25,7 +25,7 @@ const buildIFrameKnimeServiceAdapter = () => {
         extensionConfig
     });
 
-    jest.spyOn(iFrameKnimeServiceAdapter, 'checkMessageSource').mockImplementation(() => false);
+    jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
 
     return iFrameKnimeServiceAdapter;
 };
@@ -111,7 +111,7 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Posts response back ', async () => {
+        it('Posts response back', async () => {
             const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
             const spy = jest.spyOn(window, 'postMessage');
 

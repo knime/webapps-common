@@ -75,7 +75,7 @@ export class KnimeService<T = any> {
     }
 
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
-    executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
         return new Promise<JsonRpcResponse>((resolve, reject) => {
             reject(new Error('Method executeServiceCall should only be used by derived class'));
         });

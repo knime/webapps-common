@@ -3,25 +3,23 @@ import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
- * The main API entry point for iframe based UI extensions. Handles all extension side communication
- * between current window and parent window.
+ * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
+ * IFrame and parent window via window.postMessage.
  *
- * Parent window communication should be setup with instance of IFrameKnimeServiceAdapter.
+ * The parent window needs to have a instance of IFrameKnimeServiceAdapter.
  *
  * Other services should be initialized with instance of the class.
  */
-export class IFrameKnimeService<T = any> extends KnimeService {
+export class IFrameKnimeService extends KnimeService {
     private pendingJsonRpcRequests: Map<Number, any> = new Map();
 
-    extensionConfig: ExtensionConfig<T>;
-
-    boundOnMessageReceived: any;
+    private boundOnMessageFromParent: any;
 
     constructor(extensionConfig: ExtensionConfig = null) {
         super(extensionConfig);
 
-        this.boundOnMessageReceived = this.onMessageReceived.bind(this);
-        window.addEventListener('message', this.boundOnMessageReceived);
+        this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
+        window.addEventListener('message', this.onMessageFromParent);
 
         window.parent.postMessage(
             {
@@ -32,68 +30,70 @@ export class IFrameKnimeService<T = any> extends KnimeService {
     }
 
     /**
-     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
-     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
-     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     * Called when a new message is received, identifies and handles it if type is supported.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+     * @returns {void}
      */
-    onMessageReceived(event: MessageEvent) {
+    private onMessageFromParent(event: MessageEvent) {
         // TODO NXT-793 security
         const { data } = event;
 
         if (!data.type?.startsWith(UI_EXT_POST_MESSAGE_PREFIX)) {
-            return null;
+            return;
         }
 
         switch (data.type) {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
-                this.extensionConfig = event.data.payload;
+                this.onInit(data);
                 break;
 
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`:
-                {
-                    const { payload } = data;
-                    const responseJSON = JSON.parse(payload);
-                    const { id } = responseJSON;
-                    const request = this.pendingJsonRpcRequests.get(id);
-
-                    if (!request) {
-                        throw new Error(
-                            `Received jsonrpcResponse for non-existing pending request with id ${id}`
-                        );
-                    }
-
-                    const { result, error } = responseJSON;
-
-                    if (result) {
-                        request.resolve(JSON.parse(result));
-                    } else {
-                        request.reject(
-                            new Error(
-                                `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
-                                    error?.message || 'not provided'
-                                }`
-                            )
-                        );
-                    }
-
-                    this.pendingJsonRpcRequests.delete(id);
-                }
-
+                this.onJsonRpcResponse(data);
                 break;
 
             default:
-                return false;
+        }
+    }
+
+    private onInit(data) {
+        this.extensionConfig = data.payload;
+    }
+
+    private onJsonRpcResponse(data) {
+        const { payload } = data;
+        const responseJSON = JSON.parse(payload);
+        const { id } = responseJSON;
+        const request = this.pendingJsonRpcRequests.get(id);
+
+        if (!request) {
+            throw new Error(
+                `Received jsonrpcResponse for non-existing pending request with id ${id}`
+            );
         }
 
-        return true;
+        const { result, error } = responseJSON;
+
+        if (result) {
+            request.resolve(JSON.parse(result));
+        } else {
+            request.reject(
+                new Error(
+                    `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
+                        error?.message || 'not provided'
+                    }`
+                )
+            );
+        }
+
+        this.pendingJsonRpcRequests.delete(id);
     }
 
     /**
-     * Overrides method of KnimeService to implement how request should be processed at iframe environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeSerivce callService method.
+     * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
+     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
      * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
      */
-    executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
         let rejectTimeoutId;
 
         const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
@@ -127,11 +127,11 @@ export class IFrameKnimeService<T = any> extends KnimeService {
     }
 
     /**
-     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.
      * @returns {void}
      */
     destroy() {
-        window.removeEventListener('message', this.boundOnMessageReceived);
+        window.removeEventListener('message', this.boundOnMessageFromParent);
     }
 }

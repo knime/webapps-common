@@ -38,118 +38,109 @@ describe('IFrameKnimeService', () => {
                     payload: extensionConfig
                 }
             };
-
-            knimeService.onMessageReceived(testMessage as MessageEvent);
+            (knimeService as any).onMessageFromParent(testMessage as MessageEvent); /* eslint-disable-line no-extra-parens */
             expect(knimeService.extensionConfig).toStrictEqual(extensionConfig);
         });
+    });
 
-        describe('working with services', () => {
-            let knimeService;
+    describe('postMessage communication', () => {
+        let knimeService, onInitSpy, onJsonRpcResponseSpy;
 
-            beforeEach(() => {
-                knimeService = new IFrameKnimeService();
-                expect(knimeService.extensionConfig).toBe(null);
-                let testMessage = {
-                    data: {
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                        payload: extensionConfig
-                    }
-                };
-                knimeService.onMessageReceived(testMessage as MessageEvent);
+        beforeEach(() => {
+            knimeService = new IFrameKnimeService();
+            onInitSpy = jest.spyOn(knimeService, 'onInit');
+            onJsonRpcResponseSpy = jest.spyOn(knimeService, 'onJsonRpcResponse');
+            expect(knimeService.extensionConfig).toBe(null);
+            let testMessage = {
+                data: {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
+                    payload: extensionConfig
+                }
+            };
+            (knimeService as any).onMessageFromParent(testMessage as MessageEvent); /* eslint-disable-line no-extra-parens */
+        });
+
+        it('onMessageFromParent does nothing if called with unsupported prefix', () => {
+            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+                data: {
+                    type: `unsupported_prefix:jsonrpcResponse`,
+                    payload: extensionConfig
+                }
+            } as MessageEvent);
+
+            expect(onInitSpy).not.toHaveBeenCalled();
+            expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
+        });
+
+        it('onMessageFromParent does nothing if called with unsupported type', () => {
+            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+                data: {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
+                    payload: extensionConfig
+                }
+            } as MessageEvent);
+
+            expect(onInitSpy).not.toHaveBeenCalled();
+            expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
+        });
+
+        it('onMessageFromParent handles', () => {
+            knimeService.executeServiceCall({
+                id: 2
             });
 
-            it('onMessageReceived returns false if called with unsupported prefix', () => {
-                knimeService = new IFrameKnimeService();
-
-                const spy = jest.spyOn(knimeService, 'onMessageReceived');
-                knimeService.onMessageReceived({
-                    data: {
-                        type: `unsupported_prefix:jsonrpcResponse`,
-                        payload: extensionConfig
-                    }
-                } as MessageEvent);
-
-                expect(spy).toHaveReturnedWith(null);
-            });
-
-            it('onMessageReceived throws error if called with unsupported type', () => {
-                knimeService = new IFrameKnimeService();
-
-                const spy = jest.spyOn(knimeService, 'onMessageReceived');
-
-                knimeService.onMessageReceived({
-                    data: {
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
-                        payload: extensionConfig
-                    }
-                } as MessageEvent);
-
-                expect(spy).toHaveReturnedWith(false);
-            });
-
-            it('onMessageReceived with supported prefix and type returns true ', () => {
-                knimeService = new IFrameKnimeService();
-
-                knimeService.executeServiceCall({
-                    id: 2
-                });
-
-                const spy = jest.spyOn(knimeService, 'onMessageReceived');
-
-                knimeService.onMessageReceived({
-                    data: {
-                        payload: JSON.stringify({
-                            result: JSON.stringify([1, 1, 2]),
-                            id: 2
-                        }),
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
-                    }
-                } as MessageEvent);
-
-                expect(spy).toHaveReturnedWith(true);
-            });
-
-            it('returns error object if request takes too long', async () => {
-                knimeService = new IFrameKnimeService();
-
-                expect(
-                    await knimeService.executeServiceCall({
+            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+                data: {
+                    payload: JSON.stringify({
+                        result: JSON.stringify([1, 1, 2]),
                         id: 2
-                    })
-                ).toEqual({
-                    error: {
-                        message: 'Request with id: 2 rejected due to timeout.',
-                        code: 'req-timeout'
-                    },
-                    result: null
-                });
-            });
+                    }),
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
+                }
+            } as MessageEvent);
 
-            it('executes service calls', () => {
-                let postSpy = jest.spyOn(window, 'postMessage');
-                const knimeJsonDataService = new JsonDataService(knimeService);
-                knimeJsonDataService.data();
+            expect(onInitSpy).not.toHaveBeenCalled();
+            expect(onJsonRpcResponseSpy).toHaveBeenCalled();
+        });
 
-                expect(postSpy).toHaveBeenCalledWith(
-                    {
-                        payload: {
-                            id: 2,
-                            jsonrpc: JSON_RPC_VERSION,
-                            method: 'NodeService.callNodeDataService',
-                            params: [
-                                'knime workflow',
-                                'root:10',
-                                '123',
-                                'view',
-                                'data',
-                                '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
-                            ]
-                        },
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`
-                    },
-                    '*'
-                );
+        it('returns error object if request takes too long', async () => {
+            expect(
+                await knimeService.executeServiceCall({
+                    id: 2
+                })
+            ).toEqual({
+                error: {
+                    message: 'Request with id: 2 rejected due to timeout.',
+                    code: 'req-timeout'
+                },
+                result: null
             });
+        });
+
+        it('executes service calls', () => {
+            let postSpy = jest.spyOn(window, 'postMessage');
+            const knimeJsonDataService = new JsonDataService(knimeService);
+            knimeJsonDataService.data();
+
+            expect(postSpy).toHaveBeenCalledWith(
+                {
+                    payload: {
+                        id: 2,
+                        jsonrpc: JSON_RPC_VERSION,
+                        method: 'NodeService.callNodeDataService',
+                        params: [
+                            'knime workflow',
+                            'root:10',
+                            '123',
+                            'view',
+                            'data',
+                            '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
+                        ]
+                    },
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`
+                },
+                '*'
+            );
         });
     });
 });
