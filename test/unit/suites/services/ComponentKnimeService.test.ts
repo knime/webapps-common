@@ -42,9 +42,9 @@ describe('ComponentKnimeService', () => {
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             )).rejects.toMatchObject({
-                message: `Cannot read properties of null (reading 'projectId')`
+                message: `Cannot read properties of null (reading 'projectId')`,
             });
             expect(rpcSpy).not.toHaveBeenCalled();
         });
@@ -57,13 +57,13 @@ describe('ComponentKnimeService', () => {
             knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                ''
+                '',
             );
             expect(rpcSpy).toHaveBeenCalledWith({
                 jsonrpc: '2.0',
                 method: 'NodeService.callNodeDataService',
                 params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
-                id: 1
+                id: 1,
             });
         });
 
@@ -75,13 +75,13 @@ describe('ComponentKnimeService', () => {
             expect(() => knimeService.callService(
                     'UnsupportedService.unknownMethod' as NodeServiceMethods,
                     DataServiceTypes.INITIAL_DATA,
-                    ''
+                    '',
             )).rejects.toMatchObject({ message: 'Unsupported params' });
             expect(rpcSpy).toHaveBeenCalledWith({
                 jsonrpc: '2.0',
                 method: 'UnsupportedService.unknownMethod',
                 params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
-                id: 2
+                id: 2,
             });
         });
     });

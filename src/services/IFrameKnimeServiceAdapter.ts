@@ -53,9 +53,9 @@ export class IFrameKnimeServiceAdapter {
                 this.iFrameWindow.postMessage(
                     {
                         type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                        payload: this.extensionConfig
+                        payload: this.extensionConfig,
                     },
-                    '*'
+                    '*',
                 );
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
@@ -66,9 +66,9 @@ export class IFrameKnimeServiceAdapter {
                     this.iFrameWindow.postMessage(
                         {
                             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                            payload: response
+                            payload: response,
                         },
-                        '*'
+                        '*',
                     );
                 }
                 break;

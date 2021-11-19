@@ -4,7 +4,7 @@ import { extensionConfig } from 'test/mocks';
 jest.mock('src/constants', () => ({
     JSON_RPC_VERSION: '2.0',
     UI_EXT_POST_MESSAGE_PREFIX: 'prefix',
-    UI_EXT_POST_MESSAGE_TIMEOUT: 10
+    UI_EXT_POST_MESSAGE_TIMEOUT: 10,
 }));
 
 import { UI_EXT_POST_MESSAGE_PREFIX, JSON_RPC_VERSION } from 'src/constants';
@@ -23,9 +23,9 @@ describe('IFrameKnimeService', () => {
             expect(eventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
             expect(postSpy).toHaveBeenCalledWith(
                 {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
                 },
-                '*'
+                '*',
             );
         });
 
@@ -35,10 +35,12 @@ describe('IFrameKnimeService', () => {
             let testMessage = {
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: extensionConfig
-                }
+                    payload: extensionConfig,
+                },
             };
-            (knimeService as any).onMessageFromParent(testMessage as MessageEvent); /* eslint-disable-line no-extra-parens */
+            (knimeService as any).onMessageFromParent(/* eslint-disable-line no-extra-parens */
+                testMessage as MessageEvent,
+            );
             expect(knimeService.extensionConfig).toStrictEqual(extensionConfig);
         });
     });
@@ -50,22 +52,15 @@ describe('IFrameKnimeService', () => {
             knimeService = new IFrameKnimeService();
             onInitSpy = jest.spyOn(knimeService, 'onInit');
             onJsonRpcResponseSpy = jest.spyOn(knimeService, 'onJsonRpcResponse');
-            expect(knimeService.extensionConfig).toBe(null);
-            let testMessage = {
-                data: {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: extensionConfig
-                }
-            };
-            (knimeService as any).onMessageFromParent(testMessage as MessageEvent); /* eslint-disable-line no-extra-parens */
         });
 
         it('onMessageFromParent does nothing if called with unsupported prefix', () => {
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+
                 data: {
                     type: `unsupported_prefix:jsonrpcResponse`,
-                    payload: extensionConfig
-                }
+                    payload: extensionConfig,
+                },
             } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
@@ -74,10 +69,11 @@ describe('IFrameKnimeService', () => {
 
         it('onMessageFromParent does nothing if called with unsupported type', () => {
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
-                    payload: extensionConfig
-                }
+                    payload: extensionConfig,
+                },
             } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
@@ -86,17 +82,18 @@ describe('IFrameKnimeService', () => {
 
         it('onMessageFromParent handles', () => {
             knimeService.executeServiceCall({
-                id: 2
+                id: 2,
             });
 
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+
                 data: {
                     payload: JSON.stringify({
                         result: JSON.stringify([1, 1, 2]),
-                        id: 2
+                        id: 2,
                     }),
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
-                }
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
+                },
             } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
@@ -106,21 +103,32 @@ describe('IFrameKnimeService', () => {
         it('returns error object if request takes too long', async () => {
             expect(
                 await knimeService.executeServiceCall({
-                    id: 2
-                })
+                    id: 2,
+                }),
             ).toEqual({
                 error: {
                     message: 'Request with id: 2 rejected due to timeout.',
-                    code: 'req-timeout'
+                    code: 'req-timeout',
                 },
-                result: null
+                result: null,
             });
         });
 
         it('executes service calls', () => {
             let postSpy = jest.spyOn(window, 'postMessage');
+            const testMessage = {
+                data: {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
+                    payload: extensionConfig,
+                },
+            };
+
+            ((knimeService as any)).onMessageFromParent(/* eslint-disable-line no-extra-parens */
+                testMessage as MessageEvent,
+            );
             const knimeJsonDataService = new JsonDataService(knimeService);
             knimeJsonDataService.data();
+
 
             expect(postSpy).toHaveBeenCalledWith(
                 {
@@ -134,12 +142,12 @@ describe('IFrameKnimeService', () => {
                             '123',
                             'view',
                             'data',
-                            '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
-                        ]
+                            '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}',
+                        ],
                     },
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
                 },
-                '*'
+                '*',
             );
         });
     });

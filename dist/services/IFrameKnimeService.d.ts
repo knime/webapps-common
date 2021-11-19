@@ -1,47 +1,48 @@
 import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 /**
- * The main API entry point for iframe based UI extensions. Handles all extension side communication
- * between current window and parent window.
+ * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
+ * IFrame and parent window via window.postMessage.
  *
- * Parent window communication should be setup with instance of IFrameKnimeServiceAdapter.
+ * The parent window needs to have a instance of IFrameKnimeServiceAdapter.
  *
  * Other services should be initialized with instance of the class.
  */
-declare class IFrameKnimeService<T = any> extends KnimeService {
+declare class IFrameKnimeService extends KnimeService {
     private pendingJsonRpcRequests;
-    extensionConfig: ExtensionConfig<T>;
-    boundOnMessageReceived: any;
+    private boundOnMessageFromParent;
     constructor(extensionConfig?: ExtensionConfig);
     /**
-     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
-     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
-     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     * Called when a new message is received, identifies and handles it if type is supported.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+     * @returns {void}
      */
     /**
-     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
-     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
-     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     * Called when a new message is received, identifies and handles it if type is supported.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+     * @returns {void}
      */
-    onMessageReceived(event: MessageEvent): boolean;
+    private onMessageFromParent;
+    private onInit;
+    private onJsonRpcResponse;
     /**
-     * Overrides method of KnimeService to implement how request should be processed at iframe environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeSerivce callService method.
+     * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
+     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
      * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
      */
     /**
-     * Overrides method of KnimeService to implement how request should be processed at iframe environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeSerivce callService method.
+     * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
+     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
      * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
      */
-    executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
     /**
-     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.
      * @returns {void}
      */
     /**
-     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.
      * @returns {void}
      */

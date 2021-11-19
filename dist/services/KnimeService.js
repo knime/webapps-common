@@ -41,7 +41,7 @@ class KnimeService {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             service,
-            request || ''
+            request || '',
         ]);
         const { result, error } = await this.executeServiceCall(jsonRpcRequest);
         if (error) {
@@ -102,7 +102,7 @@ class KnimeService {
         }
         this.notificationCallbacksMap.set(notificationType, [
             ...this.notificationCallbacksMap.get(notificationType) || [],
-            callback
+            callback,
         ]);
     }
     /**

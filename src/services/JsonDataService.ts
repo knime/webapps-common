@@ -1,17 +1,18 @@
 import { IFrameKnimeService, ComponentKnimeService } from 'src';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
+import { KnimeService } from './KnimeService';
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
 export class JsonDataService<T = any> {
-    private knimeService: ComponentKnimeService<T> | IFrameKnimeService<T>;
+    private knimeService: ComponentKnimeService | IFrameKnimeService | KnimeService<T>;
 
     /**
-     * @param {ComponentKnimeService<T> | IFrameKnimeService<T>} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {ComponentKnimeService | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
      */
-    constructor(knimeService: ComponentKnimeService<T> | IFrameKnimeService<T>) {
+    constructor(knimeService: ComponentKnimeService | IFrameKnimeService | KnimeService<T>) {
         this.knimeService = knimeService;
     }
 
@@ -58,7 +59,7 @@ export class JsonDataService<T = any> {
     data(params: { method?: string, options?: any } = {}) {
         return this.callDataService(
             DataServiceTypes.DATA,
-            JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
+            JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)),
         );
     }
 
@@ -73,7 +74,7 @@ export class JsonDataService<T = any> {
         const data = await this.knimeService.getData();
         return this.callDataService(
             DataServiceTypes.APPLY_DATA,
-            JSON.stringify(data)
+            JSON.stringify(data),
         );
     }
 

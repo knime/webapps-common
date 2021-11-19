@@ -5,7 +5,7 @@ const createJsonRpcRequest = (method, params = []) => ({
     jsonrpc: JSON_RPC_VERSION,
     method,
     params,
-    id: generateRequestId()
+    id: generateRequestId(),
 });
 
 export { createJsonRpcRequest };

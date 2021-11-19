@@ -39,7 +39,7 @@ declare class KnimeService<T = any> {
      */
     callService(method: ServiceMethod, service: Service, request: string): Promise<any>;
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
-    executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).

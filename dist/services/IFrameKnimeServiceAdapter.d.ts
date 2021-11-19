@@ -16,34 +16,34 @@ declare class IFrameKnimeServiceAdapter {
     boundOnMessageFromIFrame: any;
     constructor({ iFrameWindow, extensionConfig }: IFrameKnimeServiceAdapterOptions);
     /**
-     * Method that checks if message source is secure.
+     * Checks if message is coming from the correct IFrame and therefore is secure.
      * @param {MessageEvent} event - postMessage event.
      * @returns {boolean} - returns true if postMessage source is secure.
      */
     /**
-     * Method that checks if message source is secure.
+     * Checks if message is coming from the correct IFrame and therefore is secure.
      * @param {MessageEvent} event - postMessage event.
      * @returns {boolean} - returns true if postMessage source is secure.
      */
-    checkMessageSource(event: MessageEvent): boolean;
+    private checkMessageSource;
     /**
-     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
-     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
-     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     * Listens for postMessage events, identifies and handles them if event type is supported.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+     * @returns {void}
      */
     /**
-     * Method that listens for postMessage events, identifies them, and handles if their type matches supported event types.
-     * @param {MessageEvent} event - postMessage event that is sent by parent window with payload and event type.
-     * @returns {null | boolean} - null if event prefix unrecognized, false if no event type matches, true on success.
+     * Listens for postMessage events, identifies and handles them if event type is supported.
+     * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+     * @returns {void}
      */
-    onMessageFromIFrame(event: MessageEvent): void;
+    private onMessageFromIFrame;
     /**
-     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * Should be called before destroying the IFrame to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.
      * @returns {void}
      */
     /**
-     * Method that should be used before destroying IFrameKnimeService, to remove event listeners from window object,
+     * Should be called before destroying the IFrame to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.
      * @returns {void}
      */

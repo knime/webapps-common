@@ -12,17 +12,17 @@ const knime = new KnimeService({
         id: 'org.knime.base.views.scatterplot.ScatterPlotNodeFactory',
         type: ResourceTypes.VUE_COMPONENT_LIB,
         path: null,
-        url: 'http://localhost:4000/ScatterPlot.js'
+        url: 'http://localhost:4000/ScatterPlot.js',
     },
     nodeInfo: {
         nodeAnnotation: '',
         nodeState: 'executed',
         nodeErrorMessage: null,
         nodeWarnMessage: null,
-        nodeName: 'Scatter Plot'
+        nodeName: 'Scatter Plot',
     },
     initialData: '{"settings":null}',
-    extensionType: ExtensionTypes.VIEW
+    extensionType: ExtensionTypes.VIEW,
 });
 
 const jsonDataService = new JsonDataService(knime);
