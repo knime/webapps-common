@@ -12,7 +12,7 @@
         "lint:fix": "eslint --fix --ext .ts .",
         "lint:ts": "eslint --ext .ts .",
         "lint:json": "eslint --ext .json .",
-        "audit": "npm run audit --production",
+        "audit": "npm audit --production",
         "test": "npm run test:unit",
         "test:unit": "jest",
         "coverage": "jest --coverage",
