@@ -87,8 +87,8 @@ git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-u
 ```javascript
 import { IFrameKnimeService, JsonDataService } from 'knime-ui-extension-service';
 this.knimeService = new IFrameKnimeService();
-this.knimeJSONDataService = new JsonDataService(this.knimeService);
-this.initialData = await this.knimeJSONDataService.initialData();
+this.knimeJsonDataService = new JsonDataService(this.knimeService);
+this.initialData = await this.knimeJsonDataService.initialData();
 ```
 
 ### Usage in a Vue-based KNIME UI component
