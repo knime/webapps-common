@@ -16,7 +16,7 @@ class IFrameKnimeService extends KnimeService {
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.onMessageFromParent);
         window.parent.postMessage({
-            type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
+            type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
         }, '*'); // TODO NXT-793 security
     }
     /**
@@ -74,9 +74,9 @@ class IFrameKnimeService extends KnimeService {
                 resolve({
                     error: {
                         message: `Request with id: ${id} rejected due to timeout.`,
-                        code: 'req-timeout',
+                        code: 'req-timeout'
                     },
-                    result: null,
+                    result: null
                 });
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
@@ -86,7 +86,7 @@ class IFrameKnimeService extends KnimeService {
         });
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-            payload: jsonRpcRequest,
+            payload: jsonRpcRequest
         }, '*'); // TODO NXT-793 security
         return promise;
     }

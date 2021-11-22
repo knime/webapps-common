@@ -21,9 +21,9 @@ describe('KnimeService', () => {
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             )).rejects.toMatchObject({
-                message: `Cannot read properties of null (reading 'projectId')`,
+                message: `Cannot read properties of null (reading 'projectId')`
             });
         });
     });
@@ -35,9 +35,9 @@ describe('KnimeService', () => {
             expect(() => knimeService.callService(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
-                '',
+                ''
             )).rejects.toMatchObject({
-                message: `Method executeServiceCall should only be used by derived class`,
+                message: `Method executeServiceCall should only be used by derived class`
             });
         });
     });
@@ -73,9 +73,9 @@ describe('KnimeService', () => {
                         workflowId: '...',
                         nodeId: '...',
                         keys: ['Row01', 'Row02'],
-                        mode: 'ADD',
-                    },
-                ],
+                        mode: 'ADD'
+                    }
+                ]
             };
 
             window.jsonrpcNotification(notification);

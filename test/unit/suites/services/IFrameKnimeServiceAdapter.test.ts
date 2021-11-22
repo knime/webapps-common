@@ -22,7 +22,7 @@ const jsonrpc = (requestJSON: string) => {
 const buildIFrameKnimeServiceAdapter = () => {
     const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter({
         iFrameWindow: window,
-        extensionConfig,
+        extensionConfig
     });
 
     jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
@@ -56,9 +56,9 @@ describe('IFrameKnimeServiceAdapter', () => {
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { data: [1, 1, 2] },
+                    payload: { data: [1, 1, 2] }
                 },
-                '*',
+                '*'
             );
 
             await sleep();
@@ -74,9 +74,9 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             window.postMessage(
                 {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`,
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
                 },
-                '*',
+                '*'
             );
 
             await sleep();
@@ -84,9 +84,9 @@ describe('IFrameKnimeServiceAdapter', () => {
             expect(spy).toBeCalledWith(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: extensionConfig,
+                    payload: extensionConfig
                 },
-                '*',
+                '*'
             );
 
             iFrameKnimeServiceAdapter.destroy();
@@ -99,9 +99,9 @@ describe('IFrameKnimeServiceAdapter', () => {
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { requestParams: 'getData' },
+                    payload: { requestParams: 'getData' }
                 },
-                '*',
+                '*'
             );
 
             await sleep();
@@ -118,9 +118,9 @@ describe('IFrameKnimeServiceAdapter', () => {
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { requestParams: 'getData' },
+                    payload: { requestParams: 'getData' }
                 },
-                '*',
+                '*'
             );
 
             await sleep();
@@ -128,9 +128,9 @@ describe('IFrameKnimeServiceAdapter', () => {
             expect(spy).toBeCalledWith(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                    payload: mockJsonRpcResponse,
+                    payload: mockJsonRpcResponse
                 },
-                '*',
+                '*'
             );
 
             iFrameKnimeServiceAdapter.destroy();

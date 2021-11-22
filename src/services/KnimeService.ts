@@ -55,7 +55,7 @@ export class KnimeService<T = any> {
             this.extensionConfig.nodeId,
             this.extensionConfig.extensionType,
             service,
-            request || '',
+            request || ''
         ]);
 
         const { result, error } = await this.executeServiceCall(jsonRpcRequest);
@@ -65,8 +65,8 @@ export class KnimeService<T = any> {
                 new Error(
                     `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
                         error?.message || 'not provided'
-                    }`,
-                ),
+                    }`
+                )
             );
         }
 
@@ -126,7 +126,7 @@ export class KnimeService<T = any> {
      */
     addNotificationCallback(
         notificationType: string,
-        callback: (notification: Notification) => void,
+        callback: (notification: Notification) => void
     ) {
         // TODO NXTEXT-114 move to ComponentKnimeService + implement for IFrameKnimeService
         if (!window.jsonrpcNotification) {
@@ -135,7 +135,7 @@ export class KnimeService<T = any> {
 
         this.notificationCallbacksMap.set(notificationType, [
             ...this.notificationCallbacksMap.get(notificationType) || [],
-            callback,
+            callback
         ]);
     }
 
@@ -147,13 +147,13 @@ export class KnimeService<T = any> {
      */
     removeNotificationCallback(
         notificationType: string,
-        callback: (notification: Notification) => void,
+        callback: (notification: Notification) => void
     ) {
         this.notificationCallbacksMap.set(
             notificationType,
             (this.notificationCallbacksMap.get(notificationType) || []).filter(
-                (cb) => cb !== callback,
-            ),
+                (cb) => cb !== callback
+            )
         );
     }
 
