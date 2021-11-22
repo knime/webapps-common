@@ -48,29 +48,16 @@ npm run lint
 When running `npm install`, some git hooks (see [.husky/](.husky/)) will automatically be installed using [husky].
 Please read the [docs in case you want to bypass or disable them](https://typicode.github.io/husky/#/?id=bypass-hooks).
 
+
 ### Security audit
 
-In some cases npm security issues can not be addressed right away or do not pose a direct threat (e.g. build
-dependencies of nuxt). To deal with these run
-
-```sh
-npm run audit:resolve
-```
-
-The tool will present you with a few choices regarding every security issue, which you can choose from. Most of the
-time it is sufficient to ignore issues for a certain amount of time (e.g. press `i` to ignore and then `M` for one
-month). This will create a `audit-resolve.json` with the security exceptions that needs to be checked in.
-
-To test if there is going to be security audit problems on our build system, call
-
+npm provides a check against known security issues of used dependencies. Run it by calling
 ```sh
 npm run audit
 ```
 
-which takes the exceptions into account.
-
 ## Build production version
-Bundles with rollup into commonjs module
+Bundles with rollup into esmodule format.
 ```sh
 npm run build
 ```
@@ -80,8 +67,8 @@ npm run build
 ```javascript
 git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-ui-extension-service
 ```
-2. Run `npm i` to install all dependencies.
-3. Instantiate and use desired services as shown below
+1. Run `npm i` to install dependencies.
+2. Instantiate and use desired services as shown below
 
 ### Usage in an IFrame-based KNIME UI component
 ```javascript
