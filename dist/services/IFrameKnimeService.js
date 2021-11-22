@@ -14,7 +14,7 @@ class IFrameKnimeService extends KnimeService {
         super(extensionConfig);
         this.pendingJsonRpcRequests = new Map();
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
-        window.addEventListener('message', this.onMessageFromParent);
+        window.addEventListener('message', this.boundOnMessageFromParent);
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
         }, '*'); // TODO NXT-793 security
