@@ -27,9 +27,9 @@ class JsonDataService {
     callDataService(dataService, request = '') {
         return this.knimeService
             .callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request)
-            .then((response) => JSON.parse(response))
+            .then((response) => JSON.parse(response)) // outer response
             .then(jsonRpcResponseHandler)
-            .then((response) => JSON.parse(response));
+            .then((response) => JSON.parse(response)); // inner response
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration

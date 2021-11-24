@@ -120,7 +120,6 @@ describe('JsonDataService', () => {
         let knimeService, jsonDataService, dataGetter;
 
         beforeEach(() => {
-            // window.jsonrpc = jest.fn(() => '{}');
             knimeService = new ComponentKnimeService(extensionConfig);
             jsonDataService = new JsonDataService(knimeService);
             dataGetter = jest.fn(() => Promise.resolve(mockData));
@@ -128,7 +127,6 @@ describe('JsonDataService', () => {
 
         afterEach(() => {
             jest.resetAllMocks();
-            delete window.jsonrpc;
         });
 
         it('calls the apply data service when "applyData" is called', async () => {

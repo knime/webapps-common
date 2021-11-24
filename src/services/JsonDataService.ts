@@ -29,9 +29,9 @@ export class JsonDataService<T = any> {
     private callDataService(dataService: DataServiceTypes, request = '') {
         return this.knimeService
             .callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request)
-            .then((response) => JSON.parse(response))
+            .then((response) => JSON.parse(response)) // outer response
             .then(jsonRpcResponseHandler)
-            .then((response) => JSON.parse(response));
+            .then((response) => JSON.parse(response)); // inner response
     }
 
     /**

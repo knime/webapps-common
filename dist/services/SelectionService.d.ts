@@ -40,7 +40,7 @@ declare class SelectionService {
      * @param {(string | key)[]} keys - will be passed as params to backend SelectionService add selection method
      * @returns {Promise<Object>} based on backend implementation.
      */
-    add(keys: (string | number)[]): Promise<any>;
+    add(keys: (string | number)[]): Promise<string>;
     /**
      * Removes data from currently selected data set.
      * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
@@ -51,7 +51,7 @@ declare class SelectionService {
      * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
      * @returns {Promise<Object>} - based on backend implementation.
      */
-    remove(keys: (string | number)[]): Promise<any>;
+    remove(keys: (string | number)[]): Promise<string>;
     /**
      * Replaces current selection with provided data.
      * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
@@ -62,7 +62,7 @@ declare class SelectionService {
      * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
      * @returns {Promise<Object>} - based on backend implementation.
      */
-    replace(keys: (string | number)[]): Promise<any>;
+    replace(keys: (string | number)[]): Promise<string>;
     /**
      * Adds callback that will be triggered on data selection change by backend.
      * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
