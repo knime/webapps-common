@@ -24,6 +24,9 @@ export default {
            },  {
               to: '/testing-nuxt-link',
               text: 'Ananas'
+           },  {
+              text: 'Close',
+              hotKey: 'Alt Q'
            }]
          */
         items: {
@@ -58,13 +61,6 @@ export default {
          * Disable SubMenu
          */
         disabled: {
-            type: Boolean,
-            default: false
-        },
-        /**
-        * Shows a column on the right of each entry filled with item.hotkeyText (if set)
-        */
-        showHotkeys: {
             type: Boolean,
             default: false
         }
@@ -237,14 +233,13 @@ export default {
             v-if="item.icon"
             class="item-icon"
           />
-          <div
-            v-if="showHotkeys"
-            class="label"
-          >
+          <div class="label">
             <span class="text">{{ item.text }}</span>
-            <span class="hotkey">{{ item.hotkeyText }}</span>
+            <span
+              v-if="item.hotKey"
+              class="hotkey"
+            >{{ item.hotKey }}</span>
           </div>
-          <template v-else>{{ item.text }}</template>
         </Component>
       </li>
     </ul>
@@ -300,19 +295,17 @@ ul {
 
     & .label {
         display: flex;
-        flex: 1;
+        width: 100%;
 
         & .text {
-          flex: 2 1 100%;
+          flex-shrink: 1;
+          flex-basis: 100%;
         }
 
         & .hotkey {
-          align-self: flex-end;
-          display: block;
-          flex: 1 1 20%;
           margin-left: 40px;
         }
-      }
+    }
 
     &:hover {
       outline: none;
