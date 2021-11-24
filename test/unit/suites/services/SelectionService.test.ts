@@ -29,7 +29,6 @@ describe('SelectionService', () => {
             const callService = jest.spyOn(knime, 'callService');
 
             const params = ['row1', 'row2', 'row3'];
-
             selectionService.add(params);
             expect(callService).toBeCalledWith(
                 NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,

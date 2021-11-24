@@ -1,5 +1,4 @@
 import { ExtensionConfig,
-    JsonRpcResponse,
     Service,
     ServiceMethod,
     Notification,
@@ -58,25 +57,14 @@ export class KnimeService<T = any> {
             request || ''
         ]);
 
-        const { result, error } = await this.executeServiceCall(jsonRpcRequest);
+        const response = await this.executeServiceCall(jsonRpcRequest);
 
-        if (error) {
-            return Promise.reject(
-                new Error(
-                    `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
-                        error?.message || 'not provided'
-                    }`
-                )
-            );
-        }
-
-        // TODO: currently we recive already parsed result from inner jsorpc calls
-        return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
+        return Promise.resolve(response);
     }
 
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
-        return new Promise<JsonRpcResponse>((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             reject(new Error('Method executeServiceCall should only be used by derived class'));
         });
     }

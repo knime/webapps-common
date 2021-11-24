@@ -14,11 +14,11 @@ class ComponentKnimeService extends KnimeService {
     /**
      * Overrides method of KnimeService to implement how request should be processed for component UI Extensions.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
     /* eslint-disable-next-line class-methods-use-this */
     executeServiceCall(jsonRpcRequest) {
-        return new Promise((resolve) => resolve(JSON.parse(window.jsonrpc(jsonRpcRequest))));
+        return new Promise((resolve) => resolve(window.jsonrpc(jsonRpcRequest)));
     }
 }
 

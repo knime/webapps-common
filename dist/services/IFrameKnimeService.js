@@ -51,19 +51,13 @@ class IFrameKnimeService extends KnimeService {
         if (!request) {
             throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${id}`);
         }
-        const { result, error } = responseJSON;
-        if (result) {
-            request.resolve(JSON.parse(result));
-        }
-        else {
-            request.reject(new Error(`Error code: ${(error === null || error === void 0 ? void 0 : error.code) || 'UNKNOWN'}. Message: ${(error === null || error === void 0 ? void 0 : error.message) || 'not provided'}`));
-        }
+        request.resolve(payload);
         this.pendingJsonRpcRequests.delete(id);
     }
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
     executeServiceCall(jsonRpcRequest) {
         let rejectTimeoutId;
@@ -71,13 +65,13 @@ class IFrameKnimeService extends KnimeService {
             const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
-                resolve({
+                resolve(JSON.stringify({
                     error: {
                         message: `Request with id: ${id} rejected due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null
-                });
+                }));
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
         // clearing reject timeout on promise resolve

@@ -2,6 +2,7 @@ import { NodeServiceMethods } from '../types/ServiceMethods.js';
 import { SelectionServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
+import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -23,7 +24,10 @@ class SelectionService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callSelectionService(selectionService, request) {
-        return this.knimeService.callService(NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request);
+        return this.knimeService
+            .callService(NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request)
+            .then((response) => JSON.parse(response))
+            .then(jsonRpcResponseHandler);
     }
     /**
      * Adds data to currently selected data set.

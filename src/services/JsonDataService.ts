@@ -1,6 +1,7 @@
 import { IFrameKnimeService, ComponentKnimeService } from 'src';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
+import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -26,7 +27,11 @@ export class JsonDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     private callDataService(dataService: DataServiceTypes, request = '') {
-        return this.knimeService.callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService
+            .callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request)
+            .then((response) => JSON.parse(response))
+            .then(jsonRpcResponseHandler)
+            .then((response) => JSON.parse(response));
     }
 
     /**
@@ -38,7 +43,8 @@ export class JsonDataService<T = any> {
     initialData() {
         const initialData = this.knimeService.extensionConfig?.initialData || null;
         if (initialData) {
-            return Promise.resolve(typeof initialData === 'string' ? JSON.parse(initialData) : initialData);
+            return Promise.resolve(initialData)
+                .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
         }
 
         return this.callDataService(DataServiceTypes.INITIAL_DATA);
@@ -56,11 +62,11 @@ export class JsonDataService<T = any> {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    data(params: { method?: string, options?: any } = {}) {
+    data(params: { method?: string; options?: any } = {}) {
         return this.callDataService(
             DataServiceTypes.DATA,
             JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
-        );
+        ).then(jsonRpcResponseHandler);
     }
 
     /**
@@ -72,10 +78,7 @@ export class JsonDataService<T = any> {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(
-            DataServiceTypes.APPLY_DATA,
-            JSON.stringify(data)
-        );
+        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
     }
 
     /**

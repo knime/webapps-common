@@ -43,12 +43,8 @@ class KnimeService {
             service,
             request || ''
         ]);
-        const { result, error } = await this.executeServiceCall(jsonRpcRequest);
-        if (error) {
-            return Promise.reject(new Error(`Error code: ${(error === null || error === void 0 ? void 0 : error.code) || 'UNKNOWN'}. Message: ${(error === null || error === void 0 ? void 0 : error.message) || 'not provided'}`));
-        }
-        // TODO: currently we recive already parsed result from inner jsorpc calls
-        return Promise.resolve(typeof result === 'string' ? JSON.parse(result) : result || null);
+        const response = await this.executeServiceCall(jsonRpcRequest);
+        return Promise.resolve(response);
     }
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     executeServiceCall(jsonRpcRequest) {

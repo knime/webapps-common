@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from 'src/types';
+import { ExtensionConfig, JsonRpcRequest } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -71,19 +71,7 @@ export class IFrameKnimeService extends KnimeService {
             );
         }
 
-        const { result, error } = responseJSON;
-
-        if (result) {
-            request.resolve(JSON.parse(result));
-        } else {
-            request.reject(
-                new Error(
-                    `Error code: ${error?.code || 'UNKNOWN'}. Message: ${
-                        error?.message || 'not provided'
-                    }`
-                )
-            );
-        }
+        request.resolve(payload);
 
         this.pendingJsonRpcRequests.delete(id);
     }
@@ -91,22 +79,22 @@ export class IFrameKnimeService extends KnimeService {
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
     protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
         let rejectTimeoutId;
 
-        const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
+        const promise = new Promise<string>((resolve, reject) => {
             const { id } = jsonRpcRequest;
             this.pendingJsonRpcRequests.set(id, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
-                resolve({
+                resolve(JSON.stringify({
                     error: {
                         message: `Request with id: ${id} rejected due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null
-                });
+                }));
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
 

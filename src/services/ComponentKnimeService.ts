@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcResponse } from 'src/types';
+import { ExtensionConfig } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -16,10 +16,10 @@ export class ComponentKnimeService extends KnimeService {
     /**
      * Overrides method of KnimeService to implement how request should be processed for component UI Extensions.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
     /* eslint-disable-next-line class-methods-use-this */
     protected executeServiceCall(jsonRpcRequest) {
-        return new Promise<JsonRpcResponse>((resolve) => resolve(JSON.parse(window.jsonrpc(jsonRpcRequest))));
+        return new Promise<string>((resolve) => resolve(window.jsonrpc(jsonRpcRequest)));
     }
 }

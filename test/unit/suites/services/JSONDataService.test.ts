@@ -26,8 +26,11 @@ describe('JsonDataService', () => {
                 ...extensionConfig,
                 initialData: null
             });
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(extensionConfig.initialData));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             const jsonDataService = new JsonDataService(knimeService);
 
             expect(jsonDataService.initialData()).resolves.toEqual({
@@ -45,8 +48,11 @@ describe('JsonDataService', () => {
         it('calls default data service', () => {
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve({}));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementationOnce(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             jsonDataService.data();
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
@@ -62,8 +68,11 @@ describe('JsonDataService', () => {
             };
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve({}));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementationOnce(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             jsonDataService.data({ options });
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
@@ -75,8 +84,11 @@ describe('JsonDataService', () => {
         it('calls data service by method', () => {
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve({}));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementationOnce(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             jsonDataService.data({ method: 'nextPage' });
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
@@ -108,7 +120,7 @@ describe('JsonDataService', () => {
         let knimeService, jsonDataService, dataGetter;
 
         beforeEach(() => {
-            window.jsonrpc = jest.fn(() => '{}');
+            // window.jsonrpc = jest.fn(() => '{}');
             knimeService = new ComponentKnimeService(extensionConfig);
             jsonDataService = new JsonDataService(knimeService);
             dataGetter = jest.fn(() => Promise.resolve(mockData));
@@ -120,8 +132,11 @@ describe('JsonDataService', () => {
         });
 
         it('calls the apply data service when "applyData" is called', async () => {
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve('{}'));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
@@ -131,8 +146,11 @@ describe('JsonDataService', () => {
         });
 
         it('calls a default data getter if none registered', async () => {
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve('{}'));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
@@ -144,8 +162,11 @@ describe('JsonDataService', () => {
 
         it('calls the registered data getter (if present)', async () => {
             jsonDataService.registerDataGetter(dataGetter);
-            let serviceSpy = jest.spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve('{}'));
+            let serviceSpy = jest
+                .spyOn(knimeService, 'callService')
+                .mockImplementation(() => Promise.resolve(
+                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
+                ));
             await jsonDataService.applyData();
             expect(serviceSpy).toHaveBeenCalledWith(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,

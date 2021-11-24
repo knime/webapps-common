@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcRequest, JsonRpcResponse } from "../index-af6571f7";
+import { ExtensionConfig, JsonRpcRequest } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -28,14 +28,14 @@ declare class IFrameKnimeService extends KnimeService {
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
      * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<JsonRpcResponse>} - promise that resolves with JsonRpcResponse or error message.
+     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<JsonRpcResponse>;
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<string>;
     /**
      * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.

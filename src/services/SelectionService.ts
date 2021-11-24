@@ -1,5 +1,6 @@
 import { IFrameKnimeService, ComponentKnimeService } from 'src/services';
 import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
+import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -24,11 +25,10 @@ export class SelectionService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     private callSelectionService(selectionService: SelectionServiceTypes, request) {
-        return this.knimeService.callService(
-            NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
-            selectionService,
-            request
-        );
+        return this.knimeService
+            .callService(NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request)
+            .then((response) => JSON.parse(response))
+            .then(jsonRpcResponseHandler);
     }
 
     /**

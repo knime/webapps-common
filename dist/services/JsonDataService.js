@@ -3,6 +3,7 @@ import { DataServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
+import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -24,7 +25,11 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService.callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request);
+        return this.knimeService
+            .callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request)
+            .then((response) => JSON.parse(response))
+            .then(jsonRpcResponseHandler)
+            .then((response) => JSON.parse(response));
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
@@ -36,7 +41,8 @@ class JsonDataService {
         var _a;
         const initialData = ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) || null;
         if (initialData) {
-            return Promise.resolve(typeof initialData === 'string' ? JSON.parse(initialData) : initialData);
+            return Promise.resolve(initialData)
+                .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
         }
         return this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
@@ -53,7 +59,7 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     data(params = {}) {
-        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
+        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))).then(jsonRpcResponseHandler);
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
