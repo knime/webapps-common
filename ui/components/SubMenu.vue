@@ -26,7 +26,7 @@ export default {
               text: 'Ananas'
            },  {
               text: 'Close',
-              hotKey: 'Alt Q'
+              hotkeyText: 'Alt Q'
            }]
          */
         items: {
@@ -236,9 +236,9 @@ export default {
           <div class="label">
             <span class="text">{{ item.text }}</span>
             <span
-              v-if="item.hotKey"
+              v-if="item.hotkeyText"
               class="hotkey"
-            >{{ item.hotKey }}</span>
+            >{{ item.hotkeyText }}</span>
           </div>
         </Component>
       </li>
