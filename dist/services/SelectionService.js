@@ -2,6 +2,7 @@ import { NodeServiceMethods } from '../types/ServiceMethods.js';
 import { SelectionServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
+import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 
 /**
@@ -25,7 +26,13 @@ class SelectionService {
      */
     callSelectionService(selectionService, request) {
         return this.knimeService
-            .callService(NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request)
+            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE, [
+            this.knimeService.extensionConfig.projectId,
+            this.knimeService.extensionConfig.workflowId,
+            this.knimeService.extensionConfig.nodeId,
+            selectionService,
+            request || ''
+        ]))
             .then((response) => JSON.parse(response))
             .then(jsonRpcResponseHandler);
     }

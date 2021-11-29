@@ -1,5 +1,6 @@
 import { IFrameKnimeService, ComponentKnimeService } from 'src/services';
 import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
+import { createJsonRpcRequest } from 'src/utils';
 import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 
 /**
@@ -26,7 +27,13 @@ export class SelectionService {
      */
     private callSelectionService(selectionService: SelectionServiceTypes, request) {
         return this.knimeService
-            .callService(NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS, selectionService, request)
+            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE, [
+                this.knimeService.extensionConfig.projectId,
+                this.knimeService.extensionConfig.workflowId,
+                this.knimeService.extensionConfig.nodeId,
+                selectionService,
+                request || ''
+            ]))
             .then((response) => JSON.parse(response))
             .then(jsonRpcResponseHandler);
     }

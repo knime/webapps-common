@@ -4,7 +4,7 @@
  */
 declare enum NodeServiceMethods {
     CALL_NODE_DATA_SERVICE = "NodeService.callNodeDataService",
-    CALL_NODE_SELECT_DATA_POINTS = "NodeService.selectDataPoints"
+    CALL_NODE_SELECTION_SERVICE = "NodeService.updateDataPointSelection"
 }
 /**
  * Any method signature which directly targets an RPC Service by the application. Each signature is in the format

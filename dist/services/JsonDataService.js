@@ -26,7 +26,14 @@ class JsonDataService {
      */
     callDataService(dataService, request = '') {
         return this.knimeService
-            .callService(NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request)
+            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_DATA_SERVICE, [
+            this.knimeService.extensionConfig.projectId,
+            this.knimeService.extensionConfig.workflowId,
+            this.knimeService.extensionConfig.nodeId,
+            this.knimeService.extensionConfig.extensionType,
+            dataService,
+            request || ''
+        ]))
             .then((response) => JSON.parse(response)) // outer response
             .then(jsonRpcResponseHandler)
             .then((response) => JSON.parse(response)); // inner response

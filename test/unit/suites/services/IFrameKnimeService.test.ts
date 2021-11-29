@@ -101,11 +101,9 @@ describe('IFrameKnimeService', () => {
         });
 
         it('returns error if request takes too long', async () => {
-            expect(
-                await knimeService.executeServiceCall({
-                    id: 2
-                })
-            ).toEqual('{"error":{"message":"Request with id: 2 rejected due to timeout.","code":"req-timeout"},"result":null}');
+            expect(await knimeService.executeServiceCall({ id: 2 })).toEqual(
+                '{"error":{"message":"Request with id: 2 rejected due to timeout.","code":"req-timeout"},"result":null}'
+            );
         });
 
         it('executes service calls', () => {

@@ -1,6 +1,7 @@
 import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
+import { createJsonRpcRequest } from 'src/utils';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 describe('KnimeService', () => {
@@ -18,27 +19,19 @@ describe('KnimeService', () => {
         it('Throws error if extension config not provided', () => {
             const knimeService = new KnimeService();
 
-            expect(() => knimeService.callService(
+            expect(() => knimeService.callService(createJsonRpcRequest(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                ''
-            )).rejects.toMatchObject({
-                message: `Cannot read properties of null (reading 'projectId')`
-            });
+                [DataServiceTypes.INITIAL_DATA, '']
+            ))).rejects.toThrowError('Cannot call service without extension config');
         });
-    });
 
-    describe('callService', () => {
-        it('Throws error if extension config not provided', () => {
+        it('Throws error if not instance of subclass with callService implementation', () => {
             const knimeService = new KnimeService(extensionConfig);
 
-            expect(() => knimeService.callService(
+            expect(() => knimeService.callService(createJsonRpcRequest(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                ''
-            )).rejects.toMatchObject({
-                message: `Method executeServiceCall should only be used by derived class`
-            });
+                [DataServiceTypes.INITIAL_DATA, '']
+            ))).rejects.toThrowError(`Method executeServiceCall should only be used by derived class`);
         });
     });
 

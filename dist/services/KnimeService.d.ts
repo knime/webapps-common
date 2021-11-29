@@ -1,4 +1,4 @@
-import { ExtensionConfig, Service, ServiceMethod, Notification, JsonRpcRequest } from "../index-af6571f7";
+import { ExtensionConfig, Notification, JsonRpcRequest } from "../index-af6571f7";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -24,20 +24,16 @@ declare class KnimeService<T = any> {
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {ServiceMethod} method - the framework method to target with this service call.
-     * @param {Service} service - the service which should be called.
-     * @param {string} request - the serialized request payload.
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {ServiceMethod} method - the framework method to target with this service call.
-     * @param {Service} service - the service which should be called.
-     * @param {string} request - the serialized request payload.
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(method: ServiceMethod, service: Service, request: string): Promise<string>;
+    callService(jsonRpcRequest: JsonRpcRequest): Promise<string>;
     /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
     protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<string>;
     /**

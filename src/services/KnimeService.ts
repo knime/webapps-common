@@ -1,9 +1,4 @@
-import { ExtensionConfig,
-    Service,
-    ServiceMethod,
-    Notification,
-    JsonRpcRequest } from 'src/types';
-import { createJsonRpcRequest } from 'src/utils';
+import { ExtensionConfig, Notification, JsonRpcRequest } from 'src/types';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -42,20 +37,13 @@ export class KnimeService<T = any> {
     /**
      * Generic method to call services provided by the UI Extension node implementation.
      *
-     * @param {ServiceMethod} method - the framework method to target with this service call.
-     * @param {Service} service - the service which should be called.
-     * @param {string} request - the serialized request payload.
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    async callService(method: ServiceMethod, service: Service, request: string) {
-        const jsonRpcRequest = createJsonRpcRequest(method, [
-            this.extensionConfig.projectId,
-            this.extensionConfig.workflowId,
-            this.extensionConfig.nodeId,
-            this.extensionConfig.extensionType,
-            service,
-            request || ''
-        ]);
+    async callService(jsonRpcRequest: JsonRpcRequest) {
+        if (!this.extensionConfig) {
+            return Promise.reject(new Error('Cannot call service without extension config'));
+        }
 
         const response = await this.executeServiceCall(jsonRpcRequest);
 

@@ -16,6 +16,7 @@
         "test": "npm run test:unit",
         "test:unit": "jest",
         "coverage": "jest --coverage",
+        "coverage:watch": "npm run test:unit -- --coverage --watch",
         "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\"",
         "prepare": "husky install"
     },

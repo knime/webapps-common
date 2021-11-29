@@ -6,7 +6,7 @@ export enum NodeServiceMethods {
     // Data service method signature.
     CALL_NODE_DATA_SERVICE = 'NodeService.callNodeDataService',
     // Selection service method signature.
-    CALL_NODE_SELECT_DATA_POINTS = 'NodeService.selectDataPoints',
+    CALL_NODE_SELECTION_SERVICE = 'NodeService.updateDataPointSelection',
 }
 
 /**

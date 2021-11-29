@@ -1,7 +1,7 @@
 import { ComponentKnimeService } from 'src/services/ComponentKnimeService';
 import { JsonDataService } from 'src/services/JsonDataService';
 import { extensionConfig } from 'test/mocks';
-import { DataServiceTypes, NodeServiceMethods } from 'src/types';
+import { DataServiceTypes, JsonRpcRequest, NodeServiceMethods } from 'src/types';
 
 describe('JsonDataService', () => {
     describe('initialization', () => {
@@ -36,11 +36,10 @@ describe('JsonDataService', () => {
             expect(jsonDataService.initialData()).resolves.toEqual({
                 settings: extensionConfig.initialData.settings
             });
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                ''
-            );
+            let invocationParameters = serviceSpy.mock.calls[0][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.INITIAL_DATA);
+            expect(invocationParameters.params).toContain('');
         });
     });
 
@@ -54,11 +53,11 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             jsonDataService.data();
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.DATA,
-                expect.stringContaining('getData')
-            );
+            let invocationParameters = serviceSpy.mock.calls[0][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            expect((invocationParameters.params as Array<string>).some(param => param?.includes?.('getData')))
+                .toBe(true);
         });
 
         it('calls data service with options', () => {
@@ -66,6 +65,7 @@ describe('JsonDataService', () => {
                 columns: [1, 2],
                 rows: 500
             };
+            let checkOptions = JSON.stringify(options);
             const knimeService = new ComponentKnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
             let serviceSpy = jest
@@ -74,11 +74,11 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             jsonDataService.data({ options });
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.DATA,
-                expect.stringContaining(JSON.stringify(options))
-            );
+            let invocationParameters = serviceSpy.mock.calls[0][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            expect((invocationParameters.params as Array<string>).some(param => param?.includes?.(checkOptions)))
+                .toBe(true);
         });
 
         it('calls data service by method', () => {
@@ -90,11 +90,11 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             jsonDataService.data({ method: 'nextPage' });
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.DATA,
-                expect.stringContaining('nextPage')
-            );
+            let invocationParameters = serviceSpy.mock.calls[0][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            expect((invocationParameters.params as Array<string>).some(param => param?.includes?.('nextPage')))
+                .toBe(true);
         });
     });
 
@@ -136,11 +136,9 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             await jsonDataService.applyData();
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.APPLY_DATA,
-                expect.anything()
-            );
+            let invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.APPLY_DATA);
         });
 
         it('calls a default data getter if none registered', async () => {
@@ -150,12 +148,11 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             await jsonDataService.applyData();
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.APPLY_DATA,
-                'null'
-            );
             expect(dataGetter).not.toHaveBeenCalled();
+            let invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.APPLY_DATA);
+            expect(invocationParameters.params).toContain('null');
         });
 
         it('calls the registered data getter (if present)', async () => {
@@ -166,12 +163,11 @@ describe('JsonDataService', () => {
                     JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
                 ));
             await jsonDataService.applyData();
-            expect(serviceSpy).toHaveBeenCalledWith(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.APPLY_DATA,
-                '"{}"'
-            );
             expect(dataGetter).toHaveBeenCalled();
+            let invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
+            expect(invocationParameters.params).toContain(DataServiceTypes.APPLY_DATA);
+            expect(invocationParameters.params).toContain('"{}"');
         });
     });
 });

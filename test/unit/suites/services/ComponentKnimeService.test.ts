@@ -1,5 +1,6 @@
 import { ComponentKnimeService } from 'src/services';
 import { NodeServiceMethods, DataServiceTypes, JsonRpcRequest } from 'src/types';
+import { createJsonRpcRequest } from 'src/utils';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 const jsonrpc = (requestJSON: JsonRpcRequest) => {
@@ -39,31 +40,27 @@ describe('ComponentKnimeService', () => {
 
             const knimeService = new ComponentKnimeService();
 
-            expect(() => knimeService.callService(
+            expect(() => knimeService.callService(createJsonRpcRequest(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                ''
-            )).rejects.toMatchObject({
-                message: `Cannot read properties of null (reading 'projectId')`
-            });
+                [DataServiceTypes.INITIAL_DATA, '']
+            ))).rejects.toThrowError('Cannot call service without extension config');
             expect(rpcSpy).not.toHaveBeenCalled();
         });
 
-        it('Calls data service', () => {
+        it('Calls data service', async () => {
             let rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new ComponentKnimeService(extensionConfig);
 
-            knimeService.callService(
+            await knimeService.callService(createJsonRpcRequest(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA,
-                ''
-            );
+                ['knime workflow', 'root:10', '123', 'view', DataServiceTypes.INITIAL_DATA, '']
+            ));
             expect(rpcSpy).toHaveBeenCalledWith({
                 jsonrpc: '2.0',
                 method: 'NodeService.callNodeDataService',
                 params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
-                id: 1
+                id: expect.any(Number)
             });
         });
 
@@ -72,16 +69,15 @@ describe('ComponentKnimeService', () => {
 
             const knimeService = new ComponentKnimeService(extensionConfig);
 
-            expect(() => knimeService.callService(
+            expect(() => knimeService.callService(createJsonRpcRequest(
                     'UnsupportedService.unknownMethod' as NodeServiceMethods,
-                    DataServiceTypes.INITIAL_DATA,
-                    ''
-            )).rejects.toMatchObject({ message: 'Unsupported params' });
+                    ['knime workflow', 'root:10', '123', 'view', DataServiceTypes.INITIAL_DATA, '']
+            ))).rejects.toMatchObject({ message: 'Unsupported params' });
             expect(rpcSpy).toHaveBeenCalledWith({
                 jsonrpc: '2.0',
                 method: 'UnsupportedService.unknownMethod',
                 params: ['knime workflow', 'root:10', '123', 'view', 'initial_data', ''],
-                id: 2
+                id: expect.any(Number)
             });
         });
     });

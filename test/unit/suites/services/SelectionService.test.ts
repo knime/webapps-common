@@ -30,25 +30,22 @@ describe('SelectionService', () => {
 
             const params = ['row1', 'row2', 'row3'];
             selectionService.add(params);
-            expect(callService).toBeCalledWith(
-                NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
-                SelectionServiceTypes.ADD,
-                params
-            );
+            let invocationParameters = callService.mock.calls[0][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
+            expect(invocationParameters.params).toContain(SelectionServiceTypes.ADD);
+            expect(invocationParameters.params).toContainEqual(params);
 
             selectionService.remove(params);
-            expect(callService).toBeCalledWith(
-                NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
-                SelectionServiceTypes.REMOVE,
-                params
-            );
+            invocationParameters = callService.mock.calls[1][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
+            expect(invocationParameters.params).toContain(SelectionServiceTypes.REMOVE);
+            expect(invocationParameters.params).toContainEqual(params);
 
             selectionService.replace(params);
-            expect(callService).toBeCalledWith(
-                NodeServiceMethods.CALL_NODE_SELECT_DATA_POINTS,
-                SelectionServiceTypes.REPLACE,
-                params
-            );
+            invocationParameters = callService.mock.calls[2][0];
+            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
+            expect(invocationParameters.params).toContain(SelectionServiceTypes.REPLACE);
+            expect(invocationParameters.params).toContainEqual(params);
         });
 
         it('Adds callback to notification with addOnSelectionChangeCallback', () => {
