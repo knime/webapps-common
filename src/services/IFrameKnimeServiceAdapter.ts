@@ -1,10 +1,7 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { ExtensionConfig } from 'src/types';
-
-interface IFrameKnimeServiceAdapterOptions {
-    iFrameWindow: Window;
-    extensionConfig: ExtensionConfig;
-}
+import { CallableService } from 'src/types/CallableService';
+import { KnimeService } from './KnimeService';
 
 /**
  * Handles postMessage communication with iframes on side of parent window.
@@ -13,16 +10,17 @@ interface IFrameKnimeServiceAdapterOptions {
  *
  * Should be instantiated by class that persists at root window object.
  */
-export class IFrameKnimeServiceAdapter {
+export class IFrameKnimeServiceAdapter extends KnimeService {
     iFrameWindow: Window;
 
     extensionConfig: ExtensionConfig;
 
     boundOnMessageFromIFrame: any;
 
-    constructor({ iFrameWindow, extensionConfig }: IFrameKnimeServiceAdapterOptions) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
+        iFrameWindow: Window) {
+        super(extensionConfig, callableService);
         this.iFrameWindow = iFrameWindow;
-        this.extensionConfig = extensionConfig;
 
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
@@ -42,7 +40,7 @@ export class IFrameKnimeServiceAdapter {
      * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
      * @returns {void}
      */
-    private onMessageFromIFrame(event: MessageEvent) {
+    private async onMessageFromIFrame(event: MessageEvent) {
         if (this.checkMessageSource(event)) {
             return;
         }
@@ -61,8 +59,7 @@ export class IFrameKnimeServiceAdapter {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
                 {
                     const { payload } = event.data;
-                    // TODO: NXT-732 this won't work in WebPortal
-                    const response = window.jsonrpc(JSON.stringify(payload));
+                    const response = await this.callService(payload);
                     this.iFrameWindow.postMessage(
                         {
                             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,

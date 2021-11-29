@@ -1,10 +1,11 @@
-import { IFrameKnimeService, ComponentKnimeService } from "../index-f37a819f";
+import { IFrameKnimeService } from "../index-8051a49e";
 import { Notification } from "../index-af6571f7";
+import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
-declare class SelectionService {
+declare class SelectionService<T = any> {
     private knimeService;
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
@@ -12,7 +13,7 @@ declare class SelectionService {
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
-    constructor(knimeService: IFrameKnimeService | ComponentKnimeService);
+    constructor(knimeService: IFrameKnimeService | KnimeService<T>);
     /**
      * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
      * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.

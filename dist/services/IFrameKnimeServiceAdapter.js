@@ -1,4 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from '../constants/index.js';
+import { KnimeService } from './KnimeService.js';
 
 /**
  * Handles postMessage communication with iframes on side of parent window.
@@ -7,10 +8,10 @@ import { UI_EXT_POST_MESSAGE_PREFIX } from '../constants/index.js';
  *
  * Should be instantiated by class that persists at root window object.
  */
-class IFrameKnimeServiceAdapter {
-    constructor({ iFrameWindow, extensionConfig }) {
+class IFrameKnimeServiceAdapter extends KnimeService {
+    constructor(extensionConfig = null, callableService = null, iFrameWindow) {
+        super(extensionConfig, callableService);
         this.iFrameWindow = iFrameWindow;
-        this.extensionConfig = extensionConfig;
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
@@ -27,7 +28,7 @@ class IFrameKnimeServiceAdapter {
      * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
      * @returns {void}
      */
-    onMessageFromIFrame(event) {
+    async onMessageFromIFrame(event) {
         if (this.checkMessageSource(event)) {
             return;
         }
@@ -42,8 +43,7 @@ class IFrameKnimeServiceAdapter {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
                 {
                     const { payload } = event.data;
-                    // TODO: NXT-732 this won't work in WebPortal
-                    const response = window.jsonrpc(JSON.stringify(payload));
+                    const response = await this.callService(payload);
                     this.iFrameWindow.postMessage({
                         type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
                         payload: response

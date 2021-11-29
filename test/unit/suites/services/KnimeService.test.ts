@@ -25,13 +25,13 @@ describe('KnimeService', () => {
             ))).rejects.toThrowError('Cannot call service without extension config');
         });
 
-        it('Throws error if not instance of subclass with callService implementation', () => {
+        it('Throws error if callable service not provided', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(createJsonRpcRequest(
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 [DataServiceTypes.INITIAL_DATA, '']
-            ))).rejects.toThrowError(`Method executeServiceCall should only be used by derived class`);
+            ))).rejects.toThrowError('Callable service is not available');
         });
     });
 
@@ -48,32 +48,6 @@ describe('KnimeService', () => {
             knime.addNotificationCallback('SelectionEvent', callback);
 
             expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
-        });
-
-        it('Calls onJsonrpcNotification if callbacks added', () => {
-            const knime = new KnimeService();
-
-            const callback = jest.fn(() => {});
-
-            knime.addNotificationCallback('SelectionEvent', callback);
-
-            const notification = {
-                jsonrpc: '2.0',
-                method: 'SelectionEvent',
-                params: [
-                    {
-                        projectId: '...',
-                        workflowId: '...',
-                        nodeId: '...',
-                        keys: ['Row01', 'Row02'],
-                        mode: 'ADD'
-                    }
-                ]
-            };
-
-            window.jsonrpcNotification(notification);
-
-            expect(callback).toBeCalled();
         });
 
         it('Removes notification callback with removeNotificationCallback', () => {

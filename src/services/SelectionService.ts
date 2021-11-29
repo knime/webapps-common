@@ -1,19 +1,20 @@
-import { IFrameKnimeService, ComponentKnimeService } from 'src/services';
+import { IFrameKnimeService } from 'src/services';
 import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
+import { KnimeService } from './KnimeService';
 
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
-export class SelectionService {
-    private knimeService: IFrameKnimeService | ComponentKnimeService;
+export class SelectionService<T = any> {
+    private knimeService: IFrameKnimeService | KnimeService<T>;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
-    constructor(knimeService: IFrameKnimeService | ComponentKnimeService) {
+    constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
         this.knimeService = knimeService;
     }
 

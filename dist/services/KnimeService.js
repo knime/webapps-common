@@ -12,12 +12,14 @@
 class KnimeService {
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig = null) {
+    constructor(extensionConfig = null, callableService = null) {
         /**
          *
          */
         this.extensionConfig = extensionConfig;
+        this.callableService = callableService;
         /**
          * Stores registered callbacks for notifications called via backend implementation.
          * Should be only used by internal service methods.
@@ -25,23 +27,29 @@ class KnimeService {
         this.notificationCallbacksMap = new Map();
     }
     /**
-     * Generic method to call services provided by the UI Extension node implementation.
+     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    async callService(jsonRpcRequest) {
+    callService(jsonRpcRequest) {
         if (!this.extensionConfig) {
             return Promise.reject(new Error('Cannot call service without extension config'));
         }
-        const response = await this.executeServiceCall(jsonRpcRequest);
-        return Promise.resolve(response);
+        if (!this.callableService) {
+            return Promise.reject(new Error('Callable service is not available'));
+        }
+        return this.executeServiceCall(jsonRpcRequest);
     }
-    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
+    /**
+     * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
+     * Default behavior is to use the member callable service directly.
+     *
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @returns {Promise} - rejected or resolved depending on response success.
+     */
     executeServiceCall(jsonRpcRequest) {
-        return new Promise((resolve, reject) => {
-            reject(new Error('Method executeServiceCall should only be used by derived class'));
-        });
+        return this.callableService(jsonRpcRequest);
     }
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
@@ -83,10 +91,6 @@ class KnimeService {
      * @returns {void}
      */
     addNotificationCallback(notificationType, callback) {
-        // TODO NXTEXT-114 move to ComponentKnimeService + implement for IFrameKnimeService
-        if (!window.jsonrpcNotification) {
-            window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
-        }
         this.notificationCallbacksMap.set(notificationType, [
             ...this.notificationCallbacksMap.get(notificationType) || [],
             callback

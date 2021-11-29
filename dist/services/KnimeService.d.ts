@@ -1,4 +1,5 @@
 import { ExtensionConfig, Notification, JsonRpcRequest } from "../index-af6571f7";
+import { CallableService } from "../CallableService-d52d8345";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -12,29 +13,45 @@ import { ExtensionConfig, Notification, JsonRpcRequest } from "../index-af6571f7
  */
 declare class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
+    protected callableService: CallableService;
     private dataGetter;
     notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig?: ExtensionConfig);
+    constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
     /**
-     * Generic method to call services provided by the UI Extension node implementation.
+     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     /**
-     * Generic method to call services provided by the UI Extension node implementation.
+     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     callService(jsonRpcRequest: JsonRpcRequest): Promise<string>;
-    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
+    /**
+     * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
+     * Default behavior is to use the member callable service directly.
+     *
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @returns {Promise} - rejected or resolved depending on response success.
+     */
+    /**
+     * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
+     * Default behavior is to use the member callable service directly.
+     *
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @returns {Promise} - rejected or resolved depending on response success.
+     */
     protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<string>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
@@ -80,7 +97,7 @@ declare class KnimeService<T = any> {
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    private onJsonrpcNotification;
+    onJsonrpcNotification(notification: Notification): void;
     /**
      * Registers callback that will be triggered on received notification.
      * @param {string} notificationType - notification type that callback should be registered for.

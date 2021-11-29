@@ -11,8 +11,9 @@ import { KnimeService } from './KnimeService.js';
  */
 class IFrameKnimeService extends KnimeService {
     constructor(extensionConfig = null) {
-        super(extensionConfig);
+        super(extensionConfig, null);
         this.pendingJsonRpcRequests = new Map();
+        this.callableService = this.executeServiceCall;
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.boundOnMessageFromParent);
         window.parent.postMessage({

@@ -10,7 +10,7 @@ import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
  */
 class JsonDataService {
     /**
-     * @param {ComponentKnimeService | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
      */
     constructor(knimeService) {
         this.knimeService = knimeService;

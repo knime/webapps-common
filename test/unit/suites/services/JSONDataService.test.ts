@@ -1,12 +1,12 @@
-import { ComponentKnimeService } from 'src/services/ComponentKnimeService';
 import { JsonDataService } from 'src/services/JsonDataService';
 import { extensionConfig } from 'test/mocks';
 import { DataServiceTypes, JsonRpcRequest, NodeServiceMethods } from 'src/types';
+import { KnimeService } from 'src/services/KnimeService';
 
 describe('JsonDataService', () => {
     describe('initialization', () => {
         it('Creates data service', () => {
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
 
             expect(jsonDataService).toHaveProperty('initialData');
@@ -15,14 +15,14 @@ describe('JsonDataService', () => {
 
     describe('initial_data handling', () => {
         it(`Fetches initial_data if it's passed to constructor`, () => {
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
 
             expect(jsonDataService.initialData()).resolves.toEqual(extensionConfig.initialData);
         });
 
         it('Fetches initial_data via ComponentKnimeService', () => {
-            const knimeService = new ComponentKnimeService({
+            const knimeService = new KnimeService({
                 ...extensionConfig,
                 initialData: null
             });
@@ -45,7 +45,7 @@ describe('JsonDataService', () => {
 
     describe('getData', () => {
         it('calls default data service', () => {
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
             const serviceSpy = jest
                 .spyOn(knimeService, 'callService')
@@ -66,7 +66,7 @@ describe('JsonDataService', () => {
                 rows: 500
             };
             const checkOptions = JSON.stringify(options);
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
             const serviceSpy = jest
                 .spyOn(knimeService, 'callService')
@@ -82,7 +82,7 @@ describe('JsonDataService', () => {
         });
 
         it('calls data service by method', () => {
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
             const serviceSpy = jest
                 .spyOn(knimeService, 'callService')
@@ -100,7 +100,7 @@ describe('JsonDataService', () => {
 
     describe('registering a data getter callback', () => {
         it('Registers a data getter with the ComponentKnimeService', () => {
-            const knimeService = new ComponentKnimeService(extensionConfig);
+            const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
 
             const spy = jest.spyOn(knimeService, 'registerDataGetter');
@@ -120,7 +120,7 @@ describe('JsonDataService', () => {
         let knimeService, jsonDataService, dataGetter;
 
         beforeEach(() => {
-            knimeService = new ComponentKnimeService(extensionConfig);
+            knimeService = new KnimeService(extensionConfig);
             jsonDataService = new JsonDataService(knimeService);
             dataGetter = jest.fn(() => Promise.resolve(mockData));
         });

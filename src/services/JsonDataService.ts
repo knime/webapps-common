@@ -1,4 +1,4 @@
-import { IFrameKnimeService, ComponentKnimeService } from 'src';
+import { IFrameKnimeService } from 'src';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
@@ -8,12 +8,12 @@ import { KnimeService } from './KnimeService';
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
 export class JsonDataService<T = any> {
-    private knimeService: ComponentKnimeService | IFrameKnimeService | KnimeService<T>;
+    private knimeService: IFrameKnimeService | KnimeService<T>;
 
     /**
-     * @param {ComponentKnimeService | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
      */
-    constructor(knimeService: ComponentKnimeService | IFrameKnimeService | KnimeService<T>) {
+    constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
         this.knimeService = knimeService;
     }
 

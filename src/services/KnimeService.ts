@@ -1,4 +1,5 @@
 import { ExtensionConfig, Notification, JsonRpcRequest } from 'src/types';
+import { CallableService } from 'src/types/CallableService';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -14,18 +15,23 @@ import { ExtensionConfig, Notification, JsonRpcRequest } from 'src/types';
 export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
+    protected callableService: CallableService;
+
     private dataGetter: () => any;
 
     notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
 
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig: ExtensionConfig = null) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null) {
         /**
          *
          */
         this.extensionConfig = extensionConfig;
+
+        this.callableService = callableService;
 
         /**
          * Stores registered callbacks for notifications called via backend implementation.
@@ -35,26 +41,32 @@ export class KnimeService<T = any> {
     }
 
     /**
-     * Generic method to call services provided by the UI Extension node implementation.
+     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    async callService(jsonRpcRequest: JsonRpcRequest) {
+    callService(jsonRpcRequest: JsonRpcRequest) {
         if (!this.extensionConfig) {
             return Promise.reject(new Error('Cannot call service without extension config'));
         }
 
-        const response = await this.executeServiceCall(jsonRpcRequest);
+        if (!this.callableService) {
+            return Promise.reject(new Error('Callable service is not available'));
+        }
 
-        return Promise.resolve(response);
+        return this.executeServiceCall(jsonRpcRequest);
     }
 
-    /* eslint-disable-next-line class-methods-use-this, @typescript-eslint/no-unused-vars */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
-        return new Promise<string>((resolve, reject) => {
-            reject(new Error('Method executeServiceCall should only be used by derived class'));
-        });
+    /**
+     * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
+     * Default behavior is to use the member callable service directly.
+     *
+     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @returns {Promise} - rejected or resolved depending on response success.
+     */
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) : Promise<string> {
+        return this.callableService(jsonRpcRequest);
     }
 
     /**
@@ -86,7 +98,7 @@ export class KnimeService<T = any> {
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    private onJsonrpcNotification(notification: Notification) {
+    onJsonrpcNotification(notification: Notification) {
         const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
 
         callbacks.forEach((cb) => {
@@ -104,11 +116,6 @@ export class KnimeService<T = any> {
         notificationType: string,
         callback: (notification: Notification) => void
     ) {
-        // TODO NXTEXT-114 move to ComponentKnimeService + implement for IFrameKnimeService
-        if (!window.jsonrpcNotification) {
-            window.jsonrpcNotification = this.onJsonrpcNotification.bind(this);
-        }
-
         this.notificationCallbacksMap.set(notificationType, [
             ...this.notificationCallbacksMap.get(notificationType) || [],
             callback

@@ -16,7 +16,9 @@ export class IFrameKnimeService extends KnimeService {
     private boundOnMessageFromParent: any;
 
     constructor(extensionConfig: ExtensionConfig = null) {
-        super(extensionConfig);
+        super(extensionConfig, null);
+
+        this.callableService = this.executeServiceCall;
 
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.boundOnMessageFromParent);

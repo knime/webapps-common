@@ -1,5 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { IFrameKnimeServiceAdapter } from 'src/services';
+import { JsonRpcRequest } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 /* eslint-disable-next-line no-magic-numbers */
@@ -9,10 +10,8 @@ const sleep = async (timeout = 15) => {
 
 const mockJsonRpcResponse = [1, 1, 2];
 
-const jsonrpc = (requestJSON: string) => {
-    const parsedRequest = JSON.parse(requestJSON);
-
-    if (parsedRequest.requestParams === 'getData') {
+const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
+    if (requestJSON.params === 'getData') {
         return mockJsonRpcResponse;
     }
 
@@ -20,28 +19,22 @@ const jsonrpc = (requestJSON: string) => {
 };
 
 const buildIFrameKnimeServiceAdapter = () => {
-    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter({
-        iFrameWindow: window,
-        extensionConfig
-    });
+    let callServiceSpy = jest.fn().mockImplementation(mockCallServiceImplementation);
+    let childSpy = jest.fn();
+    let mockChildFrame = {
+        postMessage: childSpy
+    } as unknown as Window;
+    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy, mockChildFrame);
 
     jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
 
-    return iFrameKnimeServiceAdapter;
+    return { iFrameKnimeServiceAdapter, childSpy, callServiceSpy };
 };
 
 describe('IFrameKnimeServiceAdapter', () => {
-    beforeEach(() => {
-        window.jsonrpc = jsonrpc;
-    });
-
-    afterEach(() => {
-        window.jsonrpc = null;
-    });
-
     describe('initialization', () => {
         it('Creates IFrameKnimeServiceAdapter', () => {
-            const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
+            const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
 
             expect(iFrameKnimeServiceAdapter).toHaveProperty('extensionConfig');
             expect(iFrameKnimeServiceAdapter.extensionConfig).toEqual(extensionConfig);
@@ -50,8 +43,7 @@ describe('IFrameKnimeServiceAdapter', () => {
         });
 
         it('Adds window event listener on creation', async () => {
-            const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            const spy = jest.spyOn(window, 'postMessage');
+            const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
 
             window.postMessage(
                 {
@@ -63,14 +55,14 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             await sleep();
 
-            expect(spy).toBeCalledTimes(2);
+            expect(childSpy).toHaveBeenCalled();
+            expect(callServiceSpy).toHaveBeenCalled();
 
             iFrameKnimeServiceAdapter.destroy();
         });
 
         it('Posts init event on :ready type request', async () => {
-            const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            const spy = jest.spyOn(window, 'postMessage');
+            const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
             window.postMessage(
                 {
@@ -81,7 +73,7 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             await sleep();
 
-            expect(spy).toBeCalledWith(
+            expect(childSpy).toBeCalledWith(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
                     payload: extensionConfig
@@ -93,45 +85,45 @@ describe('IFrameKnimeServiceAdapter', () => {
         });
 
         it('Calls window.jsonrpc when receives :jsonrpcRequest type event', async () => {
-            const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            const spy = jest.spyOn(window, 'jsonrpc');
+            const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
 
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { requestParams: 'getData' }
+                    payload: { params: 'getData' }
                 },
                 '*'
             );
 
             await sleep();
 
-            expect(spy).toBeCalledWith(JSON.stringify({ requestParams: 'getData' }));
+            expect(childSpy).toBeCalledWith({ payload: [1, 1, 2], type: 'knimeUIExtension:jsonrpcResponse' }, '*');
+            expect(callServiceSpy).toHaveBeenCalled();
 
             iFrameKnimeServiceAdapter.destroy();
         });
 
         it('Posts response back', async () => {
-            const iFrameKnimeServiceAdapter = buildIFrameKnimeServiceAdapter();
-            const spy = jest.spyOn(window, 'postMessage');
+            const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
 
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { requestParams: 'getData' }
+                    payload: { params: 'getData' }
                 },
                 '*'
             );
 
             await sleep();
 
-            expect(spy).toBeCalledWith(
+            expect(childSpy).toBeCalledWith(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
                     payload: mockJsonRpcResponse
                 },
                 '*'
             );
+            expect(callServiceSpy).toHaveBeenCalled();
 
             iFrameKnimeServiceAdapter.destroy();
         });

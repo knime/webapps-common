@@ -1,8 +1,6 @@
 import { ExtensionConfig } from "../index-af6571f7";
-interface IFrameKnimeServiceAdapterOptions {
-    iFrameWindow: Window;
-    extensionConfig: ExtensionConfig;
-}
+import { CallableService } from "../CallableService-d52d8345";
+import { KnimeService } from "./KnimeService";
 /**
  * Handles postMessage communication with iframes on side of parent window.
  *
@@ -10,11 +8,11 @@ interface IFrameKnimeServiceAdapterOptions {
  *
  * Should be instantiated by class that persists at root window object.
  */
-declare class IFrameKnimeServiceAdapter {
+declare class IFrameKnimeServiceAdapter extends KnimeService {
     iFrameWindow: Window;
     extensionConfig: ExtensionConfig;
     boundOnMessageFromIFrame: any;
-    constructor({ iFrameWindow, extensionConfig }: IFrameKnimeServiceAdapterOptions);
+    constructor(extensionConfig: ExtensionConfig, callableService: CallableService, iFrameWindow: Window);
     /**
      * Checks if message is coming from the correct IFrame and therefore is secure.
      * @param {MessageEvent} event - postMessage event.
