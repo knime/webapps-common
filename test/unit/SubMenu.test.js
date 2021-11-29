@@ -74,7 +74,7 @@ describe('SubMenu.vue', () => {
         expect(wrapper.find(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
     });
 
-    it('can be disabled', async () => {
+    it('can be disabled', () => {
         const id = 'testfoobar543';
         const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -95,42 +95,26 @@ describe('SubMenu.vue', () => {
         });
         let button = wrapper.find('.submenu-toggle');
         expect(button.attributes('disabled')).toBeTruthy();
-        await wrapper.setProps({ disabled: false });
+        wrapper.setProps({ disabled: false });
         expect(button.attributes('disabled')).toBeFalsy();
     });
 
-    it('can display hotkeys', () => {
+    it('displays hotkey if set', () => {
         const id = 'testfoobar543';
         const items = [
-            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
-            { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
+            { href: 'https://www.google.com/slash', text: 'Google Slash', hotKey: 'ctrl + 1' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
-        const wrapper = shallowMount(SubMenu, {
-            propsData: {
-                items,
-                id,
-                showHotkeys: true
-            }
-        });
-        const spans = wrapper.findAll('span');
-        const span = spans.at(1);
-        expect(span.classes('hotkey')).toBe(true);
-    });
-
-    it('does not display hotkeys by default', () => {
-        const id = 'testfoobar543';
-        const items = [
-            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
-            { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
-        ];
+        
         const wrapper = shallowMount(SubMenu, {
             propsData: {
                 items,
                 id
             }
         });
-        wrapper.findAll('span').wrappers.forEach(item => {
-            expect(item.classes('hotkey').toBe(false));
-        });
+        
+        let renderedItems = wrapper.findAll('.label');
+        expect(renderedItems.at(0).find('.hotkey').text()).toMatch('ctrl + 1');
+        expect(renderedItems.at(1).find('.hotkey').exists()).toBe(false);
     });
 });
