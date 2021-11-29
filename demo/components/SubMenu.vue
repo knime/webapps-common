@@ -15,11 +15,13 @@ import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inli
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon
+    icon: HelpIcon,
+    hotkeyText: 'Ctrl + 1'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon
+    icon: StarIcon,
+    hotkeyText: 'Ctrl + 2'
 },  {
     to: '/testing-nuxt-link',
     text: 'Ananas',
@@ -77,22 +79,27 @@ nav {
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon
+    icon: HelpIcon,
+    hotkeyText: 'Ctrl + 1'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon
+    icon: StarIcon,
+    hotkeyText: 'Ctrl + 2'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: HeartIcon
+    icon: HeartIcon,
+    hotkeyText: 'Ctrl + 3'
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: LeaveIcon
+    icon: LeaveIcon,
+    hotkeyText: 'Ctrl + 4'
 }, {
     text: 'Item without href/to',
-    icon: HelpIcon
+    icon: HelpIcon,
+    hotkeyText: 'Ctrl + 5'
 }];
 
 export default {
@@ -114,8 +121,12 @@ export default {
             return subMenuItems.map(item => {
                 const newItem = JSON.parse(JSON.stringify(item));
                 delete newItem.icon;
+                delete newItem.hotkeyText;
                 return newItem;
             });
+        },
+        subMenuItemsWithoutHotkeys() {
+            return subMenuItems.map(({ hotkeyText, ...rest }) => rest);
         }
     }
 };
@@ -142,7 +153,7 @@ export default {
           <div class="card">
             <span class="menu-name">With icons</span>
             <SubMenu
-              :items="subMenuItems"
+              :items="subMenuItemsWithoutHotkeys"
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />
@@ -152,7 +163,7 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation left</span>
             <SubMenu
-              :items="subMenuItems"
+              :items="subMenuItemsWithoutHotkeys"
               orientation="left"
               button-title="Open my submenu with icons"
             >
@@ -163,9 +174,19 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation top</span>
             <SubMenu
-              :items="subMenuItems"
+              :items="subMenuItemsWithoutHotkeys"
               orientation="top"
               button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+          
+          <div class="card">
+            <span class="menu-name">With hotkeys</span>
+            <SubMenu
+              :items="subMenuItems"
+              button-title="Open my submenu with hotkeys"
             >
               <MenuIcon class="open-icon" />
             </SubMenu>
