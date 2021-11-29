@@ -207,6 +207,7 @@ h4 {
 .open-icon {
   width: 25px;
   height: 50px;
+  margin: auto;
 }
 
 .menu-name {
