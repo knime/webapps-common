@@ -1,4 +1,4 @@
-import { IFrameKnimeService } from "../index-8051a49e";
+import { IFrameKnimeService } from "../index-a3360790";
 import { Notification } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 /**

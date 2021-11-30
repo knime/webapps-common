@@ -1,3 +1,4 @@
+export { KnimeService } from './KnimeService';
 export { JsonDataService } from './JsonDataService';
 export { IFrameKnimeService } from './IFrameKnimeService';
 export { IFrameKnimeServiceAdapter } from './IFrameKnimeServiceAdapter';
