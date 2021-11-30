@@ -16,8 +16,8 @@ describe('IFrameKnimeService', () => {
 
     describe('initialization', () => {
         it('Creates IFrameKnimeService', () => {
-            let eventListenerSpy = jest.spyOn(window, 'addEventListener');
-            let postSpy = jest.spyOn(window, 'postMessage');
+            const eventListenerSpy = jest.spyOn(window, 'addEventListener');
+            const postSpy = jest.spyOn(window, 'postMessage');
 
             new IFrameKnimeService();
             expect(eventListenerSpy).toHaveBeenCalledWith('message', expect.any(Function));
@@ -32,7 +32,7 @@ describe('IFrameKnimeService', () => {
         it('registers extension config', () => {
             const knimeService = new IFrameKnimeService();
             expect(knimeService.extensionConfig).toBe(null);
-            let testMessage = {
+            const testMessage = {
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
                     payload: extensionConfig
@@ -107,7 +107,7 @@ describe('IFrameKnimeService', () => {
         });
 
         it('executes service calls', () => {
-            let postSpy = jest.spyOn(window, 'postMessage');
+            const postSpy = jest.spyOn(window, 'postMessage');
             const testMessage = {
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,

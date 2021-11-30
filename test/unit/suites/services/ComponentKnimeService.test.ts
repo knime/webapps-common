@@ -36,7 +36,7 @@ describe('ComponentKnimeService', () => {
         });
 
         it('Throws error if extension config not provided', () => {
-            let rpcSpy = jest.spyOn(window, 'jsonrpc');
+            const rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new ComponentKnimeService();
 
@@ -48,7 +48,7 @@ describe('ComponentKnimeService', () => {
         });
 
         it('Calls data service', async () => {
-            let rpcSpy = jest.spyOn(window, 'jsonrpc');
+            const rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new ComponentKnimeService(extensionConfig);
 
@@ -65,7 +65,7 @@ describe('ComponentKnimeService', () => {
         });
 
         it('Throws error if called with unsupported rpc service', () => {
-            let rpcSpy = jest.spyOn(window, 'jsonrpc');
+            const rpcSpy = jest.spyOn(window, 'jsonrpc');
 
             const knimeService = new ComponentKnimeService(extensionConfig);
 
