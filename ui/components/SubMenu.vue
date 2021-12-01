@@ -294,17 +294,17 @@ ul {
     }
 
     & .label {
-        display: flex;
-        width: 100%;
+      display: flex;
+      width: 100%;
 
-        & .text {
-          flex-shrink: 1;
-          flex-basis: 100%;
-        }
+      & .text {
+        flex-shrink: 1;
+        flex-basis: 100%;
+      }
 
-        & .hotkey {
-          margin-left: 40px;
-        }
+      & .hotkey {
+        margin-left: 40px;
+      }
     }
 
     &:hover {
