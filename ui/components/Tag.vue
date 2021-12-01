@@ -23,8 +23,8 @@ export default {
   border: 1px solid var(--knime-dove-gray);
   margin-right: 5px;
   margin-bottom: 5px;
-  padding: 0 6px;
-  font-size: 10px;
+  padding: 3px 5px;
+  font-size: 14px;
   line-height: 17px;
   display: inline-block;
   font-weight: 500;
@@ -32,12 +32,11 @@ export default {
 
   & svg {
     position: relative;
-    top: 1px;
     width: 8px;
     height: 8px;
-    stroke-width: calc(32px / 14);
+    stroke-width: calc(32px / 8);
     stroke: var(--knime-dove-gray);
-    margin-right: -3px;
+    margin: 0 -1px 0 auto;
   }
 
   &.clickable {
