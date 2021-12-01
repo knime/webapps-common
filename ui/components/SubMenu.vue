@@ -24,6 +24,9 @@ export default {
            },  {
               to: '/testing-nuxt-link',
               text: 'Ananas'
+           },  {
+              text: 'Close',
+              hotkeyText: 'Alt Q'
            }]
          */
         items: {
@@ -230,7 +233,13 @@ export default {
             v-if="item.icon"
             class="item-icon"
           />
-          {{ item.text }}
+          <div class="label">
+            <span class="text">{{ item.text }}</span>
+            <span
+              v-if="item.hotkeyText"
+              class="hotkey"
+            >{{ item.hotkeyText }}</span>
+          </div>
         </Component>
       </li>
     </ul>
@@ -282,6 +291,20 @@ ul {
       width: 18px;
       height: 18px;
       margin-right: 7px;
+    }
+
+    & .label {
+      display: flex;
+      width: 100%;
+
+      & .text {
+        flex-shrink: 1;
+        flex-basis: 100%;
+      }
+
+      & .hotkey {
+        margin-left: 40px;
+      }
     }
 
     &:hover {
