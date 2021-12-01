@@ -102,17 +102,17 @@ describe('SubMenu.vue', () => {
     it('displays hotkey if set', () => {
         const id = 'testfoobar543';
         const items = [
-            { href: 'https://www.google.com/slash', text: 'Google Slash', hotKey: 'ctrl + 1' },
+            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
             { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
-        
+
         const wrapper = shallowMount(SubMenu, {
             propsData: {
                 items,
                 id
             }
         });
-        
+
         let renderedItems = wrapper.findAll('.label');
         expect(renderedItems.at(0).find('.hotkey').text()).toMatch('ctrl + 1');
         expect(renderedItems.at(1).find('.hotkey').exists()).toBe(false);
