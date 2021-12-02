@@ -52,14 +52,6 @@ export default {
         disabled: {
             type: Boolean,
             default: false
-        },
-        /**
-         * Shows a column on the right of each entry filled with item.hotkeyText (if set).
-         * The layout is a bit different even if item does not provide a hotKeyText  (spacing etc.)
-         */
-        showHotkeys: {
-            type: Boolean,
-            default: false
         }
     },
     data() {
@@ -186,7 +178,6 @@ export default {
         :id="id"
         ref="menuItems"
         :class="['menu-items', `orient-${orientation}`]"
-        :show-hotkeys="showHotkeys"
         :items="items"
         aria-label="sub menu"
         @item-click="onItemClick"

@@ -3,7 +3,7 @@ const knime = require('./knimeColors');
 module.exports = {
     Component: knime.SilverSand,
     Configuration: knime.Avocado,
-    Container: knime.Avocado,
+    Container: knime.AvocadoDark,
     Learner: knime.MeadowLight,
     Loop: knime.Aquamarine,
     LoopEnd: knime.Aquamarine,

@@ -18,11 +18,11 @@ export default {
          * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
          * @example
          [{
-              href: 'http://apple.com',
-              text: 'Apples',
-              icon: HelpIcon
-              hotkeyText: 'CTRL + H'
-           }, {
+         href: 'http://apple.com',
+         text: 'Apples',
+         icon: HelpIcon
+         hotkeyText: 'CTRL + H'
+         }, {
               href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
               text: 'Oranges',
               icon: StarIcon,
@@ -49,14 +49,6 @@ export default {
         id: {
             default: '',
             type: String
-        },
-        /**
-         * Shows a column on the right of each entry filled with item.hotkeyText (if set).
-         * The layout is a bit different even if item does not provide a hotKeyText  (spacing etc.)
-         */
-        showHotkeys: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -162,14 +154,13 @@ export default {
           v-if="item.icon"
           class="item-icon"
         />
-        <div
-          v-if="showHotkeys"
-          class="label"
-        >
+        <div class="label">
           <span class="text">{{ item.text }}</span>
-          <span class="hotkey">{{ item.hotkeyText }}</span>
+          <span
+            v-if="item.hotkeyText"
+            class="hotkey"
+          >{{ item.hotkeyText }}</span>
         </div>
-        <template v-else>{{ item.text }}</template>
       </Component>
     </li>
   </ul>
@@ -226,19 +217,15 @@ ul {
 
     & .label {
       display: flex;
-      flex: 1;
       text-align: left;
-      min-width: 80px;
+      width: 100%;
 
       & .text {
-        flex: 2 1 100%;
-        display: block;
+        flex-shrink: 1;
+        flex-basis: 100%;
       }
 
       & .hotkey {
-        align-self: flex-end;
-        display: block;
-        flex: 1 1 20%;
         margin-left: 40px;
       }
     }

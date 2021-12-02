@@ -5,7 +5,9 @@ module.exports = {
     rules: {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error',
-        'comma-dangle': ['warn', 'always-multiline']
+        'no-extra-parens': 'off',
+        '@typescript-eslint/no-extra-parens': 'error',
+        'prefer-const': 'error'
     },
     overrides: [{
         files: ['*.json'],

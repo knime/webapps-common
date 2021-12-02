@@ -73,8 +73,7 @@ describe('MenuItems.vue', () => {
             propsData: {
                 ariaLabel: 'label',
                 items,
-                id,
-                showHotkeys: true
+                id
             }
         });
         const spans = wrapper.findAll('span');
@@ -85,8 +84,8 @@ describe('MenuItems.vue', () => {
     it('doesn\'t display hotkeys by default', () => {
         const id = 'testfoobar543';
         const items = [
-            { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
-            { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
+            { href: 'https://www.google.com/slash', text: 'Google Slash' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
         const wrapper = shallowMount(MenuItems, {
             propsData: {
@@ -96,7 +95,7 @@ describe('MenuItems.vue', () => {
             }
         });
         wrapper.findAll('span').wrappers.forEach(item => {
-            expect(item.classes('hotkey').toBe(false));
+            expect(item.classes('hotkey')).toBe(false);
         });
     });
 });
