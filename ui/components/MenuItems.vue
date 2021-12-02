@@ -194,6 +194,7 @@ ul {
     background: none;
     width: 100%;
     padding: 6px 13px;
+
     /* <button> does not inherit font-weight from ul in chrome */
     font-weight: 500;
     display: flex;

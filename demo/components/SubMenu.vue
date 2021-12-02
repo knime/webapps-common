@@ -21,13 +21,13 @@ const subMenuItems = [{
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
     icon: StarIcon,
-    hotkeyText: 'CTRL + 2'
+    hotkeyText: 'Ctrl + 2'
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
     disabled: true,
     icon: StarIcon,
-    hotkeyText: 'CTRL + 3'
+    hotkeyText: 'Ctrl + 3'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
@@ -91,13 +91,13 @@ const subMenuItems = [{
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
     icon: StarIcon,
-    hotkeyText: 'CTRL + 2'
+    hotkeyText: 'Ctrl + 2'
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
     disabled: true,
     icon: StarIcon,
-    hotkeyText: 'CTRL + 3'
+    hotkeyText: 'Ctrl + 3'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
