@@ -45,7 +45,7 @@ export default {
 .description {
   font-size: 18px;
   line-height: 26px;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 
   @media only screen and (max-width: 900px) {
     font-size: 16px;
