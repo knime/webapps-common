@@ -46,6 +46,7 @@ export default {
   font-size: 18px;
   line-height: 26px;
   overflow-wrap: anywhere;
+  word-break: break-word; /* Safari needs this */
 
   @media only screen and (max-width: 900px) {
     font-size: 16px;
