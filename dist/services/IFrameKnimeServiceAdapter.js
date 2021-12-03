@@ -9,11 +9,20 @@ import { KnimeService } from './KnimeService.js';
  * Should be instantiated by class that persists at root window object.
  */
 class IFrameKnimeServiceAdapter extends KnimeService {
-    constructor(extensionConfig = null, callableService = null, iFrameWindow) {
+    constructor(extensionConfig = null, callableService = null) {
         super(extensionConfig, callableService);
-        this.iFrameWindow = iFrameWindow;
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
+    }
+    /**
+     * A setter method to update the child iframe window referenced by the service.
+     *
+     * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
+     *      is running.
+     * @returns {void}
+     */
+    setIFrameWindow(iFrameWindow) {
+        this.iFrameWindow = iFrameWindow;
     }
     /**
      * Checks if message is coming from the correct IFrame and therefore is secure.

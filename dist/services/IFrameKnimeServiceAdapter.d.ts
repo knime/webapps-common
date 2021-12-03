@@ -12,7 +12,22 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
     iFrameWindow: Window;
     extensionConfig: ExtensionConfig;
     boundOnMessageFromIFrame: any;
-    constructor(extensionConfig: ExtensionConfig, callableService: CallableService, iFrameWindow: Window);
+    constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
+    /**
+     * A setter method to update the child iframe window referenced by the service.
+     *
+     * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
+     *      is running.
+     * @returns {void}
+     */
+    /**
+     * A setter method to update the child iframe window referenced by the service.
+     *
+     * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
+     *      is running.
+     * @returns {void}
+     */
+    setIFrameWindow(iFrameWindow: Window): void;
     /**
      * Checks if message is coming from the correct IFrame and therefore is secure.
      * @param {MessageEvent} event - postMessage event.

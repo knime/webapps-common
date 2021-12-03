@@ -19,12 +19,13 @@ const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
 };
 
 const buildIFrameKnimeServiceAdapter = () => {
-    let callServiceSpy = jest.fn().mockImplementation(mockCallServiceImplementation);
-    let childSpy = jest.fn();
-    let mockChildFrame = {
+    const callServiceSpy = jest.fn().mockImplementation(mockCallServiceImplementation);
+    const childSpy = jest.fn();
+    const mockChildFrame = {
         postMessage: childSpy
     } as unknown as Window;
-    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy, mockChildFrame);
+    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy);
+    iFrameKnimeServiceAdapter.setIFrameWindow(mockChildFrame);
 
     jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
 

@@ -21,7 +21,7 @@ describe('SelectionService', () => {
 
     describe('methods', () => {
         it('Calls selection service add/remove/replace methods with correct params', async () => {
-            let callService = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res('{}'))));
+            const callService = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res('{}'))));
             const knime = new KnimeService(extensionConfig, callService);
             const selectionService = new SelectionService(knime);
 

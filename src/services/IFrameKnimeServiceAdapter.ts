@@ -17,13 +17,21 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
 
     boundOnMessageFromIFrame: any;
 
-    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
-        iFrameWindow: Window) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null) {
         super(extensionConfig, callableService);
-        this.iFrameWindow = iFrameWindow;
-
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
+    }
+
+    /**
+     * A setter method to update the child iframe window referenced by the service.
+     *
+     * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
+     *      is running.
+     * @returns {void}
+     */
+    setIFrameWindow(iFrameWindow: Window) {
+        this.iFrameWindow = iFrameWindow;
     }
 
     /**
