@@ -1,7 +1,6 @@
 import { IFrameKnimeService } from 'src';
 import { NodeServiceMethods, DataServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
-import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -35,10 +34,7 @@ export class JsonDataService<T = any> {
                 this.knimeService.extensionConfig.extensionType,
                 dataService,
                 request || ''
-            ]))
-            .then((response) => JSON.parse(response)) // outer response
-            .then(jsonRpcResponseHandler)
-            .then((response) => JSON.parse(response)); // inner response
+            ]));
     }
 
     /**
@@ -73,7 +69,7 @@ export class JsonDataService<T = any> {
         return this.callDataService(
             DataServiceTypes.DATA,
             JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
-        ).then(jsonRpcResponseHandler);
+        );
     }
 
     /**

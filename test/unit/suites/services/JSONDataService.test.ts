@@ -4,6 +4,10 @@ import { DataServiceTypes, JsonRpcRequest, NodeServiceMethods } from 'src/types'
 import { KnimeService } from 'src/services/KnimeService';
 
 describe('JsonDataService', () => {
+    const getMockCallService = (knimeService: KnimeService) => jest
+        .spyOn(knimeService, 'callService')
+        .mockImplementation(() => Promise.resolve(extensionConfig.initialData));
+
     describe('initialization', () => {
         it('Creates data service', () => {
             const knimeService = new KnimeService(extensionConfig);
@@ -26,11 +30,7 @@ describe('JsonDataService', () => {
                 ...extensionConfig,
                 initialData: null
             });
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             const jsonDataService = new JsonDataService(knimeService);
 
             expect(jsonDataService.initialData()).resolves.toEqual({
@@ -47,15 +47,12 @@ describe('JsonDataService', () => {
         it('calls default data service', () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             jsonDataService.data();
             const invocationParameters = serviceSpy.mock.calls[0][0];
             expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
             expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            /* eslint-disable-next-line no-extra-parens */
             expect((invocationParameters.params as any[]).some(param => param?.includes?.('getData')))
                 .toBe(true);
         });
@@ -68,15 +65,12 @@ describe('JsonDataService', () => {
             const checkOptions = JSON.stringify(options);
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             jsonDataService.data({ options });
             const invocationParameters = serviceSpy.mock.calls[0][0];
             expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
             expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            /* eslint-disable-next-line no-extra-parens */
             expect((invocationParameters.params as any[]).some(param => param?.includes?.(checkOptions)))
                 .toBe(true);
         });
@@ -84,15 +78,12 @@ describe('JsonDataService', () => {
         it('calls data service by method', () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementationOnce(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             jsonDataService.data({ method: 'nextPage' });
             const invocationParameters = serviceSpy.mock.calls[0][0];
             expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
             expect(invocationParameters.params).toContain(DataServiceTypes.DATA);
+            /* eslint-disable-next-line no-extra-parens */
             expect((invocationParameters.params as any[]).some(param => param?.includes?.('nextPage')))
                 .toBe(true);
         });
@@ -130,11 +121,7 @@ describe('JsonDataService', () => {
         });
 
         it('calls the apply data service when "applyData" is called', async () => {
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             await jsonDataService.applyData();
             const invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;
             expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
@@ -142,11 +129,7 @@ describe('JsonDataService', () => {
         });
 
         it('calls a default data getter if none registered', async () => {
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             await jsonDataService.applyData();
             expect(dataGetter).not.toHaveBeenCalled();
             const invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;
@@ -157,11 +140,7 @@ describe('JsonDataService', () => {
 
         it('calls the registered data getter (if present)', async () => {
             jsonDataService.registerDataGetter(dataGetter);
-            const serviceSpy = jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(
-                    JSON.stringify({ result: JSON.stringify(extensionConfig.initialData) })
-                ));
+            const serviceSpy = getMockCallService(knimeService);
             await jsonDataService.applyData();
             expect(dataGetter).toHaveBeenCalled();
             const invocationParameters = serviceSpy.mock.calls[0][0] as JsonRpcRequest;

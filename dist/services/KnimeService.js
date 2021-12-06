@@ -1,3 +1,5 @@
+import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
+
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -39,7 +41,7 @@ class KnimeService {
         if (!this.callableService) {
             return Promise.reject(new Error('Callable service is not available'));
         }
-        return this.executeServiceCall(jsonRpcRequest);
+        return this.executeServiceCall(jsonRpcRequest).then(jsonRpcResponseHandler);
     }
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).

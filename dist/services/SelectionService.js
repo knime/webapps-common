@@ -3,7 +3,6 @@ import { SelectionServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
-import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -32,9 +31,7 @@ class SelectionService {
             this.knimeService.extensionConfig.nodeId,
             selectionService,
             request || ''
-        ]))
-            .then((response) => JSON.parse(response))
-            .then(jsonRpcResponseHandler);
+        ]));
     }
     /**
      * Adds data to currently selected data set.

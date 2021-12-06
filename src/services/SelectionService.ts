@@ -1,7 +1,6 @@
 import { IFrameKnimeService } from 'src/services';
 import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
-import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -34,9 +33,7 @@ export class SelectionService<T = any> {
                 this.knimeService.extensionConfig.nodeId,
                 selectionService,
                 request || ''
-            ]))
-            .then((response) => JSON.parse(response))
-            .then(jsonRpcResponseHandler);
+            ]));
     }
 
     /**

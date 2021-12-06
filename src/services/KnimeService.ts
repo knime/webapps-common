@@ -1,5 +1,6 @@
 import { ExtensionConfig, Notification, JsonRpcRequest } from 'src/types';
 import { CallableService } from 'src/types/CallableService';
+import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -55,7 +56,7 @@ export class KnimeService<T = any> {
             return Promise.reject(new Error('Callable service is not available'));
         }
 
-        return this.executeServiceCall(jsonRpcRequest);
+        return this.executeServiceCall(jsonRpcRequest).then(jsonRpcResponseHandler);
     }
 
     /**
@@ -65,7 +66,7 @@ export class KnimeService<T = any> {
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) : Promise<string> {
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) : Promise<any> {
         return this.callableService(jsonRpcRequest);
     }
 

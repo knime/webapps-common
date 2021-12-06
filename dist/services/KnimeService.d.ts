@@ -37,7 +37,7 @@ declare class KnimeService<T = any> {
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(jsonRpcRequest: JsonRpcRequest): Promise<string>;
+    callService(jsonRpcRequest: JsonRpcRequest): Promise<any>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
@@ -52,7 +52,7 @@ declare class KnimeService<T = any> {
      * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<string>;
+    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<any>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).

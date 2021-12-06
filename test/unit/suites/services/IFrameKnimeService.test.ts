@@ -80,24 +80,27 @@ describe('IFrameKnimeService', () => {
             expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
         });
 
-        it('onMessageFromParent handles', () => {
+        it('onMessageFromParent handles async post requests with differing IDs', () => {
+            const requestId = 2;
+            const data = {
+                payload: {
+                    response: {
+                        result: JSON.stringify([1, 1, 2]),
+                        id: 3
+                    },
+                    requestId
+                },
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
+            };
             knimeService.executeServiceCall({
-                id: 2
+                id: requestId
             });
 
-            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
-
-                data: {
-                    payload: JSON.stringify({
-                        result: JSON.stringify([1, 1, 2]),
-                        id: 2
-                    }),
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
-                }
-            } as MessageEvent);
+            /* eslint-disable-next-line no-extra-parens */
+            (knimeService as any).onMessageFromParent({ data } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
-            expect(onJsonRpcResponseSpy).toHaveBeenCalled();
+            expect(onJsonRpcResponseSpy).toHaveBeenCalledWith({ ...data });
         });
 
         it('returns error if request takes too long', async () => {
@@ -115,7 +118,7 @@ describe('IFrameKnimeService', () => {
                 }
             };
 
-            ((knimeService as any)).onMessageFromParent(/* eslint-disable-line no-extra-parens */
+            (knimeService as any).onMessageFromParent(/* eslint-disable-line no-extra-parens */
                 testMessage as MessageEvent
             );
             const knimeJsonDataService = new JsonDataService(knimeService);

@@ -66,12 +66,16 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
                 {
-                    const { payload } = event.data;
+                    const { payload } = data;
+                    const requestId = payload?.id;
                     const response = await this.callService(payload);
                     this.iFrameWindow.postMessage(
                         {
                             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                            payload: response
+                            payload: {
+                                response,
+                                requestId
+                            }
                         },
                         '*'
                     );

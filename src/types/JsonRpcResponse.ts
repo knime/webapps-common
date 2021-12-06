@@ -3,5 +3,5 @@ export type JsonRpcResponse = {
         code: string;
         message: string;
     };
-    result: string;
+    result: any;
 };

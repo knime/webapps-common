@@ -3,7 +3,6 @@ import { DataServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
-import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -33,10 +32,7 @@ class JsonDataService {
             this.knimeService.extensionConfig.extensionType,
             dataService,
             request || ''
-        ]))
-            .then((response) => JSON.parse(response)) // outer response
-            .then(jsonRpcResponseHandler)
-            .then((response) => JSON.parse(response)); // inner response
+        ]));
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
@@ -66,7 +62,7 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     data(params = {}) {
-        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))).then(jsonRpcResponseHandler);
+        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the

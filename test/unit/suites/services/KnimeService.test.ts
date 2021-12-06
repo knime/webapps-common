@@ -33,6 +33,30 @@ describe('KnimeService', () => {
                 [DataServiceTypes.INITIAL_DATA, '']
             ))).rejects.toThrowError('Callable service is not available');
         });
+
+        it('Returns the results of successful service calls', async () => {
+            const result = 'test';
+            const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ result }))));
+            const knimeService = new KnimeService(extensionConfig, callableMock);
+            const testResult = await knimeService.callService(createJsonRpcRequest(
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                [DataServiceTypes.INITIAL_DATA, '']
+            ));
+            expect(testResult).toBe(result);
+        });
+
+        it('Rethrows backend errors with codes and messages if available', () => {
+            const error = {
+                code: '007',
+                message: 'Shaken, not stirred.'
+            };
+            const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ error }))));
+            const knimeService = new KnimeService(extensionConfig, callableMock);
+            expect(() => knimeService.callService(createJsonRpcRequest(
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                [DataServiceTypes.INITIAL_DATA, '']
+            ))).rejects.toThrowError('Error code: 007. Message: Shaken, not stirred.');
+        });
     });
 
     describe('notifications', () => {

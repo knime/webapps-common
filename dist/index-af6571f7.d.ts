@@ -67,7 +67,7 @@ type JsonRpcResponse = {
         code: string;
         message: string;
     };
-    result: string;
+    result: any;
 };
 type JsonRpcRequest = {
     jsonrpc: string;

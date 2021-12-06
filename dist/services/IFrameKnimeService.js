@@ -45,15 +45,14 @@ class IFrameKnimeService extends KnimeService {
         this.extensionConfig = data.payload;
     }
     onJsonRpcResponse(data) {
-        const { payload } = data;
-        const responseJSON = JSON.parse(payload);
-        const { id } = responseJSON;
-        const request = this.pendingJsonRpcRequests.get(id);
+        const { payload: { response, requestId } } = data;
+        const responseJSON = typeof response === 'string' ? JSON.parse(response) : JSON.parse(response.result);
+        const request = this.pendingJsonRpcRequests.get(requestId);
         if (!request) {
-            throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${id}`);
+            throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${requestId}`);
         }
-        request.resolve(payload);
-        this.pendingJsonRpcRequests.delete(id);
+        request.resolve(responseJSON);
+        this.pendingJsonRpcRequests.delete(requestId);
     }
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.

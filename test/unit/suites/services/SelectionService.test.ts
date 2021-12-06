@@ -3,8 +3,6 @@ import { KnimeService } from 'src/services/KnimeService';
 import { NodeServiceMethods, SelectionServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
-window.jsonrpc = () => JSON.stringify({ result: JSON.stringify({}) });
-
 describe('SelectionService', () => {
     describe('initialization', () => {
         it('Creates selection service', () => {

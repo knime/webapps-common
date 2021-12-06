@@ -11,11 +11,12 @@ const sleep = async (timeout = 15) => {
 const mockJsonRpcResponse = [1, 1, 2];
 
 const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
+    let result : any = requestJSON;
     if (requestJSON.params === 'getData') {
-        return mockJsonRpcResponse;
+        result = mockJsonRpcResponse;
     }
-
-    return requestJSON;
+    
+    return Promise.resolve({ result });
 };
 
 const buildIFrameKnimeServiceAdapter = () => {
@@ -43,25 +44,6 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Adds window event listener on creation', async () => {
-            const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
-
-            window.postMessage(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { data: [1, 1, 2] }
-                },
-                '*'
-            );
-
-            await sleep();
-
-            expect(childSpy).toHaveBeenCalled();
-            expect(callServiceSpy).toHaveBeenCalled();
-
-            iFrameKnimeServiceAdapter.destroy();
-        });
-
         it('Posts init event on :ready type request', async () => {
             const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
@@ -85,46 +67,28 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Calls window.jsonrpc when receives :jsonrpcRequest type event', async () => {
+        it('Calls service when receiving :jsonrpcRequest type events', async () => {
             const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
-
+            const requestId = 1;
+            const payload = { params: 'getData', id: requestId };
             window.postMessage(
                 {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { params: 'getData' }
+                    payload
                 },
                 '*'
             );
 
             await sleep();
 
-            expect(childSpy).toBeCalledWith({ payload: [1, 1, 2], type: 'knimeUIExtension:jsonrpcResponse' }, '*');
-            expect(callServiceSpy).toHaveBeenCalled();
-
-            iFrameKnimeServiceAdapter.destroy();
-        });
-
-        it('Posts response back', async () => {
-            const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
-
-            window.postMessage(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                    payload: { params: 'getData' }
+            expect(childSpy).toBeCalledWith({
+                payload: {
+                    response: [1, 1, 2],
+                    requestId
                 },
-                '*'
-            );
-
-            await sleep();
-
-            expect(childSpy).toBeCalledWith(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
-                    payload: mockJsonRpcResponse
-                },
-                '*'
-            );
-            expect(callServiceSpy).toHaveBeenCalled();
+                type: 'knimeUIExtension:jsonrpcResponse'
+            }, '*');
+            expect(callServiceSpy).toHaveBeenCalledWith(payload);
 
             iFrameKnimeServiceAdapter.destroy();
         });

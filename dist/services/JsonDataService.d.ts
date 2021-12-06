@@ -71,7 +71,7 @@ declare class JsonDataService<T = any> {
     data(params?: {
         method?: string;
         options?: any;
-    }): Promise<string>;
+    }): Promise<any>;
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
      * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
