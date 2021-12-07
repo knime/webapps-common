@@ -38,10 +38,20 @@ describe('IFrameKnimeServiceAdapter', () => {
         it('Creates IFrameKnimeServiceAdapter', () => {
             const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
 
-            expect(iFrameKnimeServiceAdapter).toHaveProperty('extensionConfig');
             expect(iFrameKnimeServiceAdapter.extensionConfig).toEqual(extensionConfig);
             expect(iFrameKnimeServiceAdapter).toHaveProperty('iFrameWindow');
             iFrameKnimeServiceAdapter.destroy();
+        });
+
+        it('Destroys IFrameKnimeServiceAdapter', () => {
+            const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+            const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
+
+            expect(iFrameKnimeServiceAdapter).toHaveProperty('iFrameWindow');
+            iFrameKnimeServiceAdapter.destroy();
+            expect(iFrameKnimeServiceAdapter).toHaveProperty('iFrameWindow', null);
+            expect(removeEventListenerSpy).toHaveBeenCalledWith('message',
+                (iFrameKnimeServiceAdapter as any).boundOnMessageFromIFrame);
         });
 
         it('Posts init event on :ready type request', async () => {

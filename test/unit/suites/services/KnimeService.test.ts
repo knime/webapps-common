@@ -61,7 +61,7 @@ describe('KnimeService', () => {
 
     describe('notifications', () => {
         beforeEach(() => {
-            window.jsonrpcNotification = null;
+            jest.clearAllMocks();
         });
 
         it('Adds notification callback with addNotificationCallback', () => {
@@ -101,10 +101,37 @@ describe('KnimeService', () => {
 
             knime.addNotificationCallback('SelectionEvent', () => {});
             knime.addNotificationCallback('CustomEvent', () => {});
-            knime.resetNotificationCallbacksByType('SelectionEvent');
+            knime.resetNotificationCallbacks();
 
-            expect(knime.notificationCallbacksMap.get('SelectionEvent').length === 0);
-            expect(knime.notificationCallbacksMap.get('CustomEvent').length === 0);
+            expect(knime.notificationCallbacksMap.size === 0);
+        });
+
+        it('Calls notification callback when a notification with correct type was received', () => {
+            const knime = new KnimeService();
+            const callback = jest.fn();
+
+            knime.addNotificationCallback('SelectionEvent', callback);
+            knime.onJsonRpcNotification({
+                method: 'SelectionEvent'
+            } as any);
+
+            expect(callback).toHaveBeenCalledWith({
+                method: 'SelectionEvent'
+            });
+        });
+
+        it(`Doesn't call notification callback when a notification with different type was received`, () => {
+            const knime = new KnimeService();
+            const callback = jest.fn();
+
+            knime.addNotificationCallback('SelectionEvent', callback);
+            knime.onJsonRpcNotification({
+                method: 'CustomEvent'
+            } as any);
+
+            expect(callback).not.toHaveBeenCalledWith({
+                method: 'CustomEvent'
+            });
         });
     });
 
