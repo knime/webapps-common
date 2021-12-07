@@ -6,7 +6,7 @@ import { KnimeService } from 'src/services/KnimeService';
 describe('JsonDataService', () => {
     const getMockCallService = (knimeService: KnimeService) => jest
         .spyOn(knimeService, 'callService')
-        .mockImplementation(() => Promise.resolve(extensionConfig.initialData));
+        .mockImplementation(() => Promise.resolve(JSON.stringify(extensionConfig.initialData)));
 
     describe('initialization', () => {
         it('Creates data service', () => {

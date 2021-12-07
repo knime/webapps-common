@@ -34,7 +34,7 @@ export class JsonDataService<T = any> {
                 this.knimeService.extensionConfig.extensionType,
                 dataService,
                 request || ''
-            ]));
+            ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
     /**

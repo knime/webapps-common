@@ -31,7 +31,7 @@ class SelectionService {
             this.knimeService.extensionConfig.nodeId,
             selectionService,
             request || ''
-        ]));
+        ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Adds data to currently selected data set.

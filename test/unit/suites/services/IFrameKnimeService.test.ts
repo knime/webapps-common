@@ -84,10 +84,10 @@ describe('IFrameKnimeService', () => {
             const requestId = 2;
             const data = {
                 payload: {
-                    response: {
-                        result: JSON.stringify([1, 1, 2]),
+                    response: JSON.stringify({
+                        result: [1, 1, 2],
                         id: 3
-                    },
+                    }),
                     requestId
                 },
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`

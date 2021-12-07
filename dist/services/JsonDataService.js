@@ -32,7 +32,7 @@ class JsonDataService {
             this.knimeService.extensionConfig.extensionType,
             dataService,
             request || ''
-        ]));
+        ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration

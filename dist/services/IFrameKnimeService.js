@@ -46,12 +46,11 @@ class IFrameKnimeService extends KnimeService {
     }
     onJsonRpcResponse(data) {
         const { payload: { response, requestId } } = data;
-        const responseJSON = typeof response === 'string' ? JSON.parse(response) : JSON.parse(response.result);
         const request = this.pendingJsonRpcRequests.get(requestId);
         if (!request) {
             throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${requestId}`);
         }
-        request.resolve(responseJSON);
+        request.resolve(JSON.parse(response));
         this.pendingJsonRpcRequests.delete(requestId);
     }
     /**

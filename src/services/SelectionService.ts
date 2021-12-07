@@ -33,7 +33,7 @@ export class SelectionService<T = any> {
                 this.knimeService.extensionConfig.nodeId,
                 selectionService,
                 request || ''
-            ]));
+            ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
     /**

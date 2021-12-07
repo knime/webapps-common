@@ -13,7 +13,7 @@ const mockJsonRpcResponse = [1, 1, 2];
 const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
     let result : any = requestJSON;
     if (requestJSON.params === 'getData') {
-        result = mockJsonRpcResponse;
+        result = JSON.stringify(mockJsonRpcResponse);
     }
     
     return Promise.resolve({ result });
@@ -83,7 +83,7 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             expect(childSpy).toBeCalledWith({
                 payload: {
-                    response: [1, 1, 2],
+                    response: JSON.stringify([1, 1, 2]),
                     requestId
                 },
                 type: 'knimeUIExtension:jsonrpcResponse'

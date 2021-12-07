@@ -63,7 +63,6 @@ export class IFrameKnimeService extends KnimeService {
 
     private onJsonRpcResponse(data) {
         const { payload: { response, requestId } } = data;
-        const responseJSON = typeof response === 'string' ? JSON.parse(response) : JSON.parse(response.result);
         const request = this.pendingJsonRpcRequests.get(requestId);
 
         if (!request) {
@@ -72,7 +71,7 @@ export class IFrameKnimeService extends KnimeService {
             );
         }
 
-        request.resolve(responseJSON);
+        request.resolve(JSON.parse(response));
 
         this.pendingJsonRpcRequests.delete(requestId);
     }
