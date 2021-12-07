@@ -1,4 +1,4 @@
-import { ExtensionConfig, JsonRpcRequest } from "../index-af6571f7";
+import { JsonRpcRequest } from "../index-af6571f7";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -11,7 +11,7 @@ import { KnimeService } from "./KnimeService";
 declare class IFrameKnimeService extends KnimeService {
     private pendingJsonRpcRequests;
     private boundOnMessageFromParent;
-    constructor(extensionConfig?: ExtensionConfig);
+    constructor();
     /**
      * Called when a new message is received, identifies and handles it if type is supported.
      * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.

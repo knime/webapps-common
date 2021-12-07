@@ -95,15 +95,16 @@ export class KnimeService<T = any> {
     }
 
     /**
-     * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.
+     * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
+     * notification type.
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    onJsonrpcNotification(notification: Notification) {
+    onJsonRpcNotification(notification: Notification) {
         const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
 
-        callbacks.forEach((cb) => {
-            cb(notification);
+        callbacks.forEach(callback => {
+            callback(notification);
         });
     }
 

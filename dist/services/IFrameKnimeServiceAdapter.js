@@ -2,9 +2,9 @@ import { UI_EXT_POST_MESSAGE_PREFIX } from '../constants/index.js';
 import { KnimeService } from './KnimeService.js';
 
 /**
- * Handles postMessage communication with iframes on side of parent window.
+ * Handles postMessage communication with iframes on side of the parent window.
  *
- * Iframe window communication should be setup with instance of IFrameKnimeService.
+ * IFrame window communication should be setup with instance of IFrameKnimeService.
  *
  * Should be instantiated by class that persists at root window object.
  */
@@ -15,7 +15,7 @@ class IFrameKnimeServiceAdapter extends KnimeService {
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
     /**
-     * A setter method to update the child iframe window referenced by the service.
+     * Sets the child iframe window referenced by the service.
      *
      * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
      *      is running.
@@ -72,6 +72,7 @@ class IFrameKnimeServiceAdapter extends KnimeService {
      */
     destroy() {
         window.removeEventListener('message', this.boundOnMessageFromIFrame);
+        this.iFrameWindow = null;
     }
 }
 

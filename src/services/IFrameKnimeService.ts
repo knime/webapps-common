@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { ExtensionConfig, JsonRpcRequest } from 'src/types';
+import { JsonRpcRequest } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -15,8 +15,8 @@ export class IFrameKnimeService extends KnimeService {
 
     private boundOnMessageFromParent: any;
 
-    constructor(extensionConfig: ExtensionConfig = null) {
-        super(extensionConfig, null);
+    constructor() {
+        super();
 
         this.callableService = this.executeServiceCall;
 
@@ -90,7 +90,7 @@ export class IFrameKnimeService extends KnimeService {
             rejectTimeoutId = setTimeout(() => {
                 resolve(JSON.stringify({
                     error: {
-                        message: `Request with id: ${id} rejected due to timeout.`,
+                        message: `Request with id ${id} aborted due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null

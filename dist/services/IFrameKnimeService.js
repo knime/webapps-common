@@ -10,8 +10,8 @@ import { KnimeService } from './KnimeService.js';
  * Other services should be initialized with instance of the class.
  */
 class IFrameKnimeService extends KnimeService {
-    constructor(extensionConfig = null) {
-        super(extensionConfig, null);
+    constructor() {
+        super();
         this.pendingJsonRpcRequests = new Map();
         this.callableService = this.executeServiceCall;
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
@@ -66,7 +66,7 @@ class IFrameKnimeService extends KnimeService {
             rejectTimeoutId = setTimeout(() => {
                 resolve(JSON.stringify({
                     error: {
-                        message: `Request with id: ${id} rejected due to timeout.`,
+                        message: `Request with id ${id} aborted due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null

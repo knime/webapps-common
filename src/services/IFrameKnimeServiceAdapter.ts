@@ -4,18 +4,16 @@ import { CallableService } from 'src/types/CallableService';
 import { KnimeService } from './KnimeService';
 
 /**
- * Handles postMessage communication with iframes on side of parent window.
+ * Handles postMessage communication with iframes on side of the parent window.
  *
- * Iframe window communication should be setup with instance of IFrameKnimeService.
+ * IFrame window communication should be setup with instance of IFrameKnimeService.
  *
  * Should be instantiated by class that persists at root window object.
  */
 export class IFrameKnimeServiceAdapter extends KnimeService {
-    iFrameWindow: Window;
+    private iFrameWindow: Window;
 
-    extensionConfig: ExtensionConfig;
-
-    boundOnMessageFromIFrame: any;
+    private boundOnMessageFromIFrame: any;
 
     constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null) {
         super(extensionConfig, callableService);
@@ -24,7 +22,7 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
     }
 
     /**
-     * A setter method to update the child iframe window referenced by the service.
+     * Sets the child iframe window referenced by the service.
      *
      * @param {Window} iFrameWindow - the content window of the child frame where the @see IFrameKnimeService
      *      is running.
@@ -94,5 +92,6 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
      */
     destroy() {
         window.removeEventListener('message', this.boundOnMessageFromIFrame);
+        this.iFrameWindow = null;
     }
 }

@@ -88,16 +88,18 @@ declare class KnimeService<T = any> {
      */
     getData(): Promise<any>;
     /**
-     * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.
+     * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
+     * notification type.
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
     /**
-     * Internal method that is triggered by backend implementation. Calls registered callbacks by notification type.
+     * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
+     * notification type.
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    onJsonrpcNotification(notification: Notification): void;
+    onJsonRpcNotification(notification: Notification): void;
     /**
      * Registers callback that will be triggered on received notification.
      * @param {string} notificationType - notification type that callback should be registered for.
