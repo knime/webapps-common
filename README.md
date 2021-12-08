@@ -74,6 +74,7 @@ git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-u
 ```javascript
 import { IFrameKnimeService, JsonDataService } from 'knime-ui-extension-service';
 this.knimeService = new IFrameKnimeService();
+await this.knimeService.waitForInitialization();
 this.knimeJsonDataService = new JsonDataService(this.knimeService);
 this.initialData = await this.knimeJsonDataService.initialData();
 ```

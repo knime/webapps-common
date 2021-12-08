@@ -13,14 +13,13 @@ class IFrameKnimeService extends KnimeService {
     constructor() {
         super();
         this.pendingJsonRpcRequests = new Map();
-        this.initialization = new Promise((resolve, reject) => {
-            this.initializationPromise = {
-                resolve,
-                reject
-            };
+        // to allow awaiting the initialization via waitForInitialization()
+        // TODO NXTEXT-135 remove the need for this
+        this.initializationPromise = new Promise((resolve) => {
+            this.initializationPromiseResolve = resolve;
         });
         if (this.extensionConfig) {
-            this.initializationPromise.resolve(true);
+            this.initializationPromiseResolve();
         }
         this.callableService = this.executeServiceCall;
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
@@ -28,6 +27,13 @@ class IFrameKnimeService extends KnimeService {
         window.parent.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
         }, '*'); // TODO NXT-793 security
+    }
+    /**
+     * Needs to be awaited before the service is ready to be used.
+     * @returns {void}
+     */
+    async waitForInitialization() {
+        await this.initializationPromise;
     }
     /**
      * Called when a new message is received, identifies and handles it if type is supported.
@@ -52,7 +58,7 @@ class IFrameKnimeService extends KnimeService {
     }
     onInit(data) {
         this.extensionConfig = data.payload;
-        this.initializationPromise.resolve(true);
+        this.initializationPromiseResolve();
     }
     onJsonRpcResponse(data) {
         const { payload: { response, requestId } } = data;

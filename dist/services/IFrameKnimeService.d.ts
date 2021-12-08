@@ -12,8 +12,17 @@ declare class IFrameKnimeService extends KnimeService {
     private pendingJsonRpcRequests;
     private boundOnMessageFromParent;
     private initializationPromise;
-    initialization: Promise<boolean>;
+    private initializationPromiseResolve;
     constructor();
+    /**
+     * Needs to be awaited before the service is ready to be used.
+     * @returns {void}
+     */
+    /**
+     * Needs to be awaited before the service is ready to be used.
+     * @returns {void}
+     */
+    waitForInitialization(): Promise<void>;
     /**
      * Called when a new message is received, identifies and handles it if type is supported.
      * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.

@@ -43,6 +43,12 @@ describe('IFrameKnimeService', () => {
             );
             expect(knimeService.extensionConfig).toStrictEqual(extensionConfig);
         });
+
+        it('waits for extentionConfig is resolved in waitForInitialization', async () => {
+            const knimeService = new IFrameKnimeService();
+            (knimeService as any).onInit({ payload: extensionConfig });
+            await expect(knimeService.waitForInitialization()).resolves.toBe(undefined);
+        });
     });
 
     describe('postMessage communication', () => {
