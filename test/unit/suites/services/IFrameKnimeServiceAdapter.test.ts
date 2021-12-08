@@ -15,7 +15,7 @@ const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
     if (requestJSON.params === 'getData') {
         result = JSON.stringify(mockJsonRpcResponse);
     }
-    
+
     return Promise.resolve({ result });
 };
 
@@ -51,7 +51,7 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
             expect(iFrameKnimeServiceAdapter).toHaveProperty('iFrameWindow', null);
             expect(removeEventListenerSpy).toHaveBeenCalledWith('message',
-                (iFrameKnimeServiceAdapter as any).boundOnMessageFromIFrame);
+                (iFrameKnimeServiceAdapter as any).boundOnMessageFromIFrame); // eslint-disable-line no-extra-parens
         });
 
         it('Posts init event on :ready type request', async () => {

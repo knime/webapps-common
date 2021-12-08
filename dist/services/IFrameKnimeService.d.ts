@@ -11,6 +11,8 @@ import { KnimeService } from "./KnimeService";
 declare class IFrameKnimeService extends KnimeService {
     private pendingJsonRpcRequests;
     private boundOnMessageFromParent;
+    private initializationPromise;
+    initialization: Promise<boolean>;
     constructor();
     /**
      * Called when a new message is received, identifies and handles it if type is supported.

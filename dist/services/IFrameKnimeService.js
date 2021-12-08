@@ -13,6 +13,15 @@ class IFrameKnimeService extends KnimeService {
     constructor() {
         super();
         this.pendingJsonRpcRequests = new Map();
+        this.initialization = new Promise((resolve, reject) => {
+            this.initializationPromise = {
+                resolve,
+                reject
+            };
+        });
+        if (this.extensionConfig) {
+            this.initializationPromise.resolve(true);
+        }
         this.callableService = this.executeServiceCall;
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.boundOnMessageFromParent);
@@ -43,6 +52,7 @@ class IFrameKnimeService extends KnimeService {
     }
     onInit(data) {
         this.extensionConfig = data.payload;
+        this.initializationPromise.resolve(true);
     }
     onJsonRpcResponse(data) {
         const { payload: { response, requestId } } = data;
