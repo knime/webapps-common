@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
-import { ExtensionConfig } from 'src/types';
+import { ExtensionConfig, Notification } from 'src/types';
 import { CallableService } from 'src/types/CallableService';
 import { KnimeService } from './KnimeService';
 
@@ -19,6 +19,16 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         super(extensionConfig, callableService);
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
+    }
+
+    onJsonRpcNotification(notification: Notification) {
+        this.iFrameWindow.postMessage(
+            {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                payload: JSON.parse(notification as any)
+            },
+            '*'
+        );
     }
 
     /**

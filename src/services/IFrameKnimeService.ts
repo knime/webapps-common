@@ -74,6 +74,10 @@ export class IFrameKnimeService extends KnimeService {
                 this.onJsonRpcResponse(data);
                 break;
 
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`:
+                this.onJsonRpcNotification(data.payload);
+                break;
+
             default:
         }
     }

@@ -6,6 +6,7 @@ export type Notification = {
         workflowId: string;
         nodeId: string;
         mode: string;
+        keys?: string[];
     }[];
     [key: string]: any;
 };

@@ -14,6 +14,12 @@ class IFrameKnimeServiceAdapter extends KnimeService {
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
+    onJsonRpcNotification(notification) {
+        this.iFrameWindow.postMessage({
+            type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+            payload: JSON.parse(notification)
+        }, '*');
+    }
     /**
      * Sets the child iframe window referenced by the service.
      *

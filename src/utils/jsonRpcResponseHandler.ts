@@ -1,7 +1,7 @@
 import { JsonRpcResponse } from '../types';
 
-export const jsonRpcResponseHandler = (response: JsonRpcResponse) => {
-    const { error } = response;
+export const jsonRpcResponseHandler = (response: JsonRpcResponse | null) => {
+    const error = response?.error;
     if (error) {
         return Promise.reject(
             new Error(
@@ -12,5 +12,5 @@ export const jsonRpcResponseHandler = (response: JsonRpcResponse) => {
         );
     }
 
-    return Promise.resolve(response.result);
+    return Promise.resolve(response?.result);
 };
