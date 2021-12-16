@@ -52,12 +52,13 @@ describe('IFrameKnimeService', () => {
     });
 
     describe('postMessage communication', () => {
-        let knimeService, onInitSpy, onJsonRpcResponseSpy;
+        let knimeService, onInitSpy, onJsonRpcResponseSpy, onJsonRpcNotificationSpy;
 
         beforeEach(() => {
             knimeService = new IFrameKnimeService();
             onInitSpy = jest.spyOn(knimeService, 'onInit');
             onJsonRpcResponseSpy = jest.spyOn(knimeService, 'onJsonRpcResponse');
+            onJsonRpcNotificationSpy = jest.spyOn(knimeService, 'onJsonRpcNotification');
         });
 
         it('onMessageFromParent does nothing if called with unsupported prefix', () => {
@@ -84,6 +85,29 @@ describe('IFrameKnimeService', () => {
 
             expect(onInitSpy).not.toHaveBeenCalled();
             expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
+        });
+
+        it('Calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
+            const notification = {
+                jsonrpc: '2.0.',
+                method: 'SelectionEvent',
+                params: [{
+                    projectId: '001',
+                    workflowId: '001',
+                    nodeId: '0',
+                    mode: 'ADD',
+                    keys: ['Row1', 'Row2']
+                }]
+            };
+
+            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
+                data: {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                    payload: notification
+                }
+            } as MessageEvent);
+
+            expect(onJsonRpcNotificationSpy).toBeCalledWith(notification);
         });
 
         it('onMessageFromParent handles async post requests with differing IDs', () => {

@@ -77,6 +77,36 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
+        it('Posts jsonrpcNotification event when onJsonRpcNotification is triggered', async () => {
+            const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
+
+            const notification = {
+                jsonrpc: '2.0.',
+                method: 'SelectionEvent',
+                params: [{
+                    projectId: '001',
+                    workflowId: '001',
+                    nodeId: '0',
+                    mode: 'ADD',
+                    keys: ['Row1', 'Row2']
+                }]
+            };
+
+            iFrameKnimeServiceAdapter.onJsonRpcNotification(JSON.stringify(notification) as any);
+
+            await sleep();
+
+            expect(childSpy).toBeCalledWith(
+                {
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                    payload: notification
+                },
+                '*'
+            );
+
+            iFrameKnimeServiceAdapter.destroy();
+        });
+
         it('Calls service when receiving :jsonrpcRequest type events', async () => {
             const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
             const requestId = 1;

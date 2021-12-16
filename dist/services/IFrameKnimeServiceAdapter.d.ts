@@ -1,4 +1,4 @@
-import { ExtensionConfig } from "../index-af6571f7";
+import { ExtensionConfig, Notification } from "../index-af6571f7";
 import { CallableService } from "../CallableService-d52d8345";
 import { KnimeService } from "./KnimeService";
 /**
@@ -12,6 +12,7 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
     private iFrameWindow;
     private boundOnMessageFromIFrame;
     constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
+    onJsonRpcNotification(notification: Notification): void;
     /**
      * Sets the child iframe window referenced by the service.
      *
