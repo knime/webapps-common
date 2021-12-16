@@ -1,4 +1,5 @@
 import { IFrameKnimeService } from "../index";
+import { Notification } from "../index-55c7a14b";
 import { KnimeService } from "./KnimeService";
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -100,5 +101,19 @@ declare class JsonDataService<T = any> {
      * @returns {undefined}
      */
     registerDataGetter(callback: () => any): void;
+    /**
+     * Adds callback that will be triggered when settings change.
+     * @param {Function} callback - called on settings change.
+     * @param {Notification} response - the settings update event object.
+     * @returns {void}
+     */
+    /**
+     * Adds callback that will be triggered when settings change.
+     * @param {Function} callback - called on settings change.
+     * @param {Notification} response - the settings update event object.
+     * @returns {void}
+     */
+    addOnSettingsChangeCallback(callback: (notification: Notification) => void): void;
+    publishSettingsChange(settings: any): void;
 }
 export { JsonDataService };

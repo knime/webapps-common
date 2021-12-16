@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src';
-import { NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
+import { Notification, NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -102,5 +102,15 @@ export class JsonDataService<T = any> {
      */
     addOnSettingsChangeCallback(callback: (notification: Notification) => void) {
         this.knimeService.addNotificationCallback(EventTypes.SettingsEvent, callback);
+    }
+
+    publishSettingsChange(settings: any) {
+        this.knimeService.pushNotification({
+            serviceId: this.knimeService.getServiceId(),
+            method: EventTypes.SettingsEvent,
+            data: settings,
+            jsonrpc: null,
+            params: []
+        });
     }
 }

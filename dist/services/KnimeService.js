@@ -16,12 +16,13 @@ class KnimeService {
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig = null, callableService = null) {
+    constructor(extensionConfig = null, callableService = null, pushNotification = null) {
         /**
          *
          */
         this.extensionConfig = extensionConfig;
         this.callableService = callableService;
+        this.callablePushNotification = pushNotification;
         /**
          * Stores registered callbacks for notifications called via backend implementation.
          * Should be only used by internal service methods.
@@ -75,6 +76,15 @@ class KnimeService {
     getData() {
         return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
+    pushNotification(notification) {
+        if (!this.extensionConfig) {
+            return Promise.reject(new Error('Cannot call service without extension config'));
+        }
+        if (!this.pushNotification) {
+            return Promise.reject(new Error('Callable service is not available'));
+        }
+        return this.callablePushNotification(notification);
+    }
     /**
      * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
      * notification type.
@@ -89,7 +99,7 @@ class KnimeService {
     }
     /**
      * Registers callback that will be triggered on received notification.
-     * @param {string} notificationType - notification type that callback should be registered for.
+     * @param {EventTypes} notificationType - notification type that callback should be registered for.
      * @param {function} callback - callback that should be called on received notification, will be called with {Notification} param
      * @returns {void}
      */
@@ -101,7 +111,7 @@ class KnimeService {
     }
     /**
      * Unregisters previously registered callback for notifications.
-     * @param {string} notificationType - notification type that matches registered callback notification type.
+     * @param {EventTypes} notificationType - notification type that matches registered callback notification type.
      * @param {function} callback - previously registered callback.
      * @returns {void}
      */
@@ -122,6 +132,25 @@ class KnimeService {
      */
     resetNotificationCallbacks() {
         this.notificationCallbacksMap.clear();
+    }
+    /*
+     * Utils
+     */
+    getBaseExtId() {
+        const { nodeId, projectId, workflowId } = this.extensionConfig;
+        return `${nodeId}.${projectId}.${workflowId}`;
+    }
+    /**
+     * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
+     * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
+     * etc.).
+     *
+     * @param {KnimeService} knimeService - the service from which to derive an ID.
+     * @returns {String} the id derived from the provided service.
+     */
+    getServiceId() {
+        const { extensionType } = this.extensionConfig;
+        return `${this.getBaseExtId()}.${extensionType}`;
     }
 }
 

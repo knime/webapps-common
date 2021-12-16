@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, JsonRpcRequest } from 'src/types';
+import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes } from 'src/types';
 import { CallableService } from 'src/types/CallableService';
 import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 
@@ -17,6 +17,7 @@ export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
     protected callableService: CallableService;
+    protected callablePushNotification: CallableService;
 
     private dataGetter: () => any;
 
@@ -26,13 +27,14 @@ export class KnimeService<T = any> {
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
      */
-    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null, pushNotification: CallableService = null) {
         /**
          *
          */
         this.extensionConfig = extensionConfig;
 
         this.callableService = callableService;
+        this.callablePushNotification = pushNotification;
 
         /**
          * Stores registered callbacks for notifications called via backend implementation.
@@ -94,6 +96,18 @@ export class KnimeService<T = any> {
         return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
 
+    pushNotification(notification: Notification) {
+        if (!this.extensionConfig) {
+            return Promise.reject(new Error('Cannot call service without extension config'));
+        }
+
+        if (!this.pushNotification) {
+            return Promise.reject(new Error('Callable service is not available'));
+        }
+
+        return this.callablePushNotification(notification);
+    }
+
     /**
      * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
      * notification type.
@@ -110,12 +124,12 @@ export class KnimeService<T = any> {
 
     /**
      * Registers callback that will be triggered on received notification.
-     * @param {string} notificationType - notification type that callback should be registered for.
+     * @param {EventTypes} notificationType - notification type that callback should be registered for.
      * @param {function} callback - callback that should be called on received notification, will be called with {Notification} param
      * @returns {void}
      */
     addNotificationCallback(
-        notificationType: string,
+        notificationType: EventTypes,
         callback: (notification: Notification) => void
     ) {
         this.notificationCallbacksMap.set(notificationType, [
@@ -126,12 +140,12 @@ export class KnimeService<T = any> {
 
     /**
      * Unregisters previously registered callback for notifications.
-     * @param {string} notificationType - notification type that matches registered callback notification type.
+     * @param {EventTypes} notificationType - notification type that matches registered callback notification type.
      * @param {function} callback - previously registered callback.
      * @returns {void}
      */
     removeNotificationCallback(
-        notificationType: string,
+        notificationType: EventTypes,
         callback: (notification: Notification) => void
     ) {
         this.notificationCallbacksMap.set(
@@ -163,10 +177,10 @@ export class KnimeService<T = any> {
      * Utils
      */
 
-    getBaseExtID() {
-        let { nodeId, projectId, workflowId } = this.extensionConfig;
+    getBaseExtId() {
+        const { nodeId, projectId, workflowId } = this.extensionConfig;
         return `${nodeId}.${projectId}.${workflowId}`;
-    };
+    }
     
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
@@ -176,8 +190,8 @@ export class KnimeService<T = any> {
      * @param {KnimeService} knimeService - the service from which to derive an ID.
      * @returns {String} the id derived from the provided service.
      */
-    getUIExtUUID() {
-        let { extensionType } = this.extensionConfig;
-        return `${this.getBaseExtID()}.${extensionType}`;
-    };
+    getServiceId() {
+        const { extensionType } = this.extensionConfig;
+        return `${this.getBaseExtId()}.${extensionType}`;
+    }
 }

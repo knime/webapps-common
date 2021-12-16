@@ -1,6 +1,7 @@
 import { NodeServiceMethods } from '../types/ServiceMethods.js';
 import { DataServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
+import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
@@ -83,6 +84,24 @@ class JsonDataService {
      */
     registerDataGetter(callback) {
         this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
+    }
+    /**
+     * Adds callback that will be triggered when settings change.
+     * @param {Function} callback - called on settings change.
+     * @param {Notification} response - the settings update event object.
+     * @returns {void}
+     */
+    addOnSettingsChangeCallback(callback) {
+        this.knimeService.addNotificationCallback(EventTypes.SettingsEvent, callback);
+    }
+    publishSettingsChange(settings) {
+        this.knimeService.pushNotification({
+            serviceId: this.knimeService.getServiceId(),
+            method: EventTypes.SettingsEvent,
+            data: settings,
+            jsonrpc: null,
+            params: []
+        });
     }
 }
 

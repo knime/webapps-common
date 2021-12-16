@@ -1,6 +1,7 @@
 import { NodeServiceMethods } from '../types/ServiceMethods.js';
 import { SelectionServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
+import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
@@ -64,7 +65,7 @@ class SelectionService {
      * @returns {void}
      */
     addOnSelectionChangeCallback(callback) {
-        this.knimeService.addNotificationCallback('SelectionEvent', callback);
+        this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, callback);
     }
     /**
      * Removes previously added callback.
@@ -73,7 +74,7 @@ class SelectionService {
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback) {
-        this.knimeService.removeNotificationCallback('SelectionEvent', callback);
+        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, callback);
     }
 }
 

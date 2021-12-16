@@ -70,7 +70,7 @@ export class SelectionService<T = any> {
      * @returns {void}
      */
     addOnSelectionChangeCallback(callback: (notification: Notification) => void) {
-        this.knimeService.addNotificationCallback('SelectionEvent', callback);
+        this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, callback);
     }
 
     /**
