@@ -136,8 +136,8 @@ class KnimeService {
     /*
      * Utils
      */
-    getBaseExtId() {
-        const { nodeId, projectId, workflowId } = this.extensionConfig;
+    get extensionId() {
+        const { nodeId, projectId, workflowId } = this.extensionConfig || {};
         return `${nodeId}.${projectId}.${workflowId}`;
     }
     /**
@@ -148,9 +148,9 @@ class KnimeService {
      * @param {KnimeService} knimeService - the service from which to derive an ID.
      * @returns {String} the id derived from the provided service.
      */
-    getServiceId() {
-        const { extensionType } = this.extensionConfig;
-        return `${this.getBaseExtId()}.${extensionType}`;
+    get serviceId() {
+        const { extensionType } = this.extensionConfig || {};
+        return `${this.extensionId}.${extensionType}`;
     }
 }
 

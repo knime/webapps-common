@@ -148,10 +148,7 @@ declare class KnimeService<T = any> {
      * @returns {void}
      */
     resetNotificationCallbacks(): void;
-    /*
-    * Utils
-    */
-    getBaseExtId(): string;
+    get extensionId(): string;
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
@@ -160,14 +157,6 @@ declare class KnimeService<T = any> {
      * @param {KnimeService} knimeService - the service from which to derive an ID.
      * @returns {String} the id derived from the provided service.
      */
-    /**
-     * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
-     * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
-     * etc.).
-     *
-     * @param {KnimeService} knimeService - the service from which to derive an ID.
-     * @returns {String} the id derived from the provided service.
-     */
-    getServiceId(): string;
+    get serviceId(): string;
 }
 export { KnimeService };
