@@ -94,7 +94,12 @@ class JsonDataService {
     addOnSettingsChangeCallback(callback) {
         this.knimeService.addNotificationCallback(EventTypes.SettingsEvent, callback);
     }
-    publishSettingsChange(settings) {
+    /**
+     * Publish a settings update notification to other UIExtensions registered in the current page.
+     * @param {any} settings - the settings to send.
+     * @returns {void}
+     */
+    publishSettings(settings) {
         this.knimeService.pushNotification({
             serviceId: this.knimeService.serviceId,
             method: EventTypes.SettingsEvent,

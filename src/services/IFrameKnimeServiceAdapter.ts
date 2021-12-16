@@ -21,11 +21,11 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
 
-    onJsonRpcNotification(notification: Notification) {
+    onJsonRpcNotification(notification: Notification | string) {
         this.iFrameWindow.postMessage(
             {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
-                payload: JSON.parse(notification as any)
+                payload: typeof notification === 'string' ? JSON.parse(notification) : notification
             },
             '*'
         );

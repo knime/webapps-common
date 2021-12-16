@@ -114,6 +114,16 @@ declare class JsonDataService<T = any> {
      * @returns {void}
      */
     addOnSettingsChangeCallback(callback: (notification: Notification) => void): void;
-    publishSettingsChange(settings: any): void;
+    /**
+     * Publish a settings update notification to other UIExtensions registered in the current page.
+     * @param {any} settings - the settings to send.
+     * @returns {void}
+     */
+    /**
+     * Publish a settings update notification to other UIExtensions registered in the current page.
+     * @param {any} settings - the settings to send.
+     * @returns {void}
+     */
+    publishSettings(settings: any): void;
 }
 export { JsonDataService };

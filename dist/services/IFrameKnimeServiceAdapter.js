@@ -17,7 +17,7 @@ class IFrameKnimeServiceAdapter extends KnimeService {
     onJsonRpcNotification(notification) {
         this.iFrameWindow.postMessage({
             type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
-            payload: JSON.parse(notification)
+            payload: typeof notification === 'string' ? JSON.parse(notification) : notification
         }, '*');
     }
     /**

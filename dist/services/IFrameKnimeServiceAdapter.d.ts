@@ -12,7 +12,7 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
     private iFrameWindow;
     private boundOnMessageFromIFrame;
     constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
-    onJsonRpcNotification(notification: Notification): void;
+    onJsonRpcNotification(notification: Notification | string): void;
     /**
      * Sets the child iframe window referenced by the service.
      *
