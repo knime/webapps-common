@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src/services';
-import { Notification, NodeServiceMethods, SelectionServiceTypes } from 'src/types';
+import { Notification, NodeServiceMethods, SelectionServiceTypes, EventTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -80,6 +80,6 @@ export class SelectionService<T = any> {
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback: (notification: Notification) => void) {
-        this.knimeService.removeNotificationCallback('SelectionEvent', callback);
+        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, callback);
     }
 }

@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src';
-import { NodeServiceMethods, DataServiceTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -92,5 +92,15 @@ export class JsonDataService<T = any> {
      */
     registerDataGetter(callback: () => any) {
         this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
+    }
+
+    /**
+     * Adds callback that will be triggered when settings change.
+     * @param {Function} callback - called on settings change.
+     * @param {Notification} response - the settings update event object.
+     * @returns {void}
+     */
+    addOnSettingsChangeCallback(callback: (notification: Notification) => void) {
+        this.knimeService.addNotificationCallback(EventTypes.SettingsEvent, callback);
     }
 }
