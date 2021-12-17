@@ -133,13 +133,6 @@ class KnimeService {
     resetNotificationCallbacks() {
         this.notificationCallbacksMap.clear();
     }
-    /*
-     * Utils
-     */
-    get extensionId() {
-        const { nodeId, projectId, workflowId } = this.extensionConfig || {};
-        return `${nodeId}.${projectId}.${workflowId}`;
-    }
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
@@ -149,8 +142,8 @@ class KnimeService {
      * @returns {String} the id derived from the provided service.
      */
     get serviceId() {
-        const { extensionType } = this.extensionConfig || {};
-        return `${this.extensionId}.${extensionType}`;
+        const { nodeId, projectId, workflowId, extensionType } = this.extensionConfig || {};
+        return `${nodeId}.${projectId}.${workflowId}.${extensionType}`;
     }
 }
 

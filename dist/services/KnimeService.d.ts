@@ -148,7 +148,6 @@ declare class KnimeService<T = any> {
      * @returns {void}
      */
     resetNotificationCallbacks(): void;
-    get extensionId(): string;
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,

@@ -1,9 +1,9 @@
 import { EventTypes } from '.';
 
 export type Notification = {
-    jsonrpc: string;
     method: EventTypes;
-    params: {
+    jsonrpc?: string;
+    params?: {
         projectId: string;
         workflowId: string;
         nodeId: string;
