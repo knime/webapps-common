@@ -70,14 +70,14 @@ describe('KnimeService', () => {
         it('Throws error if extension config not provided', () => {
             const knimeService = new KnimeService();
 
-            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.SettingsEvent }))
+            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent }))
                 .rejects.toThrowError('Cannot push notification without extension config');
         });
 
         it('Throws error if push notification not provided', () => {
             const knimeService = new KnimeService(extensionConfig);
 
-            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.SettingsEvent }))
+            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent }))
                 .rejects.toThrowError('Push notification is not available');
         });
 
@@ -85,7 +85,7 @@ describe('KnimeService', () => {
             const callableMock = jest.fn();
             const pushNotificationMock = jest.fn();
             const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
-            const testEvent = { agent: '007', method: EventTypes.SettingsEvent };
+            const testEvent = { agent: '007', method: EventTypes.DataEvent };
             knimeService.pushNotification(testEvent);
             expect(pushNotificationMock).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',

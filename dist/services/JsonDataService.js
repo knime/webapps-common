@@ -86,25 +86,25 @@ class JsonDataService {
         this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
     }
     /**
-     * Adds callback that will be triggered when settings change.
-     * @param {Function} callback - called on settings change.
-     * @param {Notification} response - the settings update event object.
+     * Adds callback that will be triggered when data changes.
+     * @param {Function} callback - called on data change.
+     * @param {Notification} response - the data update event object.
      * @returns {void}
      */
-    addOnSettingsChangeCallback(callback) {
-        this.knimeService.addNotificationCallback(EventTypes.SettingsEvent, callback);
+    addOnDataChangeCallback(callback) {
+        this.knimeService.addNotificationCallback(EventTypes.DataEvent, callback);
     }
     /**
-     * Publish a settings update notification to other UIExtensions registered in the current page.
-     * @param {any} settings - the settings to send.
+     * Publish a data update notification to other UIExtensions registered in the current page.
+     * @param {any} data - the data to send.
      * @returns {void}
      */
-    publishSettings(settings) {
+    publishData(data) {
         this.knimeService.pushNotification({
-            method: EventTypes.SettingsEvent,
+            method: EventTypes.DataEvent,
             event: {
-                method: EventTypes.SettingsEvent,
-                data: settings
+                method: EventTypes.DataEvent,
+                data
             }
         });
     }

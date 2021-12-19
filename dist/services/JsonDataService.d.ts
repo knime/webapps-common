@@ -102,28 +102,28 @@ declare class JsonDataService<T = any> {
      */
     registerDataGetter(callback: () => any): void;
     /**
-     * Adds callback that will be triggered when settings change.
-     * @param {Function} callback - called on settings change.
-     * @param {Notification} response - the settings update event object.
+     * Adds callback that will be triggered when data changes.
+     * @param {Function} callback - called on data change.
+     * @param {Notification} response - the data update event object.
      * @returns {void}
      */
     /**
-     * Adds callback that will be triggered when settings change.
-     * @param {Function} callback - called on settings change.
-     * @param {Notification} response - the settings update event object.
+     * Adds callback that will be triggered when data changes.
+     * @param {Function} callback - called on data change.
+     * @param {Notification} response - the data update event object.
      * @returns {void}
      */
-    addOnSettingsChangeCallback(callback: (notification: Notification) => void): void;
+    addOnDataChangeCallback(callback: (notification: Notification) => void): void;
     /**
-     * Publish a settings update notification to other UIExtensions registered in the current page.
-     * @param {any} settings - the settings to send.
+     * Publish a data update notification to other UIExtensions registered in the current page.
+     * @param {any} data - the data to send.
      * @returns {void}
      */
     /**
-     * Publish a settings update notification to other UIExtensions registered in the current page.
-     * @param {any} settings - the settings to send.
+     * Publish a data update notification to other UIExtensions registered in the current page.
+     * @param {any} data - the data to send.
      * @returns {void}
      */
-    publishSettings(settings: any): void;
+    publishData(data: any): void;
 }
 export { JsonDataService };

@@ -149,15 +149,15 @@ describe('JsonDataService', () => {
             expect(spy).toHaveBeenCalled();
         });
 
-        it('adds callback to notification with addOnSettingsChangeCallback', () => {
+        it('adds callback to notification with addOnDataChangeCallback', () => {
             const knime = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knime);
 
             const callback = () => {};
 
-            jsonDataService.addOnSettingsChangeCallback(callback);
+            jsonDataService.addOnDataChangeCallback(callback);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.SettingsEvent)[0]).toEqual(callback);
+            expect(knime.notificationCallbacksMap.get(EventTypes.DataEvent)[0]).toEqual(callback);
         });
 
         it('publishes events via the knimeService', () => {
@@ -166,14 +166,14 @@ describe('JsonDataService', () => {
             const knime = new KnimeService(extensionConfig, callableMock, pushNotificationSpy);
             const jsonDataService = new JsonDataService(knime);
             const testEvent = { agent: '007' };
-            jsonDataService.publishSettings(testEvent);
+            jsonDataService.publishData(testEvent);
             expect(pushNotificationSpy).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
                 event: {
                     data: testEvent,
-                    method: EventTypes.SettingsEvent
+                    method: EventTypes.DataEvent
                 },
-                method: EventTypes.SettingsEvent
+                method: EventTypes.DataEvent
             });
         });
     });

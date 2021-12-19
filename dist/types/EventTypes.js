@@ -1,6 +1,6 @@
 var EventTypes;
 (function (EventTypes) {
-    EventTypes["SettingsEvent"] = "SettingsEvent";
+    EventTypes["DataEvent"] = "DataEvent";
     EventTypes["SelectionEvent"] = "SelectionEvent";
 })(EventTypes || (EventTypes = {}));
 

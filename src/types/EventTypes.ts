@@ -1,4 +1,4 @@
 export enum EventTypes {
-    SettingsEvent = 'SettingsEvent',
+    DataEvent = 'DataEvent',
     SelectionEvent = 'SelectionEvent'
 }
