@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index-a3360790";
-import { Notification } from "../index-55c7a14b";
+import { Notification } from "../index-9ed3e9b8";
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.

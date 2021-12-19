@@ -1,6 +1,6 @@
 import { JsonDataService } from 'src/services/JsonDataService';
 import { extensionConfig } from 'test/mocks';
-import { DataServiceTypes, JsonRpcRequest, NodeServiceMethods } from 'src/types';
+import { DataServiceTypes, JsonRpcRequest, NodeServiceMethods, EventTypes } from 'src/types';
 import { KnimeService } from 'src/services/KnimeService';
 
 describe('JsonDataService', () => {
@@ -17,7 +17,7 @@ describe('JsonDataService', () => {
         });
     });
 
-    describe('initial_data handling', () => {
+    describe('service.initialData', () => {
         it(`Fetches initial_data if it's passed to constructor`, () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
@@ -25,7 +25,7 @@ describe('JsonDataService', () => {
             expect(jsonDataService.initialData()).resolves.toEqual(extensionConfig.initialData);
         });
 
-        it('Fetches initial_data via ComponentKnimeService', () => {
+        it('Fetches initial_data via KnimeService', () => {
             const knimeService = new KnimeService({
                 ...extensionConfig,
                 initialData: null
@@ -43,7 +43,7 @@ describe('JsonDataService', () => {
         });
     });
 
-    describe('getData', () => {
+    describe('service.data', () => {
         it('calls default data service', () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
@@ -89,20 +89,7 @@ describe('JsonDataService', () => {
         });
     });
 
-    describe('registering a data getter callback', () => {
-        it('Registers a data getter with the ComponentKnimeService', () => {
-            const knimeService = new KnimeService(extensionConfig);
-            const jsonDataService = new JsonDataService(knimeService);
-
-            const spy = jest.spyOn(knimeService, 'registerDataGetter');
-
-            jsonDataService.registerDataGetter(() => {});
-
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('applyData', () => {
+    describe('service.applyData', () => {
         const mockData = {
             item1: true,
             item2: 10
@@ -147,6 +134,47 @@ describe('JsonDataService', () => {
             expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_DATA_SERVICE);
             expect(invocationParameters.params).toContain(DataServiceTypes.APPLY_DATA);
             expect(invocationParameters.params).toContain('"{}"');
+        });
+    });
+
+    describe('callbacks and events', () => {
+        it('registers a data getter with the KnimeService', () => {
+            const knimeService = new KnimeService(extensionConfig);
+            const jsonDataService = new JsonDataService(knimeService);
+
+            const spy = jest.spyOn(knimeService, 'registerDataGetter');
+
+            jsonDataService.registerDataGetter(() => {});
+
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it('adds callback to notification with addOnSettingsChangeCallback', () => {
+            const knime = new KnimeService(extensionConfig);
+            const jsonDataService = new JsonDataService(knime);
+
+            const callback = () => {};
+
+            jsonDataService.addOnSettingsChangeCallback(callback);
+
+            expect(knime.notificationCallbacksMap.get(EventTypes.SettingsEvent)[0]).toEqual(callback);
+        });
+
+        it('publishes events via the knimeService', () => {
+            const callableMock = jest.fn();
+            const pushNotificationSpy = jest.fn();
+            const knime = new KnimeService(extensionConfig, callableMock, pushNotificationSpy);
+            const jsonDataService = new JsonDataService(knime);
+            const testEvent = { agent: '007' };
+            jsonDataService.publishSettings(testEvent);
+            expect(pushNotificationSpy).toHaveBeenCalledWith({
+                callerId: '123.knime workflow.root:10.view',
+                event: {
+                    data: testEvent,
+                    method: EventTypes.SettingsEvent
+                },
+                method: EventTypes.SettingsEvent
+            });
         });
     });
 });

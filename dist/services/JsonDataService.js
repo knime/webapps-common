@@ -101,7 +101,6 @@ class JsonDataService {
      */
     publishSettings(settings) {
         this.knimeService.pushNotification({
-            callerId: this.knimeService.serviceId,
             method: EventTypes.SettingsEvent,
             event: {
                 method: EventTypes.SettingsEvent,

@@ -1,5 +1,4 @@
-import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes } from "../index-55c7a14b";
-import { CallableService } from "../CallableService-d52d8345";
+import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes, CallableService } from "../index-9ed3e9b8";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -19,11 +18,13 @@ declare class KnimeService<T = any> {
     notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
-     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the environment-specific "call service" API method.
+     * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
      */
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
-     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the environment-specific "call service" API method.
+     * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
      */
     constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
     /**
@@ -88,7 +89,6 @@ declare class KnimeService<T = any> {
      *      returns {@type null}.
      */
     getData(): Promise<any>;
-    pushNotification(notification: Notification): Promise<any>;
     /**
      * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
      * notification type.
@@ -148,6 +148,21 @@ declare class KnimeService<T = any> {
      * @returns {void}
      */
     resetNotificationCallbacks(): void;
+    /**
+     * Public push notification wrapper with error handling. This broadcasts an event or notifications
+     * via the callable function provided during instantiation.
+     *
+     * @param {Notification} notification - the notification payload.
+     * @returns {any} - the result of the callable function.
+     */
+    /**
+     * Public push notification wrapper with error handling. This broadcasts an event or notifications
+     * via the callable function provided during instantiation.
+     *
+     * @param {Notification} notification - the notification payload.
+     * @returns {any} - the result of the callable function.
+     */
+    pushNotification(notification: Notification): Promise<any>;
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,

@@ -82,3 +82,4 @@ export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";
 export * from "./types/EventTypes";
 export * from "./types/ResourceTypes";
+export * from "./CallableService-d52d8345";

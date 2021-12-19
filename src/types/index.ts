@@ -7,3 +7,4 @@ export * from './EventTypes';
 export * from './ResourceTypes';
 export * from './JsonRpcResponse';
 export * from './JsonRpcRequest';
+export * from './CallableService';

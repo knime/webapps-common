@@ -1,6 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { IFrameKnimeServiceAdapter } from 'src/services';
-import { JsonRpcRequest } from 'src/types';
+import { JsonRpcRequest, EventTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 /* eslint-disable-next-line no-magic-numbers */
@@ -82,7 +82,7 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             const notification = {
                 jsonrpc: '2.0.',
-                method: 'SelectionEvent',
+                method: EventTypes.SelectionEvent,
                 params: [{
                     projectId: '001',
                     workflowId: '001',
@@ -91,18 +91,22 @@ describe('IFrameKnimeServiceAdapter', () => {
                     keys: ['Row1', 'Row2']
                 }]
             };
+            const expectedPost = {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                payload: notification
+            };
 
-            iFrameKnimeServiceAdapter.onJsonRpcNotification(JSON.stringify(notification) as any);
-
+            // test serialized notification (server-side origin)
+            iFrameKnimeServiceAdapter.onJsonRpcNotification(JSON.stringify(notification));
             await sleep();
+            expect(childSpy).toBeCalledWith(expectedPost, '*');
 
-            expect(childSpy).toBeCalledWith(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
-                    payload: notification
-                },
-                '*'
-            );
+            jest.clearAllMocks();
+
+            // test object notification (client-side origin)
+            iFrameKnimeServiceAdapter.onJsonRpcNotification(notification);
+            await sleep();
+            expect(childSpy).toBeCalledWith(expectedPost, '*');
 
             iFrameKnimeServiceAdapter.destroy();
         });

@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from "../index-55c7a14b";
+import { JsonRpcRequest } from "../index-9ed3e9b8";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension

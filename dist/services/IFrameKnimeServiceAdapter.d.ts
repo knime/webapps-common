@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification } from "../index-55c7a14b";
+import { ExtensionConfig, Notification } from "../index-9ed3e9b8";
 import { CallableService } from "../CallableService-d52d8345";
 import { KnimeService } from "./KnimeService";
 /**

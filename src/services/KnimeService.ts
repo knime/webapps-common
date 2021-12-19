@@ -1,5 +1,4 @@
-import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes } from 'src/types';
-import { CallableService } from 'src/types/CallableService';
+import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes, CallableService } from 'src/types';
 import { jsonRpcResponseHandler } from 'src/utils/jsonRpcResponseHandler';
 
 /**
@@ -25,9 +24,11 @@ export class KnimeService<T = any> {
 
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
-     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the environment-specific "call service" API method.
+     * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
      */
-    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null, pushNotification: CallableService = null) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
+        pushNotification: CallableService = null) {
         /**
          *
          */
@@ -96,18 +97,6 @@ export class KnimeService<T = any> {
         return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
 
-    pushNotification(notification: Notification) {
-        if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot call service without extension config'));
-        }
-
-        if (!this.pushNotification) {
-            return Promise.reject(new Error('Callable service is not available'));
-        }
-
-        return this.callablePushNotification(notification);
-    }
-
     /**
      * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
      * notification type.
@@ -171,6 +160,28 @@ export class KnimeService<T = any> {
      */
     resetNotificationCallbacks() {
         this.notificationCallbacksMap.clear();
+    }
+
+    /**
+     * Public push notification wrapper with error handling. This broadcasts an event or notifications
+     * via the callable function provided during instantiation.
+     *
+     * @param {Notification} notification - the notification payload.
+     * @returns {any} - the result of the callable function.
+     */
+    pushNotification(notification: Notification) {
+        if (!this.extensionConfig) {
+            return Promise.reject(new Error('Cannot push notification without extension config'));
+        }
+
+        if (!this.callablePushNotification) {
+            return Promise.reject(new Error('Push notification is not available'));
+        }
+
+        return this.callablePushNotification({
+            callerId: this.serviceId,
+            ...notification
+        });
     }
 
     /**

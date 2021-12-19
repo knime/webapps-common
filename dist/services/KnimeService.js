@@ -14,7 +14,8 @@ import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
 class KnimeService {
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
-     * @param {CallableService} callableService - the extension configuration for the associated UI Extension.
+     * @param {CallableService} callableService - the environment-specific "call service" API method.
+     * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
      */
     constructor(extensionConfig = null, callableService = null, pushNotification = null) {
         /**
@@ -76,15 +77,6 @@ class KnimeService {
     getData() {
         return Promise.resolve(typeof this.dataGetter === 'function' ? this.dataGetter() : null);
     }
-    pushNotification(notification) {
-        if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot call service without extension config'));
-        }
-        if (!this.pushNotification) {
-            return Promise.reject(new Error('Callable service is not available'));
-        }
-        return this.callablePushNotification(notification);
-    }
     /**
      * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
      * notification type.
@@ -132,6 +124,22 @@ class KnimeService {
      */
     resetNotificationCallbacks() {
         this.notificationCallbacksMap.clear();
+    }
+    /**
+     * Public push notification wrapper with error handling. This broadcasts an event or notifications
+     * via the callable function provided during instantiation.
+     *
+     * @param {Notification} notification - the notification payload.
+     * @returns {any} - the result of the callable function.
+     */
+    pushNotification(notification) {
+        if (!this.extensionConfig) {
+            return Promise.reject(new Error('Cannot push notification without extension config'));
+        }
+        if (!this.callablePushNotification) {
+            return Promise.reject(new Error('Push notification is not available'));
+        }
+        return this.callablePushNotification(Object.assign({ callerId: this.serviceId }, notification));
     }
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
