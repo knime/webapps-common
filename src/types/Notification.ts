@@ -1,4 +1,4 @@
-import { EventTypes } from '.';
+import { EventTypes } from './EventTypes';
 
 export type Notification = {
     method: EventTypes;

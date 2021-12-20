@@ -1,5 +1,6 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { ResourceTypes } from "./types/ResourceTypes";
+import { EventTypes } from "./types/EventTypes";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -51,6 +52,18 @@ type ExtensionConfig<T = any> = {
     extensionType: ExtensionTypes;
     initialData?: T;
 };
+type Notification = {
+    method: EventTypes;
+    jsonrpc?: string;
+    params?: {
+        projectId: string;
+        workflowId: string;
+        nodeId: string;
+        mode: string;
+        keys?: string[];
+    }[];
+    [key: string]: any;
+};
 type JsonRpcResponse = {
     error: {
         code: string;
@@ -64,19 +77,7 @@ type JsonRpcRequest = {
     params: string | string[];
     id: number;
 };
-type Notification = {
-    method: EventTypes;
-    jsonrpc?: string;
-    params?: {
-        projectId: string;
-        workflowId: string;
-        nodeId: string;
-        mode: string;
-        keys?: string[];
-    }[];
-    [key: string]: any;
-};
-export { ExtensionConfig, JsonRpcResponse, JsonRpcRequest, Notification };
+export { ExtensionConfig, Notification, JsonRpcResponse, JsonRpcRequest };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";
