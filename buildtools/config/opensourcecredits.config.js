@@ -2,7 +2,8 @@ module.exports = {
     // allowed licenses; others will fail
     onlyAllow: [
         'MIT', 'ISC', 'BSD', 'Apache-2.0', 'CC0-1.0', 'CC-BY-3.0', 'CC-BY-4.0', 'MPL-2.0', 'Public Domain', 'Zlib',
-        'Unlicense',
+        'Unlicense', 
+        "Apache*", // cluster-key-slot dependency which is actually Apache-2.0 license
         'Custom: https://github.com/Rich-Harris/devalue', // nuxtjs dependency with custom license
         'Custom: https://github.com/douglascrockford/JSON-js' // this is actually Public Domain
     ],
