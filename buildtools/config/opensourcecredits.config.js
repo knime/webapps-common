@@ -3,7 +3,6 @@ module.exports = {
     onlyAllow: [
         'MIT', 'ISC', 'BSD', 'Apache-2.0', 'CC0-1.0', 'CC-BY-3.0', 'CC-BY-4.0', 'MPL-2.0', 'Public Domain', 'Zlib',
         'Unlicense',
-        "Apache*", // cluster-key-slot dependency which is actually Apache-2.0 license
         'Custom: https://github.com/Rich-Harris/devalue', // nuxtjs dependency with custom license
         'Custom: https://github.com/douglascrockford/JSON-js' // this is actually Public Domain
     ],
@@ -15,7 +14,8 @@ module.exports = {
         'knime-ui-extension-service@1.0.0',
         '@knime/knime-ui-table@0.1.28',
         'webpack-external-import@0.3.0-beta.0', // licensed under GPL-3 but not included in the production app
-        'webpack-external-import@1.1.3' // licensed under GPL-3 but not included in the production app
+        'webpack-external-import@1.1.3', // licensed under GPL-3 but not included in the production app
+        'cluster-key-slot@1.1.0' // recognized as Apache* but is actually Apache-2.0 license
     ],
 
     // manually add packages to the credits, e.g.:
