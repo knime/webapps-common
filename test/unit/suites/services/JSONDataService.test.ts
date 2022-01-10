@@ -18,14 +18,14 @@ describe('JsonDataService', () => {
     });
 
     describe('service.initialData', () => {
-        it(`Fetches initial_data if it's passed to constructor`, () => {
+        it(`Fetches initialData if it's passed to constructor`, () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
 
             expect(jsonDataService.initialData()).resolves.toEqual(extensionConfig.initialData);
         });
 
-        it('Fetches initial_data via KnimeService', () => {
+        it('Fetches initialData via KnimeService', () => {
             const knimeService = new KnimeService({
                 ...extensionConfig,
                 initialData: null
@@ -142,22 +142,22 @@ describe('JsonDataService', () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
 
-            const spy = jest.spyOn(knimeService, 'registerDataGetter');
+            const registerDataGetterSpy = jest.spyOn(knimeService, 'registerDataGetter');
 
             jsonDataService.registerDataGetter(() => {});
 
-            expect(spy).toHaveBeenCalled();
+            expect(registerDataGetterSpy).toHaveBeenCalled();
         });
 
         it('adds callback to notification with addOnDataChangeCallback', () => {
             const knime = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knime);
 
-            const callback = () => {};
+            const mockDataChangeCallback = () => {};
 
-            jsonDataService.addOnDataChangeCallback(callback);
+            jsonDataService.addOnDataChangeCallback(mockDataChangeCallback);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.DataEvent)[0]).toEqual(callback);
+            expect(knime.notificationCallbacksMap.get(EventTypes.DataEvent)[0]).toEqual(mockDataChangeCallback);
         });
 
         it('publishes events via the knimeService', () => {
@@ -169,10 +169,7 @@ describe('JsonDataService', () => {
             jsonDataService.publishData(testEvent);
             expect(pushNotificationSpy).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
-                event: {
-                    data: testEvent,
-                    method: EventTypes.DataEvent
-                },
+                event: { data: testEvent },
                 method: EventTypes.DataEvent
             });
         });

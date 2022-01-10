@@ -112,10 +112,7 @@ export class JsonDataService<T = any> {
     publishData(data: any) {
         this.knimeService.pushNotification({
             method: EventTypes.DataEvent,
-            event: {
-                method: EventTypes.DataEvent,
-                data
-            }
+            event: { data }
         });
     }
 }

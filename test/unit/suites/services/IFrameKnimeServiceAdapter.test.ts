@@ -91,7 +91,7 @@ describe('IFrameKnimeServiceAdapter', () => {
                     keys: ['Row1', 'Row2']
                 }]
             };
-            const expectedPost = {
+            const expectedMessage = {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
                 payload: notification
             };
@@ -99,14 +99,14 @@ describe('IFrameKnimeServiceAdapter', () => {
             // test serialized notification (server-side origin)
             iFrameKnimeServiceAdapter.onJsonRpcNotification(JSON.stringify(notification));
             await sleep();
-            expect(childSpy).toBeCalledWith(expectedPost, '*');
+            expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
             jest.clearAllMocks();
 
             // test object notification (client-side origin)
             iFrameKnimeServiceAdapter.onJsonRpcNotification(notification);
             await sleep();
-            expect(childSpy).toBeCalledWith(expectedPost, '*');
+            expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
             iFrameKnimeServiceAdapter.destroy();
         });
