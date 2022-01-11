@@ -33,7 +33,7 @@ class JsonDataService {
             this.knimeService.extensionConfig.extensionType,
             dataService,
             request || ''
-        ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+        ])).then((response) => response && typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration
@@ -74,7 +74,7 @@ class JsonDataService {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
+        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
     }
     /**
      * Registers a function with the framework is used to provide the current state of the client-side UI Extension.

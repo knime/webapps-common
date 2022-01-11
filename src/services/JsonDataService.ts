@@ -34,7 +34,7 @@ export class JsonDataService<T = any> {
                 this.knimeService.extensionConfig.extensionType,
                 dataService,
                 request || ''
-            ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+            ])).then((response) => response && typeof response === 'string' ? JSON.parse(response) : response);
     }
 
     /**
@@ -81,7 +81,7 @@ export class JsonDataService<T = any> {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
+        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
     }
 
     /**
