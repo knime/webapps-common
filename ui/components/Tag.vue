@@ -63,11 +63,4 @@ export default {
     }
   }
 }
-
-@media only screen and (max-width: 900px) {
-  .tag {
-    font-size: 9px;
-    line-height: 15px;
-  }
-}
 </style>
