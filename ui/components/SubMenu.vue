@@ -69,10 +69,6 @@ export default {
          * @emits {item-click}
          */
         onItemClick(event, item) {
-            const isButton = !(item.href || item.to);
-            if (isButton && event.code === 'Enter') {
-                return;
-            }
             this.$emit('item-click', event, item, this.id);
             this.closeMenu();
         },

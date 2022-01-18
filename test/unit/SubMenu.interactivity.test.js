@@ -65,7 +65,7 @@ describe('SubMenu.vue', () => {
                 expect(wrapper.emitted('item-click')).toBeTruthy();
             });
 
-            it('does not click buttons with enter key', () => {
+            it('does click buttons with enter key', () => {
                 const items = [
                     { text: 'Google Slash', randomProp: 'test' },
                     { text: 'Nuxt Link', anotherProp: 'foo' }
@@ -91,7 +91,7 @@ describe('SubMenu.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 wrapper.vm.onItemClick(fakeEvent, items[0]);
-                expect(wrapper.emitted('item-click')).toBeFalsy();
+                expect(wrapper.emitted('item-click')).toBeTruthy();
             });
         });
     });
