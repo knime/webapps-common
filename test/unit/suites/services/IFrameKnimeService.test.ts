@@ -1,13 +1,11 @@
 import { IFrameKnimeService, JsonDataService } from 'src/services';
+import { NodeServiceMethods, DataServiceTypes, SelectionServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
+import { KnimeUtils } from 'src/utils';
 
-jest.mock('src/constants', () => ({
-    JSON_RPC_VERSION: '2.0',
-    UI_EXT_POST_MESSAGE_PREFIX: 'prefix',
-    UI_EXT_POST_MESSAGE_TIMEOUT: 10
-}));
+const { UI_EXT_POST_MESSAGE_PREFIX } = KnimeUtils;
 
-import { UI_EXT_POST_MESSAGE_PREFIX, JSON_RPC_VERSION } from 'src/constants';
+jest.mock('src/constants', () => ({ UI_EXT_POST_MESSAGE_TIMEOUT: 10 }));
 
 describe('IFrameKnimeService', () => {
     afterEach(() => {
@@ -52,26 +50,26 @@ describe('IFrameKnimeService', () => {
     });
 
     describe('postMessage communication', () => {
-        let knimeService, onInitSpy, onJsonRpcResponseSpy, onJsonRpcNotificationSpy;
+        let knimeService, onInitSpy, onCallServiceResponseSpy, onServiceNotificationSpy;
 
         beforeEach(() => {
             knimeService = new IFrameKnimeService();
             onInitSpy = jest.spyOn(knimeService, 'onInit');
-            onJsonRpcResponseSpy = jest.spyOn(knimeService, 'onJsonRpcResponse');
-            onJsonRpcNotificationSpy = jest.spyOn(knimeService, 'onJsonRpcNotification');
+            onCallServiceResponseSpy = jest.spyOn(knimeService, 'onCallServiceResponse');
+            onServiceNotificationSpy = jest.spyOn(knimeService, 'onServiceNotification');
         });
 
         it('onMessageFromParent does nothing if called with unsupported prefix', () => {
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
 
                 data: {
-                    type: `unsupported_prefix:jsonrpcResponse`,
+                    type: `unsupported_prefix:callServiceResponse`,
                     payload: extensionConfig
                 }
             } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
-            expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
+            expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
         });
 
         it('onMessageFromParent does nothing if called with unsupported type', () => {
@@ -84,53 +82,55 @@ describe('IFrameKnimeService', () => {
             } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
-            expect(onJsonRpcResponseSpy).not.toHaveBeenCalled();
+            expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
         });
 
         it('Calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
             const notification = {
                 jsonrpc: '2.0.',
-                method: 'SelectionEvent',
+                method: NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
                 params: [{
                     projectId: '001',
                     workflowId: '001',
                     nodeId: '0',
-                    mode: 'ADD',
+                    mode: SelectionServiceTypes.ADD,
                     keys: ['Row1', 'Row2']
                 }]
             };
 
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
                 data: {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
                     payload: notification
                 }
             } as MessageEvent);
 
-            expect(onJsonRpcNotificationSpy).toBeCalledWith(notification);
+            expect(onServiceNotificationSpy).toBeCalledWith(notification);
         });
 
         it('onMessageFromParent handles async post requests with differing IDs', () => {
-            const requestId = 2;
+            const requestId = 1;
             const data = {
                 payload: {
                     response: JSON.stringify({
                         result: [1, 1, 2],
-                        id: 3
+                        id: 2
                     }),
                     requestId
                 },
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`
             };
-            knimeService.executeServiceCall({
-                id: requestId
-            });
+            knimeService.executeServiceCall([
+                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                DataServiceTypes.DATA,
+                '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
+            ]);
 
             /* eslint-disable-next-line no-extra-parens */
             (knimeService as any).onMessageFromParent({ data } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
-            expect(onJsonRpcResponseSpy).toHaveBeenCalledWith({ ...data });
+            expect(onCallServiceResponseSpy).toHaveBeenCalledWith({ ...data });
         });
 
         it('returns error if request takes too long', async () => {
@@ -155,25 +155,17 @@ describe('IFrameKnimeService', () => {
             knimeJsonDataService.data();
 
 
-            expect(postSpy).toHaveBeenCalledWith(
-                {
-                    payload: {
-                        id: 2,
-                        jsonrpc: JSON_RPC_VERSION,
-                        method: 'NodeService.callNodeDataService',
-                        params: [
-                            'knime workflow',
-                            'root:10',
-                            '123',
-                            'view',
-                            'data',
-                            '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
-                        ]
-                    },
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`
+            expect(postSpy).toHaveBeenCalledWith({
+                payload: {
+                    requestId: expect.any(Number),
+                    serviceParams: [
+                        NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                        DataServiceTypes.DATA,
+                        expect.stringContaining('getData')
+                    ]
                 },
-                '*'
-            );
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`
+            }, '*');
         });
     });
 });

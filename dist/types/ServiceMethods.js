@@ -1,6 +1,6 @@
 /**
- * Collection of node service method signatures registered as RPC services with the framework. Each signature
- * targets specific workflow-level RPC node service functionality for UI Extensions.
+ * Collection of RPC method signatures registered as node services with the framework. Each signature
+ * targets specific workflow-level node service functionality for UI Extensions.
  */
 var NodeServiceMethods;
 (function (NodeServiceMethods) {

@@ -1,4 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from '../constants/index.js';
+import { generateRequestId } from '../utils/generateRequestId.js';
+import '../utils/KnimeUtils.js';
 import { KnimeService } from './KnimeService.js';
 
 /**
@@ -12,7 +14,7 @@ import { KnimeService } from './KnimeService.js';
 class IFrameKnimeService extends KnimeService {
     constructor() {
         super();
-        this.pendingJsonRpcRequests = new Map();
+        this.pendingServiceCalls = new Map();
         // to allow awaiting the initialization via waitForInitialization()
         // TODO NXTEXT-135 remove the need for this
         this.initializationPromise = new Promise((resolve) => {
@@ -51,11 +53,11 @@ class IFrameKnimeService extends KnimeService {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
                 this.onInit(data);
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`:
-                this.onJsonRpcResponse(data);
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`:
+                this.onCallServiceResponse(data);
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`:
-                this.onJsonRpcNotification(data.payload);
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
+                this.onServiceNotification(data.payload);
                 break;
         }
     }
@@ -63,29 +65,29 @@ class IFrameKnimeService extends KnimeService {
         this.extensionConfig = data.payload;
         this.initializationPromiseResolve();
     }
-    onJsonRpcResponse(data) {
+    onCallServiceResponse(data) {
         const { payload: { response, requestId } } = data;
-        const request = this.pendingJsonRpcRequests.get(requestId);
+        const request = this.pendingServiceCalls.get(requestId);
         if (!request) {
-            throw new Error(`Received jsonrpcResponse for non-existing pending request with id ${requestId}`);
+            throw new Error(`Received callService response for non-existing pending request with id ${requestId}`);
         }
         request.resolve(JSON.parse(response));
-        this.pendingJsonRpcRequests.delete(requestId);
+        this.pendingServiceCalls.delete(requestId);
     }
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
+     * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
      */
-    executeServiceCall(jsonRpcRequest) {
+    executeServiceCall(serviceParams) {
         let rejectTimeoutId;
+        const requestId = generateRequestId();
         const promise = new Promise((resolve, reject) => {
-            const { id } = jsonRpcRequest;
-            this.pendingJsonRpcRequests.set(id, { resolve, reject });
+            this.pendingServiceCalls.set(requestId, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
                 resolve(JSON.stringify({
                     error: {
-                        message: `Request with id ${id} aborted due to timeout.`,
+                        message: `Request with id ${requestId} aborted due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null
@@ -97,8 +99,8 @@ class IFrameKnimeService extends KnimeService {
             clearTimeout(rejectTimeoutId);
         });
         window.parent.postMessage({
-            type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-            payload: jsonRpcRequest
+            type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`,
+            payload: { requestId, serviceParams }
         }, '*'); // TODO NXT-793 security
         return promise;
     }

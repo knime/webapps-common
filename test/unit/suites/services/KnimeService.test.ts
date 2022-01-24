@@ -1,7 +1,6 @@
 import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
 import { NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
-import { createJsonRpcRequest } from 'src/utils';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 describe('KnimeService', () => {
@@ -26,29 +25,26 @@ describe('KnimeService', () => {
         it('Throws error if extension config not provided', () => {
             const knimeService = new KnimeService();
 
-            expect(() => knimeService.callService(createJsonRpcRequest(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                [DataServiceTypes.INITIAL_DATA, '']
-            ))).rejects.toThrowError('Cannot call service without extension config');
+            expect(() => knimeService.callService(
+                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
+            )).rejects.toThrowError('Cannot call service without extension config');
         });
 
         it('Throws error if callable service not provided', () => {
             const knimeService = new KnimeService(extensionConfig);
 
-            expect(() => knimeService.callService(createJsonRpcRequest(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                [DataServiceTypes.INITIAL_DATA, '']
-            ))).rejects.toThrowError('Callable service is not available');
+            expect(() => knimeService.callService(
+                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
+            )).rejects.toThrowError('Callable service is not available');
         });
 
         it('Returns the results of successful service calls', async () => {
             const result = 'test';
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ result }))));
             const knimeService = new KnimeService(extensionConfig, callableMock);
-            const testResult = await knimeService.callService(createJsonRpcRequest(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                [DataServiceTypes.INITIAL_DATA, '']
-            ));
+            const testResult = await knimeService.callService(
+                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
+            );
             expect(testResult).toBe(result);
         });
 
@@ -59,10 +55,9 @@ describe('KnimeService', () => {
             };
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ error }))));
             const knimeService = new KnimeService(extensionConfig, callableMock);
-            expect(() => knimeService.callService(createJsonRpcRequest(
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
-                [DataServiceTypes.INITIAL_DATA, '']
-            ))).rejects.toThrowError('Error code: 007. Message: Shaken, not stirred.');
+            expect(() => knimeService.callService(
+                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
+            )).rejects.toThrowError('Error code: 007. Message: Shaken, not stirred.');
         });
     });
 
@@ -145,7 +140,7 @@ describe('KnimeService', () => {
             const callback = jest.fn();
 
             knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
-            knime.onJsonRpcNotification({
+            knime.onServiceNotification({
                 method: EventTypes.SelectionEvent
             } as any);
 
@@ -159,7 +154,7 @@ describe('KnimeService', () => {
             const callback = jest.fn();
 
             knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
-            knime.onJsonRpcNotification({
+            knime.onServiceNotification({
                 method: invalidEvent
             } as any);
 

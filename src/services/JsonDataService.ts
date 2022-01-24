@@ -26,15 +26,8 @@ export class JsonDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     private callDataService(dataService: DataServiceTypes, request = '') {
-        return this.knimeService
-            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_DATA_SERVICE, [
-                this.knimeService.extensionConfig.projectId,
-                this.knimeService.extensionConfig.workflowId,
-                this.knimeService.extensionConfig.nodeId,
-                this.knimeService.extensionConfig.extensionType,
-                dataService,
-                request || ''
-            ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+        return this.knimeService.callService([NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request])
+            .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
     /**

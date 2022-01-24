@@ -1,6 +1,6 @@
-import { JsonRpcResponse } from '../types';
+import { CallServiceResponse } from '../types';
 
-export const jsonRpcResponseHandler = (response: JsonRpcResponse | null) => {
+export const callServiceResponseHandler = (response: CallServiceResponse | null) => {
     const { error, result } = response || {};
     if (error) {
         return Promise.reject(

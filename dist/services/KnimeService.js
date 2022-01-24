@@ -1,4 +1,4 @@
-import { jsonRpcResponseHandler } from '../utils/jsonRpcResponseHandler.js';
+import { callServiceResponseHandler } from '../utils/callServiceResponseHandler.js';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -33,27 +33,27 @@ class KnimeService {
     /**
      * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(jsonRpcRequest) {
+    callService(serviceParams) {
         if (!this.extensionConfig) {
             return Promise.reject(new Error('Cannot call service without extension config'));
         }
         if (!this.callableService) {
             return Promise.reject(new Error('Callable service is not available'));
         }
-        return this.executeServiceCall(jsonRpcRequest).then(jsonRpcResponseHandler);
+        return this.executeServiceCall(serviceParams).then(callServiceResponseHandler);
     }
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    executeServiceCall(jsonRpcRequest) {
-        return this.callableService(jsonRpcRequest);
+    executeServiceCall(serviceParams) {
+        return this.callableService(serviceParams);
     }
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
@@ -83,7 +83,7 @@ class KnimeService {
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    onJsonRpcNotification(notification) {
+    onServiceNotification(notification) {
         const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
         callbacks.forEach(callback => {
             callback(notification);

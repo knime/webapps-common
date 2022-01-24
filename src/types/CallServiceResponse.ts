@@ -1,4 +1,4 @@
-export type JsonRpcResponse = {
+export type CallServiceResponse = {
     error: {
         code: string;
         message: string;

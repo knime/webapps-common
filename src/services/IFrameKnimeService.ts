@@ -1,5 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { JsonRpcRequest } from 'src/types';
+import { ServiceParameters } from 'src/types';
+import { generateRequestId } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -11,7 +12,7 @@ import { KnimeService } from './KnimeService';
  * Other services should be initialized with instance of the class.
  */
 export class IFrameKnimeService extends KnimeService {
-    private pendingJsonRpcRequests: Map<Number, any> = new Map();
+    private pendingServiceCalls: Map<Number, any> = new Map();
 
     private boundOnMessageFromParent: any;
 
@@ -70,12 +71,12 @@ export class IFrameKnimeService extends KnimeService {
                 this.onInit(data);
                 break;
 
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`:
-                this.onJsonRpcResponse(data);
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`:
+                this.onCallServiceResponse(data);
                 break;
 
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`:
-                this.onJsonRpcNotification(data.payload);
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
+                this.onServiceNotification(data.payload);
                 break;
 
             default:
@@ -87,36 +88,36 @@ export class IFrameKnimeService extends KnimeService {
         this.initializationPromiseResolve();
     }
 
-    private onJsonRpcResponse(data) {
+    private onCallServiceResponse(data) {
         const { payload: { response, requestId } } = data;
-        const request = this.pendingJsonRpcRequests.get(requestId);
+        const request = this.pendingServiceCalls.get(requestId);
 
         if (!request) {
             throw new Error(
-                `Received jsonrpcResponse for non-existing pending request with id ${requestId}`
+                `Received callService response for non-existing pending request with id ${requestId}`
             );
         }
 
         request.resolve(JSON.parse(response));
 
-        this.pendingJsonRpcRequests.delete(requestId);
+        this.pendingServiceCalls.delete(requestId);
     }
 
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
+     * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest) {
+    protected executeServiceCall(serviceParams: ServiceParameters) {
         let rejectTimeoutId;
+        const requestId = generateRequestId();
 
         const promise = new Promise<string>((resolve, reject) => {
-            const { id } = jsonRpcRequest;
-            this.pendingJsonRpcRequests.set(id, { resolve, reject });
+            this.pendingServiceCalls.set(requestId, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
                 resolve(JSON.stringify({
                     error: {
-                        message: `Request with id ${id} aborted due to timeout.`,
+                        message: `Request with id ${requestId} aborted due to timeout.`,
                         code: 'req-timeout'
                     },
                     result: null
@@ -131,8 +132,8 @@ export class IFrameKnimeService extends KnimeService {
 
         window.parent.postMessage(
             {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
-                payload: jsonRpcRequest
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`,
+                payload: { requestId, serviceParams }
             },
             '*'
         ); // TODO NXT-793 security

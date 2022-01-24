@@ -19,7 +19,7 @@ export enum SelectionServiceTypes {
 export enum DataServiceTypes {
     // Returns the initial data as provided by the node implementation. Requires no parameters.
     INITIAL_DATA = 'initial_data',
-    // Expects request to be valid RPC format to retrieve data from the referenced data service method.
+    // Expects request to provide correct method parameters to retrieve data from the referenced data service method.
     DATA = 'data',
     // Expects request body to contain the update data to apply/persist/update depending on node implementation.
     APPLY_DATA = 'apply_data',
@@ -28,4 +28,4 @@ export enum DataServiceTypes {
 /**
  * Any Service implemented by a specific UI Extension node.
  */
-export type Service = DataServiceTypes | SelectionServiceTypes |any;
+export type Service = DataServiceTypes | SelectionServiceTypes | any;

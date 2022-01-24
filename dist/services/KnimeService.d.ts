@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, JsonRpcRequest, EventTypes, CallableService } from "../index-9ed3e9b8";
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-692f6f4e";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -30,31 +30,31 @@ declare class KnimeService<T = any> {
     /**
      * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     /**
      * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(jsonRpcRequest: JsonRpcRequest): Promise<any>;
+    callService(serviceParams: ServiceParameters): Promise<any>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
      *
-     * @param {JsonRpcRequest} jsonRpcRequest - the formatted request payload.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<any>;
+    protected executeServiceCall(serviceParams: ServiceParameters): Promise<any>;
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state
      * changes to the framework (i.e. when settings change and should be persisted).
@@ -101,7 +101,7 @@ declare class KnimeService<T = any> {
      * @param {Notification} notification - notification object, which is provided by backend implementation.
      * @returns {void}
      */
-    onJsonRpcNotification(notification: Notification): void;
+    onServiceNotification(notification: Notification): void;
     /**
      * Registers callback that will be triggered on received notification.
      * @param {EventTypes} notificationType - notification type that callback should be registered for.

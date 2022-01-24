@@ -3,7 +3,6 @@ import { SelectionServiceTypes } from '../types/ServiceTypes.js';
 import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
-import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -25,14 +24,7 @@ class SelectionService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callSelectionService(selectionService, request) {
-        return this.knimeService
-            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE, [
-            this.knimeService.extensionConfig.projectId,
-            this.knimeService.extensionConfig.workflowId,
-            this.knimeService.extensionConfig.nodeId,
-            selectionService,
-            request || ''
-        ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+        return this.knimeService.callService([NodeServiceMethods.CALL_NODE_SELECTION_SERVICE, selectionService, request]).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Adds data to currently selected data set.

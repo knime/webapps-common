@@ -4,6 +4,7 @@ import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
+import '../utils/KnimeUtils.js';
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -25,15 +26,8 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataService, request = '') {
-        return this.knimeService
-            .callService(createJsonRpcRequest(NodeServiceMethods.CALL_NODE_DATA_SERVICE, [
-            this.knimeService.extensionConfig.projectId,
-            this.knimeService.extensionConfig.workflowId,
-            this.knimeService.extensionConfig.nodeId,
-            this.knimeService.extensionConfig.extensionType,
-            dataService,
-            request || ''
-        ])).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+        return this.knimeService.callService([NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request])
+            .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from either the local configuration

@@ -1,6 +1,6 @@
-import { JSON_RPC_VERSION } from '../constants/index.js';
 import { generateRequestId } from './generateRequestId.js';
 
+const JSON_RPC_VERSION = '2.0';
 const createJsonRpcRequest = (method, params = []) => ({
     jsonrpc: JSON_RPC_VERSION,
     method,

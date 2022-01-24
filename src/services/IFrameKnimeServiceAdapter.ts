@@ -19,16 +19,8 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         super(extensionConfig, callableService);
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
-    }
-
-    onJsonRpcNotification(notification: Notification | string) {
-        this.iFrameWindow.postMessage(
-            {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
-                payload: typeof notification === 'string' ? JSON.parse(notification) : notification
-            },
-            '*'
-        );
+        // required to prevent VueX store watchers from illegally accessing property and throwing errors
+        Object.defineProperty(this, 'iFrameWindow', { configurable: false, writable: true });
     }
 
     /**
@@ -72,17 +64,16 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
                     '*'
                 );
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`:
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:callService`:
                 {
                     const { payload } = data;
-                    const requestId = payload?.id;
                     const response = await this.callService(payload);
                     this.iFrameWindow.postMessage(
                         {
-                            type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcResponse`,
+                            type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`,
                             payload: {
                                 response,
-                                requestId
+                                requestId: payload.requestId
                             }
                         },
                         '*'
@@ -93,6 +84,16 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
             default:
                 break;
         }
+    }
+
+    onServiceNotification(notification: Notification | string) {
+        this.iFrameWindow.postMessage(
+            {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
+                payload: typeof notification === 'string' ? JSON.parse(notification) : notification
+            },
+            '*'
+        );
     }
 
     /**

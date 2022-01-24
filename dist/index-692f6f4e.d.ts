@@ -1,6 +1,5 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { ResourceTypes } from "./types/ResourceTypes";
-import { EventTypes } from "./types/EventTypes";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -53,8 +52,6 @@ type ExtensionConfig<T = any> = {
     initialData?: T;
 };
 type Notification = {
-    method: EventTypes;
-    jsonrpc?: string;
     params?: {
         projectId: string;
         workflowId: string;
@@ -64,20 +61,26 @@ type Notification = {
     }[];
     [key: string]: any;
 };
-type JsonRpcResponse = {
+type CallServiceResponse = {
     error: {
         code: string;
         message: string;
     };
     result: any;
 };
-type JsonRpcRequest = {
-    jsonrpc: string;
-    method: any;
-    params: string | string[];
-    id: number;
-};
-export { ExtensionConfig, Notification, JsonRpcResponse, JsonRpcRequest };
+/**
+ * The parameters expected by the API layer for any callService call. The required members are:
+ *
+ *  - @member {ServiceMethod} - the top-level service.
+ *  - @member {Service} - the service type.
+ *  - @member {any} [parameters] - optional parameters to pass to the call.
+ */
+type ServiceParameters = [
+    ServiceMethod,
+    Service,
+    any
+];
+export { ExtensionConfig, Notification, CallServiceResponse, ServiceParameters };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

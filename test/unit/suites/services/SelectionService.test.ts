@@ -28,22 +28,24 @@ describe('SelectionService', () => {
 
             const params = ['row1', 'row2', 'row3'];
             await selectionService.add(params);
-            let invocationParameters = callableService.mock.calls[0][0];
-            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
-            expect(invocationParameters.params).toContain(SelectionServiceTypes.ADD);
-            expect(invocationParameters.params).toContainEqual(params);
+            expect(callableService.mock.calls[0][0]).toStrictEqual([
+                NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
+                SelectionServiceTypes.ADD,
+                params
+            ]);
 
             await selectionService.remove(params);
-            invocationParameters = callableService.mock.calls[1][0];
-            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
-            expect(invocationParameters.params).toContain(SelectionServiceTypes.REMOVE);
-            expect(invocationParameters.params).toContainEqual(params);
-
+            expect(callableService.mock.calls[1][0]).toStrictEqual([
+                NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
+                SelectionServiceTypes.REMOVE,
+                params
+            ]);
             await selectionService.replace(params);
-            invocationParameters = callableService.mock.calls[2][0];
-            expect(invocationParameters.method).toBe(NodeServiceMethods.CALL_NODE_SELECTION_SERVICE);
-            expect(invocationParameters.params).toContain(SelectionServiceTypes.REPLACE);
-            expect(invocationParameters.params).toContainEqual(params);
+            expect(callableService.mock.calls[2][0]).toStrictEqual([
+                NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
+                SelectionServiceTypes.REPLACE,
+                params
+            ]);
         });
 
         it('Adds callback to notification with addOnSelectionChangeCallback', () => {

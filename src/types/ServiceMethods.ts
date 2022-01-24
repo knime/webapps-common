@@ -1,6 +1,6 @@
 /**
- * Collection of node service method signatures registered as RPC services with the framework. Each signature
- * targets specific workflow-level RPC node service functionality for UI Extensions.
+ * Collection of RPC method signatures registered as node services with the framework. Each signature
+ * targets specific workflow-level node service functionality for UI Extensions.
  */
 export enum NodeServiceMethods {
     // Data service method signature.
@@ -10,8 +10,8 @@ export enum NodeServiceMethods {
 }
 
 /**
- * Any method signature which directly targets an RPC Service by the application. Each signature is in the format
- * `<service>.<method name>` where the `<service>` (i.e. NodeService) is provided by the framework  and implements
- * the `<method name>` (i.e. `callNodeDataService`) to call.
+ * Any RPC-compliant method signature which directly targets a node service of the application. Each signature
+ * is in the format `<service>.<method name>` where the `<service>` (i.e. NodeService) is provided by the framework
+ * and implements the `<method name>` (i.e. `callNodeDataService`) to call.
  */
 export type ServiceMethod = NodeServiceMethods | any;

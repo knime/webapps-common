@@ -1,6 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { IFrameKnimeServiceAdapter } from 'src/services';
-import { JsonRpcRequest, EventTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 /* eslint-disable-next-line no-magic-numbers */
@@ -8,19 +7,8 @@ const sleep = async (timeout = 15) => {
     await new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-const mockJsonRpcResponse = [1, 1, 2];
-
-const mockCallServiceImplementation = (requestJSON: JsonRpcRequest) => {
-    let result : any = requestJSON;
-    if (requestJSON.params === 'getData') {
-        result = JSON.stringify(mockJsonRpcResponse);
-    }
-
-    return Promise.resolve({ result });
-};
-
 const buildIFrameKnimeServiceAdapter = () => {
-    const callServiceSpy = jest.fn().mockImplementation(mockCallServiceImplementation);
+    const callServiceSpy = jest.fn().mockImplementation(() => Promise.resolve({ result: JSON.stringify([1, 1, 2]) }));
     const childSpy = jest.fn();
     const mockChildFrame = {
         postMessage: childSpy
@@ -77,47 +65,43 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Posts jsonrpcNotification event when onJsonRpcNotification is triggered', async () => {
+        it('Posts serviceNotification event when onServiceNotification is triggered', async () => {
             const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
             const notification = {
-                jsonrpc: '2.0.',
-                method: EventTypes.SelectionEvent,
-                params: [{
-                    projectId: '001',
-                    workflowId: '001',
-                    nodeId: '0',
-                    mode: 'ADD',
-                    keys: ['Row1', 'Row2']
-                }]
+                payload: {
+                    requestId: 1,
+                    method: ''
+                },
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`
             };
             const expectedMessage = {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcNotification`,
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
                 payload: notification
             };
 
             // test serialized notification (server-side origin)
-            iFrameKnimeServiceAdapter.onJsonRpcNotification(JSON.stringify(notification));
+            iFrameKnimeServiceAdapter.onServiceNotification(JSON.stringify(notification));
             await sleep();
             expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
             jest.clearAllMocks();
 
             // test object notification (client-side origin)
-            iFrameKnimeServiceAdapter.onJsonRpcNotification(notification);
+            iFrameKnimeServiceAdapter.onServiceNotification(notification);
             await sleep();
             expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Calls service when receiving :jsonrpcRequest type events', async () => {
+        it('Calls service when receiving :callService type events', async () => {
             const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
             const requestId = 1;
-            const payload = { params: 'getData', id: requestId };
+            const payload = { params: 'getData', requestId };
             window.postMessage(
                 {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:jsonrpcRequest`,
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`,
                     payload
                 },
                 '*'
@@ -130,7 +114,7 @@ describe('IFrameKnimeServiceAdapter', () => {
                     response: JSON.stringify([1, 1, 2]),
                     requestId
                 },
-                type: 'knimeUIExtension:jsonrpcResponse'
+                type: 'knimeUIExtension:callServiceResponse'
             }, '*');
             expect(callServiceSpy).toHaveBeenCalledWith(payload);
 

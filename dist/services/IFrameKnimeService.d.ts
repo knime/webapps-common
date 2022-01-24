@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from "../index-9ed3e9b8";
+import { ServiceParameters } from "../index-692f6f4e";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -9,7 +9,7 @@ import { KnimeService } from "./KnimeService";
  * Other services should be initialized with instance of the class.
  */
 declare class IFrameKnimeService extends KnimeService {
-    private pendingJsonRpcRequests;
+    private pendingServiceCalls;
     private boundOnMessageFromParent;
     private initializationPromise;
     private initializationPromiseResolve;
@@ -35,18 +35,18 @@ declare class IFrameKnimeService extends KnimeService {
      */
     private onMessageFromParent;
     private onInit;
-    private onJsonRpcResponse;
+    private onCallServiceResponse;
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
+     * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
      */
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
-     * @param {JsonRpcRequest} jsonRpcRequest - to be executed by KnimeService callService method.
-     * @returns {Promise<string>} - promise that resolves with JsonRpcResponse string or error message.
+     * @param {ServiceParameters} serviceParams - parameters for the service call.
+     * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
      */
-    protected executeServiceCall(jsonRpcRequest: JsonRpcRequest): Promise<string>;
+    protected executeServiceCall(serviceParams: ServiceParameters): Promise<string>;
     /**
      * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.

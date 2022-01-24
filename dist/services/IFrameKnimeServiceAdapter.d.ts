@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification } from "../index-9ed3e9b8";
+import { ExtensionConfig, Notification } from "../index-692f6f4e";
 import { CallableService } from "../CallableService-d52d8345";
 import { KnimeService } from "./KnimeService";
 /**
@@ -12,7 +12,6 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
     private iFrameWindow;
     private boundOnMessageFromIFrame;
     constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
-    onJsonRpcNotification(notification: Notification | string): void;
     /**
      * Sets the child iframe window referenced by the service.
      *
@@ -50,6 +49,7 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
      * @returns {void}
      */
     private onMessageFromIFrame;
+    onServiceNotification(notification: Notification | string): void;
     /**
      * Should be called before destroying the IFrame to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.

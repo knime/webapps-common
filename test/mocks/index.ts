@@ -1,2 +1,2 @@
 export * from './extensionConfig';
-export * from './rpcInitialData';
+export * from './initialData';
