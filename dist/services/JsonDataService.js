@@ -68,7 +68,7 @@ class JsonDataService {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
+        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
     }
     /**
      * Registers a function with the framework is used to provide the current state of the client-side UI Extension.

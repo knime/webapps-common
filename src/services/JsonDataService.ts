@@ -74,7 +74,7 @@ export class JsonDataService<T = any> {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServiceTypes.APPLY_DATA, JSON.stringify(data));
+        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
     }
 
     /**
