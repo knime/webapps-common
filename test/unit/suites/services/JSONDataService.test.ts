@@ -111,7 +111,7 @@ describe('JsonDataService', () => {
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                'null'
+                null
             ]);
         });
 
@@ -122,7 +122,7 @@ describe('JsonDataService', () => {
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                'null'
+                null
             ]);
         });
 
@@ -134,7 +134,7 @@ describe('JsonDataService', () => {
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
                 NodeServiceMethods.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
-                '"{}"'
+                '{}'
             ]);
         });
     });
