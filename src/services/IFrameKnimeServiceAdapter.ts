@@ -64,15 +64,12 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:callService`:
                 {
-                    const { payload } = data;
-                    const response = await this.callService(payload);
+                    const { payload: { requestId, serviceParams } } = data;
+                    const response = await this.callService(serviceParams);
                     this.iFrameWindow.postMessage(
                         {
                             type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`,
-                            payload: {
-                                response,
-                                requestId: payload.requestId
-                            }
+                            payload: { response, requestId }
                         },
                         '*'
                     );

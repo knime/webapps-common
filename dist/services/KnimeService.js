@@ -53,7 +53,7 @@ class KnimeService {
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     executeServiceCall(serviceParams) {
-        return this.callableService(serviceParams);
+        return this.callableService(...serviceParams);
     }
     /**
      * Register a callback method which returns relevant data to provide when "applying" client-side state

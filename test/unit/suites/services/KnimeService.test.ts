@@ -1,6 +1,6 @@
 import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
-import { NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
+import { NodeServiceMethods, DataServiceTypes, EventTypes, ServiceParameters } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 describe('KnimeService', () => {
@@ -40,11 +40,12 @@ describe('KnimeService', () => {
 
         it('Returns the results of successful service calls', async () => {
             const result = 'test';
+            const serviceParams =
+                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, ''] as ServiceParameters;
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ result }))));
             const knimeService = new KnimeService(extensionConfig, callableMock);
-            const testResult = await knimeService.callService(
-                [NodeServiceMethods.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
-            );
+            const testResult = await knimeService.callService(serviceParams);
+            expect(callableMock).toHaveBeenCalledWith(...serviceParams);
             expect(testResult).toBe(result);
         });
 

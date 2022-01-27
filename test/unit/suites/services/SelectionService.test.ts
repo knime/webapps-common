@@ -28,20 +28,20 @@ describe('SelectionService', () => {
 
             const params = ['row1', 'row2', 'row3'];
             await selectionService.add(params);
-            expect(callableService.mock.calls[0][0]).toStrictEqual([
+            expect(callableService.mock.calls[0]).toEqual([
                 NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
                 SelectionServiceTypes.ADD,
                 params
             ]);
 
             await selectionService.remove(params);
-            expect(callableService.mock.calls[1][0]).toStrictEqual([
+            expect(callableService.mock.calls[1]).toEqual([
                 NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
                 SelectionServiceTypes.REMOVE,
                 params
             ]);
             await selectionService.replace(params);
-            expect(callableService.mock.calls[2][0]).toStrictEqual([
+            expect(callableService.mock.calls[2]).toEqual([
                 NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
                 SelectionServiceTypes.REPLACE,
                 params

@@ -70,7 +70,7 @@ export class KnimeService<T = any> {
      * @returns {Promise} - rejected or resolved depending on response success.
      */
     protected executeServiceCall(serviceParams: ServiceParameters) : Promise<any> {
-        return this.callableService(serviceParams);
+        return this.callableService(...serviceParams);
     }
 
     /**
