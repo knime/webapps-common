@@ -13,8 +13,6 @@ class IFrameKnimeServiceAdapter extends KnimeService {
         super(extensionConfig, callableService);
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
-        // required to prevent VueX store watchers from illegally accessing property and throwing errors
-        Object.defineProperty(this, 'iFrameWindow', { configurable: false, writable: true });
     }
     /**
      * Sets the child iframe window referenced by the service.

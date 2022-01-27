@@ -80,18 +80,12 @@ this.initialData = await this.knimeJsonDataService.initialData();
 ```
 
 ### Usage in a Vue-based KNIME UI component
-In this case, the `knimeService` instance is already passed as a prop and doesn't need to be instantiated, e.g.
+In this case, the `knimeService` instance is already provided by the parent application and just needs to be injected, e.g.
 ```javascript
 ...
 import { JsonDataService } from 'knime-ui-extension-service';
 ...
-props: {
-    knimeService: {
-        type: Object,
-        required: true,
-        default: null
-    }
-},
+inject: ['knimeService'],
 async mounted() {
     const jsonDataService = new JsonDataService(this.knimeService);
     this.initialData = await jsonDataService.getInitialData();
