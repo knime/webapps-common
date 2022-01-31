@@ -1,6 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from '../constants/index.js';
 import { generateRequestId } from '../utils/generateRequestId.js';
-import '../utils/KnimeUtils.js';
 import { KnimeService } from './KnimeService.js';
 
 /**

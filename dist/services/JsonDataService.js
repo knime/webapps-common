@@ -4,7 +4,6 @@ import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
-import '../utils/KnimeUtils.js';
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.

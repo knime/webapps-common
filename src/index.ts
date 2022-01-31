@@ -7,4 +7,4 @@ export {
 } from './services';
 
 
-export { KnimeUtils } from './utils';
+export { KnimeUtils } from './utils/KnimeUtils';

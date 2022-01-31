@@ -1,5 +1,7 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { ResourceTypes } from "./types/ResourceTypes";
+import { Service } from "./types/ServiceTypes";
+import { ServiceMethod } from "./types/ServiceMethods";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -61,13 +63,6 @@ type Notification = {
     }[];
     [key: string]: any;
 };
-type CallServiceResponse = {
-    error: {
-        code: string;
-        message: string;
-    };
-    result: any;
-};
 /**
  * The parameters expected by the API layer for any callService call. The required members are:
  *
@@ -80,7 +75,14 @@ type ServiceParameters = [
     Service,
     any
 ];
-export { ExtensionConfig, Notification, CallServiceResponse, ServiceParameters };
+type CallServiceResponse = {
+    error: {
+        code: string;
+        message: string;
+    };
+    result: any;
+};
+export { ExtensionConfig, Notification, ServiceParameters, CallServiceResponse };
 export * from "./types/ServiceMethods";
 export * from "./types/ServiceTypes";
 export * from "./types/ExtensionTypes";

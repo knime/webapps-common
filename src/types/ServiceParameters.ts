@@ -1,4 +1,5 @@
-import { Service, ServiceMethod } from '.';
+import { Service } from './ServiceTypes';
+import { ServiceMethod } from './ServiceMethods';
 
 /**
  * The parameters expected by the API layer for any callService call. The required members are:

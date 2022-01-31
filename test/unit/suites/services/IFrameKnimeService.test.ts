@@ -1,7 +1,7 @@
 import { IFrameKnimeService, JsonDataService } from 'src/services';
 import { NodeServiceMethods, DataServiceTypes, SelectionServiceTypes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
-import { KnimeUtils } from 'src/utils';
+import { KnimeUtils } from 'src';
 
 const { UI_EXT_POST_MESSAGE_PREFIX } = KnimeUtils;
 
