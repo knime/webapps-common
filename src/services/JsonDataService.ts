@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src';
-import { Notification, NodeServiceMethods, DataServiceTypes, EventTypes } from 'src/types';
+import { Notification, NodeServices, DataService, DataServices, EventTypes } from 'src/types';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -19,14 +19,14 @@ export class JsonDataService<T = any> {
     /**
      * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServiceTypes}.
+     * known service types, {@see DataServices}.
      *
-     * @param {DataServiceTypes} dataService - the target service.
+     * @param {DataService} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    private callDataService(dataService: DataServiceTypes, request = '') {
-        return this.knimeService.callService([NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request])
+    private callDataService(dataService: DataService, request = '') {
+        return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataService, request])
             .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
@@ -43,11 +43,11 @@ export class JsonDataService<T = any> {
                 .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
         }
 
-        return this.callDataService(DataServiceTypes.INITIAL_DATA);
+        return this.callDataService(DataServices.INITIAL_DATA);
     }
 
     /**
-     * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.
@@ -60,7 +60,7 @@ export class JsonDataService<T = any> {
      */
     data(params: { method?: string; options?: any } = {}) {
         return this.callDataService(
-            DataServiceTypes.DATA,
+            DataServices.DATA,
             JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
         );
     }
@@ -74,7 +74,7 @@ export class JsonDataService<T = any> {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
+        return this.callDataService(DataServices.APPLY_DATA, data);
     }
 
     /**

@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index";
-import { Notification } from "../index-692f6f4e";
+import { Notification } from "../index-b5c74bb8";
 import { KnimeService } from "./KnimeService";
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -16,18 +16,18 @@ declare class JsonDataService<T = any> {
     /**
      * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServiceTypes}.
+     * known service types, {@see DataServices}.
      *
-     * @param {DataServiceTypes} dataService - the target service.
+     * @param {DataService} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     /**
      * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
      * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServiceTypes}.
+     * known service types, {@see DataServices}.
      *
-     * @param {DataServiceTypes} dataService - the target service.
+     * @param {DataService} dataService - the target service.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
@@ -46,7 +46,7 @@ declare class JsonDataService<T = any> {
      */
     initialData(): Promise<any>;
     /**
-     * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.
@@ -58,7 +58,7 @@ declare class JsonDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     /**
-     * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.

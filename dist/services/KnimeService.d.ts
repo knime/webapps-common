@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-692f6f4e";
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-b5c74bb8";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.

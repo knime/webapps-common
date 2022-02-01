@@ -1,3 +1,3 @@
-import { CallServiceResponse } from "../index-692f6f4e";
+import { CallServiceResponse } from "../index-b5c74bb8";
 declare const callServiceResponseHandler: (response: CallServiceResponse | null) => Promise<any>;
 export { callServiceResponseHandler };
