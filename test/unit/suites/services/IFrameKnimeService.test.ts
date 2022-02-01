@@ -101,7 +101,7 @@ describe('IFrameKnimeService', () => {
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
                 data: {
                     type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
-                    payload: notification
+                    payload: { data: notification }
                 }
             } as MessageEvent);
 
