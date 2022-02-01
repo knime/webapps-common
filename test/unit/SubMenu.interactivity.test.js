@@ -11,7 +11,7 @@ describe('SubMenu.vue', () => {
             ];
             const id = 'testfoobar543';
 
-            const wrapper = shallowMount(SubMenu, {
+            const wrapper = mount(SubMenu, {
                 propsData: {
                     items,
                     id
@@ -23,6 +23,7 @@ describe('SubMenu.vue', () => {
                     NuxtLink: RouterLinkStub
                 }
             });
+            // assumes MenuItems use <li>
             wrapper.findAll('li').at(0).trigger('click');
             expect(typeof wrapper.emittedByOrder()[0].args[0]).toBe('object'); // event object
             expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]);
@@ -35,14 +36,14 @@ describe('SubMenu.vue', () => {
         });
 
         describe('enter key behavior', () => {
-            it('clicks links with enter key', () => {
+            it('does click links with enter key', () => {
                 const items = [
                     { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                     { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
 
-                const wrapper = mount(SubMenu, {
+                const wrapper = shallowMount(SubMenu, {
                     propsData: {
                         items,
                         id
@@ -60,25 +61,18 @@ describe('SubMenu.vue', () => {
                     stopPropagation: jest.fn(),
                     stopImmediatePropagation: jest.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
-                expect(onItemClickMock).toHaveBeenCalled();
+                wrapper.vm.onItemClick(fakeEvent, items[0]);
                 expect(wrapper.emitted('item-click')).toBeTruthy();
-                expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
-                expect(fakeEvent.stopPropagation).not.toHaveBeenCalled();
-                expect(fakeEvent.stopImmediatePropagation).not.toHaveBeenCalled();
             });
 
-            it('does not click buttons with enter key', () => {
+            it('does click buttons with enter key', () => {
                 const items = [
                     { text: 'Google Slash', randomProp: 'test' },
                     { text: 'Nuxt Link', anotherProp: 'foo' }
                 ];
                 const id = 'testfoobar543';
 
-                const wrapper = mount(SubMenu, {
+                const wrapper = shallowMount(SubMenu, {
                     propsData: {
                         items,
                         id
@@ -96,97 +90,14 @@ describe('SubMenu.vue', () => {
                     stopPropagation: jest.fn(),
                     stopImmediatePropagation: jest.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
-                expect(onItemClickMock).toHaveBeenCalled();
-                expect(wrapper.emitted('item-click')).toBeFalsy();
-                expect(fakeEvent.preventDefault).toHaveBeenCalled();
-                expect(fakeEvent.stopPropagation).toHaveBeenCalled();
-                expect(fakeEvent.stopImmediatePropagation).toHaveBeenCalled();
-            });
-        });
-
-        describe('space key behavior', () => {
-            it('clicks buttons with space key', () => {
-                const items = [
-                    { text: 'Google Slash', randomProp: 'test' },
-                    { text: 'Nuxt Link', anotherProp: 'foo' }
-                ];
-                const id = 'testfoobar543';
-
-                const wrapper = mount(SubMenu, {
-                    propsData: {
-                        items,
-                        id
-                    },
-                    slots: {
-                        default: 'button me'
-                    },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
-                    }
-                });
-                let fakeEvent = {
-                    code: 'Space',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
-                };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
-                expect(onItemClickMock).toHaveBeenCalled();
+                wrapper.vm.onItemClick(fakeEvent, items[0]);
                 expect(wrapper.emitted('item-click')).toBeTruthy();
-                expect(fakeEvent.preventDefault).toHaveBeenCalled();
-                expect(fakeEvent.stopPropagation).toHaveBeenCalled();
-                expect(fakeEvent.stopImmediatePropagation).toHaveBeenCalled();
-            });
-
-            it('does not click links with space key', () => {
-                const items = [
-                    { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
-                    { to: '/', text: 'Nuxt Link', anotherProp: 'foo' }
-                ];
-                const id = 'testfoobar543';
-
-                const wrapper = mount(SubMenu, {
-                    propsData: {
-                        items,
-                        id
-                    },
-                    slots: {
-                        default: 'button me'
-                    },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
-                    }
-                });
-                let fakeEvent = {
-                    code: 'Space',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
-                };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                let closeMenuMock = jest.spyOn(wrapper.vm, 'closeMenu');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
-                expect(onItemClickMock).toHaveBeenCalled();
-                expect(closeMenuMock).not.toHaveBeenCalled();
-                expect(wrapper.emitted('item-click')).toBeFalsy();
-                expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
-                expect(fakeEvent.stopPropagation).not.toHaveBeenCalled();
-                expect(fakeEvent.stopImmediatePropagation).not.toHaveBeenCalled();
             });
         });
     });
 
     describe('arrow key navigation', () => {
-        let arrowKeyNavWrapper;
+        let arrowKeyNavWrapper, listItems;
 
         beforeEach(() => {
             const id = 'testfoobar543';
@@ -206,138 +117,38 @@ describe('SubMenu.vue', () => {
                     NuxtLink: RouterLinkStub
                 }
             });
-        });
-
-        it('gets next item to focus', () => {
-            const items = [
-                { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
-                { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' },
-                { text: 'I act like a button' }
-            ];
-            const id = 'testfoobar543';
-
-            const wrapper = shallowMount(SubMenu, {
-                propsData: {
-                    items,
-                    id
-                },
-                slots: {
-                    default: 'button me'
-                },
-                stubs: {
-                    NuxtLink: RouterLinkStub
-                }
-            });
-            // up and down
-            wrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[2]);
-            // jumps to end of list
-            wrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[2]);
-            // jumps to start of list
-            wrapper.vm.listItems[2].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[2]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[0]);
-        });
-
-        it('focuses next element on key down', () => {
-            let onDownMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onDown');
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
-            arrowKeyNavWrapper.setData({ expanded: true });
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-
-            arrowKeyNavWrapper.trigger('keydown.down');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-            expect(onDownMock).toHaveBeenCalled();
-        });
-
-        it('focuses previous element on key up', () => {
-            let onUpMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onUp');
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
-            arrowKeyNavWrapper.setData({ expanded: true });
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-
-            arrowKeyNavWrapper.trigger('keydown.up');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-            expect(onUpMock).toHaveBeenCalled();
-        });
-
-        it('focuses first element on key down at list end', () => {
-            let onDownMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onDown');
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
-            arrowKeyNavWrapper.setData({ expanded: true });
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-
-            arrowKeyNavWrapper.trigger('keydown.down');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-            expect(onDownMock).toHaveBeenCalled();
-        });
-
-        it('focuses last element on key up at list start', () => {
-            let onUpMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onUp');
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
-            arrowKeyNavWrapper.setData({ expanded: true });
-            expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-
-            arrowKeyNavWrapper.trigger('keydown.up');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-            expect(onUpMock).toHaveBeenCalled();
+            listItems = arrowKeyNavWrapper.vm.$refs.menuItems.listItems;
         });
 
         it('focuses first element on key down after expand if orientation bottom', () => {
             let onDownMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onDown');
-            let getNextElementMock = jest.spyOn(arrowKeyNavWrapper.vm, 'getNextElement');
             expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
             arrowKeyNavWrapper.setData({ expanded: true });
             expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
+            expect(listItems.length).toBe(2);
 
-            expect(document.activeElement).not.toBe(arrowKeyNavWrapper.vm.listItems[0]);
+            expect(document.activeElement).not.toBe(listItems[0]);
 
             arrowKeyNavWrapper.trigger('keydown.down');
 
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
             expect(onDownMock).toHaveBeenCalled();
-            expect(getNextElementMock).toHaveBeenCalled();
+            expect(document.activeElement).toBe(listItems[0]);
         });
 
         it('does not focus first element on key up after expand if orientation bottom', () => {
             let onUpMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onUp');
-            let getNextElementMock = jest.spyOn(arrowKeyNavWrapper.vm, 'getNextElement');
             expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
             arrowKeyNavWrapper.setData({ expanded: true });
             expect(arrowKeyNavWrapper.vm.expanded).toBe(true);
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
+            expect(listItems.length).toBe(2);
             arrowKeyNavWrapper.vm.$refs['submenu-toggle'].$el.focus();
             expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.$refs['submenu-toggle'].$el);
 
             arrowKeyNavWrapper.trigger('keydown.up');
 
-            expect(document.activeElement).not.toBe(arrowKeyNavWrapper.vm.listItems[0]);
+            expect(document.activeElement).not.toBe(listItems[0]);
             expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.$refs['submenu-toggle'].$el);
             expect(onUpMock).toHaveBeenCalled();
-            expect(getNextElementMock).not.toHaveBeenCalled();
         });
 
         it('focuses first element on key up after expand if orientation top', () => {
@@ -360,19 +171,17 @@ describe('SubMenu.vue', () => {
                 }
             });
             let onUpMock = jest.spyOn(wrapper.vm, 'onUp');
-            let getNextElementMock = jest.spyOn(wrapper.vm, 'getNextElement');
             expect(wrapper.vm.expanded).toBe(false);
             wrapper.setData({ expanded: true });
             expect(wrapper.vm.expanded).toBe(true);
-            expect(wrapper.vm.listItems.length).toBe(2);
+            expect(listItems.length).toBe(2);
 
-            expect(document.activeElement).not.toBe(wrapper.vm.listItems[1]);
+            expect(document.activeElement).not.toBe(listItems[1]);
 
             wrapper.trigger('keydown.up');
 
-            expect(document.activeElement).toBe(wrapper.vm.listItems[1]);
+            expect(document.activeElement).toStrictEqual(listItems[1]);
             expect(onUpMock).toHaveBeenCalled();
-            expect(getNextElementMock).toHaveBeenCalled();
         });
 
         it('does not focus first element on key down after expand if orientation top', () => {
@@ -395,20 +204,18 @@ describe('SubMenu.vue', () => {
                 }
             });
             let onDownMock = jest.spyOn(wrapper.vm, 'onDown');
-            let getNextElementMock = jest.spyOn(wrapper.vm, 'getNextElement');
             expect(wrapper.vm.expanded).toBe(false);
             wrapper.setData({ expanded: true });
             expect(wrapper.vm.expanded).toBe(true);
-            expect(wrapper.vm.listItems.length).toBe(2);
+            expect(listItems.length).toBe(2);
             wrapper.vm.$refs['submenu-toggle'].$el.focus();
             expect(document.activeElement).toBe(wrapper.vm.$refs['submenu-toggle'].$el);
 
             wrapper.trigger('keydown.down');
 
-            expect(document.activeElement).not.toBe(wrapper.vm.listItems[0]);
+            expect(document.activeElement).not.toBe(listItems[0]);
             expect(document.activeElement).toBe(wrapper.vm.$refs['submenu-toggle'].$el);
             expect(onDownMock).toHaveBeenCalled();
-            expect(getNextElementMock).not.toHaveBeenCalled();
         });
     });
 

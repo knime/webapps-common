@@ -1,6 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 
-jest.mock('vue-clickaway', () => ({
+jest.mock('vue-clickaway2', () => ({
     mixin: {}
 }), { virtual: true });
 
