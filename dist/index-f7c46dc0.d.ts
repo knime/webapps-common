@@ -1,5 +1,7 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { ResourceTypes } from "./types/ResourceTypes";
+import { DataServiceTypes } from "./types/DataServiceTypes";
+import { SelectionModes } from "./types/SelectionModes";
 /**
  * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
  * @property {string} nodeState - the current state of the node.
@@ -61,6 +63,10 @@ type Notification = {
     }[];
     [key: string]: any;
 };
+/**
+ * Any node service request supported by that specific node service.
+ */
+type ServiceRequest = DataServiceTypes | SelectionModes;
 type CallServiceResponse = {
     error: {
         code: string;
@@ -68,10 +74,11 @@ type CallServiceResponse = {
     };
     result: any;
 };
-export { ExtensionConfig, Notification, CallServiceResponse };
+export { ExtensionConfig, Notification, ServiceRequest, CallServiceResponse };
 export * from "./types/NodeServices";
-export * from "./types/ExtensionServices";
 export * from "./types/index";
+export * from "./types/DataServiceTypes";
+export * from "./types/SelectionModes";
 export * from "./types/ExtensionTypes";
 export * from "./types/EventTypes";
 export * from "./types/ResourceTypes";

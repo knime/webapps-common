@@ -1,5 +1,5 @@
 import { IFrameKnimeService, JsonDataService } from 'src/services';
-import { NodeServices, DataServices, SelectionServices } from 'src/types';
+import { NodeServices, DataServiceTypes, SelectionModes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 import { KnimeUtils } from 'src';
 
@@ -93,7 +93,7 @@ describe('IFrameKnimeService', () => {
                     projectId: '001',
                     workflowId: '001',
                     nodeId: '0',
-                    mode: SelectionServices.ADD,
+                    mode: SelectionModes.ADD,
                     keys: ['Row1', 'Row2']
                 }]
             };
@@ -122,7 +122,7 @@ describe('IFrameKnimeService', () => {
             };
             knimeService.executeServiceCall([
                 NodeServices.CALL_NODE_DATA_SERVICE,
-                DataServices.DATA,
+                DataServiceTypes.DATA,
                 '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
             ]);
 
@@ -160,7 +160,7 @@ describe('IFrameKnimeService', () => {
                     requestId: expect.any(Number),
                     serviceParams: [
                         NodeServices.CALL_NODE_DATA_SERVICE,
-                        DataServices.DATA,
+                        DataServiceTypes.DATA,
                         expect.stringContaining('getData')
                     ]
                 },

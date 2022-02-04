@@ -1,5 +1,6 @@
 import { NodeServices } from '../types/NodeServices.js';
-import { DataServices } from '../types/ExtensionServices.js';
+import { DataServiceTypes } from '../types/DataServiceTypes.js';
+import '../types/SelectionModes.js';
 import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
@@ -10,22 +11,22 @@ import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
  */
 class JsonDataService {
     /**
-     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+     *      with the framework.
      */
     constructor(knimeService) {
         this.knimeService = knimeService;
     }
     /**
-     * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
-     * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServices}.
+     * Calls the node data service with optional request body. The service to call is specified by the service type
+     * and needs to correspond directly to a {@see DataServiceType} supported by the node.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceType} dataServiceType - the data service type.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    callDataService(dataService, request = '') {
-        return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataService, request])
+    callDataService(dataServiceType, request = '') {
+        return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataServiceType, request])
             .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
@@ -41,10 +42,10 @@ class JsonDataService {
             return Promise.resolve(initialData)
                 .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
         }
-        return this.callDataService(DataServices.INITIAL_DATA);
+        return this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
     /**
-     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.
@@ -56,7 +57,7 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     data(params = {}) {
-        return this.callDataService(DataServices.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
+        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
@@ -67,7 +68,7 @@ class JsonDataService {
      */
     async applyData() {
         const data = await this.knimeService.getData();
-        return this.callDataService(DataServices.APPLY_DATA, data);
+        return this.callDataService(DataServiceTypes.APPLY_DATA, data);
     }
     /**
      * Registers a function with the framework is used to provide the current state of the client-side UI Extension.

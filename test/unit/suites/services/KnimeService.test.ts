@@ -1,6 +1,6 @@
 import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
-import { NodeServices, DataServices, EventTypes, ServiceParameters } from 'src/types';
+import { NodeServices, DataServiceTypes, EventTypes, ServiceParameters } from 'src/types';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 describe('KnimeService', () => {
@@ -26,7 +26,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService();
 
             expect(() => knimeService.callService(
-                [NodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, '']
+                [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
             )).rejects.toThrowError('Cannot call service without extension config');
         });
 
@@ -34,14 +34,14 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig);
 
             expect(() => knimeService.callService(
-                [NodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, '']
+                [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
             )).rejects.toThrowError('Callable service is not available');
         });
 
         it('Returns the results of successful service calls', async () => {
             const result = 'test';
             const serviceParams =
-                [NodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, ''] as ServiceParameters;
+                [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, ''] as ServiceParameters;
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ result }))));
             const knimeService = new KnimeService(extensionConfig, callableMock);
             const testResult = await knimeService.callService(serviceParams);
@@ -57,7 +57,7 @@ describe('KnimeService', () => {
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ error }))));
             const knimeService = new KnimeService(extensionConfig, callableMock);
             expect(() => knimeService.callService(
-                [NodeServices.CALL_NODE_DATA_SERVICE, DataServices.INITIAL_DATA, '']
+                [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
             )).rejects.toThrowError('Error code: 007. Message: Shaken, not stirred.');
         });
     });

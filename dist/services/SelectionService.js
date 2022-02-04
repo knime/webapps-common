@@ -1,5 +1,6 @@
 import { NodeServices } from '../types/NodeServices.js';
-import { SelectionServices } from '../types/ExtensionServices.js';
+import '../types/DataServiceTypes.js';
+import { SelectionModes } from '../types/SelectionModes.js';
 import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
@@ -20,12 +21,12 @@ class SelectionService {
      * The selection service to call is specified by the service type and needs to correspond directly to
      * a {@see SelectionServices}.
      *
-     * @param {SelectionServices} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    callSelectionService(selectionService, request) {
-        return this.knimeService.callService([NodeServices.CALL_NODE_SELECTION_SERVICE, selectionService, request]).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+    callSelectionService(selectionMode, request) {
+        return this.knimeService.callService([NodeServices.CALL_NODE_SELECTION_SERVICE, selectionMode, request]).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Adds data to currently selected data set.
@@ -33,7 +34,7 @@ class SelectionService {
      * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys) {
-        return this.callSelectionService(SelectionServices.ADD, keys);
+        return this.callSelectionService(SelectionModes.ADD, keys);
     }
     /**
      * Removes data from currently selected data set.
@@ -41,7 +42,7 @@ class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys) {
-        return this.callSelectionService(SelectionServices.REMOVE, keys);
+        return this.callSelectionService(SelectionModes.REMOVE, keys);
     }
     /**
      * Replaces current selection with provided data.
@@ -49,7 +50,7 @@ class SelectionService {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys) {
-        return this.callSelectionService(SelectionServices.REPLACE, keys);
+        return this.callSelectionService(SelectionModes.REPLACE, keys);
     }
     /**
      * Adds callback that will be triggered on data selection change by backend.

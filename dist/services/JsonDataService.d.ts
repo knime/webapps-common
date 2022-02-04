@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index";
-import { Notification } from "../index-b5c74bb8";
+import { Notification } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -7,27 +7,27 @@ import { KnimeService } from "./KnimeService";
 declare class JsonDataService<T = any> {
     private knimeService;
     /**
-     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+     *      with the framework.
      */
     /**
-     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+     *      with the framework.
      */
     constructor(knimeService: IFrameKnimeService | KnimeService<T>);
     /**
-     * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
-     * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServices}.
+     * Calls the node data service with optional request body. The service to call is specified by the service type
+     * and needs to correspond directly to a {@see DataServiceType} supported by the node.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceType} dataServiceType - the data service type.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     /**
-     * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
-     * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServices}.
+     * Calls the node data service with optional request body. The service to call is specified by the service type
+     * and needs to correspond directly to a {@see DataServiceType} supported by the node.
      *
-     * @param {DataService} dataService - the target service.
+     * @param {DataServiceType} dataServiceType - the data service type.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
@@ -46,7 +46,7 @@ declare class JsonDataService<T = any> {
      */
     initialData(): Promise<any>;
     /**
-     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.
@@ -58,7 +58,7 @@ declare class JsonDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     /**
-     * Retrieve data from the node using the {@see DataServices.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.

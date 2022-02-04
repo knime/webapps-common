@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index-a3360790";
-import { Notification } from "../index-b5c74bb8";
+import { Notification } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.
@@ -19,7 +19,7 @@ declare class SelectionService<T = any> {
      * The selection service to call is specified by the service type and needs to correspond directly to
      * a {@see SelectionServices}.
      *
-     * @param {SelectionServices} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
@@ -28,7 +28,7 @@ declare class SelectionService<T = any> {
      * The selection service to call is specified by the service type and needs to correspond directly to
      * a {@see SelectionServices}.
      *
-     * @param {SelectionServices} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */

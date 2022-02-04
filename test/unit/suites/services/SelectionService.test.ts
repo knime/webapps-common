@@ -1,6 +1,6 @@
 import { SelectionService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
-import { NodeServices, SelectionServices } from 'src/types';
+import { NodeServices, SelectionModes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 describe('SelectionService', () => {
@@ -30,20 +30,20 @@ describe('SelectionService', () => {
             await selectionService.add(params);
             expect(callableService.mock.calls[0]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
-                SelectionServices.ADD,
+                SelectionModes.ADD,
                 params
             ]);
 
             await selectionService.remove(params);
             expect(callableService.mock.calls[1]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
-                SelectionServices.REMOVE,
+                SelectionModes.REMOVE,
                 params
             ]);
             await selectionService.replace(params);
             expect(callableService.mock.calls[2]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
-                SelectionServices.REPLACE,
+                SelectionModes.REPLACE,
                 params
             ]);
         });

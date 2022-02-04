@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src/services';
-import { Notification, NodeServices, SelectionServices, EventTypes, TSelectionService } from 'src/types';
+import { Notification, NodeServices, SelectionMode, SelectionModes, EventTypes } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -21,13 +21,13 @@ export class SelectionService<T = any> {
      * The selection service to call is specified by the service type and needs to correspond directly to
      * a {@see SelectionServices}.
      *
-     * @param {SelectionServices} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    private callSelectionService(selectionService: TSelectionService, request) {
+    private callSelectionService(selectionMode: SelectionMode, request) {
         return this.knimeService.callService(
-            [NodeServices.CALL_NODE_SELECTION_SERVICE, selectionService, request]
+            [NodeServices.CALL_NODE_SELECTION_SERVICE, selectionMode, request]
         ).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
@@ -37,7 +37,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServices.ADD, keys);
+        return this.callSelectionService(SelectionModes.ADD, keys);
     }
 
     /**
@@ -46,7 +46,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServices.REMOVE, keys);
+        return this.callSelectionService(SelectionModes.REMOVE, keys);
     }
 
     /**
@@ -55,7 +55,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServices.REPLACE, keys);
+        return this.callSelectionService(SelectionModes.REPLACE, keys);
     }
 
     /**
