@@ -26,8 +26,8 @@ export class JsonDataService<T = any> {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     private callDataService(dataService: DataServiceTypes, request = '') {
-        // empty string check is required because it is correct server answer and cannot be JSON parsed
         return this.knimeService.callService([NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request])
+            // empty string check is required because it cannot be parsed but is a valid/expected response
             .then((response) => typeof response === 'string' && response !== '' ? JSON.parse(response) : response);
     }
 

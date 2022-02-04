@@ -86,14 +86,12 @@ describe('JsonDataService', () => {
             ]);
         });
 
-        it('accepts empty string as data request result', async () => {
+        it('accepts empty string response from data request', async () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
-            jest
-                .spyOn(knimeService, 'callService')
-                .mockImplementation(() => Promise.resolve(''));
-
-            expect(await jsonDataService.data()).toEqual('');
+            jest.spyOn(knimeService, 'callService').mockImplementation(() => Promise.resolve(''));
+            const response = await jsonDataService.data();
+            expect(response).toEqual('');
         });
     });
 
