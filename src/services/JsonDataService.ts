@@ -27,7 +27,8 @@ export class JsonDataService<T = any> {
      */
     private callDataService(dataServiceType: DataServiceType, request = '') {
         return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataServiceType, request])
-            .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+            // empty string check is required because it cannot be parsed but is a valid/expected response
+            .then((response) => typeof response === 'string' && response !== '' ? JSON.parse(response) : response);
     }
 
     /**

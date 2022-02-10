@@ -85,6 +85,14 @@ describe('JsonDataService', () => {
                 expect.stringContaining('nextPage')
             ]);
         });
+
+        it('accepts empty string response from data request', async () => {
+            const knimeService = new KnimeService(extensionConfig);
+            const jsonDataService = new JsonDataService(knimeService);
+            jest.spyOn(knimeService, 'callService').mockImplementation(() => Promise.resolve(''));
+            const response = await jsonDataService.data();
+            expect(response).toEqual('');
+        });
     });
 
     describe('service.applyData', () => {
