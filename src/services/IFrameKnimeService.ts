@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { ServiceParameters, ExtensionConfig, CallableService } from 'src/types';
+import { ServiceParameters } from 'src/types';
 import { generateRequestId } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -19,12 +19,8 @@ export class IFrameKnimeService extends KnimeService {
     private initializationPromise: Promise<void>;
     private initializationPromiseResolve: Function;
 
-    constructor(
-        extensionConfig: ExtensionConfig = null,
-        callableService: CallableService = null,
-        pushNotification: CallableService = null
-    ) {
-        super(extensionConfig, callableService, pushNotification);
+    constructor() {
+        super();
 
         // to allow awaiting the initialization via waitForInitialization()
         // TODO NXTEXT-135 remove the need for this
@@ -93,9 +89,7 @@ export class IFrameKnimeService extends KnimeService {
     }
 
     private onCallServiceResponse(data) {
-        const {
-            payload: { response, requestId }
-        } = data;
+        const { payload: { response, requestId } } = data;
         const request = this.pendingServiceCalls.get(requestId);
 
         if (!request) {

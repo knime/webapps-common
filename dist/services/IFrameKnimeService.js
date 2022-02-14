@@ -11,8 +11,8 @@ import { KnimeService } from './KnimeService.js';
  * Other services should be initialized with instance of the class.
  */
 class IFrameKnimeService extends KnimeService {
-    constructor(extensionConfig = null, callableService = null, pushNotification = null) {
-        super(extensionConfig, callableService, pushNotification);
+    constructor() {
+        super();
         this.pendingServiceCalls = new Map();
         // to allow awaiting the initialization via waitForInitialization()
         // TODO NXTEXT-135 remove the need for this

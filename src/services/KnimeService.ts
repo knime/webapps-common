@@ -1,9 +1,5 @@
-import { ExtensionConfig,
-    Notification,
-    EventTypes,
-    CallableService,
-    ServiceParameters,
-    CallServiceResponse } from 'src/types';
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse }
+    from 'src/types';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -31,11 +27,8 @@ export class KnimeService<T = any> {
      * @param {CallableService} callableService - the environment-specific "call service" API method.
      * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
      */
-    constructor(
-        extensionConfig: ExtensionConfig = null,
-        callableService: CallableService = null,
-        pushNotification: CallableService = null
-    ) {
+    constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
+        pushNotification: CallableService = null) {
         /**
          *
          */
@@ -72,14 +65,7 @@ export class KnimeService<T = any> {
 
         if (error) {
             this.pushError(error.message, error.code);
-
-            return Promise.reject(
-                new Error(
-                    `Error code: ${error.code || 'UNKNOWN'}. Message: ${
-                        error.message || 'not provided'
-                    }`
-                )
-            );
+            return Promise.resolve({ error });
         }
 
         return Promise.resolve(result);
@@ -214,11 +200,7 @@ export class KnimeService<T = any> {
      * @returns {void}
      */
     pushError(message: string, code = '') {
-        this.pushNotification({
-            message,
-            code,
-            type: 'ERROR'
-        });
+        this.pushNotification({ message, code, type: 'ERROR' });
     }
 
     /**

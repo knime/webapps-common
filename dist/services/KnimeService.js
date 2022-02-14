@@ -45,7 +45,7 @@ class KnimeService {
         const { error, result } = response || {};
         if (error) {
             this.pushError(error.message, error.code);
-            return Promise.reject(new Error(`Error code: ${error.code || 'UNKNOWN'}. Message: ${error.message || 'not provided'}`));
+            return Promise.resolve({ error });
         }
         return Promise.resolve(result);
     }
@@ -152,11 +152,7 @@ class KnimeService {
      * @returns {void}
      */
     pushError(message, code = '') {
-        this.pushNotification({
-            message,
-            code,
-            type: 'ERROR'
-        });
+        this.pushNotification({ message, code, type: 'ERROR' });
     }
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared

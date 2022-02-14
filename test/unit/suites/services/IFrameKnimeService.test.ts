@@ -133,11 +133,10 @@ describe('IFrameKnimeService', () => {
             expect(onCallServiceResponseSpy).toHaveBeenCalledWith({ ...data });
         });
 
-        it('returns error if request takes too long', async () => {
-            const callableMock = jest.fn().mockResolvedValue(null);
-            const pushNotificationMock = jest.fn();
-            const knimeService = new IFrameKnimeService(extensionConfig, callableMock, pushNotificationMock);
-            expect(await (knimeService as any).executeServiceCall({ id: 2 })).toEqual(
+        it('returns error if request takes too long', () => {
+            const knimeService = new IFrameKnimeService();
+            const requestPromise = (knimeService as any).executeServiceCall({ id: 2 });
+            expect(requestPromise).resolves.toBe(
                 '{"error":{"message":"Request with id 2 aborted due to timeout.","code":"req-timeout"},"result":null}'
             );
         });

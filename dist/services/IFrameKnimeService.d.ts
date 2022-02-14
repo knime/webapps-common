@@ -1,4 +1,4 @@
-import { ServiceParameters, ExtensionConfig, CallableService } from "../index-f7c46dc0";
+import { ServiceParameters } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -13,7 +13,7 @@ declare class IFrameKnimeService extends KnimeService {
     private boundOnMessageFromParent;
     private initializationPromise;
     private initializationPromiseResolve;
-    constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
+    constructor();
     /**
      * Needs to be awaited before the service is ready to be used.
      * @returns {void}
