@@ -49,16 +49,25 @@ describe('KnimeService', () => {
             expect(testResult).toBe(result);
         });
 
-        it('Rethrows backend errors with codes and messages if available', () => {
+        it('Rethrows backend errors with codes and messages if available', async () => {
             const error = {
                 code: '007',
                 message: 'Shaken, not stirred.'
             };
             const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ error }))));
-            const knimeService = new KnimeService(extensionConfig, callableMock);
-            expect(() => knimeService.callService(
-                [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
-            )).rejects.toThrowError('Error code: 007. Message: Shaken, not stirred.');
+            const pushNotificationMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
+            const pushErrorSpy = jest.spyOn(knimeService, 'pushError');
+
+            try {
+                await knimeService.callService(
+                    [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
+                );
+            } catch (e) {
+                expect(e.message).toEqual('Error code: 007. Message: Shaken, not stirred.');
+            }
+
+            expect(pushErrorSpy).toBeCalled();
         });
     });
 

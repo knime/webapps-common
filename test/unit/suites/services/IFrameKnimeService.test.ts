@@ -134,7 +134,10 @@ describe('IFrameKnimeService', () => {
         });
 
         it('returns error if request takes too long', async () => {
-            expect(await knimeService.executeServiceCall({ id: 2 })).toEqual(
+            const callableMock = jest.fn().mockResolvedValue(null);
+            const pushNotificationMock = jest.fn();
+            const knimeService = new IFrameKnimeService(extensionConfig, callableMock, pushNotificationMock);
+            expect(await (knimeService as any).executeServiceCall({ id: 2 })).toEqual(
                 '{"error":{"message":"Request with id 2 aborted due to timeout.","code":"req-timeout"},"result":null}'
             );
         });

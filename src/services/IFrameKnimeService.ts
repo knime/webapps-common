@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
-import { ServiceParameters } from 'src/types';
+import { ServiceParameters, ExtensionConfig, CallableService } from 'src/types';
 import { generateRequestId } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -19,8 +19,12 @@ export class IFrameKnimeService extends KnimeService {
     private initializationPromise: Promise<void>;
     private initializationPromiseResolve: Function;
 
-    constructor() {
-        super();
+    constructor(
+        extensionConfig: ExtensionConfig = null,
+        callableService: CallableService = null,
+        pushNotification: CallableService = null
+    ) {
+        super(extensionConfig, callableService, pushNotification);
 
         // to allow awaiting the initialization via waitForInitialization()
         // TODO NXTEXT-135 remove the need for this
@@ -89,13 +93,15 @@ export class IFrameKnimeService extends KnimeService {
     }
 
     private onCallServiceResponse(data) {
-        const { payload: { response, requestId } } = data;
+        const {
+            payload: { response, requestId }
+        } = data;
         const request = this.pendingServiceCalls.get(requestId);
 
         if (!request) {
-            throw new Error(
-                `Received callService response for non-existing pending request with id ${requestId}`
-            );
+            const message = `Received callService response for non-existing pending request with id ${requestId}`;
+            this.pushError(message, 'req-not-found');
+            throw new Error(message);
         }
 
         request.resolve(JSON.parse(response));
@@ -115,13 +121,20 @@ export class IFrameKnimeService extends KnimeService {
         const promise = new Promise<string>((resolve, reject) => {
             this.pendingServiceCalls.set(requestId, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
-                resolve(JSON.stringify({
-                    error: {
-                        message: `Request with id ${requestId} aborted due to timeout.`,
-                        code: 'req-timeout'
-                    },
-                    result: null
-                }));
+                const message = `Request with id ${requestId} aborted due to timeout.`;
+                const code = 'req-timeout';
+
+                this.pushError(message, 'req-not-found');
+
+                resolve(
+                    JSON.stringify({
+                        error: {
+                            message,
+                            code
+                        },
+                        result: null
+                    })
+                );
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
 

@@ -164,6 +164,19 @@ declare class KnimeService<T = any> {
      */
     pushNotification(notification: Notification): Promise<any>;
     /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    pushError(message: string, code?: string): void;
+    /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
      * etc.).
