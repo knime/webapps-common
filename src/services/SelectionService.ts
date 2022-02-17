@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src/services';
-import { Notification, NodeServiceMethods, SelectionServiceTypes, EventTypes } from 'src/types';
+import { Notification, NodeServices, SelectionMode, SelectionModes, EventTypes } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -17,16 +17,17 @@ export class SelectionService<T = any> {
     }
 
     /**
-     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
-     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
+     * The selection service to call is specified by the service type and needs to correspond directly to
+     * a {@see SelectionServices}.
      *
-     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    private callSelectionService(selectionService: SelectionServiceTypes, request) {
+    private callSelectionService(selectionMode: SelectionMode, request) {
         return this.knimeService.callService(
-            [NodeServiceMethods.CALL_NODE_SELECTION_SERVICE, selectionService, request]
+            [NodeServices.CALL_NODE_SELECTION_SERVICE, selectionMode, request]
         ).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
@@ -36,7 +37,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} based on backend implementation.
      */
     add(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceTypes.ADD, keys);
+        return this.callSelectionService(SelectionModes.ADD, keys);
     }
 
     /**
@@ -45,7 +46,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     remove(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceTypes.REMOVE, keys);
+        return this.callSelectionService(SelectionModes.REMOVE, keys);
     }
 
     /**
@@ -54,7 +55,7 @@ export class SelectionService<T = any> {
      * @returns {Promise<Object>} - based on backend implementation.
      */
     replace(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionServiceTypes.REPLACE, keys);
+        return this.callSelectionService(SelectionModes.REPLACE, keys);
     }
 
     /**

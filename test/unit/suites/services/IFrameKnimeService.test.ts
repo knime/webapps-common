@@ -1,5 +1,5 @@
 import { IFrameKnimeService, JsonDataService } from 'src/services';
-import { NodeServiceMethods, DataServiceTypes, SelectionServiceTypes } from 'src/types';
+import { NodeServices, DataServiceTypes, SelectionModes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 import { KnimeUtils } from 'src';
 
@@ -88,12 +88,12 @@ describe('IFrameKnimeService', () => {
         it('Calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
             const notification = {
                 jsonrpc: '2.0.',
-                method: NodeServiceMethods.CALL_NODE_SELECTION_SERVICE,
+                method: NodeServices.CALL_NODE_SELECTION_SERVICE,
                 params: [{
                     projectId: '001',
                     workflowId: '001',
                     nodeId: '0',
-                    mode: SelectionServiceTypes.ADD,
+                    mode: SelectionModes.ADD,
                     keys: ['Row1', 'Row2']
                 }]
             };
@@ -121,7 +121,7 @@ describe('IFrameKnimeService', () => {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`
             };
             knimeService.executeServiceCall([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
                 '{"jsonrpc":"2.0","method":"getData","params":[],"id":1}'
             ]);
@@ -133,8 +133,10 @@ describe('IFrameKnimeService', () => {
             expect(onCallServiceResponseSpy).toHaveBeenCalledWith({ ...data });
         });
 
-        it('returns error if request takes too long', async () => {
-            expect(await knimeService.executeServiceCall({ id: 2 })).toEqual(
+        it('returns error if request takes too long', () => {
+            const knimeService = new IFrameKnimeService();
+            const requestPromise = (knimeService as any).executeServiceCall({ id: 2 });
+            expect(requestPromise).resolves.toBe(
                 '{"error":{"message":"Request with id 2 aborted due to timeout.","code":"req-timeout"},"result":null}'
             );
         });
@@ -159,7 +161,7 @@ describe('IFrameKnimeService', () => {
                 payload: {
                     requestId: expect.any(Number),
                     serviceParams: [
-                        NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                        NodeServices.CALL_NODE_DATA_SERVICE,
                         DataServiceTypes.DATA,
                         expect.stringContaining('getData')
                     ]

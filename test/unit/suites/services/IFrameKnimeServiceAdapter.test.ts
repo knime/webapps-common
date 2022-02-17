@@ -1,6 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
 import { IFrameKnimeServiceAdapter } from 'src/services';
-import { NodeServiceMethods } from 'src/types';
+import { NodeServices } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 /* eslint-disable-next-line no-magic-numbers */
@@ -98,7 +98,7 @@ describe('IFrameKnimeServiceAdapter', () => {
 
         it('Calls service when receiving :callService type events', async () => {
             const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
-            const serviceParams = [NodeServiceMethods.CALL_NODE_DATA_SERVICE, 'getData', null];
+            const serviceParams = [NodeServices.CALL_NODE_DATA_SERVICE, 'getData', null];
             const requestId = 1;
             const payload = { serviceParams, requestId };
             window.postMessage(

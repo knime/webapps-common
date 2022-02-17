@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-692f6f4e";
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-f7c46dc0";
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -163,6 +163,19 @@ declare class KnimeService<T = any> {
      * @returns {any} - the result of the callable function.
      */
     pushNotification(notification: Notification): Promise<any>;
+    /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    pushError(message: string, code?: string): void;
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,

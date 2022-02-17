@@ -1,5 +1,6 @@
-import { NodeServiceMethods } from '../types/ServiceMethods.js';
-import { DataServiceTypes } from '../types/ServiceTypes.js';
+import { NodeServices } from '../types/NodeServices.js';
+import { DataServiceTypes } from '../types/DataServiceTypes.js';
+import '../types/SelectionModes.js';
 import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
@@ -10,22 +11,22 @@ import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
  */
 class JsonDataService {
     /**
-     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate with the framework.
+     * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+     *      with the framework.
      */
     constructor(knimeService) {
         this.knimeService = knimeService;
     }
     /**
-     * Calls a node's {@see DataService} with optional request body. The service to call is specified by the
-     * service type and needs to correspond directly to a {@see DataService} implemented by the node. For
-     * known service types, {@see DataServiceTypes}.
+     * Calls the node data service with optional request body. The service to call is specified by the service type
+     * and needs to correspond directly to a {@see DataServiceType} supported by the node.
      *
-     * @param {DataServiceTypes} dataService - the target service.
+     * @param {DataServiceType} dataServiceType - the data service type.
      * @param {string} [request] - an optional request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    callDataService(dataService, request = '') {
-        return this.knimeService.callService([NodeServiceMethods.CALL_NODE_DATA_SERVICE, dataService, request])
+    callDataService(dataServiceType, request = '') {
+        return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataServiceType, request])
             // empty string check is required because it cannot be parsed but is a valid/expected response
             .then((response) => typeof response === 'string' && response !== '' ? JSON.parse(response) : response);
     }
@@ -45,7 +46,7 @@ class JsonDataService {
         return this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
     /**
-     * Retrieve data from the node using the {@see DataServiceTypes.DATA} api. Different method names can be registered
+     * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
      * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
      * optional parameter will be provided directly to the data service target and can be used to specify the nature of
      * the data returned.

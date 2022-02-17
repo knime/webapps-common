@@ -1,4 +1,4 @@
-import { ServiceParameters } from "../index-692f6f4e";
+import { ServiceParameters } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension

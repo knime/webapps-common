@@ -1,5 +1,3 @@
-import { callServiceResponseHandler } from '../utils/callServiceResponseHandler.js';
-
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -36,14 +34,20 @@ class KnimeService {
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(serviceParams) {
+    async callService(serviceParams) {
         if (!this.extensionConfig) {
             return Promise.reject(new Error('Cannot call service without extension config'));
         }
         if (!this.callableService) {
             return Promise.reject(new Error('Callable service is not available'));
         }
-        return this.executeServiceCall(serviceParams).then(callServiceResponseHandler);
+        const response = await this.executeServiceCall(serviceParams);
+        const { error, result } = response || {};
+        if (error) {
+            this.pushError(error.message, error.code);
+            return Promise.resolve({ error });
+        }
+        return Promise.resolve(result);
     }
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
@@ -85,7 +89,7 @@ class KnimeService {
      */
     onServiceNotification(notification) {
         const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
-        callbacks.forEach(callback => {
+        callbacks.forEach((callback) => {
             callback(notification);
         });
     }
@@ -140,6 +144,15 @@ class KnimeService {
             return Promise.reject(new Error('Push notification is not available'));
         }
         return this.callablePushNotification(Object.assign({ callerId: this.serviceId }, notification));
+    }
+    /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    pushError(message, code = '') {
+        this.pushNotification({ message, code, type: 'ERROR' });
     }
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared

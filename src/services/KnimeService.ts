@@ -1,5 +1,5 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from 'src/types';
-import { callServiceResponseHandler } from 'src/utils/callServiceResponseHandler';
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse }
+    from 'src/types';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -50,7 +50,7 @@ export class KnimeService<T = any> {
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    callService(serviceParams: ServiceParameters) {
+    async callService(serviceParams: ServiceParameters) {
         if (!this.extensionConfig) {
             return Promise.reject(new Error('Cannot call service without extension config'));
         }
@@ -59,7 +59,16 @@ export class KnimeService<T = any> {
             return Promise.reject(new Error('Callable service is not available'));
         }
 
-        return this.executeServiceCall(serviceParams).then(callServiceResponseHandler);
+        const response: CallServiceResponse = await this.executeServiceCall(serviceParams);
+
+        const { error, result } = response || {};
+
+        if (error) {
+            this.pushError(error.message, error.code);
+            return Promise.resolve({ error });
+        }
+
+        return Promise.resolve(result);
     }
 
     /**
@@ -69,7 +78,7 @@ export class KnimeService<T = any> {
      * @param {ServiceParameters} serviceParams - parameters for the service call.
      * @returns {Promise} - rejected or resolved depending on response success.
      */
-    protected executeServiceCall(serviceParams: ServiceParameters) : Promise<any> {
+    protected executeServiceCall(serviceParams: ServiceParameters): Promise<any> {
         return this.callableService(...serviceParams);
     }
 
@@ -106,7 +115,7 @@ export class KnimeService<T = any> {
     onServiceNotification(notification: Notification) {
         const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
 
-        callbacks.forEach(callback => {
+        callbacks.forEach((callback) => {
             callback(notification);
         });
     }
@@ -182,6 +191,16 @@ export class KnimeService<T = any> {
             callerId: this.serviceId,
             ...notification
         });
+    }
+
+    /**
+     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
+     * @param {string} message - error message.
+     * @param {string} code - error code.
+     * @returns {void}
+     */
+    pushError(message: string, code = '') {
+        this.pushNotification({ message, code, type: 'ERROR' });
     }
 
     /**

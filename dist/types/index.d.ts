@@ -1,5 +1,4 @@
-import { NodeService, ServiceRequest } from '.';
-
+import { NodeService, ServiceRequest } from "../index-f7c46dc0";
 /**
  * The parameters expected by the API layer for any callService call. The required members are:
  *
@@ -7,4 +6,5 @@ import { NodeService, ServiceRequest } from '.';
  *  - @member {ServiceRequest} - the request to make to the specified node service.
  *  - @member {any} [parameters] - optional parameters to pass to the call.
  */
-export type ServiceParameters = [NodeService, ServiceRequest, any];
+type ServiceParameters = [NodeService, ServiceRequest, any];
+export { ServiceParameters };

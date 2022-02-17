@@ -1,9 +1,9 @@
-import { ServiceMethod } from "../index-692f6f4e";
+import { NodeService } from "../index-f7c46dc0";
 type JsonRpcRequest = {
     jsonrpc: string;
     method: any;
     params: string | string[];
     id: number;
 };
-declare const createJsonRpcRequest: (method: ServiceMethod | string, params?: any[]) => JsonRpcRequest;
+declare const createJsonRpcRequest: (method: NodeService | string, params?: any[]) => JsonRpcRequest;
 export { createJsonRpcRequest };

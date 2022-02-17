@@ -1,20 +1,7 @@
 /**
- * Selection service types for the `NodeService.selectDataPoints` method.
+ * Data service service-types available by default to UI Extension nodes.
  *
  * @enum {string}
- */
-var SelectionServiceTypes;
-(function (SelectionServiceTypes) {
-    SelectionServiceTypes["ADD"] = "ADD";
-    SelectionServiceTypes["REMOVE"] = "REMOVE";
-    SelectionServiceTypes["REPLACE"] = "REPLACE";
-})(SelectionServiceTypes || (SelectionServiceTypes = {}));
-/**
- * Service types for DataServices implemented by a specific UI Extension node.
- *
- * @enum {string}
- *
- * TODO: NXT-761 convert to interfaces which are then members of the <Type>DataService implementations.
  */
 var DataServiceTypes;
 (function (DataServiceTypes) {
@@ -26,4 +13,4 @@ var DataServiceTypes;
     DataServiceTypes["APPLY_DATA"] = "apply_data";
 })(DataServiceTypes || (DataServiceTypes = {}));
 
-export { DataServiceTypes, SelectionServiceTypes };
+export { DataServiceTypes };

@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index-a3360790";
-import { Notification } from "../index-692f6f4e";
+import { Notification } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.
@@ -15,18 +15,20 @@ declare class SelectionService<T = any> {
      */
     constructor(knimeService: IFrameKnimeService | KnimeService<T>);
     /**
-     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
-     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
+     * The selection service to call is specified by the service type and needs to correspond directly to
+     * a {@see SelectionServices}.
      *
-     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     /**
-     * Calls the NodeService `selectDataPoints` method with request body. The selection service to call is
-     * specified by the service type and needs to correspond directly to a {@see SelectionServiceTypes}.
+     * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
+     * The selection service to call is specified by the service type and needs to correspond directly to
+     * a {@see SelectionServices}.
      *
-     * @param {SelectionServiceTypes} selectionService - the target selection service.
+     * @param {SelectionMode} selectionMode - the selection mode.
      * @param {string} request - the request payload.
      * @returns {Promise} rejected or resolved depending on backend response.
      */

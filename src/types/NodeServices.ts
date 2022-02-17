@@ -2,7 +2,7 @@
  * Collection of RPC method signatures registered as node services with the framework. Each signature
  * targets specific workflow-level node service functionality for UI Extensions.
  */
-export enum NodeServiceMethods {
+export enum NodeServices {
     // Data service method signature.
     CALL_NODE_DATA_SERVICE = 'NodeService.callNodeDataService',
     // Selection service method signature.
@@ -14,4 +14,4 @@ export enum NodeServiceMethods {
  * is in the format `<service>.<method name>` where the `<service>` (i.e. NodeService) is provided by the framework
  * and implements the `<method name>` (i.e. `callNodeDataService`) to call.
  */
-export type ServiceMethod = NodeServiceMethods | any;
+export type NodeService = NodeServices | any;

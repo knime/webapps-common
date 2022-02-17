@@ -93,9 +93,9 @@ export class IFrameKnimeService extends KnimeService {
         const request = this.pendingServiceCalls.get(requestId);
 
         if (!request) {
-            throw new Error(
-                `Received callService response for non-existing pending request with id ${requestId}`
-            );
+            const message = `Received callService response for non-existing pending request with id ${requestId}`;
+            this.pushError(message, 'req-not-found');
+            throw new Error(message);
         }
 
         request.resolve(JSON.parse(response));
@@ -115,13 +115,20 @@ export class IFrameKnimeService extends KnimeService {
         const promise = new Promise<string>((resolve, reject) => {
             this.pendingServiceCalls.set(requestId, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
-                resolve(JSON.stringify({
-                    error: {
-                        message: `Request with id ${requestId} aborted due to timeout.`,
-                        code: 'req-timeout'
-                    },
-                    result: null
-                }));
+                const message = `Request with id ${requestId} aborted due to timeout.`;
+                const code = 'req-timeout';
+
+                this.pushError(message, 'req-not-found');
+
+                resolve(
+                    JSON.stringify({
+                        error: {
+                            message,
+                            code
+                        },
+                        result: null
+                    })
+                );
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
 

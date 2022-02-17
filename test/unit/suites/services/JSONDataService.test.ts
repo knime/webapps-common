@@ -1,6 +1,6 @@
 import { JsonDataService } from 'src/services/JsonDataService';
 import { extensionConfig } from 'test/mocks';
-import { DataServiceTypes, NodeServiceMethods, EventTypes } from 'src/types';
+import { NodeServices, DataServiceTypes, EventTypes } from 'src/types';
 import { KnimeService } from 'src/services/KnimeService';
 
 describe('JsonDataService', () => {
@@ -37,7 +37,7 @@ describe('JsonDataService', () => {
                 settings: extensionConfig.initialData.settings
             });
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA,
                 ''
             ]);
@@ -51,7 +51,7 @@ describe('JsonDataService', () => {
             const serviceSpy = getMockCallService(knimeService);
             jsonDataService.data();
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
                 expect.stringContaining('getData')
             ]);
@@ -67,7 +67,7 @@ describe('JsonDataService', () => {
             const serviceSpy = getMockCallService(knimeService);
             jsonDataService.data({ options });
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
                 expect.stringContaining(JSON.stringify(options))
             ]);
@@ -80,7 +80,7 @@ describe('JsonDataService', () => {
             jsonDataService.data({ method: 'nextPage' });
 
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.DATA,
                 expect.stringContaining('nextPage')
             ]);
@@ -117,7 +117,7 @@ describe('JsonDataService', () => {
             const serviceSpy = getMockCallService(knimeService);
             await jsonDataService.applyData();
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
                 null
             ]);
@@ -128,7 +128,7 @@ describe('JsonDataService', () => {
             await jsonDataService.applyData();
             expect(dataGetter).not.toHaveBeenCalled();
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
                 null
             ]);
@@ -140,7 +140,7 @@ describe('JsonDataService', () => {
             await jsonDataService.applyData();
             expect(dataGetter).toHaveBeenCalled();
             expect(serviceSpy.mock.calls[0][0]).toStrictEqual([
-                NodeServiceMethods.CALL_NODE_DATA_SERVICE,
+                NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.APPLY_DATA,
                 '{}'
             ]);
