@@ -31,5 +31,8 @@
     "vue-svg-loader": "0.16.0",
     "webapps-common": "file:.."
   },
-  "private": true
+  "private": true,
+  "volta": {
+    "node": "14.19.0"
+  }
 }

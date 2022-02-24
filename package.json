@@ -65,5 +65,8 @@
     "fontsource-roboto-mono": "3.x",
     "v-calendar": "2.0.1"
   },
-  "private": true
+  "private": true,
+  "volta": {
+    "node": "14.19.0"
+  }
 }
