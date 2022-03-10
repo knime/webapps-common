@@ -7,8 +7,8 @@ Example usage in Nuxt nuxt.config.js:
         build: {
             extend(config) {
                 // remove Nuxt's default svg loader
-                const svgRule = config.module.rules.find(rule => String(rule.test).includes('svg'));
-                svgRule.test = new RegExp(String(svgRule.test).replace('svg|', '').replace('|svg'));
+                const svgRule = config.module.rules.find(rule => rule.test.source.includes('svg'));
+                svgRule.test = new RegExp(svgRule.test.source.replace('svg|', '').replace('|svg'), svgRule.flags);
 
                 // add our svg loader
                 config.module.rules.push(svgConfig);
