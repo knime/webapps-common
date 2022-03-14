@@ -1,0 +1,116 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.knime.maven</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.1.0</version>
+	</parent>
+
+	<groupId>org.knime</groupId>
+	<artifactId>webapps-commons</artifactId>
+	<version>${revision}${changelist}</version>
+	<name>KNIME Webapps Commons</name>
+
+	<properties>
+		<revision>4.6.0</revision>
+		<changelist>-SNAPSHOT</changelist>
+		<feature-branch-extension.branchListProperty>git.branch</feature-branch-extension.branchListProperty>
+		<feature-branch-extension.appendArtifactoryProperties>false</feature-branch-extension.appendArtifactoryProperties>
+
+		<node.version>v14.10.0</node.version>
+		<npm.version>6.14.8</npm.version>
+
+		<sonar.sources>.</sonar.sources>
+		<sonar.tests>test</sonar.tests>
+		<sonar.nodejs.executable>${project.build.directory}/node/node</sonar.nodejs.executable>
+		<sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+		<sonar.css.stylelint.reportPaths>target/stylelint.json</sonar.css.stylelint.reportPaths>
+		<sonar.eslint.reportPaths>target/eslint.json</sonar.eslint.reportPaths>
+		<sonar.exclusions>test/**,node_modules/**/*,dist/**/*,.nuxt/**/*,.nyc_output/**/*,coverage/**/*,*.log,config/**/*,**/config.js,**/*.config.js</sonar.exclusions>
+		<dependency-check.skip>true</dependency-check.skip>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+					<installDirectory>${project.build.directory}</installDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+							<npmVersion>${npm.version}</npmVersion>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm ci</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>ci</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm run coverage</id>
+						<phase>test</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run coverage -- --ci</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm run audit</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run audit</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm run lint</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run ci-lint</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>coverage</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
