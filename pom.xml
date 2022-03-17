@@ -94,7 +94,7 @@
 							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<arguments>run ci-lint</arguments>
+							<arguments>run lint:ci</arguments>
 						</configuration>
 					</execution>
 				</executions>
