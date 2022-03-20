@@ -56,7 +56,8 @@ class IFrameKnimeService extends KnimeService {
                 this.onCallServiceResponse(data);
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
-                this.onServiceNotification(data.payload.data);
+                // TODO: remove when UIEXT-136 implemented
+                this.onServiceNotification(data.payload.data || data.payload);
                 break;
         }
     }
