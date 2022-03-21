@@ -1,6 +1,6 @@
-@import "fontsource-roboto-mono/400-normal";
-@import "fontsource-roboto-mono/500-normal";
-@import "fontsource-roboto-mono/700-normal";
+@import "@fontsource/roboto-mono/400";
+@import "@fontsource/roboto-mono/500";
+@import "@fontsource/roboto-mono/700";
 
 code[class*="language-"],
 pre[class*="language-"] {
