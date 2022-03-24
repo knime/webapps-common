@@ -79,8 +79,18 @@
   --theme-button-function-foreground-color-focus: var(--knime-masala);
   --theme-button-function-foreground-color-active: var(--knime-white);
 
+  /* Number Input */
+  --theme-input-number-border-color: var(--knime-stone-gray);
+  --theme-input-number-background-color: var(--knime-white);
+  --theme-input-number-background-color-focus: var(--knime-masala);
+  --theme-input-number-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-input-number-background-color-buttons: var(--knime-masala);
+
+  /* Input Field */
+  --theme-input-field-background-color: var(--knime-white);
+
   /* Dropdown (global) */
-  --theme-dropdown-background-color: transparent;
+  --theme-dropdown-background-color: var(--knime-white);
   --theme-dropdown-background-color-focus: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-hover: var(--knime-silver-sand-semi);
   --theme-dropdown-background-color-selected: var(--knime-masala);
@@ -108,7 +118,7 @@
   --theme-checkbox-border-color-selected: var(--knime-masala);
   --theme-checkbox-border-color-selected-focus: var(--knime-masala);
   --theme-checkbox-border-color-selected-hover: var(--knime-stone-gray);
-  --theme-checkbox-background-color: transparent;
+  --theme-checkbox-background-color: var(--knime-white);
   --theme-checkbox-background-color-focus: var(--knime-white);
   --theme-checkbox-background-color-hover: var(--knime-silver-sand-semi);
   --theme-checkbox-background-color-selected: var(--knime-masala);
@@ -132,7 +142,7 @@
   --theme-radio-border-color-selected: var(--knime-masala);
   --theme-radio-border-color-selected-hover: var(--knime-stone-gray);
   --theme-radio-border-color-focus: var(--knime-masala);
-  --theme-radio-background-color: transparent;
+  --theme-radio-background-color: var(--knime-white);
   --theme-radio-background-color-hover: var(--knime-silver-sand-semi);
   --theme-radio-background-color-selected: var(--knime-masala);
   --theme-radio-background-color-selected-hover: var(--knime-silver-sand-semi);

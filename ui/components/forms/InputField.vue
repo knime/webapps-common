@@ -126,7 +126,7 @@ input {
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
   outline: none;
-  background-color: transparent;
+  background-color: var(--theme-input-field-background-color);
 
   &::placeholder {
     color: var(--knime-dove-gray);

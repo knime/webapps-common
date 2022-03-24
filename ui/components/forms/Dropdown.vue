@@ -306,6 +306,10 @@ export default {
     }
   }
 
+  &.collapsed {
+    background: var(--theme-dropdown-background-color);
+  }
+
   &:not(.collapsed) [role=button] {
     border-color: var(--knime-masala);
   }

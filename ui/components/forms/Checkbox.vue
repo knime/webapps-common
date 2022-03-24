@@ -88,6 +88,7 @@ export default {
 
     & + span::before { /* □ */
       border: 1px solid var(--theme-checkbox-border-color);
+      background: var(--theme-checkbox-background-color);
       display: inline-block;
       content: '';
       width: 14px;

@@ -265,10 +265,10 @@ export default {
   position: relative;
   isolation: isolate;
   width: 100%;
-  border: 1px solid var(--knime-stone-gray);
+  border: 1px solid var(--theme-input-number-border-color);
 
   &:focus-within {
-    border-color: var(--knime-masala);
+    border-color: var(--theme-input-number-background-color-focus);
   }
 
   & input[type='number'] {
@@ -283,7 +283,7 @@ export default {
     border-radius: 0;
     width: calc(100% - 32px);
     outline: none;
-    background-color: transparent;
+    background-color: var(--theme-input-number-background-color);
 
     /* remove browser spinners FF */
     -moz-appearance: textfield;
@@ -301,7 +301,7 @@ export default {
     }
 
     &.hover:not(:focus) { /* not native :hover because of WEBP-297 */
-      background-color: var(--knime-silver-sand-semi);
+      background-color: var(--theme-input-number-background-color-hover);
     }
   }
 
@@ -332,9 +332,10 @@ export default {
     padding-left: 10px;
     padding-right: 9px;
     cursor: pointer;
+    background-color: var(--theme-input-number-background-color);
 
     &:hover {
-      background-color: var(--knime-silver-sand-semi);
+      background-color: var(--theme-input-number-background-color-hover);
     }
 
     & svg {
@@ -347,7 +348,7 @@ export default {
   & .increase:active,
   & .decrease:active {
     color: var(--knime-white);
-    background-color: var(--knime-masala);
+    background-color: var(--theme-input-number-background-color-buttons);
 
     & svg {
       stroke: var(--knime-white);
