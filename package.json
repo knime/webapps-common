@@ -47,6 +47,8 @@
     "vue-template-compiler": "2.6.11"
   },
   "peerDependencies": {
+    "@fontsource/roboto": "4.x",
+    "@fontsource/roboto-mono": "4.x",
     "@popperjs/core": "2.5.4",
     "babel-eslint": "10.x",
     "consola": "*",
@@ -61,8 +63,6 @@
     "vue-clickaway2": "2.3.2",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
-    "fontsource-roboto": "3.x",
-    "fontsource-roboto-mono": "3.x",
     "v-calendar": "2.0.1"
   },
   "private": true,

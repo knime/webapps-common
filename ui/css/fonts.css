@@ -1,9 +1,9 @@
-/** Import only the font weights and styles from fontsource-roboto that are required. No italics. */
-@import "fontsource-roboto/300-normal";
-@import "fontsource-roboto/400-normal";
-@import "fontsource-roboto/500-normal";
-@import "fontsource-roboto/700-normal";
-@import "fontsource-roboto-mono/300-normal";
+/** Import only the font weights and styles from @fontsource/roboto that are required. No italics. */
+@import "@fontsource/roboto/300";
+@import "@fontsource/roboto/400";
+@import "@fontsource/roboto/500";
+@import "@fontsource/roboto/700";
+@import "@fontsource/roboto-mono/300";
 
 /**
   Some characters (e.g. ∞) are not included in any of the font variants, but only in the -all- font files.
@@ -18,7 +18,7 @@
   font-weight: 300;
   src:
     local('Roboto Light'), local('Roboto-Light'),
-    url('../../../node_modules/fontsource-roboto/files/roboto-all-300-normal.woff') format('woff');
+    url('../../../node_modules/@fontsource/roboto/files/roboto-all-300-normal.woff') format('woff');
   unicode-range: u+221e;
 }
 
@@ -29,7 +29,7 @@
   font-weight: 400;
   src:
     local('Roboto'), local('Roboto-Regular'),
-    url('../../../node_modules/fontsource-roboto/files/roboto-all-400-normal.woff') format('woff');
+    url('../../../node_modules/@fontsource/roboto/files/roboto-all-400-normal.woff') format('woff');
   unicode-range: u+221e;
 }
 
@@ -40,7 +40,7 @@
   font-weight: 500;
   src:
     local('Roboto Medium'), local('Roboto-Medium'),
-    url('../../../node_modules/fontsource-roboto/files/roboto-all-500-normal.woff') format('woff');
+    url('../../../node_modules/@fontsource/roboto/files/roboto-all-500-normal.woff') format('woff');
   unicode-range: u+221e;
 }
 
@@ -51,7 +51,7 @@
   font-weight: 700;
   src:
     local('Roboto Bold'), local('Roboto-Bold'),
-    url('../../../node_modules/fontsource-roboto/files/roboto-all-700-normal.woff') format('woff');
+    url('../../../node_modules/@fontsource/roboto/files/roboto-all-700-normal.woff') format('woff');
   unicode-range: u+221e;
 }
 
