@@ -93,7 +93,7 @@ export default {
       transition: all 0.3s ease;
       transform-origin: 20% center;
       width: 27px;
-      background: var(--knime-white);
+      background: var(--theme-toggle-switch-background-color);
       border: 1px solid var(--knime-dove-gray);
       height: 10px;
       left: 0;
@@ -108,13 +108,13 @@ export default {
       height: 14px;
       left: 0;
       border-radius: 9999px;
-      background-color: var(--knime-white);
+      background-color: var(--theme-toggle-switch-background-color);
       border: 1px solid var(--knime-dove-gray);
     }
 
     &:checked {
       & + span::before {
-        background-color: var(--knime-masala);
+        background-color: var(--theme-toggle-switch-background-color-checked);
         border-color: var(--knime-masala);
       }
 
@@ -127,20 +127,20 @@ export default {
 
     &:hover {
       & + span::after {
-        background-color: var(--knime-gray-ultra-light);
+        background-color: var(--theme-toggle-switch-background-color-hover);
       }
     }
 
     &:focus {
       & + span::after {
-        background-color: var(--knime-dove-gray);
+        background-color: var(--theme-toggle-switch-background-color-focus);
       }
     }
 
     &:active {
       & + span::after {
         width: 17px;
-        background-color: white;
+        background-color: var(--theme-toggle-switch-background-color-active);
       }
     }
   }

@@ -265,10 +265,10 @@ export default {
   position: relative;
   isolation: isolate;
   width: 100%;
-  border: 1px solid var(--theme-input-number-border-color);
+  border: 1px solid var(--knime-stone-gray);
 
   &:focus-within {
-    border-color: var(--theme-input-number-background-color-focus);
+    border-color: var(--knime-masala);
   }
 
   & input[type='number'] {
@@ -348,7 +348,7 @@ export default {
   & .increase:active,
   & .decrease:active {
     color: var(--knime-white);
-    background-color: var(--theme-input-number-background-color-buttons);
+    background-color: var(--theme-input-number-background-color-active);
 
     & svg {
       stroke: var(--knime-white);

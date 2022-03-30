@@ -142,7 +142,7 @@ input {
   }
 
   &:hover:not(:focus):not(:disabled) {
-    background-color: var(--knime-silver-sand-semi);
+    background-color: var(--theme-input-field-background-color-focus);
   }
 
   &.with-icon {

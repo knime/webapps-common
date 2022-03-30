@@ -31,6 +31,10 @@
   --theme-text-bold-font-family: 'Roboto', sans-serif;
   --theme-text-bold-color: var(--knime-masala);
 
+  /* Text Area */
+  --theme-text-area-background-color: var(--knime-white);
+  --theme-text-area-background-color-hover: var(--knime-silver-sand-semi);
+
   /* Default Button */
   --theme-button-background-color: var(--knime-yellow);
   --theme-button-background-color-hover: var(--knime-masala);
@@ -80,14 +84,14 @@
   --theme-button-function-foreground-color-active: var(--knime-white);
 
   /* Number Input */
-  --theme-input-number-border-color: var(--knime-stone-gray);
   --theme-input-number-background-color: var(--knime-white);
   --theme-input-number-background-color-focus: var(--knime-masala);
   --theme-input-number-background-color-hover: var(--knime-silver-sand-semi);
-  --theme-input-number-background-color-buttons: var(--knime-masala);
+  --theme-input-number-background-color-active: var(--knime-masala);
 
   /* Input Field */
   --theme-input-field-background-color: var(--knime-white);
+  --theme-input-field-background-color-focus: var(--knime-silver-sand-semi);
 
   /* Dropdown (global) */
   --theme-dropdown-background-color: var(--knime-white);
@@ -98,6 +102,16 @@
   --theme-dropdown-foreground-color-focus: var(--knime-masala);
   --theme-dropdown-foreground-color-hover: var(--knime-masala);
   --theme-dropdown-foreground-color-selected: var(--knime-white);
+
+  /* Listbox */
+  --theme-listbox-background-color: var(--knime-white);
+
+  /* Multiselect */
+  --theme-multiselect-background-color: var(--knime-white);
+  --theme-multiselect-background-color-hover: var(--knime-silver-sand-semi);
+
+  /* Multiselect Listbox */
+  --theme-multiselect-listbox-background-color: var(--knime-white);
 
   /* Text links */
   --theme-text-link-background-color: transparent;
@@ -128,10 +142,18 @@
   --theme-checkbox-foreground-color-selected-focus: var(--knime-masala);
   --theme-checkbox-foreground-color-selected-hover: var(--knime-masala);
 
+  /* Toggle Switch */
+  --theme-toggle-switch-background-color: var(--knime-white);
+  --theme-toggle-switch-background-color-focus: var(--knime-dove-gray);
+  --theme-toggle-switch-background-color-hover: var(--knime-gray-ultra-light);
+  --theme-toggle-switch-background-color-checked: var(--knime-masala);
+  --theme-toggle-switch-background-color-active: var(--knime-white);
+
   /* Selection List */
-  --theme-select-control-background-color: transparent;
+  --theme-select-control-background-color: var(--knime-white);
   --theme-select-control-background-color-hover: var(--knime-silver-sand-semi);
   --theme-select-control-background-color-focus: var(--knime-masala);
+  --theme-select-control-background-color-disabled: transparent;
   --theme-select-control-foreground-color: var(--knime-dove-gray);
   --theme-select-control-foreground-color-hover: var(--knime-masala);
   --theme-select-control-foreground-color-focus: var(--knime-white);
@@ -165,6 +187,7 @@
   --theme-date-input-day-content-background: rgba(192, 196, 198, 0.5);
   --theme-date-input-border-color: var(--knime-stone-gray);
   --theme-date-input-border-focus-color: var(--knime-masala);
+  --theme-date-input-input-background: var(--knime-white);
   --theme-date-input-input-hover-background: var(--knime-silver-sand-semi);
   --theme-date-input-button-active-color: var(--knime-masala);
 
@@ -190,4 +213,8 @@
   --theme-date-input-gray-700: var(--theme-date-input-accent-700);
   --theme-date-input-gray-800: var(--knime-masala); /* background of month/year popout and font color title */
   --theme-date-input-gray-900: var(--knime-black-semi); /* hover background of month/year in popout */
+
+  /* Time Part Input */
+  --theme-time-part-input-background-color: var(--knime-white);
+  --theme-time-part-input-background-color-hover: var(--knime-silver-sand-semi);
 }

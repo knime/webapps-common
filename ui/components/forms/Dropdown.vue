@@ -345,7 +345,7 @@ export default {
     width: 100%;
     padding: 0;
     margin: -1px 0 1px 0;
-    background: var(--knime-white);
+    background: var(--theme-dropdown-background-color);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
 

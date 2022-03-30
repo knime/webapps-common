@@ -519,7 +519,7 @@ export default {
       border-radius: 0;
       width: calc(100% - 32px);
       outline: none;
-      background-color: transparent;
+      background-color: var(--theme-date-input-input-background);
 
       /* css3 invalid state */
       &:invalid {

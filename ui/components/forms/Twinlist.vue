@@ -405,7 +405,7 @@ export default {
       cursor: default;
       opacity: 0.5;
       pointer-events: none;
-      background: transparent;
+      background: var(--theme-select-control-background-color-disabled);
 
       & .icon {
         stroke: var(--theme-select-control-foreground-color);

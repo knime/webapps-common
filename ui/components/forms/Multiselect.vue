@@ -251,7 +251,7 @@ export default {
   }
 
   &.collapsed:hover {
-    background: var(--knime-silver-sand-semi);
+    background: var(--theme-multiselect-background-color-hover);
   }
 
   & .icon {
@@ -276,7 +276,7 @@ export default {
     width: 100%;
     padding: 5px 10px;
     margin-top: -1px;
-    background: var(--knime-white);
+    background: var(--theme-multiselect-background-color);
     box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
 
     & .boxes {

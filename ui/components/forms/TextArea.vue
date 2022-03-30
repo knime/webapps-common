@@ -87,6 +87,7 @@ div {
     padding: 11px 10px 11px 10px;
     border-radius: 0;
     border: 1px solid var(--knime-stone-gray);
+    background-color: var(--theme-text-area-background-color);
     outline: none;
     display: block;
 
@@ -99,7 +100,7 @@ div {
     }
 
     &:hover:not(:focus):not(:disabled) {
-      background-color: var(--knime-silver-sand-semi);
+      background-color: var(--theme-text-area-background-color-hover);
     }
   }
 

@@ -256,7 +256,7 @@ export default {
     min-height: 22px;
     padding: 0;
     margin: 0;
-    background: var(--knime-white);
+    background: var(--theme-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
     &:focus {

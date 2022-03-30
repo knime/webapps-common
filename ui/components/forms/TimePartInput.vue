@@ -368,7 +368,7 @@ export default {
     border-radius: 0;
     width: calc(100% - 32px);
     outline: none;
-    background-color: transparent;
+    background-color: var(--theme-time-part-input-background-color);
 
     /* remove browser spinners FF */
     -moz-appearance: textfield;
@@ -386,7 +386,7 @@ export default {
     }
 
     &.hover:not(:focus) { /* not native :hover because of WEBP-297 */
-      background-color: var(--knime-silver-sand-semi);
+      background-color: var(--theme-time-part-input-background-color-hover);
     }
   }
 
@@ -417,9 +417,10 @@ export default {
     padding-left: 10px;
     padding-right: 9px;
     cursor: pointer;
+    background-color: var(--theme-time-part-input-background-color);
 
     &:hover {
-      background-color: var(--knime-silver-sand-semi);
+      background-color: var(--theme-time-part-input-background-color-hover);
     }
 
     & svg {
