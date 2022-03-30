@@ -150,7 +150,7 @@
   --theme-toggle-switch-background-color-active: var(--knime-white);
 
   /* Selection List */
-  --theme-select-control-background-color: var(--knime-white);
+  --theme-select-control-background-color: transparent;
   --theme-select-control-background-color-hover: var(--knime-silver-sand-semi);
   --theme-select-control-background-color-focus: var(--knime-masala);
   --theme-select-control-background-color-disabled: transparent;
