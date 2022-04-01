@@ -7,7 +7,7 @@ data consumers (e.g. KNIME Views).
 
 ### Prerequisites
 
-* Install [Node.js][node], see version in [.nvmrc](.nvmrc).
+* Install [Node.js][node], see version in [package.json](package.json).
 
 Newer versions may also work, but have not been tested.
 
