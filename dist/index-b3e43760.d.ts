@@ -1,21 +1,8 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
+import { NodeInfo } from "./NodeInfo-cf6372d2";
 import { ResourceTypes } from "./types/ResourceTypes";
 import { DataServiceTypes } from "./types/DataServiceTypes";
 import { SelectionModes } from "./types/SelectionModes";
-/**
- * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
- * @property {string} nodeState - the current state of the node.
- * @property {string} [nodeErrorMessage] - the optional error message associated with a node in the failed state.
- * @property {string} [nodeWarnMessage] - the optional warning message associated with a node in the failed state.
- * @property {string} nodeName - the human-readable node name as it's registered with the node description.
- */
-type NodeInfo = {
-    nodeAnnotation?: string;
-    nodeState: string;
-    nodeErrorMessage?: string;
-    nodeWarnMessage?: string;
-    nodeName: string;
-};
 /**
  * @property {string} id - unique identifier based on the factory class of the node.
  * @property {ResourceTypes} type - the resource type associated with the extension.
@@ -82,6 +69,7 @@ type CallServiceResponse = {
 };
 export { ExtensionConfig, Notification, ServiceRequest, CallServiceResponse };
 export * from "./types/NodeServices";
+export * from "./NodeInfo-cf6372d2";
 export * from "./types/index";
 export * from "./types/DataServiceTypes";
 export * from "./types/SelectionModes";

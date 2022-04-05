@@ -1,5 +1,6 @@
 import { IFrameKnimeService } from 'src';
 import { Notification, NodeServices, DataServiceType, DataServiceTypes, EventTypes } from 'src/types';
+import { AlertTypes } from 'src/types/AlertTypes';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
 
@@ -37,14 +38,24 @@ export class JsonDataService<T = any> {
      *
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
-    initialData() {
-        const initialData = this.knimeService.extensionConfig?.initialData || null;
-        if (initialData) {
-            return Promise.resolve(initialData)
-                .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+    async initialData() {
+        let initialData = await Promise.resolve(this.knimeService.extensionConfig?.initialData) ||
+            this.callDataService(DataServiceTypes.INITIAL_DATA);
+
+        if (typeof initialData === 'string') {
+            initialData = JSON.parse(initialData);
         }
 
-        return this.callDataService(DataServiceTypes.INITIAL_DATA);
+        const { result, warningMessages, userError, internalError } = initialData || {};
+        if (userError || internalError) {
+            const currentError = userError || internalError;
+            this.handleError(currentError);
+            return Promise.reject(currentError);
+        }
+        if (warningMessages) {
+            this.handleWarnings(warningMessages);
+        }
+        return Promise.resolve(result);
     }
 
     /**
@@ -59,11 +70,20 @@ export class JsonDataService<T = any> {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    data(params: { method?: string; options?: any } = {}) {
-        return this.callDataService(
+    async data(params: { method?: string; options?: any } = {}) {
+        const response = await this.callDataService(
             DataServiceTypes.DATA,
             JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
         );
+        const { error, warningMessages, result } = response || {};
+        if (error) {
+            this.handleError({ ...error.data || {}, ...error });
+            return Promise.reject(error);
+        }
+        if (warningMessages) {
+            this.handleWarnings(warningMessages);
+        }
+        return Promise.resolve(result);
     }
 
     /**
@@ -108,5 +128,29 @@ export class JsonDataService<T = any> {
             method: EventTypes.DataEvent,
             event: { data }
         });
+    }
+
+    private handleError(
+        error: { details?: string, stackTrace?: any, typeName?: string, message?: string, code?: string | number} = {}
+    ) {
+        const { details, stackTrace, typeName, message, code } = error;
+        const alertParams = {
+            // eslint-disable-next-line @typescript-eslint/no-extra-parens
+            message: details || (typeName && `${typeName}:\n\n`) || '',
+            subtitle: message || '',
+            type: AlertTypes.ERROR,
+            code
+        };
+        if (Array.isArray(stackTrace)) {
+            alertParams.message += `\n\n${stackTrace.join('\n\t')}`;
+        }
+        this.knimeService.sendError(this.knimeService.createAlert(alertParams));
+    }
+
+    private handleWarnings(warningMessages) {
+        this.knimeService.sendWarning(this.knimeService.createAlert({
+            type: AlertTypes.WARN,
+            message: warningMessages.join('\n\n')
+        }));
     }
 }

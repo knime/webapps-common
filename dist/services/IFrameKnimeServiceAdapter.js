@@ -9,8 +9,8 @@ import { KnimeService } from './KnimeService.js';
  * Should be instantiated by class that persists at root window object.
  */
 class IFrameKnimeServiceAdapter extends KnimeService {
-    constructor(extensionConfig = null, callableService = null) {
-        super(extensionConfig, callableService);
+    constructor(extensionConfig = null, callableService = null, pushNotification = null) {
+        super(extensionConfig, callableService, pushNotification);
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
@@ -44,28 +44,26 @@ class IFrameKnimeServiceAdapter extends KnimeService {
         const { data } = event;
         switch (data.type) {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:ready`:
-                this.iFrameWindow.postMessage({
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:init`,
-                    payload: this.extensionConfig
-                }, '*');
+                this.postMessage({ payload: this.extensionConfig, messageType: 'init' });
                 break;
             case `${UI_EXT_POST_MESSAGE_PREFIX}:callService`:
                 {
                     const { payload: { requestId, serviceParams } } = data;
                     const response = await this.callService(serviceParams);
-                    this.iFrameWindow.postMessage({
-                        type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`,
-                        payload: { response, requestId }
-                    }, '*');
+                    this.postMessage({ payload: { response, requestId }, messageType: 'callServiceResponse' });
+                }
+                break;
+            case `${UI_EXT_POST_MESSAGE_PREFIX}:notification`:
+                {
+                    const { payload: { notification } } = data;
+                    this.pushNotification(notification);
                 }
                 break;
         }
     }
     onServiceNotification(notification) {
-        this.iFrameWindow.postMessage({
-            type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
-            payload: typeof notification === 'string' ? JSON.parse(notification) : notification
-        }, '*');
+        const payload = typeof notification === 'string' ? JSON.parse(notification) : notification;
+        this.postMessage({ payload, messageType: 'serviceNotification' });
     }
     /**
      * Should be called before destroying the IFrame to remove event listeners from window object,
@@ -75,6 +73,10 @@ class IFrameKnimeServiceAdapter extends KnimeService {
     destroy() {
         window.removeEventListener('message', this.boundOnMessageFromIFrame);
         this.iFrameWindow = null;
+    }
+    postMessage(messageParams) {
+        const { payload, messageType } = messageParams;
+        this.iFrameWindow.postMessage({ type: `${UI_EXT_POST_MESSAGE_PREFIX}:${messageType}`, payload }, '*');
     }
 }
 

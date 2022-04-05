@@ -1,4 +1,23 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-f7c46dc0";
+import { AlertTypes } from "../types/AlertTypes";
+import { NodeInfo } from "../NodeInfo-cf6372d2";
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-b3e43760";
+/**
+ *
+ * @property {string} nodeId - the id of the node in the workflow.
+ * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
+ * @property {AlertTypes} type - the type of the alert (@see AlertTypes).
+ * @property {string | number} [code] - an optional error/status code.
+ * @property {string} [subtitle] - an optional subtitle for the alert.
+ * @property {string} [message] - an optional message body for the alert.
+ */
+type Alert = {
+    nodeId: string;
+    nodeInfo: NodeInfo;
+    type: AlertTypes | keyof typeof AlertTypes;
+    code?: string | number;
+    subtitle?: string;
+    message?: string;
+};
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -164,18 +183,40 @@ declare class KnimeService<T = any> {
      */
     pushNotification(notification: Notification): Promise<any>;
     /**
-     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-     * @param {string} message - error message.
-     * @param {string} code - error code.
+     * Pushes error to framework to be displayed to the user.
+     * @param {Alert} alert - the error alert.
      * @returns {void}
      */
     /**
-     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-     * @param {string} message - error message.
-     * @param {string} code - error code.
+     * Pushes error to framework to be displayed to the user.
+     * @param {Alert} alert - the error alert.
      * @returns {void}
      */
-    pushError(message: string, code?: string): void;
+    sendError(alert: Alert): void;
+    /**
+     * Pushes warning to framework to be displayed to the user.
+     * @param {Alert} alert - the warning alert.
+     * @returns {void}
+     */
+    /**
+     * Pushes warning to framework to be displayed to the user.
+     * @param {Alert} alert - the warning alert.
+     * @returns {void}
+     */
+    sendWarning(alert: Alert): void;
+    createAlert(alertParams: {
+        type?: AlertTypes;
+        message?: string;
+        code?: string | number;
+        subtitle?: string;
+    }): {
+        nodeId: string;
+        nodeInfo: import("../NodeInfo-cf6372d2").NodeInfo;
+        type: AlertTypes;
+        message: string;
+        code: string | number;
+        subtitle: string;
+    };
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
      * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
@@ -186,4 +227,4 @@ declare class KnimeService<T = any> {
      */
     get serviceId(): string;
 }
-export { KnimeService };
+export { Alert, KnimeService };

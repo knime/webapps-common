@@ -1,4 +1,4 @@
-import { ServiceParameters } from "../index-f7c46dc0";
+import { ServiceParameters } from "../index-b3e43760";
 import { KnimeService } from "./KnimeService";
 /**
  * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -47,6 +47,8 @@ declare class IFrameKnimeService extends KnimeService {
      * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
      */
     protected executeServiceCall(serviceParams: ServiceParameters): Promise<string>;
+    private static postMessage;
+    private static iframePushNotification;
     /**
      * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
      * preventing memory leaks and unexpected behavior.

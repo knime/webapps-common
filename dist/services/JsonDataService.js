@@ -4,6 +4,7 @@ import '../types/SelectionModes.js';
 import '../types/ExtensionTypes.js';
 import { EventTypes } from '../types/EventTypes.js';
 import '../types/ResourceTypes.js';
+import { AlertTypes } from '../types/AlertTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
 /**
@@ -36,14 +37,23 @@ class JsonDataService {
      *
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
-    initialData() {
+    async initialData() {
         var _a;
-        const initialData = ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) || null;
-        if (initialData) {
-            return Promise.resolve(initialData)
-                .then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+        let initialData = await Promise.resolve((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) ||
+            this.callDataService(DataServiceTypes.INITIAL_DATA);
+        if (typeof initialData === 'string') {
+            initialData = JSON.parse(initialData);
         }
-        return this.callDataService(DataServiceTypes.INITIAL_DATA);
+        const { result, warningMessages, userError, internalError } = initialData || {};
+        if (userError || internalError) {
+            const currentError = userError || internalError;
+            this.handleError(currentError);
+            return Promise.reject(currentError);
+        }
+        if (warningMessages) {
+            this.handleWarnings(warningMessages);
+        }
+        return Promise.resolve(result);
     }
     /**
      * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
@@ -57,8 +67,17 @@ class JsonDataService {
      * @param {any} [params.options] - optional options that should be passed to called method.
      * @returns {Promise} rejected or resolved depending on backend response.
      */
-    data(params = {}) {
-        return this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
+    async data(params = {}) {
+        const response = await this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
+        const { error, warningMessages, result } = response || {};
+        if (error) {
+            this.handleError(Object.assign(Object.assign({}, error.data || {}), error));
+            return Promise.reject(error);
+        }
+        if (warningMessages) {
+            this.handleWarnings(warningMessages);
+        }
+        return Promise.resolve(result);
     }
     /**
      * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
@@ -99,6 +118,26 @@ class JsonDataService {
             method: EventTypes.DataEvent,
             event: { data }
         });
+    }
+    handleError(error = {}) {
+        const { details, stackTrace, typeName, message, code } = error;
+        const alertParams = {
+            // eslint-disable-next-line @typescript-eslint/no-extra-parens
+            message: details || (typeName && `${typeName}:\n\n`) || '',
+            subtitle: message || '',
+            type: AlertTypes.ERROR,
+            code
+        };
+        if (Array.isArray(stackTrace)) {
+            alertParams.message += `\n\n${stackTrace.join('\n\t')}`;
+        }
+        this.knimeService.sendError(this.knimeService.createAlert(alertParams));
+    }
+    handleWarnings(warningMessages) {
+        this.knimeService.sendWarning(this.knimeService.createAlert({
+            type: AlertTypes.WARN,
+            message: warningMessages.join('\n\n')
+        }));
     }
 }
 

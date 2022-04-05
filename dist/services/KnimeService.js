@@ -1,3 +1,5 @@
+import { AlertTypes } from '../types/AlertTypes.js';
+
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -44,7 +46,7 @@ class KnimeService {
         const response = await this.executeServiceCall(serviceParams);
         const { error, result } = response || {};
         if (error) {
-            this.pushError(error.message, error.code);
+            this.sendError(error);
             return Promise.resolve({ error });
         }
         return Promise.resolve(result);
@@ -146,13 +148,31 @@ class KnimeService {
         return this.callablePushNotification(Object.assign({ callerId: this.serviceId }, notification));
     }
     /**
-     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-     * @param {string} message - error message.
-     * @param {string} code - error code.
+     * Pushes error to framework to be displayed to the user.
+     * @param {Alert} alert - the error alert.
      * @returns {void}
      */
-    pushError(message, code = '') {
-        this.pushNotification({ message, code, type: 'ERROR' });
+    sendError(alert) {
+        this.pushNotification({ alert, type: 'alert' });
+    }
+    /**
+     * Pushes warning to framework to be displayed to the user.
+     * @param {Alert} alert - the warning alert.
+     * @returns {void}
+     */
+    sendWarning(alert) {
+        this.pushNotification({ alert, type: 'alert' });
+    }
+    createAlert(alertParams) {
+        const { type = AlertTypes.ERROR, message, code, subtitle } = alertParams;
+        return {
+            nodeId: this.extensionConfig.nodeId,
+            nodeInfo: this.extensionConfig.nodeInfo,
+            type,
+            message,
+            code,
+            subtitle
+        };
     }
     /**
      * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared

@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification } from "../index-f7c46dc0";
+import { ExtensionConfig, Notification } from "../index-b3e43760";
 import { CallableService } from "../CallableService-8f4e5800";
 import { KnimeService } from "./KnimeService";
 /**
@@ -11,7 +11,7 @@ import { KnimeService } from "./KnimeService";
 declare class IFrameKnimeServiceAdapter extends KnimeService {
     private iFrameWindow;
     private boundOnMessageFromIFrame;
-    constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
+    constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
     /**
      * Sets the child iframe window referenced by the service.
      *
@@ -61,5 +61,6 @@ declare class IFrameKnimeServiceAdapter extends KnimeService {
      * @returns {void}
      */
     destroy(): void;
+    private postMessage;
 }
 export { IFrameKnimeServiceAdapter };

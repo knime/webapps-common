@@ -1,5 +1,7 @@
 import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse }
     from 'src/types';
+import { Alert } from 'src/types/Alert';
+import { AlertTypes } from 'src/types/AlertTypes';
 
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
@@ -64,7 +66,7 @@ export class KnimeService<T = any> {
         const { error, result } = response || {};
 
         if (error) {
-            this.pushError(error.message, error.code);
+            this.sendError(error as Alert);
             return Promise.resolve({ error });
         }
 
@@ -194,13 +196,33 @@ export class KnimeService<T = any> {
     }
 
     /**
-     * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-     * @param {string} message - error message.
-     * @param {string} code - error code.
+     * Pushes error to framework to be displayed to the user.
+     * @param {Alert} alert - the error alert.
      * @returns {void}
      */
-    pushError(message: string, code = '') {
-        this.pushNotification({ message, code, type: 'ERROR' });
+    sendError(alert: Alert) {
+        this.pushNotification({ alert, type: 'alert' });
+    }
+
+    /**
+     * Pushes warning to framework to be displayed to the user.
+     * @param {Alert} alert - the warning alert.
+     * @returns {void}
+     */
+    sendWarning(alert: Alert) {
+        this.pushNotification({ alert, type: 'alert' });
+    }
+
+    createAlert(alertParams: { type?: AlertTypes, message?: string, code?: string | number, subtitle?: string }) {
+        const { type = AlertTypes.ERROR, message, code, subtitle } = alertParams;
+        return {
+            nodeId: this.extensionConfig.nodeId,
+            nodeInfo: this.extensionConfig.nodeInfo,
+            type,
+            message,
+            code,
+            subtitle
+        };
     }
 
     /**

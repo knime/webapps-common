@@ -1,6 +1,7 @@
 export * from './ExtensionConfig';
 export * from './Notification';
 export * from './NodeServices';
+export * from './NodeInfo';
 export * from './ServiceRequests';
 export * from './ServiceParameters';
 export * from './DataServiceTypes';

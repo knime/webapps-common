@@ -1,4 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from '../constants/index.js';
+import { AlertTypes } from '../types/AlertTypes.js';
 import { generateRequestId } from '../utils/generateRequestId.js';
 import { KnimeService } from './KnimeService.js';
 
@@ -23,11 +24,10 @@ class IFrameKnimeService extends KnimeService {
             this.initializationPromiseResolve();
         }
         this.callableService = this.executeServiceCall;
+        this.callablePushNotification = IFrameKnimeService.iframePushNotification;
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.boundOnMessageFromParent);
-        window.parent.postMessage({
-            type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
-        }, '*'); // TODO NXT-793 security
+        IFrameKnimeService.postMessage({ messageType: 'ready' });
     }
     /**
      * Needs to be awaited before the service is ready to be used.
@@ -69,8 +69,14 @@ class IFrameKnimeService extends KnimeService {
         const request = this.pendingServiceCalls.get(requestId);
         if (!request) {
             const message = `Received callService response for non-existing pending request with id ${requestId}`;
-            this.pushError(message, 'req-not-found');
-            throw new Error(message);
+            const errorMessage = this.createAlert({
+                code: '404',
+                subtitle: 'Request not found',
+                type: AlertTypes.ERROR,
+                message
+            });
+            this.sendError(errorMessage);
+            request.resolve(JSON.stringify({ error: errorMessage }));
         }
         request.resolve(JSON.parse(response));
         this.pendingServiceCalls.delete(requestId);
@@ -86,27 +92,31 @@ class IFrameKnimeService extends KnimeService {
         const promise = new Promise((resolve, reject) => {
             this.pendingServiceCalls.set(requestId, { resolve, reject });
             rejectTimeoutId = setTimeout(() => {
-                const message = `Request with id ${requestId} aborted due to timeout.`;
-                const code = 'req-timeout';
-                this.pushError(message, 'req-not-found');
-                resolve(JSON.stringify({
-                    error: {
-                        message,
-                        code
-                    },
-                    result: null
-                }));
+                const errorMessage = this.createAlert({
+                    code: '408',
+                    subtitle: 'Request Timeout',
+                    type: AlertTypes.ERROR,
+                    message: `Request with id ${requestId} aborted due to timeout.`
+                });
+                this.sendError(errorMessage);
+                resolve(JSON.stringify({ error: errorMessage }));
             }, UI_EXT_POST_MESSAGE_TIMEOUT);
         });
         // clearing reject timeout on promise resolve
         promise.then(() => {
             clearTimeout(rejectTimeoutId);
         });
-        window.parent.postMessage({
-            type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`,
-            payload: { requestId, serviceParams }
-        }, '*'); // TODO NXT-793 security
+        IFrameKnimeService.postMessage({ payload: { requestId, serviceParams }, messageType: 'callService' });
         return promise;
+    }
+    static postMessage(messageParams) {
+        const { payload, messageType } = messageParams;
+        // TODO NXT-793 security
+        window.parent.postMessage({ type: `${UI_EXT_POST_MESSAGE_PREFIX}:${messageType}`, payload }, '*');
+    }
+    static iframePushNotification(notification) {
+        IFrameKnimeService.postMessage({ payload: { notification }, messageType: 'notification' });
+        return Promise.resolve();
     }
     /**
      * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
