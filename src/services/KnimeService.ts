@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse }
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo }
     from 'src/types';
 import { Alert } from 'src/types/Alert';
 import { AlertTypes } from 'src/types/AlertTypes';
@@ -54,11 +54,21 @@ export class KnimeService<T = any> {
      */
     async callService(serviceParams: ServiceParameters) {
         if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot call service without extension config'));
+            const error = this.createAlert({
+                subtitle: 'Missing extension config',
+                message: 'Cannot call service without extension config'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
 
         if (!this.callableService) {
-            return Promise.reject(new Error('Callable service is not available'));
+            const error = this.createAlert({
+                message: 'Callable service is not available',
+                subtitle: 'Service not found'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
 
         const response: CallServiceResponse = await this.executeServiceCall(serviceParams);
@@ -182,11 +192,21 @@ export class KnimeService<T = any> {
      */
     pushNotification(notification: Notification) {
         if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot push notification without extension config'));
+            const error = this.createAlert({
+                subtitle: 'Missing extension config',
+                message: 'Cannot push notification without extension config'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
 
         if (!this.callablePushNotification) {
-            return Promise.reject(new Error('Push notification is not available'));
+            const error = this.createAlert({
+                subtitle: 'Push notification failed',
+                message: 'Push notification is not available'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
 
         return this.callablePushNotification({
@@ -197,27 +217,53 @@ export class KnimeService<T = any> {
 
     /**
      * Pushes error to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the error alert.
      * @returns {void}
      */
     sendError(alert: Alert) {
-        this.pushNotification({ alert, type: 'alert' });
+        if (this.callablePushNotification) {
+            this.callablePushNotification({
+                callerId: this.serviceId,
+                alert,
+                type: 'alert'
+            });
+        } else {
+            // eslint-disable-next-line no-console
+            console.error(alert);
+        }
     }
 
     /**
      * Pushes warning to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the warning alert.
      * @returns {void}
      */
     sendWarning(alert: Alert) {
-        this.pushNotification({ alert, type: 'alert' });
+        if (this.callablePushNotification) {
+            this.callablePushNotification({
+                callerId: this.serviceId,
+                alert,
+                type: 'alert'
+            });
+        } else {
+            // eslint-disable-next-line no-console
+            console.warn(alert);
+        }
     }
 
+    /**
+     * Helper method to create framework compatible {@see Alert} from the available information.
+     *
+     * @param {Object} alertParams - optional parameters for the formatted alert.
+     * @returns {Alert} the properly formatted alert.
+     */
     createAlert(alertParams: { type?: AlertTypes, message?: string, code?: string | number, subtitle?: string }) {
         const { type = AlertTypes.ERROR, message, code, subtitle } = alertParams;
         return {
-            nodeId: this.extensionConfig.nodeId,
-            nodeInfo: this.extensionConfig.nodeInfo,
+            nodeId: this.extensionConfig?.nodeId || 'MISSING',
+            nodeInfo: this.extensionConfig?.nodeInfo || {} as NodeInfo,
             type,
             message,
             code,

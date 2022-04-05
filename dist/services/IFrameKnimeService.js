@@ -67,19 +67,19 @@ class IFrameKnimeService extends KnimeService {
     onCallServiceResponse(data) {
         const { payload: { response, requestId } } = data;
         const request = this.pendingServiceCalls.get(requestId);
-        if (!request) {
-            const message = `Received callService response for non-existing pending request with id ${requestId}`;
-            const errorMessage = this.createAlert({
-                code: '404',
-                subtitle: 'Request not found',
-                type: AlertTypes.ERROR,
-                message
-            });
-            this.sendError(errorMessage);
-            request.resolve(JSON.stringify({ error: errorMessage }));
+        if (request) {
+            request.resolve(JSON.parse(response));
+            this.pendingServiceCalls.delete(requestId);
+            return;
         }
-        request.resolve(JSON.parse(response));
-        this.pendingServiceCalls.delete(requestId);
+        const message = `Received callService response for non-existing pending request with id ${requestId}`;
+        const errorMessage = this.createAlert({
+            code: '404',
+            subtitle: 'Request not found',
+            type: AlertTypes.ERROR,
+            message
+        });
+        this.sendError(errorMessage);
     }
     /**
      * Overrides method of KnimeService to implement how request should be processed in IFrame environment.

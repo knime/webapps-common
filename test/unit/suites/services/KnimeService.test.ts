@@ -1,6 +1,7 @@
 import { JsonDataService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
 import { NodeServices, DataServiceTypes, EventTypes, ServiceParameters } from 'src/types';
+import { AlertTypes } from 'src/types/AlertTypes';
 import { extensionConfig } from 'test/mocks/extensionConfig';
 
 describe('KnimeService', () => {
@@ -22,20 +23,38 @@ describe('KnimeService', () => {
     });
 
     describe('callService', () => {
-        it('Throws error if extension config not provided', () => {
-            const knimeService = new KnimeService();
-
-            expect(() => knimeService.callService(
+        it('Throws error if extension config not provided', async () => {
+            const knimeService = new KnimeService(null, null, jest.fn());
+            const response = await knimeService.callService(
                 [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
-            )).rejects.toThrowError('Cannot call service without extension config');
+            );
+            expect(response).toStrictEqual({
+                error: {
+                    code: undefined,
+                    message: 'Cannot call service without extension config',
+                    nodeId: 'MISSING',
+                    nodeInfo: {},
+                    subtitle: 'Missing extension config',
+                    type: 'error'
+                }
+            });
         });
 
-        it('Throws error if callable service not provided', () => {
-            const knimeService = new KnimeService(extensionConfig);
-
-            expect(() => knimeService.callService(
+        it('Throws error if callable service not provided', async () => {
+            const knimeService = new KnimeService(extensionConfig, null, jest.fn());
+            const response = await knimeService.callService(
                 [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
-            )).rejects.toThrowError('Callable service is not available');
+            );
+            expect(response).toStrictEqual({
+                error: {
+                    code: undefined,
+                    message: 'Callable service is not available',
+                    nodeId: extensionConfig.nodeId,
+                    nodeInfo: extensionConfig.nodeInfo,
+                    subtitle: 'Service not found',
+                    type: 'error'
+                }
+            });
         });
 
         it('Returns the results of successful service calls', async () => {
@@ -48,36 +67,39 @@ describe('KnimeService', () => {
             expect(callableMock).toHaveBeenCalledWith(...serviceParams);
             expect(testResult).toBe(result);
         });
-
-        it('Returns backend errors and pushes them via notification', async () => {
-            const error = {
-                code: '007',
-                message: 'Shaken, not stirred.'
-            };
-            const callableMock = jest.fn().mockReturnValue(Promise.resolve(new Promise(res => res({ error }))));
-            const pushNotificationMock = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
-            const pushErrorSpy = jest.spyOn(knimeService, 'pushError');
-            const testResult = await knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE,
-                DataServiceTypes.INITIAL_DATA, '']);
-            expect(testResult).toStrictEqual({ error });
-            expect(pushErrorSpy).toHaveBeenCalledWith(error.message, error.code);
-        });
     });
 
     describe('pushNotification', () => {
-        it('Throws error if extension config not provided', () => {
-            const knimeService = new KnimeService();
+        it('Throws error if extension config not provided', async () => {
+            const knimeService = new KnimeService(null, null, jest.fn());
 
-            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent }))
-                .rejects.toThrowError('Cannot push notification without extension config');
+            const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
+            expect(response).toStrictEqual({
+                error: {
+                    code: undefined,
+                    message: 'Cannot push notification without extension config',
+                    nodeId: 'MISSING',
+                    nodeInfo: {},
+                    subtitle: 'Missing extension config',
+                    type: 'error'
+                }
+            });
         });
 
-        it('Throws error if push notification not provided', () => {
+        it('Throws error if push notification not provided', async () => {
             const knimeService = new KnimeService(extensionConfig);
 
-            expect(() => knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent }))
-                .rejects.toThrowError('Push notification is not available');
+            const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
+            expect(response).toStrictEqual({
+                error: {
+                    code: undefined,
+                    message: 'Push notification is not available',
+                    nodeId: extensionConfig.nodeId,
+                    nodeInfo: extensionConfig.nodeInfo,
+                    subtitle: 'Push notification failed',
+                    type: 'error'
+                }
+            });
         });
 
         it('Pushes notifications successfully', () => {
@@ -168,6 +190,72 @@ describe('KnimeService', () => {
         });
     });
 
+    describe('error handling', () => {
+        const mockError = {
+            code: '007',
+            message: 'Shaken, not stirred.'
+        };
+
+        it('creates default alert', () => {
+            const knimeService = new KnimeService(extensionConfig);
+            const defaultAlert = knimeService.createAlert({});
+            expect(defaultAlert.type).toStrictEqual(AlertTypes.ERROR);
+            expect(defaultAlert.nodeId).toStrictEqual(extensionConfig.nodeId);
+            expect(defaultAlert.nodeInfo).toStrictEqual(extensionConfig.nodeInfo);
+        });
+
+        it('creates defined alert', () => {
+            const knimeService = new KnimeService(extensionConfig);
+            const alertParams = {
+                type: AlertTypes.ERROR,
+                code: 404,
+                message: 'Service not found',
+                subtitle: 'JSONDataService does not exist on node MISSING'
+            };
+            expect(knimeService.createAlert(alertParams)).toStrictEqual({
+                ...alertParams,
+                nodeId: extensionConfig.nodeId,
+                nodeInfo: extensionConfig.nodeInfo
+            });
+        });
+
+        it('sends errors', () => {
+            const pushNotificationMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushNotificationMock);
+            const alert = knimeService.createAlert(mockError);
+            knimeService.sendError(alert);
+            expect(pushNotificationMock).toHaveBeenCalledWith({
+                alert,
+                callerId: '123.knime workflow.root:10.view',
+                type: 'alert'
+            });
+        });
+
+        it('sends warnings', () => {
+            const pushNotificationMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushNotificationMock);
+            const alert = knimeService.createAlert(mockError);
+            knimeService.sendWarning(alert);
+            expect(pushNotificationMock).toHaveBeenCalledWith({
+                alert,
+                callerId: '123.knime workflow.root:10.view',
+                type: 'alert'
+            });
+        });
+
+        it('Returns backend errors and pushes them via notification', async () => {
+            const callableMock = jest.fn()
+                .mockReturnValue(Promise.resolve(new Promise(res => res({ error: mockError }))));
+            const pushNotificationMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
+            const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
+            const testResult = await knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE,
+                DataServiceTypes.INITIAL_DATA, '']);
+            expect(testResult).toStrictEqual({ error: mockError });
+            expect(sendErrorSpy).toHaveBeenCalledWith(mockError);
+        });
+    });
+
     describe('data getter callback registration', () => {
         it('Registers callback for retrieving data', () => {
             const knimeService = new KnimeService();
@@ -177,20 +265,22 @@ describe('KnimeService', () => {
             expect(knimeService).toHaveProperty('dataGetter');
         });
 
-        it('Returns default data without registered callback', () => {
+        it('Returns default data without registered callback', async () => {
             const knimeService = new KnimeService(extensionConfig);
 
-            expect(knimeService.getData()).resolves.toEqual(null);
+            const response = await knimeService.getData();
+            expect(response).toStrictEqual(null);
         });
 
-        it('Gets data with registered callback', () => {
+        it('Gets data with registered callback', async () => {
             const knimeService = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knimeService);
             const testData = { nodeName: 'something' };
             const getDataMock = jest.fn(() => testData);
 
             jsonDataService.registerDataGetter(getDataMock);
-            expect(knimeService.getData()).resolves.toEqual(JSON.stringify(testData));
+            const response = await knimeService.getData();
+            expect(response).toStrictEqual(JSON.stringify(testData));
             expect(getDataMock).toHaveBeenCalledTimes(1);
         });
     });

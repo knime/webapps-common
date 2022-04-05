@@ -8,6 +8,10 @@ const { UI_EXT_POST_MESSAGE_PREFIX } = KnimeUtils;
 jest.mock('src/constants', () => ({ UI_EXT_POST_MESSAGE_TIMEOUT: 10 }));
 
 describe('IFrameKnimeService', () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
     afterEach(() => {
         jest.restoreAllMocks();
     });
@@ -60,26 +64,20 @@ describe('IFrameKnimeService', () => {
         });
 
         it('onMessageFromParent does nothing if called with unsupported prefix', () => {
-            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
-
-                data: {
-                    type: `unsupported_prefix:callServiceResponse`,
-                    payload: extensionConfig
-                }
-            } as MessageEvent);
+            (knimeService as any).onMessageFromParent({ data: {
+                type: `unsupported_prefix:callServiceResponse`,
+                payload: extensionConfig
+            } } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
             expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
         });
 
         it('onMessageFromParent does nothing if called with unsupported type', () => {
-            (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
-
-                data: {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
-                    payload: extensionConfig
-                }
-            } as MessageEvent);
+            (knimeService as any).onMessageFromParent({ data: {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:unsupported_type`,
+                payload: extensionConfig
+            } } as MessageEvent);
 
             expect(onInitSpy).not.toHaveBeenCalled();
             expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
@@ -133,12 +131,41 @@ describe('IFrameKnimeService', () => {
             expect(onCallServiceResponseSpy).toHaveBeenCalledWith({ ...data });
         });
 
-        it('returns error if request takes too long', () => {
+        it('handles error if request takes too long', () => {
+            jest.useFakeTimers();
             const knimeService = new IFrameKnimeService();
-            const requestPromise = (knimeService as any).executeServiceCall({ id: 2 });
-            expect(requestPromise).resolves.toBe(
-                '{"error":{"message":"Request with id 2 aborted due to timeout.","code":"req-timeout"},"result":null}'
-            );
+            knimeService.extensionConfig = extensionConfig;
+            const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
+            (knimeService as any).executeServiceCall({ id: 2 });
+            jest.runAllTimers();
+            expect(sendErrorSpy).toHaveBeenCalledWith({
+                nodeId: extensionConfig.nodeId,
+                nodeInfo: extensionConfig.nodeInfo,
+                code: '408',
+                message: 'Request with id 2 aborted due to timeout.',
+                subtitle: 'Request Timeout',
+                type: 'error'
+            });
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        });
+
+        it('handles errors for responses without matching requests', () => {
+            const knimeService = new IFrameKnimeService();
+            knimeService.extensionConfig = extensionConfig;
+            const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
+            (knimeService as any).onMessageFromParent({ data: {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`,
+                payload: extensionConfig
+            } } as MessageEvent);
+            expect(sendErrorSpy).toHaveBeenCalledWith({
+                nodeId: extensionConfig.nodeId,
+                nodeInfo: extensionConfig.nodeInfo,
+                code: '404',
+                message: 'Received callService response for non-existing pending request with id undefined',
+                subtitle: 'Request not found',
+                type: 'error'
+            });
         });
 
         it('executes service calls', () => {

@@ -38,9 +38,14 @@ class JsonDataService {
      * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
      */
     async initialData() {
-        var _a;
-        let initialData = await Promise.resolve((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) ||
-            this.callDataService(DataServiceTypes.INITIAL_DATA);
+        var _a, _b;
+        let initialData;
+        if ((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.initialData) {
+            initialData = await Promise.resolve((_b = this.knimeService.extensionConfig) === null || _b === void 0 ? void 0 : _b.initialData);
+        }
+        else {
+            initialData = await this.callDataService(DataServiceTypes.INITIAL_DATA);
+        }
         if (typeof initialData === 'string') {
             initialData = JSON.parse(initialData);
         }
@@ -48,7 +53,7 @@ class JsonDataService {
         if (userError || internalError) {
             const currentError = userError || internalError;
             this.handleError(currentError);
-            return Promise.reject(currentError);
+            return Promise.resolve({ error: currentError });
         }
         if (warningMessages) {
             this.handleWarnings(warningMessages);
@@ -72,7 +77,7 @@ class JsonDataService {
         const { error, warningMessages, result } = response || {};
         if (error) {
             this.handleError(Object.assign(Object.assign({}, error.data || {}), error));
-            return Promise.reject(error);
+            return Promise.resolve({ error });
         }
         if (warningMessages) {
             this.handleWarnings(warningMessages);

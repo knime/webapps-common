@@ -38,10 +38,20 @@ class KnimeService {
      */
     async callService(serviceParams) {
         if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot call service without extension config'));
+            const error = this.createAlert({
+                subtitle: 'Missing extension config',
+                message: 'Cannot call service without extension config'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
         if (!this.callableService) {
-            return Promise.reject(new Error('Callable service is not available'));
+            const error = this.createAlert({
+                message: 'Callable service is not available',
+                subtitle: 'Service not found'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
         const response = await this.executeServiceCall(serviceParams);
         const { error, result } = response || {};
@@ -140,34 +150,73 @@ class KnimeService {
      */
     pushNotification(notification) {
         if (!this.extensionConfig) {
-            return Promise.reject(new Error('Cannot push notification without extension config'));
+            const error = this.createAlert({
+                subtitle: 'Missing extension config',
+                message: 'Cannot push notification without extension config'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
         if (!this.callablePushNotification) {
-            return Promise.reject(new Error('Push notification is not available'));
+            const error = this.createAlert({
+                subtitle: 'Push notification failed',
+                message: 'Push notification is not available'
+            });
+            this.sendError(error);
+            return Promise.resolve({ error });
         }
         return this.callablePushNotification(Object.assign({ callerId: this.serviceId }, notification));
     }
     /**
      * Pushes error to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the error alert.
      * @returns {void}
      */
     sendError(alert) {
-        this.pushNotification({ alert, type: 'alert' });
+        if (this.callablePushNotification) {
+            this.callablePushNotification({
+                callerId: this.serviceId,
+                alert,
+                type: 'alert'
+            });
+        }
+        else {
+            // eslint-disable-next-line no-console
+            console.error(alert);
+        }
     }
     /**
      * Pushes warning to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the warning alert.
      * @returns {void}
      */
     sendWarning(alert) {
-        this.pushNotification({ alert, type: 'alert' });
+        if (this.callablePushNotification) {
+            this.callablePushNotification({
+                callerId: this.serviceId,
+                alert,
+                type: 'alert'
+            });
+        }
+        else {
+            // eslint-disable-next-line no-console
+            console.warn(alert);
+        }
     }
+    /**
+     * Helper method to create framework compatible {@see Alert} from the available information.
+     *
+     * @param {Object} alertParams - optional parameters for the formatted alert.
+     * @returns {Alert} the properly formatted alert.
+     */
     createAlert(alertParams) {
+        var _a, _b;
         const { type = AlertTypes.ERROR, message, code, subtitle } = alertParams;
         return {
-            nodeId: this.extensionConfig.nodeId,
-            nodeInfo: this.extensionConfig.nodeInfo,
+            nodeId: ((_a = this.extensionConfig) === null || _a === void 0 ? void 0 : _a.nodeId) || 'MISSING',
+            nodeInfo: ((_b = this.extensionConfig) === null || _b === void 0 ? void 0 : _b.nodeInfo) || {},
             type,
             message,
             code,

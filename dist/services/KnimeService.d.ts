@@ -1,6 +1,7 @@
 import { AlertTypes } from "../types/AlertTypes";
 import { NodeInfo } from "../NodeInfo-cf6372d2";
 import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-b3e43760";
+import { NodeInfo as NodeInfo$0 } from "../index-b3e43760";
 /**
  *
  * @property {string} nodeId - the id of the node in the workflow.
@@ -184,26 +185,42 @@ declare class KnimeService<T = any> {
     pushNotification(notification: Notification): Promise<any>;
     /**
      * Pushes error to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the error alert.
      * @returns {void}
      */
     /**
      * Pushes error to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the error alert.
      * @returns {void}
      */
     sendError(alert: Alert): void;
     /**
      * Pushes warning to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the warning alert.
      * @returns {void}
      */
     /**
      * Pushes warning to framework to be displayed to the user.
+     *
      * @param {Alert} alert - the warning alert.
      * @returns {void}
      */
     sendWarning(alert: Alert): void;
+    /**
+     * Helper method to create framework compatible {@see Alert} from the available information.
+     *
+     * @param {Object} alertParams - optional parameters for the formatted alert.
+     * @returns {Alert} the properly formatted alert.
+     */
+    /**
+     * Helper method to create framework compatible {@see Alert} from the available information.
+     *
+     * @param {Object} alertParams - optional parameters for the formatted alert.
+     * @returns {Alert} the properly formatted alert.
+     */
     createAlert(alertParams: {
         type?: AlertTypes;
         message?: string;
@@ -211,7 +228,7 @@ declare class KnimeService<T = any> {
         subtitle?: string;
     }): {
         nodeId: string;
-        nodeInfo: import("../NodeInfo-cf6372d2").NodeInfo;
+        nodeInfo: NodeInfo$0;
         type: AlertTypes;
         message: string;
         code: string | number;

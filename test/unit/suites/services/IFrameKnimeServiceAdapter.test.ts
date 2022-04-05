@@ -11,20 +11,22 @@ const sleep = async (timeout = 15) => {
 const buildIFrameKnimeServiceAdapter = () => {
     const callServiceSpy = jest.fn().mockImplementation(() => Promise.resolve({ result: JSON.stringify([1, 1, 2]) }));
     const childSpy = jest.fn();
+    const pushNotificationSpy = jest.fn();
     const mockChildFrame = {
         postMessage: childSpy
     } as unknown as Window;
-    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy);
+    const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy,
+        pushNotificationSpy);
     iFrameKnimeServiceAdapter.setIFrameWindow(mockChildFrame);
 
     jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
 
-    return { iFrameKnimeServiceAdapter, childSpy, callServiceSpy };
+    return { iFrameKnimeServiceAdapter, childSpy, callServiceSpy, pushNotificationSpy };
 };
 
 describe('IFrameKnimeServiceAdapter', () => {
     describe('initialization', () => {
-        it('Creates IFrameKnimeServiceAdapter', () => {
+        it('creates IFrameKnimeServiceAdapter', () => {
             const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
 
             expect(iFrameKnimeServiceAdapter.extensionConfig).toEqual(extensionConfig);
@@ -32,7 +34,7 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Destroys IFrameKnimeServiceAdapter', () => {
+        it('destroys IFrameKnimeServiceAdapter', () => {
             const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
             const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
 
@@ -43,15 +45,10 @@ describe('IFrameKnimeServiceAdapter', () => {
                 (iFrameKnimeServiceAdapter as any).boundOnMessageFromIFrame); // eslint-disable-line no-extra-parens
         });
 
-        it('Posts init event on :ready type request', async () => {
+        it('posts init event on :ready type request', async () => {
             const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
-            window.postMessage(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready`
-                },
-                '*'
-            );
+            window.postMessage({ type: `${UI_EXT_POST_MESSAGE_PREFIX}:ready` }, '*');
 
             await sleep();
 
@@ -66,7 +63,7 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Posts serviceNotification event when onServiceNotification is triggered', async () => {
+        it('posts serviceNotification event when onServiceNotification is triggered', async () => {
             const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
             const notification = {
@@ -96,18 +93,12 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('Calls service when receiving :callService type events', async () => {
+        it('calls service when receiving :callService type events', async () => {
             const { iFrameKnimeServiceAdapter, childSpy, callServiceSpy } = buildIFrameKnimeServiceAdapter();
             const serviceParams = [NodeServices.CALL_NODE_DATA_SERVICE, 'getData', null];
             const requestId = 1;
             const payload = { serviceParams, requestId };
-            window.postMessage(
-                {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`,
-                    payload
-                },
-                '*'
-            );
+            window.postMessage({ type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`, payload }, '*');
 
             await sleep();
 
@@ -120,6 +111,22 @@ describe('IFrameKnimeServiceAdapter', () => {
             }, '*');
             expect(callServiceSpy).toHaveBeenCalledWith(...serviceParams);
 
+            iFrameKnimeServiceAdapter.destroy();
+        });
+
+        it('pushes notifications', async () => {
+            const { iFrameKnimeServiceAdapter, pushNotificationSpy } = buildIFrameKnimeServiceAdapter();
+            const notification = { message: 'Something went wrong' };
+            const message = {
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:notification`,
+                payload: { notification }
+            };
+            window.postMessage(message, '*');
+
+            await sleep();
+            expect(pushNotificationSpy).toHaveBeenCalledWith({
+                ...notification, callerId: '123.knime workflow.root:10.view'
+            });
             iFrameKnimeServiceAdapter.destroy();
         });
     });
