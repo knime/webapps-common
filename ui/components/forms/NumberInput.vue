@@ -60,6 +60,10 @@ export default {
         inputClasses: {
             default: '',
             type: String
+        },
+        disabled: {
+            default: false,
+            type: Boolean
         }
     },
     data() {
@@ -106,6 +110,7 @@ export default {
          * This value is the last valid input value for the number input.
          * It is used as a fallback if the user enters invalid values.
          */
+        console.log(this.disabled);
         this.localValue = this.parseValue(this.value);
         this.initialValue = this.localValue;
     },
@@ -186,6 +191,9 @@ export default {
          * @returns {undefined}
          */
         mouseEvent(e, type) {
+            if (this.disabled) {
+                return;
+            }
             // on any mouse event, clear existing timers and intervals
             clearTimeout(this.spinnerArrowInterval);
             clearInterval(this.spinnerArrowTimeout);
@@ -221,7 +229,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div :class="['wrapper' , { disabled: disabled }]">
     <input
       :id="id"
       ref="input"
@@ -233,6 +241,7 @@ export default {
       :max="max"
       :step="stepSize"
       :class="inputClassList"
+      :disabled="disabled"
       @input="onInput"
       @mouseenter="toggleHover"
       @mouseleave="toggleHover"
@@ -242,7 +251,7 @@ export default {
       class="invalid-marker"
     />
     <span
-      class="increase"
+      :class="['increase' , { disabled: disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseleave="(e) => mouseEvent(e, 'increase')"
@@ -250,7 +259,7 @@ export default {
       <ArrowIcon />
     </span>
     <span
-      class="decrease"
+      :class="['decrease' , { disabled: disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseleave="(e) => mouseEvent(e, 'decrease')"
@@ -266,6 +275,11 @@ export default {
   isolation: isolate;
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
+
+  &.disabled {
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
+  }
 
   &:focus-within {
     border-color: var(--knime-masala);
@@ -288,6 +302,11 @@ export default {
     /* remove browser spinners FF */
     -moz-appearance: textfield;
 
+    &:disabled {
+      color: var(--knime-dove-gray);
+      opacity: 0.5;
+    }
+
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
@@ -300,7 +319,7 @@ export default {
       box-shadow: none; /* override default browser styling */
     }
 
-    &.hover:not(:focus) { /* not native :hover because of WEBP-297 */
+    &:hover:not(:focus):not(:disabled) { /* not native :hover because of WEBP-297 */
       background-color: var(--theme-input-number-background-color-hover);
     }
   }
@@ -334,7 +353,12 @@ export default {
     cursor: pointer;
     background-color: var(--theme-input-number-background-color);
 
-    &:hover {
+    &.disabled {
+      color: var(--knime-dove-gray);
+      opacity: 0.5;
+    }
+
+    &:hover:not(.disabled) {
       background-color: var(--theme-input-number-background-color-hover);
     }
 
@@ -345,8 +369,8 @@ export default {
     }
   }
 
-  & .increase:active,
-  & .decrease:active {
+  & .increase:active:not(.disabled),
+  & .decrease:active:not(.disabled) {
     color: var(--knime-white);
     background-color: var(--theme-input-number-background-color-active);
 

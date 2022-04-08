@@ -16,6 +16,10 @@ export default {
             type: Array,
             default: () => []
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * If enabled the single click will allow the user to select multiple items, otherwise this only works with
          * CTRL + Click (similar to <select> html widgets)
@@ -110,10 +114,16 @@ export default {
             return this.value.includes(candidate);
         },
         handleCtrlClick(value, index) {
+            if (this.disabled) {
+                return;
+            }
             this.currentKeyNavIndex = index;
             this.toggleSelection(value);
         },
         handleShiftClick(value, clickedIndex) {
+            if (this.disabled) {
+                return;
+            }
             this.setSelected(this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex));
         },
         /**
@@ -128,6 +138,9 @@ export default {
             return this.possibleValues.slice(start, end + 1).map(x => x.id);
         },
         onStartDrag(e) {
+            if (this.disabled) {
+                return;
+            }
             // do not start drag if we press shift
             if (e.shiftKey) {
                 return;
@@ -161,6 +174,9 @@ export default {
             this.draggingInverseMode = false;
         },
         handleClick($event, value, index) {
+            if (this.disabled) {
+                return;
+            }
             $event.preventDefault();
             if ($event.metaKey) {
                 // mac requires debouncing
@@ -183,9 +199,15 @@ export default {
             this.toggleSelection(value);
         },
         handleDblClick(id, index) {
+            if (this.disabled) {
+                return;
+            }
             this.$emit('doubleClickOnItem', id, index);
         },
         handleShiftDblClick() {
+            if (this.disabled) {
+                return;
+            }
             this.$emit('doubleClickShift', this.selectedValues);
         },
         addToSelection(value) {
@@ -248,6 +270,9 @@ export default {
             }
         },
         onArrowDown() {
+            if (this.disabled) {
+                return;
+            }
             let next = this.currentKeyNavIndex + 1;
             if (next >= this.possibleValues.length) {
                 return;
@@ -257,6 +282,9 @@ export default {
             this.scrollToCurrent();
         },
         onArrowUp() {
+            if (this.disabled) {
+                return;
+            }
             let next = this.currentKeyNavIndex - 1;
             if (next < 0) {
                 return;
@@ -266,6 +294,9 @@ export default {
             this.scrollToCurrent();
         },
         onArrowDownShift() {
+            if (this.disabled) {
+                return;
+            }
             // set start index if this is the first shift up/down op
             if (this.shiftStartIndex === -1) {
                 this.shiftStartIndex = this.currentKeyNavIndex;
@@ -279,6 +310,9 @@ export default {
             this.scrollToCurrent();
         },
         onArrowUpShift() {
+            if (this.disabled) {
+                return;
+            }
             // set start index if this is the first shift up/down op
             if (this.shiftStartIndex === -1) {
                 this.shiftStartIndex = this.currentKeyNavIndex;
@@ -304,12 +338,21 @@ export default {
             this.$refs.ul.scrollTop = 0;
         },
         onArrowLeft() {
+            if (this.disabled) {
+                return;
+            }
             this.$emit('keyArrowLeft', this.selectedValues);
         },
         onArrowRight() {
+            if (this.disabled) {
+                return;
+            }
             this.$emit('keyArrowRight', this.selectedValues);
         },
         onCtrlA() {
+            if (this.disabled) {
+                return;
+            }
             // select all
             this.setSelected(this.possibleValues.map(x => x.id));
         },
@@ -334,9 +377,15 @@ export default {
             return `option-${this.id}-${cleanId}`;
         },
         focus() {
+            if (this.disabled) {
+                return;
+            }
             this.$refs.ul.focus();
         },
         clearSelection() {
+            if (this.disabled) {
+                return;
+            }
             this.setSelected([]);
         }
     }
@@ -345,7 +394,7 @@ export default {
 
 <template>
   <div
-    :class="['multiselect-list-box', { 'invalid' : !isValid}]"
+    :class="['multiselect-list-box', { 'invalid' : !isValid, disabled: disabled }]"
     :style="cssStyleSize"
   >
     <ul
@@ -353,6 +402,7 @@ export default {
       ref="ul"
       role="listbox"
       tabindex="0"
+      :class="{ disabled: disabled }"
       :aria-label="ariaLabel"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.prevent.exact="onCtrlA"
@@ -379,7 +429,8 @@ export default {
           'selected': isCurrentValue(item.id),
           'invalid': item.invalid,
           'noselect' :true,
-          'empty': !Boolean(item.text.trim())
+          'empty': !Boolean(item.text.trim()),
+          'disabled': disabled
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="handleClick($event, item.id, index)"
@@ -399,6 +450,11 @@ export default {
   display: flex;
   align-items: stretch;
   flex-direction: column;
+
+  &.disabled {
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
+  }
 
   &.invalid {
     &::after {
@@ -423,7 +479,7 @@ export default {
     background: var(--theme-multiselect-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
-    &:focus {
+    &:focus:not(.disabled) {
       outline: none;
       border-color: var(--knime-masala);
     }
@@ -451,17 +507,17 @@ export default {
       white-space: pre-wrap;
     }
 
-    &:hover {
+    &:hover:not(.disabled) {
       background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
     }
 
-    &:focus {
+    &:focus:not(.disabled) {
       background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
     }
 
-    &.selected {
+    &.selected:not(.disabled) {
       background: var(--theme-dropdown-background-color-selected);
       color: var(--theme-dropdown-foreground-color-selected);
     }

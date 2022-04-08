@@ -39,6 +39,10 @@ export default {
             default: true,
             type: Boolean
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
          * @example
@@ -150,9 +154,11 @@ export default {
             this.$refs.ul.scrollTop = 0;
         },
         toggleExpanded() {
-            this.isExpanded = !this.isExpanded;
-            if (this.isExpanded) {
-                Vue.nextTick(() => this.$refs.ul.focus());
+            if (!this.disabled) {
+                this.isExpanded = !this.isExpanded;
+                if (this.isExpanded) {
+                    Vue.nextTick(() => this.$refs.ul.focus());
+                }
             }
         },
         handleKeyDownList(e) {
@@ -226,7 +232,7 @@ export default {
   <div
     :id="id"
     v-on-clickaway="clickAway"
-    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid }]"
+    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid, disabled: disabled }]"
   >
     <div
       :id="generateId('button')"
@@ -308,6 +314,11 @@ export default {
 
   &.collapsed {
     background: var(--theme-dropdown-background-color);
+
+    &.disabled {
+        color: var(--knime-dove-gray);
+        opacity: 0.5;
+    }
   }
 
   &:not(.collapsed) [role=button] {

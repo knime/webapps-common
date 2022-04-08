@@ -64,6 +64,11 @@ export default {
 .radio-buttons >>> {
   user-select: none;
 
+  &.disabled {
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
+  }
+
   & label {
     position: relative;
     display: block;

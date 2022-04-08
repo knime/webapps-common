@@ -21,6 +21,10 @@ export default {
             type: Array,
             default: () => []
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * Controls the size of the list.
          * Number of visible items (for others user need to scroll)
@@ -238,7 +242,7 @@ export default {
       <div class="space" />
       <div class="title">{{ labelRight }}</div>
     </div>
-    <div class="lists">
+    <div :class="['lists', { disabled: disabled }] ">
       <MultiselectListBox
         ref="left"
         :size="listSize"
@@ -247,6 +251,7 @@ export default {
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="labelLeft"
+        :disabled="disabled"
         @doubleClickOnItem="onLeftListBoxDoubleClick"
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
         @keyArrowRight="onKeyRightArrow"
@@ -255,7 +260,7 @@ export default {
       <div class="buttons">
         <div
           ref="moveRight"
-          :class="{ disabled: moveRightButtonDisabled }"
+          :class="{ disabled: moveRightButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveRightButtonClick"
@@ -265,7 +270,7 @@ export default {
         </div>
         <div
           ref="moveAllRight"
-          :class="{ disabled: moveAllRightButtonDisabled }"
+          :class="{ disabled: moveAllRightButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllRightButtonClick"
@@ -275,7 +280,7 @@ export default {
         </div>
         <div
           ref="moveLeft"
-          :class="{ disabled: moveLeftButtonDisabled }"
+          :class="{ disabled: moveLeftButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveLeftButtonClick"
@@ -285,7 +290,7 @@ export default {
         </div>
         <div
           ref="moveAllLeft"
-          :class="{ disabled: moveAllLeftButtonDisabled }"
+          :class="{ disabled: moveAllLeftButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllLeftButtonClick"
@@ -301,6 +306,7 @@ export default {
         :possible-values="rightItems"
         :size="listSize"
         :aria-label="labelRight"
+        :disabled="disabled"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"
         @keyArrowLeft="onKeyLeftArrow"
@@ -331,6 +337,11 @@ export default {
     display: flex;
     align-items: stretch;
     flex-direction: row;
+
+    &.disabled {
+      color: var(--knime-dove-gray);
+      opacity: 0.5;
+    }
   }
 
   & .space,
