@@ -1,4 +1,5 @@
 import { ExtensionTypes } from './ExtensionTypes';
+import { FlowVariableSettings } from './FlowVariableSettings';
 import { NodeInfo } from './NodeInfo';
 import { ResourceInfo } from './ResourceInfo';
 
@@ -28,4 +29,5 @@ export type ExtensionConfig<T = any> = {
     extensionType: ExtensionTypes;
     initialData?: T;
     initialSelection?: T;
+    flowVariableSettings?: FlowVariableSettings;
 };

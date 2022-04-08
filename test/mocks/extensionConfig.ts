@@ -56,5 +56,9 @@ export const extensionConfig: ExtensionConfig = {
         nodeWarnMessage: null,
         nodeName: 'Scatter Plot'
     },
-    extensionType: ExtensionTypes.VIEW
+    extensionType: ExtensionTypes.VIEW,
+    flowVariableSettings: {
+        modelVariables: {},
+        viewVariables: {}
+    }
 };

@@ -11,3 +11,4 @@ export * from './EventTypes';
 export * from './ResourceTypes';
 export * from './CallServiceResponse';
 export * from './CallableService';
+export * from './FlowVariableSettings';

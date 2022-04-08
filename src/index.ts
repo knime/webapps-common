@@ -3,7 +3,8 @@ export {
     JsonDataService,
     IFrameKnimeService,
     IFrameKnimeServiceAdapter,
-    SelectionService
+    SelectionService,
+    DialogService
 } from './services';
 
 import * as KnimeTypes from './types';
