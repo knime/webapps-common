@@ -33,6 +33,16 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
     }
 
     /**
+     * Adds a new message event listener
+     *
+     * @returns {void}
+     */
+    updateEventListener() {
+        window.removeEventListener('message', this.boundOnMessageFromIFrame);
+        window.addEventListener('message', this.boundOnMessageFromIFrame);
+    }
+
+    /**
      * Checks if message is coming from the correct IFrame and therefore is secure.
      * @param {MessageEvent} event - postMessage event.
      * @returns {boolean} - returns true if postMessage source is secure.
