@@ -1,8 +1,9 @@
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import typescript from 'rollup-plugin-ts';
+import { terser } from 'rollup-plugin-terser';
 
-export default {
+export default [{
     input: ['./src/index.ts'],
     output: [
         {
@@ -24,4 +25,23 @@ export default {
             ]
         })
     ]
-};
+}, {
+    input: ['./src/main.ts'],
+    output: [
+        {
+            file: './dist/knime-ui-extension-service.min.js',
+            format: 'iife',
+            name: 'KnimeUIExtensionService'
+        }
+    ],
+    plugins: [
+        commonjs(),
+        typescript(),
+        terser({
+            output: {
+                comments: 'all'
+            },
+            mangle: false
+        })
+    ]
+}];
