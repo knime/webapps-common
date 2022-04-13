@@ -31,17 +31,28 @@ export default [{
         {
             file: './dist/knime-ui-extension-service.min.js',
             format: 'iife',
-            name: 'KnimeUIExtensionService'
+            name: 'KnimeUIExtensionService',
+            plugins: [terser({
+                /* eslint-disable camelcase */
+                keep_classnames: true,
+                keep_fnames: true
+                /* eslint-enable camelcase */
+            })]
+        },
+        {
+            file: './dist/knime-ui-extension-service.dev.js',
+            format: 'iife',
+            name: 'KnimeUIExtensionService',
+            plugins: [terser({
+                output: {
+                    comments: 'all'
+                },
+                mangle: false
+            })]
         }
     ],
     plugins: [
         commonjs(),
-        typescript(),
-        terser({
-            output: {
-                comments: 'all'
-            },
-            mangle: false
-        })
+        typescript()
     ]
 }];
