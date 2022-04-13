@@ -48,18 +48,33 @@ declare class KnimeService<T = any> {
      */
     constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
     /**
-     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
+     * Public service call wrapper with full error handling which can be used by subclasses/typed service
+     * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - rejected or resolved depending on response success.
+     * @returns {Promise} - resolved promise containing error or result depending on response success.
      */
     /**
-     * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
+     * Public service call wrapper with full error handling which can be used by subclasses/typed service
+     * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - rejected or resolved depending on response success.
+     * @returns {Promise} - resolved promise containing error or result depending on response success.
      */
     callService(serviceParams: ServiceParameters): Promise<any>;
+    /**
+     * Base service call wrapper with only basic pre-flight error handling which returns the raw service response.
+     *
+     * @param {ServiceParameters} serviceParams - service parameters for the service call.
+     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     */
+    /**
+     * Base service call wrapper with only basic pre-flight error handling which returns the raw service response.
+     *
+     * @param {ServiceParameters} serviceParams - service parameters for the service call.
+     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     */
+    callServiceBase(serviceParams: ServiceParameters): Promise<any>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
