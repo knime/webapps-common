@@ -19,14 +19,14 @@ export default {
     },
     props: {
         /**
-         * One of 'info', 'error', 'success'. Defaults to 'info'.
+         * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
          * This has no implication on functionality, only styling
          */
         type: {
             type: String,
             default: 'info',
             validator(type = 'info') {
-                return ['info', 'error', 'success'].includes(type);
+                return ['info', 'error', 'success', 'warn'].includes(type);
             }
         },
         /**
@@ -340,6 +340,14 @@ section {
 
     & .message-count {
       color: var(--theme-color-success);
+    }
+  }
+
+  &.warn {
+    background-color: var(--theme-color-action-required);
+
+    & .message-count {
+      background-color: var(--theme-color-action-required);
     }
   }
 }
