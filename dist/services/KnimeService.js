@@ -38,21 +38,6 @@ class KnimeService {
      * @returns {Promise} - resolved promise containing error or result depending on response success.
      */
     async callService(serviceParams) {
-        const response = await this.callServiceBase(serviceParams);
-        const { error, result } = response || {};
-        if (error) {
-            this.sendError(error);
-            return Promise.resolve({ error });
-        }
-        return Promise.resolve(result);
-    }
-    /**
-     * Base service call wrapper with only basic pre-flight error handling which returns the raw service response.
-     *
-     * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
-     */
-    callServiceBase(serviceParams) {
         if (!this.extensionConfig) {
             const error = this.createAlert({
                 subtitle: 'Missing extension config',
@@ -69,7 +54,14 @@ class KnimeService {
             this.sendError(error);
             return Promise.resolve({ error });
         }
-        return this.executeServiceCall(serviceParams);
+        const response = await this.executeServiceCall(serviceParams);
+        // handle top level RPC errors only
+        const { error } = response || {};
+        if (error) {
+            this.sendError(error);
+            return Promise.resolve({ error });
+        }
+        return Promise.resolve(response);
     }
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).

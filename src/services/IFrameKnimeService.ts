@@ -63,7 +63,7 @@ export class IFrameKnimeService extends KnimeService {
         if (!data.type?.startsWith(UI_EXT_POST_MESSAGE_PREFIX)) {
             return;
         }
-
+        let payload;
         switch (data.type) {
             case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
                 this.onInit(data);
@@ -74,7 +74,12 @@ export class IFrameKnimeService extends KnimeService {
                 break;
 
             case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
-                this.onServiceNotification(data.payload.data);
+                ({ payload = {} } = data);
+                if (payload.hasOwnProperty('method')) {
+                    this.onServiceNotification(payload);
+                } else {
+                    this.onServiceNotification(payload.data);
+                }
                 break;
 
             default:

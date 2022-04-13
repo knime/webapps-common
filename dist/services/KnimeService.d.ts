@@ -61,20 +61,21 @@ declare class KnimeService<T = any> {
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - resolved promise containing error or result depending on response success.
      */
-    callService(serviceParams: ServiceParameters): Promise<any>;
-    /**
-     * Base service call wrapper with only basic pre-flight error handling which returns the raw service response.
-     *
-     * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
-     */
-    /**
-     * Base service call wrapper with only basic pre-flight error handling which returns the raw service response.
-     *
-     * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
-     */
-    callServiceBase(serviceParams: ServiceParameters): Promise<any>;
+    callService(serviceParams: ServiceParameters): Promise<{
+        error: {
+            nodeId: string;
+            nodeInfo: NodeInfo$0;
+            type: AlertTypes;
+            message: string;
+            code: string | number;
+            subtitle: string;
+        };
+    } | {
+        error: {
+            code: string;
+            message: string;
+        };
+    }>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.

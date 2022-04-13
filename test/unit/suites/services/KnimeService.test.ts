@@ -65,7 +65,7 @@ describe('KnimeService', () => {
             const knimeService = new KnimeService(extensionConfig, callableMock);
             const testResult = await knimeService.callService(serviceParams);
             expect(callableMock).toHaveBeenCalledWith(...serviceParams);
-            expect(testResult).toBe(result);
+            expect(testResult).toStrictEqual({ result });
         });
     });
 

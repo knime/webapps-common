@@ -40,9 +40,7 @@ describe('JsonDataService', () => {
             const knimeService = new KnimeService(localExtensionConfig, callServiceSpy, pushNotificationSpy);
             const jsonDataService = new JsonDataService(knimeService);
             const response = await jsonDataService.initialData();
-            expect(response).toStrictEqual({
-                settings: extensionConfig.initialData.result.settings
-            });
+            expect(response).toStrictEqual(JSON.stringify(extensionConfig.initialData));
         });
     });
 

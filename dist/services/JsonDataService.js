@@ -27,7 +27,7 @@ class JsonDataService {
      * @returns {Promise} rejected or resolved depending on backend response.
      */
     callDataService(dataServiceType, request = '') {
-        return this.knimeService.callServiceBase([NodeServices.CALL_NODE_DATA_SERVICE, dataServiceType, request])
+        return this.knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE, dataServiceType, request])
             // empty string check is required because it cannot be parsed but is a valid/expected response
             .then((response) => typeof response === 'string' && response !== '' ? JSON.parse(response) : response);
     }
@@ -74,7 +74,7 @@ class JsonDataService {
      */
     async data(params = {}) {
         const response = await this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
-        const { error, warningMessages, result } = response || {};
+        const { error, warningMessages, result } = (response === null || response === void 0 ? void 0 : response.result) || {};
         if (error) {
             this.handleError(Object.assign(Object.assign({}, error.data || {}), error));
             return Promise.resolve({ error });

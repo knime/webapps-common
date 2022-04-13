@@ -104,7 +104,9 @@ describe('IFrameKnimeServiceAdapter', () => {
 
             expect(childSpy).toBeCalledWith({
                 payload: {
-                    response: JSON.stringify([1, 1, 2]),
+                    response: {
+                        result: JSON.stringify([1, 1, 2])
+                    },
                     requestId
                 },
                 type: 'knimeUIExtension:callServiceResponse'
