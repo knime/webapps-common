@@ -69,7 +69,6 @@ declare namespace KnimeTypes {
         resourceInfo: ResourceInfo;
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
-        flowVariableSettings: Object;
         initialData?: T;
     };
     type Notification = {
@@ -239,7 +238,6 @@ declare namespace KnimeUIExtensionService {
         resourceInfo: ResourceInfo;
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
-        flowVariableSettings: Object;
         initialData?: T;
     };
     type Notification = {
@@ -591,6 +589,12 @@ declare namespace KnimeUIExtensionService {
          * @returns {void}
          */
         setIFrameWindow(iFrameWindow: Window): void;
+        /**
+         * Adds a new message event listener
+         *
+         * @returns {void}
+         */
+        updateEventListener(): void;
         /**
          * Checks if message is coming from the correct IFrame and therefore is secure.
          * @param {MessageEvent} event - postMessage event.
