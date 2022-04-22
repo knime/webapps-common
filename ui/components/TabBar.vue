@@ -136,7 +136,7 @@ export const tabBarMixin = {
 
 <template>
   <Carousel>
-    <div class="wrapper">
+    <div class="tab-bar">
       <div class="overflow">
         <label
           v-for="item in possibleValues"
@@ -165,7 +165,7 @@ export const tabBarMixin = {
 </template>
 
 <style lang="postcss" scoped>
-.wrapper {
+.tab-bar {
   width: 100%;
   position: relative;
   margin-top: -20px;
@@ -173,12 +173,6 @@ export const tabBarMixin = {
   padding-bottom: 20px;
   display: inline-block;
   z-index: 1; /* create local stacking context */
-
-  @media only screen and (max-width: 900px) {
-    margin-top: -10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
 
   & .overflow {
     height: 55px;
@@ -223,13 +217,6 @@ span {
   height: 51px;
   line-height: 51px;
   color: var(--knime-dove-gray);
-
-  @media only screen and (max-width: 900px) {
-    padding: 0 7px;
-    font-size: 13px;
-    height: 41px;
-    line-height: 40px;
-  }
 }
 
 label:not(:last-child) {
@@ -244,13 +231,6 @@ svg {
   margin-right: 2px;
   stroke: var(--knime-dove-gray);
   stroke-width: calc(32px / 21);
-
-  @media only screen and (max-width: 900px) {
-    vertical-align: -4px;
-    width: 16px;
-    height: 16px;
-    stroke-width: calc(32px / 16);
-  }
 }
 
 input:disabled + span {
@@ -284,13 +264,5 @@ input:checked:not(:disabled) + span::after {
 input:not(:checked):not(:disabled) + span {
   cursor: pointer;
 }
-
-@media only screen and (max-width: 900px) {
-  >>> .carousel::after {
-    left: 0;
-    right: 0;
-  }
-}
-
 
 </style>

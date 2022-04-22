@@ -39,7 +39,7 @@ describe('TabBar.vue', () => {
 
         expect(wrapper.find(Carousel).exists()).toBe(true);
         expect(wrapper.find(NodeIcon).exists()).toBeTruthy();
-        expect(wrapper.find('.wrapper').exists()).toBeTruthy();
+        expect(wrapper.find('.tab-bar').exists()).toBeTruthy();
         expect(wrapper.find('.overflow').exists()).toBeTruthy();
         expect(wrapper.find('input:checked').attributes('value')).toEqual('all');
     });

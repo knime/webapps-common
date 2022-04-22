@@ -40,7 +40,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="renderableOptions.length">
+  <div v-if="renderableOptions.length" class="dialog-options">
     <template v-for="(option, index) in renderableOptions">
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
@@ -123,11 +123,6 @@ li {
 .option-description {
   font-size: 16px;
   line-height: 28px;
-
-  @media only screen and (max-width: 900px) {
-    font-size: 13px;
-    line-height: 24px;
-  }
 }
 
 .optional {
