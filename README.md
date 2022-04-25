@@ -7,13 +7,15 @@ of all KNIME web projects. It also includes an internal NPM package, knime-build
 commonly used in KNIME web projects.
 
 ## Demo
----
-Run
+
+A demo of all contained UI components, icons, CSS colors etc. can be found here:
+https://knime.github.io/webapps-common/
+
+or by calling
 ```sh
 npm run demo
 ```
 
-to see the included components.
 
 ## Usage
 ---

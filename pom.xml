@@ -33,84 +33,161 @@
 		<dependency-check.skip>true</dependency-check.skip>
 	</properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<configuration>
-					<installDirectory>${project.build.directory}</installDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>install node and npm</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<configuration>
-							<nodeVersion>${node.version}</nodeVersion>
-							<npmVersion>${npm.version}</npmVersion>
-						</configuration>
-					</execution>
+	<profiles>
+		<profile>
+			<id>build</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 
-					<execution>
-						<id>npm ci</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
 						<configuration>
-							<arguments>ci</arguments>
+							<installDirectory>${project.build.directory}</installDirectory>
 						</configuration>
-					</execution>
+						<executions>
+							<execution>
+								<id>install node and npm</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<configuration>
+									<nodeVersion>${node.version}</nodeVersion>
+									<npmVersion>${npm.version}</npmVersion>
+								</configuration>
+							</execution>
 
-					<execution>
-						<id>npm run coverage</id>
-						<phase>test</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
+							<execution>
+								<id>npm ci</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>ci</arguments>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>npm run coverage</id>
+								<phase>test</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run coverage -- --ci</arguments>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>npm run audit</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run audit</arguments>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>npm run lint</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run lint:ci</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>3.0.0</version>
 						<configuration>
-							<arguments>run coverage -- --ci</arguments>
+							<filesets>
+								<fileset>
+									<directory>coverage</directory>
+								</fileset>
+							</filesets>
 						</configuration>
-					</execution>
-
-					<execution>
-						<id>npm run audit</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>deployDemoPage</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
 						<configuration>
-							<arguments>run audit</arguments>
+							<installDirectory>${project.build.directory}</installDirectory>
 						</configuration>
-					</execution>
+						<executions>
+							<execution>
+								<id>install node and npm</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+								<configuration>
+									<nodeVersion>${node.version}</nodeVersion>
+									<npmVersion>${npm.version}</npmVersion>
+								</configuration>
+							</execution>
 
-					<execution>
-						<id>npm run lint</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run lint:ci</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+							<execution>
+								<id>npm ci</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>ci</arguments>
+									<workingDirectory>demo</workingDirectory>
+								</configuration>
+							</execution>
 
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>coverage</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+							<execution>
+								<id>npm run generate</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run generate</arguments>
+									<workingDirectory>demo</workingDirectory>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>npm run deploy</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run deploy</arguments>
+									<workingDirectory>demo</workingDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
