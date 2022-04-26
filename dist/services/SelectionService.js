@@ -17,40 +17,38 @@ class SelectionService {
         this.knimeService = knimeService;
     }
     /**
-     * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
-     * The selection service to call is specified by the service type and needs to correspond directly to
-     * a {@see SelectionServices}.
-     *
-     * @param {SelectionMode} selectionMode - the selection mode.
-     * @param {string} request - the request payload.
-     * @returns {Promise} rejected or resolved depending on backend response.
+     * Replaces current selection with provided data.
+     * @param {SelectionMode} mode - the selection mode.
+     * @param selection - will be passed as params to backend SelectionService update selection method.
+     * @returns {Promise<Object>} - based on backend implementation.
      */
-    callSelectionService(selectionMode, request) {
-        return this.knimeService.callService([NodeServices.CALL_NODE_SELECTION_SERVICE, selectionMode, request]).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+    updateSelection(mode, selection) {
+        return this.knimeService.callService([NodeServices.CALL_NODE_SELECTION_SERVICE, mode,
+            Array.isArray(selection) ? JSON.stringify(selection) : selection]).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
     /**
      * Adds data to currently selected data set.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService add selection method
+     * @param selection - will be passed as params to backend SelectionService add selection method
      * @returns {Promise<Object>} based on backend implementation.
      */
-    add(keys) {
-        return this.callSelectionService(SelectionModes.ADD, keys);
+    add(selection) {
+        return this.updateSelection(SelectionModes.ADD, selection);
     }
     /**
      * Removes data from currently selected data set.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
-     * @returns {Promise<Object>} - based on backend implementation.
+     * @param selection - will be passed as params to backend SelectionService add selection method
+     * @returns {Promise<Object>} based on backend implementation.
      */
-    remove(keys) {
-        return this.callSelectionService(SelectionModes.REMOVE, keys);
+    remove(selection) {
+        return this.updateSelection(SelectionModes.REMOVE, selection);
     }
     /**
      * Replaces current selection with provided data.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
-     * @returns {Promise<Object>} - based on backend implementation.
+     * @param selection - will be passed as params to backend SelectionService add selection method
+     * @returns {Promise<Object>} based on backend implementation.
      */
-    replace(keys) {
-        return this.callSelectionService(SelectionModes.REPLACE, keys);
+    replace(selection) {
+        return this.updateSelection(SelectionModes.REPLACE, selection);
     }
     /**
      * Adds callback that will be triggered on data selection change by backend.

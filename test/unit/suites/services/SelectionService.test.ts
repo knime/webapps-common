@@ -12,6 +12,7 @@ describe('SelectionService', () => {
             expect(selectionService).toHaveProperty('add');
             expect(selectionService).toHaveProperty('remove');
             expect(selectionService).toHaveProperty('replace');
+            expect(selectionService).toHaveProperty('updateSelection');
             expect(selectionService).toHaveProperty('addOnSelectionChangeCallback');
             expect(selectionService).toHaveProperty('removeOnSelectionChangeCallback');
         });
@@ -31,20 +32,20 @@ describe('SelectionService', () => {
             expect(callableService.mock.calls[0]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.ADD,
-                params
+                JSON.stringify(params)
             ]);
 
             await selectionService.remove(params);
             expect(callableService.mock.calls[1]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.REMOVE,
-                params
+                JSON.stringify(params)
             ]);
             await selectionService.replace(params);
             expect(callableService.mock.calls[2]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.REPLACE,
-                params
+                JSON.stringify(params)
             ]);
         });
 
