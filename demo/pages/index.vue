@@ -34,6 +34,7 @@ import NodePreview from '../components/NodePreview';
 import NumberInput from '../components/NumberInput';
 import OpenSourceCredits from '../components/OpenSourceCredits';
 import RadioButtons from '../components/RadioButtons';
+import ValueSwitch from '../components/ValueSwitch';
 import SplitButton from '../components/SplitButton';
 import SubMenu from '../components/SubMenu';
 import TabBarDemo from '../components/TabBar';
@@ -87,6 +88,7 @@ export default {
         NumberInput,
         OpenSourceCredits,
         RadioButtons,
+        ValueSwitch,
         SplitButton,
         SubMenu,
         TabBar,
@@ -191,6 +193,7 @@ export default {
       <Checkbox />
       <Checkboxes />
       <RadioButtons />
+      <ValueSwitch />
       <DateTimeInput />
       <TimePartInput />
       <ListBox />
