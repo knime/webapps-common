@@ -6,14 +6,24 @@ import code from '!!raw-loader!../../ui/components/forms/ValueSwitch';
 const codeExample = `<ValueSwitch
   v-model="selected"
   :possible-values="[{
+    id: 'eur',
+    text: 'EUR'
+  }, {
+    id: 'usd',
+    text: 'USD'
+  }]"
+/>
+<ValueSwitch
+  v-model="selected"
+  :possible-values="[{
     id: 'foo',
     text: 'Foo'
   }, {
-    id: 'bar',
-    text: 'Bar'
+    id: 'barbaz',
+    text: 'Barbaz'
   }, {
-    id: 'baz',
-    text: 'Baz'
+    id: 'qux',
+    text: 'Qux'
   }]"
 />
 `;
@@ -26,7 +36,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: 'bar'
+            selected: 'eur',
+            selectedLarge: 'foobar'
         };
     },
     computed: {
@@ -50,23 +61,36 @@ export default {
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-5">
+        <div class="grid-item-4">
           <ValueSwitch
             v-model="selected"
             :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
+              id: 'eur',
+              text: 'EUR'
             }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
+              id: 'usd',
+              text: 'USD'
             }]"
           />
         </div>
-        <div class="grid-item-5">
-          selected id: {{ selected }}
+        <div class="grid-item-4">
+          <ValueSwitch
+            v-model="selectedLarge"
+            :possible-values="[{
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'foobar',
+              text: 'Foobar'
+            }, {
+              id: 'qux',
+              text: 'Qux'
+            }]"
+          />
+        </div>
+        <div class="grid-item-4">
+          selected id: {{ selected }}<br>
+          selected id: {{ selectedLarge }}
         </div>
       </div>
     </section>
