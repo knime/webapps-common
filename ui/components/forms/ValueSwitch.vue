@@ -82,22 +82,23 @@ export default {
   align-items: center;
   height: 30px;
   width: max-content;
-  border-radius: 50px;
-  border: 1px solid black;
   padding: 3px;
+  border-radius: 50px;
+  border: 1px solid var(--knime-stone-gray);
 
   & span {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 41px;
     height: 24px;
+    min-width: 41px;
+    padding: 0 10px;
     font-weight: 300;
     font-size: 13px;
     line-height: 18px;
     cursor: pointer;
     border-radius: 50px;
-    transition: background-color 0.2s ease-in 0.1s;
+    transition: background-color 0.1s ease-in 0.05s;
 
     &:hover {
       background-color: var(--theme-value-switch-background-color-hover);
