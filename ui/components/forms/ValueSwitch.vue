@@ -39,13 +39,13 @@ export default {
     methods: {
         onInput($event) {
             /**
-             * Fired when the radio button value changes.
+             * Fired when the ValueSwitch value changes.
              *
              * @event input
              * @type {String}
              */
             let value = $event.target.value;
-            consola.trace('RadioButton value changed to', value);
+            consola.trace('ValueSwitch value changed to', value);
             this.$emit('input', value);
         }
     }
@@ -58,7 +58,7 @@ export default {
     class="value-switch"
     role="radiogroup"
   >
-    <div
+    <label
       v-for="item of possibleValues"
       :key="`value-switch-${item.id}`"
     >
@@ -71,11 +71,8 @@ export default {
         type="radio"
         @change="onInput"
       >
-      <label
-        :for="item.id"
-        :title="item.text"
-      >{{ item.text }}</label>
-    </div>
+      <span :title="item.text">{{ item.text }}</span>
+    </label>
   </div>
 </template>
 
@@ -89,7 +86,7 @@ export default {
   border: 1px solid black;
   padding: 3px;
 
-  & label {
+  & span {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -111,7 +108,7 @@ export default {
     user-select: none;
     display: none;
 
-    &:checked + label {
+    &:checked + span {
       background-color: var(--theme-value-switch-background-color-checked);
       color: var(--theme-value-switch-background-color);
     }
