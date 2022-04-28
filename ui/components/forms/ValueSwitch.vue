@@ -54,6 +54,7 @@ export default {
 
 <template>
   <div
+    v-if="possibleValues && possibleValues.length"
     :id="id"
     class="value-switch"
     role="radiogroup"
