@@ -12,7 +12,6 @@ describe('SelectionService', () => {
             expect(selectionService).toHaveProperty('add');
             expect(selectionService).toHaveProperty('remove');
             expect(selectionService).toHaveProperty('replace');
-            expect(selectionService).toHaveProperty('updateSelection');
             expect(selectionService).toHaveProperty('addOnSelectionChangeCallback');
             expect(selectionService).toHaveProperty('removeOnSelectionChangeCallback');
         });

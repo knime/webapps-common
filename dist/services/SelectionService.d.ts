@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index-a3360790";
-import { Notification, SelectionModes } from "../index-f7c46dc0";
+import { Notification } from "../index-f7c46dc0";
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.
@@ -26,7 +26,7 @@ declare class SelectionService<T = any> {
      * @param selection - will be passed as params to backend SelectionService update selection method.
      * @returns {Promise<Object>} - based on backend implementation.
      */
-    updateSelection(mode: SelectionModes, selection: (string | string[])): Promise<any>;
+    private updateSelection;
     /**
      * Adds data to currently selected data set.
      * @param selection - will be passed as params to backend SelectionService add selection method

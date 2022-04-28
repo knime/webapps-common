@@ -22,7 +22,7 @@ export class SelectionService<T = any> {
      * @param selection - will be passed as params to backend SelectionService update selection method.
      * @returns {Promise<Object>} - based on backend implementation.
      */
-    updateSelection(mode: SelectionModes, selection: (string | string[])) {
+    private updateSelection(mode: SelectionModes, selection: (string | string[])) {
         return this.knimeService.callService(
             [NodeServices.CALL_NODE_SELECTION_SERVICE, mode,
                 Array.isArray(selection) ? JSON.stringify(selection) : selection]

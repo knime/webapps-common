@@ -631,7 +631,7 @@ declare namespace KnimeUIExtensionService {
          * @param selection - will be passed as params to backend SelectionService update selection method.
          * @returns {Promise<Object>} - based on backend implementation.
          */
-        updateSelection(mode: SelectionModes, selection: (string | string[])): Promise<any>;
+        private updateSelection;
         /**
          * Adds data to currently selected data set.
          * @param selection - will be passed as params to backend SelectionService add selection method
