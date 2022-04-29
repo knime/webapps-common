@@ -628,28 +628,28 @@ declare namespace KnimeUIExtensionService {
         /**
          * Replaces current selection with provided data.
          * @param {SelectionMode} mode - the selection mode.
-         * @param selection - will be passed as params to backend SelectionService update selection method.
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
          * @returns {Promise<Object>} - based on backend implementation.
          */
         private updateSelection;
         /**
          * Adds data to currently selected data set.
-         * @param selection - will be passed as params to backend SelectionService add selection method
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
          * @returns {Promise<Object>} based on backend implementation.
          */
-        add(selection: (string | string[])): Promise<any>;
+        add(selection: (string | string[])): Promise<object>;
         /**
          * Removes data from currently selected data set.
-         * @param selection - will be passed as params to backend SelectionService add selection method
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
          * @returns {Promise<Object>} based on backend implementation.
          */
-        remove(selection: (string | string[])): Promise<any>;
+        remove(selection: (string | string[])): Promise<object>;
         /**
          * Replaces current selection with provided data.
-         * @param selection - will be passed as params to backend SelectionService add selection method
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
          * @returns {Promise<Object>} based on backend implementation.
          */
-        replace(selection: (string | string[])): Promise<any>;
+        replace(selection: (string | string[])): Promise<object>;
         /**
          * Adds callback that will be triggered on data selection change by backend.
          * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
