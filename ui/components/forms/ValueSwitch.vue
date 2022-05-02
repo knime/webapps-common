@@ -1,84 +1,24 @@
 <script>
-let count = 0;
+import BaseRadioButtons from './BaseRadioButtons';
+
 export default {
-    props: {
-        id: {
-            type: String,
-            default: null
-        },
-        value: {
-            type: String,
-            default: ''
-        },
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property
-         * @example
-         * [{
-         *   id: 'pdf',
-         *   text: 'PDF'
-         * }, {
-         *   id: 'XLS',
-         *   text: 'Excel',
-         * }]
-         */
-        possibleValues: {
-            type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
-        }
-    },
-    beforeCreate() {
-        count += 1;
-        this.count = count;
-    },
-    methods: {
-        onInput($event) {
-            /**
-             * Fired when the ValueSwitch value changes.
-             *
-             * @event input
-             * @type {String}
-             */
-            let value = $event.target.value;
-            consola.trace('ValueSwitch value changed to', value);
-            this.$emit('input', value);
-        }
+    components: {
+        BaseRadioButtons
     }
 };
 </script>
 
 <template>
-  <div
-    v-if="possibleValues && possibleValues.length"
-    :id="id"
+  <BaseRadioButtons
+    ref="radioButton"
     class="value-switch"
-    role="radiogroup"
-  >
-    <label
-      v-for="item of possibleValues"
-      :key="`value-switch-${item.id}`"
-    >
-      <input
-        :id="item.id"
-        ref="input"
-        :checked="(value === item.id)"
-        :value="item.id"
-        :name="`value-switch-${count}`"
-        type="radio"
-        @change="onInput"
-      >
-      <span :title="item.text">{{ item.text }}</span>
-    </label>
-  </div>
+    v-bind="$attrs"
+    v-on="$listeners"
+  />
 </template>
 
 <style lang="postcss" scoped>
-.value-switch {
+.value-switch >>> {
   display: flex;
   align-items: center;
   height: 30px;
