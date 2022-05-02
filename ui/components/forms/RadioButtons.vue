@@ -1,96 +1,39 @@
 <script>
-let count = 0;
+import BaseRadioButtons from './BaseRadioButtons';
+
 export default {
+    components: {
+        BaseRadioButtons
+    },
     props: {
-        id: {
-            type: String,
-            default: null
-        },
-        value: {
-            type: String,
-            default: ''
-        },
-        /**
-         * Controls the alignment of the RadioButtons
-         */
         alignment: {
             type: String,
             default: 'horizontal',
             validator(val) {
                 return ['horizontal', 'vertical'].includes(val);
             }
-        },
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property
-         * @example
-         * [{
-         *   id: 'pdf',
-         *   text: 'PDF'
-         * }, {
-         *   id: 'XLS',
-         *   text: 'Excel',
-         * }]
-         */
-        possibleValues: {
-            type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
         }
     },
-    beforeCreate() {
-        count += 1;
-        this.count = count;
-    },
     methods: {
-        onInput($event) {
-            /**
-             * Fired when the radio button value changes.
-             *
-             * @event input
-             * @type {String}
-             */
-            let value = $event.target.value;
-            consola.trace('RadioButton value changed to', value);
-            this.$emit('input', value);
-        },
         hasSelection() {
             /* looks in the DOM if one radio button is checked */
-            return this.$refs.input.some(x => x.checked);
+            return this.$refs.radioButton.$refs.input.some(x => x.checked);
         }
     }
 };
 </script>
 
 <template>
-  <div
-    :id="id"
+  <BaseRadioButtons
+    ref="radioButton"
     :class="['radio-buttons', alignment]"
-    role="radiogroup"
-  >
-    <label
-      v-for="item of possibleValues"
-      :key="`radio-${item.id}`"
-    >
-      <input
-        ref="input"
-        :checked="(value === item.id)"
-        :value="item.id"
-        :name="`wc-radio-${count}`"
-        type="radio"
-        @change="onInput"
-      >
-      <span :title="item.text">{{ item.text }}</span>
-    </label>
-  </div>
+    v-bind="$attrs"
+    v-on="$listeners"
+  />
 </template>
 
 <style lang="postcss" scoped>
-.radio-buttons {
+.radio-buttons >>> {
   user-select: none;
 
   & label {
@@ -166,24 +109,24 @@ export default {
     }
   }
 
-  &.horizontal {
-    display: flex;
-    flex-wrap: wrap;
-
-    & label {
-      min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
-
-      &:not(:last-of-type) {
-        padding-right: 12px;
-      }
-    }
-  }
-
   /* stylelint-disable no-descending-specificity */
   &:focus-within label input + span::before {
     border: 1px solid var(--theme-radio-border-color-focus);
   }
   /* stylelint-enable no-descending-specificity */
+}
+
+.horizontal >>> {
+  display: flex;
+  flex-wrap: wrap;
+
+  & label {
+    min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
+
+    &:not(:last-of-type) {
+      padding-right: 12px;
+    }
+  }
 }
 
 </style>
