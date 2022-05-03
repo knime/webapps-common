@@ -1,5 +1,6 @@
 !.eslintrc*.js
 dist/
 coverage/
+target/
 demo/node_modules/
 buildtools/node_modules/

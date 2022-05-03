@@ -26,7 +26,10 @@ export default {
 </script>
 
 <template>
-  <ul v-if="links && links.length" class="link-list">
+  <ul
+    v-if="links && links.length"
+    class="link-list"
+  >
     <li
       v-for="(link, index) of links"
       :key="index"

@@ -40,7 +40,10 @@ export default {
 </script>
 
 <template>
-  <div v-if="renderableOptions.length" class="dialog-options">
+  <div
+    v-if="renderableOptions.length"
+    class="dialog-options"
+  >
     <template v-for="(option, index) in renderableOptions">
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
