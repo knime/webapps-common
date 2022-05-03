@@ -173,8 +173,7 @@
 
   /* Value Switch */
   --theme-value-switch-background-color: var(--knime-white);
-  --theme-value-switch-background-color-focus: var(--knime-dove-gray);
-  --theme-value-switch-background-color-hover: rgba(192, 196, 198, 0.5);
+  --theme-value-switch-background-color-hover: var(--knime-silver-sand-semi);
   --theme-value-switch-background-color-checked: var(--knime-masala);
 
   /* Slider */
