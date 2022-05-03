@@ -119,16 +119,5 @@ svg {
   font-size: 16px;
   line-height: 28px;
   margin-top: 0;
-
-  @media only screen and (max-width: 900px) {
-    font-size: 13px;
-    line-height: 24px;
-  }
-}
-
-@media only screen and (max-width: 900px) {
-  h6 {
-    width: 110px;
-  }
 }
 </style>

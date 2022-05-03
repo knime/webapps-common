@@ -26,7 +26,10 @@ export default {
 </script>
 
 <template>
-  <ul v-if="links && links.length">
+  <ul
+    v-if="links && links.length"
+    class="link-list"
+  >
     <li
       v-for="(link, index) of links"
       :key="index"
@@ -89,21 +92,6 @@ ul {
       & svg {
         stroke: var(--knime-masala);
       }
-    }
-  }
-}
-
-@media only screen and (max-width: 900px) {
-  ul {
-    font-size: 13px;
-    line-height: 19px;
-    column-count: 1;
-    --icon-size: 13px;
-    --icon-spacing: 5px;
-
-    & li svg {
-      top: 3px;
-      stroke-width: calc(32px / 13);
     }
   }
 }
