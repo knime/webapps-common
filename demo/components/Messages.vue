@@ -20,25 +20,28 @@ export default {
                 message: 'Info message'
             }, {
                 id: 2,
+                type: 'warn',
+                message: 'Warning message'
+            }, {
+                id: 3,
                 type: 'success',
                 message: 'Success message',
                 icon: BulbIcon
             }, {
-                id: 3,
+                id: 4,
                 type: 'error',
                 message: 'Error message',
                 icon: BulbIcon,
-                button: 'Okily Dokily!',
-                details: 'these are details'
+                button: 'Okily Dokily!'
             }, {
-                id: 4,
+                id: 5,
                 type: 'error',
                 message: 'Error message.',
                 icon: BulbIcon,
+                details: 'These are details',
                 link: {
-                    text: 'Some linked text in the error message.',
-                    href: 'https://www.knime.com/', // for external links
-                    // to: '/login' // for internal links
+                    text: 'With appended link and details.',
+                    href: 'https://www.knime.com/'
                 }
             }]
         };
@@ -73,17 +76,21 @@ export default {
                 message: 'Info message'
             }, {
                 id: 2,
+                type: 'warn',
+                message: 'Warning message'
+            }, {
+                id: 3,
                 type: 'success',
                 message: 'Success message',
                 icon: BulbIcon
             }, {
-                id: 3,
+                id: 4,
                 type: 'error',
                 message: 'Error message',
                 icon: BulbIcon,
                 button: 'Okily Dokily!'
             }, {
-                id: 4,
+                id: 5,
                 type: 'error',
                 message: 'Error message.',
                 icon: BulbIcon,

@@ -10,7 +10,7 @@ export default {
         '../../buildtools/opensourcecredits/used-packages.json': '../../demo/assets/used-packages-mock.json'
     },
     head: {
-        title: 'KNIME Web Apps Common Demo',
+        title: 'KNIME WebApps Common',
         meta: [
             { charset: 'utf-8' },
             { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -39,6 +39,10 @@ export default {
             
             config.module.rules.push(svgConfig);
         }
+    },
+    modern: 'client',
+    router: {
+        base: '/webapps-common/'
     },
     render: {
         bundleRenderer: {

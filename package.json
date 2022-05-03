@@ -2,6 +2,7 @@
   "name": "webapps-common",
   "version": "0.0.0",
   "description": "Shared files for web projects. See README for details.",
+  "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7(SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
@@ -39,7 +40,6 @@
     "jest-junit": "6.4.0",
     "jest-transform-stub": "2.0.0",
     "npm-audit-resolver": "2.3.1",
-    "sonar-scanner": "3.1.0",
     "stylelint": "13.6.1",
     "stylelint-config-standard": "20.0.0",
     "vue": "2.6.11",

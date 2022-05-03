@@ -107,23 +107,23 @@ export default {
                 icon: PaletteIcon
             }, {
                 value: 'images',
-                label: 'Images',
+                label: 'Images & Icons',
                 icon: ImageIcon
             }, {
                 value: 'interactive',
-                label: 'Interactive UI',
+                label: 'UI Components',
                 icon: InteractiveIcon
-            }, {
-                value: 'messages',
-                label: 'Messages',
-                icon: TooltipIcon
             }, {
                 value: 'forms',
                 label: 'Forms',
                 icon: CheckboxIcon
             }, {
-                value: 'widgets',
-                label: 'Widgets',
+                value: 'messages',
+                label: 'Messages',
+                icon: TooltipIcon
+            }, {
+                value: 'misc',
+                label: 'Misc',
                 icon: UnknownIcon
             }];
         }
@@ -136,10 +136,10 @@ export default {
     <section>
       <div class="grid-container header">
         <div class="grid-item-12">
-          <h1>Web Apps Common Components</h1>
+          <h1>KNIME WebApps Common</h1>
           <p>
-            This page gives an overview of shared CSS, assets like icons and UI components.
-            It's recommended to integrate them as Git submodule as described in the
+            This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
+            To use them, it's recommended to integrate them as Git submodule as described in the
             <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
           </p>
 
@@ -200,10 +200,10 @@ export default {
       <ToggleSwitch />
       <Twinlist />
     </template>
-    <template v-if="activeTab === 'widgets'">
-      <OpenSourceCredits />
+    <template v-if="activeTab === 'misc'">
       <NodePreview />
       <NodeFeatureList />
+      <OpenSourceCredits />
     </template>
   </main>
 </template>

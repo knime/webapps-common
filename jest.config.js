@@ -27,7 +27,7 @@ module.exports = {
     },
     reporters: ['default', ['jest-junit', { outputDirectory: './coverage' }]],
     coverageReporters: ['lcov', 'text'],
-    // keep in sync with sonar-project.properties!
+    // keep in sync with pom.xml sonar settings!
     collectCoverageFrom: [
         '<rootDir>/**/*.{js,vue}',
         '!config.js',
