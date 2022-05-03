@@ -28,6 +28,13 @@ export default {
         options: {
             type: Array,
             default: () => []
+        },
+        /**
+         * Whether to sanitize the content rendered in the Description components (render as HTML or not)
+         */
+        sanitizeContent: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -55,7 +62,7 @@ export default {
         <Description
           v-if="option.sectionDescription"
           :text="option.sectionDescription"
-          :render-as-html="true"
+          :render-as-html="!sanitizeContent"
           class="section-description"
         />
         <ul class="panel">
@@ -78,7 +85,7 @@ export default {
             <Description
               class="option-description"
               :text="field.description"
-              :render-as-html="true"
+              :render-as-html="!sanitizeContent"
             />
           </li>
         </ul>

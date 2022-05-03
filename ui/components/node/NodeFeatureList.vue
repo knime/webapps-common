@@ -50,6 +50,11 @@ export default {
         emptyText: {
             type: String,
             default: 'This node does not provide any ports, options or views.'
+        },
+        /** Passed through to DialogOptions.vue */
+        sanitizeContent: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -96,6 +101,7 @@ export default {
       />
       <DialogOptions
         v-else-if="activeTab === 'node-dialog-options'"
+        :sanitize-content="sanitizeContent"
         :options="options"
       />
       <ViewsList

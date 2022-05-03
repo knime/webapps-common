@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 
 import DialogOptions from '../../ui/components/node/DialogOptions';
 import Collapser from '../../ui/components/Collapser';
@@ -119,6 +119,29 @@ describe('DialogOptions.vue', () => {
             }
         });
         expect(wrapper.find('.options').exists()).toBeFalsy();
+    });
+
+    it('should sanitize content', () => {
+        const dangerousContent = `</li><span>HELLO WORLD!</span>`;
+        const expectedContent = '&lt;/li&gt;&lt;span&gt;HELLO WORLD!&lt;/span&gt;';
+        const wrapper = mount(DialogOptions, {
+            propsData: {
+                sanitizeContent: true,
+                options: [{
+                    sectionDescription: dangerousContent,
+                    fields: [{
+                        name: '',
+                        description: dangerousContent
+                    }]
+                }]
+            }
+        });
+
+        const sectionDescription = wrapper.find('.section-description');
+        const optionDescription = wrapper.find('.option-description');
+
+        expect(sectionDescription.element.innerHTML).toMatch(expectedContent);
+        expect(optionDescription.element.innerHTML).toMatch(expectedContent);
     });
 });
 
