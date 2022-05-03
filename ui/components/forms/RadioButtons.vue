@@ -108,13 +108,14 @@ export default {
       }
     }
   }
-
-  /* stylelint-disable no-descending-specificity */
-  &:focus-within label input + span::before {
-    border: 1px solid var(--theme-radio-border-color-focus);
-  }
-  /* stylelint-enable no-descending-specificity */
 }
+
+/* stylelint-disable no-descending-specificity */
+.radio-buttons:focus-within >>> label input + span::before {
+  border: 1px solid var(--theme-radio-border-color-focus);
+}
+/* stylelint-enable no-descending-specificity */
+
 
 .horizontal >>> {
   display: flex;
