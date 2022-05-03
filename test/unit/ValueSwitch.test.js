@@ -35,26 +35,6 @@ describe('ValueSwitch.vue', () => {
         });
     });
 
-    it('does not renders when possibleValues is empty', () => {
-        expect(mount(ValueSwitch).html()).toBeFalsy();
-    });
-
-    it('two render with different name attributes', () => {
-        let w1 = mount(ValueSwitch, {
-            propsData: {
-                possibleValues
-            }
-        });
-        let w2 = mount(ValueSwitch, {
-            propsData: {
-                possibleValues
-            }
-        });
-
-        expect(w1.vm.count).not.toBe(w2.vm.count);
-        expect(w1.find('input').attributes().name).not.toBe(w2.find('input').attributes().name);
-    });
-
     it('renders selected value', () => {
         let value = 'test3';
         const wrapper = mount(ValueSwitch, {
@@ -72,30 +52,5 @@ describe('ValueSwitch.vue', () => {
                 expect(switchValues.at(i).element.checked).not.toBeTruthy();
             }
         });
-    });
-
-    it('emits event for selected value', () => {
-        const wrapper = mount(ValueSwitch, {
-            propsData: {
-                possibleValues
-            }
-        });
-        let newValue = 'test2';
-        let input = wrapper.find(`input[value=${newValue}]`);
-        input.setChecked(true);
-        expect(wrapper.emitted().input[0][0]).toEqual(newValue);
-    });
-
-    it('validation of possibleValues', () => {
-        const wrapper = mount(ValueSwitch, {
-            propsData: {
-                possibleValues
-            }
-        });
-        const propPossibleValues = wrapper.vm.$options.props.possibleValues;
-        expect(propPossibleValues.required).toBeFalsy();
-        expect(propPossibleValues.type).toBe(Array);
-        expect(propPossibleValues.validator && propPossibleValues.validator('str')).toBeFalsy();
-        expect(propPossibleValues.validator && propPossibleValues.validator(possibleValues)).toBeTruthy();
     });
 });
