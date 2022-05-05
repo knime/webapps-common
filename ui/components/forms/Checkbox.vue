@@ -13,6 +13,10 @@ export default {
             type: Boolean,
             default: false
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * Controls the size of the label
          * supported values:
@@ -50,6 +54,7 @@ export default {
       ref="input"
       :name="name"
       :checked="value"
+      :disabled="disabled"
       type="checkbox"
       @change="onInput"
     >
