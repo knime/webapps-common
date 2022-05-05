@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src/services';
-import { Notification, NodeServices, SelectionMode, SelectionModes, EventTypes } from 'src/types';
+import { Notification, NodeServices, SelectionModes, EventTypes } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -17,45 +17,44 @@ export class SelectionService<T = any> {
     }
 
     /**
-     * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
-     * The selection service to call is specified by the service type and needs to correspond directly to
-     * a {@see SelectionServices}.
-     *
-     * @param {SelectionMode} selectionMode - the selection mode.
-     * @param {string} request - the request payload.
-     * @returns {Promise} rejected or resolved depending on backend response.
+     * Replaces current selection with provided data.
+     * @param {SelectionMode} mode - the selection mode.
+     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @returns {Promise<Object>} - based on backend implementation.
      */
-    private callSelectionService(selectionMode: SelectionMode, request) {
-        return this.knimeService.callService(
-            [NodeServices.CALL_NODE_SELECTION_SERVICE, selectionMode, request]
-        ).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
+    private async updateSelection(mode: SelectionModes, selection: (string | string[])): Promise<object> {
+        const response = await this.knimeService.callService(
+            [NodeServices.CALL_NODE_SELECTION_SERVICE, mode,
+                Array.isArray(selection) ? JSON.stringify(selection) : selection]
+        );
+        return typeof response === 'string' ? JSON.parse(response) : response;
     }
 
     /**
      * Adds data to currently selected data set.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService add selection method
+     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<Object>} based on backend implementation.
      */
-    add(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionModes.ADD, keys);
+    add(selection: (string | string[])): Promise<object> {
+        return this.updateSelection(SelectionModes.ADD, selection);
     }
 
     /**
      * Removes data from currently selected data set.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
-     * @returns {Promise<Object>} - based on backend implementation.
+     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @returns {Promise<Object>} based on backend implementation.
      */
-    remove(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionModes.REMOVE, keys);
+    remove(selection: (string | string[])): Promise<object> {
+        return this.updateSelection(SelectionModes.REMOVE, selection);
     }
 
     /**
      * Replaces current selection with provided data.
-     * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
-     * @returns {Promise<Object>} - based on backend implementation.
+     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @returns {Promise<Object>} based on backend implementation.
      */
-    replace(keys: (string | number)[]) {
-        return this.callSelectionService(SelectionModes.REPLACE, keys);
+    replace(selection: (string | string[])): Promise<object> {
+        return this.updateSelection(SelectionModes.REPLACE, selection);
     }
 
     /**
@@ -64,7 +63,7 @@ export class SelectionService<T = any> {
      * @param {Notification} response - object that backend will trigger callback with.
      * @returns {void}
      */
-    addOnSelectionChangeCallback(callback: (notification: Notification) => void) {
+    addOnSelectionChangeCallback(callback: (notification: Notification) => void): void {
         this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, callback);
     }
 

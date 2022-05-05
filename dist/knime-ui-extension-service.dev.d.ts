@@ -626,33 +626,30 @@ declare namespace KnimeUIExtensionService {
          */
         constructor(knimeService: IFrameKnimeService | KnimeService<T>);
         /**
-         * Calls a selection service via the node service `updateDataPointSelection` method with provided request body.
-         * The selection service to call is specified by the service type and needs to correspond directly to
-         * a {@see SelectionServices}.
-         *
-         * @param {SelectionMode} selectionMode - the selection mode.
-         * @param {string} request - the request payload.
-         * @returns {Promise} rejected or resolved depending on backend response.
+         * Replaces current selection with provided data.
+         * @param {SelectionMode} mode - the selection mode.
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+         * @returns {Promise<Object>} - based on backend implementation.
          */
-        private callSelectionService;
+        private updateSelection;
         /**
          * Adds data to currently selected data set.
-         * @param {(string | key)[]} keys - will be passed as params to backend SelectionService add selection method
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
          * @returns {Promise<Object>} based on backend implementation.
          */
-        add(keys: (string | number)[]): Promise<any>;
+        add(selection: (string | string[])): Promise<object>;
         /**
          * Removes data from currently selected data set.
-         * @param {(string | key)[]} keys - will be passed as params to backend SelectionService remove selection method.
-         * @returns {Promise<Object>} - based on backend implementation.
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+         * @returns {Promise<Object>} based on backend implementation.
          */
-        remove(keys: (string | number)[]): Promise<any>;
+        remove(selection: (string | string[])): Promise<object>;
         /**
          * Replaces current selection with provided data.
-         * @param {(string | key)[]} keys - will be passed as params to backend SelectionService replace selection method.
-         * @returns {Promise<Object>} - based on backend implementation.
+         * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+         * @returns {Promise<Object>} based on backend implementation.
          */
-        replace(keys: (string | number)[]): Promise<any>;
+        replace(selection: (string | string[])): Promise<object>;
         /**
          * Adds callback that will be triggered on data selection change by backend.
          * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
