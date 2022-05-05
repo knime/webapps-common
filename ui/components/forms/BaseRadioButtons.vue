@@ -10,6 +10,10 @@ export default {
             type: String,
             default: ''
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
          * @example
@@ -65,6 +69,7 @@ export default {
         :checked="(value === item.id)"
         :value="item.id"
         :name="`wc-radio-${count}`"
+        :disabled="disabled"
         type="radio"
         @change="onInput"
       >
