@@ -336,6 +336,30 @@ declare namespace KnimeUIExtensionService {
         (...payload: any[]): Promise<any>;
     };
     /**
+     * @enum
+     */
+    enum AlertTypes {
+        ERROR = "error",
+        WARN = "warn"
+    }
+    /**
+     *
+     * @property {string} nodeId - the id of the node in the workflow.
+     * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
+     * @property {AlertTypes} type - the type of the alert (@see AlertTypes).
+     * @property {string | number} [code] - an optional error/status code.
+     * @property {string} [subtitle] - an optional subtitle for the alert.
+     * @property {string} [message] - an optional message body for the alert.
+     */
+    type Alert = {
+        nodeId: string;
+        nodeInfo: NodeInfo;
+        type: AlertTypes | keyof typeof AlertTypes;
+        code?: string | number;
+        subtitle?: string;
+        message?: string;
+    };
+    /**
      * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
      * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
      *
@@ -359,12 +383,27 @@ declare namespace KnimeUIExtensionService {
          */
         constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
         /**
-         * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
+         * Public service call wrapper with full error handling which can be used by subclasses/typed service
+         * implementations.
          *
          * @param {ServiceParameters} serviceParams - service parameters for the service call.
-         * @returns {Promise} - rejected or resolved depending on response success.
+         * @returns {Promise} - resolved promise containing error or result depending on response success.
          */
-        callService(serviceParams: ServiceParameters): Promise<any>;
+        callService(serviceParams: ServiceParameters): Promise<{
+            error: {
+                nodeId: string;
+                nodeInfo: NodeInfo;
+                type: AlertTypes;
+                message: string;
+                code: string | number;
+                subtitle: string;
+            };
+        } | {
+            error: {
+                code: string;
+                message: string;
+            };
+        }>;
         /**
          * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
          * Default behavior is to use the member callable service directly.
@@ -432,12 +471,38 @@ declare namespace KnimeUIExtensionService {
          */
         pushNotification(notification: Notification): Promise<any>;
         /**
-         * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-         * @param {string} message - error message.
-         * @param {string} code - error code.
+         * Pushes error to framework to be displayed to the user.
+         *
+         * @param {Alert} alert - the error alert.
          * @returns {void}
          */
-        pushError(message: string, code?: string): void;
+        sendError(alert: Alert): void;
+        /**
+         * Pushes warning to framework to be displayed to the user.
+         *
+         * @param {Alert} alert - the warning alert.
+         * @returns {void}
+         */
+        sendWarning(alert: Alert): void;
+        /**
+         * Helper method to create framework compatible {@see Alert} from the available information.
+         *
+         * @param {Object} alertParams - optional parameters for the formatted alert.
+         * @returns {Alert} the properly formatted alert.
+         */
+        createAlert(alertParams: {
+            type?: AlertTypes;
+            message?: string;
+            code?: string | number;
+            subtitle?: string;
+        }): {
+            nodeId: string;
+            nodeInfo: NodeInfo;
+            type: AlertTypes;
+            message: string;
+            code: string | number;
+            subtitle: string;
+        };
         /**
          * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
          * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
@@ -529,6 +594,8 @@ declare namespace KnimeUIExtensionService {
          * @returns {void}
          */
         publishData(data: any): void;
+        private handleError;
+        private handleWarnings;
     }
     /**
      * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -563,6 +630,8 @@ declare namespace KnimeUIExtensionService {
          * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
          */
         protected executeServiceCall(serviceParams: ServiceParameters): Promise<string>;
+        private static postMessage;
+        private static iframePushNotification;
         /**
          * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
          * preventing memory leaks and unexpected behavior.
@@ -580,7 +649,7 @@ declare namespace KnimeUIExtensionService {
     class IFrameKnimeServiceAdapter extends KnimeService {
         private iFrameWindow;
         private boundOnMessageFromIFrame;
-        constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService);
+        constructor(extensionConfig?: ExtensionConfig, callableService?: CallableService, pushNotification?: CallableService);
         /**
          * Sets the child iframe window referenced by the service.
          *
@@ -614,6 +683,7 @@ declare namespace KnimeUIExtensionService {
          * @returns {void}
          */
         destroy(): void;
+        private postMessage;
     }
     /**
      * SelectionService provides methods to handle data selection.

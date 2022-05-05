@@ -1,5 +1,8 @@
 var KnimeUIExtensionService=function(){"use strict";
 /**
+     * @enum
+     */var AlertTypes,NodeServices,DataServiceTypes,SelectionModes,ExtensionTypes,EventTypes,ResourceTypes;!function(AlertTypes){AlertTypes.ERROR="error",AlertTypes.WARN="warn"}(AlertTypes||(AlertTypes={}));
+/**
      * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
      * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
      *
@@ -9,7 +12,8 @@ var KnimeUIExtensionService=function(){"use strict";
      * Derived classes: IFrameKnimeService - for usage with iframe extensions, ComponentKnimeService for usage with components.
      *
      * @template T - the {@type ExtensionConfig} generic type.
-     */class KnimeService{
+     */
+class KnimeService{
 /**
          * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
          * @param {CallableService} callableService - the environment-specific "call service" API method.
@@ -26,11 +30,14 @@ this.extensionConfig=extensionConfig,this.callableService=callableService,this.c
              */
 this.notificationCallbacksMap=new Map}
 /**
-         * Public service call wrapper with error handling which can be used by subclasses/typed service implementations.
+         * Public service call wrapper with full error handling which can be used by subclasses/typed service
+         * implementations.
          *
          * @param {ServiceParameters} serviceParams - service parameters for the service call.
-         * @returns {Promise} - rejected or resolved depending on response success.
-         */async callService(serviceParams){if(!this.extensionConfig)return Promise.reject(new Error("Cannot call service without extension config"));if(!this.callableService)return Promise.reject(new Error("Callable service is not available"));const response=await this.executeServiceCall(serviceParams),{error:error,result:result}=response||{};return error?(this.pushError(error.message,error.code),Promise.resolve({error:error})):Promise.resolve(result)}
+         * @returns {Promise} - resolved promise containing error or result depending on response success.
+         */async callService(serviceParams){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot call service without extension config"});return this.sendError(error),Promise.resolve({error:error})}if(!this.callableService){const error=this.createAlert({message:"Callable service is not available",subtitle:"Service not found"});return this.sendError(error),Promise.resolve({error:error})}const response=await this.executeServiceCall(serviceParams),{error:error}=response||{};
+// handle top level RPC errors only
+return error?(this.sendError(error),Promise.resolve({error:error})):Promise.resolve(response)}
 /**
          * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
          * Default behavior is to use the member callable service directly.
@@ -87,13 +94,29 @@ this.notificationCallbacksMap=new Map}
          *
          * @param {Notification} notification - the notification payload.
          * @returns {any} - the result of the callable function.
-         */pushNotification(notification){return this.extensionConfig?this.callablePushNotification?this.callablePushNotification(Object.assign({callerId:this.serviceId},notification)):Promise.reject(new Error("Push notification is not available")):Promise.reject(new Error("Cannot push notification without extension config"))}
+         */pushNotification(notification){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot push notification without extension config"});return this.sendError(error),Promise.resolve({error:error})}if(!this.callablePushNotification){const error=this.createAlert({subtitle:"Push notification failed",message:"Push notification is not available"});return this.sendError(error),Promise.resolve({error:error})}return this.callablePushNotification(Object.assign({callerId:this.serviceId},notification))}
 /**
-         * Pushes error to Knime Pagebuilder to be displayed with node view overlay.
-         * @param {string} message - error message.
-         * @param {string} code - error code.
+         * Pushes error to framework to be displayed to the user.
+         *
+         * @param {Alert} alert - the error alert.
          * @returns {void}
-         */pushError(message,code=""){this.pushNotification({message:message,code:code,type:"ERROR"})}
+         */sendError(alert){this.callablePushNotification?this.callablePushNotification({callerId:this.serviceId,alert:alert,type:"alert"}):
+// eslint-disable-next-line no-console
+console.error(alert)}
+/**
+         * Pushes warning to framework to be displayed to the user.
+         *
+         * @param {Alert} alert - the warning alert.
+         * @returns {void}
+         */sendWarning(alert){this.callablePushNotification?this.callablePushNotification({callerId:this.serviceId,alert:alert,type:"alert"}):
+// eslint-disable-next-line no-console
+console.warn(alert)}
+/**
+         * Helper method to create framework compatible {@see Alert} from the available information.
+         *
+         * @param {Object} alertParams - optional parameters for the formatted alert.
+         * @returns {Alert} the properly formatted alert.
+         */createAlert(alertParams){var _a,_b;const{type:type=AlertTypes.ERROR,message:message,code:code,subtitle:subtitle}=alertParams;return{nodeId:(null===(_a=this.extensionConfig)||void 0===_a?void 0:_a.nodeId)||"MISSING",nodeInfo:(null===(_b=this.extensionConfig)||void 0===_b?void 0:_b.nodeInfo)||{},type:type,message:message,code:code,subtitle:subtitle}}
 /**
          * Creates an instance ID from a @type {KnimeService}. This ID unique among node instances in a workflow but shared
          * between KnimeService instances instantiated by the same node instance (i.e. between sessions, refreshes, reloads,
@@ -105,7 +128,7 @@ this.notificationCallbacksMap=new Map}
 /**
      * Collection of RPC method signatures registered as node services with the framework. Each signature
      * targets specific workflow-level node service functionality for UI Extensions.
-     */var NodeServices,DataServiceTypes,SelectionModes,ExtensionTypes,EventTypes,ResourceTypes;!function(NodeServices){
+     */!function(NodeServices){
 // Data service method signature.
 NodeServices.CALL_NODE_DATA_SERVICE="NodeService.callNodeDataService",
 // Selection service method signature.
@@ -133,6 +156,41 @@ var KnimeConstants=Object.freeze({__proto__:null,UI_EXT_POST_MESSAGE_PREFIX:"kni
      * The parent window needs to have a instance of IFrameKnimeServiceAdapter.
      *
      * Other services should be initialized with instance of the class.
+     */class IFrameKnimeService extends KnimeService{constructor(){super(),this.pendingServiceCalls=new Map,
+// to allow awaiting the initialization via waitForInitialization()
+// TODO NXTEXT-135 remove the need for this
+this.initializationPromise=new Promise((resolve=>{this.initializationPromiseResolve=resolve})),this.extensionConfig&&this.initializationPromiseResolve(),this.callableService=this.executeServiceCall,this.callablePushNotification=IFrameKnimeService.iframePushNotification,this.boundOnMessageFromParent=this.onMessageFromParent.bind(this),window.addEventListener("message",this.boundOnMessageFromParent),IFrameKnimeService.postMessage({messageType:"ready"})}
+/**
+         * Needs to be awaited before the service is ready to be used.
+         * @returns {void}
+         */async waitForInitialization(){await this.initializationPromise}
+/**
+         * Called when a new message is received, identifies and handles it if type is supported.
+         * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
+         * @returns {void}
+         */onMessageFromParent(event){var _a;
+// TODO NXT-793 security
+const{data:data}=event;if(!(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension")))return;let payload;switch(data.type){case"knimeUIExtension:init":this.onInit(data);break;case"knimeUIExtension:callServiceResponse":this.onCallServiceResponse(data);break;case"knimeUIExtension:serviceNotification":({payload:payload={}}=data),payload.hasOwnProperty("method")?this.onServiceNotification(payload):this.onServiceNotification(payload.data)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(request)return request.resolve(JSON.parse(response)),void this.pendingServiceCalls.delete(requestId);const message=`Received callService response for non-existing pending request with id ${requestId}`,errorMessage=this.createAlert({code:"404",subtitle:"Request not found",type:AlertTypes.ERROR,message:message});this.sendError(errorMessage)}
+/**
+         * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
+         * @param {ServiceParameters} serviceParams - parameters for the service call.
+         * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
+         */executeServiceCall(serviceParams){let rejectTimeoutId;const requestId=generateRequestId(),promise=new Promise(((resolve,reject)=>{this.pendingServiceCalls.set(requestId,{resolve:resolve,reject:reject}),rejectTimeoutId=setTimeout((()=>{const errorMessage=this.createAlert({code:"408",subtitle:"Request Timeout",type:AlertTypes.ERROR,message:`Request with id ${requestId} aborted due to timeout.`});this.sendError(errorMessage),resolve(JSON.stringify({error:errorMessage}))}),1e4)}));
+// clearing reject timeout on promise resolve
+return promise.then((()=>{clearTimeout(rejectTimeoutId)})),IFrameKnimeService.postMessage({payload:{requestId:requestId,serviceParams:serviceParams},messageType:"callService"}),promise}static postMessage(messageParams){const{payload:payload,messageType:messageType}=messageParams;
+// TODO NXT-793 security
+window.parent.postMessage({type:`knimeUIExtension:${messageType}`,payload:payload},"*")}static iframePushNotification(notification){return IFrameKnimeService.postMessage({payload:{notification:notification},messageType:"notification"}),Promise.resolve()}
+/**
+         * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
+         * preventing memory leaks and unexpected behavior.
+         * @returns {void}
+         */destroy(){window.removeEventListener("message",this.boundOnMessageFromParent)}}
+/**
+     * Handles postMessage communication with iframes on side of the parent window.
+     *
+     * IFrame window communication should be setup with instance of IFrameKnimeService.
+     *
+     * Should be instantiated by class that persists at root window object.
      */const KnimeUtils=Object.assign({generateRequestId:generateRequestId,createJsonRpcRequest:createJsonRpcRequest},KnimeConstants);var KnimeUIExtensionService=Object.freeze({__proto__:null,KnimeTypes:index,KnimeService:KnimeService,JsonDataService:class{
 /**
          * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
@@ -152,7 +210,7 @@ constructor(knimeService){this.knimeService=knimeService}
          * (if it exists) or by fetching the data from the node DataService implementation.
          *
          * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
-         */initialData(){var _a;const initialData=(null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.initialData)||null;return initialData?Promise.resolve(initialData).then((response=>"string"==typeof response?JSON.parse(response):response)):this.callDataService(DataServiceTypes.INITIAL_DATA)}
+         */async initialData(){var _a,_b;let initialData;initialData=(null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.initialData)?await Promise.resolve(null===(_b=this.knimeService.extensionConfig)||void 0===_b?void 0:_b.initialData):await this.callDataService(DataServiceTypes.INITIAL_DATA),"string"==typeof initialData&&(initialData=JSON.parse(initialData));const{result:result,warningMessages:warningMessages,userError:userError,internalError:internalError}=initialData||{};if(userError||internalError){const currentError=userError||internalError;return this.handleError(currentError),Promise.resolve({error:currentError})}return warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result)}
 /**
          * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
          * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
@@ -164,7 +222,7 @@ constructor(knimeService){this.knimeService=knimeService}
          *      (default 'getData').
          * @param {any} [params.options] - optional options that should be passed to called method.
          * @returns {Promise} rejected or resolved depending on backend response.
-         */data(params={}){return this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options)))}
+         */async data(params={}){const response=await this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options))),{error:error,warningMessages:warningMessages,result:result}=(null==response?void 0:response.result)||{};return error?(this.handleError(Object.assign(Object.assign({},error.data||{}),error)),Promise.resolve({error:error})):(warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result))}
 /**
          * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
          * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
@@ -188,45 +246,12 @@ constructor(knimeService){this.knimeService=knimeService}
          * Publish a data update notification to other UIExtensions registered in the current page.
          * @param {any} data - the data to send.
          * @returns {void}
-         */publishData(data){this.knimeService.pushNotification({method:EventTypes.DataEvent,event:{data:data}})}}
+         */publishData(data){this.knimeService.pushNotification({method:EventTypes.DataEvent,event:{data:data}})}handleError(error={}){const{details:details,stackTrace:stackTrace,typeName:typeName,message:message,code:code}=error,alertParams={
+// eslint-disable-next-line @typescript-eslint/no-extra-parens
+message:details||typeName&&`${typeName}:\n\n`||"",subtitle:message||"",type:AlertTypes.ERROR,code:code};Array.isArray(stackTrace)&&(alertParams.message+=`\n\n${stackTrace.join("\n\t")}`),this.knimeService.sendError(this.knimeService.createAlert(alertParams))}handleWarnings(warningMessages){this.knimeService.sendWarning(this.knimeService.createAlert({type:AlertTypes.WARN,message:warningMessages.join("\n\n")}))}}
 /**
      * KNIME Analytics Platform constant.
-     */,IFrameKnimeService:class extends KnimeService{constructor(){super(),this.pendingServiceCalls=new Map,
-// to allow awaiting the initialization via waitForInitialization()
-// TODO NXTEXT-135 remove the need for this
-this.initializationPromise=new Promise((resolve=>{this.initializationPromiseResolve=resolve})),this.extensionConfig&&this.initializationPromiseResolve(),this.callableService=this.executeServiceCall,this.boundOnMessageFromParent=this.onMessageFromParent.bind(this),window.addEventListener("message",this.boundOnMessageFromParent),window.parent.postMessage({type:"knimeUIExtension:ready"},"*")}
-/**
-         * Needs to be awaited before the service is ready to be used.
-         * @returns {void}
-         */async waitForInitialization(){await this.initializationPromise}
-/**
-         * Called when a new message is received, identifies and handles it if type is supported.
-         * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
-         * @returns {void}
-         */onMessageFromParent(event){var _a;
-// TODO NXT-793 security
-const{data:data}=event;if(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension"))switch(data.type){case"knimeUIExtension:init":this.onInit(data);break;case"knimeUIExtension:callServiceResponse":this.onCallServiceResponse(data);break;case"knimeUIExtension:serviceNotification":
-// TODO: remove when UIEXT-136 implemented
-this.onServiceNotification(data.payload.data||data.payload)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(!request){const message=`Received callService response for non-existing pending request with id ${requestId}`;throw this.pushError(message,"req-not-found"),new Error(message)}request.resolve(JSON.parse(response)),this.pendingServiceCalls.delete(requestId)}
-/**
-         * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
-         * @param {ServiceParameters} serviceParams - parameters for the service call.
-         * @returns {Promise<string>} - promise that resolves with response from the service call string or error message.
-         */executeServiceCall(serviceParams){let rejectTimeoutId;const requestId=generateRequestId(),promise=new Promise(((resolve,reject)=>{this.pendingServiceCalls.set(requestId,{resolve:resolve,reject:reject}),rejectTimeoutId=setTimeout((()=>{const message=`Request with id ${requestId} aborted due to timeout.`;this.pushError(message,"req-not-found"),resolve(JSON.stringify({error:{message:message,code:"req-timeout"},result:null}))}),1e4)}));// TODO NXT-793 security
-// clearing reject timeout on promise resolve
-return promise.then((()=>{clearTimeout(rejectTimeoutId)})),window.parent.postMessage({type:"knimeUIExtension:callService",payload:{requestId:requestId,serviceParams:serviceParams}},"*"),promise}
-/**
-         * Should be called before destroying IFrameKnimeService, to remove event listeners from window object,
-         * preventing memory leaks and unexpected behavior.
-         * @returns {void}
-         */destroy(){window.removeEventListener("message",this.boundOnMessageFromParent)}}
-/**
-     * Handles postMessage communication with iframes on side of the parent window.
-     *
-     * IFrame window communication should be setup with instance of IFrameKnimeService.
-     *
-     * Should be instantiated by class that persists at root window object.
-     */,IFrameKnimeServiceAdapter:class extends KnimeService{constructor(extensionConfig=null,callableService=null){super(extensionConfig,callableService),this.boundOnMessageFromIFrame=this.onMessageFromIFrame.bind(this),window.addEventListener("message",this.boundOnMessageFromIFrame)}
+     */,IFrameKnimeService:IFrameKnimeService,IFrameKnimeServiceAdapter:class extends KnimeService{constructor(extensionConfig=null,callableService=null,pushNotification=null){super(extensionConfig,callableService,pushNotification),this.boundOnMessageFromIFrame=this.onMessageFromIFrame.bind(this),window.addEventListener("message",this.boundOnMessageFromIFrame)}
 /**
          * Sets the child iframe window referenced by the service.
          *
@@ -248,12 +273,12 @@ return promise.then((()=>{clearTimeout(rejectTimeoutId)})),window.parent.postMes
          * Listens for postMessage events, identifies and handles them if event type is supported.
          * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
          * @returns {void}
-         */async onMessageFromIFrame(event){if(this.checkMessageSource(event))return;const{data:data}=event;switch(data.type){case"knimeUIExtension:ready":this.iFrameWindow.postMessage({type:"knimeUIExtension:init",payload:this.extensionConfig},"*");break;case"knimeUIExtension:callService":{const{payload:{requestId:requestId,serviceParams:serviceParams}}=data,response=await this.callService(serviceParams);this.iFrameWindow.postMessage({type:"knimeUIExtension:callServiceResponse",payload:{response:response,requestId:requestId}},"*")}}}onServiceNotification(notification){this.iFrameWindow.postMessage({type:"knimeUIExtension:serviceNotification",payload:"string"==typeof notification?JSON.parse(notification):notification},"*")}
+         */async onMessageFromIFrame(event){if(this.checkMessageSource(event))return;const{data:data}=event;switch(data.type){case"knimeUIExtension:ready":this.postMessage({payload:this.extensionConfig,messageType:"init"});break;case"knimeUIExtension:callService":{const{payload:{requestId:requestId,serviceParams:serviceParams}}=data,response=await this.callService(serviceParams);this.postMessage({payload:{response:response,requestId:requestId},messageType:"callServiceResponse"})}break;case"knimeUIExtension:notification":{const{payload:{notification:notification}}=data;this.pushNotification(notification)}}}onServiceNotification(notification){const payload="string"==typeof notification?JSON.parse(notification):notification;this.postMessage({payload:payload,messageType:"serviceNotification"})}
 /**
          * Should be called before destroying the IFrame to remove event listeners from window object,
          * preventing memory leaks and unexpected behavior.
          * @returns {void}
-         */destroy(){window.removeEventListener("message",this.boundOnMessageFromIFrame),this.iFrameWindow=null}}
+         */destroy(){window.removeEventListener("message",this.boundOnMessageFromIFrame),this.iFrameWindow=null}postMessage(messageParams){const{payload:payload,messageType:messageType}=messageParams;this.iFrameWindow.postMessage({type:`knimeUIExtension:${messageType}`,payload:payload},"*")}}
 /**
      * SelectionService provides methods to handle data selection.
      * To use it, the relating Java implementation also needs to use the SelectionService.
