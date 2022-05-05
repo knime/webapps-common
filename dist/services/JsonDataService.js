@@ -124,8 +124,7 @@ class JsonDataService {
      */
     publishData(data) {
         this.knimeService.pushNotification({
-            method: EventTypes.DataEvent,
-            event: { data }
+            event: { data, method: EventTypes.DataEvent }
         });
     }
     handleError(error = {}) {

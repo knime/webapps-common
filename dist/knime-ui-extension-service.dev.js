@@ -170,7 +170,7 @@ this.initializationPromise=new Promise((resolve=>{this.initializationPromiseReso
          * @returns {void}
          */onMessageFromParent(event){var _a,_b;
 // TODO NXT-793 security
-const{data:data}=event;if(!(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension")))return;let payload;switch(null===(_b=data.type)||void 0===_b?void 0:_b.replace("knimeUIExtension:","")){case"init":this.onInit(data);break;case"callServiceResponse":this.onCallServiceResponse(data);break;case"serviceNotification":({payload:payload={}}=data),payload.hasOwnProperty("method")?this.onServiceNotification(payload):this.onServiceNotification(payload.data)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(request)return request.resolve(response),void this.pendingServiceCalls.delete(requestId);const errorMessage=this.createAlert({code:"404",subtitle:"Request not found",type:AlertTypes.ERROR,message:`Received callService response for non-existing pending request with id ${requestId}`});this.sendError(errorMessage)}
+const{data:data}=event;if(!(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension")))return;switch(null===(_b=data.type)||void 0===_b?void 0:_b.replace("knimeUIExtension:","")){case"init":this.onInit(data);break;case"callServiceResponse":this.onCallServiceResponse(data);break;case"serviceNotification":this.onServiceNotification(data.payload)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(request)return request.resolve(response),void this.pendingServiceCalls.delete(requestId);const errorMessage=this.createAlert({code:"404",subtitle:"Request not found",type:AlertTypes.ERROR,message:`Received callService response for non-existing pending request with id ${requestId}`});this.sendError(errorMessage)}
 /**
          * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
          * @param {ServiceParameters} serviceParams - parameters for the service call.
@@ -246,7 +246,7 @@ constructor(knimeService){this.knimeService=knimeService}
          * Publish a data update notification to other UIExtensions registered in the current page.
          * @param {any} data - the data to send.
          * @returns {void}
-         */publishData(data){this.knimeService.pushNotification({method:EventTypes.DataEvent,event:{data:data}})}handleError(error={}){const{details:details,stackTrace:stackTrace,typeName:typeName,message:message,code:code}=error,alertParams={
+         */publishData(data){this.knimeService.pushNotification({event:{data:data,method:EventTypes.DataEvent}})}handleError(error={}){const{details:details,stackTrace:stackTrace,typeName:typeName,message:message,code:code}=error,alertParams={
 // eslint-disable-next-line @typescript-eslint/no-extra-parens
 message:details||typeName&&`${typeName}:\n\n`||"",subtitle:message||"",type:AlertTypes.ERROR,code:code};Array.isArray(stackTrace)&&(alertParams.message+=`\n\n${stackTrace.join("\n\t")}`),this.knimeService.sendError(this.knimeService.createAlert(alertParams))}handleWarnings(warningMessages){this.knimeService.sendWarning(this.knimeService.createAlert({type:AlertTypes.WARN,message:warningMessages.join("\n\n")}))}}
 /**

@@ -174,8 +174,7 @@ describe('JsonDataService', () => {
             jsonDataService.publishData(testEvent);
             expect(pushNotificationSpy).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
-                event: { data: testEvent },
-                method: EventTypes.DataEvent
+                event: { data: testEvent, method: EventTypes.DataEvent }
             });
         });
     });
@@ -198,7 +197,6 @@ describe('JsonDataService', () => {
                 nodeInfo: extensionConfig.nodeInfo,
                 subtitle: 'Something went wrong',
                 type: 'error'
-                    
             });
         });
 
@@ -222,7 +220,6 @@ describe('JsonDataService', () => {
                 nodeInfo: extensionConfig.nodeInfo,
                 subtitle: 'Java heap space',
                 type: 'error'
-                    
             });
         });
 
@@ -243,7 +240,6 @@ describe('JsonDataService', () => {
                 nodeInfo: extensionConfig.nodeInfo,
                 subtitle: undefined,
                 type: 'warn'
-                    
             });
         });
 
@@ -269,7 +265,6 @@ describe('JsonDataService', () => {
                 nodeInfo: extensionConfig.nodeInfo,
                 subtitle: expectedError.message,
                 type: 'error'
-                    
             });
         });
 
@@ -292,7 +287,6 @@ describe('JsonDataService', () => {
                 nodeInfo: extensionConfig.nodeInfo,
                 subtitle: undefined,
                 type: 'warn'
-                    
             });
         });
     });

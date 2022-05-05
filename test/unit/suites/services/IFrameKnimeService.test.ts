@@ -83,7 +83,7 @@ describe('IFrameKnimeService', () => {
             expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
         });
 
-        it('Calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
+        it('calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
             const notification = {
                 jsonrpc: '2.0.',
                 method: NodeServices.CALL_NODE_SELECTION_SERVICE,
@@ -103,7 +103,7 @@ describe('IFrameKnimeService', () => {
                 }
             } as MessageEvent);
 
-            expect(onServiceNotificationSpy).toBeCalledWith(notification);
+            expect(onServiceNotificationSpy).toBeCalledWith({ data: notification });
         });
 
         it('onMessageFromParent handles async post requests with differing IDs', () => {
