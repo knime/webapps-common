@@ -1,24 +1,6 @@
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo } from "../index-b3e43760";
+import { Alert } from "../Alert-3bf44dea";
 import { AlertTypes } from "../types/AlertTypes";
-import { NodeInfo } from "../NodeInfo-cf6372d2";
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters } from "../index-b3e43760";
-import { NodeInfo as NodeInfo$0 } from "../index-b3e43760";
-/**
- *
- * @property {string} nodeId - the id of the node in the workflow.
- * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
- * @property {AlertTypes} type - the type of the alert (@see AlertTypes).
- * @property {string | number} [code] - an optional error/status code.
- * @property {string} [subtitle] - an optional subtitle for the alert.
- * @property {string} [message] - an optional message body for the alert.
- */
-type Alert = {
-    nodeId: string;
-    nodeInfo: NodeInfo;
-    type: AlertTypes | keyof typeof AlertTypes;
-    code?: string | number;
-    subtitle?: string;
-    message?: string;
-};
 /**
  * The main API entry point base class for UI Extensions, derived class being initialized depending on environment
  * and handles all of the communication between the environment (e.g. KNIME Analytics Platform) and the registered services.
@@ -61,21 +43,7 @@ declare class KnimeService<T = any> {
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
      * @returns {Promise} - resolved promise containing error or result depending on response success.
      */
-    callService(serviceParams: ServiceParameters): Promise<{
-        error: {
-            nodeId: string;
-            nodeInfo: NodeInfo$0;
-            type: AlertTypes;
-            message: string;
-            code: string | number;
-            subtitle: string;
-        };
-    } | {
-        error: {
-            code: string;
-            message: string;
-        };
-    }>;
+    callService(serviceParams: ServiceParameters): Promise<CallServiceResponse>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.
@@ -244,7 +212,7 @@ declare class KnimeService<T = any> {
         subtitle?: string;
     }): {
         nodeId: string;
-        nodeInfo: NodeInfo$0;
+        nodeInfo: NodeInfo;
         type: AlertTypes;
         message: string;
         code: string | number;
@@ -260,4 +228,4 @@ declare class KnimeService<T = any> {
      */
     get serviceId(): string;
 }
-export { Alert, KnimeService };
+export { KnimeService };

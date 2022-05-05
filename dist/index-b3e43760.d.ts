@@ -65,7 +65,7 @@ type CallServiceResponse = {
         code: string;
         message: string;
     };
-    result: any;
+    result?: any;
 };
 export { ExtensionConfig, Notification, ServiceRequest, CallServiceResponse };
 export * from "./types/NodeServices";

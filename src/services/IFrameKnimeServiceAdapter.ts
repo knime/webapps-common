@@ -63,18 +63,19 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         }
         const { data } = event;
 
-        switch (data.type) {
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:ready`:
+        const messageType = data.type?.replace(`${UI_EXT_POST_MESSAGE_PREFIX}:`, '');
+        switch (messageType) {
+            case `ready`:
                 this.postMessage({ payload: this.extensionConfig, messageType: 'init' });
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:callService`:
+            case `callService`:
                 {
                     const { payload: { requestId, serviceParams } } = data;
                     const response = await this.callService(serviceParams);
                     this.postMessage({ payload: { response, requestId }, messageType: 'callServiceResponse' });
                 }
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:notification`:
+            case `notification`:
                 {
                     const { payload: { notification } } = data;
                     this.pushNotification(notification);

@@ -74,7 +74,11 @@ class JsonDataService {
      */
     async data(params = {}) {
         const response = await this.callDataService(DataServiceTypes.DATA, JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options)));
-        const { error, warningMessages, result } = (response === null || response === void 0 ? void 0 : response.result) || {};
+        let wrappedResult = (response === null || response === void 0 ? void 0 : response.result) || {};
+        if (typeof wrappedResult === 'string') {
+            wrappedResult = JSON.parse(wrappedResult);
+        }
+        const { error, warningMessages, result } = wrappedResult;
         if (error) {
             this.handleError(Object.assign(Object.assign({}, error.data || {}), error));
             return Promise.resolve({ error });

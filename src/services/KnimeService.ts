@@ -60,7 +60,7 @@ export class KnimeService<T = any> {
                 message: 'Cannot call service without extension config'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({ error } as CallServiceResponse);
         }
 
         if (!this.callableService) {
@@ -69,7 +69,7 @@ export class KnimeService<T = any> {
                 subtitle: 'Service not found'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({ error } as CallServiceResponse);
         }
 
         const response: CallServiceResponse = await this.executeServiceCall(serviceParams);
@@ -79,7 +79,6 @@ export class KnimeService<T = any> {
 
         if (error) {
             this.sendError(error as Alert);
-            return Promise.resolve({ error });
         }
 
         return Promise.resolve(response);

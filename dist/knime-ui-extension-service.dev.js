@@ -37,7 +37,7 @@ this.notificationCallbacksMap=new Map}
          * @returns {Promise} - resolved promise containing error or result depending on response success.
          */async callService(serviceParams){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot call service without extension config"});return this.sendError(error),Promise.resolve({error:error})}if(!this.callableService){const error=this.createAlert({message:"Callable service is not available",subtitle:"Service not found"});return this.sendError(error),Promise.resolve({error:error})}const response=await this.executeServiceCall(serviceParams),{error:error}=response||{};
 // handle top level RPC errors only
-return error?(this.sendError(error),Promise.resolve({error:error})):Promise.resolve(response)}
+return error&&this.sendError(error),Promise.resolve(response)}
 /**
          * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
          * Default behavior is to use the member callable service directly.
@@ -168,9 +168,9 @@ this.initializationPromise=new Promise((resolve=>{this.initializationPromiseReso
          * Called when a new message is received, identifies and handles it if type is supported.
          * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
          * @returns {void}
-         */onMessageFromParent(event){var _a;
+         */onMessageFromParent(event){var _a,_b;
 // TODO NXT-793 security
-const{data:data}=event;if(!(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension")))return;let payload;switch(data.type){case"knimeUIExtension:init":this.onInit(data);break;case"knimeUIExtension:callServiceResponse":this.onCallServiceResponse(data);break;case"knimeUIExtension:serviceNotification":({payload:payload={}}=data),payload.hasOwnProperty("method")?this.onServiceNotification(payload):this.onServiceNotification(payload.data)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(request)return request.resolve(JSON.parse(response)),void this.pendingServiceCalls.delete(requestId);const message=`Received callService response for non-existing pending request with id ${requestId}`,errorMessage=this.createAlert({code:"404",subtitle:"Request not found",type:AlertTypes.ERROR,message:message});this.sendError(errorMessage)}
+const{data:data}=event;if(!(null===(_a=data.type)||void 0===_a?void 0:_a.startsWith("knimeUIExtension")))return;let payload;switch(null===(_b=data.type)||void 0===_b?void 0:_b.replace("knimeUIExtension:","")){case"init":this.onInit(data);break;case"callServiceResponse":this.onCallServiceResponse(data);break;case"serviceNotification":({payload:payload={}}=data),payload.hasOwnProperty("method")?this.onServiceNotification(payload):this.onServiceNotification(payload.data)}}onInit(data){this.extensionConfig=data.payload,this.initializationPromiseResolve()}onCallServiceResponse(data){const{payload:{response:response,requestId:requestId}}=data,request=this.pendingServiceCalls.get(requestId);if(request)return request.resolve(response),void this.pendingServiceCalls.delete(requestId);const errorMessage=this.createAlert({code:"404",subtitle:"Request not found",type:AlertTypes.ERROR,message:`Received callService response for non-existing pending request with id ${requestId}`});this.sendError(errorMessage)}
 /**
          * Overrides method of KnimeService to implement how request should be processed in IFrame environment.
          * @param {ServiceParameters} serviceParams - parameters for the service call.
@@ -222,7 +222,7 @@ constructor(knimeService){this.knimeService=knimeService}
          *      (default 'getData').
          * @param {any} [params.options] - optional options that should be passed to called method.
          * @returns {Promise} rejected or resolved depending on backend response.
-         */async data(params={}){const response=await this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options))),{error:error,warningMessages:warningMessages,result:result}=(null==response?void 0:response.result)||{};return error?(this.handleError(Object.assign(Object.assign({},error.data||{}),error)),Promise.resolve({error:error})):(warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result))}
+         */async data(params={}){const response=await this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options)));let wrappedResult=(null==response?void 0:response.result)||{};"string"==typeof wrappedResult&&(wrappedResult=JSON.parse(wrappedResult));const{error:error,warningMessages:warningMessages,result:result}=wrappedResult;return error?(this.handleError(Object.assign(Object.assign({},error.data||{}),error)),Promise.resolve({error:error})):(warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result))}
 /**
          * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
          * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
@@ -273,7 +273,7 @@ message:details||typeName&&`${typeName}:\n\n`||"",subtitle:message||"",type:Aler
          * Listens for postMessage events, identifies and handles them if event type is supported.
          * @param {MessageEvent} event - postMessage event that is sent by parent window with event type and payload.
          * @returns {void}
-         */async onMessageFromIFrame(event){if(this.checkMessageSource(event))return;const{data:data}=event;switch(data.type){case"knimeUIExtension:ready":this.postMessage({payload:this.extensionConfig,messageType:"init"});break;case"knimeUIExtension:callService":{const{payload:{requestId:requestId,serviceParams:serviceParams}}=data,response=await this.callService(serviceParams);this.postMessage({payload:{response:response,requestId:requestId},messageType:"callServiceResponse"})}break;case"knimeUIExtension:notification":{const{payload:{notification:notification}}=data;this.pushNotification(notification)}}}onServiceNotification(notification){const payload="string"==typeof notification?JSON.parse(notification):notification;this.postMessage({payload:payload,messageType:"serviceNotification"})}
+         */async onMessageFromIFrame(event){var _a;if(this.checkMessageSource(event))return;const{data:data}=event;switch(null===(_a=data.type)||void 0===_a?void 0:_a.replace("knimeUIExtension:","")){case"ready":this.postMessage({payload:this.extensionConfig,messageType:"init"});break;case"callService":{const{payload:{requestId:requestId,serviceParams:serviceParams}}=data,response=await this.callService(serviceParams);this.postMessage({payload:{response:response,requestId:requestId},messageType:"callServiceResponse"})}break;case"notification":{const{payload:{notification:notification}}=data;this.pushNotification(notification)}}}onServiceNotification(notification){const payload="string"==typeof notification?JSON.parse(notification):notification;this.postMessage({payload:payload,messageType:"serviceNotification"})}
 /**
          * Should be called before destroying the IFrame to remove event listeners from window object,
          * preventing memory leaks and unexpected behavior.

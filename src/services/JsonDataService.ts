@@ -79,7 +79,11 @@ export class JsonDataService<T = any> {
             DataServiceTypes.DATA,
             JSON.stringify(createJsonRpcRequest(params.method || 'getData', params.options))
         );
-        const { error, warningMessages, result } = response?.result || {};
+        let wrappedResult = response?.result || {};
+        if (typeof wrappedResult === 'string') {
+            wrappedResult = JSON.parse(wrappedResult);
+        }
+        const { error, warningMessages, result } = wrappedResult;
         if (error) {
             this.handleError({ ...error.data || {}, ...error });
             return Promise.resolve({ error });

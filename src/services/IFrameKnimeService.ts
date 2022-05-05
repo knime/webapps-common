@@ -1,5 +1,6 @@
 import { UI_EXT_POST_MESSAGE_PREFIX, UI_EXT_POST_MESSAGE_TIMEOUT } from 'src/constants';
 import { ServiceParameters } from 'src/types';
+import { Alert } from 'src/types/Alert';
 import { AlertTypes } from 'src/types/AlertTypes';
 import { generateRequestId } from 'src/utils';
 import { KnimeService } from './KnimeService';
@@ -64,16 +65,17 @@ export class IFrameKnimeService extends KnimeService {
             return;
         }
         let payload;
-        switch (data.type) {
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
+        const messageType = data.type?.replace(`${UI_EXT_POST_MESSAGE_PREFIX}:`, '');
+        switch (messageType) {
+            case `init`:
                 this.onInit(data);
                 break;
 
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`:
+            case `callServiceResponse`:
                 this.onCallServiceResponse(data);
                 break;
 
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
+            case `serviceNotification`:
                 ({ payload = {} } = data);
                 if (payload.hasOwnProperty('method')) {
                     this.onServiceNotification(payload);
@@ -96,16 +98,15 @@ export class IFrameKnimeService extends KnimeService {
         const request = this.pendingServiceCalls.get(requestId);
 
         if (request) {
-            request.resolve(JSON.parse(response));
+            request.resolve(response);
             this.pendingServiceCalls.delete(requestId);
             return;
         }
-        const message = `Received callService response for non-existing pending request with id ${requestId}`;
-        const errorMessage = this.createAlert({
+        const errorMessage:Alert = this.createAlert({
             code: '404',
             subtitle: 'Request not found',
             type: AlertTypes.ERROR,
-            message
+            message: `Received callService response for non-existing pending request with id ${requestId}`
         });
         this.sendError(errorMessage);
     }

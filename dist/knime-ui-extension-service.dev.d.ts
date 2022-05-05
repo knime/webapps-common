@@ -141,7 +141,7 @@ declare namespace KnimeTypes {
             code: string;
             message: string;
         };
-        result: any;
+        result?: any;
     };
     /**
      * An environment-specific service function implementation (callable) which acts as an injectable API layer.
@@ -322,7 +322,7 @@ declare namespace KnimeUIExtensionService {
             code: string;
             message: string;
         };
-        result: any;
+        result?: any;
     };
     /**
      * An environment-specific service function implementation (callable) which acts as an injectable API layer.
@@ -389,21 +389,7 @@ declare namespace KnimeUIExtensionService {
          * @param {ServiceParameters} serviceParams - service parameters for the service call.
          * @returns {Promise} - resolved promise containing error or result depending on response success.
          */
-        callService(serviceParams: ServiceParameters): Promise<{
-            error: {
-                nodeId: string;
-                nodeInfo: NodeInfo;
-                type: AlertTypes;
-                message: string;
-                code: string | number;
-                subtitle: string;
-            };
-        } | {
-            error: {
-                code: string;
-                message: string;
-            };
-        }>;
+        callService(serviceParams: ServiceParameters): Promise<CallServiceResponse>;
         /**
          * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
          * Default behavior is to use the member callable service directly.

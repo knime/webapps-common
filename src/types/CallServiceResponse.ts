@@ -3,5 +3,5 @@ export type CallServiceResponse = {
         code: string;
         message: string;
     };
-    result: any;
+    result?: any;
 };

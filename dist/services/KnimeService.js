@@ -59,7 +59,6 @@ class KnimeService {
         const { error } = response || {};
         if (error) {
             this.sendError(error);
-            return Promise.resolve({ error });
         }
         return Promise.resolve(response);
     }

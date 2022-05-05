@@ -42,21 +42,22 @@ class IFrameKnimeService extends KnimeService {
      * @returns {void}
      */
     onMessageFromParent(event) {
-        var _a;
+        var _a, _b;
         // TODO NXT-793 security
         const { data } = event;
         if (!((_a = data.type) === null || _a === void 0 ? void 0 : _a.startsWith(UI_EXT_POST_MESSAGE_PREFIX))) {
             return;
         }
         let payload;
-        switch (data.type) {
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:init`:
+        const messageType = (_b = data.type) === null || _b === void 0 ? void 0 : _b.replace(`${UI_EXT_POST_MESSAGE_PREFIX}:`, '');
+        switch (messageType) {
+            case `init`:
                 this.onInit(data);
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:callServiceResponse`:
+            case `callServiceResponse`:
                 this.onCallServiceResponse(data);
                 break;
-            case `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`:
+            case `serviceNotification`:
                 ({ payload = {} } = data);
                 if (payload.hasOwnProperty('method')) {
                     this.onServiceNotification(payload);
@@ -75,16 +76,15 @@ class IFrameKnimeService extends KnimeService {
         const { payload: { response, requestId } } = data;
         const request = this.pendingServiceCalls.get(requestId);
         if (request) {
-            request.resolve(JSON.parse(response));
+            request.resolve(response);
             this.pendingServiceCalls.delete(requestId);
             return;
         }
-        const message = `Received callService response for non-existing pending request with id ${requestId}`;
         const errorMessage = this.createAlert({
             code: '404',
             subtitle: 'Request not found',
             type: AlertTypes.ERROR,
-            message
+            message: `Received callService response for non-existing pending request with id ${requestId}`
         });
         this.sendError(errorMessage);
     }
