@@ -20,40 +20,39 @@ export class SelectionService<T = any> {
      * Replaces current selection with provided data.
      * @param {SelectionMode} mode - the selection mode.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-     * @returns {Promise<Object>} - based on backend implementation.
+     * @returns {Promise<any>} - based on backend implementation.
      */
-    private async updateSelection(mode: SelectionModes, selection: (string | string[])): Promise<object> {
-        const response = await this.knimeService.callService(
+    private updateSelection(mode: SelectionModes, selection: (string | string[])): Promise<any> {
+        return this.knimeService.callService(
             [NodeServices.CALL_NODE_SELECTION_SERVICE, mode,
                 Array.isArray(selection) ? JSON.stringify(selection) : selection]
-        );
-        return typeof response === 'string' ? JSON.parse(response) : response;
+        ).then((response) => typeof response === 'string' ? JSON.parse(response) : response);
     }
 
     /**
      * Adds data to currently selected data set.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-     * @returns {Promise<Object>} based on backend implementation.
+     * @returns {Promise<any>} based on backend implementation.
      */
-    add(selection: (string | string[])): Promise<object> {
+    add(selection: (string | string[])): Promise<any> {
         return this.updateSelection(SelectionModes.ADD, selection);
     }
 
     /**
      * Removes data from currently selected data set.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-     * @returns {Promise<Object>} based on backend implementation.
+     * @returns {Promise<any>} based on backend implementation.
      */
-    remove(selection: (string | string[])): Promise<object> {
+    remove(selection: (string | string[])): Promise<any> {
         return this.updateSelection(SelectionModes.REMOVE, selection);
     }
 
     /**
      * Replaces current selection with provided data.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
-     * @returns {Promise<Object>} based on backend implementation.
+     * @returns {Promise<any>} based on backend implementation.
      */
-    replace(selection: (string | string[])): Promise<object> {
+    replace(selection: (string | string[])): Promise<any> {
         return this.updateSelection(SelectionModes.REPLACE, selection);
     }
 
@@ -73,7 +72,7 @@ export class SelectionService<T = any> {
      * @param {Notification} response - object that backend will trigger callback with.
      * @returns {void}
      */
-    removeOnSelectionChangeCallback(callback: (notification: Notification) => void) {
+    removeOnSelectionChangeCallback(callback: (notification: Notification) => void): void {
         this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, callback);
     }
 }
