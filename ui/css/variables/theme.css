@@ -171,6 +171,11 @@
   --theme-radio-foreground-color-selected: var(--knime-white);
   --theme-radio-foreground-color-selected-hover: var(--knime-masala);
 
+  /* Value Switch */
+  --theme-value-switch-background-color: var(--knime-white);
+  --theme-value-switch-background-color-hover: var(--knime-silver-sand-semi);
+  --theme-value-switch-background-color-checked: var(--knime-masala);
+
   /* Slider */
   --theme-slider-border-radius: 9.5px;
   --theme-slider-border-color: var(--knime-stone-gray);
