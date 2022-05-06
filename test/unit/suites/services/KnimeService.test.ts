@@ -23,37 +23,39 @@ describe('KnimeService', () => {
     });
 
     describe('callService', () => {
-        it('Throws error if extension config not provided', async () => {
+        it('Handles error if extension config not provided', async () => {
             const knimeService = new KnimeService(null, null, jest.fn());
+            const sendErrorMock = jest.spyOn(knimeService, 'sendError');
             const response = await knimeService.callService(
                 [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
             );
-            expect(response).toStrictEqual({
-                error: {
-                    code: undefined,
-                    message: 'Cannot call service without extension config',
-                    nodeId: 'MISSING',
-                    nodeInfo: {},
-                    subtitle: 'Missing extension config',
-                    type: 'error'
-                }
+            // Expect no rejected promise or thrown errors; else failure
+            expect(response).toStrictEqual({});
+            expect(sendErrorMock).toHaveBeenCalledWith({
+                code: undefined,
+                message: 'Cannot call service without extension config',
+                nodeId: 'MISSING',
+                nodeInfo: {},
+                subtitle: 'Missing extension config',
+                type: 'error'
             });
         });
 
-        it('Throws error if callable service not provided', async () => {
+        it('Handles error if callable service not provided', async () => {
             const knimeService = new KnimeService(extensionConfig, null, jest.fn());
+            const sendErrorMock = jest.spyOn(knimeService, 'sendError');
             const response = await knimeService.callService(
                 [NodeServices.CALL_NODE_DATA_SERVICE, DataServiceTypes.INITIAL_DATA, '']
             );
-            expect(response).toStrictEqual({
-                error: {
-                    code: undefined,
-                    message: 'Callable service is not available',
-                    nodeId: extensionConfig.nodeId,
-                    nodeInfo: extensionConfig.nodeInfo,
-                    subtitle: 'Service not found',
-                    type: 'error'
-                }
+            // Expect no rejected promise or thrown errors; else failure
+            expect(response).toStrictEqual({});
+            expect(sendErrorMock).toHaveBeenCalledWith({
+                code: undefined,
+                message: 'Callable service is not available',
+                nodeId: extensionConfig.nodeId,
+                nodeInfo: extensionConfig.nodeInfo,
+                subtitle: 'Service not found',
+                type: 'error'
             });
         });
 
@@ -70,35 +72,34 @@ describe('KnimeService', () => {
     });
 
     describe('pushNotification', () => {
-        it('Throws error if extension config not provided', async () => {
+        it('Handles error if extension config not provided', async () => {
             const knimeService = new KnimeService(null, null, jest.fn());
-
+            const sendErrorMock = jest.spyOn(knimeService, 'sendError');
             const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
-            expect(response).toStrictEqual({
-                error: {
-                    code: undefined,
-                    message: 'Cannot push notification without extension config',
-                    nodeId: 'MISSING',
-                    nodeInfo: {},
-                    subtitle: 'Missing extension config',
-                    type: 'error'
-                }
+            expect(response).toStrictEqual({});
+            expect(sendErrorMock).toHaveBeenCalledWith({
+                code: undefined,
+                message: 'Cannot push notification without extension config',
+                nodeId: 'MISSING',
+                nodeInfo: {},
+                subtitle: 'Missing extension config',
+                type: 'error'
             });
         });
 
-        it('Throws error if push notification not provided', async () => {
+        it('Handles error if push notification not provided', async () => {
             const knimeService = new KnimeService(extensionConfig);
+            const sendErrorMock = jest.spyOn(knimeService, 'sendError');
 
             const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
-            expect(response).toStrictEqual({
-                error: {
-                    code: undefined,
-                    message: 'Push notification is not available',
-                    nodeId: extensionConfig.nodeId,
-                    nodeInfo: extensionConfig.nodeInfo,
-                    subtitle: 'Push notification failed',
-                    type: 'error'
-                }
+            expect(response).toStrictEqual({});
+            expect(sendErrorMock).toHaveBeenCalledWith({
+                code: undefined,
+                message: 'Push notification is not available',
+                nodeId: extensionConfig.nodeId,
+                nodeInfo: extensionConfig.nodeInfo,
+                subtitle: 'Push notification failed',
+                type: 'error'
             });
         });
 
@@ -243,7 +244,7 @@ describe('KnimeService', () => {
             });
         });
 
-        it('Returns backend errors and pushes them via notification', async () => {
+        it('Pushes backend errors via notification', async () => {
             const callableMock = jest.fn()
                 .mockReturnValue(Promise.resolve(new Promise(res => res({ error: mockError }))));
             const pushNotificationMock = jest.fn();
@@ -251,7 +252,7 @@ describe('KnimeService', () => {
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const testResult = await knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA, '']);
-            expect(testResult).toStrictEqual({ error: mockError });
+            expect(testResult).toStrictEqual({ result: undefined });
             expect(sendErrorSpy).toHaveBeenCalledWith(mockError);
         });
     });

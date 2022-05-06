@@ -1,7 +1,9 @@
 import { JsonDataService } from 'src/services/JsonDataService';
-import { extensionConfig } from 'test/mocks';
+import { extensionConfig, longMessage } from 'test/mocks';
 import { NodeServices, DataServiceTypes, EventTypes } from 'src/types';
 import { KnimeService } from 'src/services/KnimeService';
+import { Alert } from 'src/types/Alert';
+import { AlertTypes } from 'src/types/AlertTypes';
 
 describe('JsonDataService', () => {
     const defaultExtensionConfig = extensionConfig;
@@ -189,7 +191,7 @@ describe('JsonDataService', () => {
             const jsonDataService = new JsonDataService(knimeService);
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const response = await jsonDataService.initialData();
-            expect(response).toStrictEqual({ error: expectedError });
+            expect(response).toBeFalsy();
             expect(sendErrorSpy).toBeCalledWith({
                 code: undefined,
                 message: 'More information',
@@ -212,7 +214,7 @@ describe('JsonDataService', () => {
             const jsonDataService = new JsonDataService(knimeService);
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const response = await jsonDataService.initialData();
-            expect(response).toStrictEqual({ error: expectedError });
+            expect(response).toBeFalsy();
             expect(sendErrorSpy).toBeCalledWith({
                 code: undefined,
                 message: expect.stringContaining(expectedError.stackTrace.join('\n\t')),
@@ -238,7 +240,7 @@ describe('JsonDataService', () => {
                 message: initialData.warningMessages.join('\n\n'),
                 nodeId: extensionConfig.nodeId,
                 nodeInfo: extensionConfig.nodeInfo,
-                subtitle: undefined,
+                subtitle: '2 messages',
                 type: 'warn'
             });
         });
@@ -257,7 +259,7 @@ describe('JsonDataService', () => {
             const jsonDataService = new JsonDataService(knimeService);
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const response = await jsonDataService.data();
-            expect(response).toStrictEqual({ error: expectedError });
+            expect(response).toBeFalsy();
             expect(sendErrorSpy).toBeCalledWith({
                 code: -32001,
                 message: expectedError.data.details,
@@ -285,9 +287,92 @@ describe('JsonDataService', () => {
                 message: data.warningMessages.join('\n\n'),
                 nodeId: extensionConfig.nodeId,
                 nodeInfo: extensionConfig.nodeInfo,
-                subtitle: undefined,
+                subtitle: '2 messages',
                 type: 'warn'
             });
+        });
+    });
+
+    describe('alert formatting', () => {
+        let knimeService, jsonDataService, sendWarningSpy, sendErrorSpy;
+
+        beforeAll(() => {
+            const callServiceSpy = jest.fn();
+            const pushNotificationSpy = jest.fn();
+            knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
+            jsonDataService = new JsonDataService(knimeService) as any;
+            sendWarningSpy = jest.spyOn(knimeService, 'sendWarning');
+            sendErrorSpy = jest.spyOn(knimeService, 'sendError');
+        });
+
+        afterEach(() => {
+            sendWarningSpy.mockReset();
+            sendErrorSpy.mockReset();
+        });
+
+        it('formats a single warning message', () => {
+            jsonDataService.handleWarnings(['Message 1']);
+            const sentMessage = sendWarningSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage.message).toBe('Message 1');
+            expect(sentMessage.type).toBe(AlertTypes.WARN);
+            expect(sentMessage.subtitle).toBeFalsy();
+        });
+
+        it('formats multiple warning messages', () => {
+            const warnings = ['Message 1', 'Message 2'];
+            jsonDataService.handleWarnings(warnings);
+            const sentMessage = sendWarningSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage.message).toBe(warnings.join('\n\n'));
+            expect(sentMessage.type).toBe(AlertTypes.WARN);
+            expect(sentMessage.subtitle).toBe('2 messages');
+        });
+
+        it('formats long warning messages', () => {
+            jsonDataService.handleWarnings([longMessage]);
+            const sentMessage = sendWarningSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage.message).toBe(longMessage);
+            expect(sentMessage.type).toBe(AlertTypes.WARN);
+            expect(sentMessage.subtitle).toBe('Expand for details');
+        });
+
+        it('formats default error', () => {
+            jsonDataService.handleError({});
+            const sentMessage = sendErrorSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage.message).toBe(
+                'No further information available. Please check the workflow configuration.'
+            );
+            expect(sentMessage.type).toBe(AlertTypes.ERROR);
+            expect(sentMessage.subtitle).toBe('Something went wrong');
+        });
+
+        it('formats long error message', () => {
+            jsonDataService.handleError({ message: longMessage });
+            const sentMessage = sendErrorSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage.message).toBe(longMessage);
+            expect(sentMessage.type).toBe(AlertTypes.ERROR);
+            expect(sentMessage.subtitle).toBe('Something went wrong');
+        });
+
+        it('formats all error information', () => {
+            jsonDataService.handleError({
+                details: 'Something went wrong',
+                stackTrace: ['Line1', 'Line2'],
+                typeName: 'NullPointerException',
+                message: 'Please check the workflow configuration',
+                code: 401
+            });
+            const sentMessage = sendErrorSpy.mock.calls[0][0] as Alert;
+            expect(sentMessage).toStrictEqual({
+                code: 401,
+                nodeId: extensionConfig.nodeId,
+                message: expect.any(String),
+                nodeInfo: extensionConfig.nodeInfo,
+                subtitle: 'Please check the workflow configuration',
+                type: AlertTypes.ERROR
+            });
+            expect(sentMessage.message).toContain('NullPointerException');
+            expect(sentMessage.message).toContain('Something went wrong');
+            expect(sentMessage.message).toContain('Line1\n\tLine2');
         });
     });
 });

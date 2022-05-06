@@ -95,7 +95,7 @@ return error&&this.sendError(error),Promise.resolve({result:result})}
          *
          * @param {Notification} notification - the notification payload.
          * @returns {any} - the result of the callable function.
-         */pushNotification(notification){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot push notification without extension config"});return this.sendError(error),Promise.resolve({error:error})}if(!this.callablePushNotification){const error=this.createAlert({subtitle:"Push notification failed",message:"Push notification is not available"});return this.sendError(error),Promise.resolve({error:error})}return this.callablePushNotification(Object.assign({callerId:this.serviceId},notification))}
+         */pushNotification(notification){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot push notification without extension config"});return this.sendError(error),Promise.resolve({})}if(!this.callablePushNotification){const error=this.createAlert({subtitle:"Push notification failed",message:"Push notification is not available"});return this.sendError(error),Promise.resolve({})}return this.callablePushNotification(Object.assign({callerId:this.serviceId},notification))}
 /**
          * Pushes error to framework to be displayed to the user.
          *

@@ -199,7 +199,7 @@ export class KnimeService<T = any> {
                 message: 'Cannot push notification without extension config'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({});
         }
 
         if (!this.callablePushNotification) {
@@ -208,7 +208,7 @@ export class KnimeService<T = any> {
                 message: 'Push notification is not available'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({});
         }
 
         return this.callablePushNotification({
