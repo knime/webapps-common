@@ -34,16 +34,20 @@ declare class KnimeService<T = any> {
      * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     * @returns {Promise<CallServiceResponse>} - resolved promise containing error or result depending on response
+     *      success.
      */
     /**
      * Public service call wrapper with full error handling which can be used by subclasses/typed service
      * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     * @returns {Promise<CallServiceResponse>} - resolved promise containing error or result depending on response
+     *      success.
      */
-    callService(serviceParams: ServiceParameters): Promise<CallServiceResponse>;
+    callService(serviceParams: ServiceParameters): Promise<CallServiceResponse | {
+        result: any;
+    }>;
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
      * Default behavior is to use the member callable service directly.

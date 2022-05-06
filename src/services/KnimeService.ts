@@ -51,7 +51,8 @@ export class KnimeService<T = any> {
      * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     * @returns {Promise<CallServiceResponse>} - resolved promise containing error or result depending on response
+     *      success.
      */
     async callService(serviceParams: ServiceParameters) {
         if (!this.extensionConfig) {
@@ -60,7 +61,7 @@ export class KnimeService<T = any> {
                 message: 'Cannot call service without extension config'
             });
             this.sendError(error);
-            return Promise.resolve({ error } as CallServiceResponse);
+            return Promise.resolve({} as CallServiceResponse);
         }
 
         if (!this.callableService) {
@@ -69,19 +70,19 @@ export class KnimeService<T = any> {
                 subtitle: 'Service not found'
             });
             this.sendError(error);
-            return Promise.resolve({ error } as CallServiceResponse);
+            return Promise.resolve({} as CallServiceResponse);
         }
 
         const response: CallServiceResponse = await this.executeServiceCall(serviceParams);
 
         // handle top level RPC errors only
-        const { error } = response || {};
+        const { error, result } = response || {};
 
         if (error) {
             this.sendError(error as Alert);
         }
 
-        return Promise.resolve(response);
+        return Promise.resolve({ result });
     }
 
     /**

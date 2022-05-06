@@ -7,6 +7,7 @@ import '../types/ResourceTypes.js';
 import { AlertTypes } from '../types/AlertTypes.js';
 import { createJsonRpcRequest } from '../utils/createJsonRpcRequest.js';
 
+const MAX_MESSAGE_LEN = 160;
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
@@ -51,9 +52,7 @@ class JsonDataService {
         }
         const { result, warningMessages, userError, internalError } = initialData || {};
         if (userError || internalError) {
-            const currentError = userError || internalError;
-            this.handleError(currentError);
-            return Promise.resolve({ error: currentError });
+            this.handleError(userError || internalError);
         }
         if (warningMessages) {
             this.handleWarnings(warningMessages);
@@ -81,7 +80,6 @@ class JsonDataService {
         const { error, warningMessages, result } = wrappedResult;
         if (error) {
             this.handleError(Object.assign(Object.assign({}, error.data || {}), error));
-            return Promise.resolve({ error });
         }
         if (warningMessages) {
             this.handleWarnings(warningMessages);
@@ -128,24 +126,50 @@ class JsonDataService {
         });
     }
     handleError(error = {}) {
-        const { details, stackTrace, typeName, message, code } = error;
-        const alertParams = {
-            // eslint-disable-next-line @typescript-eslint/no-extra-parens
-            message: details || (typeName && `${typeName}:\n\n`) || '',
-            subtitle: message || '',
+        const { details = '', stackTrace = '', typeName = '', message = '', code } = error;
+        let messageSubject = '';
+        let messageBody = '';
+        if (message) {
+            if (message.length <= MAX_MESSAGE_LEN) {
+                messageSubject = message;
+            }
+            else {
+                messageBody = message;
+            }
+        }
+        if (typeName) {
+            if (messageSubject) {
+                messageBody = typeName;
+            }
+            else {
+                messageSubject = typeName;
+            }
+        }
+        if (details) {
+            messageBody = messageBody ? `${messageBody}\n\n${details}` : details;
+        }
+        if (Array.isArray(stackTrace)) {
+            const formattedStack = stackTrace.join('\n\t');
+            messageBody = messageBody ? `${messageBody}\n\n${formattedStack}` : formattedStack;
+        }
+        messageBody = messageBody.trim();
+        this.knimeService.sendError(this.knimeService.createAlert({
+            subtitle: messageSubject || 'Something went wrong',
+            message: messageBody || 'No further information available. Please check the workflow configuration.',
             type: AlertTypes.ERROR,
             code
-        };
-        if (Array.isArray(stackTrace)) {
-            alertParams.message += `\n\n${stackTrace.join('\n\t')}`;
-        }
-        this.knimeService.sendError(this.knimeService.createAlert(alertParams));
+        }));
     }
     handleWarnings(warningMessages) {
-        this.knimeService.sendWarning(this.knimeService.createAlert({
-            type: AlertTypes.WARN,
-            message: warningMessages.join('\n\n')
-        }));
+        let subtitle;
+        const message = warningMessages === null || warningMessages === void 0 ? void 0 : warningMessages.join('\n\n');
+        if ((warningMessages === null || warningMessages === void 0 ? void 0 : warningMessages.length) > 1) {
+            subtitle = `${warningMessages === null || warningMessages === void 0 ? void 0 : warningMessages.length} messages`;
+        }
+        else if ((message === null || message === void 0 ? void 0 : message.length) > MAX_MESSAGE_LEN) {
+            subtitle = 'Expand for details';
+        }
+        this.knimeService.sendWarning(this.knimeService.createAlert({ type: AlertTypes.WARN, message, subtitle }));
     }
 }
 

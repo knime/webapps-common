@@ -34,10 +34,11 @@ this.notificationCallbacksMap=new Map}
          * implementations.
          *
          * @param {ServiceParameters} serviceParams - service parameters for the service call.
-         * @returns {Promise} - resolved promise containing error or result depending on response success.
-         */async callService(serviceParams){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot call service without extension config"});return this.sendError(error),Promise.resolve({error:error})}if(!this.callableService){const error=this.createAlert({message:"Callable service is not available",subtitle:"Service not found"});return this.sendError(error),Promise.resolve({error:error})}const response=await this.executeServiceCall(serviceParams),{error:error}=response||{};
+         * @returns {Promise<CallServiceResponse>} - resolved promise containing error or result depending on response
+         *      success.
+         */async callService(serviceParams){if(!this.extensionConfig){const error=this.createAlert({subtitle:"Missing extension config",message:"Cannot call service without extension config"});return this.sendError(error),Promise.resolve({})}if(!this.callableService){const error=this.createAlert({message:"Callable service is not available",subtitle:"Service not found"});return this.sendError(error),Promise.resolve({})}const response=await this.executeServiceCall(serviceParams),{error:error,result:result}=response||{};
 // handle top level RPC errors only
-return error&&this.sendError(error),Promise.resolve(response)}
+return error&&this.sendError(error),Promise.resolve({result:result})}
 /**
          * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
          * Default behavior is to use the member callable service directly.
@@ -144,10 +145,7 @@ ResourceTypes.HTML="HTML",
 /** Indicates the resource is a Vue component and should be treated as a library. */
 ResourceTypes.VUE_COMPONENT_LIB="VUE_COMPONENT_LIB"}(ResourceTypes||(ResourceTypes={}));var index=Object.freeze({__proto__:null,get NodeServices(){return NodeServices},get DataServiceTypes(){return DataServiceTypes},get SelectionModes(){return SelectionModes},get ExtensionTypes(){return ExtensionTypes},get EventTypes(){return EventTypes},get ResourceTypes(){return ResourceTypes}});let requestId=0;
 // for now we only need any kind of id, not even unique, later will need unique ones
-const generateRequestId=()=>(requestId+=1,requestId),createJsonRpcRequest=(method,params=[])=>({jsonrpc:"2.0",method:method,params:params,id:generateRequestId()})
-/**
-     * A utility class to interact with JsonDataServices implemented by a UI Extension node.
-     */;// 10s
+const generateRequestId=()=>(requestId+=1,requestId),createJsonRpcRequest=(method,params=[])=>({jsonrpc:"2.0",method:method,params:params,id:generateRequestId()});// 10s
 var KnimeConstants=Object.freeze({__proto__:null,UI_EXT_POST_MESSAGE_PREFIX:"knimeUIExtension",UI_EXT_POST_MESSAGE_TIMEOUT:1e4});
 /**
      * The main API entry point for IFrame-based UI extensions. Handles all communication between the extension
@@ -191,7 +189,11 @@ window.parent.postMessage({type:`knimeUIExtension:${messageType}`,payload:payloa
      * IFrame window communication should be setup with instance of IFrameKnimeService.
      *
      * Should be instantiated by class that persists at root window object.
-     */const KnimeUtils=Object.assign({generateRequestId:generateRequestId,createJsonRpcRequest:createJsonRpcRequest},KnimeConstants);var KnimeUIExtensionService=Object.freeze({__proto__:null,KnimeTypes:index,KnimeService:KnimeService,JsonDataService:class{
+     */const KnimeUtils=Object.assign({generateRequestId:generateRequestId,createJsonRpcRequest:createJsonRpcRequest},KnimeConstants);var KnimeUIExtensionService=Object.freeze({__proto__:null,KnimeTypes:index,KnimeService:KnimeService,JsonDataService:
+/**
+     * A utility class to interact with JsonDataServices implemented by a UI Extension node.
+     */
+class{
 /**
          * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
          *      with the framework.
@@ -210,7 +212,7 @@ constructor(knimeService){this.knimeService=knimeService}
          * (if it exists) or by fetching the data from the node DataService implementation.
          *
          * @returns {Promise} node initial data provided by the local configuration or by fetching from the DataService.
-         */async initialData(){var _a,_b;let initialData;initialData=(null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.initialData)?await Promise.resolve(null===(_b=this.knimeService.extensionConfig)||void 0===_b?void 0:_b.initialData):await this.callDataService(DataServiceTypes.INITIAL_DATA),"string"==typeof initialData&&(initialData=JSON.parse(initialData));const{result:result,warningMessages:warningMessages,userError:userError,internalError:internalError}=initialData||{};if(userError||internalError){const currentError=userError||internalError;return this.handleError(currentError),Promise.resolve({error:currentError})}return warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result)}
+         */async initialData(){var _a,_b;let initialData;initialData=(null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.initialData)?await Promise.resolve(null===(_b=this.knimeService.extensionConfig)||void 0===_b?void 0:_b.initialData):await this.callDataService(DataServiceTypes.INITIAL_DATA),"string"==typeof initialData&&(initialData=JSON.parse(initialData));const{result:result,warningMessages:warningMessages,userError:userError,internalError:internalError}=initialData||{};return(userError||internalError)&&this.handleError(userError||internalError),warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result)}
 /**
          * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
          * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
@@ -222,7 +224,7 @@ constructor(knimeService){this.knimeService=knimeService}
          *      (default 'getData').
          * @param {any} [params.options] - optional options that should be passed to called method.
          * @returns {Promise} rejected or resolved depending on backend response.
-         */async data(params={}){const response=await this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options)));let wrappedResult=(null==response?void 0:response.result)||{};"string"==typeof wrappedResult&&(wrappedResult=JSON.parse(wrappedResult));const{error:error,warningMessages:warningMessages,result:result}=wrappedResult;return error?(this.handleError(Object.assign(Object.assign({},error.data||{}),error)),Promise.resolve({error:error})):(warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result))}
+         */async data(params={}){const response=await this.callDataService(DataServiceTypes.DATA,JSON.stringify(createJsonRpcRequest(params.method||"getData",params.options)));let wrappedResult=(null==response?void 0:response.result)||{};"string"==typeof wrappedResult&&(wrappedResult=JSON.parse(wrappedResult));const{error:error,warningMessages:warningMessages,result:result}=wrappedResult;return error&&this.handleError(Object.assign(Object.assign({},error.data||{}),error)),warningMessages&&this.handleWarnings(warningMessages),Promise.resolve(result)}
 /**
          * Sends the current client-side data to the backend to be persisted. A data getter method which returns the
          * data to be applied/saved should be registered *prior* to invoking this method. If none is registered, a
@@ -246,9 +248,7 @@ constructor(knimeService){this.knimeService=knimeService}
          * Publish a data update notification to other UIExtensions registered in the current page.
          * @param {any} data - the data to send.
          * @returns {void}
-         */publishData(data){this.knimeService.pushNotification({event:{data:data,method:EventTypes.DataEvent}})}handleError(error={}){const{details:details,stackTrace:stackTrace,typeName:typeName,message:message,code:code}=error,alertParams={
-// eslint-disable-next-line @typescript-eslint/no-extra-parens
-message:details||typeName&&`${typeName}:\n\n`||"",subtitle:message||"",type:AlertTypes.ERROR,code:code};Array.isArray(stackTrace)&&(alertParams.message+=`\n\n${stackTrace.join("\n\t")}`),this.knimeService.sendError(this.knimeService.createAlert(alertParams))}handleWarnings(warningMessages){this.knimeService.sendWarning(this.knimeService.createAlert({type:AlertTypes.WARN,message:warningMessages.join("\n\n")}))}}
+         */publishData(data){this.knimeService.pushNotification({event:{data:data,method:EventTypes.DataEvent}})}handleError(error={}){const{details:details="",stackTrace:stackTrace="",typeName:typeName="",message:message="",code:code}=error;let messageSubject="",messageBody="";if(message&&(message.length<=160?messageSubject=message:messageBody=message),typeName&&(messageSubject?messageBody=typeName:messageSubject=typeName),details&&(messageBody=messageBody?`${messageBody}\n\n${details}`:details),Array.isArray(stackTrace)){const formattedStack=stackTrace.join("\n\t");messageBody=messageBody?`${messageBody}\n\n${formattedStack}`:formattedStack}messageBody=messageBody.trim(),this.knimeService.sendError(this.knimeService.createAlert({subtitle:messageSubject||"Something went wrong",message:messageBody||"No further information available. Please check the workflow configuration.",type:AlertTypes.ERROR,code:code}))}handleWarnings(warningMessages){let subtitle;const message=null==warningMessages?void 0:warningMessages.join("\n\n");(null==warningMessages?void 0:warningMessages.length)>1?subtitle=`${null==warningMessages?void 0:warningMessages.length} messages`:(null==message?void 0:message.length)>160&&(subtitle="Expand for details"),this.knimeService.sendWarning(this.knimeService.createAlert({type:AlertTypes.WARN,message:message,subtitle:subtitle}))}}
 /**
      * KNIME Analytics Platform constant.
      */,IFrameKnimeService:IFrameKnimeService,IFrameKnimeServiceAdapter:class extends KnimeService{constructor(extensionConfig=null,callableService=null,pushNotification=null){super(extensionConfig,callableService,pushNotification),this.boundOnMessageFromIFrame=this.onMessageFromIFrame.bind(this),window.addEventListener("message",this.boundOnMessageFromIFrame)}

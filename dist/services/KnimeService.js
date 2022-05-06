@@ -35,7 +35,8 @@ class KnimeService {
      * implementations.
      *
      * @param {ServiceParameters} serviceParams - service parameters for the service call.
-     * @returns {Promise} - resolved promise containing error or result depending on response success.
+     * @returns {Promise<CallServiceResponse>} - resolved promise containing error or result depending on response
+     *      success.
      */
     async callService(serviceParams) {
         if (!this.extensionConfig) {
@@ -44,7 +45,7 @@ class KnimeService {
                 message: 'Cannot call service without extension config'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({});
         }
         if (!this.callableService) {
             const error = this.createAlert({
@@ -52,15 +53,15 @@ class KnimeService {
                 subtitle: 'Service not found'
             });
             this.sendError(error);
-            return Promise.resolve({ error });
+            return Promise.resolve({});
         }
         const response = await this.executeServiceCall(serviceParams);
         // handle top level RPC errors only
-        const { error } = response || {};
+        const { error, result } = response || {};
         if (error) {
             this.sendError(error);
         }
-        return Promise.resolve(response);
+        return Promise.resolve({ result });
     }
     /**
      * Inner service call wrapper which can be overridden by subclasses which require specific behavior (e.g. iframes).
