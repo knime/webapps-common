@@ -154,6 +154,36 @@ describe('MultiselectListBox.vue', () => {
 
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
         });
+
+        it('disables item selection on click', async () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: ['test1', 'test3'],
+                    ariaLabel: 'A Label',
+                    disabled: true
+                }
+            });
+
+            wrapper.findAll('[role=option]').at(3).trigger('click');
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            wrapper.findAll('[role=option]').at(1).trigger('click', { shiftKey: true });
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            wrapper.findAll('[role=option]').at(3).trigger('click', { metaKey: true });
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            wrapper.findAll('[role=option]').at(3).trigger('click', { ctrlKey: true });
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            wrapper.findAll('[role=option]').at(1).trigger('dblclick');
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            wrapper.findAll('[role=option]').at(1).trigger('dblclick', { shiftKey: true });
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+        });
     });
 
     describe('keyboard navigation', () => {
@@ -252,6 +282,28 @@ describe('MultiselectListBox.vue', () => {
             let emitted = wrapper.emitted().input;
             expect(emitted[emitted.length - 1][0]).toStrictEqual(['test4']);
         });
+
+        it('disables all keyboard controls', async () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: [],
+                    ariaLabel: 'A Label',
+                    disabled: true
+                }
+            });
+
+            wrapper.find('[role=listbox]').trigger('keydown.up');
+            wrapper.find('[role=listbox]').trigger('keydown.down');
+            wrapper.find('[role=listbox]').trigger('keydown.left');
+            wrapper.find('[role=listbox]').trigger('keydown.right');
+            wrapper.find('[role=listbox]').trigger('keydown.up', { shiftKey: true });
+            wrapper.find('[role=listbox]').trigger('keydown.down', { shiftKey: true });
+            wrapper.find('[role=listbox]').trigger('keydown.a', { ctrlKey: true });
+
+            await wrapper.vm.$nextTick();
+            expect(wrapper.props().value).toStrictEqual([]);
+        });
     });
 
     describe('methods and events', () => {
@@ -279,6 +331,19 @@ describe('MultiselectListBox.vue', () => {
             });
             wrapper.vm.clearSelection();
             expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+        });
+
+        it('disables clearSelection method', () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: ['test2', 'test3', 'test4'],
+                    ariaLabel: 'A Label',
+                    disabled: true
+                }
+            });
+            wrapper.vm.clearSelection();
+            expect(wrapper.props().value).toStrictEqual(['test2', 'test3', 'test4']);
         });
 
         it('provides hasSelection method', () => {
@@ -412,6 +477,22 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
 
             expect(wrapper.emitted().input).toBeUndefined();
+        });
+
+        it('disables selection on drag', async () => {
+            const wrapper = mount(MultiselectListBox, {
+                propsData: {
+                    possibleValues,
+                    value: [],
+                    ariaLabel: 'A Label',
+                    disabled: true
+                }
+            });
+            wrapper.findAll('[role=option]').at(1).trigger('mousedown');
+            wrapper.findAll('[role=option]').at(3).trigger('mousemove');
+            await wrapper.vm.$nextTick();
+
+            expect(wrapper.props().value).toStrictEqual([]);
         });
     });
 });

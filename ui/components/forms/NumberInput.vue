@@ -110,7 +110,6 @@ export default {
          * This value is the last valid input value for the number input.
          * It is used as a fallback if the user enters invalid values.
          */
-        console.log(this.disabled);
         this.localValue = this.parseValue(this.value);
         this.initialValue = this.localValue;
     },

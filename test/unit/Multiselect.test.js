@@ -335,7 +335,7 @@ describe('Multiselect.vue', () => {
                 expect(document.activeElement).toBe(wrapper.vm.focusOptions[0]);
                 expect(onUpMock).toHaveBeenCalled();
             });
-    
+
             it('focuses first element on key down at list end', () => {
                 const wrapper = mount(Multiselect, {
                     propsData: {

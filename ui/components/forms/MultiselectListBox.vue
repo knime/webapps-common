@@ -114,16 +114,10 @@ export default {
             return this.value.includes(candidate);
         },
         handleCtrlClick(value, index) {
-            if (this.disabled) {
-                return;
-            }
             this.currentKeyNavIndex = index;
             this.toggleSelection(value);
         },
         handleShiftClick(value, clickedIndex) {
-            if (this.disabled) {
-                return;
-            }
             this.setSelected(this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex));
         },
         /**
@@ -394,7 +388,7 @@ export default {
 
 <template>
   <div
-    :class="['multiselect-list-box', { 'invalid' : !isValid, disabled: disabled }]"
+    :class="['multiselect-list-box', { 'invalid' : !isValid, 'disabled': disabled }]"
     :style="cssStyleSize"
   >
     <ul
