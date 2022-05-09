@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo } from "../index-b3e43760";
+import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo } from "../index-92dc325b";
 import { Alert } from "../Alert-3bf44dea";
 import { AlertTypes } from "../types/AlertTypes";
 /**

@@ -1,3 +1,5 @@
+import { createFlowVariablesMap } from '../utils/flowVariablesUtils.js';
+
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
  */
@@ -12,9 +14,10 @@ class DialogService {
     /**
      * @returns {FlowVariableSettings | null} - maps of model and view flow variables settings.
      */
-    getFlowVariableSettings() {
+    async getFlowVariableSettings() {
         var _a;
-        return Promise.resolve(((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.flowVariableSettings) || null);
+        const flowSettings = await Promise.resolve(((_a = this.knimeService.extensionConfig) === null || _a === void 0 ? void 0 : _a.flowVariableSettings) || {});
+        return createFlowVariablesMap(flowSettings);
     }
 }
 

@@ -1,4 +1,4 @@
-import { NodeService } from "../index-b3e43760";
+import { NodeService } from "../index-92dc325b";
 type JsonRpcRequest = {
     jsonrpc: string;
     method: any;

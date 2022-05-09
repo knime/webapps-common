@@ -1,6 +1,7 @@
 import { DialogService } from 'src/services/DialogService';
 import { extensionConfig } from 'test/mocks';
 import { KnimeService } from 'src/services/KnimeService';
+import { createFlowVariablesMap } from 'src/utils/flowVariablesUtils';
 
 describe('DialogService', () => {
     describe('initialization', () => {
@@ -13,18 +14,19 @@ describe('DialogService', () => {
     });
 
     describe('service.getFlowVariableSettings', () => {
-        it(`Fetches flowVariablesSettings if it's passed to constructor`, () => {
+        it(`Fetches flowVariablesSettings if it's passed to constructor`, async () => {
             const knimeService = new KnimeService(extensionConfig);
             const dialogService = new DialogService(knimeService);
 
-            expect(dialogService.getFlowVariableSettings()).resolves.toEqual(extensionConfig.flowVariableSettings);
+            expect(await dialogService.getFlowVariableSettings())
+                .toEqual(createFlowVariablesMap(extensionConfig.flowVariableSettings));
         });
 
-        it(`Returns null if extensionConfig is not passed to constructor`, () => {
+        it(`Returns empty settings object if extensionConfig is not passed to constructor`, async () => {
             const knimeService = new KnimeService();
             const dialogService = new DialogService(knimeService);
 
-            expect(dialogService.getFlowVariableSettings()).resolves.toEqual(null);
+            expect(await dialogService.getFlowVariableSettings()).toEqual({});
         });
     });
 });

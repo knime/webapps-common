@@ -20,6 +20,6 @@ declare class DialogService<T = any> {
     /**
      * @returns {FlowVariableSettings | null} - maps of model and view flow variables settings.
      */
-    getFlowVariableSettings(): Promise<import("../index-678f4fdf").FlowVariableSettings>;
+    getFlowVariableSettings(): Promise<any>;
 }
 export { DialogService };

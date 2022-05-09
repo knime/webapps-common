@@ -9,6 +9,21 @@ declare namespace KnimeTypes {
         DIALOG = "dialog",
         VIEW = "view"
     }
+    type FlowVariableSetting = {
+        controllingFlowVariableAvailable: boolean;
+        controllingFlowVariableName: string | null;
+        exposedFlowVariableName: string | null;
+        leaf?: boolean;
+        [key: string]: FlowVariableSetting | boolean | string | null;
+    };
+    type FlowVariableSettings = {
+        modelVariables: {
+            [key: string]: FlowVariableSetting;
+        };
+        viewVariables: {
+            [key: string]: FlowVariableSetting;
+        };
+    };
     /**
      * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
      * @property {string} nodeState - the current state of the node.
@@ -71,7 +86,11 @@ declare namespace KnimeTypes {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
+<<<<<<< HEAD
         initialSelection?: T;
+=======
+        flowVariableSettings?: FlowVariableSettings;
+>>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)
     };
     /**
      * Selection service modes available by default to UI Extension nodes.
@@ -180,6 +199,21 @@ declare namespace KnimeUIExtensionService {
         DIALOG = "dialog",
         VIEW = "view"
     }
+    type FlowVariableSetting = {
+        controllingFlowVariableAvailable: boolean;
+        controllingFlowVariableName: string | null;
+        exposedFlowVariableName: string | null;
+        leaf?: boolean;
+        [key: string]: FlowVariableSetting | boolean | string | null;
+    };
+    type FlowVariableSettings = {
+        modelVariables: {
+            [key: string]: FlowVariableSetting;
+        };
+        viewVariables: {
+            [key: string]: FlowVariableSetting;
+        };
+    };
     /**
      * @property {string} [nodeAnnotation] - the optional annotation associated with the node.
      * @property {string} nodeState - the current state of the node.
@@ -242,7 +276,11 @@ declare namespace KnimeUIExtensionService {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
+<<<<<<< HEAD
         initialSelection?: T;
+=======
+        flowVariableSettings?: FlowVariableSettings;
+>>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)
     };
     /**
      * Selection service modes available by default to UI Extension nodes.
@@ -733,6 +771,21 @@ declare namespace KnimeUIExtensionService {
          * @returns {void}
          */
         removeOnSelectionChangeCallback(callback: (any: any) => void): void;
+    }
+    /**
+     * A utility class to interact with Dialog settings implemented by a UI Extension node.
+     */
+    class DialogService<T = any> {
+        private knimeService;
+        /**
+         * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+         *      with the framework.
+         */
+        constructor(knimeService: IFrameKnimeService | KnimeService<T>);
+        /**
+         * @returns {FlowVariableSettings | null} - maps of model and view flow variables settings.
+         */
+        getFlowVariableSettings(): Promise<any>;
     }
 }
 export { KnimeUIExtensionService as default };

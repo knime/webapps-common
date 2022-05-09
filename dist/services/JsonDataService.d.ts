@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from "../index";
-import { Notification } from "../index-b3e43760";
+import { Notification } from "../index-92dc325b";
 import { KnimeService } from "./KnimeService";
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
