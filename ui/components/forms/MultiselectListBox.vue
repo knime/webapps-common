@@ -388,7 +388,7 @@ export default {
 
 <template>
   <div
-    :class="['multiselect-list-box', { 'invalid' : !isValid, 'disabled': disabled }]"
+    :class="['multiselect-list-box', { 'invalid' : !isValid, disabled }]"
     :style="cssStyleSize"
   >
     <ul
@@ -396,7 +396,7 @@ export default {
       ref="ul"
       role="listbox"
       tabindex="0"
-      :class="{ disabled: disabled }"
+      :class="{ disabled }"
       :aria-label="ariaLabel"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.prevent.exact="onCtrlA"
@@ -424,7 +424,7 @@ export default {
           'invalid': item.invalid,
           'noselect' :true,
           'empty': !Boolean(item.text.trim()),
-          'disabled': disabled
+          disabled
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="handleClick($event, item.id, index)"

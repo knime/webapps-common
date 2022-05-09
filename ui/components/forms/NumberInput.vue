@@ -228,7 +228,7 @@ export default {
 </script>
 
 <template>
-  <div :class="['wrapper' , { disabled: disabled }]">
+  <div :class="['wrapper' , { disabled }]">
     <input
       :id="id"
       ref="input"
@@ -250,7 +250,7 @@ export default {
       class="invalid-marker"
     />
     <span
-      :class="['increase' , { disabled: disabled }]"
+      :class="['increase' , { disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseleave="(e) => mouseEvent(e, 'increase')"
@@ -258,7 +258,7 @@ export default {
       <ArrowIcon />
     </span>
     <span
-      :class="['decrease' , { disabled: disabled }]"
+      :class="['decrease' , { disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseleave="(e) => mouseEvent(e, 'decrease')"

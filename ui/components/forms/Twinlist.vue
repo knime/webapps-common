@@ -242,7 +242,7 @@ export default {
       <div class="space" />
       <div class="title">{{ labelRight }}</div>
     </div>
-    <div :class="['lists', { disabled: disabled }] ">
+    <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
         :size="listSize"

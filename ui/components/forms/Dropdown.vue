@@ -154,11 +154,12 @@ export default {
             this.$refs.ul.scrollTop = 0;
         },
         toggleExpanded() {
-            if (!this.disabled) {
-                this.isExpanded = !this.isExpanded;
-                if (this.isExpanded) {
-                    Vue.nextTick(() => this.$refs.ul.focus());
-                }
+            if (this.disabled) {
+                return;
+            }
+            this.isExpanded = !this.isExpanded;
+            if (this.isExpanded) {
+                Vue.nextTick(() => this.$refs.ul.focus());
             }
         },
         handleKeyDownList(e) {
@@ -232,7 +233,7 @@ export default {
   <div
     :id="id"
     v-on-clickaway="clickAway"
-    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid, disabled: disabled }]"
+    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid, disabled }]"
   >
     <div
       :id="generateId('button')"

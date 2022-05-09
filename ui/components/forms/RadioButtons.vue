@@ -15,6 +15,10 @@ export default {
             type: String,
             default: ''
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
          * @example
@@ -55,6 +59,7 @@ export default {
     ref="radioButton"
     :possible-values="possibleValues"
     :value="value"
+    :disabled="disabled"
     :class="['radio-buttons', alignment]"
     v-on="$listeners"
   />
@@ -63,11 +68,6 @@ export default {
 <style lang="postcss" scoped>
 .radio-buttons >>> {
   user-select: none;
-
-  &.disabled {
-    color: var(--knime-dove-gray);
-    opacity: 0.5;
-  }
 
   & label {
     position: relative;
@@ -140,6 +140,11 @@ export default {
         }
       }
     }
+  }
+
+  &:disabled {
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
   }
 }
 

@@ -196,6 +196,11 @@ export default {
     }
     /* stylelint-enable no-descending-specificity */
   }
+
+  &:disabled {
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
+  }
 }
 
 </style>
