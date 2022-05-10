@@ -1,7 +1,7 @@
 <script>
-import packages from '../../buildtools/opensourcecredits/used-packages.json';
-import Description from '../components/Description';
-import ArrowNextIcon from '../assets/img/icons/arrow-next.svg?inline';
+import packages from '../buildtools/opensourcecredits/used-packages.json';
+import Description from '../../../ui/components/Description';
+import ArrowNextIcon from '../../icons/icons/arrow-next.svg?inline';
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses
