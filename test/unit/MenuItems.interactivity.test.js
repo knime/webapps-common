@@ -81,8 +81,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -115,8 +115,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -151,8 +151,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -185,8 +185,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeFalsy();
@@ -237,20 +237,20 @@ describe('MenuItems.vue', () => {
                 }
             });
             // up and down
-            wrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[2]);
+            wrapper.vm.$refs.listItem[1].focus();
+            expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[1]);
+            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.$refs.listItem[0]);
+            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.$refs.listItem[2]);
             // jumps to end of list
-            wrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[2]);
+            wrapper.vm.$refs.listItem[0].focus();
+            expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
+            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.$refs.listItem[1]);
+            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.$refs.listItem[2]);
             // jumps to start of list
-            wrapper.vm.listItems[2].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[2]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[0]);
+            wrapper.vm.$refs.listItem[2].focus();
+            expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[2]);
+            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.$refs.listItem[1]);
+            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.$refs.listItem[0]);
         });
 
         it('focuses next element on key down', () => {

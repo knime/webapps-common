@@ -117,7 +117,7 @@ describe('SubMenu.vue', () => {
                     NuxtLink: RouterLinkStub
                 }
             });
-            listItems = arrowKeyNavWrapper.vm.$refs.menuItems.listItems;
+            listItems = arrowKeyNavWrapper.vm.$refs.menuItems.$refs.listItem;
         });
 
         it('focuses first element on key down after expand if orientation bottom', () => {
