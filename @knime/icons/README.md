@@ -11,12 +11,6 @@ commonly used in KNIME web projects.
 A demo of all contained UI components, icons, CSS colors etc. can be found here:
 https://knime.github.io/webapps-common/
 
-or by calling
-```sh
-npm run demo
-```
-
-
 ## Usage
 ---
 You should follow these steps
