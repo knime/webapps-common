@@ -1,0 +1,8 @@
+{
+  "name": "@knime/icons",
+  "version": "1.0.0",
+  "description": "Shared files for web projects. See README for details.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "scripts": {},
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt"
+}
