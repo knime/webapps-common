@@ -1,0 +1,16 @@
+{
+  "name": "@knime/styles",
+  "version": "1.0.0",
+  "description": "Shared files for web projects. See README for details.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "scripts": {
+    "generate-css": "node ./colors/generateCSS.js",
+    "postinstall": "npm run generate-css"
+  },
+  "author": "KNIME AG, Zurich, Switzerland",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt",
+  "dependencies": {
+    "@fontsource/roboto": "4.x",
+    "@fontsource/roboto-mono": "4.x"
+  }
+}
