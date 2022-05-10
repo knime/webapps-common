@@ -32,8 +32,6 @@ Include this in your [ESLint config file]:
 Use `.eslintrc-nuxt.js` for nuxt.js projects, `eslintrc-vue.js` for Vue.js projects, `.eslintrc-legacy.js`
 for legacy views (KNIME AP, ES3), and`.eslintrc-base.js` for other projects.
 
-Configuration files are made for ESLint 5.
-
 
 ## **stylelint**
 ---
