@@ -4,7 +4,7 @@ import CopyIcon from '../../icons/icons/copy.svg?inline';
 import Button from './Button';
 import Collapser from './Collapser';
 import MessageLink from './MessageLink';
-import { copyText } from '../../util/copyText';
+import { copyText } from '../util/copyText';
 
 /**
  * Message banner component with close button
