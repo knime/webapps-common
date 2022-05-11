@@ -1,0 +1,9 @@
+{
+  "name": "@knime/demo",
+  "version": "1.0.0",
+  "description": "Shared files for web projects. See README for details",
+  "scripts": {},
+  "author": "KNIME AG, Zurich, Switzerland",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)"
+}
