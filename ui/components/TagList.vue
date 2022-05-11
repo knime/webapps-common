@@ -71,7 +71,7 @@ export default {
       v-for="(tag, index) in tagsToDisplay"
       :key="index"
       :clickable="clickable"
-      @click.native.prevent="onClick(tag)"
+      @click.prevent="onClick(tag)"
     >
       {{ tag }}
       <slot name="icon" />
@@ -79,7 +79,7 @@ export default {
  --><Tag
       v-if="hasMoreTags"
       class="more-tags"
-      @click.native.prevent="onShowMore"
+      @click.prevent="onShowMore"
     >
       +{{ tags.length - numberOfInitialTags }}
     </Tag>

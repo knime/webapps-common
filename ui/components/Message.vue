@@ -251,7 +251,7 @@ section {
       display: flex;
     }
 
-    & >>> svg {
+    &:deep(svg) {
       position: relative;
       width: 24px;
       height: 24px;
@@ -317,8 +317,8 @@ section {
 
     /* hover/focus styles for type info */
 
-    & .close:hover >>> svg,
-    & .close:focus >>> svg {
+    & .close:hover:deep(svg),
+    & .close:focus:deep(svg) {
       filter: drop-shadow(0 0 4px white);
     }
 
@@ -356,7 +356,7 @@ section {
   width: 100%;
   pointer-events: all;
 
-  & >>> .button {
+  &:deep(.button) {
     display: flex;
     align-content: center;
 
@@ -387,7 +387,7 @@ section {
     }
   }
 
-  & >>> .panel {
+  &:deep(.panel) {
     width: 100vw;
     max-width: 100vw;
     background-color: var(--knime-white);
@@ -453,7 +453,7 @@ section {
 
 @media only screen and (max-width: 1180px) {
   .collapser {
-    & >>> .panel {
+    &:deep(.panel) {
       padding-left: var(--grid-gap-width);
       padding-right: var(--grid-gap-width);
     }

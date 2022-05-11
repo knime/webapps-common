@@ -82,7 +82,7 @@ export default {
 <template>
   <div class="feature-list">
     <TabBar
-      :value.sync="activeTab"
+      v-model="activeTab"
       :possible-values="possibleTabValues"
       name="feature"
     />

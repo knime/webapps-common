@@ -115,7 +115,7 @@ svg {
   }
 }
 
->>> .description {
+:deep(.description) {
   font-size: 16px;
   line-height: 28px;
   margin-top: 0;

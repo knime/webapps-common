@@ -19,9 +19,7 @@ describe('BaseButton.vue', () => {
     });
 
     it('has native and generic click handler events', () => {
-        /* Depending on the `to` and `href` attributes, the component renders either a native button or a (nuxt-)link.
-        * To make sure click handlers work with both, we need to set the `@click` or the `@click.native` handler
-        * cf. https://stackoverflow.com/a/41476882/5134084 */
+        // Depending on the `to` and `href` attributes, the component renders either a native button or a (nuxt-)link.
 
         // test for nuxt-link
         let wrapper = shallowMount(BaseButton, {
@@ -30,7 +28,6 @@ describe('BaseButton.vue', () => {
             }
         });
         expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn.click).toBeDefined();
 
         // test for a element
         wrapper = shallowMount(BaseButton, {
@@ -39,12 +36,10 @@ describe('BaseButton.vue', () => {
             }
         });
         expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn).not.toBeDefined();
 
         // test for button element
         wrapper = shallowMount(BaseButton);
         expect(wrapper.vnode.data.on.click).toBeDefined();
-        expect(wrapper.vnode.data.nativeOn).not.toBeDefined();
     });
 
     it('emits events', () => {

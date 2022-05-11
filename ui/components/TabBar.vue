@@ -73,7 +73,7 @@ export default {
              * @type {String}
              */
             consola.trace('TabBar value changed to', value);
-            this.$emit('update:value', value);
+            this.$emit('input', value);
         }
     }
 };
@@ -185,7 +185,7 @@ export const tabBarMixin = {
   }
 }
 
->>> .carousel::after {
+:deep(.carousel::after) {
   content: "";
   display: block;
   position: absolute;
@@ -286,7 +286,7 @@ input:not(:checked):not(:disabled) + span {
 }
 
 @media only screen and (max-width: 900px) {
-  >>> .carousel::after {
+  :deep(.carousel::after) {
     left: 0;
     right: 0;
   }
