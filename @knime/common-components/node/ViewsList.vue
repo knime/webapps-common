@@ -1,7 +1,7 @@
 <script>
 import Description from '../Description';
-import StandardIcon from '../../assets/img/icons/eye.svg?inline';
-import InteractiveIcon from '../../assets/img/icons/interactive.svg?inline';
+import StandardIcon from '../../../icons/icons/eye.svg?inline';
+import InteractiveIcon from '../../../icons/icons/interactive.svg?inline';
 
 /**
  * ViewsList are part of the NodeFeaureList

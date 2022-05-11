@@ -1,5 +1,5 @@
 <script>
-import CalendarIcon from '../../assets/img/icons/calendar.svg?inline';
+import CalendarIcon from '../../icons/icons/calendar.svg?inline';
 import TimePartInput from './TimePartInput';
 import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';

@@ -1,5 +1,5 @@
 <script>
-import ArrowNext from '../assets/img/icons/arrow-next.svg?inline';
+import ArrowNext from '../../icons/icons/arrow-next.svg?inline';
 
 export default {
     components: {

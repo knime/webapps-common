@@ -1,7 +1,7 @@
 <script>
-import PortIcon from '../../assets/img/icons/plugin.svg?inline';
-import ViewsIcon from '../../assets/img/icons/eye.svg?inline';
-import OptionsIcon from '../../assets/img/icons/settings.svg?inline';
+import PortIcon from '../../../icons/icons/plugin.svg?inline';
+import ViewsIcon from '../../../icons/icons/eye.svg?inline';
+import OptionsIcon from '../../../icons/icons/settings.svg?inline';
 import TabBar, { tabBarMixin } from '../TabBar';
 import PortsList from './PortsList';
 import ViewsList from './ViewsList';

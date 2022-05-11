@@ -8,9 +8,9 @@ import code from '!!raw-loader!../../ui/components/Modal';
 import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 
 const codeExample = `<script>
-import Modal from '~/webapps-common/ui/components/Modal';
+import Modal from '~/webapps-common/@knime/common-components/components/Modal';
 import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg?inline';
-import Button from '~/webapps-common/ui/components/Button';
+import Button from '~/webapps-common/@knime/common-components/components/Button';
 
 export default {
     components: {

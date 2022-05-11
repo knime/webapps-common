@@ -1,5 +1,5 @@
 <script>
-import ArrowIcon from '../assets/img/icons/arrow-right.svg?inline';
+import ArrowIcon from '../../icons/icons/arrow-right.svg?inline';
 
 /**
  * Renders a list of clickable links displayed with an arrow icon and text

@@ -65,7 +65,7 @@ export default {
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
         content: "";
-        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+        mask: url("../../icons/icons/link-external.svg?data") no-repeat 50% 50%;
         mask-size: cover;
         background-color: var(--knime-masala); /* defines icon color */
         width: 16px;

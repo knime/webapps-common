@@ -1,6 +1,6 @@
 <script>
-import CloseIcon from '../assets/img/icons/close.svg?inline';
-import CopyIcon from '../assets/img/icons/copy.svg?inline';
+import CloseIcon from '../../icons/icons/close.svg?inline';
+import CopyIcon from '../../icons/icons/copy.svg?inline';
 import Button from './Button';
 import Collapser from './Collapser';
 import MessageLink from './MessageLink';

@@ -1,5 +1,5 @@
 <script>
-import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
+import DropdownIcon from '../../icons/icons/arrow-dropdown.svg?inline';
 import BaseButton from './BaseButton';
 
 export default {
