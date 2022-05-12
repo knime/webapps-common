@@ -1,0 +1,28 @@
+{
+    "name": "eslint-config-knime",
+    "version": "1.0.0",
+    "description": "Knime's ESLint config",
+    "main": "index.js",
+    "license": "UNLICENSED",
+    "author": "KNIME AG, Zurich, Switzerland",
+    "exports": {
+        ".": "./index.js",
+        "./base": "./base.js",
+        "./jest": "./jest.js",
+        "./legacy": "./legacy.js",
+        "./nuxt": "./nuxt.js",
+        "./tyepscript": "./tyepscript.js",
+        "./vue": "./vue.js"
+    },
+    "peerDependencies": {
+        "eslint": ">= 7.32.0",
+        "eslint-plugin-jest-formatting": ">= 3.0.0",
+        "eslint-plugin-jsonc": ">= 2.0.0",
+        "eslint-plugin-vue": ">= 7.10.0",
+        "stylelint": "13.6.1",
+        "stylelint-config-standard": "20.0.0"
+    },
+        "volta": {
+        "node": "14.19.0"
+    }
+}

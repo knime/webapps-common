@@ -1,6 +1,10 @@
 module.exports = {
-    extends: '@knime/eslint-config',
+    extends: 'knime',
     globals: {
         consola: true
+    },
+    env: {
+        jest: true,
+        node: true
     }
 };

@@ -1,4 +1,4 @@
-let inherited = require('../../.eslintrc');
+let inherited = require('../../.eslintrc.js');
 module.exports = {
     ...inherited,
     env: {
