@@ -8,7 +8,7 @@
     "postinstall": "npm run generate-css"
   },
   "author": "KNIME AG, Zurich, Switzerland",
-  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "dependencies": {
     "@fontsource/roboto": "4.5.5",
     "@fontsource/roboto-mono": "4.5.5"

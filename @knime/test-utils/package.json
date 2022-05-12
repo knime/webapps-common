@@ -1,0 +1,28 @@
+{
+  "name": "@knime/test-utils",
+  "version": "1.0.0",
+  "description": "Shared test utility files for web projects. See README for details.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "main": "index.js",
+  "files": [
+    "./jest-file-loader.js",
+    "./jest-transform-svgs.js"
+  ],
+  "devDependencies": {
+    "@vue/test-utils": ">=1.0.0 <2.0.0",
+    "eslint": "7.32.0",
+    "eslint-config-knime": "file:../config/eslint",
+    "eslint-plugin-jest": "26.1.5",
+    "eslint-plugin-jest-formatting": "3.0.0",
+    "eslint-plugin-jsonc": "2.0.0",
+    "eslint-plugin-vue": "7.10.0",
+    "vue": "2.x",
+    "vue-template-compiler": "^2.x"
+  },
+  "peerDependencies": {
+    "@vue/test-utils": ">=1.0.0 <2.0.0"
+  },
+  "private": true
+}
