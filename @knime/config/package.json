@@ -13,6 +13,7 @@
     "node": "14.19.0"
   },
   "files": [
-    "./stylelint/.stylelintrc.js"
+    "./stylelint/**",
+    "./webpack/**"
   ]
 }
