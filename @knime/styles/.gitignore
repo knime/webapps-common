@@ -22,9 +22,6 @@ coverage
 # nyc test coverage
 .nyc_output
 
-# other test outputs
-test/*/reports
-
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -80,16 +77,15 @@ dist
 # Serverless directories
 .serverless
 
-.scannerwork/
-/node/
-/target/
+# IDE / Editor
+.idea
+.editorconfig
 
-# Ignore knime-build-tools npm & build files
-buildtools/node_modules
-buildtools/opensourcecredits/used-packages.json
+# Service worker
+sw.*
 
 # Mac OSX
 .DS_Store
 
-# VSCode
-.history/
+# Vim swap files
+*.swp
