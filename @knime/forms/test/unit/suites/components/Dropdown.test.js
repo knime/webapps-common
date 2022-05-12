@@ -1,4 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
+import Dropdown from '~/components/Dropdown';
 
 jest.mock('vue-clickaway2', () => ({
     mixin: {}
@@ -7,7 +8,6 @@ jest.mock('vue-clickaway2', () => ({
 const localVue = createLocalVue();
 localVue.directive('onClickaway', () => {});
 
-import Dropdown from '../../../components/Dropdown';
 
 describe('Dropdown.vue', () => {
     let propsData;

@@ -1,11 +1,11 @@
 <script>
-import CalendarIcon from '../../icons/icons/calendar.svg?inline';
+import CalendarIcon from '@knime/icons/icons/calendar.svg?inline';
 import TimePartInput from './TimePartInput';
 import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import updateDate from '../../../util/updateDate';
-import { isBeforeMinDate, isAfterMaxDate } from '../../../util/dateMinMaxCheck';
-import getLocalTimeZone from '../../../util/localTimezone';
+import updateDate from '../util/updateDate';
+import { isBeforeMinDate, isAfterMaxDate } from '../util/dateMinMaxCheck';
+import getLocalTimeZone from '../util/localTimezone';
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented

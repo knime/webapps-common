@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import ToggleSwitch from '../../../components/ToggleSwitch';
+import ToggleSwitch from '~/components/ToggleSwitch';
 
 describe('ToggleSwitch.vue', () => {
     it('renders', () => {

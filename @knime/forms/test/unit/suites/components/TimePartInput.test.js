@@ -1,7 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import { shallowMount, mount } from '@vue/test-utils';
 
-import TimePartInput from '../../../components/TimePartInput';
+import TimePartInput from '~/components/TimePartInput';
 
 describe('TimePartInput.vue', () => {
     let propsData, wrapper;

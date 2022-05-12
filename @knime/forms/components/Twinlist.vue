@@ -1,9 +1,9 @@
 <script>
 import MultiselectListBox from './MultiselectListBox';
-import ArrowNextIcon from '../../icons/icons/arrow-next.svg?inline';
-import ArrowNextDoubleIcon from '../../icons/icons/arrow-next-double.svg?inline';
-import ArrowPrevIcon from '../../icons/icons/arrow-prev.svg?inline';
-import ArrowPrevDoubleIcon from '../../icons/icons/arrow-prev-double.svg?inline';
+import ArrowNextIcon from '@knime/icons/icons/arrow-next.svg?inline';
+import ArrowNextDoubleIcon from '@knime/icons/icons/arrow-next-double.svg?inline';
+import ArrowPrevIcon from '@knime/icons/icons/arrow-prev.svg?inline';
+import ArrowPrevDoubleIcon from '@knime/icons/icons/arrow-prev-double.svg?inline';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;

@@ -1,6 +1,6 @@
 <script>
-import Checkbox from '../forms/Checkbox';
-import DropdownIcon from '../../icons/icons/arrow-dropdown.svg?inline';
+import Checkbox from './Checkbox';
+import DropdownIcon from '@knime/icons/icons/arrow-dropdown.svg?inline';
 
 const BLUR_TIMEOUT = 1;
 

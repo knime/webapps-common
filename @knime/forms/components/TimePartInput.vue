@@ -1,6 +1,6 @@
 <script>
-import ArrowIcon from '../../icons/icons/arrow-dropdown.svg?inline';
-import numIntegerDigits from '../../../util/numIntegerDigits';
+import ArrowIcon from '@knime/icons/icons/arrow-dropdown.svg?inline';
+import numIntegerDigits from '../util/numIntegerDigits';
 
 const INTERVAL_TIMEOUT_DELAY = 200;
 const MOUSE_DOWN_CHANGE_INTERVAL = 50;

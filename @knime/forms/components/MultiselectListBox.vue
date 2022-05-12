@@ -1,5 +1,5 @@
 <script>
-import debounce from '../../../util/debounce';
+import debounce from '../util/debounce';
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
