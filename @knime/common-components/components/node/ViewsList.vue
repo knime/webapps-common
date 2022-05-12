@@ -1,7 +1,7 @@
 <script>
-import Description from '../components/Description';
-import StandardIcon from '../../icons/icons/eye.svg?inline';
-import InteractiveIcon from '../../icons/icons/interactive.svg?inline';
+import Description from '~/components/Description';
+import StandardIcon from '@knime/icons/icons/eye.svg?inline';
+import InteractiveIcon from '@knime/icons/icons/interactive.svg?inline';
 
 /**
  * ViewsList are part of the NodeFeaureList

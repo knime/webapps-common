@@ -1,6 +1,6 @@
 <script>
 import filesize from 'filesize';
-import { icons } from '../util/fileTypeIcons';
+import { icons } from '@knime/icons/util/fileTypeIcons';
 
 export default {
     components: {

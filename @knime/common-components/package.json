@@ -2,8 +2,53 @@
   "name": "@knime/common-components",
   "version": "1.0.0",
   "description": "Shared files for web projects. See README for details.",
-  "scripts": {},
   "author": "KNIME AG, Zurich, Switzerland",
   "homepage": "https://knime.github.io/webapps-common/",
-  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)"
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "scripts": {
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:json",
+    "lint:js": "eslint --ext .js,.vue .",
+    "lint:json": "eslint --ext .json .",
+    "lint:css": "stylelint '**/*.{css,vue}'",
+    "lint:ci": "eslint --ext .js,.vue,.json -f json -o target/eslint.json || true; stylelint '**/*.{css,vue}' -f json -o target/stylelint.json || true",
+    "test:unit": "jest",
+    "coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "@knime/icons": "file:../icons",
+    "@knime/styles": "file:../styles",
+    "filesize": "6.1.0"
+  },
+  "devDependencies": {
+    "@knime/config": "file:../config",
+    "@babel/preset-env": "7.9.0",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.3",
+    "consola": "2.10.1",
+    "cross-var": "1.1.0",
+    "eslint-config-knime": "file:../config/eslint",
+    "eslint": "7.32.0",
+    "eslint-plugin-jest": "26.1.5",
+    "eslint-plugin-jest-formatting": "3.0.0",
+    "eslint-plugin-jsonc": "2.0.0",
+    "eslint-plugin-vue": "7.10.0",
+    "stylelint": "13.6.1",
+    "stylelint-config-standard": "20.0.0",
+    "jest": "24.9.0",
+    "jest-junit": "6.4.0",
+    "jest-transform-stub": "2.0.0",
+    "npm-audit-resolver": "2.3.1",
+    "vue": "2.6.11",
+    "vue-jest": "3.0.4",
+    "vue-template-compiler": "2.6.11"
+  },
+  "peerDependencies": {
+    "vue-clickaway2": "2.3.2",
+    "v-calendar": "2.0.1"
+  },
+  "private": true,
+  "volta": {
+    "node": "14.19.0"
+  }
 }

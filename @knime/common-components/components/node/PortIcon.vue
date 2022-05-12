@@ -1,5 +1,5 @@
 <script>
-import portColors from '../../styles/colors/portColors';
+import portColors from '@knime/styles/colors/portColors';
 
 const portSize = 9; // 9px
 const strokeWidth = 1.4; // 1.4px

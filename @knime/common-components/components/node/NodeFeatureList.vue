@@ -1,8 +1,8 @@
 <script>
-import PortIcon from '../../icons/icons/plugin.svg?inline';
-import ViewsIcon from '../../icons/icons/eye.svg?inline';
-import OptionsIcon from '../../icons/icons/settings.svg?inline';
-import TabBar, { tabBarMixin } from '../components/TabBar';
+import PortIcon from '@knime/icons/icons/plugin.svg?inline';
+import ViewsIcon from '@knime/icons/icons/eye.svg?inline';
+import OptionsIcon from '@knime/icons/icons/settings.svg?inline';
+import TabBar, { tabBarMixin } from '~/components/TabBar';
 import PortsList from './PortsList';
 import ViewsList from './ViewsList';
 import DialogOptions from './DialogOptions';
