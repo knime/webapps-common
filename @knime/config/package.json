@@ -6,8 +6,8 @@
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "peerDependencies": {
-    "stylelint": "13.6.1",
-    "stylelint-config-standard": "20.0.0"
+    "stylelint": ">= 13.0.0",
+    "stylelint-config-standard": ">= 20.0.0"
   },
   "volta": {
     "node": "14.19.0"
