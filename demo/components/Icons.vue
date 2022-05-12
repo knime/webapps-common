@@ -1,13 +1,13 @@
 <script>
 import ImagePreviews from './demo/ImagePreviews';
 import CodeExample from './demo/CodeExample';
-import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg?inline';
-import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
+import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg';
+import FolderIcon from '../../ui/assets/img/icons/folder.svg';
 import svgWithTitle from '../../ui/util/svgWithTitle';
 import InputField from '../../ui/components/forms/InputField';
 
 const codeExample1 = `<script>
-import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';
+import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg';
 
 export default {
   components: {
@@ -48,7 +48,7 @@ svg {
 </style>`;
 
 const codeExample2 = `<script>
-import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg?inline';
+import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg';
 
 export default {
   components: {
@@ -98,7 +98,7 @@ svg {
 </style>`;
 
 const codeExampleTooltip = `<script>
-import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg?inline';
+import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg';
 import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
 
 export default {

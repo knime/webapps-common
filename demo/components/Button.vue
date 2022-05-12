@@ -3,7 +3,7 @@ import CodeExample from './demo/CodeExample';
 import Button from '../../ui/components/Button';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
 import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
-import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
+import PlayIcon from '../../ui/assets/img/icons/circle-play.svg';
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>

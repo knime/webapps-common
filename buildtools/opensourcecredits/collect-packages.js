@@ -10,7 +10,7 @@ const pkgUp = require('pkg-up');
 const parentPkgPath = pkgUp.sync({ cwd: '../..' });
 const parentRoot = path.resolve(parentPkgPath, '..');
 
-const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
+const skip = import.meta.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
 if (!skip) {
     // exclude parent package

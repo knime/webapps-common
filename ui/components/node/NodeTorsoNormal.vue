@@ -1,5 +1,5 @@
 <script>
-import nodeBackgroundColors from '../../colors/nodeColors';
+import * as nodeBackgroundColors from '../../colors/nodeColors';
 import { HibiscusDark as colorHibiscusDark } from '../../colors/knimeColors';
 
 const nodeSize = 32;

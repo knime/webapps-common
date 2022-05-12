@@ -1,7 +1,7 @@
 <script>
 import BaseModal from './BaseModal';
 import FunctionButton from './FunctionButton';
-import CloseIcon from '../assets/img/icons/close.svg?inline';
+import CloseIcon from '../assets/img/icons/close.svg';
 
 /**
 * See demo for documentation

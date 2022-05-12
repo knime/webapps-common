@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import InputField from '../../ui/components/forms/InputField';
-import MailIcon from '../../ui/assets/img/icons/mail.svg?inline';
+import MailIcon from '../../ui/assets/img/icons/mail.svg';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField

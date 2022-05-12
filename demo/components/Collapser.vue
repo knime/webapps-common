@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample';
 import Collapser from '../../ui/components/Collapser';
-import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg';
 import code from '!!raw-loader!../../ui/components/Collapser';
 
 export default {

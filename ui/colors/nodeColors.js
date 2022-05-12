@@ -1,25 +1,23 @@
-const knime = require('./knimeColors');
+import * as knime from './knimeColors';
 
-module.exports = {
-    Component: knime.SilverSand,
-    Configuration: knime.Avocado,
-    Container: knime.AvocadoDark,
-    Learner: knime.MeadowLight,
-    Loop: knime.Aquamarine,
-    LoopEnd: knime.Aquamarine,
-    LoopStart: knime.Aquamarine,
-    Manipulator: knime.Yellow,
-    Metanode: knime.White,
-    MetanodeSecondary: knime.StoneGray,
-    Other: knime.Wood,
-    Predictor: knime.Meadow,
-    QuickForm: knime.Avocado,
-    ScopeEnd: knime.Lavender,
-    ScopeStart: knime.Lavender,
-    Sink: knime.Coral,
-    Source: knime.Carrot,
-    VirtualIn: knime.Stone,
-    VirtualOut: knime.Stone,
-    Visualizer: knime.AquamarineDark,
-    Widget: knime.AquamarineDark
-};
+export const Component = knime.SilverSand;
+export const Configuration = knime.Avocado;
+export const Container = knime.AvocadoDark;
+export const Learner = knime.MeadowLight;
+export const Loop = knime.Aquamarine;
+export const LoopEnd = knime.Aquamarine;
+export const LoopStart = knime.Aquamarine;
+export const Manipulator = knime.Yellow;
+export const Metanode = knime.White;
+export const MetanodeSecondary = knime.StoneGray;
+export const Other = knime.Wood;
+export const Predictor = knime.Meadow;
+export const QuickForm = knime.Avocado;
+export const ScopeEnd = knime.Lavender;
+export const ScopeStart = knime.Lavender;
+export const Sink = knime.Coral;
+export const Source = knime.Carrot;
+export const VirtualIn = knime.Stone;
+export const VirtualOut = knime.Stone;
+export const Visualizer = knime.AquamarineDark;
+export const Widget = knime.AquamarineDark;

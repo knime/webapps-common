@@ -1,5 +1,5 @@
 <script>
-import ArrowIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import ArrowIcon from '../../assets/img/icons/arrow-dropdown.svg';
 
 const INTERVAL_TIMEOUT_DELAY = 200;
 const MOUSE_DOWN_CHANGE_INTERVAL = 50;

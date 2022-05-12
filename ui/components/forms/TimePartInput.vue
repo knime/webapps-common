@@ -1,5 +1,5 @@
 <script>
-import ArrowIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import ArrowIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import numIntegerDigits from '../../../util/numIntegerDigits';
 
 const INTERVAL_TIMEOUT_DELAY = 200;

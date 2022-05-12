@@ -1,6 +1,4 @@
-const knime = require('./knimeColors');
+import * as knime from './knimeColors';
 
-module.exports = {
-    table: knime.Black,
-    flowVariable: knime.Coral
-};
+export const table = knime.Black;
+export const flowVariable = knime.Coral;

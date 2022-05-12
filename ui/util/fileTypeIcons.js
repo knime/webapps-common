@@ -1,20 +1,20 @@
-import csvIcon from '../assets/img/icons/file-csv.svg?inline';
-import docxIcon from '../assets/img/icons/file-docx.svg?inline';
-import htmlIcon from '../assets/img/icons/file-html.svg?inline';
-import mdIcon from '../assets/img/icons/file-md.svg?inline';
-import odpIcon from '../assets/img/icons/file-odp.svg?inline';
-import odsIcon from '../assets/img/icons/file-ods.svg?inline';
-import odtIcon from '../assets/img/icons/file-odt.svg?inline';
-import pdfIcon from '../assets/img/icons/file-pdf.svg?inline';
-import pptxIcon from '../assets/img/icons/file-pptx.svg?inline';
-import psIcon from '../assets/img/icons/file-ps.svg?inline';
-import xlsIcon from '../assets/img/icons/file-xls.svg?inline';
-import xlsxIcon from '../assets/img/icons/file-xlsx.svg?inline';
-import xmlIcon from '../assets/img/icons/file-xml.svg?inline';
-import zipIcon from '../assets/img/icons/file-zip.svg?inline';
-import exeIcon from '../assets/img/icons/file-zip-exe.svg?inline';
-import txtIcon from '../assets/img/icons/file-text.svg?inline';
-import fileIcon from '../assets/img/icons/file-question.svg?inline';
+import csvIcon from '../assets/img/icons/file-csv.svg';
+import docxIcon from '../assets/img/icons/file-docx.svg';
+import htmlIcon from '../assets/img/icons/file-html.svg';
+import mdIcon from '../assets/img/icons/file-md.svg';
+import odpIcon from '../assets/img/icons/file-odp.svg';
+import odsIcon from '../assets/img/icons/file-ods.svg';
+import odtIcon from '../assets/img/icons/file-odt.svg';
+import pdfIcon from '../assets/img/icons/file-pdf.svg';
+import pptxIcon from '../assets/img/icons/file-pptx.svg';
+import psIcon from '../assets/img/icons/file-ps.svg';
+import xlsIcon from '../assets/img/icons/file-xls.svg';
+import xlsxIcon from '../assets/img/icons/file-xlsx.svg';
+import xmlIcon from '../assets/img/icons/file-xml.svg';
+import zipIcon from '../assets/img/icons/file-zip.svg';
+import exeIcon from '../assets/img/icons/file-zip-exe.svg';
+import txtIcon from '../assets/img/icons/file-text.svg';
+import fileIcon from '../assets/img/icons/file-question.svg';
 
 export const icons = {
     csvIcon,
