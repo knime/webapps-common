@@ -5,15 +5,14 @@
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
-  "devDependencies": {
-    "eslint": ">= 7.32.0",
-    "eslint-plugin-jest-formatting": ">= 3.0.0",
-    "eslint-plugin-jsonc": ">= 2.0.0",
-    "eslint-plugin-vue": ">= 7.10.0",
+  "peerDependencies": {
     "stylelint": "13.6.1",
     "stylelint-config-standard": "20.0.0"
   },
   "volta": {
     "node": "14.19.0"
-  }
+  },
+  "files": [
+    "./stylelint/.stylelintrc.js"
+  ]
 }

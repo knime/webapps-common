@@ -5,15 +5,15 @@
     "main": "index.js",
     "license": "UNLICENSED",
     "author": "KNIME AG, Zurich, Switzerland",
-    "exports": {
-        ".": "./index.js",
-        "./base": "./base.js",
-        "./jest": "./jest.js",
-        "./legacy": "./legacy.js",
-        "./nuxt": "./nuxt.js",
-        "./tyepscript": "./tyepscript.js",
-        "./vue": "./vue.js"
-    },
+    "files": [
+        "./index.js",
+        "./base.js",
+        "./jest.js",
+        "./legacy.js",
+        "./nuxt.js",
+        "./tyepscript.js",
+        "./vue.js"
+    ],
     "peerDependencies": {
         "eslint": ">= 7.32.0",
         "eslint-plugin-jest-formatting": ">= 3.0.0",
