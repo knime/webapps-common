@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import ListBox from '../../components/ListBox';
+import ListBox from '../../../components/ListBox';
 
 describe('ListBox.vue', () => {
     let propsData;

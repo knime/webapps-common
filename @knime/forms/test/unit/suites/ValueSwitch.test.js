@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import ValueSwitch from '../../components//ValueSwitch';
+import ValueSwitch from '../../../components/ValueSwitch';
 
 describe('ValueSwitch.vue', () => {
     let possibleValues;

@@ -1,7 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import { shallowMount } from '@vue/test-utils';
 
-import NumberInput from '../../components/NumberInput';
+import NumberInput from '../../../components/NumberInput';
 
 describe('NumberInput.vue', () => {
     let propsData, wrapper;

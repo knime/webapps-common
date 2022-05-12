@@ -2,7 +2,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 
 const localVue = createLocalVue();
 
-import Multiselect from '../../components/Multiselect';
+import Multiselect from '../../../components/Multiselect';
 
 describe('Multiselect.vue', () => {
     it('renders', () => {

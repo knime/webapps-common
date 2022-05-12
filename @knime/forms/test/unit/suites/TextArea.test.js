@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import TextArea from '../../components/TextArea';
+import TextArea from '../../../components/TextArea';
 
 describe('TextArea.vue', () => {
     it('renders', () => {

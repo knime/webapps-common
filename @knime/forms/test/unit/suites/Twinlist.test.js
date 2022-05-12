@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 
-import Twinlist from '../../components/Twinlist';
-import MultiselectListBox from '../../components/MultiselectListBox';
+import Twinlist from '../../../components/Twinlist';
+import MultiselectListBox from '../../../components/MultiselectListBox';
 
 describe('Twinlist.vue', () => {
     let defaultPossibleValues;
