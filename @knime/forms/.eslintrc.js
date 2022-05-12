@@ -1,10 +1,13 @@
 module.exports = {
-    extends: 'knime',
+    extends: 'knime/vue',
     globals: {
+        browser: true,
         consola: true
     },
-    env: {
-        jest: true,
-        node: true
-    }
+    overrides: [{
+        files: ['*.config.js'],
+        env: {
+            node: true
+        }
+    }]
 };

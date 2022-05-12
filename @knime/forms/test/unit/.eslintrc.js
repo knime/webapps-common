@@ -1,8 +1,8 @@
-let inherited = require('../../.eslintrc.js');
 module.exports = {
-    ...inherited,
+    extends: ['knime/vue', 'knime/jest'],
     env: {
-        ...inherited.env,
+        browser: true,
+        node: true,
         jest: true
     }
 };
