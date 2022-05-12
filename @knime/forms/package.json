@@ -15,7 +15,9 @@
     "coverage": "jest --coverage"
   },
   "dependencies": {
-    "@knime/icons": "file:../icons"
+    "@knime/icons": "file:../icons",
+    "date-fns": "2.16.1",
+    "date-fns-tz": "1.0.12"
   },
   "devDependencies": {
     "@knime/config": "file:../config",
@@ -40,6 +42,10 @@
     "vue": "2.6.11",
     "vue-jest": "3.0.4",
     "vue-template-compiler": "2.6.11"
+  },
+  "peerDependencies": {
+    "vue-clickaway2": "2.3.2",
+    "v-calendar": "2.0.1"
   },
   "private": true,
   "volta": {
