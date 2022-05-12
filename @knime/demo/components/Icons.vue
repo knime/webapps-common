@@ -99,7 +99,7 @@ svg {
 
 const codeExampleTooltip = `<script>
 import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg?inline';
-import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
+import svgWithTitle from '@knime/icons/util/svgWithTitle';
 
 export default {
   components: {

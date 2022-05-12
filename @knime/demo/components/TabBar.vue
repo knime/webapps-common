@@ -7,7 +7,7 @@ import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
 import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
 
 const codeExampleStandalone = `<script>
-import TabBar from '~/webapps-common/@knime/common-components/components/TabBar';
+import TabBar from '@knime/common-components/components/TabBar';
 import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
 import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
 
@@ -55,7 +55,7 @@ export default {
 </template>`;
 
 const codeExampleMixin = `<script>
-import TabBar, { tabBarMixin } from '~/webapps-common/@knime/common-components/components/TabBar';
+import TabBar, { tabBarMixin } from '@knime/common-components/components/TabBar';
 import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
 import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
 

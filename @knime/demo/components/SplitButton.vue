@@ -11,9 +11,9 @@ import SplitButton from '../../ui/components/SplitButton';
 import code from '!!raw-loader!../../ui/components/SplitButton';
 
 const codeExample = `<script>
-import Button from '~/webapps-common/@knime/common-components/components/Button';
-import SubMenu from '~/webapps-common/@knime/common-components/components/SubMenu';
-import SplitButton from '~/webapps-common/@knime/common-components/components/SplitButton';
+import Button from '@knime/common-components/components/Button';
+import SubMenu from '@knime/common-components/components/SubMenu';
+import SplitButton from '@knime/common-components/components/SplitButton';
 import DropdownIcon from '~/webapps-common/ui/assets/img/icons/arrow-dropdown.svg?inline';
 
 const subMenuItems = [{

@@ -9,7 +9,7 @@ import MenuIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import code from '!!raw-loader!../../ui/components/SubMenu';
 
 const codeExampleStandalone = `<script>
-import SubMenu from '~/webapps-common/@knime/common-components/components/SubMenu';
+import SubMenu from '@knime/common-components/components/SubMenu';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inline';
 
 const subMenuItems = [{
