@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['../../lint/.eslintrc-nuxt.js'],
+    extends: '@knime/eslint-config',
     globals: {
         consola: true
     }
