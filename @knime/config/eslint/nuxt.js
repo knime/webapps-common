@@ -1,7 +1,7 @@
-const parentRules = require('./.eslintrc-vue').rules;
+const parentRules = require('./vue').rules;
 
 module.exports = {
-    extends: ['./.eslintrc-vue.js'],
+    extends: ['./vue.js'],
     rules: {
         'vue/component-name-in-template-casing': ['error', 'PascalCase', {
             ignores: [

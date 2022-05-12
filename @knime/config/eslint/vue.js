@@ -2,7 +2,7 @@ const parentRules = require('./base').rules;
 
 module.exports = {
     plugins: ['vue'],
-    extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
+    extends: ['./base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
     rules: {
         'max-lines': ['warn', Object.assign(parentRules['max-lines'][1], {
             max: 500

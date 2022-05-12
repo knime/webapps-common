@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['./.eslintrc-base.js'],
+    extends: ['./base.js'],
     parserOptions: {
         ecmaVersion: 5,
         sourceType: 'script'
