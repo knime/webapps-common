@@ -1,6 +1,6 @@
 <script>
-import packages from '../buildtools/opensourcecredits/used-packages.json';
-import Description from '../../../ui/components/Description';
+import packages from '../opensourcecredits/used-packages.json';
+import Description from '../../common-components/components/Description';
 import ArrowNextIcon from '../../icons/icons/arrow-next.svg?inline';
 
 /**
