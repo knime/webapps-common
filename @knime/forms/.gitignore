@@ -84,10 +84,6 @@ dist
 /node/
 /target/
 
-# Ignore knime-build-tools npm & build files
-buildtools/node_modules
-buildtools/opensourcecredits/used-packages.json
-
 # Mac OSX
 .DS_Store
 
