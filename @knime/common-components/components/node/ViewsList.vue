@@ -1,5 +1,5 @@
 <script>
-import Description from '~/components/Description';
+import Description from '../Description';
 import StandardIcon from '@knime/icons/icons/eye.svg?inline';
 import InteractiveIcon from '@knime/icons/icons/interactive.svg?inline';
 
