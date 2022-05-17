@@ -62,7 +62,6 @@ export default {
     :possible-values="possibleValues"
     :value="value"
     :class="['radio-buttons', alignment]"
-    v-bind="$attrs"
     v-on="$listeners"
   />
 </template>
