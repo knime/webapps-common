@@ -75,19 +75,23 @@ export class SelectionService<T = any> {
     }
 
     /**
-     * Adds callback that will be triggered on data selection change by backend.
-     * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
-     * @param {Notification} response - object that backend will trigger callback with.
+     * Adds callback that will be triggered on data selection change outside the scope of the view.
+     * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
      * @returns {void}
      */
-    addOnSelectionChangeCallback(callback: (notification: Notification) => void): void {
-        this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, callback);
+    addOnSelectionChangeCallback(callback: (any) => void): void {
+        const wrappedCallback = (notification: Notification): void => {
+            const { nodeId, keys, mode } = notification.params[0] || {};
+            if (this.knimeService.extensionConfig.nodeId === nodeId) {
+                callback({ keys, mode });
+            }
+        };
+        this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 
     /**
      * Removes previously added callback.
      * @param {function} callback - that needs to be removed from notifications.
-     * @param {Notification} response - object that backend will trigger callback with.
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback: (notification: Notification) => void): void {

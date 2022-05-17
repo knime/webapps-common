@@ -315,14 +315,12 @@ constructor(knimeService){this.knimeService=knimeService}
          * @returns {Promise<any>} based on backend implementation.
          */replace(selection){return this.updateSelection(SelectionModes.REPLACE,selection)}
 /**
-         * Adds callback that will be triggered on data selection change by backend.
-         * @param {function} callback - that need to be added. Will be triggered by backend implementation on selection change.
-         * @param {Notification} response - object that backend will trigger callback with.
+         * Adds callback that will be triggered on data selection change outside the scope of the view.
+         * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
          * @returns {void}
-         */addOnSelectionChangeCallback(callback){this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,callback)}
+         */addOnSelectionChangeCallback(callback){this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,(notification=>{const{nodeId:nodeId,keys:keys,mode:mode}=notification.params[0]||{};this.knimeService.extensionConfig.nodeId===nodeId&&callback({keys:keys,mode:mode})}))}
 /**
          * Removes previously added callback.
          * @param {function} callback - that needs to be removed from notifications.
-         * @param {Notification} response - object that backend will trigger callback with.
          * @returns {void}
          */removeOnSelectionChangeCallback(callback){this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,callback)}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
