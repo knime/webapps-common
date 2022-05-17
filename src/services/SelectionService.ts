@@ -17,6 +17,24 @@ export class SelectionService<T = any> {
     }
 
     /**
+     * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
+     * if it exists.
+     *
+     * @returns {Promise} node initial selection provided by the extension configuration.
+     */
+    async initialSelection() {
+        let initialSelection;
+        if (this.knimeService.extensionConfig?.initialData) {
+            initialSelection = await Promise.resolve(this.knimeService.extensionConfig?.initialSelection);
+        }
+
+        if (typeof initialSelection === 'string') {
+            initialSelection = JSON.parse(initialSelection);
+        }
+        return Promise.resolve(initialSelection);
+    }
+
+    /**
      * Replaces current selection with provided data.
      * @param {SelectionMode} mode - the selection mode.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.

@@ -15,6 +15,19 @@ declare class SelectionService<T = any> {
      */
     constructor(knimeService: IFrameKnimeService | KnimeService<T>);
     /**
+     * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
+     * if it exists.
+     *
+     * @returns {Promise} node initial selection provided by the extension configuration.
+     */
+    /**
+     * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
+     * if it exists.
+     *
+     * @returns {Promise} node initial selection provided by the extension configuration.
+     */
+    initialSelection(): Promise<any>;
+    /**
      * Replaces current selection with provided data.
      * @param {SelectionMode} mode - the selection mode.
      * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.

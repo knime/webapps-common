@@ -29,6 +29,7 @@ type ResourceInfo = {
  * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
  * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+ * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
  * @template T
  */
 type ExtensionConfig<T = any> = {
@@ -39,6 +40,7 @@ type ExtensionConfig<T = any> = {
     nodeInfo: NodeInfo;
     extensionType: ExtensionTypes;
     initialData?: T;
+    initialSelection?: T;
 };
 type Notification = {
     params?: {

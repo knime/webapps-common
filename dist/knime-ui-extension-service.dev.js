@@ -288,6 +288,12 @@ constructor(knimeService){this.knimeService=knimeService}
          */
 constructor(knimeService){this.knimeService=knimeService}
 /**
+         * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
+         * if it exists.
+         *
+         * @returns {Promise} node initial selection provided by the extension configuration.
+         */async initialSelection(){var _a,_b;let initialSelection;return(null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.initialData)&&(initialSelection=await Promise.resolve(null===(_b=this.knimeService.extensionConfig)||void 0===_b?void 0:_b.initialSelection)),"string"==typeof initialSelection&&(initialSelection=JSON.parse(initialSelection)),Promise.resolve(initialSelection)}
+/**
          * Replaces current selection with provided data.
          * @param {SelectionMode} mode - the selection mode.
          * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.

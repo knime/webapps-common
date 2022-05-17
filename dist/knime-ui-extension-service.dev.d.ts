@@ -60,6 +60,7 @@ declare namespace KnimeTypes {
      * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
      * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
      * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+     * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
      * @template T
      */
     type ExtensionConfig<T = any> = {
@@ -70,6 +71,7 @@ declare namespace KnimeTypes {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
+        initialSelection?: T;
     };
     type Notification = {
         params?: {
@@ -229,6 +231,7 @@ declare namespace KnimeUIExtensionService {
      * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
      * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
      * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+     * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
      * @template T
      */
     type ExtensionConfig<T = any> = {
@@ -239,6 +242,7 @@ declare namespace KnimeUIExtensionService {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
+        initialSelection?: T;
     };
     type Notification = {
         params?: {
@@ -684,6 +688,13 @@ declare namespace KnimeUIExtensionService {
          * @param {KnimeService} knimeService - instance should be provided to use notifications.
          */
         constructor(knimeService: IFrameKnimeService | KnimeService<T>);
+        /**
+         * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
+         * if it exists.
+         *
+         * @returns {Promise} node initial selection provided by the extension configuration.
+         */
+        initialSelection(): Promise<any>;
         /**
          * Replaces current selection with provided data.
          * @param {SelectionMode} mode - the selection mode.
