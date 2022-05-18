@@ -28,13 +28,7 @@ export default {
          */
         possibleValues: {
             type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
+            default: () => []
         },
 
         // additional props

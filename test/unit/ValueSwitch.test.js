@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 
 import ValueSwitch from '~/ui/components/forms/ValueSwitch';
+import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons';
 
 describe('ValueSwitch.vue', () => {
     let possibleValues;
@@ -18,24 +19,7 @@ describe('ValueSwitch.vue', () => {
         }];
     });
 
-    it('renders', () => {
-        const wrapper = mount(ValueSwitch, {
-            propsData: {
-                possibleValues
-            }
-        });
-
-        expect(wrapper.html()).toBeTruthy();
-        expect(wrapper.isVisible()).toBeTruthy();
-
-        let labels = wrapper.findAll('label');
-        expect(labels.length).toBe(possibleValues.length);
-        possibleValues.forEach((value, i) => {
-            expect(labels.at(i).text()).toContain(value.text);
-        });
-    });
-
-    it('renders selected value', () => {
+    it('renders and passes props to BaseRadioButtons', () => {
         let value = 'test3';
         const wrapper = mount(ValueSwitch, {
             propsData: {
@@ -44,13 +28,19 @@ describe('ValueSwitch.vue', () => {
             }
         });
 
-        let switchValues = wrapper.findAll('input[type=radio]');
-        possibleValues.forEach((option, i) => {
-            if (option.id === value) {
-                expect(switchValues.at(i).element.checked).toBeTruthy();
-            } else {
-                expect(switchValues.at(i).element.checked).not.toBeTruthy();
+        expect(wrapper.html()).toBeTruthy();
+        expect(wrapper.isVisible()).toBeTruthy();
+        const baseComponent = wrapper.find(BaseRadioButtons);
+        expect(baseComponent.props('possibleValues')).toBe(possibleValues);
+        expect(baseComponent.props('value')).toBe(value);
+    });
+
+    it('passes-through all listeners', () => {
+        let wrapper = mount(ValueSwitch, {
+            listeners: {
+                fakeEvent: jest.fn()
             }
         });
+        expect(wrapper.find(BaseRadioButtons).vm.$listeners).toHaveProperty('fakeEvent');
     });
 });

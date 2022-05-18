@@ -28,13 +28,7 @@ export default {
          */
         possibleValues: {
             type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
+            default: () => []
         }
     }
 };
@@ -73,7 +67,6 @@ export default {
     line-height: 18px;
     cursor: pointer;
     border-radius: 50px;
-    transition: background-color 0.1s ease-in 0.05s;
 
     &:hover {
       background-color: var(--theme-value-switch-background-color-hover);
