@@ -684,6 +684,7 @@ declare namespace KnimeUIExtensionService {
      */
     class SelectionService<T = any> {
         private knimeService;
+        private callbackMap;
         /**
          * @param {KnimeService} knimeService - instance should be provided to use notifications.
          */
@@ -731,7 +732,7 @@ declare namespace KnimeUIExtensionService {
          * @param {function} callback - that needs to be removed from notifications.
          * @returns {void}
          */
-        removeOnSelectionChangeCallback(callback: (notification: Notification) => void): void;
+        removeOnSelectionChangeCallback(callback: (any: any) => void): void;
     }
 }
 export { KnimeUIExtensionService as default };

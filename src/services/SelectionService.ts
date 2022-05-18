@@ -8,12 +8,14 @@ import { KnimeService } from './KnimeService';
  */
 export class SelectionService<T = any> {
     private knimeService: IFrameKnimeService | KnimeService<T>;
+    private callbackMap: Map<Function, Function>;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
     constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
         this.knimeService = knimeService;
+        this.callbackMap = new Map();
     }
 
     /**
@@ -86,6 +88,7 @@ export class SelectionService<T = any> {
                 callback({ keys, mode });
             }
         };
+        this.callbackMap.set(callback, wrappedCallback);
         this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 
@@ -94,7 +97,8 @@ export class SelectionService<T = any> {
      * @param {function} callback - that needs to be removed from notifications.
      * @returns {void}
      */
-    removeOnSelectionChangeCallback(callback: (notification: Notification) => void): void {
-        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, callback);
+    removeOnSelectionChangeCallback(callback: (any) => void): void {
+        const wrappedCallback = this.callbackMap.get(callback) as (notification: Notification) => void;
+        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 }

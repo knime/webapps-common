@@ -1,5 +1,4 @@
 import { IFrameKnimeService } from "../index-a3360790";
-import { Notification } from "../index-b3e43760";
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.
@@ -7,6 +6,7 @@ import { KnimeService } from "./KnimeService";
  */
 declare class SelectionService<T = any> {
     private knimeService;
+    private callbackMap;
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
@@ -94,6 +94,6 @@ declare class SelectionService<T = any> {
      * @param {function} callback - that needs to be removed from notifications.
      * @returns {void}
      */
-    removeOnSelectionChangeCallback(callback: (notification: Notification) => void): void;
+    removeOnSelectionChangeCallback(callback: (any: any) => void): void;
 }
 export { SelectionService };

@@ -1,6 +1,6 @@
 import { SelectionService } from 'src/services';
 import { KnimeService } from 'src/services/KnimeService';
-import { NodeServices, SelectionModes } from 'src/types';
+import { ExtensionConfig, NodeServices, SelectionModes } from 'src/types';
 import { extensionConfig } from 'test/mocks';
 
 describe('SelectionService', () => {
@@ -56,18 +56,27 @@ describe('SelectionService', () => {
 
             selectionService.addOnSelectionChangeCallback(callback);
 
-            expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
+            expect(knime.notificationCallbacksMap.get('SelectionEvent')[0])
+                .toEqual((selectionService as any).callbackMap.get(callback));
         });
 
-        it('Adds jsonrpcNotification callback with addOnSelectionChangeCallback', () => {
-            const knime = new KnimeService();
+        it('wraps selection callbacks to filter events by nodeId', () => {
+            const testPayload = { key: 'someValue' };
+            const nodeId = '123';
+            const extensionConfig = { nodeId } as ExtensionConfig;
+            const knime = new KnimeService(extensionConfig);
             const selectionService = new SelectionService(knime);
 
-            const callback = () => {};
+            const callback = jest.fn();
 
             selectionService.addOnSelectionChangeCallback(callback);
 
-            expect(knime.notificationCallbacksMap.get('SelectionEvent')[0]).toEqual(callback);
+            const wrappedCallback = (selectionService as any).callbackMap.get(callback);
+
+            wrappedCallback({ nodeId: '321', params: [testPayload] });
+            expect(callback).not.toHaveBeenCalled();
+            wrappedCallback({ nodeId, params: [testPayload] });
+            expect(callback).not.toHaveBeenCalledWith(testPayload);
         });
 
         it('Removes jsonrpcNotification callback with removeOnSelectionChangeCallback', () => {

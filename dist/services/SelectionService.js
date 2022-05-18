@@ -15,6 +15,7 @@ class SelectionService {
      */
     constructor(knimeService) {
         this.knimeService = knimeService;
+        this.callbackMap = new Map();
     }
     /**
      * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
@@ -79,6 +80,7 @@ class SelectionService {
                 callback({ keys, mode });
             }
         };
+        this.callbackMap.set(callback, wrappedCallback);
         this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
     /**
@@ -87,7 +89,8 @@ class SelectionService {
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback) {
-        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, callback);
+        const wrappedCallback = this.callbackMap.get(callback);
+        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 }
 

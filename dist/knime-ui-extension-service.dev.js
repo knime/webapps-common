@@ -286,7 +286,7 @@ constructor(knimeService){this.knimeService=knimeService}
 /**
          * @param {KnimeService} knimeService - instance should be provided to use notifications.
          */
-constructor(knimeService){this.knimeService=knimeService}
+constructor(knimeService){this.knimeService=knimeService,this.callbackMap=new Map}
 /**
          * Retrieves the initial data for the client-side UI Extension implementation from the extension configuration
          * if it exists.
@@ -318,9 +318,9 @@ constructor(knimeService){this.knimeService=knimeService}
          * Adds callback that will be triggered on data selection change outside the scope of the view.
          * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
          * @returns {void}
-         */addOnSelectionChangeCallback(callback){this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,(notification=>{const{nodeId:nodeId,keys:keys,mode:mode}=notification.params[0]||{};this.knimeService.extensionConfig.nodeId===nodeId&&callback({keys:keys,mode:mode})}))}
+         */addOnSelectionChangeCallback(callback){const wrappedCallback=notification=>{const{nodeId:nodeId,keys:keys,mode:mode}=notification.params[0]||{};this.knimeService.extensionConfig.nodeId===nodeId&&callback({keys:keys,mode:mode})};this.callbackMap.set(callback,wrappedCallback),this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}
 /**
          * Removes previously added callback.
          * @param {function} callback - that needs to be removed from notifications.
          * @returns {void}
-         */removeOnSelectionChangeCallback(callback){this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,callback)}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
+         */removeOnSelectionChangeCallback(callback){const wrappedCallback=this.callbackMap.get(callback);this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
