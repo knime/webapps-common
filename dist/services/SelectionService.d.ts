@@ -30,49 +30,49 @@ declare class SelectionService<T = any> {
     /**
      * Replaces current selection with provided data.
      * @param {SelectionMode} mode - the selection mode.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} - based on backend implementation.
      */
     /**
      * Replaces current selection with provided data.
      * @param {SelectionMode} mode - the selection mode.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} - based on backend implementation.
      */
     private updateSelection;
     /**
      * Adds data to currently selected data set.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
     /**
      * Adds data to currently selected data set.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
-    add(selection: (string | string[])): Promise<any>;
+    add(selection: string[]): Promise<any>;
     /**
      * Removes data from currently selected data set.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
     /**
      * Removes data from currently selected data set.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
-    remove(selection: (string | string[])): Promise<any>;
+    remove(selection: string[]): Promise<any>;
     /**
      * Replaces current selection with provided data.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
     /**
      * Replaces current selection with provided data.
-     * @param {string | string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
+     * @param {string[]} selection - will be passed as params to backend NodeService.updateDataPointSelection.
      * @returns {Promise<any>} based on backend implementation.
      */
-    replace(selection: (string | string[])): Promise<any>;
+    replace(selection: string[]): Promise<any>;
     /**
      * Adds callback that will be triggered on data selection change outside the scope of the view.
      * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
