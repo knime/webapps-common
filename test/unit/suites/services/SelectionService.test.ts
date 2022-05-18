@@ -31,20 +31,20 @@ describe('SelectionService', () => {
             expect(callableService.mock.calls[0]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.ADD,
-                JSON.stringify(params)
+                params
             ]);
 
             await selectionService.remove(params);
             expect(callableService.mock.calls[1]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.REMOVE,
-                JSON.stringify(params)
+                params
             ]);
             await selectionService.replace(params);
             expect(callableService.mock.calls[2]).toEqual([
                 NodeServices.CALL_NODE_SELECTION_SERVICE,
                 SelectionModes.REPLACE,
-                JSON.stringify(params)
+                params
             ]);
         });
 
