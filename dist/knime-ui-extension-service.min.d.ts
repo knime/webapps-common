@@ -14,7 +14,7 @@ declare namespace KnimeTypes {
         controllingFlowVariableName: string | null;
         exposedFlowVariableName: string | null;
         leaf?: boolean;
-        [key: string]: FlowVariableSetting | boolean | string | null;
+        [key: string]: FlowVariableSetting | boolean | string | null | undefined;
     };
     type FlowVariableSettings = {
         modelVariables: {
@@ -204,7 +204,7 @@ declare namespace KnimeUIExtensionService {
         controllingFlowVariableName: string | null;
         exposedFlowVariableName: string | null;
         leaf?: boolean;
-        [key: string]: FlowVariableSetting | boolean | string | null;
+        [key: string]: FlowVariableSetting | boolean | string | null | undefined;
     };
     type FlowVariableSettings = {
         modelVariables: {

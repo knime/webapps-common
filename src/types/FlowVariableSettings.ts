@@ -3,7 +3,7 @@ export type FlowVariableSetting = {
     controllingFlowVariableName: string | null;
     exposedFlowVariableName: string | null;
     leaf?: boolean;
-    [key: string]: FlowVariableSetting | boolean | string | null;
+    [key: string]: FlowVariableSetting | boolean | string | null | undefined;
 };
 
 export type FlowVariableSettings = {
