@@ -1,9 +1,11 @@
+import { SelectionModes } from './SelectionModes';
+
 export type Notification = {
     params?: {
         projectId: string;
         workflowId: string;
         nodeId: string;
-        mode: string;
+        mode: SelectionModes | string;
         keys?: string[];
     }[];
     type?: 'ERROR' | 'WARNING' | string;

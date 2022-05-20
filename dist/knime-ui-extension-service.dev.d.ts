@@ -73,12 +73,23 @@ declare namespace KnimeTypes {
         initialData?: T;
         initialSelection?: T;
     };
+    /**
+     * Selection service modes available by default to UI Extension nodes.
+     *
+     * @enum {string}
+     */
+    enum SelectionModes {
+        ADD = "ADD",
+        REMOVE = "REMOVE",
+        REPLACE = "REPLACE"
+    }
+    type SelectionMode = SelectionModes;
     type Notification = {
         params?: {
             projectId: string;
             workflowId: string;
             nodeId: string;
-            mode: string;
+            mode: SelectionModes | string;
             keys?: string[];
         }[];
         type?: "ERROR" | "WARNING" | string;
@@ -119,17 +130,6 @@ declare namespace KnimeTypes {
         APPLY_DATA = "apply_data"
     }
     type DataServiceType = DataServiceTypes;
-    /**
-     * Selection service modes available by default to UI Extension nodes.
-     *
-     * @enum {string}
-     */
-    enum SelectionModes {
-        ADD = "ADD",
-        REMOVE = "REMOVE",
-        REPLACE = "REPLACE"
-    }
-    type SelectionMode = SelectionModes;
     /**
      * Any node service request supported by that specific node service.
      */
@@ -244,12 +244,23 @@ declare namespace KnimeUIExtensionService {
         initialData?: T;
         initialSelection?: T;
     };
+    /**
+     * Selection service modes available by default to UI Extension nodes.
+     *
+     * @enum {string}
+     */
+    enum SelectionModes {
+        ADD = "ADD",
+        REMOVE = "REMOVE",
+        REPLACE = "REPLACE"
+    }
+    type SelectionMode = SelectionModes;
     type Notification = {
         params?: {
             projectId: string;
             workflowId: string;
             nodeId: string;
-            mode: string;
+            mode: SelectionModes | string;
             keys?: string[];
         }[];
         type?: "ERROR" | "WARNING" | string;
@@ -290,17 +301,6 @@ declare namespace KnimeUIExtensionService {
         APPLY_DATA = "apply_data"
     }
     type DataServiceType = DataServiceTypes;
-    /**
-     * Selection service modes available by default to UI Extension nodes.
-     *
-     * @enum {string}
-     */
-    enum SelectionModes {
-        ADD = "ADD",
-        REMOVE = "REMOVE",
-        REPLACE = "REPLACE"
-    }
-    type SelectionMode = SelectionModes;
     /**
      * Any node service request supported by that specific node service.
      */

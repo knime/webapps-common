@@ -1,8 +1,8 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { NodeInfo } from "./NodeInfo-cf6372d2";
 import { ResourceTypes } from "./types/ResourceTypes";
-import { DataServiceTypes } from "./types/DataServiceTypes";
 import { SelectionModes } from "./types/SelectionModes";
+import { DataServiceTypes } from "./types/DataServiceTypes";
 /**
  * @property {string} id - unique identifier based on the factory class of the node.
  * @property {ResourceTypes} type - the resource type associated with the extension.
@@ -47,7 +47,7 @@ type Notification = {
         projectId: string;
         workflowId: string;
         nodeId: string;
-        mode: string;
+        mode: SelectionModes | string;
         keys?: string[];
     }[];
     type?: "ERROR" | "WARNING" | string;
