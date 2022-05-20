@@ -43,11 +43,6 @@ npm run test:unit
 npm run lint
 ```
 
-### Git hooks
-
-When running `npm install`, some git hooks (see [.husky/](.husky/)) will automatically be installed using [husky].
-Please read the [docs in case you want to bypass or disable them](https://typicode.github.io/husky/#/?id=bypass-hooks).
-
 
 ### Security audit
 
@@ -109,4 +104,3 @@ async mounted() {
 [Vue]: https://vuejs.org/
 [Java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [jest]: https://jestjs.io/en
-[husky]: https://typicode.github.io/husky/
