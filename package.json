@@ -15,7 +15,7 @@
         "audit": "npm audit --production",
         "test": "npm run test:unit",
         "test:unit": "jest",
-        "coverage": "jest --coverage",
+        "coverage": "jest --coverage --runInBand",
         "coverage:watch": "npm run test:unit -- --coverage --watch",
         "sendcoverage": "cross-var sonar-scanner -Dsonar.login=\"$SONAR_LOGIN\" -Dsonar.password=\"$SONAR_PASSWORD\""
     },
