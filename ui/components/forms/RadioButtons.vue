@@ -60,7 +60,7 @@ export default {
     :possible-values="possibleValues"
     :value="value"
     :disabled="disabled"
-    :class="['radio-buttons', alignment]"
+    :class="['radio-buttons', alignment, {disabled}]"
     v-on="$listeners"
   />
 </template>
@@ -141,11 +141,11 @@ export default {
       }
     }
   }
+}
 
-  &:disabled {
-    color: var(--knime-dove-gray);
-    opacity: 0.5;
-  }
+.disabled {
+  color: var(--knime-dove-gray);
+  opacity: 0.5;
 }
 
 /* stylelint-disable no-descending-specificity */

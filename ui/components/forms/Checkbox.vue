@@ -28,6 +28,11 @@ export default {
             default: 'regular'
         }
     },
+    computed: {
+        classes() {
+            return ['checkbox', this.labelSize, { disabled: this.disabled }];
+        }
+    },
     methods: {
         onInput($event) {
             /**
@@ -48,7 +53,7 @@ export default {
 </script>
 
 <template>
-  <label :class="['checkbox', labelSize]">
+  <label :class="classes">
     <input
       :id="id"
       ref="input"
@@ -197,7 +202,7 @@ export default {
     /* stylelint-enable no-descending-specificity */
   }
 
-  &:disabled {
+  &.disabled {
     color: var(--knime-dove-gray);
     opacity: 0.5;
   }
