@@ -66,6 +66,9 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+.radio-buttons.disabled >>> label {
+  cursor: initial;
+}
 .radio-buttons >>> {
   user-select: none;
 
@@ -79,6 +82,7 @@ export default {
     max-width: 100%;
     width: max-content;
     cursor: pointer;
+
 
     & input {
       opacity: 0;
@@ -113,9 +117,15 @@ export default {
         text-align: center;
       }
 
-      &:hover + span::before {
+      &:hover:enabled + span::before {
         border: 1px solid var(--theme-radio-border-color-hover);
         background: var(--theme-radio-background-color-hover);
+      }
+
+      &:hover:disabled + span::before {
+        border: 1px solid var(--theme-radio-border-color);
+        background: var(--theme-radio-background-color);
+        cursor: initial;
       }
 
       &:checked { /* 🔘 */
@@ -127,7 +137,7 @@ export default {
           box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
         }
 
-        &:hover + span::before {
+        &:hover:enabled + span::before {
           box-shadow: unset;
           background: radial-gradient(
             ellipse at center,
@@ -137,6 +147,13 @@ export default {
             var(--theme-radio-background-color-selected-hover) 100%
           );
           border-color: var(--theme-radio-border-color-selected-hover);
+        }
+
+        &:hover:disabled + span::before {
+          background: var(--theme-radio-foreground-color-selected);
+          border-color: var(--theme-radio-border-color-selected);
+          content: '';
+          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
         }
       }
     }

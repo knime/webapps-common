@@ -80,6 +80,10 @@ export default {
   max-width: 100%;
   cursor: pointer;
 
+  &.disabled {
+    cursor: initial;
+  }
+
   & input {
     user-select: none;
     display: flex;
@@ -125,9 +129,14 @@ export default {
         background: var(--theme-checkbox-background-color-selected-focus);
       }
 
-      &:hover + span::before {
+      &:hover:enabled + span::before {
         border-color: var(--theme-checkbox-border-color-selected-hover);
         background: var(--theme-checkbox-background-color-selected-hover);
+      }
+
+      &:hover:disabled + span::before {
+        border-color: var(--theme-checkbox-border-color-selected);
+        background: var(--theme-checkbox-background-color-selected);
       }
 
       /* ✓ */
@@ -144,8 +153,12 @@ export default {
         border-color: var(--theme-checkbox-foreground-color-selected);
       }
 
-      &:hover + span::after {
+      &:hover:enabled + span::after {
         border-color: var(--theme-checkbox-foreground-color-selected-hover);
+      }
+
+      &:hover:disabled + span::after {
+        border-color: var(--theme-checkbox-foreground-color-selected);
       }
 
       &:focus + span::after {
@@ -157,7 +170,7 @@ export default {
       background: var(--theme-checkbox-background-color);
 
       /* □ */
-      &:hover + span::before {
+      &:hover:enabled + span::before {
         border-color: var(--theme-checkbox-border-color-hover);
       }
 
