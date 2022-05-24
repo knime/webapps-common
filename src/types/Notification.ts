@@ -6,7 +6,7 @@ export type Notification = {
         workflowId: string;
         nodeId: string;
         mode: SelectionModes | string;
-        keys?: string[];
+        selection?: string[];
     }[];
     type?: 'ERROR' | 'WARNING' | string;
     nodeInfo?: {

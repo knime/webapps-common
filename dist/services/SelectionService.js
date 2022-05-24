@@ -74,9 +74,9 @@ class SelectionService {
      */
     addOnSelectionChangeCallback(callback) {
         const wrappedCallback = (notification) => {
-            const { nodeId, keys, mode } = notification.params[0] || {};
+            const { nodeId, selection, mode } = notification.params[0] || {};
             if (this.knimeService.extensionConfig.nodeId === nodeId) {
-                callback({ keys, mode });
+                callback({ selection, mode });
             }
         };
         this.callbackMap.set(callback, wrappedCallback);

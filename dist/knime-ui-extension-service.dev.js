@@ -318,7 +318,7 @@ constructor(knimeService){this.knimeService=knimeService,this.callbackMap=new Ma
          * Adds callback that will be triggered on data selection change outside the scope of the view.
          * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
          * @returns {void}
-         */addOnSelectionChangeCallback(callback){const wrappedCallback=notification=>{const{nodeId:nodeId,keys:keys,mode:mode}=notification.params[0]||{};this.knimeService.extensionConfig.nodeId===nodeId&&callback({keys:keys,mode:mode})};this.callbackMap.set(callback,wrappedCallback),this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}
+         */addOnSelectionChangeCallback(callback){const wrappedCallback=notification=>{const{nodeId:nodeId,selection:selection,mode:mode}=notification.params[0]||{};this.knimeService.extensionConfig.nodeId===nodeId&&callback({selection:selection,mode:mode})};this.callbackMap.set(callback,wrappedCallback),this.knimeService.addNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}
 /**
          * Removes previously added callback.
          * @param {function} callback - that needs to be removed from notifications.
