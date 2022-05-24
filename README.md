@@ -80,12 +80,20 @@ this.initialData = await this.knimeJsonDataService.initialData();
 ```
 
 ### Usage in a Vue-based KNIME UI component
-In this case, the `knimeService` instance is already provided by the parent application and just needs to be injected, e.g.
+In this case, the `getKnimeService` method is already provided by the parent application and just needs to be called.
+*Note*: to make the view compatible with re-execution in Data Apps, use a computed property to access the `knimeService` e.g.
 ```javascript
 ...
 import { JsonDataService } from 'knime-ui-extension-service';
 ...
-inject: ['knimeService'],
+inject: ['getKnimeService'],
+...
+computed: {
+    knimeService() {
+        return this.getKnimeService();
+    }
+}
+...
 async mounted() {
     const jsonDataService = new JsonDataService(this.knimeService);
     this.initialData = await jsonDataService.getInitialData();
