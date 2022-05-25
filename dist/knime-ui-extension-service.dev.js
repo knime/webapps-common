@@ -323,10 +323,7 @@ constructor(knimeService){this.knimeService=knimeService,this.callbackMap=new Ma
          * Removes previously added callback.
          * @param {function} callback - that needs to be removed from notifications.
          * @returns {void}
-<<<<<<< HEAD
-         */removeOnSelectionChangeCallback(callback){const wrappedCallback=this.callbackMap.get(callback);this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
-=======
-         */removeOnSelectionChangeCallback(callback){this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,callback)}}
+         */removeOnSelectionChangeCallback(callback){const wrappedCallback=this.callbackMap.get(callback);this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}}
 // creates an object which maps the path of each element to their flow variable object
 ,DialogService:
 /**
@@ -341,4 +338,3 @@ constructor(knimeService){this.knimeService=knimeService}
 /**
          * @returns {FlowVariableSettings | null} - maps of model and view flow variables settings.
          */async getFlowVariableSettings(){var _a;return(({viewVariables:viewVariables={},modelVariables:modelVariables={}}={})=>{const traverseObject=(variables,currentPath,initialValue={})=>variables?Object.entries(variables).reduce(((acc,[key,value])=>value.leaf?(acc[currentPath?`${currentPath}.${key}`:key]=value,acc):traverseObject(value,`${currentPath}${"value"===key?"":`.${key}`}`,acc)),initialValue):{};return Object.assign(Object.assign({},traverseObject(viewVariables,"view")),traverseObject(modelVariables,"model"))})(await Promise.resolve((null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.flowVariableSettings)||{}))}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
->>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)

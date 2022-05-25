@@ -1,8 +1,8 @@
 import { ExtensionTypes } from "./types/ExtensionTypes";
 import { NodeInfo } from "./NodeInfo-cf6372d2";
 import { ResourceTypes } from "./types/ResourceTypes";
-import { DataServiceTypes } from "./types/DataServiceTypes";
 import { SelectionModes } from "./types/SelectionModes";
+import { DataServiceTypes } from "./types/DataServiceTypes";
 type FlowVariableSetting = {
     controllingFlowVariableAvailable: boolean;
     controllingFlowVariableName: string | null;
@@ -44,6 +44,7 @@ type ResourceInfo = {
  * @property {NodeInfo} nodeInfo - additional information regarding the node itself.
  * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
+ * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
  * @template T
  */
 type ExtensionConfig<T = any> = {
@@ -54,6 +55,7 @@ type ExtensionConfig<T = any> = {
     nodeInfo: NodeInfo;
     extensionType: ExtensionTypes;
     initialData?: T;
+    initialSelection?: T;
     flowVariableSettings?: FlowVariableSettings;
 };
 type Notification = {
@@ -61,8 +63,8 @@ type Notification = {
         projectId: string;
         workflowId: string;
         nodeId: string;
-        mode: string;
-        keys?: string[];
+        mode: SelectionModes | string;
+        selection?: string[];
     }[];
     type?: "ERROR" | "WARNING" | string;
     nodeInfo?: {

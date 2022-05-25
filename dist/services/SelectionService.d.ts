@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import { IFrameKnimeService } from "../index-a3360790";
-=======
 import { IFrameKnimeService } from "../index-fdcc8875";
-import { Notification } from "../index-92dc325b";
->>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)
 import { KnimeService } from "./KnimeService";
 /**
  * SelectionService provides methods to handle data selection.

@@ -86,11 +86,8 @@ declare namespace KnimeTypes {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
-<<<<<<< HEAD
         initialSelection?: T;
-=======
         flowVariableSettings?: FlowVariableSettings;
->>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)
     };
     /**
      * Selection service modes available by default to UI Extension nodes.
@@ -276,11 +273,8 @@ declare namespace KnimeUIExtensionService {
         nodeInfo: NodeInfo;
         extensionType: ExtensionTypes;
         initialData?: T;
-<<<<<<< HEAD
         initialSelection?: T;
-=======
         flowVariableSettings?: FlowVariableSettings;
->>>>>>> e87fd6e (UIEXT-163: Refactored based on commits)
     };
     /**
      * Selection service modes available by default to UI Extension nodes.
