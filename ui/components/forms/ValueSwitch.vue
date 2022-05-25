@@ -4,15 +4,43 @@ import BaseRadioButtons from './BaseRadioButtons';
 export default {
     components: {
         BaseRadioButtons
+    },
+    props: {
+        // this props are passed to BaseRadioButtons
+        id: {
+            type: String,
+            default: null
+        },
+        value: {
+            type: String,
+            default: ''
+        },
+        /**
+         * List of possible values. Each item must have an `id` and a `text` property
+         * @example
+         * [{
+         *   id: 'pdf',
+         *   text: 'PDF'
+         * }, {
+         *   id: 'XLS',
+         *   text: 'Excel',
+         * }]
+         */
+        possibleValues: {
+            type: Array,
+            default: () => []
+        }
     }
 };
 </script>
 
 <template>
   <BaseRadioButtons
+    :id="id"
     ref="radioButton"
+    :possible-values="possibleValues"
+    :value="value"
     class="value-switch"
-    v-bind="$attrs"
     v-on="$listeners"
   />
 </template>
@@ -39,7 +67,6 @@ export default {
     line-height: 18px;
     cursor: pointer;
     border-radius: 50px;
-    transition: background-color 0.1s ease-in 0.05s;
 
     &:hover {
       background-color: var(--theme-value-switch-background-color-hover);
