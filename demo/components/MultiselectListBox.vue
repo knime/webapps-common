@@ -27,7 +27,8 @@ export default {
     data() {
         return {
             codeExample,
-            selected: []
+            selected: [],
+            disabledSelected: []
         };
     },
     computed: {
@@ -89,6 +90,45 @@ export default {
         </div>
         <div class="grid-item-6">
           selected ids: {{ selected }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiselectListBox
+            v-model="disabledSelected"
+            :size="4"
+            aria-label="Disabled..."
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'baz2',
+              text: 'Baz 2'
+            }, {
+              id: 'baz3',
+              text: 'Baz 3'
+            }, {
+              id: 'baz4',
+              text: 'Baz 4'
+            }, {
+              id: 'baz5',
+              text: 'Baz 5'
+            }, {
+              id: 'baz6',
+              text: 'Baz 6'
+            }]"
+            :disabled="true"
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ disabledSelected }}
         </div>
       </div>
     </section>

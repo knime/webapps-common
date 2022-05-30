@@ -27,7 +27,8 @@ export default {
         return {
             codeExample,
             selected: 'bar',
-            placeholderModel: ''
+            placeholderModel: '',
+            disabledSelected: ''
         };
     },
     computed: {
@@ -187,6 +188,30 @@ export default {
               id: 'baz',
               text: 'Baz'
             }]"
+          />
+        </div>
+        <div class="grid-item-2">
+          selected id: {{ placeholderModel }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="disabledSelected"
+            placeholder="Disabled..."
+            aria-label="A List"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+            :disabled="true"
           />
         </div>
         <div class="grid-item-2">

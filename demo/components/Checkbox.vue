@@ -19,7 +19,8 @@ export default {
         return {
             codeExample,
             selected: false,
-            selectedLarge: false
+            selectedLarge: false,
+            selectedDisabled: false
         };
     },
     computed: {
@@ -55,10 +56,18 @@ export default {
           >
             I want larger cookies!
           </Checkbox>
+          <br>
+          <Checkbox
+            v-model="selectedDisabled"
+            :disabled="true"
+          >
+            This checkbox is disabled!
+          </Checkbox>
         </div>
         <div class="grid-item-6">
           value: {{ selected }}<br>
-          value: {{ selectedLarge }}
+          value: {{ selectedLarge }}<br>
+          value: {{ selectedDisabled }}
         </div>
       </div>
     </section>

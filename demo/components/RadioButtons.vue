@@ -95,6 +95,23 @@ export default {
             }]"
           />
         </div>
+        <div class="grid-item-5">
+          <RadioButtons
+            v-model="selected"
+            alignment="vertical"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }]"
+            :disabled="true"
+          />
+        </div>
         <div class="grid-item-2">
           selected id: {{ selected }}
         </div>
