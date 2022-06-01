@@ -11,6 +11,7 @@ module.exports = {
     excludePackages: [
         'webapps-common@0.0.0',
         'knime-build-tools@0.0.0',
+        'knime-ui@0.0.0-unused',
         'knime-ui-extension-service@1.0.0',
         '@knime/knime-ui-table@0.1.31',
         'webpack-external-import@0.3.0-beta.0', // licensed under GPL-3 but not included in the production app
