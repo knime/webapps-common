@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 
 import RadioButtons from '~/ui/components/forms/RadioButtons';
+import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons';
 
 describe('RadioButtons.vue', () => {
     let possibleValues;
@@ -24,20 +25,29 @@ describe('RadioButtons.vue', () => {
         }];
     });
 
-    it('renders', () => {
+    it('renders and passes props to BaseRadioButtons', () => {
+        let value = 'test3';
         const wrapper = mount(RadioButtons, {
             propsData: {
-                possibleValues
+                possibleValues,
+                value
             }
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
 
-        let labels = wrapper.findAll('label');
-        expect(labels.length).toBe(possibleValues.length);
-        possibleValues.forEach((value, i) => {
-            expect(labels.at(i).text()).toContain(value.text);
+        const baseComponent = wrapper.find(BaseRadioButtons);
+        expect(baseComponent.props('possibleValues')).toBe(possibleValues);
+        expect(baseComponent.props('value')).toBe(value);
+    });
+
+    it('passes-through all listeners', () => {
+        let wrapper = mount(RadioButtons, {
+            listeners: {
+                fakeEvent: jest.fn()
+            }
         });
+        expect(wrapper.find(BaseRadioButtons).vm.$listeners).toHaveProperty('fakeEvent');
     });
 
     it('renders horizontal by default', () => {
@@ -59,26 +69,6 @@ describe('RadioButtons.vue', () => {
         });
         expect(wrapper.find('div').classes()).toContain('vertical');
     });
-
-    it('renders selected value', () => {
-        let value = 'test3';
-        const wrapper = mount(RadioButtons, {
-            propsData: {
-                possibleValues,
-                value
-            }
-        });
-
-        let radioInputs = wrapper.findAll('input[type=radio]');
-        possibleValues.forEach((option, i) => {
-            if (option.id === value) {
-                expect(radioInputs.at(i).element.checked).toBeTruthy();
-            } else {
-                expect(radioInputs.at(i).element.checked).not.toBeTruthy();
-            }
-        });
-    });
-
 
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(RadioButtons, {

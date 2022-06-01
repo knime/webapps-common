@@ -1,5 +1,5 @@
+/* eslint-disable max-nested-callbacks */
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
-
 import MenuItems from '~/ui/components/MenuItems';
 
 describe('MenuItems.vue', () => {
@@ -96,6 +96,128 @@ describe('MenuItems.vue', () => {
         });
         wrapper.findAll('span').wrappers.forEach(item => {
             expect(item.classes('hotkey')).toBe(false);
+        });
+    });
+
+    describe('interactions', () => {
+        let items, wrapper;
+
+        beforeEach(() => {
+            items = [
+                { text: 'First' },
+                { text: 'Second', disabled: true },
+                { text: 'Third' }
+            ];
+
+            wrapper = shallowMount(MenuItems, {
+                propsData: {
+                    ariaLabel: 'label',
+                    items,
+                    id: 'menu'
+                },
+                attachTo: document.body
+            });
+        });
+
+        afterEach(() => {
+            document.body.focus();
+        });
+
+        describe('focus and keyboard navigation', () => {
+            test('focus first', () => {
+                expect(document.activeElement.textContent).not.toContain('First');
+                wrapper.vm.focusFirst();
+
+                expect(document.activeElement.textContent).toContain('First');
+            });
+
+            test('focus last', () => {
+                expect(document.activeElement.textContent).not.toContain('Third');
+                wrapper.vm.focusLast();
+
+                expect(document.activeElement.textContent).toContain('Third');
+            });
+
+            test('arrow up', () => {
+                wrapper.vm.focusFirst();
+                wrapper.trigger('keydown.down');
+
+                expect(document.activeElement.textContent).toContain('Third');
+            });
+
+            test('arrow down', () => {
+                wrapper.vm.focusLast();
+                wrapper.trigger('keydown.up');
+
+                expect(document.activeElement.textContent).toContain('First');
+            });
+
+            test('arrow up wrap-around', () => {
+                wrapper.vm.focusFirst();
+                wrapper.trigger('keydown.up');
+
+                expect(document.activeElement.textContent).toContain('Third');
+            });
+
+            test('arrow down wrap-around', () => {
+                wrapper.vm.focusLast();
+                wrapper.trigger('keydown.down');
+
+                expect(document.activeElement.textContent).toContain('First');
+            });
+
+            test('arrow up with prevented wrap-around', () => {
+                wrapper.vm.focusFirst();
+                
+                wrapper.vm.$on('top-reached', (e) => {
+                    e.preventDefault();
+                });
+                wrapper.trigger('keydown.up');
+
+                expect(document.activeElement.textContent).toContain('First');
+            });
+
+            test('arrow down with prevented wrap-around', () => {
+                wrapper.vm.focusLast();
+                
+                wrapper.vm.$on('bottom-reached', (e) => {
+                    e.preventDefault();
+                });
+                wrapper.trigger('keydown.down');
+
+                expect(document.activeElement.textContent).toContain('Third');
+            });
+        });
+
+        describe('events', () => {
+            test('@item-active on list items', () => {
+                let listElements = wrapper.findAll('li');
+
+                // enabled element
+                listElements.at(0).trigger('focusin');
+                expect(wrapper.emitted('item-active')[0]).toStrictEqual([items[0], 'menu']);
+
+                listElements.at(0).trigger('pointerenter');
+                expect(wrapper.emitted('item-active')[1]).toStrictEqual([items[0], 'menu']);
+
+                // disabled element
+                listElements.at(1).trigger('focusin');
+                expect(wrapper.emitted('item-active')[2]).toStrictEqual([null, 'menu']);
+
+                listElements.at(1).trigger('pointerenter');
+                expect(wrapper.emitted('item-active')[2]).toStrictEqual([null, 'menu']);
+            });
+
+            test('@item-active on the menu', () => {
+                let menu = wrapper.find('ul');
+
+                // enabled element
+                menu.trigger('focusout');
+                expect(wrapper.emitted('item-active')[0]).toStrictEqual([null, 'menu']);
+
+                menu.trigger('pointerleave');
+                expect(wrapper.emitted('item-active')[1]).toStrictEqual([null, 'menu']);
+            });
         });
     });
 });

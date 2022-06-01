@@ -6,6 +6,32 @@ export default {
         BaseRadioButtons
     },
     props: {
+        // this props are passed to BaseRadioButtons
+        id: {
+            type: String,
+            default: null
+        },
+        value: {
+            type: String,
+            default: ''
+        },
+        /**
+         * List of possible values. Each item must have an `id` and a `text` property
+         * @example
+         * [{
+         *   id: 'pdf',
+         *   text: 'PDF'
+         * }, {
+         *   id: 'XLS',
+         *   text: 'Excel',
+         * }]
+         */
+        possibleValues: {
+            type: Array,
+            default: () => []
+        },
+
+        // additional props
         alignment: {
             type: String,
             default: 'horizontal',
@@ -25,9 +51,11 @@ export default {
 
 <template>
   <BaseRadioButtons
+    :id="id"
     ref="radioButton"
+    :possible-values="possibleValues"
+    :value="value"
     :class="['radio-buttons', alignment]"
-    v-bind="$attrs"
     v-on="$listeners"
   />
 </template>

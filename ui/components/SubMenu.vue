@@ -184,6 +184,7 @@ export default {
 
 <style lang="postcss" scoped>
 .menu-items {
+  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
   position: absolute;
   right: 0;
 
