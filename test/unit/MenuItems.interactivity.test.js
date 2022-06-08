@@ -81,8 +81,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -115,8 +115,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -151,8 +151,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
@@ -185,8 +185,8 @@ describe('MenuItems.vue', () => {
                     stopImmediatePropagation: jest.fn()
                 };
                 let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
-                wrapper.vm.listItems[0].focus();
-                expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
+                wrapper.vm.$refs.listItem[0].focus();
+                expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
                 wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeFalsy();
@@ -194,142 +194,6 @@ describe('MenuItems.vue', () => {
                 expect(fakeEvent.stopPropagation).not.toHaveBeenCalled();
                 expect(fakeEvent.stopImmediatePropagation).not.toHaveBeenCalled();
             });
-        });
-    });
-
-    describe('arrow key navigation', () => {
-        let arrowKeyNavWrapper;
-
-        beforeEach(() => {
-            const id = 'testfoobar543';
-            const items = [
-                { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
-                { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
-            ];
-            arrowKeyNavWrapper = mount(MenuItems, {
-                propsData: {
-                    ariaLabel: id,
-                    items,
-                    id
-                },
-                stubs: {
-                    NuxtLink: RouterLinkStub
-                }
-            });
-        });
-
-        it('gets next item to focus', () => {
-            const items = [
-                { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
-                { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' },
-                { text: 'I act like a button' }
-            ];
-            const id = 'testfoobar543';
-
-            const wrapper = shallowMount(MenuItems, {
-                propsData: {
-                    ariaLabel: id,
-                    items,
-                    id
-                },
-                stubs: {
-                    NuxtLink: RouterLinkStub
-                }
-            });
-            // up and down
-            wrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[2]);
-            // jumps to end of list
-            wrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[0]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[2]);
-            // jumps to start of list
-            wrapper.vm.listItems[2].focus();
-            expect(document.activeElement).toBe(wrapper.vm.listItems[2]);
-            expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.listItems[1]);
-            expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.listItems[0]);
-        });
-
-        it('focuses next element on key down', () => {
-            let onDownMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowDownKey');
-
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-
-            arrowKeyNavWrapper.trigger('keydown.down');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-            expect(onDownMock).toHaveBeenCalled();
-        });
-
-        it('focuses previous element on key up', () => {
-            let onUpMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowUpKey');
-
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-
-            arrowKeyNavWrapper.trigger('keydown.up');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-            expect(onUpMock).toHaveBeenCalled();
-        });
-
-        it('focuses first element on key down at list end', () => {
-            let onDownMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowDownKey');
-
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[1].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-
-            arrowKeyNavWrapper.trigger('keydown.down');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-            expect(onDownMock).toHaveBeenCalled();
-        });
-
-        it('focuses last element on key up at list start', () => {
-            let onUpMock = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowUpKey');
-
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(2);
-            arrowKeyNavWrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-
-            arrowKeyNavWrapper.trigger('keydown.up');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[1]);
-            expect(onUpMock).toHaveBeenCalled();
-        });
-
-        it('ignores disabled items on key navigation', () => {
-            const id = 'ignoreId213';
-            const items = [
-                { href: 'https://example.com/slash', text: 'Slash' },
-                { disabled: true, text: 'Disabled Item' },
-                { text: 'Another item' }
-            ];
-            arrowKeyNavWrapper = mount(MenuItems, {
-                propsData: {
-                    ariaLabel: id,
-                    items,
-                    id
-                }
-            });
-            let onMockDown = jest.spyOn(arrowKeyNavWrapper.vm, 'onArrowDownKey');
-
-            // eslint-disable-next-line no-magic-numbers
-            expect(arrowKeyNavWrapper.vm.listItems.length).toBe(3);
-            arrowKeyNavWrapper.vm.listItems[0].focus();
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[0]);
-
-            arrowKeyNavWrapper.trigger('keydown.down');
-
-            expect(document.activeElement).toBe(arrowKeyNavWrapper.vm.listItems[2]);
-            expect(onMockDown).toHaveBeenCalled();
         });
     });
 });

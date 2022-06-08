@@ -8,6 +8,11 @@
  * If the data has a to attribute the used tag will be `nuxt-link` if it has a `href` attribute it will be a `a` tag
  * otherwise we use the generic `button` and leave the handling of the action to the wrapping component that reacts
  * to `item-click` and calls any action.
+ *
+ * Hovering or focusing an item emits `@item-active`.
+ *
+ * By default keyboard navigation wraps around top and bottom.
+ * This can be disabled by calling preventDefault on the the events `@top-reached` and `@bottom-reached`
  */
 export default {
     props: {
@@ -51,15 +56,77 @@ export default {
             type: String
         }
     },
-    computed: {
+    methods: {
         /**
          * @returns {Array<Element>} - HTML Elements to use for focus and events.
          */
-        listItems() {
-            return this.$refs.listItem.map(el => el.$el || el);
-        }
-    },
-    methods: {
+        getEnabledListItems() {
+            return this.$refs.listItem.map(el => el.$el || el).filter(x => !x.classList.contains('disabled'));
+        },
+        /**
+         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
+         * of the list, this method will return the opposite end.
+         *
+         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
+         * @returns {Element} - the next option Element in the list of items.
+         */
+        getNextElement(changeInd) {
+            // filter out disabled items
+            let listItems = this.getEnabledListItems();
+            
+            // lookup next item (if none is currently active, start at top or bottom)
+            let nextItem = listItems[listItems.indexOf(document.activeElement) + changeInd];
+            
+            let cancelWrapAround = false;
+            if (!nextItem) {
+                if (changeInd < 0) {
+                    // if before first element, wrap around the list
+                    this.$emit('top-reached', { preventDefault: () => { cancelWrapAround = true; } });
+                    if (!cancelWrapAround) {
+                        nextItem = listItems[listItems.length - 1];
+                    }
+                } else {
+                    // if after last element, wrap around the list
+                    this.$emit('bottom-reached', { preventDefault: () => { cancelWrapAround = true; } });
+                    if (!cancelWrapAround) {
+                        nextItem = listItems[0];
+                    }
+                }
+            }
+
+            return nextItem;
+        },
+        // publicly accessed
+        onArrowUpKey() {
+            let nextElement = this.getNextElement(-1);
+            if (nextElement) { nextElement.focus(); }
+        },
+        // publicly accessed
+        onArrowDownKey() {
+            let nextElement = this.getNextElement(1);
+            if (nextElement) { nextElement.focus(); }
+        },
+        // publicly accessed
+        focusFirst() {
+            let listItems = this.getEnabledListItems();
+            let firstItem = listItems[0];
+            if (firstItem) { firstItem.focus(); }
+        },
+        // publicly accessed
+        focusLast() {
+            let listItems = this.getEnabledListItems();
+            let lastItem = listItems[listItems.length - 1];
+            if (lastItem) { lastItem.focus(); }
+        },
+        linkTagByType(item) {
+            if (item.to) {
+                return 'nuxt-link';
+            } else if (item.href) {
+                return 'a';
+            } else {
+                return 'button';
+            }
+        },
         /**
          * Items can behave as links (either nuxt or native <a>) or buttons.
          * The MenuItems just emit the item-click event.
@@ -70,57 +137,25 @@ export default {
          * @emits {item-click}
          */
         onItemClick(event, item) {
-            if (item.disabled) {
-                return;
-            }
+            if (item.disabled) { return; }
+
             let isButton = !(item.href || item.to);
             if (isButton) {
                 event.preventDefault();
                 event.stopPropagation();
                 event.stopImmediatePropagation();
+            } else if (event.type !== 'click' && event.code === 'Space') {
+                // ignore a "click" through pressing space on links
+                return;
             } else if (event.type !== 'click') {
-                if (event.code === 'Space') {
-                    return;
-                }
                 // Handle "Enter" on links. Nuxt-link with `to: { name: 'namedRoute' }` do not have an href property
                 // and will not automatically react to keyboard events. We must trigger the click to activate the nuxt
                 // event listener.
                 let newEvent = new Event('click');
                 event.target.dispatchEvent(newEvent);
             }
+            
             this.$emit('item-click', event, item, this.id);
-        },
-        // this method is called by SubMenu; this is required due to the focs based hide
-        onArrowUpKey() {
-            this.getNextElement(-1).focus();
-        },
-        // this method is called by SubMenu; this is required due to the focs based hide
-        onArrowDownKey() {
-            this.getNextElement(1).focus();
-        },
-        linkTagByType(item) {
-            if (item.to) {
-                return 'nuxt-link';
-            } else if (item.href) {
-                return 'a';
-            }
-            return 'button';
-        },
-        /**
-         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
-         * of the list, this method will return the opposite end.
-         *
-         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
-         * @returns {Element} - the next option Element in the list of items.
-         */
-        getNextElement(changeInd) {
-            let listItems = this.listItems;
-            // filter out disabled items
-            listItems = listItems.filter(x => !x.classList.contains('disabled'));
-            // lookup next item
-            return listItems[listItems.indexOf(document.activeElement) + changeInd] || (changeInd < 0
-                ? listItems[listItems.length - 1]
-                : listItems[0]);
         }
     }
 };
@@ -133,6 +168,8 @@ export default {
     tabindex="0"
     @keydown.up.stop.prevent="onArrowUpKey"
     @keydown.down.stop.prevent="onArrowDownKey"
+    @pointerleave="$emit('item-active', null, id)"
+    @focusout="$emit('item-active', null, id)"
   >
     <li
       v-for="(item, index) in items"
@@ -140,6 +177,8 @@ export default {
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
       @keydown.space="onItemClick($event, item)"
+      @focusin="$emit('item-active', item.disabled ? null : item, id)"
+      @pointerenter="$emit('item-active', item.disabled ? null : item, id)"
     >
       <Component
         :is="linkTagByType(item)"
@@ -178,7 +217,6 @@ ul {
   font-family: var(--theme-text-medium-font-family);
   text-align: left;
   list-style-type: none;
-  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
   z-index: var(--z-index-common-menu-items-expanded, 1);
 
   &.expanded {
