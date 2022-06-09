@@ -277,6 +277,21 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+.dropdown.disabled {
+  & [role=button] {
+    cursor: unset;
+
+    &:focus {
+      border-color: var(--knime-stone-gray);
+      outline: unset;
+    }
+  }
+
+  & .placeholder {
+    cursor: unset;
+  }
+}
+
 .dropdown {
   position: relative;
 
@@ -326,7 +341,7 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  &.collapsed:hover {
+  &:not(.disabled).collapsed:hover {
     background: var(--knime-silver-sand-semi);
   }
 
@@ -346,6 +361,10 @@ export default {
     transform: scaleY(-1);
   }
 
+  & [role="listbox"] .disabled {
+    cursor: unset;
+  }
+
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
   & [role="listbox"] {
     overflow-y: auto;
@@ -361,7 +380,7 @@ export default {
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
 
-    &:focus {
+    &:not(.disabled):focus {
       outline: none;
       border-color: var(--knime-masala);
     }
@@ -383,17 +402,17 @@ export default {
       white-space: pre-wrap;
     }
 
-    &:hover {
+    &:not(.disabled):hover {
       background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
     }
 
-    &:focus {
+    &:not(.disabled):focus {
       background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
     }
 
-    &.focused {
+    &:not(.disabled).focused {
       background: var(--theme-dropdown-background-color-selected);
       color: var(--theme-dropdown-foreground-color-selected);
     }

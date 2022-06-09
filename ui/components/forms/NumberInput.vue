@@ -278,6 +278,11 @@ export default {
   &.disabled {
     color: var(--knime-dove-gray);
     opacity: 0.5;
+
+    & .increase,
+    & .decrease {
+      cursor: unset;
+    }
   }
 
   &:focus-within {
