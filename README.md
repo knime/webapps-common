@@ -52,7 +52,7 @@ npm run audit
 ```
 
 ## Build production version
-Bundles with rollup into esmodule format.
+Bundles with rollup into esmodule format and an IIFE bundle.
 ```sh
 npm run build
 ```
@@ -94,6 +94,66 @@ async mounted() {
     this.initialData = await jsonDataService.getInitialData();
 }
 ```
+
+## Usage in Custom Visualizations
+Custom UI component implementations can also use this package to interface with the KNIME® Analytics Platform and
+visualization framework
+
+To access this functionality within a component, simply add the provided IIFE build output as `<script>` content in
+the HTML scope. This output is found in the `dist/knime-ui-extension-service.min.js` bundle and  will automatically
+execute the JavaScript necessary to provide access to the API. *Note: In all cases, it's important to load the IIFE
+content into the HTML document **before** the UI component implementation so the API is loaded and available in the
+custom context.*
+
+There are two options to use included in the `dist` folder (use only one at a time):
+
+- `knime-ui-extension-service.min.js` a minified production build of the package
+- `knime-ui-extension-service.dev.js` a documented package build intended for development
+
+There are a number of ways to include this bundle in a component implementation:
+
+### Document `<head>`
+The simplest method is to copy the content directly into
+the HTML document `<head>` as `<script>` tag content:
+
+```html
+<!DOCTYPE html>
+...
+<head>
+    ...
+    <script type="text/javascript">
+        // Copy contents here
+    </script>
+    ...
+</head>
+...
+```
+
+### Local/Remote File System
+If the component is being served by a filesystem or server, the path to the `min.js` file can also be included
+as the src of the `<script>` tag in the `<head>` of the document:
+```html
+<!DOCTYPE html>
+...
+<head>
+    ...
+    // NOTE: Update the path to the correct resource location for your filesystem or server.
+    <script src="./dist/knime-ui-extension-service.min.js"></script>
+    ...
+</head>
+...
+```
+
+### Custom Build Step
+For components which include a build step, it is also possible to bundle the library into the build output using a
+local clone of the repository and the appropriate build tools associated with the project. Please reference
+the documentation of the language/build tool in question for more information about *bundling dependencies*.
+
+### Accessing the Package
+Once loaded, the package will be available in the global scope of the view under the namespace
+`window.KnimeUIExtensionService`; which includes the classes, functionality and types of this package. To include the
+JSDoc comments in the document, adjust the IIFE file content (described in the above sections) to use the `.dev.js`
+build file instead of the `.min.js` file.
 
 
 # Join the Community!
