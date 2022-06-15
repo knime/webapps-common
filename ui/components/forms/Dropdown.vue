@@ -277,21 +277,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.dropdown.disabled {
-  & [role=button] {
-    cursor: unset;
-
-    &:focus {
-      border-color: var(--knime-stone-gray);
-      outline: unset;
-    }
-  }
-
-  & .placeholder {
-    cursor: unset;
-  }
-}
-
 .dropdown {
   position: relative;
 
@@ -402,24 +387,41 @@ export default {
       white-space: pre-wrap;
     }
 
-    &:not(.disabled):hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-    }
+    &:not(.disabled) {
+      &:hover {
+        background: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+      }
 
-    &:not(.disabled):focus {
-      background: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-    }
+      &:focus {
+        background: var(--theme-dropdown-background-color-focus);
+        color: var(--theme-dropdown-foreground-color-focus);
+      }
 
-    &:not(.disabled).focused {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
+      &.focused {
+        background: var(--theme-dropdown-background-color-selected);
+        color: var(--theme-dropdown-foreground-color-selected);
+      }
     }
   }
 
   & .noselect {
     user-select: none;
+  }
+}
+
+.dropdown.disabled {
+  & [role=button] {
+    cursor: unset;
+
+    &:focus {
+      border-color: var(--knime-stone-gray);
+      outline: unset;
+    }
+  }
+
+  & .placeholder {
+    cursor: unset;
   }
 }
 </style>

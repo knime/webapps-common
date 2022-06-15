@@ -66,9 +66,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.radio-buttons.disabled >>> label {
-  cursor: initial;
-}
 .radio-buttons >>> {
   user-select: none;
 
@@ -115,6 +112,13 @@ export default {
         vertical-align: top;
         cursor: pointer;
         text-align: center;
+
+        &:checked {
+          background: var(--theme-radio-foreground-color-selected);
+          border-color: var(--theme-radio-border-color-selected);
+          content: '';
+          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
+        }
       }
 
       &:hover:enabled + span::before {
@@ -129,14 +133,6 @@ export default {
       }
 
       &:checked { /* 🔘 */
-
-        & + span::before {
-          background: var(--theme-radio-foreground-color-selected);
-          border-color: var(--theme-radio-border-color-selected);
-          content: '';
-          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
-        }
-
         &:hover:enabled + span::before {
           box-shadow: unset;
           background: radial-gradient(
@@ -183,6 +179,10 @@ export default {
       padding-right: 12px;
     }
   }
+}
+
+.radio-buttons.disabled >>> label {
+  cursor: initial;
 }
 
 </style>

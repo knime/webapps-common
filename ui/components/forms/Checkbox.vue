@@ -82,6 +82,8 @@ export default {
 
   &.disabled {
     cursor: initial;
+    color: var(--knime-dove-gray);
+    opacity: 0.5;
   }
 
   & input {
@@ -153,16 +155,16 @@ export default {
         border-color: var(--theme-checkbox-foreground-color-selected);
       }
 
+      &:focus + span::after {
+        border-color: var(--theme-checkbox-foreground-color-selected-focus);
+      }
+
       &:hover:enabled + span::after {
         border-color: var(--theme-checkbox-foreground-color-selected-hover);
       }
 
       &:hover:disabled + span::after {
         border-color: var(--theme-checkbox-foreground-color-selected);
-      }
-
-      &:focus + span::after {
-        border-color: var(--theme-checkbox-foreground-color-selected-focus);
       }
     }
 
@@ -213,11 +215,6 @@ export default {
       top: 5px; /* line height 20px; container 26px(2x3px padding) 26-14=12/2=6  -1=5 to center higher letters better */
     }
     /* stylelint-enable no-descending-specificity */
-  }
-
-  &.disabled {
-    color: var(--knime-dove-gray);
-    opacity: 0.5;
   }
 }
 

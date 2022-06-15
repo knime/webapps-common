@@ -278,11 +278,6 @@ export default {
   &.disabled {
     color: var(--knime-dove-gray);
     opacity: 0.5;
-
-    & .increase,
-    & .decrease {
-      cursor: unset;
-    }
   }
 
   &:focus-within {
@@ -306,16 +301,16 @@ export default {
     /* remove browser spinners FF */
     -moz-appearance: textfield;
 
-    &:disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
-    }
-
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
       -webkit-appearance: none;
       margin: 0;
+    }
+
+    &:disabled {
+      color: var(--knime-dove-gray);
+      opacity: 0.5;
     }
 
     /* css3 invalid state */
@@ -360,6 +355,7 @@ export default {
     &.disabled {
       color: var(--knime-dove-gray);
       opacity: 0.5;
+      cursor: unset;
     }
 
     &:hover:not(.disabled) {
