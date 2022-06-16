@@ -43,6 +43,10 @@ export default {
         disabled: {
             default: false,
             type: Boolean
+        },
+        required: {
+            default: false,
+            type: Boolean
         }
     },
     computed: {
@@ -51,6 +55,9 @@ export default {
             if (this.$slots.icon && this.$slots.icon.length) {
                 classes += ' with-icon';
             }
+            if (!this.isValid) {
+                classes += ' invalid';
+            }
             return classes;
         }
     },
@@ -58,7 +65,7 @@ export default {
         getValue() {
             return this.$refs.input.value;
         },
-        onInput(e) {
+        onInput() {
             this.$emit('input', this.getValue());
         },
         focus() {
@@ -100,10 +107,11 @@ export default {
       :placeholder="placeholder"
       :autocomplete="autocomplete"
       :disabled="disabled"
+      :required="required"
       @input="onInput"
+      @blur="onBlur"
     >
     <span
-      v-if="!isValid"
       class="invalid-marker"
     />
   </div>
@@ -141,6 +149,21 @@ input {
     border-color: var(--knime-masala);
   }
 
+  &.invalid,
+  &:focus:invalid {
+    & + .invalid-marker {
+      position: absolute;
+      display: block;
+      width: 3px;
+      left: 0;
+      margin: 0;
+      top: 0;
+      bottom: 0;
+      background-color: var(--theme-color-error);
+      pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+    }
+  }
+
   &:hover:not(:focus):not(:disabled) {
     background-color: var(--theme-input-field-background-color-focus);
   }
@@ -148,18 +171,6 @@ input {
   &.with-icon {
     padding: 10px 10px 10px 38px;
   }
-}
-
-.invalid-marker {
-  position: absolute;
-  display: block;
-  width: 3px;
-  left: 0;
-  margin: 0;
-  top: 0;
-  bottom: 0;
-  background-color: var(--theme-color-error);
-  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
 }
 
 svg {
