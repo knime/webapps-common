@@ -109,7 +109,6 @@ export default {
       :disabled="disabled"
       :required="required"
       @input="onInput"
-      @blur="onBlur"
     >
     <span
       class="invalid-marker"
