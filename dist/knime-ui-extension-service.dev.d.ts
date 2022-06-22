@@ -549,6 +549,10 @@ declare namespace KnimeUIExtensionService {
             id: number;
         };
     };
+    const handlePublishSelectionOnSettingsChange: (selectionService: SelectionService, selectionMode: SelectionModes, getSelectionCallback: Function, currentPublishSelection: boolean | undefined, newPublishSelection: boolean | undefined) => void;
+    const handlePublishSelectionOnSelectionChange: (selectionService: SelectionService, selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined) => void;
+    const handleSubscribeToSelectionOnInit: (selectionService: SelectionService, onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined) => void;
+    const handleSubscribeToSelectionOnSettingsChange: (selectionService: SelectionService, onSelectionChangeCallback: (any: any) => void, clearSelectionCallback: () => void, currentSubscribeToSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined) => void;
     /**
      * A utility class to interact with JsonDataServices implemented by a UI Extension node.
      */
