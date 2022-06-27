@@ -28,7 +28,7 @@
   "devDependencies": {
     "@babel/preset-env": "7.9.0",
     "@vue/test-utils": "1.0.0-beta.29",
-    "@typescript-eslint/parser": "^4.31.2",
+    "@typescript-eslint/parser": "4.31.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
     "consola": "2.10.1",
@@ -43,8 +43,9 @@
     "npm-audit-resolver": "2.3.1",
     "stylelint": "13.6.1",
     "stylelint-config-standard": "20.0.0",
-    "typescript": "^4.5.4",
+    "typescript": "4.5.4",
     "vue": "2.6.11",
+    "vue-clickaway2": "2.3.2",
     "vue-jest": "3.0.4",
     "vue-template-compiler": "2.6.11"
   },
@@ -62,7 +63,6 @@
     "postcss-import": "*",
     "postcss-preset-env": "6.x",
     "postcss-url": "*",
-    "vue-clickaway2": "2.3.2",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
     "v-calendar": "2.0.1"
