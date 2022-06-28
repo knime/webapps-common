@@ -81,13 +81,17 @@ export default {
             if (!nextItem) {
                 if (changeInd < 0) {
                     // if before first element, wrap around the list
-                    this.$emit('top-reached', { preventDefault: () => { cancelWrapAround = true; } });
+                    this.$emit('top-reached', { preventDefault: () => {
+                        cancelWrapAround = true;
+                    } });
                     if (!cancelWrapAround) {
                         nextItem = listItems[listItems.length - 1];
                     }
                 } else {
                     // if after last element, wrap around the list
-                    this.$emit('bottom-reached', { preventDefault: () => { cancelWrapAround = true; } });
+                    this.$emit('bottom-reached', { preventDefault: () => {
+                        cancelWrapAround = true;
+                    } });
                     if (!cancelWrapAround) {
                         nextItem = listItems[0];
                     }
@@ -99,24 +103,32 @@ export default {
         // publicly accessed
         onArrowUpKey() {
             let nextElement = this.getNextElement(-1);
-            if (nextElement) { nextElement.focus(); }
+            if (nextElement) {
+                nextElement.focus();
+            }
         },
         // publicly accessed
         onArrowDownKey() {
             let nextElement = this.getNextElement(1);
-            if (nextElement) { nextElement.focus(); }
+            if (nextElement) {
+                nextElement.focus();
+            }
         },
         // publicly accessed
         focusFirst() {
             let listItems = this.getEnabledListItems();
             let firstItem = listItems[0];
-            if (firstItem) { firstItem.focus(); }
+            if (firstItem) {
+                firstItem.focus();
+            }
         },
         // publicly accessed
         focusLast() {
             let listItems = this.getEnabledListItems();
             let lastItem = listItems[listItems.length - 1];
-            if (lastItem) { lastItem.focus(); }
+            if (lastItem) {
+                lastItem.focus();
+            }
         },
         linkTagByType(item) {
             if (item.to) {
@@ -137,7 +149,9 @@ export default {
          * @emits {item-click}
          */
         onItemClick(event, item) {
-            if (item.disabled) { return; }
+            if (item.disabled) {
+                return;
+            }
 
             let isButton = !(item.href || item.to);
             if (isButton) {
