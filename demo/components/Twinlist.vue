@@ -153,7 +153,7 @@ export default {
               id: 'baz11',
               text: 'Baz 11'
             }]"
-            :disabled="true"
+            disabled
           />
         </div>
         <div class="grid-item-6">

@@ -46,11 +46,9 @@ export default {
             inputValue1: 0,
             inputValue2: '4.5324526E6',
             inputValue3: -15,
-            inputValueDisabled: 0,
             isValid1: true,
             isValid2: true,
-            isValid3: true,
-            isValidDisabled: true
+            isValid3: true
         };
     },
     computed: {
@@ -65,7 +63,6 @@ export default {
         this.validate1();
         this.validate2();
         this.validate3();
-        this.validateDisabled();
     },
     methods: {
         validate1() {
@@ -76,9 +73,6 @@ export default {
         },
         validate3() {
             this.isValid3 = this.$refs.input3.validate().isValid;
-        },
-        validateDisabled() {
-            this.isValidDisabled = this.$refs.disabledInput.validate().isValid;
         }
     }
 };
@@ -150,19 +144,18 @@ export default {
           </Label>
           <Label
             v-slot="{ labelForId }"
-            text="Disabled..."
+            text="Disabled"
           >
             <NumberInput
               :id="labelForId"
-              ref="disabledInput"
-              v-model="inputValueDisabled"
+              v-model="inputValue1"
               :min="min"
               :max="max"
-              :is-valid="isValidDisabled"
+              :is-valid="isValid1"
               type="integer"
               title="Disabled"
-              :disabled="true"
-              @input="validateDisabled"
+              disabled
+              @input="validate1"
             />
           </Label>
         </div>
@@ -172,8 +165,6 @@ export default {
           Double: {{ inputValue2 }}
           <br>
           {{ input3Text }}: {{ inputValue3 }}
-          <br>
-          Disabled: {{ inputValueDisabled }}
         </div>
         <div class="grid-item-2">
           <u>All</u>
