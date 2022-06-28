@@ -308,11 +308,6 @@ export default {
       margin: 0;
     }
 
-    &:disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
-    }
-
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */
@@ -349,33 +344,28 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
-    cursor: pointer;
     background-color: var(--theme-input-number-background-color);
-
-    &.disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
-      cursor: unset;
-    }
-
-    &:hover:not(.disabled) {
-      background-color: var(--theme-input-number-background-color-hover);
-    }
 
     & svg {
       width: 100%;
       height: 100%;
       stroke-width: 1.5px;
     }
-  }
 
-  & .increase:active:not(.disabled),
-  & .decrease:active:not(.disabled) {
-    color: var(--knime-white);
-    background-color: var(--theme-input-number-background-color-active);
+    &:not(.disabled) {
+      &:hover {
+        cursor: pointer;
+        background-color: var(--theme-input-number-background-color-hover);
+      }
 
-    & svg {
-      stroke: var(--knime-white);
+      &:active {
+        color: var(--knime-white);
+        background-color: var(--theme-input-number-background-color-active);
+
+        & svg {
+          stroke: var(--knime-white);
+        }
+      }
     }
   }
 }

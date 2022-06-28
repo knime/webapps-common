@@ -468,8 +468,11 @@ export default {
     background: var(--theme-multiselect-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
-    &:focus:not(.disabled) {
+    &:focus {
       outline: none;
+    }
+
+    &:focus:not(.disabled) {
       border-color: var(--knime-masala);
     }
   }

@@ -280,8 +280,17 @@ export default {
 .dropdown {
   position: relative;
 
-  & .placeholder {
-    color: var(--knime-stone-gray);
+  &.collapsed {
+    background: var(--theme-dropdown-background-color);
+
+    &.disabled {
+      color: var(--knime-dove-gray);
+      opacity: 0.5;
+    }
+  }
+
+  &:not(.disabled).collapsed:hover {
+    background: var(--knime-silver-sand-semi);
   }
 
   &.invalid::after {
@@ -295,6 +304,11 @@ export default {
     background-color: var(--theme-color-error);
   }
 
+  & .placeholder {
+    color: var(--knime-stone-gray);
+    user-select: none;
+  }
+
   & [role=button] {
     margin: 0;
     border: 1px solid var(--knime-stone-gray);
@@ -302,23 +316,12 @@ export default {
     font-size: 13px;
     height: 40px;
     line-height: 40px; /* to center text vertically */
-    cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 
     &:focus {
-      border-color: var(--knime-masala);
       outline: none;
-    }
-  }
-
-  &.collapsed {
-    background: var(--theme-dropdown-background-color);
-
-    &.disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
     }
   }
 
@@ -326,8 +329,12 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  &:not(.disabled).collapsed:hover {
-    background: var(--knime-silver-sand-semi);
+  &:not(.disabled) [role=button] {
+    cursor: pointer;
+
+    &:focus {
+      border-color: var(--knime-masala);
+    }
   }
 
   & .icon {
@@ -346,10 +353,6 @@ export default {
     transform: scaleY(-1);
   }
 
-  & [role="listbox"] .disabled {
-    cursor: unset;
-  }
-
   /* this selector is required to override some * rules interfere (overflow) - so do not simplify */
   & [role="listbox"] {
     overflow-y: auto;
@@ -364,11 +367,6 @@ export default {
     background: var(--theme-dropdown-background-color);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
-
-    &:not(.disabled):focus {
-      outline: none;
-      border-color: var(--knime-masala);
-    }
   }
 
   & [role="option"] {
@@ -387,41 +385,24 @@ export default {
       white-space: pre-wrap;
     }
 
-    &:not(.disabled) {
-      &:hover {
-        background: var(--theme-dropdown-background-color-hover);
-        color: var(--theme-dropdown-foreground-color-hover);
-      }
+    &:hover {
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
 
-      &:focus {
-        background: var(--theme-dropdown-background-color-focus);
-        color: var(--theme-dropdown-foreground-color-focus);
-      }
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
+    }
 
-      &.focused {
-        background: var(--theme-dropdown-background-color-selected);
-        color: var(--theme-dropdown-foreground-color-selected);
-      }
+    &.focused {
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
     }
   }
 
   & .noselect {
     user-select: none;
-  }
-}
-
-.dropdown.disabled {
-  & [role=button] {
-    cursor: unset;
-
-    &:focus {
-      border-color: var(--knime-stone-gray);
-      outline: unset;
-    }
-  }
-
-  & .placeholder {
-    cursor: unset;
   }
 }
 </style>
