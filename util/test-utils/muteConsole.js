@@ -9,7 +9,9 @@ const methods = ['log', 'error', 'warn'];
  */
 export default f => {
     let originals = methods.map(method => console[method]);
-    methods.forEach(method => { console[method] = () => {}; });
+    methods.forEach(method => {
+        console[method] = () => {};
+    });
 
     let originalConsola;
     if (global.consola) {
@@ -20,7 +22,9 @@ export default f => {
     }
 
     const restoreOriginals = () => {
-        methods.forEach((method, i) => { console[method] = originals[i]; });
+        methods.forEach((method, i) => {
+            console[method] = originals[i];
+        });
         if (originalConsola) {
             global.consola = originalConsola;
         }
