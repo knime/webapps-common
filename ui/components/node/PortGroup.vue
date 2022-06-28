@@ -56,7 +56,7 @@ export default {
       <Description
         v-if="dynamicPorts"
         :text="groupDescription"
-        :render-as-html="true"
+        render-as-html
         class="dyn-ports-description"
       />
       <ol>
@@ -85,7 +85,7 @@ export default {
           <Description
             v-if="!dynamicPorts && port.description"
             :text="port.description"
-            :render-as-html="true"
+            render-as-html
             class="port-description"
           />
         </li>

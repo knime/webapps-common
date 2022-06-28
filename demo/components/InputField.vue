@@ -24,7 +24,7 @@ const codeExample = `<InputField
 <InputField
   :value="no edit here"
   type="text"
-  :disabled="true"
+  disabled
 />
 <InputField
   type="password"

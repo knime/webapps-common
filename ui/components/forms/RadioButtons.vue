@@ -66,9 +66,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.radio-buttons.disabled >>> label {
-  cursor: initial;
-}
 .radio-buttons >>> {
   user-select: none;
 
@@ -82,7 +79,6 @@ export default {
     max-width: 100%;
     width: max-content;
     cursor: pointer;
-
 
     & input {
       opacity: 0;
@@ -113,31 +109,26 @@ export default {
         top: 5px;
         position: absolute;
         vertical-align: top;
-        cursor: pointer;
         text-align: center;
       }
 
-      &:hover:enabled + span::before {
+      &:enabled:hover + span::before {
         border: 1px solid var(--theme-radio-border-color-hover);
         background: var(--theme-radio-background-color-hover);
-      }
-
-      &:hover:disabled + span::before {
-        border: 1px solid var(--theme-radio-border-color);
-        background: var(--theme-radio-background-color);
-        cursor: initial;
+        cursor: pointer;
       }
 
       &:checked { /* 🔘 */
-
+        /* stylelint-disable no-descending-specificity */
         & + span::before {
           background: var(--theme-radio-foreground-color-selected);
           border-color: var(--theme-radio-border-color-selected);
           content: '';
           box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
         }
+        /* stylelint-enable no-descending-specificity */
 
-        &:hover:enabled + span::before {
+        &:enabled:hover + span::before {
           box-shadow: unset;
           background: radial-gradient(
             ellipse at center,
@@ -148,21 +139,17 @@ export default {
           );
           border-color: var(--theme-radio-border-color-selected-hover);
         }
-
-        &:hover:disabled + span::before {
-          background: var(--theme-radio-foreground-color-selected);
-          border-color: var(--theme-radio-border-color-selected);
-          content: '';
-          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
-        }
       }
     }
   }
 }
 
 .disabled {
-  color: var(--knime-dove-gray);
   opacity: 0.5;
+
+  & >>> label {
+    cursor: initial;
+  }
 }
 
 /* stylelint-disable no-descending-specificity */

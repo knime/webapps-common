@@ -19,8 +19,7 @@ export default {
         return {
             codeExample,
             selected: false,
-            selectedLarge: false,
-            selectedDisabled: false
+            selectedLarge: false
         };
     },
     computed: {
@@ -58,16 +57,15 @@ export default {
           </Checkbox>
           <br>
           <Checkbox
-            v-model="selectedDisabled"
-            :disabled="true"
+            v-model="selected"
+            disabled
           >
             This checkbox is disabled!
           </Checkbox>
         </div>
         <div class="grid-item-6">
           value: {{ selected }}<br>
-          value: {{ selectedLarge }}<br>
-          value: {{ selectedDisabled }}
+          value: {{ selectedLarge }}
         </div>
       </div>
     </section>
