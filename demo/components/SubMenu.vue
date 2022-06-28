@@ -204,7 +204,7 @@ export default {
             <span class="menu-name">Disabled submenu</span>
             <SubMenu
               :items="subMenuItems"
-              :disabled="true"
+              disabled
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />

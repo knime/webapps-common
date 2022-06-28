@@ -124,7 +124,7 @@ export default {
               id: 'baz6',
               text: 'Baz 6'
             }]"
-            :disabled="true"
+            disabled
           />
         </div>
         <div class="grid-item-6">

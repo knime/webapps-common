@@ -276,13 +276,7 @@ export default {
   border: 1px solid var(--knime-stone-gray);
 
   &.disabled {
-    color: var(--knime-dove-gray);
     opacity: 0.5;
-
-    & .increase,
-    & .decrease {
-      cursor: unset;
-    }
   }
 
   &:focus-within {
@@ -305,11 +299,6 @@ export default {
 
     /* remove browser spinners FF */
     -moz-appearance: textfield;
-
-    &:disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
-    }
 
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
@@ -354,32 +343,28 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
-    cursor: pointer;
     background-color: var(--theme-input-number-background-color);
-
-    &.disabled {
-      color: var(--knime-dove-gray);
-      opacity: 0.5;
-    }
-
-    &:hover:not(.disabled) {
-      background-color: var(--theme-input-number-background-color-hover);
-    }
 
     & svg {
       width: 100%;
       height: 100%;
       stroke-width: 1.5px;
     }
-  }
 
-  & .increase:active:not(.disabled),
-  & .decrease:active:not(.disabled) {
-    color: var(--knime-white);
-    background-color: var(--theme-input-number-background-color-active);
+    &:not(.disabled) {
+      &:hover {
+        cursor: pointer;
+        background-color: var(--theme-input-number-background-color-hover);
+      }
 
-    & svg {
-      stroke: var(--knime-white);
+      &:active {
+        color: var(--knime-white);
+        background-color: var(--theme-input-number-background-color-active);
+
+        & svg {
+          stroke: var(--knime-white);
+        }
+      }
     }
   }
 }

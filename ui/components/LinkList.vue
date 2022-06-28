@@ -19,7 +19,9 @@ export default {
          * */
         links: {
             type: Array,
-            default() { return []; }
+            default() {
+                return [];
+            }
         }
     }
 };

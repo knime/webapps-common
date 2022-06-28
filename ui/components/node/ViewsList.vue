@@ -52,7 +52,7 @@ export default {
         <span class="name">{{ view.name }}</span>
         <Description
           :text="view.description"
-          :render-as-html="true"
+          render-as-html
         />
       </div>
     </li>
