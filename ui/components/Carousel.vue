@@ -27,7 +27,9 @@ export default {
             isMouseDown = false;
         },
         onMouseMove(e) {
-            if (!isMouseDown) { return; }
+            if (!isMouseDown) {
+                return;
+            }
             e.preventDefault();
             const x = e.pageX;
             const walk = x - startX;

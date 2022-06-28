@@ -32,7 +32,7 @@ module.exports = {
         'arrow-spacing': 'error',
         'block-scoped-var': 'error',
         'block-spacing': 'error',
-        'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+        'brace-style': ['error', '1tbs', { allowSingleLine: false }],
         camelcase: 'error',
         'class-methods-use-this': 'warn',
         'comma-dangle': 'error',
