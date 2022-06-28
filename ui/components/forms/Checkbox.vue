@@ -82,7 +82,6 @@ export default {
 
   &.disabled {
     cursor: initial;
-    color: var(--knime-dove-gray);
     opacity: 0.5;
   }
 

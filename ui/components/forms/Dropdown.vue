@@ -284,7 +284,6 @@ export default {
     background: var(--theme-dropdown-background-color);
 
     &.disabled {
-      color: var(--knime-dove-gray);
       opacity: 0.5;
     }
   }

@@ -133,7 +133,6 @@ input {
   }
 
   &:disabled {
-    color: var(--knime-dove-gray);
     opacity: 0.5;
   }
 

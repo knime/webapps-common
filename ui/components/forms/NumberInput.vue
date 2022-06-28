@@ -276,7 +276,6 @@ export default {
   border: 1px solid var(--knime-stone-gray);
 
   &.disabled {
-    color: var(--knime-dove-gray);
     opacity: 0.5;
   }
 
