@@ -22,6 +22,12 @@ const codeExample = `<InputField
   :is-valid="false"
 />
 <InputField
+  v-model="inputValue2"
+  type="text"
+  placeholder="Required field"
+  required
+/>
+<InputField
   :value="no edit here"
   type="text"
   :disabled="true"
@@ -81,6 +87,12 @@ export default {
             v-model="inputValue2"
             type="text"
             placeholder="I'm a placeholder"
+          />
+          <InputField
+            v-model="inputValue2"
+            type="text"
+            placeholder="Required field"
+            required
           />
           <InputField
             value="disabled: no edit here"
