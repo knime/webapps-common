@@ -27,6 +27,16 @@ describe('InputField.vue', () => {
         expect(wrapper.find('.invalid-marker').exists()).toBe(true);
     });
 
+    it('renders with required attribute', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: '',
+                required: true
+            }
+        });
+        expect(wrapper.find('input').attributes().required).toBeDefined();
+    });
+
     it('renders with icon slot', () => {
         const wrapper = mount(InputField, {
             slots: {
