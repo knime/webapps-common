@@ -45,7 +45,8 @@ export default {
             type: Boolean
         },
         /**
-         * Sets the error styling if the field is not valid on form submit
+         * Sets the error styling if the field is not valid, validity it's controlled by form submit event.
+         * Validity does not needs to be controlled by the parent component
          */
         required: {
             default: false,
