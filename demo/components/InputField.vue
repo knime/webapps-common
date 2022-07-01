@@ -22,7 +22,7 @@ const codeExample = `<InputField
   :is-valid="false"
 />
 <InputField
-  v-model="inputValue2"
+  v-model="inputValue3"
   type="text"
   placeholder="Required field"
   required
@@ -53,7 +53,8 @@ export default {
         return {
             codeExample,
             inputValue: 'demo text',
-            inputValue2: ''
+            inputValue2: '',
+            inputValue3: ''
         };
     },
     computed: {
@@ -89,7 +90,7 @@ export default {
             placeholder="I'm a placeholder"
           />
           <InputField
-            v-model="inputValue2"
+            v-model="inputValue3"
             type="text"
             placeholder="Required field"
             required

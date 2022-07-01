@@ -14,7 +14,7 @@ export default {
             default: null
         },
         /**
-         * validity needs to be controlled by the parent component to be flexible
+         * Sets the error styling, validity needs to be controlled by the parent component to be flexible
          */
         isValid: {
             default: true,
@@ -44,6 +44,9 @@ export default {
             default: false,
             type: Boolean
         },
+        /**
+         * Sets the error styling if the field is not valid on form submit
+         */
         required: {
             default: false,
             type: Boolean
