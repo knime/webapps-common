@@ -9,7 +9,7 @@ module.exports = {
     LoopEnd: knime.Aquamarine,
     LoopStart: knime.Aquamarine,
     Manipulator: knime.Yellow,
-    Metanode: knime.White,
+    Metanode: knime.StoneLight,
     MetanodeSecondary: knime.StoneGray,
     Other: knime.Wood,
     Predictor: knime.Meadow,
