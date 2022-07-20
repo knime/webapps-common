@@ -12,7 +12,3 @@ import * as KnimeTypes from './types';
 export { KnimeTypes };
 
 export { KnimeUtils } from './utils/KnimeUtils';
-
-export { handlePublishSelectionOnSettingsChange, handlePublishSelectionOnSelectionChange,
-    handleSubscribeToSelectionOnInit, handleSubscribeToSelectionOnSettingsChange }
-    from './utils/selectionCheckboxUtils';

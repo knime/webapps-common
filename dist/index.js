@@ -7,4 +7,3 @@ export { DialogService } from './services/DialogService.js';
 import * as index from './types/index.js';
 export { index as KnimeTypes };
 export { KnimeUtils } from './utils/KnimeUtils.js';
-export { handlePublishSelectionOnSelectionChange, handlePublishSelectionOnSettingsChange, handleSubscribeToSelectionOnInit, handleSubscribeToSelectionOnSettingsChange } from './utils/selectionCheckboxUtils.js';

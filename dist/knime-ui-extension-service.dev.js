@@ -323,7 +323,26 @@ constructor(knimeService){this.knimeService=knimeService,this.callbackMap=new Ma
          * Removes previously added callback.
          * @param {function} callback - that needs to be removed from notifications.
          * @returns {void}
-         */removeOnSelectionChangeCallback(callback){const wrappedCallback=this.callbackMap.get(callback);this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}}
+         */removeOnSelectionChangeCallback(callback){const wrappedCallback=this.callbackMap.get(callback);this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent,wrappedCallback)}
+/**
+         * Handles selection subscription on view initialization.
+         * @param onSelectionChangeCallback - that is used when the selection changes
+         * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+         */onInit(onSelectionChangeCallback,currentSubscribeToSelection){this.onSelectionChangeCallback=onSelectionChangeCallback,currentSubscribeToSelection&&this.addOnSelectionChangeCallback(this.onSelectionChangeCallback)}
+/**
+         * Handles publishing selection on selection change.
+         * @param selectionMode - with which the selection should be updates
+         * @param rowKeys - data with which the selection should be updated
+         * @param currentPublishSelection - whether to publish the selection or not
+         */onSelectionChange(selectionMode,rowKeys,currentPublishSelection){currentPublishSelection&&this[selectionMode.toLowerCase()](rowKeys)}
+/**
+         * Handles publishing selection and selection subscription on settings change
+         * @param getCurrentSelectionCallback - that returns the current selection of a view
+         * @param previousPublishSelection - old value for publishSelection
+         * @param clearSelectionCallback - that completely clears the selection in the view
+         * @param previousSubscribeToSelection - old value for subscribeToSelection
+         * @param viewSettings - new values for publishSelection and subscribeToSelection
+         */onSettingsChange(getCurrentSelectionCallback,previousPublishSelection,clearSelectionCallback,previousSubscribeToSelection,viewSettings){const{publishSelection:publishSelection,subscribeToSelection:subscribeToSelection}=viewSettings;if(!previousPublishSelection&&publishSelection){const currentSelection=getCurrentSelectionCallback();this.replace(currentSelection)}if(subscribeToSelection!==previousSubscribeToSelection){this[subscribeToSelection?"addOnSelectionChangeCallback":"removeOnSelectionChangeCallback"](this.onSelectionChangeCallback),subscribeToSelection&&(this.replace([]),clearSelectionCallback())}}}
 // creates an object which maps the path of each element to their flow variable object
 ,DialogService:
 /**
@@ -337,4 +356,4 @@ class{
 constructor(knimeService){this.knimeService=knimeService}
 /**
          * @returns {FlowVariableSettings | null} - maps of model and view flow variables settings.
-         */async getFlowVariableSettings(){var _a;return(({viewVariables:viewVariables={},modelVariables:modelVariables={}}={})=>{const traverseObject=(variables,currentPath,initialValue={})=>variables?Object.entries(variables).reduce(((acc,[key,value])=>value.leaf?(acc[currentPath?`${currentPath}.${key}`:key]=value,acc):traverseObject(value,`${currentPath}${"value"===key?"":`.${key}`}`,acc)),initialValue):{};return Object.assign(Object.assign({},traverseObject(viewVariables,"view")),traverseObject(modelVariables,"model"))})(await Promise.resolve((null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.flowVariableSettings)||{}))}},KnimeUtils:KnimeUtils,handlePublishSelectionOnSettingsChange:(selectionService,selectionMode,getSelectionCallback,currentPublishSelection,newPublishSelection)=>{if(!currentPublishSelection&&newPublishSelection){const currentSelection=getSelectionCallback();selectionService[selectionMode.toLowerCase()](currentSelection)}},handlePublishSelectionOnSelectionChange:(selectionService,selectionMode,rowKeys,currentPublishSelection)=>{currentPublishSelection&&selectionService[selectionMode.toLowerCase()](rowKeys)},handleSubscribeToSelectionOnInit:(selectionService,onSelectionChangeCallback,currentSubscribeToSelection)=>{currentSubscribeToSelection&&selectionService.addOnSelectionChangeCallback(onSelectionChangeCallback)},handleSubscribeToSelectionOnSettingsChange:(selectionService,onSelectionChangeCallback,clearSelectionCallback,currentSubscribeToSelection,newSubscribeToSelection)=>{if(newSubscribeToSelection!==currentSubscribeToSelection){selectionService[newSubscribeToSelection?"addOnSelectionChangeCallback":"removeOnSelectionChangeCallback"](onSelectionChangeCallback),newSubscribeToSelection&&(selectionService.replace([]),clearSelectionCallback())}}});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();
+         */async getFlowVariableSettings(){var _a;return(({viewVariables:viewVariables={},modelVariables:modelVariables={}}={})=>{const traverseObject=(variables,currentPath,initialValue={})=>variables?Object.entries(variables).reduce(((acc,[key,value])=>value.leaf?(acc[currentPath?`${currentPath}.${key}`:key]=value,acc):traverseObject(value,`${currentPath}${"value"===key?"":`.${key}`}`,acc)),initialValue):{};return Object.assign(Object.assign({},traverseObject(viewVariables,"view")),traverseObject(modelVariables,"model"))})(await Promise.resolve((null===(_a=this.knimeService.extensionConfig)||void 0===_a?void 0:_a.flowVariableSettings)||{}))}},KnimeUtils:KnimeUtils});return Object.defineProperty(window,"KnimeUIExtensionService",KnimeUIExtensionService),KnimeUIExtensionService}();

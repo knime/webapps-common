@@ -9,6 +9,7 @@ import { KnimeService } from './KnimeService';
 export class SelectionService<T = any> {
     private knimeService: IFrameKnimeService | KnimeService<T>;
     private callbackMap: Map<Function, Function>;
+    private onSelectionChangeCallback: (any: any) => void;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
@@ -99,5 +100,55 @@ export class SelectionService<T = any> {
     removeOnSelectionChangeCallback(callback: (any) => void): void {
         const wrappedCallback = this.callbackMap.get(callback) as (notification: Notification) => void;
         this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
+    }
+
+    /**
+     * Handles selection subscription on view initialization.
+     * @param onSelectionChangeCallback - that is used when the selection changes
+     * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+     */
+    onInit(onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined) {
+        this.onSelectionChangeCallback = onSelectionChangeCallback;
+        if (currentSubscribeToSelection) {
+            this.addOnSelectionChangeCallback(this.onSelectionChangeCallback);
+        }
+    }
+
+    /**
+     * Handles publishing selection on selection change.
+     * @param selectionMode - with which the selection should be updates
+     * @param rowKeys - data with which the selection should be updated
+     * @param currentPublishSelection - whether to publish the selection or not
+     */
+    onSelectionChange(selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined) {
+        if (currentPublishSelection) {
+            this[selectionMode.toLowerCase()](rowKeys);
+        }
+    }
+
+    /**
+     * Handles publishing selection and selection subscription on settings change
+     * @param getCurrentSelectionCallback - that returns the current selection of a view
+     * @param previousPublishSelection - old value for publishSelection
+     * @param clearSelectionCallback - that completely clears the selection in the view
+     * @param previousSubscribeToSelection - old value for subscribeToSelection
+     * @param viewSettings - new values for publishSelection and subscribeToSelection
+     */
+    onSettingsChange(getCurrentSelectionCallback: Function, previousPublishSelection: boolean | undefined,
+        clearSelectionCallback: () => void, previousSubscribeToSelection: boolean | undefined, viewSettings: any) {
+        const { publishSelection, subscribeToSelection } = viewSettings;
+        if (!previousPublishSelection && publishSelection) {
+            const currentSelection = getCurrentSelectionCallback();
+            this.replace(currentSelection);
+        }
+
+        if (subscribeToSelection !== previousSubscribeToSelection) {
+            const mode = subscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
+            this[mode](this.onSelectionChangeCallback);
+            if (subscribeToSelection) {
+                this.replace([]);
+                clearSelectionCallback();
+            }
+        }
     }
 }

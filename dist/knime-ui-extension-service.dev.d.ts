@@ -549,10 +549,6 @@ declare namespace KnimeUIExtensionService {
             id: number;
         };
     };
-    const handlePublishSelectionOnSettingsChange: (selectionService: SelectionService, selectionMode: SelectionModes, getSelectionCallback: Function, currentPublishSelection: boolean | undefined, newPublishSelection: boolean | undefined) => void;
-    const handlePublishSelectionOnSelectionChange: (selectionService: SelectionService, selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined) => void;
-    const handleSubscribeToSelectionOnInit: (selectionService: SelectionService, onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined) => void;
-    const handleSubscribeToSelectionOnSettingsChange: (selectionService: SelectionService, onSelectionChangeCallback: (any: any) => void, clearSelectionCallback: () => void, currentSubscribeToSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined) => void;
     /**
      * A utility class to interact with JsonDataServices implemented by a UI Extension node.
      */
@@ -721,6 +717,7 @@ declare namespace KnimeUIExtensionService {
     class SelectionService<T = any> {
         private knimeService;
         private callbackMap;
+        private onSelectionChangeCallback;
         /**
          * @param {KnimeService} knimeService - instance should be provided to use notifications.
          */
@@ -769,6 +766,28 @@ declare namespace KnimeUIExtensionService {
          * @returns {void}
          */
         removeOnSelectionChangeCallback(callback: (any: any) => void): void;
+        /**
+         * Handles selection subscription on view initialization.
+         * @param onSelectionChangeCallback - that is used when the selection changes
+         * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+         */
+        onInit(onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined): void;
+        /**
+         * Handles publishing selection on selection change.
+         * @param selectionMode - with which the selection should be updates
+         * @param rowKeys - data with which the selection should be updated
+         * @param currentPublishSelection - whether to publish the selection or not
+         */
+        onSelectionChange(selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined): void;
+        /**
+         * Handles publishing selection and selection subscription on settings change
+         * @param getCurrentSelectionCallback - that returns the current selection of a view
+         * @param previousPublishSelection - old value for publishSelection
+         * @param clearSelectionCallback - that completely clears the selection in the view
+         * @param previousSubscribeToSelection - old value for subscribeToSelection
+         * @param viewSettings - new values for publishSelection and subscribeToSelection
+         */
+        onSettingsChange(getCurrentSelectionCallback: Function, previousPublishSelection: boolean | undefined, clearSelectionCallback: () => void, previousSubscribeToSelection: boolean | undefined, viewSettings: any): void;
     }
     /**
      * A utility class to interact with Dialog settings implemented by a UI Extension node.
