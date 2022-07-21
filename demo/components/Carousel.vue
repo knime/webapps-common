@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Carousel from '../../ui/components/Carousel';
+import CodeExample from './demo/CodeExample.vue';
+import Carousel from '../../ui/components/Carousel.vue';
 import carouselCode from '!!raw-loader!../../ui/components/Carousel';
 
 const codeExample = `

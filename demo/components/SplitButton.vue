@@ -1,19 +1,19 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import SubMenu from '../../ui/components/SubMenu';
+import CodeExample from './demo/CodeExample.vue';
+import SubMenu from '../../ui/components/SubMenu.vue';
 import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
 import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
 import LeaveIcon from '../../ui/assets/img/icons/leave.svg?inline';
 import HeartIcon from '../../ui/assets/img/icons/heart.svg?inline';
 import DropdownIcon from '../../ui/assets/img/icons/arrow-dropdown.svg?inline';
-import Button from '../../ui/components/Button';
-import SplitButton from '../../ui/components/SplitButton';
+import Button from '../../ui/components/Button.vue';
+import SplitButton from '../../ui/components/SplitButton.vue';
 import code from '!!raw-loader!../../ui/components/SplitButton';
 
 const codeExample = `<script>
-import Button from '~/webapps-common/ui/components/Button';
-import SubMenu from '~/webapps-common/ui/components/SubMenu';
-import SplitButton from '~/webapps-common/ui/components/SplitButton';
+import Button from '~/webapps-common/ui/components/Button.vue';
+import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
+import SplitButton from '~/webapps-common/ui/components/SplitButton.vue';
 import DropdownIcon from '~/webapps-common/ui/assets/img/icons/arrow-dropdown.svg?inline';
 
 const subMenuItems = [{

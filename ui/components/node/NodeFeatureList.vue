@@ -2,10 +2,10 @@
 import PortIcon from '../../assets/img/icons/plugin.svg?inline';
 import ViewsIcon from '../../assets/img/icons/eye.svg?inline';
 import OptionsIcon from '../../assets/img/icons/settings.svg?inline';
-import TabBar, { tabBarMixin } from '../TabBar';
-import PortsList from './PortsList';
-import ViewsList from './ViewsList';
-import DialogOptions from './DialogOptions';
+import TabBar, { tabBarMixin } from '../TabBar.vue';
+import PortsList from './PortsList.vue';
+import ViewsList from './ViewsList.vue';
+import DialogOptions from './DialogOptions.vue';
 
 export default {
     components: {

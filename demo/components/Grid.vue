@@ -1,5 +1,5 @@
 <script>
-import Description from '../../ui/components/Description';
+import Description from '../../ui/components/Description.vue';
 
 export default {
     components: {

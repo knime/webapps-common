@@ -2,9 +2,9 @@
 
 import { shallowMount } from '@vue/test-utils';
 
-import PortGroup from '../../ui/components/node/PortGroup';
-import PortIcon from '../../ui/components/node/PortIcon';
-import Description from '../../ui/components/Description';
+import PortGroup from '../../ui/components/node/PortGroup.vue';
+import PortIcon from '../../ui/components/node/PortIcon.vue';
+import Description from '../../ui/components/Description.vue';
 
 describe('PortsListItem.vue', () => {
     let propsData, wrapper;

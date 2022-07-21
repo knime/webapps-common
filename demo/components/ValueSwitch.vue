@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import ValueSwitch from '../../ui/components/forms/ValueSwitch';
+import CodeExample from './demo/CodeExample.vue';
+import ValueSwitch from '../../ui/components/forms/ValueSwitch.vue';
 import code from '!!raw-loader!../../ui/components/forms/ValueSwitch';
 
 const codeExample = `<ValueSwitch

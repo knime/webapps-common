@@ -1,7 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import { mount } from '@vue/test-utils';
 
-import MultiselectListBox from '~/ui/components/forms/MultiselectListBox';
+import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
 
 jest.useFakeTimers();
 

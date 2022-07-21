@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import NodeFeatureList from '../../ui/components/node/NodeFeatureList';
+import CodeExample from './demo/CodeExample.vue';
+import NodeFeatureList from '../../ui/components/node/NodeFeatureList.vue';
 import code from '!!raw-loader!../../ui/components/node/NodeFeatureList';
 
 const codeExample = `<NodeFeatureList

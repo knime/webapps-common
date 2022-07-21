@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
-import Button from '~/ui/components/Button';
-import BaseButton from '~/ui/components/BaseButton';
+import Button from '~/ui/components/Button.vue';
+import BaseButton from '~/ui/components/BaseButton.vue';
 
 describe('Button.vue', () => {
     it('renders a button', () => {

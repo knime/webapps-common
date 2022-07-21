@@ -1,6 +1,6 @@
 <script>
 import packages from '../../buildtools/opensourcecredits/used-packages.json';
-import Description from '../components/Description';
+import Description from '../components/Description.vue';
 import ArrowNextIcon from '../assets/img/icons/arrow-next.svg?inline';
 
 /**

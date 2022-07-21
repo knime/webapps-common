@@ -1,9 +1,9 @@
 <script>
 import CloseIcon from '../assets/img/icons/close.svg?inline';
 import CopyIcon from '../assets/img/icons/copy.svg?inline';
-import Button from './Button';
-import Collapser from './Collapser';
-import MessageLink from './MessageLink';
+import Button from './Button.vue';
+import Collapser from './Collapser.vue';
+import MessageLink from './MessageLink.vue';
 import { copyText } from '../../util/copyText';
 
 /**

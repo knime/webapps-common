@@ -1,5 +1,5 @@
 <script>
-import CodeExample from './demo/CodeExample';
+import CodeExample from './demo/CodeExample.vue';
 
 const codeExample = `<h1>Headline 1</h1>
 <h2>Headline 2</h2>

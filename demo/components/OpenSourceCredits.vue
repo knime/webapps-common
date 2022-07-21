@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import OpenSourceCredits from '../../ui/components/OpenSourceCredits';
+import CodeExample from './demo/CodeExample.vue';
+import OpenSourceCredits from '../../ui/components/OpenSourceCredits.vue';
 import code from '!!raw-loader!../../ui/components/OpenSourceCredits';
 
 export default {

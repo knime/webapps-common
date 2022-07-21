@@ -1,5 +1,5 @@
 <script>
-import Tag from './Tag';
+import Tag from './Tag.vue';
 
 const defaultInitialTagCount = 5;
 

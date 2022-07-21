@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import Description from '~/ui/components/Description';
+import Description from '~/ui/components/Description.vue';
 
 describe('Description.vue', () => {
     it('renders plain text', () => {

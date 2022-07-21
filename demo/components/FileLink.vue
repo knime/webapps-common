@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import FileLink from '../../ui/components/FileLink';
+import CodeExample from './demo/CodeExample.vue';
+import FileLink from '../../ui/components/FileLink.vue';
 import fileLinkCode from '!!raw-loader!../../ui/components/FileLink';
 
 const codeExample =

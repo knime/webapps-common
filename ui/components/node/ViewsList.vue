@@ -1,5 +1,5 @@
 <script>
-import Description from '../Description';
+import Description from '../Description.vue';
 import StandardIcon from '../../assets/img/icons/eye.svg?inline';
 import InteractiveIcon from '../../assets/img/icons/interactive.svg?inline';
 

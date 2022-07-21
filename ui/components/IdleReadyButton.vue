@@ -1,5 +1,5 @@
 <script>
-import Button from './Button';
+import Button from './Button.vue';
 import DownIcon from '../assets/img/icons/circle-arrow-down.svg?inline';
 
 export default {

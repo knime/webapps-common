@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Dropdown from '../../ui/components/forms/Dropdown';
+import CodeExample from './demo/CodeExample.vue';
+import Dropdown from '../../ui/components/forms/Dropdown.vue';
 import code from '!!raw-loader!../../ui/components/forms/Dropdown';
 
 const codeExample = `<Dropdown

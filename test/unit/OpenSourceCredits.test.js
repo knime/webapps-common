@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import OpenSourceCredits from '~/ui/components/OpenSourceCredits';
+import OpenSourceCredits from '~/ui/components/OpenSourceCredits.vue';
 import Description from '~/ui/components/Description.vue';
 
 jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [

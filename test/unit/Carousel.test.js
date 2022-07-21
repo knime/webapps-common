@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import Carousel from '~/ui/components/Carousel';
+import Carousel from '~/ui/components/Carousel.vue';
 
 describe('Carousel.vue', () => {
     it('renders default', () => {

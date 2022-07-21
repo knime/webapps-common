@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import TagList from '~/ui/components/TagList';
-import Tag from '~/ui/components/Tag';
+import TagList from '~/ui/components/TagList.vue';
+import Tag from '~/ui/components/Tag.vue';
 
 const sevenTags = ['tag1', 'tag2', 'tagedyTag', 'tagMaster', 'bestTagEver', 'moarTags', 'blub'];
 const threeTags = ['tag1', 'tag2', 'tagedyTag'];

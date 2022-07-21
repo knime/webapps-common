@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import ToggleSwitch from '../../ui/components/forms/ToggleSwitch';
+import CodeExample from './demo/CodeExample.vue';
+import ToggleSwitch from '../../ui/components/forms/ToggleSwitch.vue';
 import code from '!!raw-loader!../../ui/components/forms/ToggleSwitch';
 
 const codeExample = `<ToggleSwitch />

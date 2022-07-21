@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons';
+import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons.vue';
 
 describe('BaseRadioButtons.vue', () => {
     let possibleValues;

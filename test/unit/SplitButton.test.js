@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import SplitButton from '~/ui/components/SplitButton';
+import SplitButton from '~/ui/components/SplitButton.vue';
 
 describe('SplitButton.vue', () => {
     it('renders slot content', () => {

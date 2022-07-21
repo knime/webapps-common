@@ -1,13 +1,13 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import TabBar, { tabBarMixin } from '../../ui/components/TabBar';
+import CodeExample from './demo/CodeExample.vue';
+import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
 import tabbarCode from '!!raw-loader!../../ui/components/TabBar';
 import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
 import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
 import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
 
 const codeExampleStandalone = `<script>
-import TabBar from '~/webapps-common/ui/components/TabBar';
+import TabBar from '~/webapps-common/ui/components/TabBar.vue';
 import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
 import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
 
@@ -55,7 +55,7 @@ export default {
 </template>`;
 
 const codeExampleMixin = `<script>
-import TabBar, { tabBarMixin } from '~/webapps-common/ui/components/TabBar';
+import TabBar, { tabBarMixin } from '~/webapps-common/ui/components/TabBar.vue';
 import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
 import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
 

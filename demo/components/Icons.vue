@@ -1,10 +1,10 @@
 <script>
-import ImagePreviews from './demo/ImagePreviews';
-import CodeExample from './demo/CodeExample';
+import ImagePreviews from './demo/ImagePreviews.vue';
+import CodeExample from './demo/CodeExample.vue';
 import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg?inline';
 import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
 import svgWithTitle from '../../ui/util/svgWithTitle';
-import InputField from '../../ui/components/forms/InputField';
+import InputField from '../../ui/components/forms/InputField.vue';
 
 const codeExample1 = `<script>
 import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg?inline';

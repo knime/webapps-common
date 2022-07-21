@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import NodePreview from '../../ui/components/node/NodePreview';
+import CodeExample from './demo/CodeExample.vue';
+import NodePreview from '../../ui/components/node/NodePreview.vue';
 import sourceCode from '!!raw-loader!../../ui/components/node/NodePreview';
 
 const icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiN' +

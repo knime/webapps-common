@@ -1,6 +1,6 @@
 <script>
-import FunctionButton from './FunctionButton';
-import MenuItems from './MenuItems';
+import FunctionButton from './FunctionButton.vue';
+import MenuItems from './MenuItems.vue';
 
 const BLUR_TIMEOUT = 1;
 

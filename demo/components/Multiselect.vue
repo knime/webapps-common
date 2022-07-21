@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Multiselect from '../../ui/components/forms/Multiselect';
+import CodeExample from './demo/CodeExample.vue';
+import Multiselect from '../../ui/components/forms/Multiselect.vue';
 import code from '!!raw-loader!../../ui/components/forms/Multiselect';
 
 const codeExample = `<Multiselect

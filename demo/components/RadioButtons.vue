@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import RadioButtons from '../../ui/components/forms/RadioButtons';
+import CodeExample from './demo/CodeExample.vue';
+import RadioButtons from '../../ui/components/forms/RadioButtons.vue';
 import code from '!!raw-loader!../../ui/components/forms/RadioButtons';
 
 const codeExample = `<RadioButtons

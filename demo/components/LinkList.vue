@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import LinkList from '../../ui/components/LinkList';
+import CodeExample from './demo/CodeExample.vue';
+import LinkList from '../../ui/components/LinkList.vue';
 import code from '!!raw-loader!../../ui/components/LinkList';
 
 const codeExample = `<LinkList

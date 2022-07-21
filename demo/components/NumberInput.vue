@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import NumberInput from '../../ui/components/forms/NumberInput';
-import Label from '../../ui/components/forms/Label';
+import CodeExample from './demo/CodeExample.vue';
+import NumberInput from '../../ui/components/forms/NumberInput.vue';
+import Label from '../../ui/components/forms/Label.vue';
 import code from '!!raw-loader!../../ui/components/forms/NumberInput';
 
 const codeExample = `<NumberInput

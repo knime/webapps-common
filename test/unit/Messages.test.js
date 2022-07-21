@@ -1,6 +1,6 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 import Messages from '~/ui/components/Messages.vue';
-import MessageLink from '~/ui/components/MessageLink';
+import MessageLink from '~/ui/components/MessageLink.vue';
 import Message from '~/ui/components/Message.vue';
 import SuccessIcon from '~/ui/assets/img/icons/circle-check.svg?inline';
 

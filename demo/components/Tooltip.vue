@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Tooltip from '../../ui/components/Tooltip';
+import CodeExample from './demo/CodeExample.vue';
+import Tooltip from '../../ui/components/Tooltip.vue';
 import BrainIcon from '../../ui/assets/img/icons/ai-brain.svg?inline';
 import code from '!!raw-loader!../../ui/components/Tooltip';
 

@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import FunctionButton from '../../ui/components/FunctionButton';
+import CodeExample from './demo/CodeExample.vue';
+import FunctionButton from '../../ui/components/FunctionButton.vue';
 import functionButtonCode from '!!raw-loader!../../ui/components/FunctionButton';
 import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
 import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';

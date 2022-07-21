@@ -1,8 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import InputField from '../../ui/components/forms/InputField';
-import Label from '../../ui/components/forms/Label';
-import Fieldset from '../../ui/components/forms/Fieldset';
+import CodeExample from './demo/CodeExample.vue';
+import InputField from '../../ui/components/forms/InputField.vue';
+import Label from '../../ui/components/forms/Label.vue';
+import Fieldset from '../../ui/components/forms/Fieldset.vue';
 import InfoIcon from '../../ui/assets/img/icons/circle-info.svg?inline';
 import code from '!!raw-loader!../../ui/components/forms/Fieldset';
 

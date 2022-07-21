@@ -1,6 +1,6 @@
 <script>
-import Message from './Message';
-import MessageLink from './MessageLink';
+import Message from './Message.vue';
+import MessageLink from './MessageLink.vue';
 
 /**
  * Displays multiple stacked messages. If a message is added or removed (e.g. dismissed), a smooth animation is shown.

@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
-import MenuItems from '~/ui/components/MenuItems';
+import MenuItems from '~/ui/components/MenuItems.vue';
 
 describe('MenuItems.vue', () => {
     it('renders the items', () => {

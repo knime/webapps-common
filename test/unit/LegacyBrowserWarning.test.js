@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import LegacyBrowserWarning from '~/ui/components/LegacyBrowserWarning';
+import LegacyBrowserWarning from '~/ui/components/LegacyBrowserWarning.vue';
 
 describe('Label.vue', () => {
     let propsData;

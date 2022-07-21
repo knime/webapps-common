@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Collapser from '../../ui/components/Collapser';
+import CodeExample from './demo/CodeExample.vue';
+import Collapser from '../../ui/components/Collapser.vue';
 import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
 import code from '!!raw-loader!../../ui/components/Collapser';
 

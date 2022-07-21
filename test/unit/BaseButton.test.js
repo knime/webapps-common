@@ -1,5 +1,5 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
-import BaseButton from '~/ui/components/BaseButton';
+import BaseButton from '~/ui/components/BaseButton.vue';
 
 
 describe('BaseButton.vue', () => {

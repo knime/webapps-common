@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import DateTimeInput from '../../ui/components/forms/DateTimeInput';
-import Label from '../../ui/components/forms/Label';
+import CodeExample from './demo/CodeExample.vue';
+import DateTimeInput from '../../ui/components/forms/DateTimeInput.vue';
+import Label from '../../ui/components/forms/Label.vue';
 import code from '!!raw-loader!../../ui/components/forms/DateTimeInput';
 
 const codeExample = `<DateTimeInput

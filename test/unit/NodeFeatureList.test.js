@@ -1,10 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
 
-import NodeFeatureList from '../../ui/components/node/NodeFeatureList';
-import TabBar from '../../ui/components/TabBar';
-import PortsList from '../../ui/components/node/PortsList';
-import DialogOptions from '../../ui/components/node/DialogOptions';
-import ViewsList from '../../ui/components/node/ViewsList';
+import NodeFeatureList from '../../ui/components/node/NodeFeatureList.vue';
+import TabBar from '../../ui/components/TabBar.vue';
+import PortsList from '../../ui/components/node/PortsList.vue';
+import DialogOptions from '../../ui/components/node/DialogOptions.vue';
+import ViewsList from '../../ui/components/node/ViewsList.vue';
 
 describe('NodeFeatureList.vue', () => {
     it('renders ports and options', () => {

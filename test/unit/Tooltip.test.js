@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import Tooltip from '~/ui/components/Tooltip';
+import Tooltip from '~/ui/components/Tooltip.vue';
 
 describe('Tooltip', () => {
     it('renders', () => {

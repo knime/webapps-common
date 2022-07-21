@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 
-import TabBar from '~/ui/components/TabBar';
+import TabBar from '~/ui/components/TabBar.vue';
 import WorkflowIcon from '~/ui/assets/img/icons/workflow.svg?inline';
 import NodeIcon from '~/ui/assets/img/icons/node.svg?inline';
-import Carousel from '~/ui/components/Carousel';
+import Carousel from '~/ui/components/Carousel.vue';
 
 describe('TabBar.vue', () => {
     let possibleValues = [{

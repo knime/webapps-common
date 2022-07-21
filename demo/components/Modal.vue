@@ -1,16 +1,16 @@
 <script>
-import Modal from '../../ui/components/Modal';
+import Modal from '../../ui/components/Modal.vue';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
-import Button from '../../ui/components/Button';
-import CodeExample from './demo/CodeExample';
+import Button from '../../ui/components/Button.vue';
+import CodeExample from './demo/CodeExample.vue';
 
 import code from '!!raw-loader!../../ui/components/Modal';
 import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 
 const codeExample = `<script>
-import Modal from '~/webapps-common/ui/components/Modal';
+import Modal from '~/webapps-common/ui/components/Modal.vue';
 import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg?inline';
-import Button from '~/webapps-common/ui/components/Button';
+import Button from '~/webapps-common/ui/components/Button.vue';
 
 export default {
     components: {

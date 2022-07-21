@@ -1,8 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 
-import NodePreview from '../../../ui/components/node/NodePreview';
-import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal';
-import PortIcon from '../../../ui/components/node/PortIcon';
+import NodePreview from '../../../ui/components/node/NodePreview.vue';
+import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal.vue';
+import PortIcon from '../../../ui/components/node/PortIcon.vue';
 
 describe('NodePreview.vue', () => {
     it('renders node torso', () => {

@@ -1,7 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import TimePartInput from '../../ui/components/forms/TimePartInput';
-import DateTimeInput from '../../ui/components/forms/DateTimeInput';
+import TimePartInput from '../../ui/components/forms/TimePartInput.vue';
+import DateTimeInput from '../../ui/components/forms/DateTimeInput.vue';
 
 import { getDayOfYear, getHours, getMinutes, getSeconds, getMilliseconds, getDate, getMonth, getYear } from 'date-fns';
 

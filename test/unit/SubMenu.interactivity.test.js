@@ -1,6 +1,6 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
-import SubMenu from '~/ui/components/SubMenu';
+import SubMenu from '~/ui/components/SubMenu.vue';
 
 describe('SubMenu.vue', () => {
     describe('clicking submenu items', () => {

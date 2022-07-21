@@ -1,4 +1,4 @@
-import MessageLink from '~/ui/components/MessageLink';
+import MessageLink from '~/ui/components/MessageLink.vue';
 import { shallowMount } from '@vue/test-utils';
 
 describe('MessageLink.vue', () => {

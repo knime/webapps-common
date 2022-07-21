@@ -1,5 +1,5 @@
 <script>
-import MultiselectListBox from '../forms/MultiselectListBox';
+import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg?inline';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg?inline';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg?inline';

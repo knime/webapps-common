@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import InputField from '../../ui/components/forms/InputField';
-import Label from '../../ui/components/forms/Label';
+import CodeExample from './demo/CodeExample.vue';
+import InputField from '../../ui/components/forms/InputField.vue';
+import Label from '../../ui/components/forms/Label.vue';
 import code from '!!raw-loader!../../ui/components/forms/Label';
 
 const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>

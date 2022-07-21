@@ -1,7 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import IdleReadyButton from '~/ui/components/IdleReadyButton';
-import Button from '~/ui/components/Button';
+import IdleReadyButton from '~/ui/components/IdleReadyButton.vue';
+import Button from '~/ui/components/Button.vue';
 import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg?inline';
 
 describe('IdleReadyButton.vue', () => {

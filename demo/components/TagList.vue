@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import TagList from '../../ui/components/TagList';
+import CodeExample from './demo/CodeExample.vue';
+import TagList from '../../ui/components/TagList.vue';
 import code from '!!raw-loader!../../ui/components/TagList';
 
 const codeExample = `<TagList

@@ -1,5 +1,5 @@
 <script>
-import PortGroup from './PortGroup';
+import PortGroup from './PortGroup.vue';
 
 /**
  * Part of NodeFeatureList

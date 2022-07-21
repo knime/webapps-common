@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Twinlist from '../../ui/components/forms/Twinlist';
+import CodeExample from './demo/CodeExample.vue';
+import Twinlist from '../../ui/components/forms/Twinlist.vue';
 import code from '!!raw-loader!../../ui/components/forms/Twinlist';
 
 const codeExample = `<Twinlist

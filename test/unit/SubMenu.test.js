@@ -1,7 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import SubMenu from '~/ui/components/SubMenu';
-import FunctionButton from '~/ui/components/FunctionButton';
+import SubMenu from '~/ui/components/SubMenu.vue';
+import FunctionButton from '~/ui/components/FunctionButton.vue';
 
 describe('SubMenu.vue', () => {
     it('renders the menu toggle', () => {

@@ -1,6 +1,6 @@
 <script>
-import ImagePreviews from './demo/ImagePreviews';
-import CodeExample from './demo/CodeExample';
+import ImagePreviews from './demo/ImagePreviews.vue';
+import CodeExample from './demo/CodeExample.vue';
 
 export default {
     components: {

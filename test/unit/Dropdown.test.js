@@ -7,7 +7,7 @@ jest.mock('vue-clickaway2', () => ({
 const localVue = createLocalVue();
 localVue.directive('onClickaway', () => {});
 
-import Dropdown from '~/ui/components/forms/Dropdown';
+import Dropdown from '~/ui/components/forms/Dropdown.vue';
 
 describe('Dropdown.vue', () => {
     let propsData;

@@ -1,6 +1,6 @@
 <script>
-import Collapser from '../Collapser';
-import Description from '../Description';
+import Collapser from '../Collapser.vue';
+import Description from '../Description.vue';
 
 /**
  * DialogOptions are part of the NodeFeaureList

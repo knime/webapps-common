@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import SubMenu from '../../ui/components/SubMenu';
+import CodeExample from './demo/CodeExample.vue';
+import SubMenu from '../../ui/components/SubMenu.vue';
 import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
 import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
 import LeaveIcon from '../../ui/assets/img/icons/leave.svg?inline';
@@ -9,7 +9,7 @@ import MenuIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
 import code from '!!raw-loader!../../ui/components/SubMenu';
 
 const codeExampleStandalone = `<script>
-import SubMenu from '~/webapps-common/ui/components/SubMenu';
+import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inline';
 
 const subMenuItems = [{

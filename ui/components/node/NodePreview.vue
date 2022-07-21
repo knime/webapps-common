@@ -1,6 +1,6 @@
 <script>
-import PortIcon from './PortIcon';
-import NodeTorsoNormal from './NodeTorsoNormal';
+import PortIcon from './PortIcon.vue';
+import NodeTorsoNormal from './NodeTorsoNormal.vue';
 
 /**
  * SVG icon preview for a node or component, generated from its attributes

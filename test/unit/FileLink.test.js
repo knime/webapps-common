@@ -1,6 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import FileLink from '~/ui/components/FileLink';
+import FileLink from '~/ui/components/FileLink.vue';
 
 describe('FileLink.vue', () => {
     it('renders link', () => {

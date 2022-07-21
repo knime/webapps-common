@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import Error from '~/ui/components/Error';
+import Error from '~/ui/components/Error.vue';
 
 describe('Error.vue', () => {
     it('renders default', () => {

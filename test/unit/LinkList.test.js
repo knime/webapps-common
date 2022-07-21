@@ -1,6 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import LinkList from '~/ui/components/LinkList';
+import LinkList from '~/ui/components/LinkList.vue';
 
 describe('LinkList.vue', () => {
     it('renders links', () => {

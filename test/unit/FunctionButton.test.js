@@ -1,7 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import FunctionButton from '~/ui/components/FunctionButton';
-import BaseButton from '~/ui/components/BaseButton';
+import FunctionButton from '~/ui/components/FunctionButton.vue';
+import BaseButton from '~/ui/components/BaseButton.vue';
 
 describe('FunctionButton.vue', () => {
     it('renders a FunctionButton', () => {

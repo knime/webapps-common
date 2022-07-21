@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import TimePartInput from '../../ui/components/forms/TimePartInput';
-import Label from '../../ui/components/forms/Label';
+import CodeExample from './demo/CodeExample.vue';
+import TimePartInput from '../../ui/components/forms/TimePartInput.vue';
+import Label from '../../ui/components/forms/Label.vue';
 import code from '!!raw-loader!../../ui/components/forms/TimePartInput';
 
 const codeExample = `<Label text="Hours">

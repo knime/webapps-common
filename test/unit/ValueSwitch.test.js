@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 
-import ValueSwitch from '~/ui/components/forms/ValueSwitch';
-import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons';
+import ValueSwitch from '~/ui/components/forms/ValueSwitch.vue';
+import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons.vue';
 
 describe('ValueSwitch.vue', () => {
     let possibleValues;

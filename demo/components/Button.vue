@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Button from '../../ui/components/Button';
+import CodeExample from './demo/CodeExample.vue';
+import Button from '../../ui/components/Button.vue';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
 import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';

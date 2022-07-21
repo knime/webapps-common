@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import Checkbox from '~/ui/components/forms/Checkbox';
+import Checkbox from '~/ui/components/forms/Checkbox.vue';
 
 describe('Checkbox.vue', () => {
     it('renders', () => {

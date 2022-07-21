@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Description from '../../ui/components/Description';
+import CodeExample from './demo/CodeExample.vue';
+import Description from '../../ui/components/Description.vue';
 import code from '!!raw-loader!../../ui/components/Description';
 
 export default {

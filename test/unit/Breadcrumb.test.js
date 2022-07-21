@@ -1,5 +1,5 @@
 import { shallowMount, mount } from '@vue/test-utils';
-import Breadcrumb from '~/ui/components/Breadcrumb';
+import Breadcrumb from '~/ui/components/Breadcrumb.vue';
 import ArrowNext from '~/ui/assets/img/icons/arrow-next.svg?inline';
 
 describe('Breadcrumb.vue', () => {

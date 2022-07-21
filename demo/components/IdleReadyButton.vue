@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample';
+import CodeExample from './demo/CodeExample.vue';
 import code from '!!raw-loader!../../ui/components/IdleReadyButton';
-import IdleReadyButton from '../../ui/components/IdleReadyButton';
+import IdleReadyButton from '../../ui/components/IdleReadyButton.vue';
 
 const codeExample = `<IdleReadyButton
   :idle="ready"

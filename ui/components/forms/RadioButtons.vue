@@ -1,5 +1,5 @@
 <script>
-import BaseRadioButtons from './BaseRadioButtons';
+import BaseRadioButtons from './BaseRadioButtons.vue';
 
 export default {
     components: {

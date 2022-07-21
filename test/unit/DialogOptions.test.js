@@ -1,7 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import DialogOptions from '../../ui/components/node/DialogOptions';
-import Collapser from '../../ui/components/Collapser';
+import DialogOptions from '../../ui/components/node/DialogOptions.vue';
+import Collapser from '../../ui/components/Collapser.vue';
 
 describe('DialogOptions.vue', () => {
     it('renders', () => {

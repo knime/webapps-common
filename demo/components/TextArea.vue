@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import TextArea from '../../ui/components/forms/TextArea';
+import CodeExample from './demo/CodeExample.vue';
+import TextArea from '../../ui/components/forms/TextArea.vue';
 import code from '!!raw-loader!../../ui/components/forms/TextArea';
 
 const codeExample = `<TextArea

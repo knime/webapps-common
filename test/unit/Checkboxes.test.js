@@ -1,7 +1,7 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import Checkboxes from '~/ui/components/forms/Checkboxes';
-import Checkbox from '~/ui/components/forms/Checkbox';
+import Checkboxes from '~/ui/components/forms/Checkboxes.vue';
+import Checkbox from '~/ui/components/forms/Checkbox.vue';
 
 describe('Checkboxes.vue', () => {
     let propsData;

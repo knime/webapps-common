@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
-import PortsList from '../../../ui/components/node/PortsList';
-import PortGroup from '../../../ui/components/node/PortGroup';
+import PortsList from '../../../ui/components/node/PortsList.vue';
+import PortGroup from '../../../ui/components/node/PortGroup.vue';
 
 describe('PortsList.vue', () => {
     it('renders', () => {

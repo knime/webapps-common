@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import Checkboxes from '../../ui/components/forms/Checkboxes';
+import CodeExample from './demo/CodeExample.vue';
+import Checkboxes from '../../ui/components/forms/Checkboxes.vue';
 import code from '!!raw-loader!../../ui/components/forms/Checkboxes';
 
 const codeExample = `<Checkboxes

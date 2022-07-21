@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import Collapser from '~/ui/components/Collapser';
+import Collapser from '~/ui/components/Collapser.vue';
 
 describe('Collapser.vue', () => {
     it('renders content and title', () => {

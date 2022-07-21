@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import InputField from '~/ui/components/forms/InputField';
+import InputField from '~/ui/components/forms/InputField.vue';
 
 describe('InputField.vue', () => {
     it('renders', () => {

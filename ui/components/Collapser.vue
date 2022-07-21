@@ -1,6 +1,6 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg?inline';
-import BaseButton from './BaseButton';
+import BaseButton from './BaseButton.vue';
 
 export default {
     components: {

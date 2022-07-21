@@ -1,6 +1,6 @@
 <script>
-import CodeExample from './demo/CodeExample';
-import ListBox from '../../ui/components/forms/ListBox';
+import CodeExample from './demo/CodeExample.vue';
+import ListBox from '../../ui/components/forms/ListBox.vue';
 import code from '!!raw-loader!../../ui/components/forms/ListBox';
 
 const codeExample = `<ListBox

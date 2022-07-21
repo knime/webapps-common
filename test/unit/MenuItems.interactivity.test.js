@@ -1,6 +1,6 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
-import MenuItems from '~/ui/components/MenuItems';
+import MenuItems from '~/ui/components/MenuItems.vue';
 
 describe('MenuItems.vue', () => {
     describe('clicking menu items', () => {

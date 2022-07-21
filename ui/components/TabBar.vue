@@ -1,5 +1,5 @@
 <script>
-import Carousel from './Carousel';
+import Carousel from './Carousel.vue';
 /**
  * A radio button group that looks like a tab bar
 */
