@@ -1,5 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
+// eslint-disable-next-line import/extensions
 import colorsCSS from '!!raw-loader!webapps-common/ui/css/variables/knime-colors.css';
 
 export default {

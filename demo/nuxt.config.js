@@ -1,5 +1,7 @@
+/* eslint-disable import/extensions */
 import postcssConfig from '../webpack/webpack.postcss.config';
 import svgConfig from '../webpack/webpack.svg.config';
+/* eslint-enable */
 
 import path from 'path';
 

@@ -1,7 +1,7 @@
 const parentRules = require('./.eslintrc-base').rules;
 
 module.exports = {
-    plugins: ['vue'],
+    plugins: ['vue', 'import'],
     extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
     rules: {
         'max-lines': ['warn', Object.assign(parentRules['max-lines'][1], {
@@ -30,7 +30,8 @@ module.exports = {
         'vue/padding-line-between-blocks': 'error',
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/require-v-for-key': 'warn',
-        'vue/singleline-html-element-content-newline': 'off'
+        'vue/singleline-html-element-content-newline': 'off',
+        'import/extensions': ['error', { vue: 'always' }]
     },
     overrides: [{
         files: ['server/**/*.js', '{vue,nuxt}.config.js', 'nightwatch.conf.js'],
@@ -50,5 +51,18 @@ module.exports = {
         rules: {
             'max-lines': 'off'
         }
-    }]
+    }],
+    settings: {
+        'import/resolver': {
+            alias: {
+                map: [
+                    ['~', '.'],
+                    ['@', '.'],
+                    ['~~', '.'],
+                    ['@@', '.']
+                ],
+                extensions: ['.vue']
+            }
+        }
+    }
 };

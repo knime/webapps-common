@@ -16,6 +16,7 @@ export default {
     components: {
         CalendarIcon,
         TimePartInput,
+        // eslint-disable-next-line import/extensions
         DatePicker: () => import('v-calendar/lib/components/date-picker.umd') // needed in order for DatePicker to work
 
     },
