@@ -1,17 +1,10 @@
-const eslint = require('eslint');
-
 const indentationSpaces = 4;
 const jsonIndentationSpaces = 2;
 const lineLength = 120;
 
-let eslintVersion = eslint.Linter.version.split('.')[0];
-let ecmaVersion = eslintVersion <= 5 ? 2019 : 2020;
-let parser = eslintVersion < 7 ? 'babel-eslint' : null;
-
 let parserOptions = {
-    ecmaVersion,
-    sourceType: 'module',
-    parser
+    ecmaVersion: '2020',
+    sourceType: 'module'
 };
 
 module.exports = {
