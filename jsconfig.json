@@ -1,12 +1,27 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-          "~/*": ["./*"],
-          "@/*": ["./*"],
-          "~~/*": ["./*"],
-          "@@/*": ["./*"]
-        }
-    },
-    "exclude": ["node_modules", ".nuxt", "dist", ".git", ".settings", ".vscode"]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "~~/*": [
+        "./*"
+      ],
+      "@@/*": [
+        "./*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    ".nuxt",
+    "dist",
+    ".git",
+    ".settings",
+    ".vscode"
+  ]
 }
