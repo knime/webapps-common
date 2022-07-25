@@ -22,7 +22,14 @@ module.exports = {
         browser: false,
         es6: true
     },
-    ignorePatterns: ['package*.json', 'audit-resolve.json', '**/opensourcecredits/used-packages.json'],
+    ignorePatterns: [
+        'package*.json',
+        'audit-resolve.json',
+        'coverage/',
+        'dist/',
+        'target/',
+        'webapps-common/'
+    ],
     rules: {
         'accessor-pairs': 'warn',
         'array-bracket-newline': ['error', 'consistent'],

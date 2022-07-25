@@ -6,5 +6,8 @@ module.exports = {
     },
     globals: {
         consola: true
-    }
+    },
+    ignorePatterns: [
+        '**/opensourcecredits/used-packages.json'
+    ]
 };
