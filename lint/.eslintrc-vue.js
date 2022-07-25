@@ -61,7 +61,7 @@ module.exports = {
                     ['~~', '.'],
                     ['@@', '.']
                 ],
-                extensions: ['.vue']
+                extensions: ['.vue', ".config.js", ".ttl-patch.js"]
             }
         }
     }
