@@ -111,8 +111,8 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                const element = this.$refs.menuItems?.$el;
-                if (element && !element.contains(document.activeElement)) {
+                const menuItems = this.$refs.menuItems;
+                if (menuItems && menuItems.$el && !menuItems.$el.contains(document.activeElement)) {
                     this.closeMenu(false);
                 }
             }, BLUR_TIMEOUT);
