@@ -96,33 +96,8 @@ describe('SelectionService', () => {
     });
 
     describe('selection checkbox handling methods', () => {
-
         describe('onInit', () => {
-            it('initializes onSelectionChangeCallback and adds it to the callbackMap when subscribeToSelection',
-            () => {
-                const knime = new KnimeService();
-                const selectionService = new SelectionService(knime);
-                const onSelectionChangeCallback = jest.fn();
-
-                selectionService.onInit(onSelectionChangeCallback, true);
-                expect((selectionService as any).onSelectionChangeCallback).toEqual(onSelectionChangeCallback);
-                expect((selectionService as any).callbackMap.has(onSelectionChangeCallback)).toEqual(true);
-            });
-        
-        it('initializes onSelectionChangeCallback but doesnt add it to the callbackMap when not subscribeToSelection',
-            () => {
-                const knime = new KnimeService();
-                const selectionService = new SelectionService(knime);
-                const onSelectionChangeCallback = jest.fn();
-
-                selectionService.onInit(onSelectionChangeCallback, false);
-                expect((selectionService as any).onSelectionChangeCallback).toEqual(onSelectionChangeCallback);
-                expect((selectionService as any).callbackMap.has(onSelectionChangeCallback)).toEqual(false);
-            });
-        });
-
-        describe('onSelectionChange', () => {
-            let knime, selectionService, selectionMode, selectedRowKeys, replaceSpy;
+            let knime, selectionService, onSelectionChangeCallback;
 
             beforeEach(() => {
                 const callableService = jest.fn().mockReturnValue(
@@ -130,28 +105,67 @@ describe('SelectionService', () => {
                 );
                 knime = new KnimeService(extensionConfig, callableService);
                 selectionService = new SelectionService(knime);
+                onSelectionChangeCallback = jest.fn();
+            });
+
+            it('initializes onSelectionChangeCallback and adds it to the callbackMap when subscribeToSelection',
+                () => {
+                    const publishSelection = false;
+                    const subscribeToSelection = true;
+
+                    selectionService.onInit(onSelectionChangeCallback, publishSelection, subscribeToSelection);
+                    expect((selectionService as any).onSelectionChangeCallback).toEqual(onSelectionChangeCallback);
+                    expect((selectionService as any).callbackMap.has(onSelectionChangeCallback)).toEqual(true);
+                    expect((selectionService as any).currentPublishSelection).toEqual(publishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(subscribeToSelection);
+                });
+        
+            it('initializes onSelectionChangeCallback but doesnt add it to the callbackMap when not subscribe',
+                () => {
+                    const publishSelection = false;
+                    const subscribeToSelection = false;
+
+                    selectionService.onInit(onSelectionChangeCallback, publishSelection, subscribeToSelection);
+                    expect((selectionService as any).onSelectionChangeCallback).toEqual(onSelectionChangeCallback);
+                    expect((selectionService as any).callbackMap.has(onSelectionChangeCallback)).toEqual(false);
+                    expect((selectionService as any).currentPublishSelection).toEqual(publishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(subscribeToSelection);
+                });
+        });
+
+        describe('onSelectionChange', () => {
+            let knime, selectionService, onSelectionChangeCallback, selectionMode, selectedRowKeys, replaceSpy;
+
+            beforeEach(() => {
+                const callableService = jest.fn().mockReturnValue(
+                    Promise.resolve(new Promise(res => res({ result: '[]' })))
+                );
+                knime = new KnimeService(extensionConfig, callableService);
+                selectionService = new SelectionService(knime);
+                onSelectionChangeCallback = jest.fn();
                 selectionMode = SelectionModes.REPLACE;
                 selectedRowKeys = ['Row4', 'Row7'];
                 replaceSpy = jest.spyOn(selectionService, 'replace');
-            })
+            });
 
             it('calls the given mode with the given rowKeys when publishSelection is checked', () => {
-                const publishSelection = true;
-                selectionService.onSelectionChange(selectionMode, selectedRowKeys, publishSelection);
+                selectionService.onInit(onSelectionChangeCallback, true, false);
+                selectionService.onSelectionChange(selectionMode, selectedRowKeys);
 
                 expect(replaceSpy).toHaveBeenCalledWith(selectedRowKeys);
             });
         
             it('calls nothing when publishSelection is not checked', () => {
-                const publishSelection = false;
-                selectionService.onSelectionChange(selectionMode, selectedRowKeys, publishSelection);
+                selectionService.onInit(onSelectionChangeCallback, false, false);
+                selectionService.onSelectionChange(selectionMode, selectedRowKeys);
 
                 expect(replaceSpy).not.toHaveBeenCalled();
             });
         });
 
         describe('onSettingsChange', () => {
-            let knime, selectionService;
+            let knime, selectionService, onSelectionChangeCallback, getCurrentSelectionCallback, clearSelectionCallback,
+                replaceSpy;
 
             beforeEach(() => {
                 const callableService = jest.fn().mockReturnValue(
@@ -159,99 +173,105 @@ describe('SelectionService', () => {
                 );
                 knime = new KnimeService(extensionConfig, callableService);
                 selectionService = new SelectionService(knime);
+                onSelectionChangeCallback = jest.fn();
+                getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
+                clearSelectionCallback = jest.fn();
+                replaceSpy = jest.spyOn(selectionService, 'replace');
             });
 
-            it('replaces the current selection when publishSelection changes to checked', () => {
-                const getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
-                const clearSelectionCallback = jest.fn();
-                const previousPublishSelection = false;
-                const previousSubscribeToSelection = false;
-                const viewSettings = { publishSelection: true, subscribeToSelection: false };
-    
-                const replaceSpy = jest.spyOn(selectionService, 'replace');
-    
-                selectionService.onSettingsChange(getCurrentSelectionCallback, previousPublishSelection,
-                    clearSelectionCallback, previousSubscribeToSelection, viewSettings);
-    
-                expect(getCurrentSelectionCallback).toHaveBeenCalled();
-                expect(replaceSpy).toHaveBeenCalledWith(['Row1', 'Row4', 'Row20']);
-            });
+            it('replaces the current selection when publishSelection changes to checked, updates local selection vars'
+                , () => {
+                    const previousPublishSelection = false;
+                    const previousSubscribeToSelection = false;
+                    const viewSettings = { publishSelection: true, subscribeToSelection: false };
+        
+                    selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
+                        previousSubscribeToSelection);
+                    selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                        viewSettings);
+        
+                    expect(getCurrentSelectionCallback).toHaveBeenCalled();
+                    expect(replaceSpy).toHaveBeenCalledWith(['Row1', 'Row4', 'Row20']);
+                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
+                        viewSettings.subscribeToSelection
+                    );
+                });
 
             it('does not replace the current selection when publishSelection changes to unchecked', () => {
-                const getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
-                const clearSelectionCallback = jest.fn();
                 const previousPublishSelection = true;
                 const previousSubscribeToSelection = false;
                 const viewSettings = { publishSelection: false, subscribeToSelection: false };
     
-                const replaceSpy = jest.spyOn(selectionService, 'replace');
-    
-                selectionService.onSettingsChange(getCurrentSelectionCallback, previousPublishSelection,
-                    clearSelectionCallback, previousSubscribeToSelection, viewSettings);
+                selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
+                    previousSubscribeToSelection);
+                selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback, viewSettings);
     
                 expect(getCurrentSelectionCallback).not.toHaveBeenCalled();
                 expect(replaceSpy).not.toHaveBeenCalled();
+                expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
+                expect((selectionService as any).currentSubscribeToSelection).toEqual(
+                    viewSettings.subscribeToSelection
+                );
             });
 
             it('clears the current selection when subscribeToSelection changes to checked and adds the callback',
                 () => {
-                    const onSelectionChangeCallback = jest.fn();
-                    selectionService.onInit(onSelectionChangeCallback, false);
-                    const getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
-                    const clearSelectionCallback = jest.fn();
                     const previousPublishSelection = false;
                     const previousSubscribeToSelection = false;
                     const viewSettings = { publishSelection: false, subscribeToSelection: true };
+                    const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
+                        'addOnSelectionChangeCallback');
         
-                    const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'addOnSelectionChangeCallback');
-                    const replaceSpy = jest.spyOn(selectionService, 'replace');
-        
-                    selectionService.onSettingsChange(getCurrentSelectionCallback, previousPublishSelection,
-                        clearSelectionCallback, previousSubscribeToSelection, viewSettings);
-        
+                    selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
+                        previousSubscribeToSelection);
+                    selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                        viewSettings);
                     
                     expect(addOnSelectionChangeCallbackSpy).toHaveBeenCalledWith(onSelectionChangeCallback);
                     expect(replaceSpy).toHaveBeenCalledWith([]);
                     expect(clearSelectionCallback).toHaveBeenCalled();
+                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
+                        viewSettings.subscribeToSelection
+                    );
                 });
 
             it('does not clear the selection when subscribeToSelection changes to unchecked and removes the callback',
                 () => {
-                    const onSelectionChangeCallback = jest.fn();
-                    selectionService.onInit(onSelectionChangeCallback, false);
-                    const getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
-                    const clearSelectionCallback = jest.fn();
                     const previousPublishSelection = false;
                     const previousSubscribeToSelection = true;
                     const viewSettings = { publishSelection: false, subscribeToSelection: false };
+                    const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
+                        'removeOnSelectionChangeCallback');
         
-                    const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'removeOnSelectionChangeCallback');
-                    const replaceSpy = jest.spyOn(selectionService, 'replace');
-        
-                    selectionService.onSettingsChange(getCurrentSelectionCallback, previousPublishSelection,
-                        clearSelectionCallback, previousSubscribeToSelection, viewSettings);
-        
+                    selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
+                        previousSubscribeToSelection);
+                    selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                        viewSettings);
                     
                     expect(removeOnSelectionChangeCallbackSpy).toHaveBeenCalledWith(onSelectionChangeCallback);
                     expect(replaceSpy).not.toHaveBeenCalled();
                     expect(clearSelectionCallback).not.toHaveBeenCalled();
+                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
+                        viewSettings.subscribeToSelection
+                    );
                 });
 
             it('calls nothing when subscribe/publish-ToSelection were not changed', () => {
-                const onSelectionChangeCallback = jest.fn();
-                selectionService.onInit(onSelectionChangeCallback, false);
-                const getCurrentSelectionCallback = jest.fn().mockReturnValue(['Row1', 'Row4', 'Row20']);
-                const clearSelectionCallback = jest.fn();
                 const previousPublishSelection = false;
                 const previousSubscribeToSelection = false;
                 const viewSettings = { publishSelection: false, subscribeToSelection: false };
     
                 const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'addOnSelectionChangeCallback');
-                const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'removeOnSelectionChangeCallback');
-                const replaceSpy = jest.spyOn(selectionService, 'replace');
+                const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
+                    'removeOnSelectionChangeCallback');
     
-                selectionService.onSettingsChange(getCurrentSelectionCallback, previousPublishSelection,
-                    clearSelectionCallback, previousSubscribeToSelection, viewSettings);
+                selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
+                    previousSubscribeToSelection);
+                selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                    viewSettings);
     
                 expect(addOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();
                 expect(removeOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();

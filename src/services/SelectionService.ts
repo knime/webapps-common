@@ -10,6 +10,8 @@ export class SelectionService<T = any> {
     private knimeService: IFrameKnimeService | KnimeService<T>;
     private callbackMap: Map<Function, Function>;
     private onSelectionChangeCallback: (any: any) => void;
+    private currentPublishSelection: boolean;
+    private currentSubscribeToSelection: boolean;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
@@ -104,11 +106,16 @@ export class SelectionService<T = any> {
 
     /**
      * Handles selection subscription on view initialization.
-     * @param onSelectionChangeCallback - that is used when the selection changes
-     * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @param {function} onSelectionChangeCallback - that is used when the selection changes
+     * @param {boolean} currentPublishSelection - whether to publish selection events or not
+     * @param {boolean} currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @returns {void}
      */
-    onInit(onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined) {
+    onInit(onSelectionChangeCallback: (any: any) => void, currentPublishSelection: boolean | undefined,
+        currentSubscribeToSelection: boolean | undefined) {
         this.onSelectionChangeCallback = onSelectionChangeCallback;
+        this.currentPublishSelection = currentPublishSelection;
+        this.currentSubscribeToSelection = currentSubscribeToSelection;
         if (currentSubscribeToSelection) {
             this.addOnSelectionChangeCallback(this.onSelectionChangeCallback);
         }
@@ -116,33 +123,31 @@ export class SelectionService<T = any> {
 
     /**
      * Handles publishing selection on selection change.
-     * @param selectionMode - with which the selection should be updates
-     * @param rowKeys - data with which the selection should be updated
-     * @param currentPublishSelection - whether to publish the selection or not
+     * @param {SelectionModes} selectionMode - with which the selection should be updates
+     * @param {array} rowKeys - data with which the selection should be updated
+     * @returns {void}
      */
-    onSelectionChange(selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined) {
-        if (currentPublishSelection) {
+    onSelectionChange(selectionMode: SelectionModes, rowKeys: string[]) {
+        if (this.currentPublishSelection) {
             this[selectionMode.toLowerCase()](rowKeys);
         }
     }
 
     /**
      * Handles publishing selection and selection subscription on settings change
-     * @param getCurrentSelectionCallback - that returns the current selection of a view
-     * @param previousPublishSelection - old value for publishSelection
-     * @param clearSelectionCallback - that completely clears the selection in the view
-     * @param previousSubscribeToSelection - old value for subscribeToSelection
-     * @param viewSettings - new values for publishSelection and subscribeToSelection
+     * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
+     * @param {function} clearSelectionCallback - that completely clears the selection in the view
+     * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+     * @returns {void}
      */
-    onSettingsChange(getCurrentSelectionCallback: Function, previousPublishSelection: boolean | undefined,
-        clearSelectionCallback: () => void, previousSubscribeToSelection: boolean | undefined, viewSettings: any) {
+    onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, viewSettings: any) {
         const { publishSelection, subscribeToSelection } = viewSettings;
-        if (!previousPublishSelection && publishSelection) {
+        if (!this.currentPublishSelection && publishSelection) {
             const currentSelection = getCurrentSelectionCallback();
             this.replace(currentSelection);
         }
 
-        if (subscribeToSelection !== previousSubscribeToSelection) {
+        if (subscribeToSelection !== this.currentSubscribeToSelection) {
             const mode = subscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
             this[mode](this.onSelectionChangeCallback);
             if (subscribeToSelection) {
@@ -150,5 +155,7 @@ export class SelectionService<T = any> {
                 clearSelectionCallback();
             }
         }
+        this.currentPublishSelection = publishSelection;
+        this.currentSubscribeToSelection = subscribeToSelection;
     }
 }

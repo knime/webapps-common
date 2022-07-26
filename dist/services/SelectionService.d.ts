@@ -9,6 +9,8 @@ declare class SelectionService<T = any> {
     private knimeService;
     private callbackMap;
     private onSelectionChangeCallback;
+    private currentPublishSelection;
+    private currentSubscribeToSelection;
     /**
      * @param {KnimeService} knimeService - instance should be provided to use notifications.
      */
@@ -99,44 +101,46 @@ declare class SelectionService<T = any> {
     removeOnSelectionChangeCallback(callback: (any: any) => void): void;
     /**
      * Handles selection subscription on view initialization.
-     * @param onSelectionChangeCallback - that is used when the selection changes
-     * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @param {function} onSelectionChangeCallback - that is used when the selection changes
+     * @param {boolean} currentPublishSelection - whether to publish selection events or not
+     * @param {boolean} currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @returns {void}
      */
     /**
      * Handles selection subscription on view initialization.
-     * @param onSelectionChangeCallback - that is used when the selection changes
-     * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @param {function} onSelectionChangeCallback - that is used when the selection changes
+     * @param {boolean} currentPublishSelection - whether to publish selection events or not
+     * @param {boolean} currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @returns {void}
      */
-    onInit(onSelectionChangeCallback: (any: any) => void, currentSubscribeToSelection: boolean | undefined): void;
+    onInit(onSelectionChangeCallback: (any: any) => void, currentPublishSelection: boolean | undefined, currentSubscribeToSelection: boolean | undefined): void;
     /**
      * Handles publishing selection on selection change.
-     * @param selectionMode - with which the selection should be updates
-     * @param rowKeys - data with which the selection should be updated
-     * @param currentPublishSelection - whether to publish the selection or not
+     * @param {SelectionModes} selectionMode - with which the selection should be updates
+     * @param {array} rowKeys - data with which the selection should be updated
+     * @returns {void}
      */
     /**
      * Handles publishing selection on selection change.
-     * @param selectionMode - with which the selection should be updates
-     * @param rowKeys - data with which the selection should be updated
-     * @param currentPublishSelection - whether to publish the selection or not
+     * @param {SelectionModes} selectionMode - with which the selection should be updates
+     * @param {array} rowKeys - data with which the selection should be updated
+     * @returns {void}
      */
-    onSelectionChange(selectionMode: SelectionModes, rowKeys: string[], currentPublishSelection: boolean | undefined): void;
+    onSelectionChange(selectionMode: SelectionModes, rowKeys: string[]): void;
     /**
      * Handles publishing selection and selection subscription on settings change
-     * @param getCurrentSelectionCallback - that returns the current selection of a view
-     * @param previousPublishSelection - old value for publishSelection
-     * @param clearSelectionCallback - that completely clears the selection in the view
-     * @param previousSubscribeToSelection - old value for subscribeToSelection
-     * @param viewSettings - new values for publishSelection and subscribeToSelection
+     * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
+     * @param {function} clearSelectionCallback - that completely clears the selection in the view
+     * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+     * @returns {void}
      */
     /**
      * Handles publishing selection and selection subscription on settings change
-     * @param getCurrentSelectionCallback - that returns the current selection of a view
-     * @param previousPublishSelection - old value for publishSelection
-     * @param clearSelectionCallback - that completely clears the selection in the view
-     * @param previousSubscribeToSelection - old value for subscribeToSelection
-     * @param viewSettings - new values for publishSelection and subscribeToSelection
+     * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
+     * @param {function} clearSelectionCallback - that completely clears the selection in the view
+     * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+     * @returns {void}
      */
-    onSettingsChange(getCurrentSelectionCallback: Function, previousPublishSelection: boolean | undefined, clearSelectionCallback: () => void, previousSubscribeToSelection: boolean | undefined, viewSettings: any): void;
+    onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, viewSettings: any): void;
 }
 export { SelectionService };

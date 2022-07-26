@@ -93,41 +93,44 @@ class SelectionService {
     }
     /**
      * Handles selection subscription on view initialization.
-     * @param onSelectionChangeCallback - that is used when the selection changes
-     * @param currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @param {function} onSelectionChangeCallback - that is used when the selection changes
+     * @param {boolean} currentPublishSelection - whether to publish selection events or not
+     * @param {boolean} currentSubscribeToSelection - whether to subscribe to selection events or not
+     * @returns {void}
      */
-    onInit(onSelectionChangeCallback, currentSubscribeToSelection) {
+    onInit(onSelectionChangeCallback, currentPublishSelection, currentSubscribeToSelection) {
         this.onSelectionChangeCallback = onSelectionChangeCallback;
+        this.currentPublishSelection = currentPublishSelection;
+        this.currentSubscribeToSelection = currentSubscribeToSelection;
         if (currentSubscribeToSelection) {
             this.addOnSelectionChangeCallback(this.onSelectionChangeCallback);
         }
     }
     /**
      * Handles publishing selection on selection change.
-     * @param selectionMode - with which the selection should be updates
-     * @param rowKeys - data with which the selection should be updated
-     * @param currentPublishSelection - whether to publish the selection or not
+     * @param {SelectionModes} selectionMode - with which the selection should be updates
+     * @param {array} rowKeys - data with which the selection should be updated
+     * @returns {void}
      */
-    onSelectionChange(selectionMode, rowKeys, currentPublishSelection) {
-        if (currentPublishSelection) {
+    onSelectionChange(selectionMode, rowKeys) {
+        if (this.currentPublishSelection) {
             this[selectionMode.toLowerCase()](rowKeys);
         }
     }
     /**
      * Handles publishing selection and selection subscription on settings change
-     * @param getCurrentSelectionCallback - that returns the current selection of a view
-     * @param previousPublishSelection - old value for publishSelection
-     * @param clearSelectionCallback - that completely clears the selection in the view
-     * @param previousSubscribeToSelection - old value for subscribeToSelection
-     * @param viewSettings - new values for publishSelection and subscribeToSelection
+     * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
+     * @param {function} clearSelectionCallback - that completely clears the selection in the view
+     * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+     * @returns {void}
      */
-    onSettingsChange(getCurrentSelectionCallback, previousPublishSelection, clearSelectionCallback, previousSubscribeToSelection, viewSettings) {
+    onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback, viewSettings) {
         const { publishSelection, subscribeToSelection } = viewSettings;
-        if (!previousPublishSelection && publishSelection) {
+        if (!this.currentPublishSelection && publishSelection) {
             const currentSelection = getCurrentSelectionCallback();
             this.replace(currentSelection);
         }
-        if (subscribeToSelection !== previousSubscribeToSelection) {
+        if (subscribeToSelection !== this.currentSubscribeToSelection) {
             const mode = subscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
             this[mode](this.onSelectionChangeCallback);
             if (subscribeToSelection) {
@@ -135,6 +138,8 @@ class SelectionService {
                 clearSelectionCallback();
             }
         }
+        this.currentPublishSelection = publishSelection;
+        this.currentSubscribeToSelection = subscribeToSelection;
     }
 }
 
