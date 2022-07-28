@@ -143,6 +143,6 @@ declare class SelectionService<T = any> {
      * @param {boolean} newSubscribeToSelection - new values for subscribeToSelection
      * @returns {void}
      */
-    onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, newPublishSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined): void;
+    onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, newPublishSelection: boolean, newSubscribeToSelection: boolean): void;
 }
 export { SelectionService };

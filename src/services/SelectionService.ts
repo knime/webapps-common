@@ -142,7 +142,7 @@ export class SelectionService<T = any> {
      * @returns {void}
      */
     onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void,
-        newPublishSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined) {
+        newPublishSelection: boolean, newSubscribeToSelection: boolean) {
         if (!this.currentPublishSelection && newPublishSelection) {
             const currentSelection = getCurrentSelectionCallback();
             this.replace(currentSelection);

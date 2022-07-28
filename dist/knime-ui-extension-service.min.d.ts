@@ -791,7 +791,7 @@ declare namespace KnimeUIExtensionService {
          * @param {boolean} newSubscribeToSelection - new values for subscribeToSelection
          * @returns {void}
          */
-        onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, newPublishSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined): void;
+        onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, newPublishSelection: boolean, newSubscribeToSelection: boolean): void;
     }
     /**
      * A utility class to interact with Dialog settings implemented by a UI Extension node.
