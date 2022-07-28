@@ -112,7 +112,7 @@ class SelectionService {
      * @param {array} rowKeys - data with which the selection should be updated
      * @returns {void}
      */
-    onSelectionChange(selectionMode, rowKeys) {
+    publishOnSelectionChange(selectionMode, rowKeys) {
         if (this.currentPublishSelection) {
             this[selectionMode.toLowerCase()](rowKeys);
         }
@@ -121,25 +121,25 @@ class SelectionService {
      * Handles publishing selection and selection subscription on settings change
      * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
      * @param {function} clearSelectionCallback - that completely clears the selection in the view
-     * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+     * @param {boolean} newPublishSelection - new values for publishSelection
+     * @param {boolean} newSubscribeToSelection - new values for subscribeToSelection
      * @returns {void}
      */
-    onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback, viewSettings) {
-        const { publishSelection, subscribeToSelection } = viewSettings;
-        if (!this.currentPublishSelection && publishSelection) {
+    onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback, newPublishSelection, newSubscribeToSelection) {
+        if (!this.currentPublishSelection && newPublishSelection) {
             const currentSelection = getCurrentSelectionCallback();
             this.replace(currentSelection);
         }
-        if (subscribeToSelection !== this.currentSubscribeToSelection) {
-            const mode = subscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
+        if (newSubscribeToSelection !== this.currentSubscribeToSelection) {
+            const mode = newSubscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
             this[mode](this.onSelectionChangeCallback);
-            if (subscribeToSelection) {
+            if (newSubscribeToSelection) {
                 this.replace([]);
                 clearSelectionCallback();
             }
         }
-        this.currentPublishSelection = publishSelection;
-        this.currentSubscribeToSelection = subscribeToSelection;
+        this.currentPublishSelection = newPublishSelection;
+        this.currentSubscribeToSelection = newSubscribeToSelection;
     }
 }
 

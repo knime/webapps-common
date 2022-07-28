@@ -16,7 +16,7 @@ describe('SelectionService', () => {
             expect(selectionService).toHaveProperty('removeOnSelectionChangeCallback');
             expect(selectionService).toHaveProperty('onInit');
             expect(selectionService).toHaveProperty('onSettingsChange');
-            expect(selectionService).toHaveProperty('onSelectionChange');
+            expect(selectionService).toHaveProperty('publishOnSelectionChange');
         });
     });
 
@@ -150,14 +150,14 @@ describe('SelectionService', () => {
 
             it('calls the given mode with the given rowKeys when publishSelection is checked', () => {
                 selectionService.onInit(onSelectionChangeCallback, true, false);
-                selectionService.onSelectionChange(selectionMode, selectedRowKeys);
+                selectionService.publishOnSelectionChange(selectionMode, selectedRowKeys);
 
                 expect(replaceSpy).toHaveBeenCalledWith(selectedRowKeys);
             });
         
             it('calls nothing when publishSelection is not checked', () => {
                 selectionService.onInit(onSelectionChangeCallback, false, false);
-                selectionService.onSelectionChange(selectionMode, selectedRowKeys);
+                selectionService.publishOnSelectionChange(selectionMode, selectedRowKeys);
 
                 expect(replaceSpy).not.toHaveBeenCalled();
             });
@@ -183,86 +183,84 @@ describe('SelectionService', () => {
                 , () => {
                     const previousPublishSelection = false;
                     const previousSubscribeToSelection = false;
-                    const viewSettings = { publishSelection: true, subscribeToSelection: false };
+                    const newPublishSelection = true;
+                    const newSubscribeToSelection = false;
         
                     selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
                         previousSubscribeToSelection);
                     selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
-                        viewSettings);
+                        newPublishSelection, newSubscribeToSelection);
         
                     expect(getCurrentSelectionCallback).toHaveBeenCalled();
                     expect(replaceSpy).toHaveBeenCalledWith(['Row1', 'Row4', 'Row20']);
-                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
-                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
-                        viewSettings.subscribeToSelection
-                    );
+                    expect((selectionService as any).currentPublishSelection).toEqual(newPublishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(newSubscribeToSelection);
                 });
 
             it('does not replace the current selection when publishSelection changes to unchecked', () => {
                 const previousPublishSelection = true;
                 const previousSubscribeToSelection = false;
-                const viewSettings = { publishSelection: false, subscribeToSelection: false };
+                const newPublishSelection = false;
+                const newSubscribeToSelection = false;
     
                 selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
                     previousSubscribeToSelection);
-                selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback, viewSettings);
+                selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                    newPublishSelection, newSubscribeToSelection);
     
                 expect(getCurrentSelectionCallback).not.toHaveBeenCalled();
                 expect(replaceSpy).not.toHaveBeenCalled();
-                expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
-                expect((selectionService as any).currentSubscribeToSelection).toEqual(
-                    viewSettings.subscribeToSelection
-                );
+                expect((selectionService as any).currentPublishSelection).toEqual(newPublishSelection);
+                expect((selectionService as any).currentSubscribeToSelection).toEqual(newSubscribeToSelection);
             });
 
             it('clears the current selection when subscribeToSelection changes to checked and adds the callback',
                 () => {
                     const previousPublishSelection = false;
                     const previousSubscribeToSelection = false;
-                    const viewSettings = { publishSelection: false, subscribeToSelection: true };
+                    const newPublishSelection = false;
+                    const newSubscribeToSelection = true;
                     const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
                         'addOnSelectionChangeCallback');
         
                     selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
                         previousSubscribeToSelection);
                     selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
-                        viewSettings);
+                        newPublishSelection, newSubscribeToSelection);
                     
                     expect(addOnSelectionChangeCallbackSpy).toHaveBeenCalledWith(onSelectionChangeCallback);
                     expect(replaceSpy).toHaveBeenCalledWith([]);
                     expect(clearSelectionCallback).toHaveBeenCalled();
-                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
-                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
-                        viewSettings.subscribeToSelection
-                    );
+                    expect((selectionService as any).currentPublishSelection).toEqual(newPublishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(newSubscribeToSelection);
                 });
 
             it('does not clear the selection when subscribeToSelection changes to unchecked and removes the callback',
                 () => {
                     const previousPublishSelection = false;
                     const previousSubscribeToSelection = true;
-                    const viewSettings = { publishSelection: false, subscribeToSelection: false };
+                    const newPublishSelection = false;
+                    const newSubscribeToSelection = false;
                     const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
                         'removeOnSelectionChangeCallback');
         
                     selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
                         previousSubscribeToSelection);
                     selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
-                        viewSettings);
+                        newPublishSelection, newSubscribeToSelection);
                     
                     expect(removeOnSelectionChangeCallbackSpy).toHaveBeenCalledWith(onSelectionChangeCallback);
                     expect(replaceSpy).not.toHaveBeenCalled();
                     expect(clearSelectionCallback).not.toHaveBeenCalled();
-                    expect((selectionService as any).currentPublishSelection).toEqual(viewSettings.publishSelection);
-                    expect((selectionService as any).currentSubscribeToSelection).toEqual(
-                        viewSettings.subscribeToSelection
-                    );
+                    expect((selectionService as any).currentPublishSelection).toEqual(newPublishSelection);
+                    expect((selectionService as any).currentSubscribeToSelection).toEqual(newSubscribeToSelection);
                 });
 
             it('calls nothing when subscribe/publish-ToSelection were not changed', () => {
                 const previousPublishSelection = false;
                 const previousSubscribeToSelection = false;
-                const viewSettings = { publishSelection: false, subscribeToSelection: false };
+                const newPublishSelection = false;
+                const newSubscribeToSelection = false;
     
                 const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'addOnSelectionChangeCallback');
                 const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
@@ -271,7 +269,7 @@ describe('SelectionService', () => {
                 selectionService.onInit(onSelectionChangeCallback, previousPublishSelection,
                     previousSubscribeToSelection);
                 selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
-                    viewSettings);
+                    newPublishSelection, newSubscribeToSelection);
     
                 expect(addOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();
                 expect(removeOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();

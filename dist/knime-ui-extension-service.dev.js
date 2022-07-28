@@ -336,14 +336,15 @@ constructor(knimeService){this.knimeService=knimeService,this.callbackMap=new Ma
          * @param {SelectionModes} selectionMode - with which the selection should be updates
          * @param {array} rowKeys - data with which the selection should be updated
          * @returns {void}
-         */onSelectionChange(selectionMode,rowKeys){this.currentPublishSelection&&this[selectionMode.toLowerCase()](rowKeys)}
+         */publishOnSelectionChange(selectionMode,rowKeys){this.currentPublishSelection&&this[selectionMode.toLowerCase()](rowKeys)}
 /**
          * Handles publishing selection and selection subscription on settings change
          * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
          * @param {function} clearSelectionCallback - that completely clears the selection in the view
-         * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+         * @param {boolean} newPublishSelection - new values for publishSelection
+         * @param {boolean} newSubscribeToSelection - new values for subscribeToSelection
          * @returns {void}
-         */onSettingsChange(getCurrentSelectionCallback,clearSelectionCallback,viewSettings){const{publishSelection:publishSelection,subscribeToSelection:subscribeToSelection}=viewSettings;if(!this.currentPublishSelection&&publishSelection){const currentSelection=getCurrentSelectionCallback();this.replace(currentSelection)}if(subscribeToSelection!==this.currentSubscribeToSelection){this[subscribeToSelection?"addOnSelectionChangeCallback":"removeOnSelectionChangeCallback"](this.onSelectionChangeCallback),subscribeToSelection&&(this.replace([]),clearSelectionCallback())}this.currentPublishSelection=publishSelection,this.currentSubscribeToSelection=subscribeToSelection}}
+         */onSettingsChange(getCurrentSelectionCallback,clearSelectionCallback,newPublishSelection,newSubscribeToSelection){if(!this.currentPublishSelection&&newPublishSelection){const currentSelection=getCurrentSelectionCallback();this.replace(currentSelection)}if(newSubscribeToSelection!==this.currentSubscribeToSelection){this[newSubscribeToSelection?"addOnSelectionChangeCallback":"removeOnSelectionChangeCallback"](this.onSelectionChangeCallback),newSubscribeToSelection&&(this.replace([]),clearSelectionCallback())}this.currentPublishSelection=newPublishSelection,this.currentSubscribeToSelection=newSubscribeToSelection}}
 // creates an object which maps the path of each element to their flow variable object
 ,DialogService:
 /**

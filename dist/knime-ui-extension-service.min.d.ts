@@ -782,15 +782,16 @@ declare namespace KnimeUIExtensionService {
          * @param {array} rowKeys - data with which the selection should be updated
          * @returns {void}
          */
-        onSelectionChange(selectionMode: SelectionModes, rowKeys: string[]): void;
+        publishOnSelectionChange(selectionMode: SelectionModes, rowKeys: string[]): void;
         /**
          * Handles publishing selection and selection subscription on settings change
          * @param {function} getCurrentSelectionCallback - that returns the current selection of a view
          * @param {function} clearSelectionCallback - that completely clears the selection in the view
-         * @param {any} viewSettings - new values for publishSelection and subscribeToSelection
+         * @param {boolean} newPublishSelection - new values for publishSelection
+         * @param {boolean} newSubscribeToSelection - new values for subscribeToSelection
          * @returns {void}
          */
-        onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, viewSettings: any): void;
+        onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void, newPublishSelection: boolean | undefined, newSubscribeToSelection: boolean | undefined): void;
     }
     /**
      * A utility class to interact with Dialog settings implemented by a UI Extension node.
