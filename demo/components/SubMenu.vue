@@ -242,6 +242,7 @@ h4 {
 .submenus {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 20px;
 
   & > * {

@@ -197,12 +197,9 @@ export default {
 <style lang="postcss" scoped>
 .align-horizontal {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 10px;
-
-  & > * {
-    margin-right: 20px;
-  }
+  gap: 20px;
 }
 
 .background {
