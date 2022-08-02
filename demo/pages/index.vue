@@ -24,6 +24,7 @@ import InputField from '../components/InputField.vue';
 import Label from '../components/Label.vue';
 import LinkList from '../components/LinkList.vue';
 import ListBox from '../components/ListBox.vue';
+import LoadingIcon from '../components/LoadingIcon.vue';
 import Message from '../components/Message.vue';
 import Messages from '../components/Messages.vue';
 import Modal from '../components/Modal.vue';
@@ -98,7 +99,8 @@ export default {
         TimePartInput,
         ToggleSwitch,
         Tooltip,
-        Twinlist
+        Twinlist,
+        LoadingIcon
     },
     mixins: [tabBarMixin],
     computed: {
@@ -179,6 +181,7 @@ export default {
       <Tooltip />
       <TabBarDemo />
       <TagList />
+      <LoadingIcon />
     </template>
     <template v-if="activeTab === 'messages'">
       <Message />
