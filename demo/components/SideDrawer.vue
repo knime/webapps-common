@@ -102,16 +102,11 @@ h4 {
   margin: 0;
 }
 
-body,
-html {
-  /* overflow-x: hidden; */
-}
-
 .contents-side-drawer {
   padding: 30px;
   box-sizing: border-box;
   background-color: var(--knime-white);
-  height: stretch;
+  height: 100%;
 }
 
 </style>
