@@ -52,40 +52,47 @@ export default {
         };
     },
     computed: {
-      expandedMessage() {
-        return this.isExpanded ? 'expanded' : 'not expanded';
-      }
+        expandedMessage() {
+            return this.isExpanded ? 'expanded' : 'not expanded';
+        }
     }
 
 };
 </script>
 
 <template>
-<div>
-  <section>
-    <div class="grid-container">
-      <div class="grid-item-12 wrapper">
-        <h2>Side Drawer</h2>
-        <p>Provides an expandable drawer to the right side which can be filled with arbitrary content. On mobile it will take up the whole width.</p>
-        <Button
-          primary
-          @click="isExpanded = !isExpanded"
-        >
-         Draw it!
-        </Button>
-        <p>I am {{expandedMessage}}</p>
-
+  <div>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12 wrapper">
+          <h2>Side Drawer</h2>
+          <p>Provides an expandable drawer to the right side which can be filled with arbitrary content. On mobile it will take up the whole width.</p>
+          <Button
+            primary
+            @click="isExpanded = !isExpanded"
+          >
+            Draw it!
+          </Button>
+          <p>I am {{ expandedMessage }}</p>
+        </div>
       </div>
-    </div>
-  </section>
-        <SideDrawer class="side-drawer" :is-expanded="isExpanded">
-          <div class="contents-side-drawer">
-            <h4>something here</h4>
-            <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa sint alias.</p>
-            <Button with-border @click="isExpanded = false">Close me!</Button>
-          </div>
-        </SideDrawer>
-    </div>
+    </section>
+    <SideDrawer
+      class="side-drawer"
+      :is-expanded="isExpanded"
+    >
+      <div class="contents-side-drawer">
+        <h4>something here</h4>
+        <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa sint alias.</p>
+        <Button
+          with-border
+          @click="isExpanded = false"
+        >
+          Close me!
+        </Button>
+      </div>
+    </SideDrawer>
+  </div>
 </template>
 
 

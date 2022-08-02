@@ -36,7 +36,7 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <h2>Button</h2>
-        <div class="align-horizontal">
+        <div class="wrapper">
           <Button>Button</Button>
           <Button with-border>Button with border</Button>
           <div class="background">
@@ -56,10 +56,8 @@ export default {
               Primary button on dark
             </Button>
           </div>
-        </div>
 
-        <!-- with icon -->
-        <div class="align-horizontal">
+          <!-- with icon -->
           <Button><PlayIcon />Button</Button>
           <Button with-border><PlayIcon />Button with border</Button>
           <div class="background">
@@ -79,10 +77,8 @@ export default {
               <PlayIcon />Primary button on dark
             </Button>
           </div>
-        </div>
 
-        <!-- compact -->
-        <div class="align-horizontal">
+          <!-- compact -->
           <Button compact>Button compact</Button>
           <Button
             with-border
@@ -114,10 +110,8 @@ export default {
               Primary button compact on dark
             </Button>
           </div>
-        </div>
 
-        <!-- compact with icon -->
-        <div class="align-horizontal">
+          <!-- compact with icon -->
           <Button compact><PlayIcon />Button compact</Button>
           <Button
             with-border
@@ -149,10 +143,8 @@ export default {
               <PlayIcon />Primary button compact on dark
             </Button>
           </div>
-        </div>
 
-        <!-- disabled -->
-        <div class="align-horizontal">
+          <!-- disabled -->
           <Button disabled>Button disabled</Button>
           <Button
             with-border
@@ -185,7 +177,6 @@ export default {
             </Button>
           </div>
         </div>
-
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
         <CodeExample summary="Show BaseButton.vue source code">{{ baseButtonCode }}</CodeExample>
@@ -195,11 +186,17 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.align-horizontal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(5, max-content);
   gap: 20px;
+  max-width: 100%;
+  align-items: center;
+  justify-items: center;
+
+  @media only screen and (max-width: 900px) {
+    grid-template-columns: repeat(1, max-content);
+  }
 }
 
 .background {
