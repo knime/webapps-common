@@ -35,6 +35,7 @@ import NodePreview from '../components/NodePreview.vue';
 import NumberInput from '../components/NumberInput.vue';
 import OpenSourceCredits from '../components/OpenSourceCredits.vue';
 import RadioButtons from '../components/RadioButtons.vue';
+import SideDrawer from '../components/SideDrawer.vue';
 import ValueSwitch from '../components/ValueSwitch.vue';
 import SplitButton from '../components/SplitButton.vue';
 import SubMenu from '../components/SubMenu.vue';
@@ -90,6 +91,7 @@ export default {
         OpenSourceCredits,
         RadioButtons,
         ValueSwitch,
+        SideDrawer,
         SplitButton,
         SubMenu,
         TabBar,
@@ -176,6 +178,7 @@ export default {
       <FileLink />
       <IdleReadyButton />
       <Modal />
+      <SideDrawer />
       <SubMenu />
       <SplitButton />
       <Tooltip />

@@ -26,7 +26,7 @@ const codeExample =
   <FunctionButton primary>
     <MenuOptionsIcon />
   </FunctionButton>
-  
+
   <FunctionButton :disabled="disabled">
     <span>Disabled Function</span>
     <SorterIcon />
@@ -122,10 +122,7 @@ export default {
 .align-horizontal {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-
-  & > * {
-    margin-right: 20px;
-  }
+  gap: 20px;
+  flex-wrap: wrap;
 }
 </style>
