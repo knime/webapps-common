@@ -249,6 +249,7 @@ section {
 
     & .title {
       display: flex;
+      align-items: center;
     }
 
     & >>> svg {
