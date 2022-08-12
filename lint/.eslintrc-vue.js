@@ -36,7 +36,7 @@ module.exports = {
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off',
-        'import/extensions': ['error', { vue: 'always' }]
+        'import/extensions': ['error', { vue: 'always', json: 'always' }]
     },
     overrides: [{
         files: ['server/**/*.js', '{vue,nuxt}.config.js', 'nightwatch.conf.js'],

@@ -4,9 +4,9 @@ import ReloadIcon from '../../ui/assets/img/icons/reload.svg';
 
 describe('LoadingIcon.vue', () => {
     it('renders', () => {
-        const wrapper = shallowMount(LoadingIcon,{
-             stubs: {
-                ReloadIcon 
+        const wrapper = shallowMount(LoadingIcon, {
+            stubs: {
+                ReloadIcon
             }
         });
 
