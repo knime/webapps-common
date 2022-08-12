@@ -22,7 +22,7 @@ or e.g. inline as base64 in CSS:
     },
     computed: {
         images() {
-            const components = require.context('webapps-common/ui/assets/img', false, /.*$/);
+            const components = require.context('webapps-common/ui/assets/img/?file', false, /.*$/);
             return components.keys().sort().map(x => ({
                 name: x.replace('./', ''),
                 src: components(x)
