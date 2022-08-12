@@ -3,9 +3,9 @@ import CodeExample from './demo/CodeExample.vue';
 import FunctionButton from '../../ui/components/FunctionButton.vue';
 import functionButtonCode from '!!raw-loader!../../ui/components/FunctionButton';
 import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
-import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
-import LensIcon from '../../ui/assets/img/icons/lens.svg?inline';
-import SorterIcon from '../../ui/assets/img/icons/arrows-order.svg?inline';
+import MenuOptionsIcon from '../../ui/assets/img/icons/menu-options.svg';
+import LensIcon from '../../ui/assets/img/icons/lens.svg';
+import SorterIcon from '../../ui/assets/img/icons/arrows-order.svg';
 
 const codeExample =
 `

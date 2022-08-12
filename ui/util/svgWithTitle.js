@@ -4,7 +4,7 @@
  *
  * @example
  *
- * import MyIcon from '~/icons/foo.svg?inline';
+ * import MyIcon from '~/icons/foo.svg';
  * import svgWithTitle from '…';
  * export default {
  *   components: {

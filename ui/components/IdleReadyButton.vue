@@ -1,6 +1,6 @@
 <script>
 import Button from './Button.vue';
-import DownIcon from '../assets/img/icons/circle-arrow-down.svg?inline';
+import DownIcon from '../assets/img/icons/circle-arrow-down.svg';
 
 export default {
     components: {

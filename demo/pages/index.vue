@@ -49,14 +49,13 @@ import Twinlist from '../components/Twinlist.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
 import SearchField from '../../ui/components/forms/InputField.vue';
 
-import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg?inline';
-import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg?inline';
-import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg?inline';
-import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg?inline';
-import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg?inline';
-import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg?inline';
-import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg?inline';
-
+import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
+import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
+import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg';
+import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
+import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
+import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
+import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
 
 const demoComponents = {
     layout: {

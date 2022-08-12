@@ -3,7 +3,7 @@ import CodeExample from './demo/CodeExample.vue';
 import InputField from '../../ui/components/forms/InputField.vue';
 import Label from '../../ui/components/forms/Label.vue';
 import Fieldset from '../../ui/components/forms/Fieldset.vue';
-import InfoIcon from '../../ui/assets/img/icons/circle-info.svg?inline';
+import InfoIcon from '../../ui/assets/img/icons/circle-info.svg';
 import code from '!!raw-loader!../../ui/components/forms/Fieldset';
 
 const codeExample = `<Fieldset text="Login">

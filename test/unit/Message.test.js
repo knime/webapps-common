@@ -1,7 +1,7 @@
 import Message from '~/ui/components/Message.vue';
 import Button from '~/ui/components/Button.vue';
 import { shallowMount, mount } from '@vue/test-utils';
-import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg?inline';
+import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg';
 
 describe('Message.vue', () => {
     let wrapper;

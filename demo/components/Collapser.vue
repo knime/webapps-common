@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
 import Collapser from '../../ui/components/Collapser.vue';
-import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg';
 import code from '!!raw-loader!../../ui/components/Collapser';
 
 export default {

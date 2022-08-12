@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import LoadingIcon from '~/ui/components/LoadingIcon.vue';
-import ReloadIcon from '../../ui/assets/img/icons/reload.svg?inline';
+import ReloadIcon from '../../ui/assets/img/icons/reload.svg';
 
 describe('LoadingIcon.vue', () => {
     it('renders', () => {

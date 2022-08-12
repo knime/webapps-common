@@ -1,6 +1,6 @@
 <script>
-import CloseIcon from '../assets/img/icons/close.svg?inline';
-import CopyIcon from '../assets/img/icons/copy.svg?inline';
+import CloseIcon from '../assets/img/icons/close.svg';
+import CopyIcon from '../assets/img/icons/copy.svg';
 import Button from './Button.vue';
 import Collapser from './Collapser.vue';
 import MessageLink from './MessageLink.vue';
