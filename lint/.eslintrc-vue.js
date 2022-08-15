@@ -2,7 +2,7 @@ const parentRules = require('./.eslintrc-base').rules;
 
 module.exports = {
     plugins: ['vue', 'import'],
-    extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:vue/base', 'plugin:jsonc/recommended-with-json'],
+    extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
     parserOptions: { 
         "ecmaFeatures": {
             "jsx": true
