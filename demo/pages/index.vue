@@ -119,21 +119,22 @@ const demoComponents = {
 };
 
 
-const flattenComponentList = (componentTreeList) => {
+const flattenComponents = (componentsByCategory) => {
     let componentsFlattened = {};
-    for (let [, componentsList] of Object.entries(componentTreeList)) {
-        for (let [componentKey, component] of Object.entries(componentsList)) {
-            componentsFlattened[componentKey] = component;
+    for (let [, componentByName] of Object.entries(componentsByCategory)) {
+        for (let [name, component] of Object.entries(componentByName)) {
+            componentsFlattened[name] = component;
         }
     }
     return componentsFlattened;
 };
+
 // Transform the components into a flat object
 const components = {
     TabBar,
     SearchField,
     SearchIcon,
-    ...flattenComponentList(demoComponents)
+    ...flattenComponents(demoComponents)
 };
 
 
@@ -142,7 +143,6 @@ export default {
     mixins: [tabBarMixin],
     data() {
         return {
-            demoComponents,
             searchQuery: ''
         };
     },
@@ -151,16 +151,18 @@ export default {
             if (!this.isSearchActive) {
                 return this.demoComponents;
             }
-            let result = {};
-            for (let [category, componentsList] of Object.entries(this.demoComponents)) {
-                for (let [componentKey, component] of Object.entries(componentsList)) {
-                    if (componentKey.toLowerCase().includes(this.searchQuery.trim().toLowerCase())) {
-                        result[category] = result[category] || {};
-                        result[category][componentKey] = component;
+            let filtered = {};
+            for (let [category, componentByName] of Object.entries(this.demoComponents)) {
+                for (let [name, component] of Object.entries(componentByName)) {
+                    if (name.toLowerCase().includes(this.searchQuery.trim().toLowerCase())) {
+                        if (!filtered.hasOwnProperty(category)) {
+                            filtered[category] = {};
+                        }
+                        filtered[category][name] = component;
                     }
                 }
             }
-            return result;
+            return filtered;
         },
         isSearchActive() {
             return this.searchQuery.trim() !== '';
@@ -192,8 +194,10 @@ export default {
                 icon: UnknownIcon
             }];
         }
+    },
+    created() {
+        this.demoComponents = demoComponents;
     }
-
 };
 </script>
 
@@ -210,6 +214,11 @@ export default {
           </p>
 
           <div class="categories">
+            <TabBar
+              :disabled="isSearchActive"
+              :value.sync="activeTab"
+              :possible-values="possibleTabValues"
+            />
             <SearchField
               v-model="searchQuery"
               autofocus
@@ -219,25 +228,20 @@ export default {
             >
               <template #icon><SearchIcon /></template>
             </SearchField>
-            <TabBar
-              :disabled="isSearchActive"
-              :value.sync="activeTab"
-              :possible-values="possibleTabValues"
-            />
           </div>
         </div>
       </div>
     </section>
 
-    <template v-for="(components, category) in filteredDemoComponents">
+    <template v-for="(componentByName, category) in filteredDemoComponents">
       <div
         v-if="activeTab === category || isSearchActive"
         :key="category"
       >
         <component
-          :is="key"
-          v-for="(component, key) in components"
-          :key="category+key"
+          :is="name"
+          v-for="(component, name) in componentByName"
+          :key="category+name"
         />
       </div>
     </template>

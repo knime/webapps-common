@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
 import LoadingIcon from '../../ui/components/LoadingIcon.vue';
-import code from '!!raw-loader!../../ui/components/loadingIcon';
+import code from '!!raw-loader!../../ui/components/LoadingIcon';
 
 const codeExample = `
 <script>
@@ -27,7 +27,7 @@ export default {
     stroke: var(--knime-masala);
   }
 </style>
-`
+`;
 export default {
     components: {
         LoadingIcon,
