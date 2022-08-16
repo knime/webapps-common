@@ -47,6 +47,7 @@ import ToggleSwitch from '../components/ToggleSwitch.vue';
 import Tooltip from '../components/Tooltip.vue';
 import Twinlist from '../components/Twinlist.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
+import SearchField from '../../ui/components/forms/InputField.vue';
 
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg?inline';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg?inline';
@@ -54,58 +55,118 @@ import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg?in
 import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg?inline';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg?inline';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg?inline';
+import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg?inline';
 
-export default {
-    components: {
-        Breadcrumb,
-        Button,
-        Carousel,
-        Checkbox,
-        Checkboxes,
-        Collapser,
-        Colors,
-        DateTimeInput,
-        Description,
-        Dropdown,
-        Fieldset,
+
+const demoComponents = {
+    layout: {
         Fonts,
-        FunctionButton,
-        FileLink,
+        Colors,
         Grid,
         Headlines,
-        Icons,
-        IdleReadyButton,
+        Description
+    },
+    images: {
         Images,
-        InputField,
-        Label,
+        Icons
+    },
+    interactive: {
+        Breadcrumb,
         LinkList,
-        ListBox,
-        Message,
-        Messages,
+        Button,
+        Carousel,
+        Collapser,
+        FunctionButton,
+        FileLink,
+        IdleReadyButton,
         Modal,
-        Multiselect,
-        MultiselectListBox,
-        NodeFeatureList,
-        NodePreview,
-        NumberInput,
-        OpenSourceCredits,
-        RadioButtons,
-        ValueSwitch,
         SideDrawer,
-        SplitButton,
         SubMenu,
-        TabBar,
+        SplitButton,
+        Tooltip,
         TabBarDemo,
         TagList,
-        TextArea,
-        TimePartInput,
-        ToggleSwitch,
-        Tooltip,
-        Twinlist,
         LoadingIcon
     },
+    messages: {
+        Message,
+        Messages
+    },
+    forms: {
+        Label,
+        Fieldset,
+        InputField,
+        TextArea,
+        NumberInput,
+        Checkbox,
+        Checkboxes,
+        RadioButtons,
+        ValueSwitch,
+        DateTimeInput,
+        TimePartInput,
+        ListBox,
+        Dropdown,
+        Multiselect,
+        MultiselectListBox,
+        ToggleSwitch,
+        Twinlist
+    },
+    misc: {
+        NodePreview,
+        NodeFeatureList,
+        OpenSourceCredits
+    }
+};
+
+
+const flattenComponents = (componentsByCategory) => {
+    let componentsFlattened = {};
+    for (let componentByName of Object.values(componentsByCategory)) {
+        for (let [name, component] of Object.entries(componentByName)) {
+            componentsFlattened[name] = component;
+        }
+    }
+    return componentsFlattened;
+};
+
+// Transform the components into a flat object
+const components = {
+    TabBar,
+    SearchField,
+    SearchIcon,
+    ...flattenComponents(demoComponents)
+};
+
+
+export default {
+    components,
     mixins: [tabBarMixin],
+    data() {
+        return {
+            searchQuery: ''
+        };
+    },
     computed: {
+        filteredDemoComponents() {
+            if (!this.isSearchActive) {
+                return this.demoComponents;
+            }
+            let filtered = {};
+            for (let [category, componentByName] of Object.entries(this.demoComponents)) {
+                for (let [name, component] of Object.entries(componentByName)) {
+                    if (name.toLowerCase().includes(this.searchQuery.trim().toLowerCase())) {
+                        if (!filtered.hasOwnProperty(category)) {
+                            filtered[category] = {};
+                        }
+                        filtered[category][name] = component;
+                    }
+                }
+            }
+            return filtered;
+        },
+        isSearchActive() {
+            return this.searchQuery.trim() !== '';
+        },
         possibleTabValues() {
             return [{
                 value: 'layout',
@@ -133,6 +194,9 @@ export default {
                 icon: UnknownIcon
             }];
         }
+    },
+    created() {
+        this.demoComponents = demoComponents;
     }
 };
 </script>
@@ -149,70 +213,37 @@ export default {
             <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
           </p>
 
-          <TabBar
-            :value.sync="activeTab"
-            :possible-values="possibleTabValues"
-          />
+          <div class="categories">
+            <TabBar
+              :disabled="isSearchActive"
+              :value.sync="activeTab"
+              :possible-values="possibleTabValues"
+            />
+            <SearchField
+              v-model="searchQuery"
+              autofocus
+              type="search"
+              placeholder="Filter by component name…"
+              class="search"
+            >
+              <template #icon><SearchIcon /></template>
+            </SearchField>
+          </div>
         </div>
       </div>
     </section>
 
-    <template v-if="activeTab === 'layout'">
-      <Fonts />
-      <Colors />
-      <Headlines />
-      <Description />
-      <Grid />
-    </template>
-    <template v-if="activeTab === 'images'">
-      <Images />
-      <Icons />
-    </template>
-    <template v-if="activeTab === 'interactive'">
-      <Breadcrumb />
-      <LinkList />
-      <Button />
-      <Carousel />
-      <Collapser />
-      <FunctionButton />
-      <FileLink />
-      <IdleReadyButton />
-      <Modal />
-      <SideDrawer />
-      <SubMenu />
-      <SplitButton />
-      <Tooltip />
-      <TabBarDemo />
-      <TagList />
-      <LoadingIcon />
-    </template>
-    <template v-if="activeTab === 'messages'">
-      <Message />
-      <Messages />
-    </template>
-    <template v-if="activeTab === 'forms'">
-      <Label />
-      <Fieldset />
-      <InputField />
-      <TextArea />
-      <NumberInput />
-      <Checkbox />
-      <Checkboxes />
-      <RadioButtons />
-      <ValueSwitch />
-      <DateTimeInput />
-      <TimePartInput />
-      <ListBox />
-      <Dropdown />
-      <Multiselect />
-      <MultiselectListBox />
-      <ToggleSwitch />
-      <Twinlist />
-    </template>
-    <template v-if="activeTab === 'misc'">
-      <NodePreview />
-      <NodeFeatureList />
-      <OpenSourceCredits />
+    <template v-for="(componentByName, category) in filteredDemoComponents">
+      <div
+        v-if="activeTab === category || isSearchActive"
+        :key="category"
+      >
+        <component
+          :is="name"
+          v-for="(component, name) in componentByName"
+          :key="category+name"
+        />
+      </div>
     </template>
   </main>
 </template>
@@ -233,6 +264,23 @@ section {
 
   & >>> .shadow-wrapper::after {
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
+  }
+}
+
+.categories {
+  position: relative;
+
+  & .search {
+    min-width: 250px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+
+    @media only screen and (max-width: 1280px) {
+      position: relative;
+      margin-bottom: 30px;
+    }
   }
 }
 
