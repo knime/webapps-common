@@ -121,7 +121,7 @@ const demoComponents = {
 
 const flattenComponents = (componentsByCategory) => {
     let componentsFlattened = {};
-    for (let [, componentByName] of Object.entries(componentsByCategory)) {
+    for (let componentByName of Object.values(componentsByCategory)) {
         for (let [name, component] of Object.entries(componentByName)) {
             componentsFlattened[name] = component;
         }
