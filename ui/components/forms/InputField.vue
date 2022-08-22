@@ -36,6 +36,10 @@ export default {
             default: null,
             type: String
         },
+        autofocus: {
+            default: false,
+            type: Boolean
+        },
         inputClasses: {
             default: '',
             type: String
@@ -109,6 +113,7 @@ export default {
       :type="type"
       :pattern="pattern"
       :placeholder="placeholder"
+      :autofocus="autofocus"
       :autocomplete="autocomplete"
       :disabled="disabled"
       :required="required"

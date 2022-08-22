@@ -3,6 +3,11 @@ const parentRules = require('./.eslintrc-base').rules;
 module.exports = {
     plugins: ['vue', 'import'],
     extends: ['./.eslintrc-base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
+    parserOptions: { 
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
     rules: {
         'max-lines': ['warn', Object.assign(parentRules['max-lines'][1], {
             max: 500

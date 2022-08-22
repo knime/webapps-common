@@ -37,6 +37,16 @@ describe('InputField.vue', () => {
         expect(wrapper.find('input').attributes().required).toBeDefined();
     });
 
+    it('renders with autofocus attribute', () => {
+        const wrapper = mount(InputField, {
+            propsData: {
+                value: '',
+                autofocus: true
+            }
+        });
+        expect(wrapper.find('input').attributes().autofocus).toBeDefined();
+    });
+
     it('renders with icon slot', () => {
         const wrapper = mount(InputField, {
             slots: {
