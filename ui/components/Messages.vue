@@ -1,4 +1,5 @@
 <script>
+import BaseMessage from './BaseMessage.vue';
 import Message from './Message.vue';
 import MessageLink from './MessageLink.vue';
 
@@ -7,6 +8,7 @@ import MessageLink from './MessageLink.vue';
  */
 export default {
     components: {
+        BaseMessage,
         Message,
         MessageLink
     },
@@ -42,29 +44,38 @@ export default {
     tag="div"
     name="messages"
   >
-    <Message
-      v-for="message in messages"
-      :key="message.id"
-      :type="message.type.toLowerCase()"
-      :count="message.count"
-      :button="message.button"
-      :details="message.details"
-      :show-close-button="message.showCloseButton"
-      :show-collapser="message.showCollapser"
-      :class="{ 'offset-details': message.icon }"
-      @copied="$emit('copied')"
-      @dismiss="$emit('dismiss', message.id)"
-    >
-      <Component
-        :is="message.icon"
-        slot="icon"
-      />
-      {{ message.message }}
-      <MessageLink
-        v-if="message.link"
-        :link="message.link"
-      />
-    </Message>
+    <template v-for="message in messages">
+      <BaseMessage
+        v-if="message.content"
+        :key="message.id"
+        :type="message.type.toLowerCase()"
+      >
+        <Component :is="message.content" />
+      </BaseMessage>
+      <Message
+        v-else
+        :key="message.id"
+        :type="message.type.toLowerCase()"
+        :count="message.count"
+        :button="message.button"
+        :details="message.details"
+        :show-close-button="message.showCloseButton"
+        :show-collapser="message.showCollapser"
+        :class="{ 'offset-details': message.icon }"
+        @copied="$emit('copied')"
+        @dismiss="$emit('dismiss', message.id)"
+      >
+        <Component
+          :is="message.icon"
+          slot="icon"
+        />
+        {{ message.message }}
+        <MessageLink
+          v-if="message.link"
+          :link="message.link"
+        />
+      </Message>
+    </template>
   </transition-group>
 </template>
 

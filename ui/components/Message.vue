@@ -1,9 +1,10 @@
 <script>
-import CloseIcon from '../assets/img/icons/close.svg?inline';
-import CopyIcon from '../assets/img/icons/copy.svg?inline';
+import BaseMessage from './BaseMessage.vue';
 import Button from './Button.vue';
 import Collapser from './Collapser.vue';
 import MessageLink from './MessageLink.vue';
+import CloseIcon from '../assets/img/icons/close.svg?inline';
+import CopyIcon from '../assets/img/icons/copy.svg?inline';
 import { copyText } from '../../util/copyText';
 
 /**
@@ -11,11 +12,12 @@ import { copyText } from '../../util/copyText';
  */
 export default {
     components: {
-        CloseIcon,
-        CopyIcon,
+        BaseMessage,
         Button,
         Collapser,
-        MessageLink
+        MessageLink,
+        CloseIcon,
+        CopyIcon
     },
     props: {
         /**
@@ -121,83 +123,83 @@ export default {
 </script>
 
 <template>
-  <section
+  <BaseMessage
     v-if="active"
+    :type="type"
     :class="type"
   >
-    <div class="grid-container">
-      <div class="grid-item-12">
-        <Component
-          :is="showDetailsCollapser ? 'Collapser' : 'div'"
-          :class="showDetailsCollapser ? 'collapser' : 'banner'"
+    <Component
+      :is="showDetailsCollapser ? 'Collapser' : 'div'"
+      :class="showDetailsCollapser ? 'collapser' : 'banner'"
+    >
+      <Component
+        :is="showDetailsCollapser ? 'template' : 'div'"
+        slot="title"
+        class="title"
+      >
+        <!-- @slot Use this slot to add an icon. -->
+        <slot name="icon" />
+        <span class="message">
+          <!-- @slot Use this slot to add text content (markup). -->
+          <slot />
+          <span
+            v-show="count && count > 1"
+            class="message-count"
+            :class="type"
+          >
+            {{ '×' + count }}
+          </span>
+        </span>
+        <template v-if="showCloseButton">
+          <Button
+            v-if="button"
+            class="close"
+            :class="type"
+            primary
+            compact
+            on-dark
+            @click="onDismiss"
+            @keydown.space.stop.prevent="onDismiss"
+          >
+            {{ button }}
+          </Button>
+          <span
+            v-else
+            tabindex="0"
+            class="close"
+            :class="type"
+            title="Discard message"
+            @click="onDismiss"
+            @keydown.space.stop.prevent="onDismiss"
+          >
+            <CloseIcon />
+          </span>
+        </template>
+      </Component>
+      <div
+        v-if="detailsText"
+        class="details"
+      >
+        <span class="detail-text">
+          {{ detailsText }}
+          <MessageLink
+            v-if="detailsLink"
+            :link="detailsLink"
+          />
+        </span>
+        <div
+          v-if="showCollapser"
+          class="copy-button"
+          title="Copy to clipboard"
+          tabindex="0"
+          @click="copyMessage($event)"
+          @keyup.space.prevent="copyMessage($event)"
         >
-          <Component
-            :is="showDetailsCollapser ? 'template' : 'div'"
-            slot="title"
-            class="title"
-          >
-            <!-- @slot Use this slot to add an icon. -->
-            <slot name="icon" />
-            <span class="message">
-              <!-- @slot Use this slot to add text content (markup). -->
-              <slot />
-              <span
-                v-show="count && count > 1"
-                class="message-count"
-              >
-                {{ '×' + count }}
-              </span>
-            </span>
-            <template v-if="showCloseButton">
-              <Button
-                v-if="button"
-                class="close"
-                primary
-                compact
-                on-dark
-                @click="onDismiss"
-                @keydown.space.stop.prevent="onDismiss"
-              >
-                {{ button }}
-              </Button>
-              <span
-                v-else
-                tabindex="0"
-                class="close"
-                title="Discard message"
-                @click="onDismiss"
-                @keydown.space.stop.prevent="onDismiss"
-              >
-                <CloseIcon />
-              </span>
-            </template>
-          </Component>
-          <div
-            v-if="detailsText"
-            class="details"
-          >
-            <span class="detail-text">
-              {{ detailsText }}
-              <MessageLink
-                v-if="detailsLink"
-                :link="detailsLink"
-              />
-            </span>
-            <div
-              v-if="showCollapser"
-              class="copy-button"
-              title="Copy to clipboard"
-              tabindex="0"
-              @click="copyMessage($event)"
-              @keyup.space.prevent="copyMessage($event)"
-            >
-              <CopyIcon />
-            </div>
-          </div>
-        </Component>
+          <CopyIcon />
+        </div>
       </div>
-    </div>
-  </section>
+    </Component>
+  </BaseMessage>
 </template>
 
 <style lang="postcss" scoped>
@@ -206,151 +208,113 @@ export default {
   margin-left: 5px;
   background-color: white;
   border-radius: 12px;
-}
-
-.banner {
-  width: 100%;
-
-  & .close {
-    top: 12px;
-  }
-}
-
-section {
-  border-bottom: 1px solid var(--knime-white);
-  overflow: hidden;
-
-  & .grid-item-12 {
-    font-weight: 700;
-    font-style: normal;
-    font-size: 16px;
-    line-height: 24px;
-    padding: 15px 0;
-    display: flex;
-    position: relative;
-    align-items: center;
-    color: var(--knime-white);
-
-    & .message {
-      flex-grow: 1;
-      margin-right: 50px; /* this is set to not interfere with the dropdown or close button */
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 3px;
-    }
-
-    & .details {
-      display: inline-block;
-      font-size: 13px;
-      font-weight: 300;
-      line-height: 18px;
-      margin: auto 0;
-    }
-
-    & .title {
-      display: flex;
-      align-items: center;
-    }
-
-    & >>> svg {
-      position: relative;
-      width: 24px;
-      height: 24px;
-      stroke-width: calc(32px / 24);
-      stroke: var(--knime-white);
-      margin-right: 20px;
-      flex-shrink: 0;
-      top: 3px;
-    }
-
-    & button.close {
-      flex-shrink: 0;
-      margin-bottom: 0;
-      display: flex;
-      width: unset;
-    }
-
-    & span.close {
-      height: 30px;
-      width: 30px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    & .close {
-      outline: none;
-      display: flex;
-      align-items: center;
-      position: relative;
-      right: -6px; /* align svg with right border */
-      pointer-events: all;
-      text-align: center;
-      top: 0;
-      align-self: flex-start;
-      float: right;
-      margin-left: auto;
-
-      /* hover/focus styles for type error and success */
-
-      &:hover,
-      &:focus {
-        background-color: var(--knime-masala-semi);
-      }
-
-      & svg {
-        position: relative;
-        top: 0;
-        margin: auto;
-        height: 18px;
-        width: 18px;
-        stroke-width: calc(32px / 18);
-        cursor: pointer;
-      }
-    }
-  }
-
-  &:last-child {
-    border-bottom: 0;
-  }
 
   &.info {
-    background-color: var(--theme-color-info);
-
-    /* hover/focus styles for type info */
-
-    & .close:hover >>> svg,
-    & .close:focus >>> svg {
-      filter: drop-shadow(0 0 4px white);
-    }
-
-    & .message-count {
-      color: var(--theme-color-info);
-    }
+    color: var(--theme-color-info);
   }
 
   &.error {
-    background-color: var(--theme-color-error);
-
-    & .message-count {
-      color: var(--theme-color-error);
-    }
+    color: var(--theme-color-error);
   }
 
   &.success {
-    background-color: var(--theme-color-success);
-
-    & .message-count {
-      color: var(--theme-color-success);
-    }
+    color: var(--theme-color-success);
   }
 
   &.warn {
     background-color: var(--theme-color-action-required);
-
-    & .message-count {
-      background-color: var(--theme-color-action-required);
-    }
   }
+}
+
+.banner {
+  width: 100%;
+}
+
+.message {
+  flex-grow: 1;
+  margin-right: 50px; /* this is set to not interfere with the dropdown or close button */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 3px;
+}
+
+.details {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 18px;
+  margin: auto 0;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+}
+
+>>> svg {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  stroke-width: calc(32px / 24);
+  stroke: var(--knime-white);
+  margin-right: 20px;
+  flex-shrink: 0;
+  top: 3px;
+}
+
+.close {
+  outline: none;
+  display: flex;
+  align-items: center;
+  position: relative;
+  right: -6px; /* align svg with right border */
+  pointer-events: all;
+  text-align: center;
+  top: 0;
+  align-self: flex-start;
+  float: right;
+  margin-left: auto;
+
+  /* hover/focus styles for type error and success */
+
+  &:hover,
+  &:focus {
+    background-color: var(--knime-masala-semi);
+  }
+
+  & svg {
+    position: relative;
+    top: 0;
+    margin: auto;
+    height: 18px;
+    width: 18px;
+    stroke-width: calc(32px / 18);
+    cursor: pointer;
+  }
+
+  /* hover/focus styles for type info */
+  &.info:hover >>> svg,
+  &.info:focus >>> svg {
+    filter: drop-shadow(0 0 4px white);
+  }
+}
+
+button.close {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  display: flex;
+  width: unset;
+}
+
+span.close {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+:last-child {
+  border-bottom: 0;
 }
 
 .collapser {
