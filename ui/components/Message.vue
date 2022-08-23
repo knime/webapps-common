@@ -251,7 +251,8 @@ export default {
   align-items: center;
 }
 
->>> svg {
+.collapser >>> svg,
+.banner >>> svg {
   position: relative;
   width: 24px;
   height: 24px;
