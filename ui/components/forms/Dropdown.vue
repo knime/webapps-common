@@ -70,7 +70,6 @@ export default {
     data() {
         return {
             isExpanded: false,
-            typingTimeout: null,
             searchQuery: ''
         };
     },
@@ -97,6 +96,9 @@ export default {
                 return `(MISSING) ${this.value}`;
             }
         }
+    },
+    created() {
+        this.typingTimeout = null;
     },
     methods: {
         isCurrentValue(candidate) {
