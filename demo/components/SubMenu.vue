@@ -1,16 +1,16 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
 import SubMenu from '../../ui/components/SubMenu.vue';
-import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
-import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
-import LeaveIcon from '../../ui/assets/img/icons/leave.svg?inline';
-import HeartIcon from '../../ui/assets/img/icons/heart.svg?inline';
-import MenuIcon from '../../ui/assets/img/icons/menu-options.svg?inline';
+import HelpIcon from '../../ui/assets/img/icons/circle-help.svg';
+import StarIcon from '../../ui/assets/img/icons/star.svg';
+import LeaveIcon from '../../ui/assets/img/icons/leave.svg';
+import HeartIcon from '../../ui/assets/img/icons/heart.svg';
+import MenuIcon from '../../ui/assets/img/icons/menu-options.svg';
 import code from '!!raw-loader!../../ui/components/SubMenu';
 
 const codeExampleStandalone = `<script>
 import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
-import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg?inline';
+import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
 
 const subMenuItems = [{
     href: 'http://apple.com',

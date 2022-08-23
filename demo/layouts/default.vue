@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <img src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg">
+      <img src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file">
     </header>
     <nuxt />
   </div>

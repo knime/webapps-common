@@ -1,5 +1,5 @@
 <script>
-import ReloadIcon from '../../ui/assets/img/icons/reload.svg?inline';
+import ReloadIcon from '../../ui/assets/img/icons/reload.svg';
 import svgWithTitle from '../../ui/util/svgWithTitle';
 
 export default {

@@ -4,6 +4,9 @@ import svgConfig from '../webpack/webpack.svg.config';
 import path from 'path';
 
 export default {
+    server: {
+        port: process.env.APP_PORT || 3000
+    },
     alias: {
         'webapps-common': path.resolve(__dirname, '..'),
         '../../../node_modules/@fontsource/roboto': path.resolve(__dirname, 'node_modules', '@fontsource/roboto'),

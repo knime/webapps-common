@@ -1,7 +1,7 @@
 <script>
 import BaseModal from './BaseModal.vue';
 import FunctionButton from './FunctionButton.vue';
-import CloseIcon from '../assets/img/icons/close.svg?inline';
+import CloseIcon from '../assets/img/icons/close.svg';
 
 /**
 * See demo for documentation

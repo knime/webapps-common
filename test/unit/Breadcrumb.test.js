@@ -1,6 +1,6 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import Breadcrumb from '~/ui/components/Breadcrumb.vue';
-import ArrowNext from '~/ui/assets/img/icons/arrow-next.svg?inline';
+import ArrowNext from '~/ui/assets/img/icons/arrow-next.svg';
 
 describe('Breadcrumb.vue', () => {
     it('renders', () => {

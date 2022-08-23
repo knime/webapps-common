@@ -1,5 +1,5 @@
 <script>
-import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
 import { mixin as clickaway } from 'vue-clickaway2';
 
