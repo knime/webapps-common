@@ -1,5 +1,5 @@
 <script>
-import CalendarIcon from '../../assets/img/icons/calendar.svg?inline';
+import CalendarIcon from '../../assets/img/icons/calendar.svg';
 import TimePartInput from './TimePartInput.vue';
 import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';

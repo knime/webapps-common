@@ -1,15 +1,15 @@
 <script>
 import Message from '../../ui/components/Message.vue';
-import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
-import CheckIcon from '../../ui/assets/img/icons/circle-check.svg?inline';
-import InfoIcon from '../../ui/assets/img/icons/circle-info.svg?inline';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg';
+import CheckIcon from '../../ui/assets/img/icons/circle-check.svg';
+import InfoIcon from '../../ui/assets/img/icons/circle-info.svg';
 import CodeExample from './demo/CodeExample.vue';
 import code from '!!raw-loader!../../ui/components/Message';
 
 const codeExample = `<script>
 import Message from 'webapps-common/ui/components/Message';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
-import CheckIcon from '~/webapps-common/ui/assets/img/icons/circle-check.svg?inline';
+import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
+import CheckIcon from '~/webapps-common/ui/assets/img/icons/circle-check.svg';
 
 export default {
     components: {

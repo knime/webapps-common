@@ -1,7 +1,7 @@
 <script>
-import PortIcon from '../../assets/img/icons/plugin.svg?inline';
-import ViewsIcon from '../../assets/img/icons/eye.svg?inline';
-import OptionsIcon from '../../assets/img/icons/settings.svg?inline';
+import PortIcon from '../../assets/img/icons/plugin.svg';
+import ViewsIcon from '../../assets/img/icons/eye.svg';
+import OptionsIcon from '../../assets/img/icons/settings.svg';
 import TabBar, { tabBarMixin } from '../TabBar.vue';
 import PortsList from './PortsList.vue';
 import ViewsList from './ViewsList.vue';

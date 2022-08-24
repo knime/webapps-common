@@ -1,6 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
-import FolderIcon from '../../ui/assets/img/icons/folder.svg?inline';
+import FolderIcon from '../../ui/assets/img/icons/folder.svg';
 import Breadcrumb from '../../ui/components/Breadcrumb.vue';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 

@@ -1,7 +1,7 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
 import Tooltip from '../../ui/components/Tooltip.vue';
-import BrainIcon from '../../ui/assets/img/icons/ai-brain.svg?inline';
+import BrainIcon from '../../ui/assets/img/icons/ai-brain.svg';
 import code from '!!raw-loader!../../ui/components/Tooltip';
 
 const codeExample = `

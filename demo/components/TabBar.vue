@@ -2,14 +2,14 @@
 import CodeExample from './demo/CodeExample.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
 import tabbarCode from '!!raw-loader!../../ui/components/TabBar';
-import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
-import HelpIcon from '../../ui/assets/img/icons/circle-help.svg?inline';
-import StarIcon from '../../ui/assets/img/icons/star.svg?inline';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg';
+import HelpIcon from '../../ui/assets/img/icons/circle-help.svg';
+import StarIcon from '../../ui/assets/img/icons/star.svg';
 
 const codeExampleStandalone = `<script>
 import TabBar from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
-import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
+import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
+import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg';
 
 export default {
     components: {
@@ -56,8 +56,8 @@ export default {
 
 const codeExampleMixin = `<script>
 import TabBar, { tabBarMixin } from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
-import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
+import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
+import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg';
 
 export default {
     components: {

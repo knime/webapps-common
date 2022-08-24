@@ -8,6 +8,7 @@ const localVue = createLocalVue();
 localVue.directive('onClickaway', () => {});
 
 import Dropdown from '~/ui/components/forms/Dropdown.vue';
+jest.useFakeTimers();
 
 describe('Dropdown.vue', () => {
     let propsData;
@@ -233,4 +234,75 @@ describe('Dropdown.vue', () => {
             expect(wrapper.emitted().input[0][0]).toBe('test5');
         });
     });
+
+    describe('keyboard search', () => {
+        it('finds the first matching item', () => {
+            const wrapper = mount(Dropdown, {
+                propsData: {
+                    ...propsData,
+                    value: 'test2' // defines start point
+                },
+                localVue
+            });
+
+            let ul = wrapper.find('ul');
+
+            ul.find('ul').trigger('keydown', {
+                key: 't'
+            });
+
+            expect(wrapper.emitted().input[0][0]).toBe('test1');
+        });
+
+        it('finds a more exact matching item', () => {
+            const wrapper = mount(Dropdown, {
+                propsData: {
+                    ...propsData,
+                    value: 'test2' // defines start point
+                },
+                localVue
+            });
+
+            let ul = wrapper.find('ul');
+
+            ul.trigger('keydown', {key: 't'});
+            ul.trigger('keydown', {key: 'e'});
+            ul.trigger('keydown', {key: 'x'});
+            ul.trigger('keydown', {key: 't'});
+            ul.trigger('keydown', {key: ' '});
+            ul.trigger('keydown', {key: '4'});
+
+            expect(wrapper.emitted().input[5][0]).toBe('test4');
+        });
+
+
+        it('resets after stop typing', () => {
+            const wrapper = mount(Dropdown, {
+                propsData: {
+                    ...propsData,
+                    value: 'test2' // defines start point
+                },
+                localVue
+            });
+
+            let ul = wrapper.find('ul');
+
+            ul.trigger('keydown', {key: 't'});
+            expect(wrapper.emitted().input[0][0]).toBe('test1');
+
+            // stopping typing
+            jest.runAllTimers();
+
+            ul.trigger('keydown', {key: 't'});
+            ul.trigger('keydown', {key: 'e'});
+            ul.trigger('keydown', {key: 'x'});
+            ul.trigger('keydown', {key: 't'});
+            ul.trigger('keydown', {key: ' '});
+            ul.trigger('keydown', {key: '3'});
+
+            expect(wrapper.emitted().input[6][0]).toBe('test3');
+        });
+
+    });
+
 });

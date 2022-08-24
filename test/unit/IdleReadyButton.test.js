@@ -2,7 +2,7 @@ import { shallowMount, mount } from '@vue/test-utils';
 
 import IdleReadyButton from '~/ui/components/IdleReadyButton.vue';
 import Button from '~/ui/components/Button.vue';
-import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg?inline';
+import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg';
 
 describe('IdleReadyButton.vue', () => {
     it('doesn’t render when not needed', () => {

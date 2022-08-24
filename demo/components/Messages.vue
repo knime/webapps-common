@@ -1,12 +1,12 @@
 <script>
 import Messages from '../../ui/components/Messages.vue';
-import BulbIcon from '../../ui/assets/img/icons/bulb.svg?inline';
+import BulbIcon from '../../ui/assets/img/icons/bulb.svg';
 import CodeExample from './demo/CodeExample.vue';
 import code from '!!raw-loader!../../ui/components/Messages';
 
 const codeExample = `<script>
 import Messages from 'webapps-common/ui/components/Messages';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg?inline';
+import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
 
 export default {
     components: {

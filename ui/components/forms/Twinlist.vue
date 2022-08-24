@@ -1,9 +1,9 @@
 <script>
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
-import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg?inline';
-import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg?inline';
-import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg?inline';
-import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg?inline';
+import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
+import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
+import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
+import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;

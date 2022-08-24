@@ -1,6 +1,6 @@
 <script>
 import Modal from '../../ui/components/Modal.vue';
-import PlayIcon from '../../ui/assets/img/icons/circle-play.svg?inline';
+import PlayIcon from '../../ui/assets/img/icons/circle-play.svg';
 import Button from '../../ui/components/Button.vue';
 import CodeExample from './demo/CodeExample.vue';
 
@@ -9,7 +9,7 @@ import baseModalCode from '!!raw-loader!../../ui/components/BaseModal';
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal.vue';
-import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg?inline';
+import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg';
 import Button from '~/webapps-common/ui/components/Button.vue';
 
 export default {

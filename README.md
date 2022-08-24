@@ -62,7 +62,7 @@ Depending on the use case, you must follow a different syntax to import the comm
 This can be used when importing js files or SVG images into a `.vue` file:
 
 ```js
-import DownloadIcon from '~/webapps-common/ui/assets/img/icons/cloud-download.svg?inline'; // inline SVG
+import DownloadIcon from '~/webapps-common/ui/assets/img/icons/cloud-download.svg'; // inline SVG
 import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle'; // .js
 import Description from '~/webapps-common/ui/components/Description'; // Vue component
 ```

@@ -1,5 +1,5 @@
 <script>
-import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg?inline';
+import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
 import { mixin as clickaway } from 'vue-clickaway2';
 
@@ -10,6 +10,8 @@ const KEY_HOME = 36;
 const KEY_END = 35;
 const KEY_ESC = 27;
 const KEY_ENTER = 13;
+
+const TYPING_TIMEOUT = 1000; // in ms
 
 export default {
     components: {
@@ -67,7 +69,8 @@ export default {
     },
     data() {
         return {
-            isExpanded: false
+            isExpanded: false,
+            searchQuery: ''
         };
     },
     computed: {
@@ -94,12 +97,15 @@ export default {
             }
         }
     },
+    created() {
+        this.typingTimeout = null;
+    },
     methods: {
         isCurrentValue(candidate) {
             return this.value === candidate;
         },
-        setSelected(value) {
-            consola.trace('ListBox setSelected on', value);
+        setSelected(id) {
+            consola.trace('ListBox setSelected on', id);
 
             /**
              * Fired when the selection changes.
@@ -107,7 +113,7 @@ export default {
              * @event input
              * @type {String}
              */
-            this.$emit('input', value);
+            this.$emit('input', id);
         },
         onOptionClick(value) {
             this.setSelected(value);
@@ -167,42 +173,69 @@ export default {
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_UP) {
                 this.onArrowUp();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_END) {
                 this.onEndKey();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_HOME) {
                 this.onHomeKey();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_ESC) {
                 this.isExpanded = false;
                 this.$refs.ul.blur();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_ENTER) {
                 this.isExpanded = false;
                 this.$refs.button.focus();
                 e.preventDefault();
+                return;
             }
+            this.searchItem(e);
         },
         handleKeyDownButton(e) {
             if (e.keyCode === KEY_ENTER) {
                 this.toggleExpanded();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_DOWN) {
                 this.onArrowDown();
                 e.preventDefault();
+                return;
             }
             if (e.keyCode === KEY_UP) {
                 this.onArrowUp();
                 e.preventDefault();
+                return;
+            }
+            this.searchItem(e);
+        },
+        searchItem(e) {
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = setTimeout(() => {
+                this.searchQuery = '';
+            }, TYPING_TIMEOUT);
+            this.searchQuery += e.key;
+
+            consola.trace(`Searching for ${this.searchQuery}`);
+
+            const candidate = this.possibleValues.find(
+                item => item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase())
+            );
+            if (candidate) {
+                this.setSelected(candidate.id);
             }
         },
         hasSelection() {

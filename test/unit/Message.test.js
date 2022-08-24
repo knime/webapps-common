@@ -1,7 +1,7 @@
 import Message from '~/ui/components/Message.vue';
 import Button from '~/ui/components/Button.vue';
 import { shallowMount, mount } from '@vue/test-utils';
-import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg?inline';
+import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg';
 
 describe('Message.vue', () => {
     let wrapper;
@@ -12,6 +12,8 @@ describe('Message.vue', () => {
         wrapper = shallowMount(Message);
 
         expect(wrapper.classes()).toEqual(['info']);
+        expect(wrapper.find('.message-count').classes()).toContain('info');
+        expect(wrapper.find('.close').classes()).toContain('info');
         expect(wrapper.find('span.close').exists()).toBe(true);
         expect(wrapper.find('.collapser').exists()).toBe(false);
         expect(wrapper.find('.banner').exists()).toBe(true);
@@ -25,6 +27,8 @@ describe('Message.vue', () => {
         });
 
         expect(wrapper.classes()).toEqual(['success']);
+        expect(wrapper.find('.message-count').classes()).toContain('success');
+        expect(wrapper.find('.close').classes()).toContain('success');
     });
 
     it('renders error', () => {
@@ -35,6 +39,8 @@ describe('Message.vue', () => {
         });
 
         expect(wrapper.classes()).toEqual(['error']);
+        expect(wrapper.find('.message-count').classes()).toContain('error');
+        expect(wrapper.find('.close').classes()).toContain('error');
     });
 
     it('renders button', () => {

@@ -34,31 +34,39 @@ const svgoOptions = {
 
 module.exports = {
     test: /\.svg$/i,
-    oneOf: [{
-        resourceQuery: /\?inline$/,
-        use: [{
-            loader: 'vue-svg-loader',
-            options: {
-                svgo: svgoOptions
-            }
-        }]
-    }, {
-        resourceQuery: /\?data$/,
-        use: [{
-            loader: 'url-loader'
-        }, {
-            loader: 'svgo-loader',
-            options: svgoOptions
-        }]
-    }, {
-        use: [{
-            loader: 'file-loader?name=img/[name].[hash:7].[ext]',
-            options: {
-                esModule: false
-            }
-        }, {
-            loader: 'svgo-loader',
-            options: svgoOptions
-        }]
-    }]
+    oneOf: [
+        {
+            resourceQuery: /\?data$/,
+            use: [
+                { loader: 'url-loader' },
+                {
+                    loader: 'svgo-loader',
+                    options: svgoOptions
+                }
+            ]
+        },
+        {
+            resourceQuery: /\?file$/,
+            use: [
+                {
+                    loader: 'file-loader?name=img/[name].[hash:7].[ext]',
+                    options: { esModule: false }
+                },
+                {
+                    loader: 'svgo-loader',
+                    options: svgoOptions
+                }
+            ]
+        },
+        {
+            use: [
+                {
+                    loader: 'vue-svg-loader',
+                    options: {
+                        svgo: svgoOptions
+                    }
+                }
+            ]
+        }
+    ]
 };
