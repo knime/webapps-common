@@ -8,7 +8,15 @@ def BN = BRANCH_NAME == 'master' || BRANCH_NAME.startsWith('releases/') ? BRANCH
 library "knime-pipeline@$BN"
 
 properties([
-  buildDiscarder(logRotator(numToKeepStr: '20'))
+  buildDiscarder(logRotator(numToKeepStr: '20')),
+  parameters([
+    booleanParam(
+      name: 'PUBLISH_ESLINT_CONFIG',
+      description: 'Triggers a publish of @knime/eslint-config to npm. Make sure you update the version number in ' 
+          + 'package.json. Only for master branch.',
+      defaultValue: false
+    )
+  ])
 ])
 
 try {
@@ -33,7 +41,7 @@ try {
         junit 'coverage/junit.xml'
         knimetools.processAuditResults()
 
-        /* if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) { */
+        if ((BRANCH_NAME == "master") && (params.PUBLISH_ESLINT_CONFIG)) {
             try {
                 stage('Deploy to npm') {
                     env.lastStage = env.STAGE_NAME
@@ -60,7 +68,7 @@ try {
                 env.testFailure = true
                 junit 'publish.xml'
             }
-        /* } */
+        }
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
