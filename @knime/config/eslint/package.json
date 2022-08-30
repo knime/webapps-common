@@ -1,0 +1,43 @@
+{
+    "name": "@knime/eslint-config",
+    "version": "0.1.0",
+    "description": "An ESLint ruleset designed for typical KNIME project setups using Vue/Nuxt",
+    "scripts": {
+        "lint": "eslint --ext .js .",
+        "lint:ci": "eslint --ext .js -f json -o ../../../target/eslint-config.json ."
+    },
+    "main": "index.js",
+    "license": "UNLICENSED",
+    "author": "KNIME AG, Zurich, Switzerland",
+    "files": [
+        "./index.js",
+        "./base.js",
+        "./jest.js",
+        "./legacy.js",
+        "./nuxt.js",
+        "./tyepscript.js",
+        "./vue.js",
+        "./vue3.js"
+    ],
+    "peerDependencies": {
+        "eslint": "^7.0.0 || ^8.0.0"        
+    },
+    "dependencies": {
+        "@rushstack/eslint-patch": "^1.1.4",
+        "eslint-import-resolver-alias": "^1.1.2",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jest": "^27.0.1",
+        "eslint-plugin-jest-formatting": "^3.1.0",
+        "eslint-plugin-jsonc": "^2.4.0",
+        "eslint-plugin-vue": "^9.4.0"
+    },
+    "devDependencies": {
+        "eslint": "8.23.0"
+    },
+    "engines": {
+        "node": "18.x"
+    },
+    "volta": {
+        "node": "18.7.0"
+    }
+}
