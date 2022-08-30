@@ -1,6 +1,6 @@
 {
     "name": "@knime/eslint-config",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "An ESLint ruleset designed for typical KNIME project setups using Vue/Nuxt",
     "scripts": {
         "lint": "eslint --ext .js .",

@@ -80,8 +80,8 @@ module.exports = {
             skipBlankLines: true,
             skipComments: true
         }],
-        'max-nested-callbacks': ['warn', 4], // eslint-disable-line no-magic-numbers
-        'max-params': ['warn', 4], // eslint-disable-line no-magic-numbers
+        'max-nested-callbacks': ['warn', 4],
+        'max-params': ['warn', 4],
         'max-statements-per-line': ['warn', { max: 2 }],
         'multiline-ternary': ['error', 'always-multiline'],
         'new-cap': 'warn',
@@ -217,6 +217,17 @@ module.exports = {
         yoda: ['error', 'never', { exceptRange: true }]
     },
     overrides: [{
+        files: ['.eslintrc*.js'],
+        // this is required for .eslintrc-legacy, which overrides parserOptions in root
+        parserOptions: { ...parserOptions },
+        env: {
+            browser: false,
+            node: true
+        },
+        rules: {
+            'no-magic-numbers': 'off'
+        }
+    }, {
         files: ['*.json'],
         parser: 'jsonc-eslint-parser',
         rules: {
