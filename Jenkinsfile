@@ -40,7 +40,7 @@ try {
                     withCredentials([string(credentialsId: 'NPM_AUTH_TOKEN', variable: 'NPM_AUTH_TOKEN'),]) {
                         sh '''
                             echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> ~/.npmrc
-                            target/node/npm publish @knime/config/eslint --quiet
+                            target/node/npm publish @knime/config/eslint --quiet --access=public
                         '''
                     }
                 }
