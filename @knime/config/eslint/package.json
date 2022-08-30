@@ -7,7 +7,7 @@
         "lint:ci": "eslint --ext .js -f json -o ../../../target/eslint-config.json ."
     },
     "main": "index.js",
-    "license": "UNLICENSED",
+    "license": "See the file LICENSE",
     "author": "KNIME AG, Zurich, Switzerland",
     "files": [
         "./index.js",
