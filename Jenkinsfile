@@ -33,7 +33,7 @@ try {
         junit 'coverage/junit.xml'
         knimetools.processAuditResults()
 
-        if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) {
+        /* if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) { */
             try {
                 stage('Deploy to npm') {
                     env.lastStage = env.STAGE_NAME
@@ -60,7 +60,7 @@ try {
                 env.testFailure = true
                 junit 'publish.xml'
             }
-        }
+        /* } */
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
