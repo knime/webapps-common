@@ -1,4 +1,4 @@
-const parentRules = require('./.eslintrc-base').rules;
+const parentRules = require('./base').rules;
 
 module.exports = {
     plugins: ['vue', 'import'],
