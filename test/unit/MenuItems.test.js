@@ -92,6 +92,65 @@ describe('MenuItems.vue', () => {
         expect(menuLineItems.at(2).classes()).toContain('separator');
     });
 
+    it('renders with sectionHeadlines', () => {
+        const items = [{
+            text: 'Apples',
+            disabled: false,
+            separator: true,
+            sectionHeadline: true
+        }, {
+            text: 'Oranges',
+            disabled: true,
+            sectionHeadline: true,
+            separator: true
+        }, {
+            text: 'Ananas',
+            hotkeyText: 'F9',
+        }];
+        const wrapper = shallowMount(MenuItems, {
+            propsData: {
+                ariaLabel: 'label',
+                items
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        expect(wrapper.html()).toBeTruthy();
+        const listItems = wrapper.findAll({ ref: 'listItem' })
+        expect(listItems.at(0).classes()).toContain('section-headline');
+        expect(listItems.at(1).classes()).toContain('section-headline');
+        expect(listItems.at(2).classes()).not.toContain('section-headline');
+    });
+
+    it('renders with selected items', () => {
+        const items = [{
+            text: 'Apples',
+            disabled: false,
+            selected: true
+        }, {
+            text: 'Oranges',
+            disabled: true,
+        }, {
+            text: 'Ananas',
+            hotkeyText: 'F9',
+        }];
+        const wrapper = shallowMount(MenuItems, {
+            propsData: {
+                ariaLabel: 'label',
+                items
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        expect(wrapper.html()).toBeTruthy();
+        const clickableItems = wrapper.findAll('.clickable-item');
+        expect(clickableItems.at(0).classes()).toContain('selected');
+        expect(clickableItems.at(1).classes()).not.toContain('selected');
+        expect(clickableItems.at(2).classes()).not.toContain('selected');
+    });
+
     it('can display hotkeys', () => {
         const id = 'testfoobar543';
         const items = [

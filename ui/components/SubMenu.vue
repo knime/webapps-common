@@ -53,6 +53,20 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Set max-width for the menu and truncate larger text
+         */
+        maxMenuWidth: {
+            type: Number,
+            default: 0
+        },
+        /**
+         * Prevent overflow of the popper on the main axis regarding the SubMenu Button
+         */
+        preventOverflowMainAxis: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -87,7 +101,11 @@ export default {
             const targetEl = this.$refs['menu-wrapper'];
 
             this.popperInstance = createPopper(referenceEl, targetEl, {
-                placement: this.popperPlacement
+                placement: this.popperPlacement,
+                modifiers: [{
+                    name: 'preventOverflow',
+                    options: { mainAxis: this.preventOverflowMainAxis }
+                }]
             });
         },
         setPopperOrientation() {
@@ -119,6 +137,7 @@ export default {
         toggleMenu() {
             this.expanded = !this.expanded;
             this.popperInstance.update();
+            this.$emit('menu-toggled', this.expanded);
 
             setTimeout(() => {
                 if (this.$refs['submenu-toggle']) {
@@ -172,6 +191,7 @@ export default {
         closeMenu(refocusToggle = true) {
             setTimeout(() => {
                 this.expanded = false;
+                this.$emit('menu-toggled', this.expanded);
                 if (refocusToggle && this.$refs['submenu-toggle']) {
                     this.$refs['submenu-toggle'].focus();
                 }
@@ -225,6 +245,7 @@ export default {
         ref="menuItems"
         :class="['menu-items', `orient-${orientation}`]"
         :items="items"
+        :max-menu-width="maxMenuWidth"
         aria-label="sub menu"
         @item-click="onItemClick"
       />
