@@ -1,7 +1,7 @@
 {
     "name": "@knime/eslint-config",
-    "version": "0.1.3",
-    "description": "An ESLint ruleset designed for typical KNIME project setups using Vue/Nuxt",
+    "version": "7.0.0",
+    "description": "An ESLint ruleset designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
     "scripts": {
         "lint": "eslint --ext .js .",
         "lint:ci": "eslint --ext .js -f json -o ../../../target/eslint-config.json ."
@@ -10,15 +10,17 @@
     "license": "See the file LICENSE",
     "author": "KNIME AG, Zurich, Switzerland",
     "repository": {
-      "type" : "git",
-      "url" : "https://github.com/knime/webapps-common",
-      "directory": "@knime/config/eslint"
+        "type": "git",
+        "url": "https://github.com/knime/webapps-common",
+        "directory": "@knime/config/eslint"
     },
     "peerDependencies": {
-        "eslint": "^7.0.0 || ^8.0.0"        
+        "eslint": "^7.0.0 || ^8.0.0"
     },
     "dependencies": {
         "@rushstack/eslint-patch": "^1.1.4",
+        "@typescript-eslint/eslint-plugin": "^5.36.1",
+        "@typescript-eslint/parser": "^5.36.1",
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-jest": "^27.0.1",

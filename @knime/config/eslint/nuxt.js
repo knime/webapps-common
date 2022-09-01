@@ -1,11 +1,8 @@
-const parentRules = require('./vue').rules;
-
 module.exports = {
     extends: ['./vue.js'],
     rules: {
         'vue/component-name-in-template-casing': ['error', 'PascalCase', {
             ignores: [
-                ...parentRules['vue/component-name-in-template-casing'][2].ignores,
                 'nuxt',
                 'nuxt-link',
                 'nuxt-child',

@@ -17,10 +17,10 @@ module.exports = {
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off',
-        'import/extensions': ['error', { vue: 'always', json: 'always' }]
+        'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
     },
     overrides: [{
-        files: ['server/**/*.js', '{vue,nuxt}.config.js', 'nightwatch.conf.js'],
+        files: ['server/**/*.js', 'vite.config.js'],
         env: {
             node: true
         }
@@ -35,13 +35,7 @@ module.exports = {
     settings: {
         'import/resolver': {
             alias: {
-                map: [
-                    ['~', '.'],
-                    ['@', '.'],
-                    ['~~', '.'],
-                    ['@@', '.']
-                ],
-                extensions: ['.vue', '.config.js', '.ttl-patch.js']
+                extensions: ['.js', '.mjs', '.config.js', '.vue', '.json', '.svg']
             }
         }
     }

@@ -12,34 +12,22 @@ module.exports = {
         'max-lines': ['warn', Object.assign(parentRules['max-lines'][1], {
             max: 500
         })],
-        'vue/component-name-in-template-casing': ['error', 'PascalCase', {
-            // Workaround for https://github.com/vuejs/eslint-plugin-vue/issues/580
-            ignores: [
-                'a', 'animate', 'animateMotion', 'animateTransform', 'audio', 'canvas', 'circle', 'clipPath', 'defs',
-                'desc', 'discard', 'ellipse', 'feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite',
-                'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feDropShadow',
-                'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge',
-                'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight',
-                'feTile', 'feTurbulence', 'filter', 'foreignObject', 'g', 'iframe', 'image', 'line', 'linearGradient',
-                'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient',
-                'rect', 'script', 'set', 'stop', 'style', 'svg', 'switch', 'symbol', 'text', 'textPath', 'title',
-                'tspan', 'unknown', 'use', 'video', 'view'
-            ]
-        }],
         'vue/html-closing-bracket-newline': ['error', {
             singleline: 'never',
             multiline: 'always'
         }],
         'vue/html-closing-bracket-spacing': 'error',
         'vue/multiline-html-element-content-newline': 'error',
-        'vue/padding-line-between-blocks': 'error',
+        'vue/multi-word-component-names': 'off',
+        'vue/no-reserved-component-names': 'off',
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
+        'vue/padding-line-between-blocks': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off',
-        'import/extensions': ['error', { vue: 'always', json: 'always' }]
+        'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
     },
     overrides: [{
-        files: ['server/**/*.js', '{vue,nuxt}.config.js', 'nightwatch.conf.js'],
+        files: ['server/**/*.js', '{vue,nuxt}.config.js'],
         env: {
             node: true
         }
@@ -60,13 +48,7 @@ module.exports = {
     settings: {
         'import/resolver': {
             alias: {
-                map: [
-                    ['~', '.'],
-                    ['@', '.'],
-                    ['~~', '.'],
-                    ['@@', '.']
-                ],
-                extensions: ['.vue', '.config.js', '.ttl-patch.js']
+                extensions: ['.js', '.mjs', '.config.js', '.vue', '.json', '.svg']
             }
         }
     }
