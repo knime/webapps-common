@@ -23,10 +23,10 @@ module.exports = {
         '!<rootDir>/test/unit/test-util'
     ],
     coveragePathIgnorePatterns: [
-        '^<rootDir>/(coverage|dist|test|target|node_modules|bin|webapps-common|src/dev)/',
+        '^<rootDir>/(coverage|dist|test|target|node_modules|bin|src/dev)/',
         '^<rootDir>/src/(main.ts|dev.ts)'
     ],
-    watchPathIgnorePatterns: ['^<rootDir>/(coverage|dist|target|node_modules|bin|webapps-common)/'],
+    watchPathIgnorePatterns: ['^<rootDir>/(coverage|dist|target|node_modules|bin)/'],
     testURL: 'http://test.example/',
     testMatch: ['<rootDir>/test/unit/suites/**/*.test.ts'],
     watchPlugins: [],
