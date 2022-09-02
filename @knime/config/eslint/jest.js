@@ -13,7 +13,8 @@ module.exports = {
                 'no-undefined': 'off'
             },
             env: {
-                jest: true
+                jest: true,
+                node: true
             }
         }
     ]

@@ -229,6 +229,16 @@ module.exports = {
             'no-magic-numbers': 'off'
         }
     }, {
+        files: ['config.{js,ts}', '*.config.{js,ts}', 'config.mjs', '*.config.mjs', 'config/**'],
+        rules: {
+            camelcase: 'off',
+            'no-magic-numbers': 'off',
+            'no-process-env': 'off'
+        },
+        env: {
+            node: true
+        }
+    }, {
         files: ['*.json'],
         parser: 'jsonc-eslint-parser',
         rules: {

@@ -1,8 +1,8 @@
 # KNIME ESLint config
 
-This repository contains an [ESLint] ruleset for typical KNIME frontend projects. Rules cover simple TypeScript setups
-as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test scenarios with [Jest] are also
-present.
+This repository contains an [ESLint] ruleset for typical KNIME frontend projects. Rules cover simple
+JavaScript/TypeScript setups as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test
+scenarios with [Jest] are also present.
 
 ## Development
 

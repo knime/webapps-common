@@ -19,19 +19,6 @@ module.exports = {
         'vue/singleline-html-element-content-newline': 'off',
         'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
     },
-    overrides: [{
-        files: ['server/**/*.js', 'vite.config.js'],
-        env: {
-            node: true
-        }
-    }, {
-        files: ['config.js', '*.config.js', '*.conf.js', 'config.mjs', '*.config.mjs', '*.conf.mjs', 'config/**'],
-        rules: {
-            camelcase: 'off',
-            'no-magic-numbers': 'off',
-            'no-process-env': 'off'
-        }
-    }],
     settings: {
         'import/resolver': {
             alias: {

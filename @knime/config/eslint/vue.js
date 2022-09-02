@@ -27,18 +27,6 @@ module.exports = {
         'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
     },
     overrides: [{
-        files: ['server/**/*.js', '{vue,nuxt}.config.js'],
-        env: {
-            node: true
-        }
-    }, {
-        files: ['config.js', '*.config.js', '*.conf.js', 'config.mjs', '*.config.mjs', '*.conf.mjs', 'config/**'],
-        rules: {
-            camelcase: 'off',
-            'no-magic-numbers': 'off',
-            'no-process-env': 'off'
-        }
-    }, {
         // this needs to be done here as the max-lines rule above overrides stuff from eslintrc-base
         files: ['*.json'],
         rules: {
