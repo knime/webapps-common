@@ -56,6 +56,9 @@ import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
+import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
+
+import NpmLink from '../components/demo/NpmLink.vue';
 
 const demoComponents = {
     layout: {
@@ -114,6 +117,22 @@ const demoComponents = {
         NodePreview,
         NodeFeatureList,
         OpenSourceCredits
+    },
+    npm: {
+        knimeUiTable: {
+            render() {
+                const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
+                const name = 'KNIME Table';
+                return <NpmLink link={link} name={name}/>;
+            }
+        },
+        knimeEsLint: {
+            render() {
+                const link = 'https://www.npmjs.com/package/@knime/eslint-config';
+                const name = 'KNIME ESLint config';
+                return <NpmLink link={link} name={name}/>;
+            }
+        }
     }
 };
 
@@ -191,6 +210,10 @@ export default {
                 value: 'misc',
                 label: 'Misc',
                 icon: UnknownIcon
+            }, {
+                value: 'npm',
+                label: 'Npm modules',
+                icon: ListThumbs
             }];
         }
     },
