@@ -12,11 +12,31 @@ const parentRoot = path.resolve(parentPkgPath, '..');
 
 const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
+const excludeScopedPackages = (allPackages, scope) => {
+    const formatDependencyList = (packages, orgPrefix) => Object.entries(packages)
+        .filter(([name]) => name.startsWith(orgPrefix))
+        .map(([name, version]) => `${name}@${semver.coerce(version)}`, []);
+
+    const excludePackagesByScope = (orgPrefix) => [
+        ...formatDependencyList(allPackages.dependencies, orgPrefix),
+        ...formatDependencyList(allPackages.devDependencies, orgPrefix)
+    ];
+    
+    return excludePackagesByScope('@knime').join(';');
+};
+
 if (!skip) {
     // exclude parent package
     const parentPkg = require(parentPkgPath);
-    const parentPkgVersion = semver.coerce(parentPkg.version); // licensechecker only accepts semver versions
+    
+    // licensechecker only accepts semver versions
+    const parentPkgVersion = semver.coerce(parentPkg.version);
+    
     config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
+
+    config.excludePackages.push(
+        excludeScopedPackages(parentPkg, '@knime')
+    );
 
     // collect all used production packages and their licenses
     const options = {
@@ -26,6 +46,7 @@ if (!skip) {
         excludePackages: config.excludePackages.join(';'),
         customPath: path.resolve(__dirname, 'collect-packages-format.json')
     };
+
     licensechecker.init(options, (err, collectedPackages) => {
         if (err) {
             throw err;
