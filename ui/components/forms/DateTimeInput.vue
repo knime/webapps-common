@@ -410,7 +410,7 @@ export default {
     width: auto;
     flex-wrap: wrap;
 
-    & >>> .wrapper {
+    & :deep(.wrapper) {
       width: 5rem;
     }
 
@@ -430,12 +430,12 @@ export default {
        new 1.1+ theme with css-vars see https://github.com/nathanreyes/v-calendar/blob/master/src/styles/base.css */
 
     /* remove caret (triangle) */
-    & >>> .vc-popover-caret {
+    & :deep(.vc-popover-caret) {
       display: none;
     }
 
     /* no space between input and popover */
-    & >>> .vc-popover-content-wrapper {
+    & :deep(.vc-popover-content-wrapper) {
       --popover-vertical-content-offset: 0;
       --popover-horizontal-content-offset: 0;
 
@@ -443,7 +443,7 @@ export default {
       --popover-transition-time: 0.1s ease-in-out;
     }
 
-    & >>> .vc-container {
+    & :deep(.vc-container) {
       /* remove roundness */
       --rounded: 0;
       --rounded-lg: 0;

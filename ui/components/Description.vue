@@ -54,11 +54,11 @@ export default {
     possible markup in Port description: a,b,br,hr,i,ol,p,pre,sub,sup,tt,u,ul
     see https://bitbucket.org/KNIME/knime-core/src/3207ad3e20e242550d4c775e1af6d69cd521d9fd/org.knime.core/src/eclipse/org/knime/core/node/Node_v3.6.xsd#lines-316
   */
-  & >>> p {
+  & :deep(p) {
     margin: 0 0 20px;
   }
 
-  & >>> a {
+  & :deep(a) {
     color: var(--theme-text-link-foreground-color);
     background: var(--theme-text-link-background-color);
 
@@ -100,32 +100,32 @@ export default {
     }
   }
 
-  & >>> pre,
-  & >>> code, /* in case it will be used in the future since <tt> is deprecated */
-  & >>> tt {
+  & :deep(pre),
+  & :deep(code), /* in case it will be used in the future since <tt> is deprecated */
+  & :deep(tt) {
     background-color: var(--knime-white);
     border: 1px solid var(--knime-silver-sand);
     padding: 0 5px;
     font-size: 17px;
   }
 
-  & >>> pre {
+  & :deep(pre) {
     padding: 3px 8px;
     white-space: pre-wrap;
     overflow: hidden; /* for nicer floating around node icon */
   }
 
-  & >>> hr {
+  & :deep(hr) {
     border: 0;
     border-top: 1px solid var(--knime-silver-sand);
   }
 
-  & >>> ul,
-  & >>> ol {
+  & :deep(ul),
+  & :deep(ol) {
     overflow: hidden; /* for nicer floating around node icon */
   }
 
-  & >>> table {
+  & :deep(table) {
     border-spacing: 15px 0;
     width: calc(100% + 2 * 15px);
     text-align: left;
@@ -157,12 +157,12 @@ export default {
     }
   }
 
-  & >>> dt,
-  & >>> b {
+  & :deep(dt),
+  & :deep(b) {
     font-weight: bold;
   }
 
-  & >>> dd {
+  & :deep(dd) {
     margin-left: 15px;
   }
 }

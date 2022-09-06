@@ -186,11 +186,11 @@ export default {
 .demo {
   background-color: var(--knime-gray-ultra-light);
 
-  & >>> .shadow-wrapper::before {
+  & :deep(.shadow-wrapper::before) {
     background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-gray-ultra-light) 100%);
   }
 
-  & >>> .shadow-wrapper::after {
+  & :deep(.shadow-wrapper::after) {
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-gray-ultra-light) 100%);
   }
 }

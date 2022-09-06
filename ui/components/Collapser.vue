@@ -100,7 +100,7 @@ export default {
   text-align: left;
   cursor: pointer;
 
-  & >>> svg {
+  & :deep(svg) {
     position: absolute;
     margin-right: 4px;
     float: left;
@@ -144,8 +144,8 @@ export default {
   }
 }
 
->>> ul,
->>> ol {
+:deep(ul),
+:deep(ol) {
   margin: 0;
   padding-left: 40px;
 }

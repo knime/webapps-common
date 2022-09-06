@@ -77,7 +77,7 @@ export default {
   /*
   Add margin to first children, using last-child and first-child to avoid problems in build
   */
-  & >>> > * {
+  & :deep(> *) {
     &:first-child {
       margin-right: 8px;
     }
@@ -92,7 +92,7 @@ export default {
     padding: 6px;
   }
 
-  & >>> svg {
+  & :deep(svg) {
     vertical-align: top;
     stroke: var(--theme-button-function-foreground-color);
     width: 18px;
@@ -105,7 +105,7 @@ export default {
     color: var(--theme-button-function-foreground-color-hover);
     background-color: var(--theme-button-function-background-color-hover);
 
-    & >>> svg {
+    & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-hover);
     }
   }
@@ -115,7 +115,7 @@ export default {
     color: var(--theme-button-function-foreground-color-focus);
     background-color: var(--theme-button-function-background-color-focus);
 
-    & >>> svg {
+    & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-focus);
     }
   }
@@ -124,7 +124,7 @@ export default {
     color: var(--theme-button-function-foreground-color-active);
     background-color: var(--theme-button-function-background-color-active);
 
-    & >>> svg {
+    & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-active);
     }
   }
@@ -133,7 +133,7 @@ export default {
     color: var(--theme-button-foreground-color);
     background-color: var(--theme-button-background-color);
 
-    & >>> svg {
+    & :deep(svg) {
       stroke: var(--theme-button-foreground-color);
     }
 
@@ -142,7 +142,7 @@ export default {
       color: var(--theme-button-foreground-color-hover);
       background-color: var(--theme-button-background-color-hover);
 
-      & >>> svg {
+      & :deep(svg) {
         stroke: var(--theme-button-foreground-color-hover);
       }
     }
@@ -153,7 +153,7 @@ export default {
       color: var(--theme-button-foreground-color-focus);
       background-color: var(--theme-button-background-color-focus);
 
-      & >>> svg {
+      & :deep(svg) {
         stroke: var(--theme-button-foreground-color-focus);
       }
     }

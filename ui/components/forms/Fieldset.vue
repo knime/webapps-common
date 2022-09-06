@@ -69,13 +69,13 @@ fieldset {
     margin-bottom: 3px;
   }
 
-  & >>> .label-wrapper,
+  & :deep(.label-wrapper),
   & > fieldset {
     margin-top: 10px;
   }
 
   /* avoid duplicated margins */
-  & >>> legend + .label-wrapper {
+  & :deep(legend + .label-wrapper) {
     margin-top: 0;
   }
 }

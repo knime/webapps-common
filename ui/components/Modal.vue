@@ -83,11 +83,11 @@ export default {
 
   color: var(--theme-text-link-foreground-color);
 
-  & >>> strong {
+  & :deep(strong) {
     font-weight: 500;
   }
 
-  & >>> a {
+  & :deep(a) {
     color: var(--theme-text-link-foreground-color);
     background: var(--theme-text-link-background-color);
 
@@ -117,7 +117,7 @@ export default {
     }
   }
 
-  & >>> p {
+  & :deep(p) {
     margin: 0;
 
     &:not(:last-child) {
@@ -129,7 +129,7 @@ export default {
     margin-left: auto;
     margin-right: -6px;
 
-    & >>> svg {
+    & :deep(svg) {
       stroke: var(--knime-white);
     }
   }
@@ -151,7 +151,7 @@ export default {
       line-height: 0;
       margin-right: 10px;
 
-      & >>> svg {
+      & :deep(svg) {
         width: 22px;
         height: 22px;
         stroke-width: 2.2px;
@@ -180,7 +180,7 @@ export default {
     }
   }
 
-  & .notice >>> {
+  & .notice :deep(*) {
     padding: var(--modal-padding);
     font-weight: 300;
 
@@ -208,7 +208,7 @@ export default {
     }
   }
 
-  & .confirmation >>> {
+  & .confirmation :deep(*) {
     padding: var(--modal-padding) var(--modal-padding) 0;
 
     & p {

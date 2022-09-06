@@ -192,11 +192,11 @@ export default {
 
 <style lang="postcss" scoped>
 section {
-  & >>> .shadow-wrapper::before {
+  & :deep(.shadow-wrapper::before) {
     background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 
-  & >>> .shadow-wrapper::after {
+  & :deep(.shadow-wrapper::after) {
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 }
@@ -209,12 +209,12 @@ button {
   width: 6em;
 }
 
->>> input[value="bananas"] + span svg {
+:deep(input[value="bananas"] + span svg) {
   fill: transparent;
   transition: fill 0.4s linear;
 }
 
->>> input[value="bananas"]:checked + span svg {
+:deep(input[value="bananas"]:checked + span svg) {
   fill: var(--knime-yellow);
 }
 </style>

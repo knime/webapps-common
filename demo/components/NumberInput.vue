@@ -188,7 +188,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
->>> label > div {
+:deep(label > div) {
   margin-bottom: 5px;
 }
 </style>

@@ -150,8 +150,8 @@ dl {
   & button:active,
   & button:hover,
   & button:focus,
-  & >>> a:focus,
-  & >>> a:hover {
+  & :deep(a:focus),
+  & :deep(a:hover) {
     outline: none;
     font-weight: 400;
   }

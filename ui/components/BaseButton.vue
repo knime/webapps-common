@@ -25,6 +25,9 @@ export default {
             default: false
         }
     },
+    created() {
+        consola.log(this);
+    },
     methods: {
         onClick(e) {
             /**
@@ -46,12 +49,13 @@ export default {
 </script>
 
 <template>
-  <!-- see https://stackoverflow.com/a/41476882/5134084 for the `.native` in `@click.native`  -->
   <nuxt-link
     v-if="to"
     :to="to"
     :event="preventDefault ? [] : 'click'"
-    @click.native="onClick"
+    v-bind="$attrs"
+    class
+    @click="onClick"
   >
     <slot />
   </nuxt-link>
@@ -59,6 +63,8 @@ export default {
   <a
     v-else-if="href"
     :href="href"
+    v-bind="$attrs"
+    class
     @click="onClick"
   >
     <slot />
@@ -66,6 +72,8 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Space -->
   <button
     v-else
+    v-bind="$attrs"
+    class
     @click="onClick"
   >
     <slot />

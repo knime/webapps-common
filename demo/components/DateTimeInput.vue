@@ -96,7 +96,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.inputs >>> label {
+.inputs :deep(label) {
   margin-bottom: 0;
   margin-top: 15px;
 }

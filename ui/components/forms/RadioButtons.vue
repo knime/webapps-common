@@ -66,7 +66,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.radio-buttons >>> {
+.radio-buttons :deep(*) {
   user-select: none;
 
   & label {
@@ -147,19 +147,19 @@ export default {
 .disabled {
   opacity: 0.5;
 
-  & >>> label {
+  & :deep(label) {
     cursor: initial;
   }
 }
 
 /* stylelint-disable no-descending-specificity */
-.radio-buttons:focus-within >>> label input + span::before {
+.radio-buttons:focus-within :deep(label input + span::before) {
   border: 1px solid var(--theme-radio-border-color-focus);
 }
 /* stylelint-enable no-descending-specificity */
 
 
-.horizontal >>> {
+.horizontal :deep(*) {
   display: flex;
   flex-wrap: wrap;
 

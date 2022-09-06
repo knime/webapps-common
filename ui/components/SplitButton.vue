@@ -9,7 +9,7 @@ div {
   display: inline-flex;
   border-radius: var(--theme-button-split-border-radius); /* needed for correct :hover style trigger below */
 
-  & >>> .button.primary {
+  & :deep(.button.primary) {
     position: relative;
     margin-bottom: 0;
 
@@ -30,14 +30,14 @@ div {
 
   &:hover,
   &:focus-within {
-    & >>> .button {
+    & :deep(.button) {
       &::after {
         display: none;
       }
     }
   }
 
-  & >>> .submenu {
+  & :deep(.submenu) {
     /* best way to ensure flexible 1/4 corners */
     border-radius: 0 var(--theme-button-split-border-radius) var(--theme-button-split-border-radius) 0;
 

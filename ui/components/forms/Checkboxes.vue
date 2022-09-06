@@ -101,7 +101,7 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
 
-    & >>> label {
+    & :deep(label) {
       text-overflow: ellipsis;
 
       &:not(:last-of-type) {

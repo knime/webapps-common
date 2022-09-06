@@ -132,11 +132,13 @@ export default {
       :is="showDetailsCollapser ? 'Collapser' : 'div'"
       :class="showDetailsCollapser ? 'collapser' : 'banner'"
     >
-      <Component
+      <!-- TODO: check how this affects rendering, named slots can only be used by templates, replaced with simple template for now
+        <Component
         :is="showDetailsCollapser ? 'template' : 'div'"
-        slot="title"
+        #title
         class="title"
-      >
+      > -->
+      <template #title>
         <!-- @slot Use this slot to add an icon. -->
         <slot name="icon" />
         <span class="message">
@@ -175,7 +177,8 @@ export default {
             <CloseIcon />
           </span>
         </template>
-      </Component>
+      <!-- </Component> -->
+      </template>
       <div
         v-if="detailsText"
         class="details"
@@ -251,8 +254,8 @@ export default {
   align-items: center;
 }
 
-.collapser >>> svg,
-.banner >>> svg {
+.collapser :deep(svg),
+.banner :deep(svg) {
   position: relative;
   width: 24px;
   height: 24px;
@@ -294,8 +297,8 @@ export default {
   }
 
   /* hover/focus styles for type info */
-  &.info:hover >>> svg,
-  &.info:focus >>> svg {
+  &.info:hover :slotted(svg),
+  &.info:focus :slotted(svg) {
     filter: drop-shadow(0 0 4px white);
   }
 }
@@ -322,7 +325,7 @@ span.close {
   width: 100%;
   pointer-events: all;
 
-  & >>> .button {
+  & :deep(.button) {
     display: flex;
     align-content: center;
 
@@ -353,7 +356,7 @@ span.close {
     }
   }
 
-  & >>> .panel {
+  & :deep(.panel) {
     width: 100vw;
     max-width: 100vw;
     background-color: var(--knime-white);
@@ -419,7 +422,7 @@ span.close {
 
 @media only screen and (max-width: 1180px) {
   .collapser {
-    & >>> .panel {
+    & :deep(.panel) {
       padding-left: var(--grid-gap-width);
       padding-right: var(--grid-gap-width);
     }

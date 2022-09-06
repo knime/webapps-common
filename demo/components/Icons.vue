@@ -182,7 +182,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
->>> .wrapper {
+:deep(.wrapper) {
   margin: 0 -20px;
 }
 
@@ -198,7 +198,7 @@ svg {
   stroke-width: calc(32px / 50);
   stroke: var(--knime-masala);
 
-  & >>> .text {
+  & :deep(.text) {
     fill: var(--knime-masala);
     stroke: none;
   }

@@ -46,7 +46,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.value-switch >>> {
+.value-switch :deep(*) {
   display: flex;
   align-items: center;
   height: 30px;

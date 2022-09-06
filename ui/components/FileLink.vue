@@ -109,7 +109,7 @@ export default {
     margin-left: 0.5ch;
   }
 
-  & >>> svg {
+  & :deep(svg) {
     margin-right: 0.8ch;
     vertical-align: middle;
     stroke: var(--theme-text-link-foreground-color);
@@ -126,7 +126,7 @@ export default {
       background: var(--theme-text-link-background-color-hover);
       color: var(--theme-text-link-foreground-color-hover);
 
-      & >>> svg {
+      & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-hover);
 
         /* text on file icons use fill in path with class text */
@@ -140,7 +140,7 @@ export default {
       background: var(--theme-text-link-background-color-focus);
       color: var(--theme-text-link-foreground-color-focus);
 
-      & >>> svg {
+      & :deep(svg) {
         stroke: var(--theme-text-link-foreground-color-focus);
 
         /* text on file icons use fill in path with class text */

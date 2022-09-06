@@ -55,8 +55,8 @@ export default {
 
 <template>
   <BaseButton
-    :class="classes"
     v-bind="$attrs"
+    :class="classes"
     v-on="$listeners"
   >
     <slot />
@@ -78,7 +78,7 @@ export default {
   color: var(--knime-dove-gray);
   background-color: transparent;
 
-  & >>> svg {
+  & :slotted(svg) {
     width: 18px;
     height: 18px;
     stroke: var(--knime-dove-gray);
@@ -100,7 +100,7 @@ export default {
     outline: none;
     color: var(--knime-masala);
 
-    & >>> svg {
+    & :slotted(svg) {
       stroke: var(--knime-masala);
     }
   }
@@ -124,7 +124,7 @@ export default {
       background: var(--theme-button-small-background-color-focus);
     }
 
-    & >>> svg {
+    & :slotted(svg) {
       width: 14px;
       height: 14px;
       stroke-width: calc(32px / 14);
@@ -150,7 +150,7 @@ export default {
     color: var(--theme-button-foreground-color);
     background-color: var(--theme-button-background-color);
 
-    & >>> svg {
+    & :slotted(svg) {
       stroke: var(--theme-button-foreground-color);
     }
   }
@@ -160,7 +160,7 @@ export default {
     border: 1px solid var(--theme-button-border-color);
     color: var(--theme-button-foreground-color);
 
-    & >>> svg {
+    & :slotted(svg) {
       stroke: var(--theme-button-foreground-color);
     }
   }
@@ -179,7 +179,7 @@ export default {
       color: var(--theme-button-foreground-color-hover);
       background-color: var(--theme-button-background-color-hover);
 
-      & >>> svg {
+      & :slotted(svg) {
         stroke: var(--theme-button-foreground-color-hover);
       }
     }
@@ -190,7 +190,7 @@ export default {
       color: var(--theme-button-foreground-color-focus);
       background-color: var(--theme-button-background-color-focus);
 
-      & >>> svg {
+      & :slotted(svg) {
         stroke: var(--theme-button-foreground-color-focus);
       }
     }
@@ -202,7 +202,7 @@ export default {
       background-color: transparent;
       color: var(--knime-white);
 
-      & >>> svg {
+      & :slotted(svg) {
         stroke: var(--knime-white);
       }
     }
@@ -216,7 +216,7 @@ export default {
         background-color: var(--knime-white);
         color: var(--knime-masala);
 
-        & >>> svg {
+        & :slotted(svg) {
           stroke: var(--knime-masala);
         }
       }

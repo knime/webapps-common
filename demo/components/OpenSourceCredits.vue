@@ -89,7 +89,7 @@ export default {
   & .license-content {
     width: 100%;
 
-    & >>> section:last-child {
+    & :deep(section:last-child) {
       background: var(--knime-porcelain);
     }
   }

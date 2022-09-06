@@ -21,11 +21,11 @@ const codeExample = `
   }
 /* overwrite shadow color */
   section {
-    & >>> .shadow-wrapper::before {
+    & :deep(.shadow-wrapper::before) {
       background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
     }
 
-    & >>> .shadow-wrapper::after {
+    & :deep(.shadow-wrapper::after) {
       background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
     }
   }
@@ -83,11 +83,11 @@ export default {
 
 <style lang="postcss" scoped>
 section {
-  & >>> .shadow-wrapper::before {
+  & :deep(.shadow-wrapper::before) {
     background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 
-  & >>> .shadow-wrapper::after {
+  & :deep(.shadow-wrapper::after) {
     background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
   }
 }

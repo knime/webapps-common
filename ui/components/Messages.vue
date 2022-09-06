@@ -87,7 +87,7 @@ export default {
     pointer-events: all;
   }
 
-  & .offset-details >>> .details {
+  & .offset-details :deep(.details) {
     padding-left: 47px;
   }
 }

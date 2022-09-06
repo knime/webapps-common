@@ -179,7 +179,7 @@ export const tabBarMixin = {
   }
 }
 
->>> .carousel::after {
+:deep(.carousel::after) {
   content: "";
   display: block;
   position: absolute;

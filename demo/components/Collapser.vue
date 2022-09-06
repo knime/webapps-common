@@ -69,13 +69,13 @@ export default {
 .collapser {
   background-color: var(--knime-porcelain);
 
-  & >>> h5 {
+  & :deep(h5) {
     padding: 15px 30px;
     margin: 0;
     position: relative;
   }
 
-  & >>> .panel {
+  & :deep(.panel) {
     padding: 0 30px;
   }
 }

@@ -68,9 +68,9 @@ export default {
 nav {
   display: flex;
 
-  & >>> .submenu-toggle:hover,
-  & >>> .submenu-toggle:focus,
-  &:focus-within >>> .submenu-toggle {
+  & :deep(.submenu-toggle:hover),
+  & :deep(.submenu-toggle:focus),
+  &:focus-within :deep(.submenu-toggle) {
     color: var(--knime-white);
     background-color: var(--knime-masala);
 
@@ -257,7 +257,7 @@ h4 {
     align-self: stretch;
   }
 
-  & >>> .submenu-toggle {
+  & :deep(.submenu-toggle) {
     height: 100%;
     border-radius: 0;
   }
