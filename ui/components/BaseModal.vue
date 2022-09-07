@@ -67,6 +67,12 @@ export default {
          */
         cancel() {
             this.$emit('cancel');
+        },
+        /**
+         * Prevents propagation of the current event through the DOM tree
+         */
+        onContentClick(e) {
+            e.stopPropagation();
         }
     }
 };
@@ -86,12 +92,13 @@ export default {
       <div ref="dialog">
         <div
           class="overlay"
-          @click="onOverlayClick"
+          @click.stop="onOverlayClick"
         />
         <transition name="slide">
           <div
             v-if="showContent"
             class="wrapper"
+            @click="onContentClick"
           >
             <div class="inner">
               <slot />
