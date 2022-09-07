@@ -88,3 +88,7 @@ typings/
 target/
 
 dist/index.html
+
+# Maven build artifacts
+**/.flattened-pom.xml
+**/target/
