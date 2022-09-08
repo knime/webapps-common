@@ -41,14 +41,14 @@ try {
         junit 'coverage/junit.xml'
         knimetools.processAuditResults()
 
-        if ((BRANCH_NAME == "master") && (params.PUBLISH_ESLINT_CONFIG)) {
+        if ((BRANCH_NAME == "vue3") && (params.PUBLISH_ESLINT_CONFIG)) {
             try {
                 stage('Deploy to npm') {
                     env.lastStage = env.STAGE_NAME
                     withCredentials([string(credentialsId: 'NPM_AUTH_TOKEN', variable: 'NPM_AUTH_TOKEN'),]) {
                         sh '''
                             echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> ~/.npmrc
-                            target/node/npm publish @knime/config/eslint --quiet --access=public
+                            target/node/npm publish lint --quiet --access=public
                         '''
                     }
                 }
