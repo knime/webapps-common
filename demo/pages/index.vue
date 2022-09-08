@@ -122,7 +122,7 @@ const demoComponents = {
         knimeUiTable: {
             render() {
                 const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
-                const name = 'KNIME Table';
+                const name = 'KNIME UI Table';
                 return <NpmLink link={link} name={name}/>;
             }
         },
@@ -212,7 +212,7 @@ export default {
                 icon: UnknownIcon
             }, {
                 value: 'npm',
-                label: 'Npm modules',
+                label: 'npm packages',
                 icon: ListThumbs
             }];
         }
@@ -233,6 +233,7 @@ export default {
             This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
             To use them, it's recommended to integrate them as Git submodule as described in the
             <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
+            More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
           </p>
 
           <div class="categories">

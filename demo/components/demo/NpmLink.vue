@@ -15,7 +15,7 @@ export default {
             type: String
         },
         description: {
-            default: 'For the module\'s documentation, please look at the npm module page itself:',
+            default: 'See npm package:',
             type: String
         }
     }
