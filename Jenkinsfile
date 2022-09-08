@@ -12,10 +12,10 @@ properties([
 try {
     node('maven && java11') {
         knimetools.defaultMavenBuild(withoutNode: true)
-        
+
         junit '**/coverage/junit.xml'
-        knimetools.processAuditResults()
-        
+        knimetools.processAuditResults(skipStylelint: true)
+
         stage('Sonarqube analysis') {
             withCredentials([usernamePassword(credentialsId: 'ARTIFACTORY_CREDENTIALS', passwordVariable: 'ARTIFACTORY_PASSWORD', usernameVariable: 'ARTIFACTORY_LOGIN')]) {
                 withSonarQubeEnv('Sonarcloud') {
@@ -28,7 +28,7 @@ try {
                 }
             }
         }
-        
+
         // TODO: NXT-736 enable NPM publishing stage
         if (false) {
         //if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) {
