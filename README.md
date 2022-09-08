@@ -162,5 +162,4 @@ build file instead of the `.min.js` file.
 
 [node]: https://nodejs.org/
 [Vue]: https://vuejs.org/
-[Java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [jest]: https://jestjs.io/en

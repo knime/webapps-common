@@ -29,7 +29,9 @@ try {
             }
         }
         
-        if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) {
+        // TODO: NXT-736 enable NPM publishing stage
+        if (false) {
+        //if ((BRANCH_NAME == "master") && (currentBuild.result != 'UNSTABLE')) {
             try {
                 stage('Deploy to npm') {
                     env.lastStage = env.STAGE_NAME
