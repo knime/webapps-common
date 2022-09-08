@@ -67,12 +67,6 @@ export default {
          */
         cancel() {
             this.$emit('cancel');
-        },
-        /**
-         * Prevents propagation of the current event through the DOM tree
-         */
-        onContentClick(e) {
-            e.stopPropagation();
         }
     }
 };
@@ -98,7 +92,7 @@ export default {
           <div
             v-if="showContent"
             class="wrapper"
-            @click="onContentClick"
+            @click.stop
           >
             <div class="inner">
               <slot />
