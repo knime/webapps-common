@@ -265,12 +265,12 @@ describe('Dropdown.vue', () => {
 
             let ul = wrapper.find('ul');
 
-            ul.trigger('keydown', {key: 't'});
-            ul.trigger('keydown', {key: 'e'});
-            ul.trigger('keydown', {key: 'x'});
-            ul.trigger('keydown', {key: 't'});
-            ul.trigger('keydown', {key: ' '});
-            ul.trigger('keydown', {key: '4'});
+            ul.trigger('keydown', { key: 't' });
+            ul.trigger('keydown', { key: 'e' });
+            ul.trigger('keydown', { key: 'x' });
+            ul.trigger('keydown', { key: 't' });
+            ul.trigger('keydown', { key: ' ' });
+            ul.trigger('keydown', { key: '4' });
 
             expect(wrapper.emitted().input[5][0]).toBe('test4');
         });
@@ -287,22 +287,20 @@ describe('Dropdown.vue', () => {
 
             let ul = wrapper.find('ul');
 
-            ul.trigger('keydown', {key: 't'});
+            ul.trigger('keydown', { key: 't' });
             expect(wrapper.emitted().input[0][0]).toBe('test1');
 
             // stopping typing
             jest.runAllTimers();
 
-            ul.trigger('keydown', {key: 't'});
-            ul.trigger('keydown', {key: 'e'});
-            ul.trigger('keydown', {key: 'x'});
-            ul.trigger('keydown', {key: 't'});
-            ul.trigger('keydown', {key: ' '});
-            ul.trigger('keydown', {key: '3'});
+            ul.trigger('keydown', { key: 't' });
+            ul.trigger('keydown', { key: 'e' });
+            ul.trigger('keydown', { key: 'x' });
+            ul.trigger('keydown', { key: 't' });
+            ul.trigger('keydown', { key: ' ' });
+            ul.trigger('keydown', { key: '3' });
 
             expect(wrapper.emitted().input[6][0]).toBe('test3');
         });
-
     });
-
 });
