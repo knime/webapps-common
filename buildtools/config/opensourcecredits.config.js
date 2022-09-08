@@ -1,11 +1,3 @@
-const minorVersionRange = 100;
-const baseKnimePackages = ['@knime/knime-ui-table@0.1'];
-const dynamicPackageExclusions = [];
-
-for (let i = 0; i <= minorVersionRange; i++) {
-    dynamicPackageExclusions.push(...baseKnimePackages.map(pkg => `${pkg}.${i}`));
-}
-
 module.exports = {
     // allowed licenses; others will fail
     onlyAllow: [
@@ -15,7 +7,6 @@ module.exports = {
 
     // e.g. 'nuxt@2.0.0'
     excludePackages: [
-        ...dynamicPackageExclusions,
         'webapps-common@0.0.0',
         'knime-build-tools@0.0.0',
         'knime-ui@0.0.0-unused',

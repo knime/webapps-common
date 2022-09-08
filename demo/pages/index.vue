@@ -56,6 +56,9 @@ import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
+import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
+
+import NpmLink from '../components/demo/NpmLink.vue';
 
 const demoComponents = {
     layout: {
@@ -114,6 +117,22 @@ const demoComponents = {
         NodePreview,
         NodeFeatureList,
         OpenSourceCredits
+    },
+    npm: {
+        knimeUiTable: {
+            render() {
+                const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
+                const name = 'KNIME UI Table';
+                return <NpmLink link={link} name={name}/>;
+            }
+        },
+        knimeEsLint: {
+            render() {
+                const link = 'https://www.npmjs.com/package/@knime/eslint-config';
+                const name = 'KNIME ESLint config';
+                return <NpmLink link={link} name={name}/>;
+            }
+        }
     }
 };
 
@@ -191,6 +210,10 @@ export default {
                 value: 'misc',
                 label: 'Misc',
                 icon: UnknownIcon
+            }, {
+                value: 'npm',
+                label: 'npm packages',
+                icon: ListThumbs
             }];
         }
     },
@@ -210,6 +233,7 @@ export default {
             This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
             To use them, it's recommended to integrate them as Git submodule as described in the
             <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
+            More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
           </p>
 
           <div class="categories">

@@ -28,7 +28,8 @@ module.exports = {
         'coverage/',
         'dist/',
         'target/',
-        'webapps-common/'
+        'webapps-common/',
+        'knime-ui-extension-service/'
     ],
     rules: {
         'accessor-pairs': 'warn',

@@ -21,19 +21,21 @@ export default {
          * Each item has a `text`, optional `icon` and optional `to` / `href` properties, where `to` is for router-links
          * and `href` for standard (e.g. external) links. Items can be disabled with the 'disabled' property.
          * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
+         * The optional separator will add a separator below the item if it's not the last in the list.
          * @example
          [{
          href: 'http://apple.com',
          text: 'Apples',
          icon: HelpIcon
-         hotkeyText: 'CTRL + H'
+         hotkeyText: 'CTRL + H',
          }, {
-              href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
+           href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
               text: 'Oranges',
               icon: StarIcon,
-              disabled: true
+              disabled: true,
+              separator: true
            },  {
-              to: '/testing-nuxt-link',
+             to: '/testing-nuxt-link',
               text: 'Ananas'
            }]
          */
@@ -188,6 +190,7 @@ export default {
     <li
       v-for="(item, index) in items"
       :key="index"
+      :class="[{ separator: item.separator }]"
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
       @keydown.space="onItemClick($event, item)"
@@ -241,6 +244,10 @@ ul {
     outline: none;
   }
 
+  & li:not(:last-child).separator {
+    border-bottom: 1px solid var(--knime-porcelain);
+  }
+
   & .clickable-item {
     border: none;
     background: none;
@@ -263,6 +270,7 @@ ul {
 
     & .item-icon {
       stroke: var(--theme-dropdown-foreground-color);
+      stroke-width: calc(32px / 18);
       width: 18px;
       height: 18px;
       margin-right: 7px;
