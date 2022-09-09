@@ -136,6 +136,12 @@ export default {
         },
         subMenuItemsWithoutHotkeys() {
             return subMenuItems.map(({ hotkeyText, ...rest }) => rest);
+        },
+        subMenuItemsWithSeparator() {
+            return subMenuItems.map((item, index) => {
+                item.separator = index === 2 || index === 4;
+                return item;
+            });
         }
     }
 };
@@ -206,6 +212,16 @@ export default {
               :items="subMenuItems"
               disabled
               button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+
+          <div class="card">
+            <span class="menu-name">With separators</span>
+            <SubMenu
+              :items="subMenuItemsWithSeparator"
+              button-title="Open my submenu with separator"
             >
               <MenuIcon class="open-icon" />
             </SubMenu>
