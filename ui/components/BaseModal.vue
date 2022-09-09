@@ -83,16 +83,18 @@ export default {
       :active="active"
       class="container"
     >
-      <div ref="dialog">
+      <div
+        ref="dialog"
+        @click.stop
+      >
         <div
           class="overlay"
-          @click.stop="onOverlayClick"
+          @click="onOverlayClick"
         />
         <transition name="slide">
           <div
             v-if="showContent"
             class="wrapper"
-            @click.stop
           >
             <div class="inner">
               <slot />

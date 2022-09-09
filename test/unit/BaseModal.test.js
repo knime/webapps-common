@@ -96,10 +96,7 @@ describe('BaseModal', () => {
         wrapper.setData({ showContent: true });
         let fakeEvent = { stopPropagation: jest.fn() };
 
-        wrapper.find('.wrapper').trigger('click', fakeEvent);
-        expect(fakeEvent.stopPropagation).toHaveBeenCalledTimes(1);
-
-        wrapper.find('.overlay').trigger('click', fakeEvent);
-        expect(fakeEvent.stopPropagation).toHaveBeenCalledTimes(2);
+        wrapper.find({ ref: 'dialog' }).trigger('click', fakeEvent);
+        expect(fakeEvent.stopPropagation).toHaveBeenCalled();
     });
 });
