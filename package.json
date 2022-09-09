@@ -50,6 +50,7 @@
     "vue": "2.6.11",
     "vue-clickaway2": "2.3.2",
     "vue-jest": "3.0.4",
+    "vue-svg-loader": "0.16.0",
     "vue-template-compiler": "2.6.11"
   },
   "peerDependencies": {
