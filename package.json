@@ -65,7 +65,7 @@
     "focus-trap-vue": "0.x",
     "modern-normalize": "*",
     "postcss-import": "*",
-    "postcss-preset-env": "6.x",
+    "postcss-preset-env": "7.x",
     "postcss-url": "*",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",
