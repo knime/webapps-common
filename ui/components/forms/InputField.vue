@@ -180,7 +180,7 @@ input {
   }
 }
 
-svg {
+:slotted(svg) {
   width: 18px;
   height: 18px;
   stroke-width: calc(32px / 18);

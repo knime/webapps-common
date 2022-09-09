@@ -1,7 +1,20 @@
+// This is a workaround for https://github.com/eslint/eslint/issues/3458
+require('@rushstack/eslint-patch/modern-module-resolution');
+
 module.exports = {
-    extends: ['../lint/.eslintrc-nuxt.js'],
-    root: false,
+    root: true,
+    extends: ['@knime/eslint-config/vue'],
     globals: {
         consola: true
+    },
+    settings: {
+        'import/resolver': {
+            alias: {
+                map: [
+                    ['@', './src'],
+                    ['@@', '.']
+                ]
+            }
+        }
     }
 };
