@@ -25,9 +25,6 @@ export default {
             default: false
         }
     },
-    created() {
-        consola.log(this);
-    },
     methods: {
         onClick(e) {
             /**
@@ -54,7 +51,6 @@ export default {
     :to="to"
     :event="preventDefault ? [] : 'click'"
     v-bind="$attrs"
-    class
     @click="onClick"
   >
     <slot />
@@ -64,7 +60,6 @@ export default {
     v-else-if="href"
     :href="href"
     v-bind="$attrs"
-    class
     @click="onClick"
   >
     <slot />
@@ -73,7 +68,6 @@ export default {
   <button
     v-else
     v-bind="$attrs"
-    class
     @click="onClick"
   >
     <slot />
