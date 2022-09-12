@@ -106,4 +106,48 @@ describe('NumberInput.vue', () => {
         wrapper.setProps({ value: '4.423532523e5' });
         expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
     });
+
+    it('accepts decimal point as separator', () => {
+        const mockEvent = {
+            data: '5',
+            inputType: '',
+            target: {
+                value: '1.5'
+            }
+        };
+        wrapper.vm.$refs.input.value = '1.5';
+       
+        wrapper.vm.onInput(mockEvent);
+        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(1.5);
+    });
+
+    it('converts invalid decimal point to number', () => {
+        const mockEvent = {
+            data: '.',
+            inputType: '',
+            target: {
+                value: ''
+            }
+        };
+        wrapper.vm.$refs.input.value = '1.';
+        
+        wrapper.vm.onInput(mockEvent);
+        expect(wrapper.emitted().input).toBeFalsy();
+    });
+
+    it('accepts decimal point as separator on delete', () => {
+        const mockEvent = {
+            data: null,
+            inputType: 'deleteContentBackward',
+            target: {
+                value: ''
+            }
+        };
+        wrapper.vm.$refs.input.value = '0';
+
+        wrapper.vm.onInput(mockEvent);
+        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(1);
+    });
 });
