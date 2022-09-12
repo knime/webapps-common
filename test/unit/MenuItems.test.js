@@ -63,6 +63,35 @@ describe('MenuItems.vue', () => {
         expect(menuEntries.at(0).attributes('tabindex')).toBe('0');
     });
 
+    it('renders with separators', () => {
+        const items = [{
+            text: 'Apples',
+            disabled: false,
+            separator: true
+        }, {
+            text: 'Oranges',
+            disabled: true
+        }, {
+            text: 'Ananas',
+            hotkeyText: 'F9',
+            separator: true
+        }];
+        const wrapper = shallowMount(MenuItems, {
+            propsData: {
+                ariaLabel: 'label',
+                items
+            },
+            stubs: {
+                NuxtLink: RouterLinkStub
+            }
+        });
+        expect(wrapper.html()).toBeTruthy();
+        const menuLineItems = wrapper.findAll('li');
+        expect(menuLineItems.at(0).classes()).toContain('separator');
+        expect(menuLineItems.at(1).classes()).not.toContain('separator');
+        expect(menuLineItems.at(2).classes()).toContain('separator');
+    });
+
     it('can display hotkeys', () => {
         const id = 'testfoobar543';
         const items = [

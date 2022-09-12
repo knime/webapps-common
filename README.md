@@ -49,6 +49,9 @@ You should follow these steps
 
     This is required for importing assets via `<img src="…">` in Vue templates and `url("…")` in CSS.
 
+
+Alternativly, more and more parts are also published as [npm packages](https://www.npmjs.com/~knime) and can be used without git submodules.
+
 ## Vue
 ---
 This project contains shared CSS files and Vue components.

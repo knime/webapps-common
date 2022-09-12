@@ -1,3 +1,4 @@
+// TODO migrate to vite-svg-loader
 import svgLoader from '~/node_modules/vue-svg-loader/package.json';
 
 /**
