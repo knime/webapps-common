@@ -51,9 +51,9 @@ const demoComponents = {
         // Messages: defineAsyncComponent(() => import('./components/Messages.vue'))
     },
     forms: {
-        Label: defineAsyncComponent(() => import('./components/Label.vue')),
-        Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
-        InputField: defineAsyncComponent(() => import('./components/InputField.vue'))
+        // Label: defineAsyncComponent(() => import('./components/Label.vue')),
+        // Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
+        // InputField: defineAsyncComponent(() => import('./components/InputField.vue'))
         // TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
         // NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
         // Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
