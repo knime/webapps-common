@@ -7,7 +7,7 @@
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
     "preinstall": "node ./install-subDependencies",
-    "generate-css": "node ./ui/colors/generateCSS.js",
+    "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "audit": "check-audit --production --json > target/audit.json || true",

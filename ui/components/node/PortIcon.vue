@@ -1,5 +1,5 @@
 <script>
-import portColors from '../../colors/portColors';
+import * as portColors from '../../colors/portColors.mjs';
 
 const portSize = 9; // 9px
 const strokeWidth = 1.4; // 1.4px

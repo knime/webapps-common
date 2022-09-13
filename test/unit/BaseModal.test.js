@@ -82,4 +82,21 @@ describe('BaseModal', () => {
         wrapper.find('.overlay').trigger('click');
         expect(wrapper.emitted().cancel).toBeTruthy();
     });
+
+    it('does not propagate event on overlay click', () => {
+        let wrapper = shallowMount(BaseModal, {
+            stubs: { FocusTrap: true },
+            slots: {
+                default: '<p class="content-item">test</p>'
+            },
+            attachToDocument: true
+        });
+
+        wrapper.setProps({ active: true });
+        wrapper.setData({ showContent: true });
+        let fakeEvent = { stopPropagation: jest.fn() };
+
+        wrapper.find({ ref: 'dialog' }).trigger('click', fakeEvent);
+        expect(fakeEvent.stopPropagation).toHaveBeenCalled();
+    });
 });

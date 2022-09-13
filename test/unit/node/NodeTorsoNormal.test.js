@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
 import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal.vue';
-import nodeColors from '../../../ui/colors/nodeColors';
+import nodeColors from '../../../ui/colors/nodeColors.mjs';
 
 describe('NodeTorsoNormal.vue', () => {
     let doShallowMount = propsData => shallowMount(NodeTorsoNormal, { propsData });
