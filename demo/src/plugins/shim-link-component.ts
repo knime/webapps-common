@@ -1,4 +1,6 @@
-import { App, h } from 'vue';
+import { h, defineComponent } from 'vue';
+// eslint-disable-next-line no-duplicate-imports
+import type { App } from 'vue';
 
 export const registerLinkComponent = (appInstance: App<Element>) => {
     const hasNuxtLink = Boolean(appInstance._context.components.NuxtLink);
@@ -14,7 +16,7 @@ export const registerLinkComponent = (appInstance: App<Element>) => {
     }
 
     // fallback component when neither NuxtLink nor RouterLink are available
-    const defaultLinkComponent = {
+    const defaultLinkComponent = defineComponent({
         compatConfig: {
             RENDER_FUNCTION: false
         },
@@ -29,6 +31,6 @@ export const registerLinkComponent = (appInstance: App<Element>) => {
         render() {
             return h('a', { to: this.to }, [this.$slots.default()]);
         }
-    };
+    });
     appInstance.component('NuxtLink', defaultLinkComponent);
 };

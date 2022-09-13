@@ -3,7 +3,7 @@ require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
     root: true,
-    extends: ['@knime/eslint-config/vue3', '@knime/eslint-config/typescript'],
+    extends: ['@knime/eslint-config/vue3', '@vue/eslint-config-typescript'],
     globals: {
         consola: true,
         window: true

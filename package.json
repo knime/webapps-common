@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@knime/eslint-config": "file:lint",
+    "@vue/eslint-config-typescript": "^11.0.1",
     "consola": "2.10.1",
     "eslint": "8.23.0",
     "stylelint": "13.6.1",
