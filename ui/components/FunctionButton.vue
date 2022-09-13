@@ -48,8 +48,8 @@ export default {
 
 <template>
   <BaseButton
-    :class="['function-button', { single, active, primary, disabled }]"
     v-bind="$attrs"
+    :class="['function-button', { single, active, primary, disabled }]"
   >
     <slot />
   </BaseButton>

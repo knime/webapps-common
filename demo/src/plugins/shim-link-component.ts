@@ -16,11 +16,7 @@ export const registerLinkComponent = (appInstance: App<Element>) => {
     }
 
     // fallback component when neither NuxtLink nor RouterLink are available
-    const defaultLinkComponent = defineComponent({
-        compatConfig: {
-            RENDER_FUNCTION: false
-        },
-    
+    const fallbackComponent = defineComponent({
         props: {
             to: {
                 type: String,
@@ -32,5 +28,5 @@ export const registerLinkComponent = (appInstance: App<Element>) => {
             return h('a', { to: this.to }, [this.$slots.default()]);
         }
     });
-    appInstance.component('NuxtLink', defaultLinkComponent);
+    appInstance.component('NuxtLink', fallbackComponent);
 };
