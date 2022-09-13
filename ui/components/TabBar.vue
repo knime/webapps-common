@@ -1,9 +1,13 @@
 <script>
 import Carousel from './Carousel.vue';
+
 /**
  * A radio button group that looks like a tab bar
 */
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         Carousel
     },
@@ -18,7 +22,7 @@ export default {
         /**
          * Selected value. Should be one of the value attributes in the `possibleValues` prop.
          */
-        value: {
+        modelValue: {
             type: String,
             default: ''
         },
@@ -64,6 +68,12 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
+    mounted() {
+        const firstTab = this.possibleValues.find(tab => !tab.disabled);
+        consola.trace('TabBar: Setting initial tab', firstTab);
+        this.$emit('update:modelValue', firstTab ? firstTab.value : null);
+    },
     methods: {
         onChange(value) {
             /**
@@ -73,63 +83,8 @@ export default {
              * @type {String}
              */
             consola.trace('TabBar value changed to', value);
-            this.$emit('update:value', value);
+            this.$emit('update:modelValue', value);
         }
-    }
-};
-
-/*
-* The TabBar can be used as a stand-alone component, or with this mixin, which facilitates usage together with tabbed
-* content. Usage example:
-*
-* <script>
-* …
-*    computed: {
-*        possibleTabValues() { // required
-*            return [{
-*                value: 'foo',
-*                label: 'Foo'
-*            }, {
-*                value: 'bar',
-*                label: 'Bar'
-*            }];
-*        }
-*     }
-* …
-* <\/script>
-*
-*
-* <template>
-*   <div>
-*     <TabBar
-*       :value.sync="activeTab"              // this exact line is required
-*       :possible-values="possibleTabValues" // this exact line is required
-*     />
-*     <Foo v-if="activeTab === 'bar'"/>     // activeTab can be used here
-*     <Baz v-else />
-*   </div>
-* </template>
-*/
-export const tabBarMixin = {
-    data() {
-        return {
-            activeTab: null
-        };
-    },
-    computed: {
-        // returns the first tab that is not empty
-        initialTab() {
-            let firstTab = this.possibleTabValues.find(tab => !tab.disabled);
-            return firstTab ? firstTab.value : null;
-        },
-        possibleTabValues() {
-            throw new Error('You must implement the possibleTabValues computed property when using this mixin');
-        }
-    },
-    created() {
-        let { initialTab } = this;
-        consola.trace('TabBar mixin setting initial tab', initialTab);
-        this.activeTab = initialTab;
     }
 };
 </script>
@@ -148,7 +103,7 @@ export const tabBarMixin = {
             :value="item.value"
             :disabled="disabled || item.disabled"
             type="radio"
-            :checked="item.value === value"
+            :checked="item.value === modelValue"
             @change="onChange(item.value)"
           >
           <span>

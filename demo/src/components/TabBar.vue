@@ -1,6 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
-import TabBar, { tabBarMixin } from 'webapps-common/ui/components/TabBar.vue';
+import TabBar from 'webapps-common/ui/components/TabBar.vue';
 import tabbarCode from 'webapps-common/ui/components/TabBar.vue?raw';
 import BulbIcon from 'webapps-common/ui/assets/img/icons/bulb.svg';
 import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
@@ -47,54 +47,17 @@ export default {
 
 <template>
   <TabBar
-    value="oranges"
+    :model-value="oranges"
     :possible-values="possibleTabValues"
     :disabled="false"
-    @update:value="activeTab = $event"
+    @update:modelValue="activeTab = $event"
   />
-</template>`;
-
-const codeExampleMixin = `<script>
-import TabBar, { tabBarMixin } from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
-import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg';
-
-export default {
-    components: {
-        TabBar,
-        BulbIcon,
-        HelpIcon
-    },
-    mixins: [tabBarMixin],
-    computed: {
-        possibleTabValues() { // required by the mixin
-            return [{
-                value: 'apples',
-                label: 'Apples',
-                title: 'Click for apples',
-                icon: BulbIcon
-            }, {
-                value: 'oranges',
-                label: 'Oranges',
-                title: 'Click for oranges',
-                icon: HelpIcon
-            }, {
-                label: 'Bananas (out of stock)',
-                value: 'bananas',
-                disabled: true
-            }];
-        }
-    }
-};
-<\/script>
-
-<template>
+  <!-- OR -->
   <TabBar
-    :value.sync="activeTab"
+    v-model="oranges"
     :possible-values="possibleTabValues"
+    :disabled="false"
   />
-  <\!-- The mixin provides the 'activeTab' value -->
-  <p><b>Active tab:</b> {{ activeTab }}</p>
 </template>`;
 
 const possibleTabValues = [{
@@ -119,12 +82,11 @@ export default {
         TabBar,
         CodeExample
     },
-    mixins: [tabBarMixin],
     data() {
         return {
+            activeTab: null,
             tabbarCode,
             codeExampleStandalone,
-            codeExampleMixin,
             activeTabStandalone: 'oranges',
             disabled: false,
             bananasDisabled: true
@@ -161,11 +123,10 @@ export default {
 
         <h4>Standalone</h4>
         <TabBar
+          v-model="activeTabStandalone"
           :disabled="disabled"
-          :value="activeTabStandalone"
           :possible-values="possibleTabValuesStandalone"
           name="t1"
-          @update:value="activeTabStandalone = $event"
         />
         <p><b>active tab:</b> {{ activeTabStandalone }}</p>
         <p>
@@ -178,12 +139,11 @@ export default {
 
         <h4>With Mixin</h4>
         <TabBar
-          :value.sync="activeTab"
+          v-model="activeTab"
           :possible-values="possibleTabValues"
           name="t2"
         />
         <p><b>active tab:</b> {{ activeTab }}</p>
-        <CodeExample summary="Show usage example (withMixin)">{{ codeExampleMixin }}</CodeExample>
         <CodeExample summary="Show TabBar.vue source code">{{ tabbarCode }}</CodeExample>
       </div>
     </div>

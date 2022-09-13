@@ -2,7 +2,7 @@
 import PortIcon from '../../assets/img/icons/plugin.svg';
 import ViewsIcon from '../../assets/img/icons/eye.svg';
 import OptionsIcon from '../../assets/img/icons/settings.svg';
-import TabBar, { tabBarMixin } from '../TabBar.vue';
+import TabBar from '../TabBar.vue';
 import PortsList from './PortsList.vue';
 import ViewsList from './ViewsList.vue';
 import DialogOptions from './DialogOptions.vue';
@@ -14,7 +14,6 @@ export default {
         PortsList,
         ViewsList
     },
-    mixins: [tabBarMixin],
     props: {
         /** Passed through to PortsList.vue */
         inPorts: {
@@ -57,6 +56,11 @@ export default {
             default: false
         }
     },
+    data() {
+        return {
+            activeTab: null
+        };
+    },
     computed: {
         hasPorts() {
             return this.inPorts.length > 0 || this.outPorts.length > 0 || this.dynInPorts.length > 0 ||
@@ -87,7 +91,7 @@ export default {
 <template>
   <div class="feature-list">
     <TabBar
-      :value.sync="activeTab"
+      v-model="activeTab"
       :possible-values="possibleTabValues"
       name="feature"
     />

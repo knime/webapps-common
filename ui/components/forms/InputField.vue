@@ -1,7 +1,10 @@
 <script>
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
-        value: {
+        modelValue: {
             default: '',
             type: [Number, String]
         },
@@ -57,10 +60,11 @@ export default {
             type: Boolean
         }
     },
+    emits: ['update:modelValue'],
     computed: {
         inputClassList() {
             let classes = this.inputClasses;
-            if (this.$slots.icon && this.$slots.icon.length) {
+            if (this.$slots.icon && this.$slots.icon().length) {
                 classes += ' with-icon';
             }
             if (!this.isValid) {
@@ -74,7 +78,7 @@ export default {
             return this.$refs.input.value;
         },
         onInput() {
-            this.$emit('input', this.getValue());
+            this.$emit('update:modelValue', this.getValue());
         },
         focus() {
             this.$refs.input.focus();
@@ -108,7 +112,7 @@ export default {
       :id="id"
       ref="input"
       :name="name"
-      :value="value"
+      :value="modelValue"
       :class="inputClassList"
       :type="type"
       :pattern="pattern"

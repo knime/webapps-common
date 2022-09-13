@@ -3,7 +3,7 @@ import { defineAsyncComponent } from 'vue';
 import './assets/index.css';
 // import 'prismjs';
 
-import TabBar, { tabBarMixin } from 'webapps-common/ui/components/TabBar.vue';
+import TabBar from 'webapps-common/ui/components/TabBar.vue';
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
 import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg';
@@ -29,7 +29,7 @@ const demoComponents = {
         Icons: defineAsyncComponent(() => import('./components/Icons.vue'))
     },
     interactive: {
-        // Breadcrumb: defineAsyncComponent(() => import('./components/Breadcrumb.vue')),
+        // Breadcrumb: defineAsyncComponent(() => import('./components/Breadcrumb.vue'))
         // LinkList: defineAsyncComponent(() => import('./components/LinkList.vue')),
         // Button: defineAsyncComponent(() => import('./components/Button.vue')),
         // Carousel: defineAsyncComponent(() => import('./components/Carousel.vue')),
@@ -42,7 +42,7 @@ const demoComponents = {
         // SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         // SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
         // Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
-        // TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue')),
+        TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue'))
         // TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
         // LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue'))
     },
@@ -113,13 +113,12 @@ const components = {
     ...flattenComponents(demoComponents)
 };
 
-
 export default {
     components,
-    mixins: [tabBarMixin],
     data() {
         return {
-            searchQuery: ''
+            searchQuery: '',
+            activeTab: ''
         };
     },
     computed: {
@@ -182,66 +181,65 @@ export default {
 </script>
 
 <template>
-  <div>
-    <header>
-      <img
-        src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
-        class="logo"
-      >
-    </header>
-    <main>
-      <section>
-        <div class="grid-container header">
-          <div class="grid-item-12">
-            <h1>KNIME WebApps Common</h1>
-            <p>
-              This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
-              To use them, it's recommended to integrate them as Git submodule as described in the
-              <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
-              More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
-            </p>
+  <header>
+    <img
+      src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
+      class="logo"
+    >
+  </header>
+  <main>
+    <section>
+      <div class="grid-container header">
+        <div class="grid-item-12">
+          <h1>KNIME WebApps Common</h1>
+          <p>
+            This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
+            To use them, it's recommended to integrate them as Git submodule as described in the
+            <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
+            More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
+          </p>
 
-            <div class="categories">
-              <TabBar
-                :disabled="isSearchActive"
-                :value.sync="activeTab"
-                :possible-values="possibleTabValues"
-              />
-              <SearchField
-                v-model="searchQuery"
-                autofocus
-                type="search"
-                placeholder="Filter by component name…"
-                class="search"
-              >
-                <template #icon><SearchIcon /></template>
-              </SearchField>
-            </div>
+          <div class="categories">
+            <TabBar
+              v-model="activeTab"
+              :disabled="isSearchActive"
+              :possible-values="possibleTabValues"
+            />
+            <SearchField
+              v-model="searchQuery"
+              autofocus
+              type="search"
+              placeholder="Filter by component name…"
+              class="search"
+            >
+              <template #icon><SearchIcon /></template>
+            </SearchField>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <template v-for="(componentByName, category) in filteredDemoComponents">
-        <div
-          v-if="activeTab === category || isSearchActive"
-          :key="category"
-        >
-          <component
-            :is="name"
-            v-for="(component, name) in componentByName"
-            :key="category+name"
-          />
-        </div>
-      </template>
-    </main>
-  </div>
+    <template v-for="(componentByName, category) in filteredDemoComponents">
+      <div
+        v-if="activeTab === category || isSearchActive"
+        :key="category"
+      >
+        <component
+          :is="name"
+          v-for="(component, name) in componentByName"
+          :key="category+name"
+        />
+      </div>
+    </template>
+  </main>
 </template>
 
 <style scoped lang="postcss">
-  .logo {
-      height: 4vmin;
-      margin: 2vmin 0;
-  }
+.logo {
+    height: 4vmin;
+    margin: 2vmin 0;
+}
+
 main {
   margin-bottom: 10em;
 }
