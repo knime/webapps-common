@@ -57,7 +57,6 @@ export default {
   <BaseButton
     v-bind="$attrs"
     :class="classes"
-    v-on="$listeners"
   >
     <slot />
   </BaseButton>
