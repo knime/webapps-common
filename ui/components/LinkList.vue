@@ -1,6 +1,4 @@
-<script>
-import ArrowIcon from '../assets/img/icons/arrow-right.svg';
-
+<script setup lang="ts">
 /**
  * Renders a list of clickable links displayed with an arrow icon and text
  *
@@ -8,23 +6,17 @@ import ArrowIcon from '../assets/img/icons/arrow-right.svg';
  * -> Google
  * -> KNIME Hub
 */
-export default {
-    components: { ArrowIcon },
-    props: {
-        /** @example
-         * [
-         *   { text: 'Google', url: 'https://google.de' },
-         *   { text: 'KNIME Hub', url: 'https://hub.knime.com' }
-         * ]
-         * */
-        links: {
-            type: Array,
-            default() {
-                return [];
-            }
-        }
-    }
-};
+import ArrowIcon from '../assets/img/icons/arrow-right.svg';
+
+interface LinkItem {
+  text: string;
+  url: string;
+}
+
+const { links } = withDefaults(
+  defineProps<{ links: Array<LinkItem> }>(), 
+  { links: () => [] }
+);
 </script>
 
 <template>
