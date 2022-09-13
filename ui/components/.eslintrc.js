@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['@knime/eslint-config/vue3'],
+    extends: ['@knime/eslint-config/vue3', '@knime/eslint-config/typescript'],
     globals: {
         consola: true
     },
