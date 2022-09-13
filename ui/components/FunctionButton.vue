@@ -34,7 +34,7 @@ export default {
     },
     computed: {
         single() {
-            return this.$slots.default.length === 1;
+            return this.$slots.default().length === 1;
         }
     },
     methods: {
@@ -50,7 +50,6 @@ export default {
   <BaseButton
     :class="['function-button', { single, active, primary, disabled }]"
     v-bind="$attrs"
-    v-on="$listeners"
   >
     <slot />
   </BaseButton>

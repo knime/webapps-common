@@ -11,6 +11,9 @@ window.consola = consola.create({
 
 configureCompat({
     // COMPONENT_ASYNC: false
+    INSTANCE_LISTENERS: false,
+    RENDER_FUNCTION: false,
+    COMPONENT_V_MODEL: false
 });
 
 const app = createApp(App);

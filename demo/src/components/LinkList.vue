@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import CodeExample from './demo/CodeExample.vue';
 import LinkList from 'webapps-common/ui/components/LinkList.vue';
 import code from 'webapps-common/ui/components/LinkList.vue?raw';

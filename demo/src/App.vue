@@ -29,22 +29,22 @@ const demoComponents = {
         Icons: defineAsyncComponent(() => import('./components/Icons.vue'))
     },
     interactive: {
-        // Breadcrumb: defineAsyncComponent(() => import('./components/Breadcrumb.vue'))
-        // LinkList: defineAsyncComponent(() => import('./components/LinkList.vue')),
-        // Button: defineAsyncComponent(() => import('./components/Button.vue')),
-        // Carousel: defineAsyncComponent(() => import('./components/Carousel.vue')),
-        // Collapser: defineAsyncComponent(() => import('./components/Collapser.vue')),
-        // FunctionButton: defineAsyncComponent(() => import('./components/FunctionButton.vue')),
-        // FileLink: defineAsyncComponent(() => import('./components/FileLink.vue')),
-        // IdleReadyButton: defineAsyncComponent(() => import('./components/IdleReadyButton.vue')),
+        Breadcrumb: defineAsyncComponent(() => import('./components/Breadcrumb.vue')),
+        LinkList: defineAsyncComponent(() => import('./components/LinkList.vue')),
+        Button: defineAsyncComponent(() => import('./components/Button.vue')),
+        Carousel: defineAsyncComponent(() => import('./components/Carousel.vue')),
+        Collapser: defineAsyncComponent(() => import('./components/Collapser.vue')),
+        FunctionButton: defineAsyncComponent(() => import('./components/FunctionButton.vue')),
+        FileLink: defineAsyncComponent(() => import('./components/FileLink.vue')),
+        IdleReadyButton: defineAsyncComponent(() => import('./components/IdleReadyButton.vue')),
         // Modal: defineAsyncComponent(() => import('./components/Modal.vue')),
         // SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
         // SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         // SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
         // Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
-        TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue'))
+        // TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue'))
         // TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
-        // LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue'))
+        LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue'))
     },
     messages: {
         // Message: defineAsyncComponent(() => import('./components/Message.vue')),

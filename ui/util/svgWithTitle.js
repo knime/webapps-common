@@ -1,5 +1,4 @@
-// TODO migrate to vite-svg-loader
-import svgLoader from '~/node_modules/vue-svg-loader/package.json';
+import { h as createElement } from 'vue';
 
 /**
  * Higher order component that decorates a SVG component (loaded with vue-svg-loader) with a `<title>` element
@@ -20,13 +19,8 @@ import svgLoader from '~/node_modules/vue-svg-loader/package.json';
  * @returns { Vue.component } The component with a title inserted as the first child of `<svg>`
  */
 export default (SvgComponent, title) => ({
-    render(createElement) {
-        // Due to an incompatibility of vue-svg-loader between versions 0.16.0 and 0.17.x
-        // a different implementation has to be provided, so that projects which use v0.17.x (e.g Vue-CLI 5 projects)
-        // can make use of this svgWithTitle reusable helper function
-        const renderedComponent = svgLoader.version === '0.16.0'
-            ? createElement(SvgComponent)
-            : SvgComponent.render.apply(this, createElement);
+    render() {
+        const renderedComponent = SvgComponent.render.apply(this, createElement);
 
         const titleEl = createElement('title', title);
         titleEl.ns = 'svg';

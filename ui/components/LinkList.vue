@@ -13,19 +13,19 @@ interface LinkItem {
   url: string;
 }
 
-const { links } = withDefaults(
-  defineProps<{ links: Array<LinkItem> }>(), 
-  { links: () => [] }
+const props = withDefaults(
+    defineProps<{ links: Array<LinkItem> }>(),
+    { links: () => [] }
 );
 </script>
 
 <template>
   <ul
-    v-if="links && links.length"
+    v-if="props.links && props.links.length"
     class="link-list"
   >
     <li
-      v-for="(link, index) of links"
+      v-for="(link, index) of props.links"
       :key="index"
     >
       <a

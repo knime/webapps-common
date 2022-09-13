@@ -1,10 +1,10 @@
 <script>
-import Button from './Button.vue';
+import KnimeButton from './Button.vue';
 import DownIcon from '../assets/img/icons/circle-arrow-down.svg';
 
 export default {
     components: {
-        Button,
+        KnimeButton,
         DownIcon
     },
     props: {
@@ -51,6 +51,7 @@ export default {
             default: true
         }
     },
+    emits: ['click'],
     computed: {
         text() {
             if (this.idle) {
@@ -59,11 +60,6 @@ export default {
                 return this.readyText;
             }
             return '';
-        }
-    },
-    methods: {
-        onClick() {
-            this.$emit('click');
         }
     }
 };
@@ -76,12 +72,12 @@ export default {
   >
     <client-only>
       <div :class="{ idle }">
-        <Button
+        <KnimeButton
           v-if="ready || idle"
           compact
           :with-border="withBorder"
           :disabled="idle"
-          @click="onClick"
+          @click="$emit('click')"
         >
           <slot
             v-if="ready"
@@ -89,7 +85,7 @@ export default {
           />
           {{ text }}
           <DownIcon v-if="withDownIcon && !idle" />
-        </Button>
+        </KnimeButton>
       </div>
     </client-only>
   </div>

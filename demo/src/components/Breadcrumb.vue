@@ -1,4 +1,5 @@
 <script>
+import { shallowRef } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import FolderIcon from 'webapps-common/ui/assets/img/icons/folder.svg';
 import Breadcrumb from 'webapps-common/ui/components/Breadcrumb.vue';
@@ -15,13 +16,14 @@ export default {
         CodeExample
     },
     data() {
+        const FolderIconRef = shallowRef(FolderIcon);
         return {
             breadcrumbCode,
             breadcrumbItems: [
                 { text: 'KNIME Hub', href: '/' },
                 { text: 'John Doe', href: '/john.doe' },
-                { text: 'Public Space', href: '/john.doe/space', icon: FolderIcon },
-                { text: 'Examples', icon: FolderIcon },
+                { text: 'Public Space', href: '/john.doe/space', icon: FolderIconRef },
+                { text: 'Examples', icon: FolderIconRef },
                 { text: 'Sentiment Prediction via REST' }
             ],
             codeExample
