@@ -1,10 +1,8 @@
 <script>
-// import Prism from 'vue-prism-component';
+import { h } from 'vue';
+import Prism from 'prismjs';
 
 export default {
-    components: {
-        // Prism
-    },
     props: {
         summary: {
             type: String,
@@ -14,17 +12,33 @@ export default {
             type: String,
             default: 'html'
         }
+    },
+    
+    render() {
+        const slotsData = (this.$slots && this.$slots.default && this.$slots.default()) || [];
+        const code = slotsData.length > 0 ? slotsData[0].children : '';
+        const prismLanguage = Prism.languages[this.language];
+        const className = `language-${this.language}`;
+        
+        const prismOutput = Prism.highlight(code, prismLanguage);
+        
+        /**
+         * HTML:
+         * <details>
+         *  <summary></summary>
+         *  <pre><code>{{ PrismOutput }}</code></pre>
+         * </details>
+         */
+        const summaryEl = h('summary', this.summary);
+        const preEl = h('pre',
+            { ...this.$attrs, class: [this.$attrs.class, className] },
+            [
+                h('code', { class: className, innerHTML: prismOutput })
+            ]);
+        return h('details', [summaryEl, preEl]);
     }
 };
 </script>
-
-<template>
-  <details>
-    <summary>{{ summary }}</summary>
-    <!-- <pre><slot /></pre> -->
-    <!--<Prism :language="language"><slot /></Prism>-->
-  </details>
-</template>
 
 <style lang="postcss" scoped>
 details {

@@ -24,7 +24,8 @@
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0",
-    "modern-normalize": "^1.1.0"
+    "modern-normalize": "^1.1.0",
+    "prismjs": "^1.29.0"
   },
   "devDependencies": {
     "@knime/eslint-config": "file:lint",

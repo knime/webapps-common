@@ -49,9 +49,9 @@ export default {
 <template>
   <nuxt-link
     v-if="to"
+    v-bind="$attrs"
     :to="to"
     :event="preventDefault ? [] : 'click'"
-    v-bind="$attrs"
     @click="onClick"
   >
     <slot />
@@ -59,8 +59,8 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <a
     v-else-if="href"
-    :href="href"
     v-bind="$attrs"
+    :href="href"
     @click="onClick"
   >
     <slot />

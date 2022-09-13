@@ -14,7 +14,7 @@ export default {
     FolderIcon
   }
 };
-<\\/script>
+<\/script>
 
 <template>
   <FolderIcon />

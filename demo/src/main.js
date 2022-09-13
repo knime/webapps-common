@@ -13,7 +13,8 @@ configureCompat({
     // COMPONENT_ASYNC: false
     INSTANCE_LISTENERS: false,
     RENDER_FUNCTION: false,
-    COMPONENT_V_MODEL: false
+    COMPONENT_V_MODEL: false,
+    COMPILER_V_BIND_OBJECT_ORDER: false
 });
 
 const app = createApp(App);
