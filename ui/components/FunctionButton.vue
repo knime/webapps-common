@@ -40,7 +40,7 @@ export default {
     methods: {
         focus() {
             // This can be called from outside via focus on a $ref */
-            this.$el.focus();
+            this.$refs.baseButton.focus?.();
         }
     }
 };
@@ -48,6 +48,7 @@ export default {
 
 <template>
   <BaseButton
+    ref="baseButton"
     v-bind="$attrs"
     :class="['function-button', { single, active, primary, disabled }]"
   >

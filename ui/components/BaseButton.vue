@@ -40,7 +40,7 @@ export default {
         },
         // This can be called from outside via focus on a $ref
         focus() {
-            this.$el.focus();
+            this.$refs.button?.focus?.();
         }
     }
 };
@@ -49,6 +49,7 @@ export default {
 <template>
   <nuxt-link
     v-if="to"
+    ref="button"
     v-bind="$attrs"
     :to="to"
     :event="preventDefault ? [] : 'click'"
@@ -59,6 +60,7 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <a
     v-else-if="href"
+    ref="button"
     v-bind="$attrs"
     :href="href"
     @click="onClick"
@@ -68,6 +70,7 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Space -->
   <button
     v-else
+    ref="button"
     v-bind="$attrs"
     @click="onClick"
   >

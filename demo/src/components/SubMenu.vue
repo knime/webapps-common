@@ -82,33 +82,35 @@ nav {
 </style>
 `;
 
+const getIconShallowRef = (iconComponent) => iconComponent;
+
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon,
+    icon: getIconShallowRef(HelpIcon),
     hotkeyText: 'Ctrl + 1'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon,
+    icon: getIconShallowRef(StarIcon),
     hotkeyText: 'Ctrl + 2'
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
     disabled: true,
-    icon: StarIcon,
+    icon: getIconShallowRef(StarIcon),
     hotkeyText: 'Ctrl + 3'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: HeartIcon
+    icon: getIconShallowRef(HeartIcon)
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: LeaveIcon
+    icon: getIconShallowRef(LeaveIcon)
 }, {
     text: 'Item without href/to',
-    icon: HelpIcon
+    icon: getIconShallowRef(HelpIcon)
 }];
 
 export default {
@@ -139,6 +141,7 @@ export default {
         },
         subMenuItemsWithSeparator() {
             return subMenuItems.map((item, index) => {
+                // eslint-disable-next-line no-magic-numbers
                 item.separator = index === 2 || index === 4;
                 return item;
             });

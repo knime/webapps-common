@@ -19,22 +19,22 @@ export default {
          * See MenuItems for more details.
          */
         items: {
-            required: true,
-            type: Array
+            type: Array,
+            required: true
         },
         /**
          * Identifier for click handler
          */
         id: {
-            default: '',
-            type: String
+            type: String,
+            default: ''
         },
         /**
          * Button title
          */
         buttonTitle: {
-            default: '',
-            type: String
+            type: String,
+            default: ''
         },
         /**
          * Alignment of the submenu with the menu button left or right. Defaults to 'right'.
@@ -54,6 +54,7 @@ export default {
             default: false
         }
     },
+    emits: ['item-click'],
     data() {
         return {
             expanded: false
@@ -162,7 +163,7 @@ export default {
       type="button"
       :title="buttonTitle"
       :class="['submenu-toggle', { expanded }]"
-      :aria-expanded="expanded"
+      :aria-expanded="String(expanded)"
       :disabled="disabled"
       :active="expanded"
       @click.stop.prevent="toggleMenu"
