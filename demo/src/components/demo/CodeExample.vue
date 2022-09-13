@@ -1,5 +1,5 @@
 <script>
-//import Prism from 'vue-prism-component';
+// import Prism from 'vue-prism-component';
 
 export default {
     components: {
@@ -21,7 +21,7 @@ export default {
 <template>
   <details>
     <summary>{{ summary }}</summary>
-    <pre><slot /></pre>
+    <!-- <pre><slot /></pre> -->
     <!--<Prism :language="language"><slot /></Prism>-->
   </details>
 </template>
