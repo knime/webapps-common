@@ -83,7 +83,10 @@ export default {
       :active="active"
       class="container"
     >
-      <div ref="dialog">
+      <div
+        ref="dialog"
+        @click.stop
+      >
         <div
           class="overlay"
           @click="onOverlayClick"

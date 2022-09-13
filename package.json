@@ -7,7 +7,7 @@
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
     "preinstall": "node ./install-subDependencies",
-    "generate-css": "node ./ui/colors/generateCSS.js",
+    "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "audit": "check-audit --production --json > target/audit.json || true",
@@ -27,11 +27,11 @@
   },
   "devDependencies": {
     "@babel/preset-env": "7.9.0",
-    "@types/jest": "^24.9.0",
+    "@types/jest": "24.9.0",
     "@typescript-eslint/parser": "4.31.2",
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "10.0.3",
     "consola": "2.10.1",
     "cross-var": "1.1.0",
     "eslint": "7.32.0",
@@ -50,6 +50,7 @@
     "vue": "2.6.11",
     "vue-clickaway2": "2.3.2",
     "vue-jest": "3.0.4",
+    "vue-svg-loader": "0.16.0",
     "vue-template-compiler": "2.6.11"
   },
   "peerDependencies": {
@@ -64,7 +65,7 @@
     "focus-trap-vue": "0.x",
     "modern-normalize": "*",
     "postcss-import": "*",
-    "postcss-preset-env": "6.x",
+    "postcss-preset-env": "7.x",
     "postcss-url": "*",
     "stylelint": "10.x - 13.x",
     "stylelint-config-standard": "18.x - 20.x",

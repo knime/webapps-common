@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 
 import PortIcon from '../../../ui/components/node/PortIcon.vue';
-import portColors from '../../../ui/colors/portColors';
+import portColors from '../../../ui/colors/portColors.mjs';
 
 describe('PortIcon', () => {
     let wrapper;
