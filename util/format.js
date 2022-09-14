@@ -1,6 +1,6 @@
 /**
  * Converts the specified date String to human readable text containing the day, month, and year.
- * Example: '2018-07-31T09:44:31+00:00' => '31 Jul 2018'
+ * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31 2018'
  *
  * @param {String} dateString String representation of the Date to format
  * @returns {String} human readable date String
@@ -21,5 +21,5 @@ export const formatDateString = (dateString) => {
     let month = date.toLocaleDateString('en-US', { month: 'short' });
     let year = date.getFullYear();
 
-    return [dayOfMonth, month, year].join(' ');
+    return [month, dayOfMonth, year].join(' ');
 };
