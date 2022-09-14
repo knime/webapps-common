@@ -10,16 +10,6 @@ export const formatDateString = (dateString) => {
     if (isNaN(date)) {
         throw Error('Invalid Date format');
     }
-    // Build String manually in 'en-GB' format. Directly using
-    // date.toLocaleDateString('en-GB', options) with
-    // options = { day: 'numeric', month: 'short', year: 'numeric' }
-    // could lead to a different format when the 'en-GB' locale is missing,
-    // i.e. it will fall back to 'en-US' without complaining. By default
-    // node.js only contains the US locale. Also see:
-    // https://github.com/nodejs/node/issues/8500
-    let dayOfMonth = date.getDate();
-    let month = date.toLocaleDateString('en-US', { month: 'short' });
-    let year = date.getFullYear();
 
-    return [month, dayOfMonth, year].join(' ');
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 };
