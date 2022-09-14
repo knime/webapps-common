@@ -1,18 +1,18 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
 import SideDrawer from 'webapps-common/ui/components/SideDrawer.vue';
-import KnimeButton from 'webapps-common/ui/components/Button.vue';
+import Button from 'webapps-common/ui/components/Button.vue';
 import code from 'webapps-common/ui/components/SideDrawer.vue?raw';
 
 
 const codeExample = `<script>
 import SideDrawer from '~/webapps-common/ui/components/SideDrawer.vue';
-import KnimeButton from '~/webapps-common/ui/components/Button.vue';
+import Button from '~/webapps-common/ui/components/Button.vue';
 
 export default {
     components: {
         SideDrawer,
-        KnimeButton,
+        Button,
     },
     data() {
         return {
@@ -36,12 +36,12 @@ export default {
       <div class="contents-side-drawer">
         <h4>something here</h4>
         <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa sint alias.</p>
-        <KnimeButton
+        <Button
           with-border
           @click="isExpanded = false"
         >
           Close me!
-        </KnimeButton>
+        </Button>
       </div>
     </SideDrawer>
 </template>
@@ -65,7 +65,7 @@ h4 {
 export default {
     components: {
         SideDrawer,
-        KnimeButton,
+        Button,
         CodeExample
     },
     data() {
@@ -96,12 +96,12 @@ export default {
             Provides an expandable drawer to the right side which can be filled with arbitrary content.
             On small screens it will take up the whole width.
           </p>
-          <KnimeButton
+          <Button
             primary
             @click="isExpanded = !isExpanded"
           >
             Draw it!
-          </KnimeButton>
+          </Button>
           <p>I am {{ expandedMessage }}</p>
         </div>
       </div>
@@ -112,13 +112,17 @@ export default {
     >
       <div class="contents-side-drawer">
         <h4>something here</h4>
-        <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa sint alias.</p>
-        <KnimeButton
+        <p>
+          And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo
+          nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt
+          exercitationem aut sapiente quas culpa sint alias.
+        </p>
+        <Button
           with-border
           @click="isExpanded = false"
         >
           Close me!
-        </KnimeButton>
+        </Button>
       </div>
     </SideDrawer>
     <section>

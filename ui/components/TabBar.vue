@@ -5,6 +5,9 @@ import Carousel from './Carousel.vue';
  * A radio button group that looks like a tab bar
 */
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         Carousel
     },
@@ -66,7 +69,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-    mounted() {
+    created() {
         const firstTab = this.possibleValues.find(tab => !tab.disabled);
         consola.trace('TabBar: Setting initial tab', firstTab);
         this.$emit('update:modelValue', firstTab ? firstTab.value : null);

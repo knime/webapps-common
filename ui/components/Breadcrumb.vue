@@ -1,5 +1,6 @@
 <script>
 import ArrowNext from '../assets/img/icons/arrow-next.svg';
+import { resolveLinkComponent } from '../util/custom-component-resolver';
 
 export default {
     components: {
@@ -30,6 +31,12 @@ export default {
             type: Boolean,
             default: false
         }
+    },
+    computed: {
+        // TODO: Can be made into a composition function
+        linkComponent() {
+            return resolveLinkComponent();
+        }
     }
 };
 </script>
@@ -44,7 +51,8 @@ export default {
         v-for="(breadcrumbItem, i) in items"
         :key="i"
       >
-        <nuxt-link
+        <Component
+          :is="linkComponent"
           v-if="breadcrumbItem.href"
           :to="breadcrumbItem.href"
         >
@@ -54,7 +62,7 @@ export default {
             class="breadcrumb-icon"
           />
           {{ breadcrumbItem.text }}
-        </nuxt-link>
+        </Component>
         <span v-else>
           <Component
             :is="breadcrumbItem.icon"

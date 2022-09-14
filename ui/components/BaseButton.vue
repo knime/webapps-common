@@ -1,5 +1,10 @@
 <script>
+import { resolveLinkComponent } from '../util/custom-component-resolver';
+
 export default {
+    compatConfig: {
+        INSTANCE_LISTENERS: false
+    },
     props: {
         /**
          * If set, the button renders an <a> element instead of a <button> element
@@ -26,6 +31,12 @@ export default {
         }
     },
     emits: ['click'],
+    computed: {
+        // TODO: Can be made into a composition function
+        linkComponent() {
+            return resolveLinkComponent();
+        }
+    },
     methods: {
         onClick(e) {
             /**
@@ -47,7 +58,8 @@ export default {
 </script>
 
 <template>
-  <nuxt-link
+  <Component
+    :is="linkComponent"
     v-if="to"
     ref="button"
     v-bind="$attrs"
@@ -56,7 +68,7 @@ export default {
     @click="onClick"
   >
     <slot />
-  </nuxt-link>
+  </Component>
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <a
     v-else-if="href"

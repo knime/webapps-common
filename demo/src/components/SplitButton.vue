@@ -1,4 +1,5 @@
 <script>
+import { markRaw } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
 import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
@@ -78,22 +79,24 @@ export default {
 }
 </style>`;
 
+const toRaw = (icon) => markRaw(icon);
+
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon
+    icon: toRaw(HelpIcon)
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon
+    icon: toRaw(StarIcon)
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: HeartIcon
+    icon: toRaw(HeartIcon)
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: LeaveIcon
+    icon: toRaw(LeaveIcon)
 }];
 
 export default {

@@ -3,6 +3,9 @@ import { h } from 'vue';
 import Prism from 'prismjs';
 
 export default {
+    compatConfig: {
+        RENDER_FUNCTION: false
+    },
     props: {
         summary: {
             type: String,

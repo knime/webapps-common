@@ -19,6 +19,9 @@ import { h as createElement } from 'vue';
  * @returns { Vue.component } The component with a title inserted as the first child of `<svg>`
  */
 export default (SvgComponent, title) => ({
+    compatConfig: {
+        RENDER_FUNCTION: false
+    },
     render() {
         const renderedComponent = SvgComponent.render.apply(this, createElement);
 

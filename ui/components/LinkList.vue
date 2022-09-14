@@ -1,11 +1,5 @@
-<script setup lang="ts">
-/**
- * Renders a list of clickable links displayed with an arrow icon and text
- *
- * Example:
- * -> Google
- * -> KNIME Hub
-*/
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 import ArrowIcon from '../assets/img/icons/arrow-right.svg';
 
 interface LinkItem {
@@ -13,19 +7,33 @@ interface LinkItem {
   url: string;
 }
 
-const props = withDefaults(
-    defineProps<{ links: Array<LinkItem> }>(),
-    { links: () => [] }
-);
+/**
+ * Renders a list of clickable links displayed with an arrow icon and text
+ *
+ * Example:
+ * -> Google
+ * -> KNIME Hub
+*/
+export default defineComponent({
+    components: {
+        ArrowIcon
+    },
+    props: {
+        links: {
+            type: Array as PropType<Array<LinkItem>>,
+            default: () => []
+        }
+    }
+});
 </script>
 
 <template>
   <ul
-    v-if="props.links && props.links.length"
+    v-if="links && links.length"
     class="link-list"
   >
     <li
-      v-for="(link, index) of props.links"
+      v-for="(link, index) of links"
       :key="index"
     >
       <a

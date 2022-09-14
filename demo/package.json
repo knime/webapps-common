@@ -24,6 +24,8 @@
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "gh-pages": "3.2.3",
+    "modern-normalize": "^1.1.0",
+    "prismjs": "^1.29.0",
     "webapps-common": "file:.."
   },
   "devDependencies": {

@@ -5,6 +5,9 @@ import BaseButton from './BaseButton.vue';
  * Works with an icon & text combination or a single icon.
  */
 export default {
+    compatConfig: {
+        INSTANCE_LISTENERS: false
+    },
     components: {
         BaseButton
     },

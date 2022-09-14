@@ -1,10 +1,11 @@
 <script>
-import KnimeButton from './Button.vue';
+import Button from './Button.vue';
 import DownIcon from '../assets/img/icons/circle-arrow-down.svg';
+import { resolveClientOnlyComponent } from '../util/custom-component-resolver';
 
 export default {
     components: {
-        KnimeButton,
+        Button,
         DownIcon
     },
     props: {
@@ -53,6 +54,10 @@ export default {
     },
     emits: ['click'],
     computed: {
+        // TODO: Can be made into a composition function
+        clientOnlyComponent() {
+            return resolveClientOnlyComponent();
+        },
         text() {
             if (this.idle) {
                 return this.idleText;
@@ -70,9 +75,9 @@ export default {
     v-if="idle || ready"
     class="load-more"
   >
-    <client-only>
+    <Component :is="clientOnlyComponent">
       <div :class="{ idle }">
-        <KnimeButton
+        <Button
           v-if="ready || idle"
           compact
           :with-border="withBorder"
@@ -85,9 +90,9 @@ export default {
           />
           {{ text }}
           <DownIcon v-if="withDownIcon && !idle" />
-        </KnimeButton>
+        </Button>
       </div>
-    </client-only>
+    </Component>
   </div>
 </template>
 
