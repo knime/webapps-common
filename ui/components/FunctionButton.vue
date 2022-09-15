@@ -6,7 +6,8 @@ import BaseButton from './BaseButton.vue';
  */
 export default {
     compatConfig: {
-        INSTANCE_LISTENERS: false
+        INSTANCE_LISTENERS: false,
+        COMPILER_V_BIND_OBJECT_ORDER: false
     },
     components: {
         BaseButton
@@ -43,7 +44,7 @@ export default {
     methods: {
         focus() {
             // This can be called from outside via focus on a $ref */
-            this.$refs.baseButton.focus?.();
+            this.$refs.baseButton.focus();
         }
     }
 };

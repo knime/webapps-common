@@ -14,12 +14,11 @@ export const resolveClientOnlyComponent = () => {
     const app = getAppInstance();
     
     const clientOnlyComponent = app.component('ClientOnly');
-    
     if (clientOnlyComponent) {
         return clientOnlyComponent;
     }
     
-    // fallback component when neither NuxtLink nor RouterLink are available
+    // fallback component when ClientOnly not available
     const fallbackComponent = defineComponent({
         compatConfig,
         render() {
@@ -27,26 +26,20 @@ export const resolveClientOnlyComponent = () => {
         }
     });
 
-    // register component globally
-    app.component('ClientOnly', fallbackComponent);
-    
     return fallbackComponent;
 };
 
-export const resolveLinkComponent = () => {
+export const resolveNuxtLinkComponent = () => {
     const app = getAppInstance();
 
     const nuxtLinkComponent = app.component('NuxtLink');
-
     if (nuxtLinkComponent) {
         return nuxtLinkComponent;
     }
     
     const routerLinkComponent = app.component('RouterLink');
-
     if (routerLinkComponent) {
-        // shim and replace NuxtLink with RouterLink
-        app.component('NuxtLink', routerLinkComponent);
+        return routerLinkComponent;
     }
 
     // fallback component when neither NuxtLink nor RouterLink are available
@@ -60,11 +53,9 @@ export const resolveLinkComponent = () => {
         },
     
         render() {
-            return h('a', { to: this.to }, [this.$slots.default()]);
+            return h('a', { href: this.to }, [this.$slots.default()]);
         }
     });
-    
-    app.component('NuxtLink', fallbackComponent);
     
     return fallbackComponent;
 };

@@ -1,5 +1,4 @@
 <script>
-import { markRaw } from 'vue';
 /**
  * MenuItems component with keyboard navigation and (optional) hotkey text and icons
  * Can be used co create a float-able menu or a sub menu or similar.
@@ -61,9 +60,6 @@ export default {
     },
     emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
     methods: {
-        getIcon(iconComponent) {
-            return markRaw(iconComponent);
-        },
         /**
          * @returns {Array<Element>} - HTML Elements to use for focus and events.
          */
@@ -211,7 +207,7 @@ export default {
         :href="item.href || null"
       >
         <Component
-          :is="getIcon(item.icon)"
+          :is="item.icon"
           v-if="item.icon"
           class="item-icon"
         />

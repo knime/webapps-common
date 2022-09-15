@@ -3,7 +3,7 @@ require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
     root: true,
-    extends: ['@knime/eslint-config/vue3', '@vue/eslint-config-typescript'],
+    extends: ['@knime/eslint-config/vue3-typescript'],
     globals: {
         consola: true,
         window: true
@@ -17,13 +17,5 @@ module.exports = {
                 ]
             }
         }
-    },
-    overrides: [
-        {
-            files: ['./**/*.vue'],
-            rules: {
-                'vue/multi-word-component-names': 'off'
-            }
-        }
-    ]
+    }
 };

@@ -7,3 +7,8 @@ console.info(`Running "npm ${npmCommand}" in ${__dirname}/buildtools`);
 execSync(`npm ${npmCommand}`, {
     cwd: path.join(`${__dirname}`, 'buildtools')
 });
+
+console.info(`Running "npm ${npmCommand}" in ${__dirname}/lint`);
+execSync(`npm ${npmCommand}`, {
+    cwd: path.join(`${__dirname}`, 'lint')
+});

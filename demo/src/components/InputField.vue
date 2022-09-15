@@ -28,13 +28,13 @@ const codeExample = `<InputField
   required
 />
 <InputField
-  :value="no edit here"
+  :model-value="no edit here"
   type="text"
   disabled
 />
 <InputField
   type="password"
-  value="secret-password"
+  model-value="secret-password"
 />
 <InputField
   v-model="inputValue"
@@ -96,7 +96,7 @@ export default {
             required
           />
           <InputField
-            value="disabled: no edit here"
+            model-value="disabled: no edit here"
             type="text"
             disabled
           />
@@ -107,7 +107,7 @@ export default {
             <template #icon><MailIcon /></template>
           </InputField>
           <InputField
-            value="invalid"
+            model-value="invalid"
             :is-valid="false"
             type="text"
           >

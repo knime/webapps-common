@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['@knime/eslint-config/vue3', '@vue/eslint-config-typescript'],
+    extends: ['@knime/eslint-config/vue3-typescript'],
     globals: {
         consola: true
     },
@@ -12,13 +12,5 @@ module.exports = {
                 ]
             }
         }
-    },
-    overrides: [
-        {
-            files: ['./**/*.vue'],
-            rules: {
-                'vue/multi-word-component-names': 'off'
-            }
-        }
-    ]
+    }
 };

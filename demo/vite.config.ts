@@ -22,5 +22,11 @@ export default defineConfig({
             '~': fileURLToPath(new URL('.', import.meta.url)) // only needed for import statements in webapps-common
         }
     },
-    envPrefix: 'KNIME_'
+    envPrefix: 'KNIME_',
+    server: {
+        fs: {
+            // Allow serving files from one level up to the project root
+            allow: ['..']
+        }
+    }
 });

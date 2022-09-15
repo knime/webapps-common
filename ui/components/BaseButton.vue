@@ -1,9 +1,10 @@
 <script>
-import { resolveLinkComponent } from '../util/custom-component-resolver';
+import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
 
 export default {
     compatConfig: {
-        INSTANCE_LISTENERS: false
+        INSTANCE_LISTENERS: false,
+        COMPILER_V_BIND_OBJECT_ORDER: false
     },
     props: {
         /**
@@ -34,7 +35,7 @@ export default {
     computed: {
         // TODO: Can be made into a composition function
         linkComponent() {
-            return resolveLinkComponent();
+            return resolveNuxtLinkComponent();
         }
     },
     methods: {
@@ -51,7 +52,7 @@ export default {
         },
         // This can be called from outside via focus on a $ref
         focus() {
-            this.$refs.button?.focus?.();
+            this.$refs.button?.focus();
         }
     }
 };

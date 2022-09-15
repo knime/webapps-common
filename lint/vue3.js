@@ -17,7 +17,9 @@ module.exports = {
         'vue/no-spaces-around-equal-signs-in-attribute': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off',
-        'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
+        'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }],
+        'vue/multi-word-component-names': 'off', // TODO enable?
+        'vue/no-reserved-component-names': 'off' // TODO enable?
     },
     settings: {
         'import/resolver': {

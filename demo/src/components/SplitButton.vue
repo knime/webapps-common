@@ -79,24 +79,22 @@ export default {
 }
 </style>`;
 
-const toRaw = (icon) => markRaw(icon);
-
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: toRaw(HelpIcon)
+    icon: markRaw(HelpIcon)
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: toRaw(StarIcon)
+    icon: markRaw(StarIcon)
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: toRaw(HeartIcon)
+    icon: markRaw(HeartIcon)
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: toRaw(LeaveIcon)
+    icon: markRaw(LeaveIcon)
 }];
 
 export default {

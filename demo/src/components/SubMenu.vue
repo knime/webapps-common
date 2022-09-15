@@ -1,4 +1,5 @@
 <script>
+import { markRaw } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
 import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
@@ -82,35 +83,33 @@ nav {
 </style>
 `;
 
-const getIconShallowRef = (iconComponent) => iconComponent;
-
 const subMenuItems = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: getIconShallowRef(HelpIcon),
+    icon: markRaw(HelpIcon),
     hotkeyText: 'Ctrl + 1'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: getIconShallowRef(StarIcon),
+    icon: markRaw(StarIcon),
     hotkeyText: 'Ctrl + 2'
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
     disabled: true,
-    icon: getIconShallowRef(StarIcon),
+    icon: markRaw(StarIcon),
     hotkeyText: 'Ctrl + 3'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: getIconShallowRef(HeartIcon)
+    icon: markRaw(HeartIcon)
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: getIconShallowRef(LeaveIcon)
+    icon: markRaw(LeaveIcon)
 }, {
     text: 'Item without href/to',
-    icon: getIconShallowRef(HelpIcon)
+    icon: markRaw(HelpIcon)
 }];
 
 export default {

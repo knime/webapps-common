@@ -20,31 +20,28 @@
     "coverage": "jest --coverage",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
-  "dependencies": {
-    "date-fns": "2.16.1",
-    "date-fns-tz": "1.0.12",
-    "filesize": "6.1.0",
-    "modern-normalize": "^1.1.0"
-  },
   "devDependencies": {
     "@knime/eslint-config": "file:lint",
-    "consola": "2.10.1",
     "eslint": "8.23.0",
     "stylelint": "13.6.1",
     "stylelint-config-standard": "20.0.0",
     "typescript": "4.5.4",
-    "vue": "^3.2.39",
-    "vue3-click-away": "^1.2.4"
+    "vue": "^3.2.39"
   },
   "peerDependencies": {
+    "date-fns": "2.16.1",
+    "date-fns-tz": "1.0.12",
+    "filesize": "6.1.0",
     "@fontsource/roboto": "4.x",
     "@fontsource/roboto-mono": "4.x",
     "@popperjs/core": "2.5.4",
-    "consola": "*",
+    "consola": "^2.15.3",
     "focus-trap": "6.7.0",
     "focus-trap-vue": "^3.3.1",
     "postcss-preset-env": "7.x",
-    "v-calendar": "^3.0.0-alpha.8"
+    "v-calendar": "^3.0.0-alpha.8",
+    "vue3-click-away": "^1.2.4",
+    "modern-normalize": "^1.1.0"
   },
   "engines": {
     "node": "18.x"

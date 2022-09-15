@@ -1,6 +1,6 @@
 <script>
 import ArrowNext from '../assets/img/icons/arrow-next.svg';
-import { resolveLinkComponent } from '../util/custom-component-resolver';
+import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
 
 export default {
     components: {
@@ -35,7 +35,7 @@ export default {
     computed: {
         // TODO: Can be made into a composition function
         linkComponent() {
-            return resolveLinkComponent();
+            return resolveNuxtLinkComponent();
         }
     }
 };
