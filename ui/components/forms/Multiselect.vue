@@ -48,8 +48,36 @@ export default {
             default: null
         },
         isValid: {
-            default: true,
-            type: Boolean
+            type: Boolean,
+            default: true
+        },
+        /**
+         * List of items that should be disabled, i.e. can not be selected / unselected.
+         */
+        disabledItems: {
+            type: Array,
+            default: () => []
+        },
+        /**
+         * Seperator which seperates selected items in their string representation.
+         */
+        separator: {
+            type: String,
+            default: ', '
+        },
+        /**
+         * Max number of items that will be displayed as a listing in the string representation.
+         */
+        maxItemCount: {
+            type: Number,
+            default: Infinity
+        },
+        /**
+         * Name that will be used if maxItemCount is .
+         */
+        itemsName: {
+            type: String,
+            default: ''
         }
     },
     data() {
@@ -69,10 +97,15 @@ export default {
             if (this.checkedValue.length === 0) {
                 return this.placeholder;
             }
+
+            if (this.checkedValue.length > this.maxItemCount) {
+                return `${this.checkedValue.length} ${this.itemsName}`;
+            }
+
             return this.possibleValues
                 .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
                 .map(({ text, selectedText = text }) => selectedText)
-                .join(', ');
+                .join(this.separator);
         }
     },
     watch: {
@@ -118,7 +151,10 @@ export default {
             }, BLUR_TIMEOUT);
         },
         isChecked(itemId) {
-            return this.checkedValue.indexOf(itemId) > -1;
+            return this.checkedValue.includes(itemId);
+        },
+        isDisabled(itemId) {
+            return this.disabledItems.includes(itemId);
         },
         /**
          * Handle closing the options.
@@ -198,6 +234,7 @@ export default {
         ref="option"
         :key="`multiselect-${item.id}`"
         :value="isChecked(item.id)"
+        :disabled="isDisabled(item.id)"
         class="boxes"
         @input="onInput(item.id, $event)"
       >

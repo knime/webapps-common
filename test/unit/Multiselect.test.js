@@ -3,6 +3,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 const localVue = createLocalVue();
 
 import Multiselect from '~/ui/components/forms/Multiselect.vue';
+import Checkbox from '~/ui/components/forms/Checkbox.vue';
 
 describe('Multiselect.vue', () => {
     it('renders', () => {
@@ -396,6 +397,78 @@ describe('Multiselect.vue', () => {
     
                 expect(document.activeElement).toBe(wrapper.vm.focusOptions[2]);
                 expect(onUpMock).toHaveBeenCalled();
+            });
+
+            it('disables options if disabledItems is set', () => {
+                const wrapper = mount(Multiselect, {
+                    propsData: {
+                        possibleValues: [{
+                            id: 'test1',
+                            text: 'test1'
+                        }, {
+                            id: 'test2',
+                            text: 'test2'
+                        }, {
+                            id: 'test3',
+                            text: 'test3'
+                        }],
+                        disabledItems: ['test1', 'test3']
+                    },
+                    localVue
+                });
+
+                const checkboxes = wrapper.findAll(Checkbox);
+        
+                expect(checkboxes.at(0).props('disabled')).toBe(true);
+                expect(checkboxes.at(1).props('disabled')).toBe(false);
+                expect(checkboxes.at(2).props('disabled')).toBe(true);
+            });
+
+            it('renders custom seperator', () => {
+                const wrapper = mount(Multiselect, {
+                    propsData: {
+                        possibleValues: [{
+                            id: 'test1',
+                            text: 'Test1'
+                        }, {
+                            id: 'test2',
+                            text: 'Test2'
+                        }],
+                        value: ['test1', 'test2'],
+                        separator: ' & '
+                    },
+                    localVue
+                });
+
+                const button = wrapper.find('[role="button"]');
+                expect(button.text()).toBe('Test1 & Test2');
+            });
+
+            it('renders count and placeholder if maxItemCount is set', () => {
+                const wrapper = mount(Multiselect, {
+                    propsData: {
+                        possibleValues: [{
+                            id: 'test1',
+                            text: 'Test1'
+                        }, {
+                            id: 'test2',
+                            text: 'Test2'
+                        }, {
+                            id: 'test3',
+                            text: 'Test3'
+                        }, {
+                            id: 'test4',
+                            text: 'Test4'
+                        }],
+                        value: ['test1', 'test2', 'test4'],
+                        maxItemCount: 2,
+                        itemsName: 'Fische'
+                    },
+                    localVue
+                });
+
+                const button = wrapper.find('[role="button"]');
+                expect(button.text()).toBe('3 Fische');
             });
         });
     });
