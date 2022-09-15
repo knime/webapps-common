@@ -123,11 +123,11 @@ export default {
         onInput(e) {
             // do not emit input event when decimal point is being
             // used because number input field treats it as invalid
-            if (e?.data === '.' && !e?.target.value) {
+            if (e && e.data === '.' && !e.target.value) {
                 return;
             }
             let inputValue;
-            if (e?.inputType === 'deleteContentBackward' && this.localValue.toString().length > 1) {
+            if (e && e.inputType === 'deleteContentBackward' && this.localValue.toString().length > 1) {
                 // manually slice and parse the value (in case the new input value ends with a decimal point)
                 // in which case the number input field treats it as invalid
                 inputValue = this.parseValue(this.localValue.toString().slice(0, -1));
