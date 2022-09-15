@@ -12,5 +12,13 @@ module.exports = {
                 ]
             }
         }
-    }
+    },
+    overrides: [
+        {
+            files: ['./**/*.vue'],
+            rules: {
+                'vue/multi-word-component-names': 'off'
+            }
+        }
+    ]
 };
