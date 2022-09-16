@@ -11,6 +11,11 @@ properties([
   buildDiscarder(logRotator(numToKeepStr: '20')),
   parameters([
     booleanParam(
+        name: 'SKIP_TESTS',
+        description: 'Skip tests and coverage',
+        defaultValue: true
+    ),
+    booleanParam(
       name: 'PUBLISH_ESLINT_CONFIG',
       description: 'Triggers a publish of @knime/eslint-config to npm. Make sure you update the version number in ' 
           + 'package.json. Only for master branch.',
