@@ -64,7 +64,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             text="Label for a field"
           >
             <InputField
@@ -76,7 +76,7 @@ export default {
         </div>
         <div class="grid-item-6">
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             text="Compact label for a field"
             compact
           >

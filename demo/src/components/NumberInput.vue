@@ -95,7 +95,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6 inputs">
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             text="Integer (step-size = 1)"
           >
             <NumberInput
@@ -111,7 +111,7 @@ export default {
             />
           </Label>
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             text="Double (step-size = .1)"
           >
             <NumberInput
@@ -127,7 +127,7 @@ export default {
             />
           </Label>
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             :text="input3Text"
           >
             <NumberInput
@@ -143,7 +143,7 @@ export default {
             />
           </Label>
           <Label
-            v-slot="{ labelForId }"
+            #default="{ labelForId }"
             text="Disabled"
           >
             <NumberInput

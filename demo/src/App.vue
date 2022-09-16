@@ -46,8 +46,8 @@ const demoComponents = {
         LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue'))
     },
     messages: {
-        // Message: defineAsyncComponent(() => import('./components/Message.vue')),
-        // Messages: defineAsyncComponent(() => import('./components/Messages.vue'))
+        Message: defineAsyncComponent(() => import('./components/Message.vue')),
+        Messages: defineAsyncComponent(() => import('./components/Messages.vue'))
     },
     forms: {
         // Label: defineAsyncComponent(() => import('./components/Label.vue')),

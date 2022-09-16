@@ -67,7 +67,7 @@ export default {
           <Fieldset text="Login">
             <template #icon><InfoIcon /></template>
             <Label
-              v-slot="{ labelForId }"
+              #default="{ labelForId }"
               text="User"
             >
               <InputField
@@ -76,7 +76,7 @@ export default {
               />
             </Label>
             <Label
-              v-slot="{ labelForId }"
+              #default="{ labelForId }"
               text="Password"
             >
               <InputField

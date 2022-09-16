@@ -77,6 +77,7 @@ export default {
             }, {
                 id: 2,
                 type: 'warn',
+                count: 3,
                 message: 'Warning message'
             }, {
                 id: 3,

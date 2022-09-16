@@ -158,7 +158,9 @@ export default {
       This is a simple message
     </Message>
     <Message>
-      <BulbIcon slot="icon" />
+      <template #icon>
+        <BulbIcon />
+      </template>
       This is a simple message with an icon.<br>
       <!-- eslint-disable-next-line vue/max-attributes-per-line -->
       <a href="#" @click.prevent>It contains markup</a>
@@ -170,7 +172,9 @@ export default {
       This is an error message with a button
     </Message>
     <Message type="success">
-      <CheckIcon slot="icon" />
+      <template #icon>
+        <CheckIcon />
+      </template>
       This is a success message with an icon
     </Message>
     <Message :show-close-button="false">
@@ -226,7 +230,9 @@ export default {
       })"
       :show-collapser="false"
     >
-      <InfoIcon slot="icon" />
+      <template #icon>
+        <InfoIcon />
+      </template>
       This is a message with an icon, details and a link in the main banner
     </Message>
     <section>

@@ -1,9 +1,8 @@
 <script>
 import BaseMessage from './BaseMessage.vue';
-import Button from './Button.vue';
+import MessageTitle from './MessageTitle.vue';
 import Collapser from './Collapser.vue';
 import MessageLink from './MessageLink.vue';
-import CloseIcon from '../assets/img/icons/close.svg';
 import CopyIcon from '../assets/img/icons/copy.svg';
 import { copyText } from '../../util/copyText';
 
@@ -13,10 +12,9 @@ import { copyText } from '../../util/copyText';
 export default {
     components: {
         BaseMessage,
-        Button,
+        MessageTitle,
         Collapser,
         MessageLink,
-        CloseIcon,
         CopyIcon
     },
     props: {
@@ -70,6 +68,7 @@ export default {
             default: ''
         }
     },
+    emits: ['copied', 'dismiss'],
     data() {
         return {
             active: true
@@ -132,53 +131,41 @@ export default {
       :is="showDetailsCollapser ? 'Collapser' : 'div'"
       :class="showDetailsCollapser ? 'collapser' : 'banner'"
     >
-      <!-- TODO: check how this affects rendering, named slots can only be used by templates, replaced with simple template for now
-        <Component
-        :is="showDetailsCollapser ? 'template' : 'div'"
+      <template
+        v-if="showDetailsCollapser"
         #title
-        class="title"
-      > -->
-      <template #title>
-        <!-- @slot Use this slot to add an icon. -->
-        <slot name="icon" />
-        <span class="message">
-          <!-- @slot Use this slot to add text content (markup). -->
+      >
+        <MessageTitle
+          :type="type"
+          :button="button"
+          :show-close-button="showCloseButton"
+          :count="count"
+          @dismiss="onDismiss"
+        >
+          <template #icon>
+            <slot name="icon" />
+          </template>
           <slot />
-          <span
-            v-show="count && count > 1"
-            class="message-count"
-            :class="type"
-          >
-            {{ '×' + count }}
-          </span>
-        </span>
-        <template v-if="showCloseButton">
-          <Button
-            v-if="button"
-            class="close"
-            :class="type"
-            primary
-            compact
-            on-dark
-            @click="onDismiss"
-            @keydown.space.stop.prevent="onDismiss"
-          >
-            {{ button }}
-          </Button>
-          <span
-            v-else
-            tabindex="0"
-            class="close"
-            :class="type"
-            title="Discard message"
-            @click="onDismiss"
-            @keydown.space.stop.prevent="onDismiss"
-          >
-            <CloseIcon />
-          </span>
-        </template>
-      <!-- </Component> -->
+        </MessageTitle>
       </template>
+      <div
+        v-if="!showDetailsCollapser"
+        class="title"
+      >
+        <MessageTitle
+          :type="type"
+          :button="button"
+          :show-close-button="showCloseButton"
+          :count="count"
+          @dismiss="onDismiss"
+        >
+          <template #icon>
+            <slot name="icon" />
+          </template>
+          <slot />
+        </MessageTitle>
+      </div>
+      
       <div
         v-if="detailsText"
         class="details"
@@ -206,39 +193,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.message-count {
-  padding: 3px 7.5px;
-  margin-left: 5px;
-  background-color: white;
-  border-radius: 12px;
-
-  &.info {
-    color: var(--theme-color-info);
-  }
-
-  &.error {
-    color: var(--theme-color-error);
-  }
-
-  &.success {
-    color: var(--theme-color-success);
-  }
-
-  &.warn {
-    background-color: var(--theme-color-action-required);
-  }
-}
-
 .banner {
   width: 100%;
-}
-
-.message {
-  flex-grow: 1;
-  margin-right: 50px; /* this is set to not interfere with the dropdown or close button */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 3px;
 }
 
 .details {
@@ -264,61 +220,6 @@ export default {
   margin-right: 20px;
   flex-shrink: 0;
   top: 3px;
-}
-
-.close {
-  outline: none;
-  display: flex;
-  align-items: center;
-  position: relative;
-  right: -6px; /* align svg with right border */
-  pointer-events: all;
-  text-align: center;
-  top: 0;
-  align-self: flex-start;
-  float: right;
-  margin-left: auto;
-
-  /* hover/focus styles for type error and success */
-
-  &:hover,
-  &:focus {
-    background-color: var(--knime-masala-semi);
-  }
-
-  & svg {
-    position: relative;
-    top: 0;
-    margin: auto;
-    height: 18px;
-    width: 18px;
-    stroke-width: calc(32px / 18);
-    cursor: pointer;
-  }
-
-  /* hover/focus styles for type info */
-  &.info:hover :slotted(svg),
-  &.info:focus :slotted(svg) {
-    filter: drop-shadow(0 0 4px white);
-  }
-}
-
-button.close {
-  flex-shrink: 0;
-  margin-bottom: 0;
-  display: flex;
-  width: unset;
-}
-
-span.close {
-  height: 30px;
-  width: 30px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-:last-child {
-  border-bottom: 0;
 }
 
 .collapser {

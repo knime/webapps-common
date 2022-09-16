@@ -44,17 +44,18 @@ export default {
     tag="div"
     name="messages"
   >
-    <template v-for="message in messages">
+    <template
+      v-for="message in messages"
+      :key="message.id"
+    >
       <BaseMessage
         v-if="message.content"
-        :key="message.id"
         :type="message.type.toLowerCase()"
       >
         <Component :is="message.content" />
       </BaseMessage>
       <Message
         v-else
-        :key="message.id"
         :type="message.type.toLowerCase()"
         :count="message.count"
         :button="message.button"
@@ -65,10 +66,11 @@ export default {
         @copied="$emit('copied')"
         @dismiss="$emit('dismiss', message.id)"
       >
-        <Component
-          :is="message.icon"
-          slot="icon"
-        />
+        <template #icon>
+          <Component
+            :is="message.icon"
+          />
+        </template>
         {{ message.message }}
         <MessageLink
           v-if="message.link"
