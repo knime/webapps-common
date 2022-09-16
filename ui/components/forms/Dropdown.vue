@@ -1,7 +1,7 @@
 <script>
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
-import { mixin as clickaway } from 'vue-clickaway2';
+import { mixin as VueClickAway } from 'vue3-click-away';
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -17,7 +17,7 @@ export default {
     components: {
         DropdownIcon
     },
-    mixins: [clickaway],
+    mixins: [VueClickAway],
     props: {
         id: {
             type: String,
@@ -265,7 +265,7 @@ export default {
 <template>
   <div
     :id="id"
-    v-on-clickaway="clickAway"
+    v-click-away="clickAway"
     :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid, disabled }]"
   >
     <div
