@@ -48,7 +48,7 @@ export default {
   &::after {
     width: var(--arrow-size);
     height: var(--arrow-size);
-    content: '';
+    content: "";
     position: absolute;
     z-index: -1;
     left: 50%;

@@ -101,7 +101,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-
 .grid-item-6 {
   display: flex;
   align-items: flex-end;

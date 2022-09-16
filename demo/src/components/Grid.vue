@@ -140,13 +140,13 @@ export default {
 .grid-demo {
   font-weight: 500;
   min-height: 10vmin;
-  background: rgba(0, 0, 0, 0.1);
-  outline: 1px solid rgba(0, 0, 0, 0.2);
+  background: rgb(0 0 0 / 10%);
+  outline: 1px solid rgb(0 0 0 / 20%);
   margin-bottom: 2vmin;
   transition: box-shadow 0.2s linear;
 
   &:hover {
-    box-shadow: 0 0 1vmin rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 1vmin rgb(0 0 0 / 20%);
   }
 
   & .grid-container {
@@ -155,23 +155,23 @@ export default {
       45deg,
       transparent 0%,
       transparent 25%,
-      rgba(128, 0, 128, 0.1) 25%,
-      rgba(128, 0, 128, 0.1) 50%,
+      rgb(128 0 128 / 10%) 25%,
+      rgb(128 0 128 / 10%) 50%,
       transparent 50%,
       transparent 75%,
-      rgba(128, 0, 128, 0.1) 75%,
-      rgba(128, 0, 128, 0.1) 100%
+      rgb(128 0 128 / 10%) 75%,
+      rgb(128 0 128 / 10%) 100%
     );
     background-size: 4vmin 4vmin;
     position: relative;
     transition: background-color 0.2s linear;
 
     &:hover {
-      background-color: rgba(255, 0, 255, 0.1);
+      background-color: rgb(255 0 255 / 10%);
     }
 
     &::before {
-      content: '.grid-container';
+      content: ".grid-container";
       color: purple;
       position: absolute;
       left: 1vmin;
@@ -179,14 +179,14 @@ export default {
     }
 
     &::after {
-      content: 'section';
+      content: "section";
       position: absolute;
       line-height: 10vmin;
       left: calc(-3 * var(--grid-gap-width));
     }
 
     & .grid-container::after {
-      content: '';
+      content: "";
     }
 
     & [class^="grid-item-"] {
@@ -195,12 +195,12 @@ export default {
         135deg,
         transparent 0%,
         transparent 25%,
-        rgba(0, 200, 0, 0.1) 25%,
-        rgba(0, 200, 0, 0.1) 50%,
+        rgb(0 200 0 / 10%) 25%,
+        rgb(0 200 0 / 10%) 50%,
         transparent 50%,
         transparent 75%,
-        rgba(0, 200, 0, 0.1) 75%,
-        rgba(0, 200, 0, 0.1) 100%
+        rgb(0 200 0 / 10%) 75%,
+        rgb(0 200 0 / 10%) 100%
       );
       background-size: 4vmin 4vmin;
       white-space: pre;
@@ -216,7 +216,7 @@ export default {
       }
 
       &:hover {
-        background-color: rgba(0, 255, 0, 0.5);
+        background-color: rgb(0 255 0 / 50%);
       }
     }
 

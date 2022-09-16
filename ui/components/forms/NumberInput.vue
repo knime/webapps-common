@@ -283,7 +283,7 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  & input[type='number'] {
+  & input[type="number"] {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: inherit;
@@ -298,12 +298,12 @@ export default {
     background-color: var(--theme-input-number-background-color);
 
     /* remove browser spinners FF */
-    -moz-appearance: textfield;
+    appearance: textfield;
 
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
+      appearance: none;
       margin: 0;
     }
 
@@ -312,7 +312,7 @@ export default {
       box-shadow: none; /* override default browser styling */
     }
 
-    &:hover:not(:focus):not(:disabled) { /* not native :hover because of WEBP-297 */
+    &:hover:not(:focus, :disabled) { /* not native :hover because of WEBP-297 */
       background-color: var(--theme-input-number-background-color-hover);
     }
   }

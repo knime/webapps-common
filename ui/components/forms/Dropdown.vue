@@ -326,7 +326,7 @@ export default {
   }
 
   &.invalid::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 3px;
     left: 0;
@@ -341,7 +341,7 @@ export default {
     user-select: none;
   }
 
-  & [role=button] {
+  & [role="button"] {
     margin: 0;
     border: 1px solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
@@ -357,11 +357,11 @@ export default {
     }
   }
 
-  &:not(.collapsed) [role=button] {
+  &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
   }
 
-  &:not(.disabled) [role=button] {
+  &:not(.disabled) [role="button"] {
     cursor: pointer;
 
     &:focus {
@@ -395,7 +395,7 @@ export default {
     min-height: 22px;
     width: 100%;
     padding: 0;
-    margin: -1px 0 1px 0;
+    margin: -1px 0 1px;
     background: var(--theme-dropdown-background-color);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
@@ -404,7 +404,7 @@ export default {
   & [role="option"] {
     display: block;
     width: 100%;
-    padding: 0 10px 0 10px;
+    padding: 0 10px;
     line-height: 22px;
     position: relative;
     text-overflow: ellipsis;

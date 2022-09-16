@@ -1,1 +1,3 @@
-module.exports = require('./lint/.stylelintrc');
+module.exports = {
+    extends: ['@knime/eslint-config/stylelint/vue']
+};

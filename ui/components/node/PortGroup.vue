@@ -104,7 +104,7 @@ export default {
 
   & h6 {
     flex-basis: 33%;
-    margin: 0 0 16px 0;
+    margin: 0 0 16px;
     min-width: 140px;
     padding-right: 10px;
     flex-grow: 1;

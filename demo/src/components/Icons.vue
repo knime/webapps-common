@@ -3,7 +3,7 @@ import ImagePreviews from './demo/ImagePreviews.vue';
 import CodeExample from './demo/CodeExample.vue';
 import ListNumbersIcon from 'webapps-common/ui/assets/img/icons/list-numbers.svg';
 import FolderIcon from 'webapps-common/ui/assets/img/icons/folder.svg';
-// TODO import svgWithTitle from 'webapps-common/ui/util/svgWithTitle';
+import svgWithTitle from 'webapps-common/ui/util/svgWithTitle';
 import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 
 const codeExample1 = `<script>
@@ -116,8 +116,7 @@ export default {
     components: {
         ListNumbersIcon,
         FolderIcon,
-        ListNumbersIconWithTip: ListNumbersIcon,
-        // TODO ListNumbersIconWithTip: svgWithTitle(ListNumbersIcon, 'This is a list with numbers'),
+        ListNumbersIconWithTip: svgWithTitle(ListNumbersIcon, 'This is a list with numbers'),
         ImagePreviews,
         CodeExample,
         InputField
@@ -154,7 +153,7 @@ export default {
           <h2>Icons</h2>
           <InputField
             v-model="iconFilterTerm"
-            class="filterIconsInput"
+            class="filter-icons-input"
             type="text"
             placeholder="Filter Icons"
           />
@@ -167,10 +166,10 @@ export default {
             The SVG icons have an original size of 32x32px. It's recommended to inline the icons as Vue components which
             also supports to change e.g. the stroke color and width via CSS:
           </p>
-          <FolderIcon class="hoverStyle" /> Normal case
+          <FolderIcon class="hover" /> Normal case
           <CodeExample summary="Show icon as Vue component code example">{{ codeExample1 }}</CodeExample>
 
-          <ListNumbersIcon class="hoverStyle" /> With numbers or text (be sure to set the <code>.text</code>
+          <ListNumbersIcon class="hover" /> With numbers or text (be sure to set the <code>.text</code>
           class with a fill and stroke to none)
           <CodeExample summary="Show icon with text as Vue component code example">{{ codeExample2 }}</CodeExample>
 
@@ -188,7 +187,7 @@ export default {
   margin: 0 -20px;
 }
 
-.filterIconsInput {
+.filter-icons-input {
   width: 400px;
   margin-bottom: 30px;
 }
@@ -205,7 +204,7 @@ svg {
     stroke: none;
   }
 
-  &.hoverStyle {
+  &.hover {
     stroke: var(--knime-silver-sand);
 
     & .text {

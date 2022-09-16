@@ -153,11 +153,11 @@ export default {
 <style lang="postcss" scoped>
 section {
   & :deep(.shadow-wrapper::before) {
-    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(270deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
   }
 
   & :deep(.shadow-wrapper::after) {
-    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(90deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
   }
 }
 

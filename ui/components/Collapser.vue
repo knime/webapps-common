@@ -94,7 +94,7 @@ export default {
   background-color: transparent;
   border: 0;
   outline: none;
-  -webkit-appearance: none;
+  appearance: none;
   color: inherit; /* Safari needs this */
   width: 100%;
   text-align: left;

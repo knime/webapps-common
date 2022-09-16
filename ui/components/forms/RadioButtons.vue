@@ -101,7 +101,7 @@ export default {
         border: 1px solid var(--theme-radio-border-color);
         background: var(--theme-radio-background-color);
         display: inline-block;
-        content: '';
+        content: "";
         width: 14px;
         height: 14px;
         border-radius: 100%;
@@ -123,7 +123,7 @@ export default {
         & + span::before {
           background: var(--theme-radio-foreground-color-selected);
           border-color: var(--theme-radio-border-color-selected);
-          content: '';
+          content: "";
           box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
         }
         /* stylelint-enable no-descending-specificity */

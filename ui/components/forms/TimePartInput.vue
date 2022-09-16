@@ -356,7 +356,7 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  & input[type='number'] {
+  & input[type="number"] {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: inherit;
@@ -371,12 +371,12 @@ export default {
     background-color: var(--theme-time-part-input-background-color);
 
     /* remove browser spinners FF */
-    -moz-appearance: textfield;
+    appearance: textfield;
 
     /* remove browser spinners WebKit/Blink */
     &::-webkit-inner-spin-button,
     &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
+      appearance: none;
       margin: 0;
     }
 

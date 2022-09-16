@@ -31,7 +31,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-
 section {
   border-bottom: 1px solid var(--knime-white);
   overflow: hidden;

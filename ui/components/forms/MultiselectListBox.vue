@@ -101,7 +101,7 @@ export default {
             this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         window.removeEventListener('mouseup', this.onStopDrag);
     },
     created() {
@@ -447,7 +447,7 @@ export default {
 
   &.invalid {
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       width: 3px;
       left: 0;

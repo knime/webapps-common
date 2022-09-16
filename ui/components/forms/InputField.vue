@@ -175,7 +175,7 @@ input {
     }
   }
 
-  &:hover:not(:focus):not(:disabled) {
+  &:hover:not(:focus, :disabled) {
     background-color: var(--theme-input-field-background-color-focus);
   }
 

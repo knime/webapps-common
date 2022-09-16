@@ -46,7 +46,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-
 .message-link {
   text-decoration: underline;
   cursor: pointer;

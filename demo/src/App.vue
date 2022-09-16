@@ -1,7 +1,6 @@
 <script>
 import { defineAsyncComponent } from 'vue';
 import './assets/index.css';
-// import 'prismjs';
 
 import TabBar from 'webapps-common/ui/components/TabBar.vue';
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
@@ -236,8 +235,8 @@ export default {
 
 <style scoped lang="postcss">
 .logo {
-    height: 4vmin;
-    margin: 2vmin 0;
+  height: 4vmin;
+  margin: 2vmin 0;
 }
 
 main {
@@ -250,11 +249,11 @@ main {
 
 section {
   & :deep(.shadow-wrapper::before) {
-    background-image: linear-gradient(270deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(270deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
   }
 
   & :deep(.shadow-wrapper::after) {
-    background-image: linear-gradient(90deg, hsla(0, 0%, 100%, 0) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(90deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
   }
 }
 

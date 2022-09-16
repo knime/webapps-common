@@ -105,7 +105,7 @@ export default {
       border: 1px solid var(--theme-checkbox-border-color);
       background: var(--theme-checkbox-background-color);
       display: inline-block;
-      content: '';
+      content: "";
       width: 14px;
       height: 14px;
     }
@@ -142,7 +142,7 @@ export default {
 
       /* ✓ */
       & + span::after { /* default */
-        content: '';
+        content: "";
         position: absolute;
         display: block;
         transform: translate(4px, 3.5px) rotate(-45deg);

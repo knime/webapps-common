@@ -126,7 +126,7 @@ export default {
 
     background: var(--bg);
     color: var(--font);
-    outline: 1px solid rgba(0, 0, 0, 0.1);
+    outline: 1px solid rgb(0 0 0 / 10%);
     margin-bottom: 6px;
     padding: 10px;
     font-weight: bold;
@@ -147,7 +147,7 @@ export default {
     padding: 1em;
     min-width: 10vmin;
     height: 10vmin;
-    outline: 1px solid rgba(0, 0, 0, 0.1);
+    outline: 1px solid rgb(0 0 0 / 10%);
     text-align: center;
     line-height: calc(10vmin - 2em);
     font-weight: bold;
@@ -166,7 +166,7 @@ export default {
     height: auto;
 
     &::before {
-      content: '';
+      content: "";
       display: block;
       margin: auto;
       width: 5vmin;

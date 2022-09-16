@@ -216,7 +216,7 @@ input:checked:not(:disabled) + span::after {
   z-index: 1; /* local stacking context because Carousel.vue has isolation: isolate; */
 }
 
-input:not(:checked):not(:disabled) + span {
+input:not(:checked, :disabled) + span {
   cursor: pointer;
 }
 

@@ -1,7 +1,7 @@
 {
     "name": "@knime/eslint-config",
     "version": "7.0.3",
-    "description": "An ESLint ruleset designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
+    "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
     "scripts": {
         "lint": "eslint --ext .js .",
         "lint:ci": "eslint --ext .js -f json -o ../target/eslint-config.json ."

@@ -241,7 +241,7 @@ export default {
   isolation: isolate;
 
   &.invalid::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 3px;
     left: 0;

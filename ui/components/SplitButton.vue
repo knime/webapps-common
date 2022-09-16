@@ -17,7 +17,7 @@ div {
     border-radius: var(--theme-button-split-border-radius) 0 0 var(--theme-button-split-border-radius);
 
     &::after {
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       width: 1px;
@@ -39,6 +39,7 @@ div {
 
   & :deep(.submenu) {
     display: inline-flex;
+
     /* best way to ensure flexible 1/4 corners */
     border-radius: 0 var(--theme-button-split-border-radius) var(--theme-button-split-border-radius) 0;
 

@@ -88,7 +88,7 @@ export default {
     & + span::before {
       display: inline-block;
       position: absolute;
-      content: '';
+      content: "";
       border-radius: 50px;
       transition: all 0.3s ease;
       transform-origin: 20% center;
@@ -102,7 +102,7 @@ export default {
     & + span::after {
       position: absolute;
       display: block;
-      content: '';
+      content: "";
       transition: all 0.3s ease, width 0.1s ease-in, left 0.3s ease;
       width: 14px;
       height: 14px;

@@ -84,7 +84,7 @@ div {
     font-size: 13px;
     font-weight: 300;
     line-height: 18px;
-    padding: 11px 10px 11px 10px;
+    padding: 11px 10px;
     border-radius: 0;
     border: 1px solid var(--knime-stone-gray);
     background-color: var(--theme-text-area-background-color);
@@ -99,7 +99,7 @@ div {
       border-color: var(--knime-masala);
     }
 
-    &:hover:not(:focus):not(:disabled) {
+    &:hover:not(:focus, :disabled) {
       background-color: var(--theme-text-area-background-color-hover);
     }
   }

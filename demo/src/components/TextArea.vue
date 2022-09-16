@@ -101,7 +101,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-
 .inputs :deep(> *) {
   margin-bottom: 5px;
 }

@@ -141,6 +141,6 @@ li {
 
 .section-description {
   font-size: 16px;
-  padding: 0 30px 15px 30px;
+  padding: 0 30px 15px;
 }
 </style>
