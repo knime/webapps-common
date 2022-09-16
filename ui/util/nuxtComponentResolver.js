@@ -22,7 +22,7 @@ export const resolveClientOnlyComponent = () => {
     const fallbackComponent = defineComponent({
         compatConfig,
         render() {
-            return h('div', [this.$slots.default()]);
+            return this.$slots.default();
         }
     });
 
