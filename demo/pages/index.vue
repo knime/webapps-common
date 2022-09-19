@@ -11,6 +11,7 @@ import Colors from '../components/Colors.vue';
 import DateTimeInput from '../components/DateTimeInput.vue';
 import Description from '../components/Description.vue';
 import Dropdown from '../components/Dropdown.vue';
+import DonutChart from '../components/DonutChart.vue';
 import Fieldset from '../components/Fieldset.vue';
 import Fonts from '../components/Fonts.vue';
 import FunctionButton from '../components/FunctionButton.vue';
@@ -88,7 +89,8 @@ const demoComponents = {
         Tooltip,
         TabBarDemo,
         TagList,
-        LoadingIcon
+        LoadingIcon,
+        DonutChart
     },
     messages: {
         Message,

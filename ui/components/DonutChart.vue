@@ -1,5 +1,4 @@
 <script>
-import { Masala, Yellow } from '../../webapps-common/ui/colors/knimeColors';
 
 export default {
 
@@ -40,16 +39,6 @@ export default {
         additionalLabel: {
             type: String,
             default: ''
-        },
-        /** The color of the background circle. */
-        backgroundColor: {
-            type: String,
-            default: Masala
-        },
-        /** The color of the value wedge. */
-        wedgeColor: {
-            type: String,
-            default: Yellow
         }
     },
 
@@ -135,7 +124,6 @@ export default {
         :cx="radius"
         :cy="radius"
         :r="r"
-        :stroke="backgroundColor"
         :stroke-width="backgroundStrokeWidth"
         fill="transparent"
       />
@@ -144,7 +132,6 @@ export default {
         :cx="radius"
         :cy="radius"
         :r="r"
-        :stroke="wedgeColor"
         :stroke-width="strokeWidth"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="strokeDashOffset"
@@ -173,6 +160,14 @@ export default {
 <style lang="postcss" scoped>
 .donut-container {
   position: relative;
+
+  & .background-circle{
+    stroke: var(--knime-masala);
+  }
+
+  & .value-wedge{
+    stroke: var(--knime-yellow);
+  }
 }
 
 svg {

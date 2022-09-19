@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils';
-import { Masala, Yellow, Carrot, Cornflower } from '../../../../../webapps-common/ui/colors/knimeColors';
 
-import DonutChart from '~/components/monitoring/DonutChart.vue';
+import DonutChart from '~/ui/components/DonutChart.vue';
 
 describe('DonutChart.vue', () => {
     const defaultValue = 3;
@@ -35,8 +34,6 @@ describe('DonutChart.vue', () => {
         expect(wrapper.vm.innerRadius).toBe(defaultValues.innerRadius);
         expect(wrapper.vm.displayValues).toBe(false);
         expect(wrapper.vm.additionalLabel).toBe('');
-        expect(wrapper.vm.backgroundColor).toBe(Masala);
-        expect(wrapper.vm.wedgeColor).toBe(Yellow);
 
         // data
         expect(wrapper.vm.backgroundStrokeOffset).toBe(defaultValues.backgroundStrokeOffset);
@@ -63,14 +60,12 @@ describe('DonutChart.vue', () => {
         expect(bgCircle.attributes('cx')).toBe(String(defaultValues.radius));
         expect(bgCircle.attributes('cy')).toBe(String(defaultValues.radius));
         expect(bgCircle.attributes('r')).toBe(String(defaultValues.r));
-        expect(bgCircle.attributes('stroke')).toBe(Masala);
         expect(bgCircle.attributes('stroke-width')).toBe(String(defaultValues.backgroundStrokeWidth));
         let wedge = wrapper.find('circle.value-wedge');
         expect(wedge.exists()).toBe(true);
         expect(wedge.attributes('cx')).toBe(String(defaultValues.radius));
         expect(wedge.attributes('cy')).toBe(String(defaultValues.radius));
         expect(wedge.attributes('r')).toBe(String(defaultValues.r));
-        expect(wedge.attributes('stroke')).toBe(Yellow);
         expect(wedge.attributes('stroke-width')).toBe(String(defaultValues.strokeWidth));
         expect(Number(wedge.attributes('stroke-dasharray')))
             .toBeCloseTo(defaultCircumference, precision);
@@ -196,21 +191,6 @@ describe('DonutChart.vue', () => {
         let additionalLabel = wrapper.find('div.additional-label');
         expect(additionalLabel.exists()).toBe(true);
         expect(additionalLabel.text()).toBe('007');
-    });
-
-    it('sets colors', () => {
-        const wrapper = mount(DonutChart, { propsData: {
-            value: defaultValue,
-            maxValue: defaultMaxValue,
-            backgroundColor: Cornflower,
-            wedgeColor: Carrot
-        } });
-        let bgCircle = wrapper.find('circle.background-circle');
-        expect(bgCircle.exists()).toBe(true);
-        expect(bgCircle.attributes('stroke')).toBe(Cornflower);
-        let wedge = wrapper.find('circle.value-wedge');
-        expect(wedge.exists()).toBe(true);
-        expect(wedge.attributes('stroke')).toBe(Carrot);
     });
 
     it('handles infinity as maximum value', () => {
