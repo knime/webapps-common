@@ -161,11 +161,11 @@ export default {
 .donut-container {
   position: relative;
 
-  & .background-circle{
+  & .background-circle {
     stroke: var(--knime-masala);
   }
 
-  & .value-wedge{
+  & .value-wedge {
     stroke: var(--knime-yellow);
   }
 }
