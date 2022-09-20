@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import DonutChart from '~/ui/components/DonutChart.vue';
+import DonutChart from '../../ui/components/DonutChart.vue';
 
 describe('DonutChart.vue', () => {
     const defaultValue = 3;

@@ -95,7 +95,7 @@ export default {
 
 
 <style lang="postcss" scoped>
-.demo{
+.demo {
   display: flex;
   gap: 30px;
   justify-content: center;
