@@ -1,4 +1,5 @@
 <script>
+import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
 
 /**
  * Link component for use in the Message component. Minimally styled to allow reuse in the body
@@ -23,18 +24,25 @@ export default {
             type: Object,
             default: () => ({})
         }
+    },
+    computed: {
+        // TODO: Can be made into a composition function
+        linkComponent() {
+            return resolveNuxtLinkComponent();
+        }
     }
 };
 </script>
 
 <template>
-  <nuxt-link
+  <Component
+    :is="linkComponent"
     v-if="link.to"
     :to="link.to"
     class="message-link"
   >
     {{ ' ' + link.text }}
-  </nuxt-link>
+  </Component>
   <a
     v-else-if="link.href"
     :href="link.href"

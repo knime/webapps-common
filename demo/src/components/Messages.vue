@@ -1,4 +1,5 @@
 <script>
+import { markRaw } from 'vue';
 import Messages from 'webapps-common/ui/components/Messages.vue';
 import BulbIcon from 'webapps-common/ui/assets/img/icons/bulb.svg';
 import CodeExample from './demo/CodeExample.vue';
@@ -85,18 +86,18 @@ export default {
                 id: 3,
                 type: 'success',
                 message: 'Success message',
-                icon: BulbIcon
+                icon: markRaw(BulbIcon)
             }, {
                 id: 4,
                 type: 'error',
                 message: 'Error message',
-                icon: BulbIcon,
+                icon: markRaw(BulbIcon),
                 button: 'Okily Dokily!'
             }, {
                 id: 5,
                 type: 'error',
                 message: 'Error message.',
-                icon: BulbIcon,
+                icon: markRaw(BulbIcon),
                 details: 'These are details',
                 link: {
                     text: 'With appended link and details.',
