@@ -268,10 +268,7 @@ export default {
     display: flex;
     align-content: center;
     margin-top: 15px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-    padding-left: calc(3 * var(--grid-gap-width));
-    padding-right: calc(3 * var(--grid-gap-width));
+    padding: 10px calc(3 * var(--grid-gap-width)) 5px calc(3 * var(--grid-gap-width));
     position: relative;
     left: calc((100% - 100vw) / 2);
 

@@ -4,6 +4,8 @@ import MessageLink from '~/ui/components/MessageLink.vue';
 import Message from '~/ui/components/Message.vue';
 import SuccessIcon from '~/ui/assets/img/icons/circle-check.svg';
 
+// TODO add test case for message.content prop
+
 const messages = [
     {
         message: 'Error 404',

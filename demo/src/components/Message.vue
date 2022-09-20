@@ -122,11 +122,10 @@ export default {
           <p>
             There are several types of messages: <code>info</code> (default),
             <code>success</code> and <code>error</code>.
-            You can select them with the <code>type</code> property.
           </p>
           <p>
-            Each message can have an icon in the <code>icon</code> slot. Note: for spacing of text when using an icon
-            via <code>icon</code> slot, please use the parent component to style the text accordingly.
+            Each message can have an icon in the <code>icon</code> slot. For spacing of text when using an icon, please
+            use the parent component to style the text accordingly.
           </p>
           <p>
             A message can have an 'x' button (default), or a close button with text, controlled by the

@@ -23,6 +23,7 @@ export default {
          *    icon (Component)
          *    button (optional button text)
          *    message (actual message String)
+         *    content (optional Vue component to render instead of text message, icon, etc.)
          *    link: { (optional link that will be displayed after the message)
          *       text
          *       href (external links, will become <a></a>)
@@ -34,7 +35,8 @@ export default {
             type: Array,
             default: () => []
         }
-    }
+    },
+    emits: ['copied', 'dismiss']
 };
 </script>
 

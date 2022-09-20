@@ -4,6 +4,8 @@ import BulbIcon from 'webapps-common/ui/assets/img/icons/bulb.svg';
 import CodeExample from './demo/CodeExample.vue';
 import code from 'webapps-common/ui/components/Messages.vue?raw';
 
+// TODO add demo case for message.content prop
+
 const codeExample = `<script>
 import Messages from 'webapps-common/ui/components/Messages';
 import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
