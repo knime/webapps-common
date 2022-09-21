@@ -73,6 +73,6 @@
   },
   "private": true,
   "volta": {
-    "node": "14.19.0"
+    "node": "14.20.0"
   }
 }
