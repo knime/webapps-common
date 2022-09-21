@@ -18,8 +18,10 @@ export default {
     props: {
         /**
          * Items to be listed in the menu.
-         * Each item has a `text`, optional `icon` and optional `to` / `href` properties, where `to` is for router-links
-         * and `href` for standard (e.g. external) links. Items can be disabled with the 'disabled' property.
+         * Each item has a `text`, optional `title`, optional `icon` and optional `to` / `href` properties,
+         * where `to` is for router-links and `href` for standard (e.g. external) links.
+         * Items can be disabled with the 'disabled' property.
+         * The optional title will be shown on menu items on hover
          * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
          * The optional separator will add a separator below the item if it's not the last in the list.
          * @example
@@ -28,6 +30,7 @@ export default {
          text: 'Apples',
          icon: HelpIcon
          hotkeyText: 'CTRL + H',
+         title: 'Tastier Apples',
          }, {
            href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
               text: 'Oranges',
