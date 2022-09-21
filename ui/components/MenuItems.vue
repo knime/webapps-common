@@ -191,6 +191,7 @@ export default {
       v-for="(item, index) in items"
       :key="index"
       :class="[{ separator: item.separator }]"
+      :title="item.title"
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
       @keydown.space="onItemClick($event, item)"
