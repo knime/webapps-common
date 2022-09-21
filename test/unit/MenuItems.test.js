@@ -128,6 +128,23 @@ describe('MenuItems.vue', () => {
         });
     });
 
+    it('displays a title for items', () => {
+        const id = 'testfoobar543';
+        const items = [
+            { href: 'https://www.google.com/slash', text: 'Google Slash', title: 'This is an example title' },
+            { href: 'https://www.link.me.in', text: 'Linked Thing' }
+        ];
+        const wrapper = shallowMount(MenuItems, {
+            propsData: {
+                ariaLabel: 'label',
+                items,
+                id
+            }
+        });
+        expect(wrapper.findAll('li').at(0).attributes('title')).toMatch('This is an example title');
+        expect(wrapper.findAll('li').at(1).attributes('title')).toBeUndefined();
+    });
+
     describe('interactions', () => {
         let items, wrapper;
 

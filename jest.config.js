@@ -3,10 +3,12 @@ module.exports = {
         'js',
         'jsx',
         'json',
-        'vue'
+        'vue',
+        'mjs'
     ],
     transform: {
         '\\.js$': 'babel-jest',
+        '\\.mjs$': 'babel-jest',
         '\\.vue$': 'vue-jest',
         '\\.(css|styl|less|sass|scss|ttf|woff|woff2)(\\?|$)': 'jest-transform-stub',
         '\\.svg': '<rootDir>/test/unit/jest-transform-svgs',
