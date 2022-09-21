@@ -136,28 +136,24 @@ export default {
   align-self: flex-start;
   float: right;
   margin-left: auto;
-
-  /* hover/focus styles for type error and success */
+  cursor: pointer;
 
   &:hover,
   &:focus {
     background-color: var(--knime-masala-semi);
+
+    &.info {
+      background-color: var(--knime-dove-gray);
+    }
   }
 
   & svg.close-icon {
     position: relative;
     top: 0;
     margin: auto;
-    height: 18px;
     width: 18px;
+    height: 18px;
     stroke-width: calc(32px / 18);
-    cursor: pointer;
-  }
-
-  /* hover/focus styles for type info */
-  &.info:hover svg,
-  &.info:focus svg {
-    filter: drop-shadow(0 0 4px white);
   }
 }
 

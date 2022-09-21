@@ -307,11 +307,11 @@ export default {
 
         & svg {
           margin: auto;
+          top: 6px;
           stroke: var(--knime-dove-gray);
           height: 18px;
           width: 18px;
           stroke-width: calc(32px / 18);
-          vertical-align: middle;
         }
       }
     }
