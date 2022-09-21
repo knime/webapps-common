@@ -3,23 +3,27 @@ image: node:14.20.0
 pipelines:
   default:
     - step:
-        name: npm audit
+        name: npm install
         script:
           - npm ci
-          - npm run audit
         caches:
           - node
-    - step:
-        name: Unit tests & coverage
-        script:
-          - npm ci
-          - npm run coverage -- --ci
-        caches:
-          - node
-    - step:
-        name: Lint
-        script:
-          - npm ci
-          - npm run lint
-        caches:
-          - node
+    - parallel:
+        - step:
+            name: npm audit
+            script:
+              - npm run audit
+            caches:
+              - node
+        - step:
+            name: Unit tests & coverage
+            script:
+              - npm run coverage -- --ci
+            caches:
+              - node
+        - step:
+            name: Lint
+            script:
+              - npm run lint
+            caches:
+              - node
