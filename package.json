@@ -10,12 +10,13 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
+    "audit": "check-audit --production --json > target/audit.json || true",
     "lint": "run-p lint:*",
     "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "lint:json": "eslint . --ext .json --fix",
     "lint:css": "stylelint '**/*.{css,vue}' --fix",
-    "test:unit": "jest",
-    "coverage": "jest --coverage",
+    "test:unit": "TZ='Europe/Berlin' jest",
+    "coverage": "TZ='Europe/Berlin' jest --coverage",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
