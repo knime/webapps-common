@@ -17,7 +17,23 @@ const codeExample = `<Multiselect
     text: 'Baz',
     selectedText: 'Baz!!'
   }]"
+  :disabled-items="['foo']"
+  separator=" & "
+  :max-item-count="2"
+  items-name="users"
 />`;
+
+const POSSIBLE_VALUES = [{
+    id: 'foo',
+    text: 'Foo'
+}, {
+    id: 'bar',
+    text: 'Bar'
+}, {
+    id: 'baz',
+    text: 'Baz',
+    selectedText: 'Baz!!'
+}];
 
 export default {
     components: {
@@ -27,7 +43,14 @@ export default {
     data() {
         return {
             codeExample,
-            selected: []
+            selected: [
+                [],
+                [],
+                ['foo', 'bar', 'baz'],
+                ['foo', 'bar', 'baz'],
+                ['foo', 'bar', 'baz']
+            ],
+            possibleValues: POSSIBLE_VALUES
         };
     },
     computed: {
@@ -50,28 +73,90 @@ export default {
           </p>
         </div>
       </div>
+
       <div class="grid-container">
-        <div class="grid-item-6">
+        <div class="grid-item-2">
+          default
+        </div>
+        <div class="grid-item-5">
           <Multiselect
-            v-model="selected"
-            placeholder="Select stuff here!"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz',
-              selectedText: 'Baz!!'
-            }]"
+            v-model="selected[0]"
+            :possible-values="possibleValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected }}
+        <div class="grid-item-3">
+          selected ids: {{ selected[0] }}
         </div>
       </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-2">
+          placeholder
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[1]"
+            placeholder="Select stuff here!"
+            :possible-values="possibleValues"
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[1] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-2">
+          disabled items
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[2]"
+            placeholder="Select stuff here!"
+            :possible-values="possibleValues"
+            :disabled-items="['foo']"
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[2] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-2">
+          custom separator
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[3]"
+            placeholder="Select stuff here!"
+            :possible-values="possibleValues"
+            separator=" & "
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[3] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-2">
+          max item count & items name
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[4]"
+            placeholder="Select stuff here!"
+            :possible-values="possibleValues"
+            :max-item-count="2"
+            items-name="users"
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[4] }}
+        </div>
+      </div>
+      <br>
     </section>
     <section>
       <div class="grid-container">
