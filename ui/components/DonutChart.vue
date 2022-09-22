@@ -77,7 +77,7 @@ export default {
         },
         strokeDashOffset() {
             // if the maximum is 0 or infinity, the circle is never filled
-            if (this.maxValue <= 0 || !window.isFinite(this.maxValue)) {
+            if (this.maxValue <= 0 || !Number.isFinite(this.maxValue)) {
                 return this.circumference;
             }
             // otherwise calculate the difference
@@ -91,7 +91,7 @@ export default {
             return Boolean(this.displayValues && this.additionalLabel);
         },
         maxValueString() {
-            return window.isFinite(this.maxValue) ? String(this.maxValue) : '∞';
+            return Number.isFinite(this.maxValue) ? String(this.maxValue) : '∞';
         },
         containerStyle() {
             return `width: ${this.diameter}px; height: ${this.diameter}px;`;
@@ -99,7 +99,7 @@ export default {
         labelStyle() {
             // simple approach to account for larger numbers as the label inside the donut hole
             let valueExceedsLarge = this.clippedValue > this.regularLabelMaxValue;
-            let maxValueExceedsLarge = window.isFinite(this.maxValue) && this.maxValue > this.regularLabelMaxValue;
+            let maxValueExceedsLarge = Number.isFinite(this.maxValue) && this.maxValue > this.regularLabelMaxValue;
             let size = valueExceedsLarge || maxValueExceedsLarge ? this.smallLabelFontSize : this.regularLabelFontSize;
             return `font-size: ${size}px; line-height: ${size}px;`;
         }
