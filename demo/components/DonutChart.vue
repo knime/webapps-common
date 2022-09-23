@@ -72,7 +72,7 @@ export default {
           />
           <DonutChart
             :value="8"
-            :max-value="5"
+            :max-value="Infinity"
             display-values
             additional-label="some metric"
             :inner-radius="70"
