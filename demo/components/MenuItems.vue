@@ -233,7 +233,7 @@ h4 {
 
     & .hover-title {
       padding-bottom: 10px;
-      text-align: center
+      text-align: center;
     }
 
     & .hover-content {

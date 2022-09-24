@@ -49,7 +49,7 @@ const generateCSSFromObject = (inputObject, prefix, generatedPath) => {
         .entries(inputObject)
         .map(objectEntryToStyleProperty(prefix)).join(';\n  ');
     
-    const variables = `:root {\n  ${cssProperties}; \n}\n`;
+    const variables = `:root {\n  ${cssProperties};\n}\n`;
 
     return [].concat(l1, l2, l3, l4, variables).join('');
 };
