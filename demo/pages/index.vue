@@ -38,6 +38,7 @@ import RadioButtons from '../components/RadioButtons.vue';
 import SideDrawer from '../components/SideDrawer.vue';
 import ValueSwitch from '../components/ValueSwitch.vue';
 import SplitButton from '../components/SplitButton.vue';
+import MenuItems from '../components/MenuItems.vue';
 import SubMenu from '../components/SubMenu.vue';
 import TabBarDemo from '../components/TabBar.vue';
 import TagList from '../components/TagList.vue';
@@ -83,6 +84,7 @@ const demoComponents = {
         IdleReadyButton,
         Modal,
         SideDrawer,
+        MenuItems,
         SubMenu,
         SplitButton,
         Tooltip,

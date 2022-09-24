@@ -1,7 +1,7 @@
 <script>
 /**
  * MenuItems component with keyboard navigation and (optional) hotkey text and icons
- * Can be used co create a float-able menu or a sub menu or similar.
+ * Can be used to create a float-able menu or a sub menu or similar.
  * Position and visibility needs to be handled by the wrapper.
  *
  * A click or activation by keyboard (enter and space) emits `@item-click`.
