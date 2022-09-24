@@ -61,11 +61,6 @@ div {
         stroke: var(--theme-button-split-foreground-color);
       }
     }
-
-    & ul {
-      margin-left: 50%;
-      margin-top: 80%;
-    }
   }
 }
 </style>

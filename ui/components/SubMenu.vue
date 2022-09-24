@@ -1,4 +1,5 @@
 <script>
+import { createPopper } from '@popperjs/core';
 import FunctionButton from './FunctionButton.vue';
 import MenuItems from './MenuItems.vue';
 
@@ -59,7 +60,50 @@ export default {
             expanded: false
         };
     },
+    computed: {
+        popperPlacement() {
+            const placementMap = {
+                right: 'bottom-end',
+                top: 'top-end',
+                left: 'bottom-start'
+            };
+            return placementMap[this.orientation];
+        }
+    },
+    watch: {
+        orientation() {
+            this.setPopperOrientation();
+        }
+    },
+    mounted() {
+        this.activatePopper();
+    },
+    beforeDestroy() {
+        this.destroyPopper();
+    },
     methods: {
+        activatePopper() {
+            const referenceEl = this.$refs.submenu;
+            const targetEl = this.$refs['menu-wrapper'];
+
+            this.popperInstance = createPopper(referenceEl, targetEl, {
+                placement: this.popperPlacement
+            });
+        },
+        setPopperOrientation() {
+            if (!this.popperInstance) {
+                return;
+            }
+
+            this.popperInstance.setOptions({
+                placement: this.popperPlacement
+            });
+        },
+        destroyPopper() {
+            if (this.popperInstance) {
+                this.popperInstance.destroy();
+            }
+        },
         /**
          * Close the menu if item was clicked (or activated by keyboard)
          *
@@ -74,6 +118,8 @@ export default {
         },
         toggleMenu() {
             this.expanded = !this.expanded;
+            this.popperInstance.update();
+
             setTimeout(() => {
                 if (this.$refs['submenu-toggle']) {
                     this.$refs['submenu-toggle'].focus();
@@ -170,7 +216,10 @@ export default {
     >
       <slot />
     </FunctionButton>
-    <div :class="['menu-wrapper', { expanded }, { disabled } ]">
+    <div
+      ref="menu-wrapper"
+      :class="['menu-wrapper', { expanded }, { disabled } ]"
+    >
       <MenuItems
         :id="id"
         ref="menuItems"
@@ -186,22 +235,10 @@ export default {
 <style lang="postcss" scoped>
 .menu-items {
   box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
-  position: absolute;
-  right: 0;
-
-  &.orient-left {
-    right: auto;
-    left: 0;
-  }
-
-  &.orient-top {
-    bottom: 18px;
-    right: 10px;
-  }
 }
 
 .menu-wrapper {
-  position: relative;
+  position: absolute;
   display: none;
 
   &.expanded {
