@@ -88,5 +88,6 @@ dist
 buildtools/node_modules
 buildtools/opensourcecredits/used-packages.json
 
-# VSCode
+# IDE
 .history/
+/.idea/**
