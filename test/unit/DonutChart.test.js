@@ -9,7 +9,7 @@ describe('DonutChart.vue', () => {
     const precision = 5;
     
     it('renders with default settings', () => {
-        const defaultValues = {
+        const expectedValues = {
             radius: 50,
             innerRadius: 30,
             backgroundStrokeOffset: 0.5,
@@ -30,26 +30,26 @@ describe('DonutChart.vue', () => {
         } });
         expect(wrapper.exists()).toBe(true);
         // props
-        expect(wrapper.vm.radius).toBe(defaultValues.radius);
-        expect(wrapper.vm.innerRadius).toBe(defaultValues.innerRadius);
+        expect(wrapper.vm.radius).toBe(expectedValues.radius);
+        expect(wrapper.vm.innerRadius).toBe(expectedValues.innerRadius);
         expect(wrapper.vm.displayValues).toBe(false);
         expect(wrapper.vm.additionalLabel).toBe('');
 
         // data
-        expect(wrapper.vm.backgroundStrokeOffset).toBe(defaultValues.backgroundStrokeOffset);
-        expect(wrapper.vm.smallLabelFontSize).toBe(defaultValues.smallLabelFontSize);
-        expect(wrapper.vm.regularLabelFontSize).toBe(defaultValues.regularLabelFontSize);
-        expect(wrapper.vm.regularLabelMaxValue).toBe(defaultValues.regularLabelMaxValue);
+        expect(wrapper.vm.backgroundStrokeOffset).toBe(expectedValues.backgroundStrokeOffset);
+        expect(wrapper.vm.smallLabelFontSize).toBe(expectedValues.smallLabelFontSize);
+        expect(wrapper.vm.regularLabelFontSize).toBe(expectedValues.regularLabelFontSize);
+        expect(wrapper.vm.regularLabelMaxValue).toBe(expectedValues.regularLabelMaxValue);
 
         // computed
         expect(wrapper.vm.clippedValue).toBe(defaultValue);
-        expect(wrapper.vm.strokeWidth).toBe(defaultValues.strokeWidth);
-        expect(wrapper.vm.backgroundStrokeWidth).toBe(defaultValues.backgroundStrokeWidth);
-        expect(wrapper.vm.r).toBe(defaultValues.r);
-        expect(wrapper.vm.diameter).toBe(defaultValues.diameter);
+        expect(wrapper.vm.strokeWidth).toBe(expectedValues.strokeWidth);
+        expect(wrapper.vm.backgroundStrokeWidth).toBe(expectedValues.backgroundStrokeWidth);
+        expect(wrapper.vm.r).toBe(expectedValues.r);
+        expect(wrapper.vm.diameter).toBe(expectedValues.diameter);
         expect(wrapper.vm.circumference).toBeCloseTo(defaultCircumference, precision);
-        expect(wrapper.vm.strokeDashOffset).toBeCloseTo(defaultValues.strokeDashOffset, precision);
-        expect(wrapper.vm.transformWedge).toBe(defaultValues.transform);
+        expect(wrapper.vm.strokeDashOffset).toBeCloseTo(expectedValues.strokeDashOffset, precision);
+        expect(wrapper.vm.transformWedge).toBe(expectedValues.transform);
         expect(wrapper.vm.displayLabel).toBe(false);
         expect(wrapper.vm.maxValueString).toBe(String(defaultMaxValue));
 
@@ -57,21 +57,21 @@ describe('DonutChart.vue', () => {
         expect(wrapper.find('svg').exists()).toBe(true);
         let bgCircle = wrapper.find('circle.background-circle');
         expect(bgCircle.exists()).toBe(true);
-        expect(bgCircle.attributes('cx')).toBe(String(defaultValues.radius));
-        expect(bgCircle.attributes('cy')).toBe(String(defaultValues.radius));
-        expect(bgCircle.attributes('r')).toBe(String(defaultValues.r));
-        expect(bgCircle.attributes('stroke-width')).toBe(String(defaultValues.backgroundStrokeWidth));
+        expect(bgCircle.attributes('cx')).toBe(String(expectedValues.radius));
+        expect(bgCircle.attributes('cy')).toBe(String(expectedValues.radius));
+        expect(bgCircle.attributes('r')).toBe(String(expectedValues.r));
+        expect(bgCircle.attributes('stroke-width')).toBe(String(expectedValues.backgroundStrokeWidth));
         let wedge = wrapper.find('circle.value-wedge');
         expect(wedge.exists()).toBe(true);
-        expect(wedge.attributes('cx')).toBe(String(defaultValues.radius));
-        expect(wedge.attributes('cy')).toBe(String(defaultValues.radius));
-        expect(wedge.attributes('r')).toBe(String(defaultValues.r));
-        expect(wedge.attributes('stroke-width')).toBe(String(defaultValues.strokeWidth));
+        expect(wedge.attributes('cx')).toBe(String(expectedValues.radius));
+        expect(wedge.attributes('cy')).toBe(String(expectedValues.radius));
+        expect(wedge.attributes('r')).toBe(String(expectedValues.r));
+        expect(wedge.attributes('stroke-width')).toBe(String(expectedValues.strokeWidth));
         expect(Number(wedge.attributes('stroke-dasharray')))
             .toBeCloseTo(defaultCircumference, precision);
         expect(Number(wedge.attributes('stroke-dashoffset')))
-            .toBeCloseTo(defaultValues.strokeDashOffset, precision);
-        expect(wedge.attributes('transform')).toBe(defaultValues.transform);
+            .toBeCloseTo(expectedValues.strokeDashOffset, precision);
+        expect(wedge.attributes('transform')).toBe(expectedValues.transform);
         expect(wrapper.find('div.value-label').exists()).toBe(false);
         expect(wrapper.find('div.additional-label').exists()).toBe(false);
     });
