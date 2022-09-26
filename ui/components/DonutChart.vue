@@ -151,7 +151,7 @@ export default {
         v-if="displayLabel"
         class="additional-label"
       >
-        {{ `${additionalLabel}` }}
+        {{ additionalLabel }}
       </div>
     </div>
   </div>
