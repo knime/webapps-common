@@ -38,7 +38,7 @@ export default {
          * if 'displayValues === false' */
         additionalLabel: {
             type: String,
-            default: ''
+            default: null
         }
     },
 

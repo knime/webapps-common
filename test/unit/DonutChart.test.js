@@ -33,7 +33,7 @@ describe('DonutChart.vue', () => {
         expect(wrapper.vm.radius).toBe(expectedValues.radius);
         expect(wrapper.vm.innerRadius).toBe(expectedValues.innerRadius);
         expect(wrapper.vm.displayValues).toBe(false);
-        expect(wrapper.vm.additionalLabel).toBe('');
+        expect(wrapper.vm.additionalLabel).toBeNull();
 
         // data
         expect(wrapper.vm.backgroundStrokeOffset).toBe(expectedValues.backgroundStrokeOffset);
