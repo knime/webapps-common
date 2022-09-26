@@ -162,11 +162,11 @@ export default {
   position: relative;
 
   & .background-circle {
-    stroke: var(--knime-masala);
+    stroke: var(--theme-donut-chart-background-color);
   }
 
   & .value-wedge {
-    stroke: var(--knime-yellow);
+    stroke: var(--theme-donut-chart-value-color);
   }
 }
 
