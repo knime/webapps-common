@@ -399,7 +399,7 @@ describe('Multiselect.vue', () => {
                 expect(onUpMock).toHaveBeenCalled();
             });
 
-            it('disables options if disabledItems is set', () => {
+            it('disables options if `disabled` is set', () => {
                 const wrapper = mount(Multiselect, {
                     propsData: {
                         possibleValues: [{
