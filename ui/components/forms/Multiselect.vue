@@ -11,8 +11,10 @@ export default {
     },
     props: {
         /**
-         * List of possible values. Each item must have an `id` and a `text` property, and optionally a `selectedText`
-         * property that is used for displaying the list of selected items. If it is omitted, `text` is used instead.
+         * List of possible values. Each item must have an `id` and a `text` property. Optionally it can have:
+         * - `selectedText` property that is used for displaying the list of selected items.
+         *   If it is omitted, `text` is used instead.
+         * - `disabled` property for disabling the corresponding checkbox so that the user can not change the value.
          * @example
          * [{
          *   id: 'pdf',
@@ -52,32 +54,25 @@ export default {
             default: true
         },
         /**
-         * List of items that should be disabled, i.e. can not be selected / unselected.
-         */
-        disabledItems: {
-            type: Array,
-            default: () => []
-        },
-        /**
-         * Seperator which seperates selected items in their string representation.
+         * Seperator which seperates selected items in the summary.
          */
         separator: {
             type: String,
             default: ', '
         },
         /**
-         * Max number of items that will be displayed as a listing in the string representation.
+         * Max number of items that will be displayed in the summary.
          */
-        maxItemCount: {
+        summaryMaxItemCount: {
             type: Number,
             default: Infinity
         },
         /**
-         * Name that will be used if maxItemCount is .
+         * Name that will be used if summaryMaxItemCount is exceeded.
          */
-        itemsName: {
+        summaryName: {
             type: String,
-            default: ''
+            default: null
         }
     },
     data() {
@@ -93,13 +88,13 @@ export default {
         focusOptions() {
             return this.$refs.option.map(el => el.$el && el.$el.firstChild);
         },
-        optionText() {
+        summary() {
             if (this.checkedValue.length === 0) {
                 return this.placeholder;
             }
 
-            if (this.checkedValue.length > this.maxItemCount) {
-                return `${this.checkedValue.length} ${this.itemsName}`;
+            if (this.checkedValue.length > this.summaryMaxItemCount) {
+                return `${this.checkedValue.length} ${this.summaryName}`;
             }
 
             return this.possibleValues
@@ -152,9 +147,6 @@ export default {
         },
         isChecked(itemId) {
             return this.checkedValue.includes(itemId);
-        },
-        isDisabled(itemId) {
-            return this.disabledItems.includes(itemId);
         },
         /**
          * Handle closing the options.
@@ -222,7 +214,7 @@ export default {
       @click="toggle"
       @keydown.space.prevent="toggle"
     >
-      {{ optionText }}
+      {{ summary }}
     </div>
     <DropdownIcon class="icon" />
     <div
@@ -234,7 +226,7 @@ export default {
         ref="option"
         :key="`multiselect-${item.id}`"
         :value="isChecked(item.id)"
-        :disabled="isDisabled(item.id)"
+        :disabled="item.disabled"
         class="boxes"
         @input="onInput(item.id, $event)"
       >

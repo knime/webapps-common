@@ -11,16 +11,16 @@ const codeExample = `<Multiselect
     text: 'Foo'
   }, {
     id: 'bar',
-    text: 'Bar'
+    text: 'Bar',
+    disabled: true
   }, {
     id: 'baz',
     text: 'Baz',
     selectedText: 'Baz!!'
   }]"
-  :disabled-items="['foo']"
   separator=" & "
-  :max-item-count="2"
-  items-name="users"
+  :summary-max-item-count="2"
+  summary-name="users"
 />`;
 
 const POSSIBLE_VALUES = [{
@@ -34,6 +34,15 @@ const POSSIBLE_VALUES = [{
     text: 'Baz',
     selectedText: 'Baz!!'
 }];
+
+const POSSIBLE_VALUES_WITH_DISABLED = [
+    {
+        id: 'buzz',
+        text: 'Buzz',
+        disabled: true
+    },
+    ...POSSIBLE_VALUES
+];
 
 export default {
     components: {
@@ -50,7 +59,8 @@ export default {
                 ['foo', 'bar', 'baz'],
                 ['foo', 'bar', 'baz']
             ],
-            possibleValues: POSSIBLE_VALUES
+            possibleValues: POSSIBLE_VALUES,
+            possibleValuesWithDisabled: POSSIBLE_VALUES_WITH_DISABLED
         };
     },
     computed: {
@@ -75,7 +85,7 @@ export default {
       </div>
 
       <div class="grid-container">
-        <div class="grid-item-2">
+        <div class="grid-item-3">
           default
         </div>
         <div class="grid-item-5">
@@ -90,7 +100,7 @@ export default {
       </div>
       <br>
       <div class="grid-container">
-        <div class="grid-item-2">
+        <div class="grid-item-3">
           placeholder
         </div>
         <div class="grid-item-5">
@@ -106,15 +116,14 @@ export default {
       </div>
       <br>
       <div class="grid-container">
-        <div class="grid-item-2">
+        <div class="grid-item-3">
           disabled items
         </div>
         <div class="grid-item-5">
           <Multiselect
             v-model="selected[2]"
             placeholder="Select stuff here!"
-            :possible-values="possibleValues"
-            :disabled-items="['foo']"
+            :possible-values="possibleValuesWithDisabled"
           />
         </div>
         <div class="grid-item-3">
@@ -123,7 +132,7 @@ export default {
       </div>
       <br>
       <div class="grid-container">
-        <div class="grid-item-2">
+        <div class="grid-item-3">
           custom separator
         </div>
         <div class="grid-item-5">
@@ -140,16 +149,16 @@ export default {
       </div>
       <br>
       <div class="grid-container">
-        <div class="grid-item-2">
-          max item count & items name
+        <div class="grid-item-3">
+          summaryMaxItemCount & summaryName
         </div>
         <div class="grid-item-5">
           <Multiselect
             v-model="selected[4]"
             placeholder="Select stuff here!"
             :possible-values="possibleValues"
-            :max-item-count="2"
-            items-name="users"
+            :summary-max-item-count="2"
+            summary-name="users"
           />
         </div>
         <div class="grid-item-3">

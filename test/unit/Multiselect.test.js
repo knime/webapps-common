@@ -404,15 +404,16 @@ describe('Multiselect.vue', () => {
                     propsData: {
                         possibleValues: [{
                             id: 'test1',
-                            text: 'test1'
+                            text: 'test1',
+                            disabled: true
                         }, {
                             id: 'test2',
                             text: 'test2'
                         }, {
                             id: 'test3',
-                            text: 'test3'
-                        }],
-                        disabledItems: ['test1', 'test3']
+                            text: 'test3',
+                            disabled: true
+                        }]
                     },
                     localVue
                 });
@@ -444,7 +445,7 @@ describe('Multiselect.vue', () => {
                 expect(button.text()).toBe('Test1 & Test2');
             });
 
-            it('renders count and placeholder if maxItemCount is set', () => {
+            it('renders count and placeholder if summaryMaxItemCount is set', () => {
                 const wrapper = mount(Multiselect, {
                     propsData: {
                         possibleValues: [{
@@ -461,8 +462,8 @@ describe('Multiselect.vue', () => {
                             text: 'Test4'
                         }],
                         value: ['test1', 'test2', 'test4'],
-                        maxItemCount: 2,
-                        itemsName: 'Fische'
+                        summaryMaxItemCount: 2,
+                        summaryName: 'Fische'
                     },
                     localVue
                 });
