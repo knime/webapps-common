@@ -1,8 +1,7 @@
 image: node:14.20.0
 
-pipelines:
-  pull-requests:
-    '**':
+definitions: 
+  steps: &pipeline
       - step:
           name: npm install
           script:
@@ -28,3 +27,10 @@ pipelines:
                 - npm run lint
               caches:
                 - node
+
+pipelines:
+  branches:
+    master: *pipeline
+    vue3: *pipeline
+  pull-requests:
+    '**': *pipeline
