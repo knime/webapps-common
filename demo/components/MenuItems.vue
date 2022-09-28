@@ -20,7 +20,8 @@ const items = [{
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
     icon: StarIcon,
-    hotkeyText: 'Ctrl + 2'
+    hotkeyText: 'Ctrl + 2',
+    separator: true
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
@@ -158,7 +159,7 @@ export default {
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With icons, hotkeys and separators</div>
+            <div class="menu-name">With icons and hotkeys</div>
             <div class="card">
               <MenuItems
                 id="WITH_ICONS_AND_HOTKEYS"

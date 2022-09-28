@@ -228,7 +228,7 @@ export default {
 
 <style lang="postcss" scoped>
 ul {
-  margin-top: 8px;
+  margin: 5px 0;
   padding: 0;
   background-color: var(--knime-white);
   color: var(--theme-dropdown-foreground-color);
