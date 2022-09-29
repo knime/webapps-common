@@ -217,8 +217,21 @@ export default {
             }];
         }
     },
+    watch: {
+        searchQuery(newSearchQuery, oldSearchQuery) {
+            if (newSearchQuery !== oldSearchQuery) {
+                this.$router.replace({ path: `/?q=${this.searchQuery}` });
+            }
+        }
+    },
     created() {
         this.demoComponents = demoComponents;
+    },
+
+    mounted() {
+        if (this.$route.query.q) {
+            this.searchQuery = this.$route.query.q;
+        }
     }
 };
 </script>
@@ -249,7 +262,9 @@ export default {
               placeholder="Filter by component name…"
               class="search"
             >
-              <template #icon><SearchIcon /></template>
+              <template #icon>
+                <SearchIcon />
+              </template>
             </SearchField>
           </div>
         </div>
