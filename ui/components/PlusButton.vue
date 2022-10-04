@@ -11,9 +11,13 @@ export default {
     },
     props: {
         /**
-         * @see {@link BaseButton.vue}
+         * @see {@link Button.vue}
          */
 
+        /**
+         * Button's title rendered as tooltip
+         * if null, the tooltip won't be rendered
+         */
         title: {
             type: String,
             default: null

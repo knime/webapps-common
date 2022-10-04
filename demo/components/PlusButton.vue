@@ -62,18 +62,18 @@ export default {
             />
           </div>
           <PlusButton
-            title="Primary Plus button"
+            title="Primary plus button"
             primary
           />
           <div class="background">
             <PlusButton
-              title="Primary Plus button on dark"
+              title="Primary plus button on dark"
               primary
               on-dark
             />
           </div>
           <PlusButton
-            title="Disabled Plus button"
+            title="Disabled plus button"
             primary
             disabled
           />
