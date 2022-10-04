@@ -17,31 +17,6 @@ export default {
         title: {
             type: String,
             default: null
-        },
-        withBorder: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches colors to use button on a dark background
-         */
-        onDark: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches colors
-         */
-        primary: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * smaller font size and padding
-         */
-        compact: {
-            type: Boolean,
-            default: false
         }
     }
 };
@@ -53,7 +28,7 @@ export default {
     :text="title"
   >
     <Button
-      class="floating-button"
+      class="plus-button"
       v-bind="[$attrs, $props]"
       v-on="$listeners"
     >
@@ -63,7 +38,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.floating-button {
+.plus-button {
   --theme-button-border-radius: 9999px;
 
   width: 60px;
@@ -76,6 +51,10 @@ export default {
   display: flex;
   justify-content: center;
 
+  &:hover {
+    box-shadow: 0 0 10px var(--knime-gray-dark-semi), 0 0 10px var(--knime-gray-dark-semi);
+  }
+
   & >>> svg {
     width: 60px;
     height: 60px;
@@ -83,6 +62,14 @@ export default {
     stroke-width: 1px;
     position: absolute;
     margin: 0;
+  }
+
+  &.primary:hover {
+    background-color: var(--theme-button-background-color);
+
+    & >>> svg {
+      stroke: var(--theme-button-foreground-color);
+    }
   }
 }
 </style>
