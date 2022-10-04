@@ -15,6 +15,7 @@ import DonutChart from '../components/DonutChart.vue';
 import Fieldset from '../components/Fieldset.vue';
 import Fonts from '../components/Fonts.vue';
 import FunctionButton from '../components/FunctionButton.vue';
+import PlusButton from '../components/PlusButton.vue';
 import FileLink from '../components/FileLink.vue';
 import Grid from '../components/Grid.vue';
 import Headlines from '../components/Headlines.vue';
@@ -81,6 +82,7 @@ const demoComponents = {
         Carousel,
         Collapser,
         FunctionButton,
+        PlusButton,
         FileLink,
         IdleReadyButton,
         Modal,
