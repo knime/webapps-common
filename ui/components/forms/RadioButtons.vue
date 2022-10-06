@@ -66,7 +66,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.radio-buttons :deep(*) {
+.radio-buttons :deep() {
   user-select: none;
 
   & label {
@@ -96,7 +96,6 @@ export default {
       }
 
       /* ◯ */
-
       & + span::before {
         border: 1px solid var(--theme-radio-border-color);
         background: var(--theme-radio-background-color);
@@ -118,7 +117,8 @@ export default {
         cursor: pointer;
       }
 
-      &:checked { /* 🔘 */
+      /* 🔘 */
+      &:checked {
         /* stylelint-disable no-descending-specificity */
         & + span::before {
           background: var(--theme-radio-foreground-color-selected);
@@ -152,14 +152,11 @@ export default {
   }
 }
 
-/* stylelint-disable no-descending-specificity */
 .radio-buttons:focus-within :deep(label input + span::before) {
   border: 1px solid var(--theme-radio-border-color-focus);
 }
-/* stylelint-enable no-descending-specificity */
 
-
-.horizontal :deep(*) {
+.horizontal :deep() {
   display: flex;
   flex-wrap: wrap;
 
@@ -171,5 +168,4 @@ export default {
     }
   }
 }
-
 </style>
