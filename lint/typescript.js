@@ -3,6 +3,8 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint'],
     rules: {
+        'no-duplicate-imports': 'off',
+        'import/no-duplicates': 'error',
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error',
         'no-extra-parens': 'off',

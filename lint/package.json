@@ -1,6 +1,6 @@
 {
     "name": "@knime/eslint-config",
-    "version": "7.0.3",
+    "version": "7.0.4",
     "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
     "scripts": {
         "lint": "eslint --ext .js .",
@@ -19,16 +19,16 @@
         "stylelint": "14.x"
     },
     "dependencies": {
-        "@rushstack/eslint-patch": "^1.1.4",
-        "@typescript-eslint/eslint-plugin": "^5.36.1",
-        "@typescript-eslint/parser": "^5.36.1",
-        "@vue/eslint-config-typescript": "^11.0.1",
+        "@rushstack/eslint-patch": "^1.2.0",
+        "@typescript-eslint/eslint-plugin": "^5.39.0",
+        "@typescript-eslint/parser": "^5.39.0",
+        "@vue/eslint-config-typescript": "^11.0.2",
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-jest": "^27.0.1",
+        "eslint-plugin-jest": "^27.1.1",
         "eslint-plugin-jest-formatting": "^3.1.0",
         "eslint-plugin-jsonc": "^2.4.0",
-        "eslint-plugin-vue": "^9.4.0",
+        "eslint-plugin-vue": "^9.6.0",
         "stylelint-config-standard-vue": "^1.0.0"
     },
     "devDependencies": {
