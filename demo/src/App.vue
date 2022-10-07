@@ -37,6 +37,7 @@ const demoComponents = {
         FileLink: defineAsyncComponent(() => import('./components/FileLink.vue')),
         IdleReadyButton: defineAsyncComponent(() => import('./components/IdleReadyButton.vue')),
         // Modal: defineAsyncComponent(() => import('./components/Modal.vue')),
+        MenuItems: defineAsyncComponent(() => import('./components/MenuItems.vue')),
         SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
         SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),

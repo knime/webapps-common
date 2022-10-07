@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import fs from 'fs';
 import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -49,7 +49,7 @@ const generateCSSFromObject = (inputObject, prefix, generatedPath) => {
         .entries(inputObject)
         .map(objectEntryToStyleProperty(prefix)).join(';\n  ');
     
-    const variables = `:root {\n  ${cssProperties}; \n}\n`;
+    const variables = `:root {\n  ${cssProperties};\n}\n`;
 
     return [].concat(l1, l2, l3, l4, variables).join('');
 };
@@ -57,7 +57,7 @@ const generateCSSFromObject = (inputObject, prefix, generatedPath) => {
 const generateCss = async () => {
     for (let [filename, prefix, output] of assets) {
         const filePath = `${path.join(__dirname, filename)}.mjs`;
-        const fileContentJS = await import(filePath);
+        const fileContentJS = await import(pathToFileURL(filePath).toString());
 
         const outputPath = path.join(__dirname, output);
         
