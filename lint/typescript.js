@@ -1,7 +1,7 @@
 module.exports = {
     extends: ['./base.js'],
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'import'],
     rules: {
         'no-duplicate-imports': 'off',
         'import/no-duplicates': 'error',
