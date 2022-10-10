@@ -1,5 +1,4 @@
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
 import typescript from 'rollup-plugin-ts';
 import { terser } from 'rollup-plugin-terser';
 
@@ -15,15 +14,7 @@ export default [{
     ],
     plugins: [
         commonjs(),
-        typescript(),
-        copy({
-            targets: [
-                {
-                    src: 'package.json',
-                    dest: 'dist'
-                }
-            ]
-        })
+        typescript()
     ]
 }, {
     input: ['./src/main.ts'],

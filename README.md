@@ -3,66 +3,16 @@
 This folder contains the frontend wrapper that implements adapter pattern between data providers (back-end services) and
 data consumers (e.g. KNIME Views).
 
-## Development
 
-### Prerequisites
+## Usage in UI components
 
-* Install [Node.js][node], see version in [package.json](package.json).
-
-Newer versions may also work, but have not been tested.
-
-### Install dependencies
-
-```sh
-npm install
-```
-
-### Launch development server
-To start project in a browser window for dev purposes use:
-```sh
-npm run dev
-```
-
-### Testing
-
-#### Running unit tests
-This project contains unit tests written with [jest]. They are run with
-
-```sh
-npm run test:unit
-```
-
-### Linting
-
-```sh
-npm run lint
-```
-
-
-### Security audit
-
-npm provides a check against known security issues of used dependencies. Run it by calling
-```sh
-npm run audit
-```
-
-## Build production version
-Bundles with rollup into esmodule format and an IIFE bundle.
-```sh
-npm run build
-```
-
-## Basic usage in UI components
-1. Add a submodule in app, where you wish to have access to KNIME service. To do so, run the command below in the root folder of the app where you want to use KNIME service.
-```javascript
-git submodule add https://bitbucket.org/KNIME/knime-ui-extension-service knime-ui-extension-service
-```
-1. Run `npm i` to install dependencies.
+1. Run `npm i @knime/ui-extension-service` to install dependency.
 2. Instantiate and use desired services as shown below
 
-### Usage in an IFrame-based KNIME UI component
+### Usage in an IFrame-based KNIME UI component (recommended)
+
 ```javascript
-import { IFrameKnimeService, JsonDataService } from 'knime-ui-extension-service';
+import { IFrameKnimeService, JsonDataService } from '@knime/ui-extension-service';
 this.knimeService = new IFrameKnimeService();
 await this.knimeService.waitForInitialization();
 this.knimeJsonDataService = new JsonDataService(this.knimeService);
@@ -72,9 +22,10 @@ this.initialData = await this.knimeJsonDataService.initialData();
 ### Usage in a Vue-based KNIME UI component
 In this case, the `getKnimeService` method is already provided by the parent application and just needs to be called.
 *Note*: to make the view compatible with re-execution in Data Apps, use a computed property to access the `knimeService` e.g.
+
 ```javascript
 ...
-import { JsonDataService } from 'knime-ui-extension-service';
+import { JsonDataService } from '@knime/ui-extension-service';
 ...
 inject: ['getKnimeService'],
 ...
@@ -90,20 +41,21 @@ async mounted() {
 }
 ```
 
-## Usage in Custom Visualizations
-Custom UI component implementations can also use this package to interface with the KNIME® Analytics Platform and
-visualization framework
+## Usage in custom visualizations
+Custom UI component implementations can also use this package to interface with the KNIME® Analytics Platform.
 
 To access this functionality within a component, simply add the provided IIFE build output as `<script>` content in
-the HTML scope. This output is found in the `dist/knime-ui-extension-service.min.js` bundle and  will automatically
-execute the JavaScript necessary to provide access to the API. *Note: In all cases, it's important to load the IIFE
+the HTML scope. This output is found in the `dist/knime-ui-extension-service.min.js` bundle and will automatically
+execute the JavaScript necessary to provide access to the API.
+
+*Note: In all cases, it's important to load the IIFE
 content into the HTML document **before** the UI component implementation so the API is loaded and available in the
 custom context.*
 
 There are two options to use included in the `dist` folder (use only one at a time):
 
 - `knime-ui-extension-service.min.js` a minified production build of the package
-- `knime-ui-extension-service.dev.js` a documented package build intended for development
+- `knime-ui-extension-service.dev.js` a documented package build intended for development/debugging
 
 There are a number of ways to include this bundle in a component implementation:
 
@@ -139,10 +91,6 @@ as the src of the `<script>` tag in the `<head>` of the document:
 ...
 ```
 
-### Custom Build Step
-For components which include a build step, it is also possible to bundle the library into the build output using a
-local clone of the repository and the appropriate build tools associated with the project. Please reference
-the documentation of the language/build tool in question for more information about *bundling dependencies*.
 
 ### Accessing the Package
 Once loaded, the package will be available in the global scope of the view under the namespace
@@ -150,6 +98,48 @@ Once loaded, the package will be available in the global scope of the view under
 JSDoc comments in the document, adjust the IIFE file content (described in the above sections) to use the `.dev.js`
 build file instead of the `.min.js` file.
 
+## Development
+
+### Prerequisites
+
+* Install [Node.js][node], see version in [package.json](package.json).
+
+Newer versions may also work, but have not been tested.
+
+### Install dependencies
+
+```sh
+npm install
+```
+
+### Testing
+
+#### Running unit tests
+This project contains unit tests written with [jest]. They are run with
+
+```sh
+npm run test:unit
+```
+
+### Linting
+
+```sh
+npm run lint
+```
+
+
+### Security audit
+
+npm provides a check against known security issues of used dependencies. Run it by calling
+```sh
+npm run audit
+```
+
+## Build production version
+Bundles with rollup into esmodule format and an IIFE bundle.
+```sh
+npm run build
+```
 
 # Join the Community!
 * [KNIME Forum](https://forum.knime.com/)

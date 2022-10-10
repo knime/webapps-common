@@ -1,0 +1,34 @@
+image: node:18.10.0
+
+definitions: 
+  steps:
+    - step: &lint-test-build
+        name: Lint, tests and build
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint
+          - npm run coverage -- --ci
+          - npm run build
+          - npm audit --production
+        artifacts:
+          - dist/**
+
+pipelines:
+  pull-requests:
+    '**':
+      - step: *lint-test-build
+  branches:
+    master:
+      - step: *lint-test-build
+      - step:
+          name: "publish minor version to npm"
+          trigger: manual
+          deployment: production
+          script:
+            - npm version minor -m "Pump version to %s [skip ci]"
+            - git push
+            - pipe: atlassian/npm-publish:0.2.0
+              variables:
+                NPM_TOKEN: $NPM_TOKEN
