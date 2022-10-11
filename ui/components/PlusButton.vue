@@ -66,6 +66,7 @@ export default {
     stroke-width: 1px;
     position: absolute;
     margin: 0;
+    top: 0;
   }
 
   &.primary:hover {
