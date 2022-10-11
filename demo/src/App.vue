@@ -70,8 +70,8 @@ const demoComponents = {
         // Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
     },
     misc: {
-        // NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
-        // NodeFeatureList: defineAsyncComponent(() => import('./components/NodeFeatureList.vue')),
+        NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
+        NodeFeatureList: defineAsyncComponent(() => import('./components/NodeFeatureList.vue'))
         // OpenSourceCredits: defineAsyncComponent(() => import('./components/OpenSourceCredits.vue'))
     }
     /*

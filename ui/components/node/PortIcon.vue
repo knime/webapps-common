@@ -76,6 +76,7 @@ export default {
     :fill="fillColor"
     :stroke="portColor"
     :stroke-width="strokeWidth"
+    v-bind="$attrs"
   />
   <!-- flow variable port -->
   <circle
@@ -84,6 +85,7 @@ export default {
     :fill="fillColor"
     :stroke="portColor"
     :stroke-width="strokeWidth"
+    v-bind="$attrs"
   />
   <!-- other port -->
   <rect
@@ -95,5 +97,6 @@ export default {
     :fill="fillColor"
     :stroke="portColor"
     :stroke-width="strokeWidth"
+    v-bind="$attrs"
   />
 </template>
