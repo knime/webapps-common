@@ -79,7 +79,7 @@ export default {
     mounted() {
         this.activatePopper();
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.destroyPopper();
     },
     methods: {

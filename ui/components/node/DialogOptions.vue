@@ -51,10 +51,12 @@ export default {
     v-if="renderableOptions.length"
     class="dialog-options"
   >
-    <template v-for="(option, index) in renderableOptions">
+    <template
+      v-for="(option, index) in renderableOptions"
+      :key="index"
+    >
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
-        :key="index"
         :class="['options', { 'with-section': option.sectionName }]"
         :initially-expanded="options.length === 1"
       >

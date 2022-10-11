@@ -56,18 +56,22 @@ export default {
       title="Output ports"
       :ports="outPorts"
     />
-    <template v-for="dynPortsGroup in dynInPorts">
+    <template
+      v-for="dynPortsGroup in dynInPorts"
+      :key="dynPortsGroup.groupName"
+    >
       <PortGroup
-        :key="dynPortsGroup.groupName"
         :title="dynPortsGroup.groupName + ' (Dynamic Inport)'"
         :group-description="dynPortsGroup.groupDescription"
         :ports="dynPortsGroup.types"
       />
     </template>
 
-    <template v-for="dynPortsGroup in dynOutPorts">
+    <template
+      v-for="dynPortsGroup in dynOutPorts"
+      :key="dynPortsGroup.groupName"
+    >
       <PortGroup
-        :key="dynPortsGroup.groupName"
         :title="dynPortsGroup.groupName + ' (Dynamic Outport)'"
         :group-description="dynPortsGroup.groupDescription"
         :ports="dynPortsGroup.types"
