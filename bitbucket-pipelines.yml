@@ -27,8 +27,8 @@ pipelines:
           trigger: manual
           deployment: production
           script:
-            - npm version minor -m "Pump version to %s [skip ci]"
-            - git push
+            - npm version minor -m "Bump version to %s [skip ci]"
+            - git push && git push --tags
             - pipe: atlassian/npm-publish:0.2.0
               variables:
                 NPM_TOKEN: $NPM_TOKEN
