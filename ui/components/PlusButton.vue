@@ -42,6 +42,10 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+.tooltip {
+  width: 60px;
+}
+
 .plus-button {
   --theme-button-border-radius: 9999px;
 
