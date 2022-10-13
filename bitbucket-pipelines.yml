@@ -19,10 +19,9 @@ pipelines:
   pull-requests:
     '**':
       - step: *lint-test-build
-  branches:
-    master:
-      - step: *lint-test-build
       - step:
+          # actually publishing should be only possible on the master branch, but see
+          # https://community.atlassian.com/t5/Bitbucket-questions/bitbucket-pipeline-user-permissions-to-write-to-master/qaq-p/1177712
           name: "publish minor version to npm"
           trigger: manual
           deployment: production
@@ -32,3 +31,6 @@ pipelines:
             - pipe: atlassian/npm-publish:0.2.0
               variables:
                 NPM_TOKEN: $NPM_TOKEN
+  branches:
+    master:
+      - step: *lint-test-build
