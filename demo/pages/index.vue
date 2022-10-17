@@ -220,7 +220,7 @@ export default {
     watch: {
         searchQuery(newSearchQuery, oldSearchQuery) {
             if (newSearchQuery !== oldSearchQuery) {
-                this.$router.replace({ path: `/?q=${this.searchQuery}` });
+                this.$router.replace({ path: `/?q=${encodeURIComponent(this.searchQuery)}` });
             }
         }
     },
