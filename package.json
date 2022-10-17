@@ -20,14 +20,14 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
     "@fontsource/roboto": "4.x",
     "@fontsource/roboto-mono": "4.x",
+    "@popperjs/core": "^2.11.6",
     "consola": "^2.15.3",
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0",
-    "focus-trap": "6.7.0",
+    "focus-trap": "^6.9.4",
     "focus-trap-vue": "^3.3.1",
     "modern-normalize": "^1.1.0",
     "v-calendar": "^3.0.0-alpha.8",

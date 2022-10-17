@@ -1,5 +1,5 @@
 <script>
-import { FocusTrap } from 'focus-trap-vue';
+// import { FocusTrap } from 'focus-trap-vue';
 
 const KEY_ESC = 27;
 
@@ -14,7 +14,7 @@ const KEY_ESC = 27;
  */
 export default {
     components: {
-        FocusTrap
+        // FocusTrap
     },
     props: {
         /**
@@ -25,6 +25,7 @@ export default {
             default: false
         }
     },
+    emits: ['cancel'],
     data() {
         return {
             /**
@@ -58,7 +59,7 @@ export default {
          * @param {Object} e - the browser mouse event.
          * @returns {undefined}
          */
-        onOverlayClick(e) {
+        onOverlayClick() {
             this.cancel();
         },
         /**
@@ -73,14 +74,22 @@ export default {
 </script>
 
 <template>
-  <transition
-    v-if="active"
+  <Transition
     name="fade"
     @after-enter="showContent = true"
     @leave="showContent = false"
   >
-    <FocusTrap
+    <!-- <FocusTrap
       :active="active"
+      class="container"
+    > -->
+
+    <!--
+      TODO: Focus trap requires vue internally, which breaks when using compat-mode.
+      Replace this div with the FocusTrap component once vue-compat is phased out
+    -->
+    <div
+      v-if="active"
       class="container"
     >
       <div
@@ -102,8 +111,9 @@ export default {
           </div>
         </transition>
       </div>
-    </FocusTrap>
-  </transition>
+    </div>
+    <!-- </FocusTrap> -->
+  </Transition>
 </template>
 
 <style lang="postcss" scoped>

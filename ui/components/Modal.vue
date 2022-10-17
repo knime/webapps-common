@@ -33,6 +33,7 @@ export default {
             }
         }
     },
+    emits: ['cancel'],
     methods: {
         onCloserClick() {
             this.$emit('cancel');
@@ -45,7 +46,6 @@ export default {
   <BaseModal
     v-bind="$attrs"
     :class="['modal', styleType]"
-    v-on="$listeners"
   >
     <div class="header">
       <span class="header-icon">
@@ -60,13 +60,13 @@ export default {
       </FunctionButton>
     </div>
     <div
-      v-if="$slots.notice"
+      v-if="$slots.notice()"
       class="notice"
     >
       <slot name="notice" />
     </div>
     <div
-      v-if="$slots.confirmation"
+      v-if="$slots.confirmation()"
       class="confirmation"
     >
       <slot name="confirmation" />
@@ -180,16 +180,16 @@ export default {
     }
   }
 
-  & .notice :deep(*) {
+  & .notice {
     padding: var(--modal-padding);
     font-weight: 300;
 
-    & p {
+    & :deep(p) {
       font-size: 16px;
       line-height: 25px;
     }
 
-    & ul {
+    & :deep(ul) {
       padding: 0 0 0 30px;
       margin: 0;
 
@@ -198,7 +198,7 @@ export default {
       }
     }
 
-    & li {
+    & :deep(li) {
       font-size: 16px;
       line-height: 25px;
 
@@ -208,10 +208,10 @@ export default {
     }
   }
 
-  & .confirmation :deep(*) {
+  & .confirmation {
     padding: var(--modal-padding) var(--modal-padding) 0;
 
-    & p {
+    & :deep(p) {
       font-size: 13px;
       line-height: 18px;
     }

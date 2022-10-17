@@ -1,5 +1,6 @@
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import type { PropType } from 'vue';
+import { defineComponent } from 'vue';
 import ArrowIcon from '../assets/img/icons/arrow-right.svg';
 
 interface LinkItem {
