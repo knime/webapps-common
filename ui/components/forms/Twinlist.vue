@@ -1,9 +1,12 @@
 <script>
+import Label from '../forms/Label.vue';
+import InputField from '../forms/InputField.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
 import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg';
+import SearchIcon from '../../assets/img/icons/lens.svg';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
@@ -14,7 +17,10 @@ export default {
         ArrowNextIcon,
         ArrowPrevDoubleIcon,
         ArrowPrevIcon,
-        MultiselectListBox
+        InputField,
+        Label,
+        MultiselectListBox,
+        SearchIcon
     },
     props: {
         value: {
@@ -22,6 +28,10 @@ export default {
             default: () => []
         },
         disabled: {
+            default: false,
+            type: Boolean
+        },
+        showSearch: {
             default: false,
             type: Boolean
         },
@@ -52,6 +62,21 @@ export default {
             required: true,
             default: 'Selected values'
         },
+        labelSearch: {
+            type: String,
+            required: false,
+            default: 'Search values'
+        },
+        initialSearchTerm: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        searchPlaceholder: {
+            type: String,
+            required: false,
+            default: 'Search'
+        },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
          * @example
@@ -79,7 +104,8 @@ export default {
             chosenValues: this.value,
             invalidPossibleValueIds: new Set(),
             selectedRight: [],
-            selectedLeft: []
+            selectedLeft: [],
+            searchTerm: this.initialSearchTerm
         };
     },
     computed: {
@@ -93,12 +119,19 @@ export default {
         invalidValueIds() {
             return this.value.filter(x => !this.possibleValueMap[x]);
         },
+        hiddenValueIds() {
+            return this.possibleValues
+                .filter(possibleValue => !this.itemMatchesSearch(possibleValue))
+                .map(possibleValue => possibleValue.id);
+        },
         leftItems() {
             const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
-            return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
+            return [...this.possibleValues, ...invalidItems]
+                .filter(x => !this.hiddenValueIds.includes(x.id) && !this.chosenValues.includes(x.id));
         },
         rightItems() {
-            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
+            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x))
+                .filter(x => !this.hiddenValueIds.includes(x.id));
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -117,6 +150,9 @@ export default {
         },
         moveLeftButtonDisabled() {
             return this.selectedRight.length === 0;
+        },
+        normalizedSearchTerm() {
+            return this.searchTerm.toLowerCase();
         }
     },
     watch: {
@@ -224,12 +260,18 @@ export default {
         onKeyLeftArrow() {
             this.moveLeft();
         },
+        onSearchInput(value) {
+            this.searchTerm = value;
+        },
         hasSelection() {
             return this.chosenValues.length > 0;
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
+        },
+        itemMatchesSearch(item) {
+            return item.text.toLowerCase().includes(this.normalizedSearchTerm);
         }
     }
 };
@@ -237,6 +279,27 @@ export default {
 
 <template>
   <div class="twinlist">
+    <div v-if="showSearch" class="search-wrapper">
+      <Label
+          v-slot="{ labelForId }"
+          :text="labelSearch"
+          class="search-label"
+          compact
+      >
+          <InputField
+            :id="labelForId"
+            ref="search"
+            :size="listSize"
+            :placeholder="searchPlaceholder"
+            :value="searchTerm"
+            :disabled="disabled"
+            class="search"
+            @input="onSearchInput"
+          >
+            <template #icon><SearchIcon /></template>
+          </InputField>
+      </Label>
+    </div>
     <div class="header">
       <div class="title">{{ labelLeft }}</div>
       <div class="space" />
@@ -341,6 +404,10 @@ export default {
     &.disabled {
       opacity: 0.5;
     }
+  }
+
+  & .search-wrapper {
+    margin-bottom: 10px;
   }
 
   & .space,
