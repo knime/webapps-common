@@ -28,6 +28,7 @@ export default {
   height: 1px;
   width: 1px;
   visibility: hidden;
+  overflow: hidden;
 
   /* positioning and styling */
   position: absolute;
@@ -64,6 +65,7 @@ export default {
     height: auto;
     width: auto;
     visibility: visible;
+    overflow: initial;
 
     /* other styles */
     opacity: 1;
