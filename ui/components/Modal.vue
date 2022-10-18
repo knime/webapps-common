@@ -14,13 +14,6 @@ export default {
     },
     props: {
         /**
-         * Opens and closes the alert from the parent.
-         */
-         active: {
-            type: Boolean,
-            default: false
-        },
-        /**
          * @see {@link BaseModal.vue}
          */
 
