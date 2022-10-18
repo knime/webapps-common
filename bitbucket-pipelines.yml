@@ -1,36 +1,21 @@
 image: node:14.20.0
 
-definitions: 
-  steps: &pipeline
-      - step:
-          name: npm install
-          script:
-            - npm ci
-          caches:
-            - node
-      - parallel:
-          - step:
-              name: npm audit
-              script:
-                - npm run audit
-              caches:
-                - node
-          - step:
-              name: Unit tests & coverage
-              script:
-                - npm run coverage -- --ci
-              caches:
-                - node
-          - step:
-              name: Lint
-              script:
-                - npm run lint
-              caches:
-                - node
+definitions:
+  steps:
+    - step: &lint-test-build
+        name: Lint, tests and build
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint
+          - npm run coverage -- --ci
+          - npm run audit
 
 pipelines:
-  branches:
-    master: *pipeline
-    vue3: *pipeline
   pull-requests:
-    '**': *pipeline
+    '**':
+      - step: *lint-test-build
+  branches:
+    master:
+      - step: *lint-test-build

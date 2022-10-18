@@ -3,6 +3,9 @@ import 'prismjs';
 
 import Breadcrumb from '../components/Breadcrumb.vue';
 import Button from '../components/Button.vue';
+import FunctionButton from '../components/FunctionButton.vue';
+import PlusButton from '../components/PlusButton.vue';
+import SplitButton from '../components/SplitButton.vue';
 import Carousel from '../components/Carousel.vue';
 import Checkbox from '../components/Checkbox.vue';
 import Checkboxes from '../components/Checkboxes.vue';
@@ -14,7 +17,6 @@ import Dropdown from '../components/Dropdown.vue';
 import DonutChart from '../components/DonutChart.vue';
 import Fieldset from '../components/Fieldset.vue';
 import Fonts from '../components/Fonts.vue';
-import FunctionButton from '../components/FunctionButton.vue';
 import FileLink from '../components/FileLink.vue';
 import Grid from '../components/Grid.vue';
 import Headlines from '../components/Headlines.vue';
@@ -38,7 +40,6 @@ import OpenSourceCredits from '../components/OpenSourceCredits.vue';
 import RadioButtons from '../components/RadioButtons.vue';
 import SideDrawer from '../components/SideDrawer.vue';
 import ValueSwitch from '../components/ValueSwitch.vue';
-import SplitButton from '../components/SplitButton.vue';
 import MenuItems from '../components/MenuItems.vue';
 import SubMenu from '../components/SubMenu.vue';
 import TabBarDemo from '../components/TabBar.vue';
@@ -78,16 +79,17 @@ const demoComponents = {
         Breadcrumb,
         LinkList,
         Button,
+        FunctionButton,
+        PlusButton,
+        SplitButton,
         Carousel,
         Collapser,
-        FunctionButton,
         FileLink,
         IdleReadyButton,
         Modal,
         SideDrawer,
         MenuItems,
         SubMenu,
-        SplitButton,
         Tooltip,
         TabBarDemo,
         TagList,
