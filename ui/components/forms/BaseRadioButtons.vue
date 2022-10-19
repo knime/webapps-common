@@ -8,7 +8,11 @@ export default {
         },
         value: {
             type: String,
-            default: ''
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
         },
         disabled: {
             default: false,
@@ -51,6 +55,11 @@ export default {
             let value = $event.target.value;
             this.$emit('input', value);
         }
+    },
+    computed: {
+      inputName() {
+        return this.name ? this.name : `wc-radio-${this.count}`;
+      }
     }
 };
 </script>
@@ -68,7 +77,7 @@ export default {
         ref="input"
         :checked="(value === item.id)"
         :value="item.id"
-        :name="`wc-radio-${count}`"
+        :name="inputName"
         :disabled="disabled"
         type="radio"
         @change="onInput"

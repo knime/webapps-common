@@ -27,7 +27,11 @@ export default {
         },
         value: {
             type: String,
-            default: ''
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
         },
         placeholder: {
             type: String,
@@ -115,8 +119,8 @@ export default {
              */
             this.$emit('input', id);
         },
-        onOptionClick(value) {
-            this.setSelected(value);
+        onOptionClick(id) {
+            this.setSelected(id);
             this.isExpanded = false;
             this.$refs.button.focus();
         },
@@ -306,6 +310,7 @@ export default {
         {{ item.text }}
       </li>
     </ul>
+    <input type="hidden" :name="name" :id="id" :value="getCurrentSelectedId()">
   </div>
 </template>
 
