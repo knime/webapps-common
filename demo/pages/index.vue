@@ -230,7 +230,7 @@ export default {
 
     mounted() {
         if (this.$route.query.q) {
-            this.searchQuery = this.$route.query.q;
+            this.searchQuery = decodeURIComponent(this.$route.query.q);
         }
     }
 };
