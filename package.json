@@ -16,11 +16,12 @@
     "lint:json": "eslint --ext .json .",
     "lint:css": "stylelint '**/*.{css,vue}'",
     "lint:ci": "eslint --ext .js,.vue,.json -f json -o target/eslint.json || true; stylelint '**/*.{css,vue}' -f json -o target/stylelint.json || true",
-    "test:unit": "jest",
-    "coverage": "jest --coverage",
+    "test:unit": "TZ='Europe/Berlin' jest",
+    "coverage": "TZ='Europe/Berlin' jest --coverage",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.6",
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0"
@@ -73,6 +74,6 @@
   },
   "private": true,
   "volta": {
-    "node": "14.19.0"
+    "node": "14.20.0"
   }
 }

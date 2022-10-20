@@ -1,0 +1,212 @@
+<script>
+
+export default {
+
+    props: {
+        /** The value of the wedge to be displayed, can exceed the maximum value */
+        value: {
+            type: Number,
+            required: true
+        },
+        /** The maximum value on which the wedge size is calculated. Also 'Infinity' can be passed here */
+        maxValue: {
+            type: Number,
+            required: true
+        },
+        /** Wether or not values larger than the maximum are allowed. If this is false larger values will be clipped to
+         * the maxValue. */
+        acceptValuesLargerThanMax: {
+            type: Boolean,
+            default: false
+        },
+        /** The outside radius of the donut chart. This also determines the overall size of the component. */
+        radius: {
+            type: Number,
+            default: 50
+        },
+        /** The inner radius. This can be seen as the radius of the donut hole. */
+        innerRadius: {
+            type: Number,
+            default: 30
+        },
+        /** Whether or not the wedge and max values are displayed as a label inside the donut hole. */
+        displayValues: {
+            type: Boolean,
+            default: false
+        },
+        /** An additional label string, which is shown beneath the value label, if present. Does not display
+         * if 'displayValues === false' */
+        additionalLabel: {
+            type: String,
+            default: null
+        }
+    },
+
+    data() {
+        return {
+            backgroundStrokeOffset: 0.5,
+            smallLabelFontSize: 20,
+            regularLabelFontSize: 30,
+            regularLabelMaxValue: 999
+        };
+    },
+
+    computed: {
+        clippedValue() {
+            let value = Math.max(0, this.value);
+            return this.acceptValuesLargerThanMax ? value : Math.min(value, this.maxValue);
+        },
+        strokeWidth() {
+            return this.radius - this.innerRadius;
+        },
+        backgroundStrokeWidth() {
+            // to account for rendering inacuracies the background stroke is slightly smaller than the wedge stroke
+            return this.strokeWidth - this.backgroundStrokeOffset;
+        },
+        r() {
+            return this.radius - (this.strokeWidth / 2);
+        },
+        diameter() {
+            return 2 * this.radius;
+        },
+        viewBox() {
+            return `0 0 ${this.diameter} ${this.diameter}`;
+        },
+        circumference() {
+            return 2 * Math.PI * this.r;
+        },
+        strokeDashOffset() {
+            // if the maximum is 0 or infinity, the circle is never filled
+            if (this.maxValue <= 0 || !Number.isFinite(this.maxValue)) {
+                return this.circumference;
+            }
+            // otherwise calculate the difference
+            const strokeDiff = Math.min(this.clippedValue / this.maxValue * this.circumference, this.circumference);
+            return Math.max(this.circumference - strokeDiff, 0);
+        },
+        transformWedge() {
+            return `rotate(-90, ${this.radius}, ${this.radius})`;
+        },
+        displayLabel() {
+            return Boolean(this.displayValues && this.additionalLabel);
+        },
+        maxValueString() {
+            return Number.isFinite(this.maxValue) ? String(this.maxValue) : '∞';
+        },
+        containerStyle() {
+            return `width: ${this.diameter}px; height: ${this.diameter}px;`;
+        },
+        labelStyle() {
+            // simple approach to account for larger numbers as the label inside the donut hole
+            let valueExceedsLarge = this.clippedValue > this.regularLabelMaxValue;
+            let maxValueExceedsLarge = Number.isFinite(this.maxValue) && this.maxValue > this.regularLabelMaxValue;
+            let size = valueExceedsLarge || maxValueExceedsLarge ? this.smallLabelFontSize : this.regularLabelFontSize;
+            return `font-size: ${size}px; line-height: ${size}px;`;
+        }
+    }
+};
+
+</script>
+
+<template>
+  <div
+    class="donut-container"
+    :style="containerStyle"
+  >
+    <svg
+      :height="diameter"
+      :width="diameter"
+      :viewBox="viewBox"
+      class="donut-chart"
+    >
+      <circle
+        class="background-circle"
+        :cx="radius"
+        :cy="radius"
+        :r="r"
+        :stroke-width="backgroundStrokeWidth"
+        fill="transparent"
+      />
+      <circle
+        class="value-wedge"
+        :cx="radius"
+        :cy="radius"
+        :r="r"
+        :stroke-width="strokeWidth"
+        :stroke-dasharray="circumference"
+        :stroke-dashoffset="strokeDashOffset"
+        fill="transparent"
+        :transform="transformWedge"
+      />
+    </svg>
+    <div class="labelContainer">
+      <div
+        v-if="displayValues"
+        class="value-label"
+        :style="labelStyle"
+      >
+        {{ `${clippedValue} / ${maxValueString}` }}
+      </div>
+      <div
+        v-if="displayLabel"
+        class="additional-label"
+      >
+        {{ additionalLabel }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="postcss" scoped>
+.donut-container {
+  position: relative;
+
+  & .background-circle {
+    stroke: var(--theme-donut-chart-background-color);
+  }
+
+  & .value-wedge {
+    stroke: var(--theme-donut-chart-value-color);
+  }
+}
+
+svg {
+  display: block;
+
+  & circle.value-wedge {
+    transition: stroke-dashoffset 0.5s;
+  }
+}
+
+.labelContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.value-label {
+  font-family: var(--theme-text-bold-font-family);
+  color: var(--theme-text-bold-color);
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+}
+
+.additional-label {
+  font-family: var(--theme-text-normal-font-family);
+  color: var(--theme-text-normal-color);
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: 300;
+  width: 100%;
+  text-align: center;
+}
+
+</style>

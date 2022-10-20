@@ -1,7 +1,7 @@
 <script>
 /**
  * MenuItems component with keyboard navigation and (optional) hotkey text and icons
- * Can be used co create a float-able menu or a sub menu or similar.
+ * Can be used to create a float-able menu or a sub menu or similar.
  * Position and visibility needs to be handled by the wrapper.
  *
  * A click or activation by keyboard (enter and space) emits `@item-click`.
@@ -18,8 +18,10 @@ export default {
     props: {
         /**
          * Items to be listed in the menu.
-         * Each item has a `text`, optional `icon` and optional `to` / `href` properties, where `to` is for router-links
-         * and `href` for standard (e.g. external) links. Items can be disabled with the 'disabled' property.
+         * Each item has a `text`, optional `title`, optional `icon` and optional `to` / `href` properties,
+         * where `to` is for router-links and `href` for standard (e.g. external) links.
+         * Items can be disabled with the 'disabled' property.
+         * The optional title will be shown on menu items on hover
          * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
          * The optional separator will add a separator below the item if it's not the last in the list.
          * @example
@@ -28,6 +30,7 @@ export default {
          text: 'Apples',
          icon: HelpIcon
          hotkeyText: 'CTRL + H',
+         title: 'Tastier Apples',
          }, {
            href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
               text: 'Oranges',
@@ -191,6 +194,7 @@ export default {
       v-for="(item, index) in items"
       :key="index"
       :class="[{ separator: item.separator }]"
+      :title="item.title"
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
       @keydown.space="onItemClick($event, item)"
@@ -224,7 +228,7 @@ export default {
 
 <style lang="postcss" scoped>
 ul {
-  margin-top: 8px;
+  margin: 5px 0;
   padding: 0;
   background-color: var(--knime-white);
   color: var(--theme-dropdown-foreground-color);

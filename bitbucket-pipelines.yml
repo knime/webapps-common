@@ -1,0 +1,21 @@
+image: node:14.20.0
+
+definitions:
+  steps:
+    - step: &lint-test-build
+        name: Lint, tests and build
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint
+          - npm run coverage -- --ci
+          - npm run audit
+
+pipelines:
+  pull-requests:
+    '**':
+      - step: *lint-test-build
+  branches:
+    master:
+      - step: *lint-test-build

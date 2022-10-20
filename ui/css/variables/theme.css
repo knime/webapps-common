@@ -222,4 +222,8 @@
   /* Time Part Input */
   --theme-time-part-input-background-color: var(--knime-white);
   --theme-time-part-input-background-color-hover: var(--knime-silver-sand-semi);
+
+  /* Donut Chart */
+  --theme-donut-chart-value-color: var(--knime-yellow);
+  --theme-donut-chart-background-color: var(--knime-masala);
 }

@@ -126,21 +126,11 @@ export default {
         };
     },
     computed: {
-        subMenuItemsWithoutIcons() {
-            return subMenuItems.map(item => {
-                const newItem = JSON.parse(JSON.stringify(item));
-                delete newItem.icon;
-                delete newItem.hotkeyText;
-                return newItem;
-            });
-        },
-        subMenuItemsWithoutHotkeys() {
-            return subMenuItems.map(({ hotkeyText, ...rest }) => rest);
-        },
         subMenuItemsWithSeparator() {
             return subMenuItems.map((item, index) => {
-                item.separator = index === 2 || index === 4;
-                return item;
+                // eslint-disable-next-line no-magic-numbers
+                const hasSeparator = index === 2 || index === 4;
+                return hasSeparator ? { ...item, separator: true } : item;
             });
         }
     }
@@ -152,24 +142,18 @@ export default {
     <div class="grid-container">
       <div class="grid-item-12">
         <h2>SubMenu</h2>
-        <p>A button that opens a dropdown menu containing clickable items.</p>
+        <p>
+          A button that opens a dropdown menu containing clickable items. The menu will be positioned based on
+          the orientation prop but will readjust automatically depending on available space. Resize window and/or
+          scroll to try it out
+        </p>
 
         <div class="submenus">
           <div class="card">
             <span class="menu-name">Normal</span>
             <SubMenu
-              :items="subMenuItemsWithoutIcons"
+              :items="subMenuItemsWithSeparator"
               button-title="Open my submenu"
-            >
-              <MenuIcon class="open-icon" />
-            </SubMenu>
-          </div>
-
-          <div class="card">
-            <span class="menu-name">With icons</span>
-            <SubMenu
-              :items="subMenuItemsWithoutHotkeys"
-              button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />
             </SubMenu>
@@ -178,7 +162,7 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation left</span>
             <SubMenu
-              :items="subMenuItemsWithoutHotkeys"
+              :items="subMenuItemsWithSeparator"
               orientation="left"
               button-title="Open my submenu with icons"
             >
@@ -189,17 +173,8 @@ export default {
           <div class="card">
             <span class="menu-name">Orientation top</span>
             <SubMenu
-              :items="subMenuItemsWithoutHotkeys"
+              :items="subMenuItemsWithSeparator"
               orientation="top"
-              button-title="Open my submenu with icons"
-            >
-              <MenuIcon class="open-icon" />
-            </SubMenu>
-          </div>
-          <div class="card">
-            <span class="menu-name">With hotKeys</span>
-            <SubMenu
-              :items="subMenuItems"
               button-title="Open my submenu with icons"
             >
               <MenuIcon class="open-icon" />
@@ -212,16 +187,6 @@ export default {
               :items="subMenuItems"
               disabled
               button-title="Open my submenu with icons"
-            >
-              <MenuIcon class="open-icon" />
-            </SubMenu>
-          </div>
-
-          <div class="card">
-            <span class="menu-name">With separators</span>
-            <SubMenu
-              :items="subMenuItemsWithSeparator"
-              button-title="Open my submenu with separator"
             >
               <MenuIcon class="open-icon" />
             </SubMenu>
@@ -258,6 +223,7 @@ h4 {
 .submenus {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
 
