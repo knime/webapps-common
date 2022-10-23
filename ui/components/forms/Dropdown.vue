@@ -310,7 +310,12 @@ export default {
         {{ item.text }}
       </li>
     </ul>
-    <input type="hidden" :name="name" :id="id" :value="getCurrentSelectedId()">
+    <input
+      :id="id"
+      type="hidden"
+      :name="name"
+      :value="value"
+    >
   </div>
 </template>
 

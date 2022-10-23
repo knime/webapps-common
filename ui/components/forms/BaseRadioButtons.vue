@@ -40,6 +40,11 @@ export default {
             }
         }
     },
+    computed: {
+        inputName() {
+            return this.name ? this.name : `wc-radio-${this.count}`;
+        }
+    },
     beforeCreate() {
         count += 1;
         this.count = count;
@@ -55,11 +60,6 @@ export default {
             let value = $event.target.value;
             this.$emit('input', value);
         }
-    },
-    computed: {
-      inputName() {
-        return this.name ? this.name : `wc-radio-${this.count}`;
-      }
     }
 };
 </script>
