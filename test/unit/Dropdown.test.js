@@ -81,12 +81,14 @@ describe('Dropdown.vue', () => {
             propsData: {
                 ...propsData,
                 placeholder,
-                value: 'test66'
+                value: 'test66',
+                name: 'test-name'
             },
             localVue
         });
         expect(wrapper.find('input').exists()).toBe(true);
         expect(wrapper.find('input').element.value).toBe('test66');
+        expect(wrapper.find('input').attributes('name')).toBe('test-name');
     });
 
     it('renders invalid value if value is invalid', () => {
