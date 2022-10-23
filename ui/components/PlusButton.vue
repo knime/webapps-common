@@ -66,7 +66,7 @@ export default {
     width: 60px;
     height: 60px;
     stroke: var(--knime-dove-gray);
-    stroke-width: 1px;
+    stroke-width: calc(32px / 60);
     position: absolute;
     margin: 0;
     top: 0;
