@@ -74,6 +74,9 @@ describe('DonutChart.vue', () => {
         expect(wedge.attributes('transform')).toBe(expectedValues.transform);
         expect(wrapper.find('div.value-label').exists()).toBe(false);
         expect(wrapper.find('div.additional-label').exists()).toBe(false);
+
+        expect(wrapper.find('circle.disabled-circle').exists()).toBe(false);
+        expect(wrapper.find('circle.inner-disabled-circle').exists()).toBe(false);
     });
 
     it('sets radius', () => {
@@ -194,18 +197,33 @@ describe('DonutChart.vue', () => {
     });
 
     it('handles infinity as maximum value', () => {
+        const radius = 100;
+        const innerRadius = 40;
         const wrapper = mount(DonutChart, { propsData: {
             value: 42,
             maxValue: Infinity,
-            displayValues: true
+            displayValues: true,
+            radius,
+            innerRadius
         } });
         expect(wrapper.vm.maxValueString).toBe('∞');
         let label = wrapper.find('div.value-label');
         expect(label.exists()).toBe(true);
         expect(label.text()).toBe('42 / ∞');
 
-        let wedge = wrapper.find('circle.value-wedge');
-        expect(Number(wedge.attributes('stroke-dashoffset'))).toBeCloseTo(defaultCircumference, precision);
+        expect(wrapper.find('circle.disabled-circle').exists()).toBe(true);
+        expect(wrapper
+            .find('circle.disabled-circle')
+            .attributes('r')).toEqual(`${radius - 0.5}`);
+        expect(wrapper
+            .find('circle.disabled-circle')
+            .attributes('stroke-width')).toEqual('1');
+        expect(wrapper
+            .find('circle.disabled-inner-circle')
+            .attributes('r')).toEqual(`${innerRadius + 0.5}`);
+        expect(wrapper
+            .find('circle.disabled-inner-circle')
+            .attributes('stroke-width')).toEqual('1');
     });
 
     it('handles values larger than maximum', () => {
