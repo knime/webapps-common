@@ -8,7 +8,11 @@ export default {
         },
         value: {
             type: String,
-            default: ''
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
         },
         disabled: {
             default: false,
@@ -34,6 +38,11 @@ export default {
                 }
                 return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
             }
+        }
+    },
+    computed: {
+        inputName() {
+            return this.name ? this.name : `wc-radio-${this.count}`;
         }
     },
     beforeCreate() {
@@ -68,7 +77,7 @@ export default {
         ref="input"
         :checked="(value === item.id)"
         :value="item.id"
-        :name="`wc-radio-${count}`"
+        :name="inputName"
         :disabled="disabled"
         type="radio"
         @change="onInput"

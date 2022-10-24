@@ -40,6 +40,28 @@ describe('BaseRadioButtons.vue', () => {
         });
     });
 
+    it('renders a name value', () => {
+        let value = 'test3';
+        let wrapper = mount(BaseRadioButtons, {
+            propsData: {
+                possibleValues,
+                value
+            }
+        });
+
+        // right now depends on the position of the test
+        expect(wrapper.find('input').attributes('name')).toBe('wc-radio-2');
+
+        wrapper = mount(BaseRadioButtons, {
+            propsData: {
+                possibleValues,
+                value,
+                name: 'custom-name'
+            }
+        });
+        expect(wrapper.find('input').attributes('name')).toBe('custom-name');
+    });
+
     it('renders when possibleValues is empty', () => {
         expect(mount(BaseRadioButtons).html()).toBeTruthy();
     });

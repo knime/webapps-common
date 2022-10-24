@@ -13,7 +13,11 @@ export default {
         },
         value: {
             type: String,
-            default: ''
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -40,6 +44,7 @@ export default {
     ref="radioButton"
     :possible-values="possibleValues"
     :value="value"
+    :name="name"
     class="value-switch"
     v-on="$listeners"
   />

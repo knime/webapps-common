@@ -75,6 +75,22 @@ describe('Dropdown.vue', () => {
         expect(button.text()).toBe(placeholder);
     });
 
+    it('renders a hidden input field to be able to read form data', () => {
+        let placeholder = 'my-placeholder';
+        const wrapper = mount(Dropdown, {
+            propsData: {
+                ...propsData,
+                placeholder,
+                value: 'test66',
+                name: 'test-name'
+            },
+            localVue
+        });
+        expect(wrapper.find('input').exists()).toBe(true);
+        expect(wrapper.find('input').element.value).toBe('test66');
+        expect(wrapper.find('input').attributes('name')).toBe('test-name');
+    });
+
     it('renders invalid value if value is invalid', () => {
         const wrapper = mount(Dropdown, {
             propsData: {
