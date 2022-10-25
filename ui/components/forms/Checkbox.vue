@@ -1,5 +1,8 @@
 <script>
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
         id: {
             type: String,
@@ -9,7 +12,7 @@ export default {
             type: String,
             default: null
         },
-        value: {
+        modelValue: {
             type: Boolean,
             default: false
         },
@@ -25,9 +28,11 @@ export default {
          */
         labelSize: {
             type: String,
-            default: 'regular'
+            default: 'regular',
+            validator: (value) => ['regular', 'large'].includes(value)
         }
     },
+    emits: ['update:modelValue'],
     computed: {
         classes() {
             return ['checkbox', this.labelSize, { disabled: this.disabled }];
@@ -43,7 +48,7 @@ export default {
              */
             let { checked } = $event.target;
             consola.trace('Checkbox value changed to', checked);
-            this.$emit('input', checked);
+            this.$emit('update:modelValue', checked);
         },
         isChecked() {
             return this.$refs.input.checked;
@@ -58,7 +63,7 @@ export default {
       :id="id"
       ref="input"
       :name="name"
-      :checked="value"
+      :checked="modelValue"
       :disabled="disabled"
       type="checkbox"
       @change="onInput"

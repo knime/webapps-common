@@ -53,10 +53,10 @@ const demoComponents = {
     forms: {
         // Label: defineAsyncComponent(() => import('./components/Label.vue')),
         // Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
-        InputField: defineAsyncComponent(() => import('./components/InputField.vue'))
+        InputField: defineAsyncComponent(() => import('./components/InputField.vue')),
         // TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
         // NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
-        // Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
+        Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue'))
         // Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
         // RadioButtons: defineAsyncComponent(() => import('./components/RadioButtons.vue')),
         // ValueSwitch: defineAsyncComponent(() => import('./components/ValueSwitch.vue')),
