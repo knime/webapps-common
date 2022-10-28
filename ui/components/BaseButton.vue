@@ -62,8 +62,8 @@ export default {
   <Component
     :is="linkComponent"
     v-if="to"
-    ref="button"
     v-bind="$attrs"
+    ref="button"
     :to="to"
     :event="preventDefault ? [] : 'click'"
     @click="onClick"
@@ -73,8 +73,8 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <a
     v-else-if="href"
-    ref="button"
     v-bind="$attrs"
+    ref="button"
     :href="href"
     @click="onClick"
   >
@@ -83,8 +83,8 @@ export default {
   <!-- Note: @click events also fire on keyboard activation via Space -->
   <button
     v-else
-    ref="button"
     v-bind="$attrs"
+    ref="button"
     @click="onClick"
   >
     <slot />

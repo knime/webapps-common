@@ -5,18 +5,9 @@ import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue({
-        template: {
-            compilerOptions: {
-                compatConfig: {
-                    MODE: 2
-                }
-            }
-        }
-    }), svgLoader()],
+    plugins: [vue(), svgLoader()],
     resolve: {
         alias: {
-            vue: '@vue/compat',
             '@': fileURLToPath(new URL('./src', import.meta.url)),
             '@@': fileURLToPath(new URL('.', import.meta.url)), // I believe this is 'more standard' than to define individual imports for submodules
             '~': fileURLToPath(new URL('.', import.meta.url)) // only needed for import statements in webapps-common

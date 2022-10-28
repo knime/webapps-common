@@ -1,5 +1,4 @@
 <script>
-import Vue from 'vue';
 import { mixin as VueClickAway } from 'vue3-click-away';
 
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
@@ -171,7 +170,7 @@ export default {
             }
             this.isExpanded = !this.isExpanded;
             if (this.isExpanded) {
-                Vue.nextTick(() => this.$refs.ul.focus());
+                this.$nextTick(() => this.$refs.ul.focus());
             }
         },
         handleKeyDownList(e) {
