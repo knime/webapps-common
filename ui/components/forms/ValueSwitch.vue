@@ -55,7 +55,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.value-switch :deep(*) {
+.value-switch {
   display: flex;
   align-items: center;
   height: 30px;
@@ -64,7 +64,7 @@ export default {
   border-radius: 50px;
   border: 1px solid var(--knime-stone-gray);
 
-  & span {
+  & :deep(span) {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,7 +82,7 @@ export default {
     }
   }
 
-  & input {
+  & :deep(input) {
     user-select: none;
     display: none;
 
