@@ -41,6 +41,7 @@ import RadioButtons from '../components/RadioButtons.vue';
 import SideDrawer from '../components/SideDrawer.vue';
 import ValueSwitch from '../components/ValueSwitch.vue';
 import MenuItems from '../components/MenuItems.vue';
+import SearchBarDemo from '../components/SearchBar.vue';
 import SubMenu from '../components/SubMenu.vue';
 import TabBarDemo from '../components/TabBar.vue';
 import TagList from '../components/TagList.vue';
@@ -50,7 +51,7 @@ import ToggleSwitch from '../components/ToggleSwitch.vue';
 import Tooltip from '../components/Tooltip.vue';
 import Twinlist from '../components/Twinlist.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
-import SearchField from '../../ui/components/forms/InputField.vue';
+import SearchBar from '../../ui/components/forms/SearchBar.vue';
 
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
@@ -58,7 +59,6 @@ import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg';
 import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
-import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
 import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
 
 import NpmLink from '../components/demo/NpmLink.vue';
@@ -105,6 +105,7 @@ const demoComponents = {
         Fieldset,
         InputField,
         TextArea,
+        SearchBarDemo,
         NumberInput,
         Checkbox,
         Checkboxes,
@@ -156,8 +157,7 @@ const flattenComponents = (componentsByCategory) => {
 // Transform the components into a flat object
 const components = {
     TabBar,
-    SearchField,
-    SearchIcon,
+    SearchBar,
     ...flattenComponents(demoComponents)
 };
 
@@ -265,17 +265,12 @@ export default {
               :value.sync="activeTab"
               :possible-values="possibleTabValues"
             />
-            <SearchField
+            <SearchBar
               v-model="searchQuery"
               autofocus
-              type="search"
               placeholder="Filter by component name…"
               class="search"
-            >
-              <template #icon>
-                <SearchIcon />
-              </template>
-            </SearchField>
+            />
           </div>
         </div>
       </div>

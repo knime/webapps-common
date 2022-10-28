@@ -1,12 +1,10 @@
 <script>
-import Label from '../forms/Label.vue';
-import InputField from '../forms/InputField.vue';
+import SearchBar from '../forms/SearchBar.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
 import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg';
-import SearchIcon from '../../assets/img/icons/lens.svg';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
@@ -17,10 +15,8 @@ export default {
         ArrowNextIcon,
         ArrowPrevDoubleIcon,
         ArrowPrevIcon,
-        InputField,
-        Label,
         MultiselectListBox,
-        SearchIcon
+        SearchBar
     },
     props: {
         value: {
@@ -279,27 +275,17 @@ export default {
 
 <template>
   <div class="twinlist">
-    <div v-if="showSearch" class="search-wrapper">
-      <Label
-          v-slot="{ labelForId }"
-          :text="labelSearch"
-          class="search-label"
-          compact
-      >
-          <InputField
-            :id="labelForId"
-            ref="search"
-            :size="listSize"
-            :placeholder="searchPlaceholder"
-            :value="searchTerm"
-            :disabled="disabled"
-            class="search"
-            @input="onSearchInput"
-          >
-            <template #icon><SearchIcon /></template>
-          </InputField>
-      </Label>
-    </div>
+    <SearchBar
+      v-if="showSearch"
+      ref="search"
+      :size="listSize"
+      :placeholder="searchPlaceholder"
+      :value="searchTerm"
+      :label="labelSearch"
+      :disabled="disabled"
+      class="search"
+      @input="onSearchInput"
+    />
     <div class="header">
       <div class="title">{{ labelLeft }}</div>
       <div class="space" />
@@ -404,10 +390,6 @@ export default {
     &.disabled {
       opacity: 0.5;
     }
-  }
-
-  & .search-wrapper {
-    margin-bottom: 10px;
   }
 
   & .space,

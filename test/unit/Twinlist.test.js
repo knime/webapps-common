@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 
+import SearchBar from '~/ui/components/forms/SearchBar.vue';
 import Twinlist from '~/ui/components/forms/Twinlist.vue';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
-import InputField from '~/ui/components/forms/InputField.vue';
 
 describe('Twinlist.vue', () => {
     let defaultPossibleValues;
@@ -592,7 +592,7 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.findAll(InputField).length).toBe(0);
+            expect(wrapper.findAll(SearchBar).length).toBe(0);
             expect(wrapper.findAll('div.search-wrapper label.search').length).toBe(0);
             expect(wrapper.findAll('div.search-wrapper input[type=text].with-icon').length).toBe(0);
         });
@@ -611,12 +611,9 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.findAll(InputField).length).toBe(1);
-            expect(wrapper.findAll('div.search-wrapper div.search-label label').length).toBe(1);
-            expect(wrapper.findAll('div.search-wrapper div.search-label label').at(0).text()).toBe('Filter entries');
-            expect(wrapper.findAll('div.search-wrapper div.search input[type=text].with-icon').length).toBe(1);
-            expect(wrapper.findAll('div.search-wrapper div.search input[type=text].with-icon')
-                .at(0).attributes('placeholder')).toBe('Enter search term');
+            expect(wrapper.findAll(SearchBar).length).toBe(1);
+            expect(wrapper.findAll('div.search-wrapper label').length).toBe(1);
+            expect(wrapper.findAll('div.search-wrapper label').at(0).text()).toBe('Filter entries');
         });
 
         it('can include initial search term', () => {
