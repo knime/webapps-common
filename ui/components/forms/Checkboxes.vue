@@ -36,8 +36,8 @@ export default {
         alignment: {
             type: String,
             default: 'horizontal',
-            validator(val) {
-                return ['horizontal', 'vertical'].includes(val);
+            validator(value) {
+                return ['horizontal', 'vertical'].includes(value);
             }
         },
         /**

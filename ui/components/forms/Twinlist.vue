@@ -37,8 +37,8 @@ export default {
         size: {
             type: Number,
             default: 0,
-            validator(val) {
-                return val >= 0;
+            validator(value) {
+                return value >= 0;
             }
         },
         isValid: {

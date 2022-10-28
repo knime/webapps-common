@@ -17,12 +17,12 @@ export default {
         modelValue: {
             default: 0,
             type: [Number, String],
-            validator(val) {
-                if (typeof val === 'string') {
+            validator(value) {
+                if (typeof value === 'string') {
                     // possible scientific notation
-                    return val.toLowerCase().includes('e');
+                    return value.toLowerCase().includes('e');
                 }
-                return typeof val === 'number';
+                return typeof value === 'number';
             }
         },
         id: {
@@ -56,8 +56,8 @@ export default {
         type: {
             default: 'double',
             type: String,
-            validator(val) {
-                return ['double', 'integer'].includes(val);
+            validator(value) {
+                return ['double', 'integer'].includes(value);
             }
         },
         inputClasses: {
@@ -140,10 +140,10 @@ export default {
             }
             this.$emit('update:modelValue', inputValue);
         },
-        validate(val) {
+        validate(value) {
             let isValid = true;
             let errorMessage;
-            let value = typeof val === 'undefined' ? this.getValue() : this.parseValue(val);
+            value = typeof value === 'undefined' ? this.getValue() : this.parseValue(value);
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
                 errorMessage = 'Current value is not a number.';

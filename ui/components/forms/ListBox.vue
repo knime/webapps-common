@@ -27,8 +27,8 @@ export default {
         size: {
             type: Number,
             default: 0,
-            validator(val) {
-                return val >= 0;
+            validator(value) {
+                return value >= 0;
             }
         },
         isValid: {
@@ -88,17 +88,17 @@ export default {
         this.updateSelectedIndexAndInvalidValue(this.modelValue);
     },
     methods: {
-        updateSelectedIndexAndInvalidValue(val) {
+        updateSelectedIndexAndInvalidValue(value) {
             // update the selected index on start
-            const idx = this.selectableValues.findIndex((item) => item.id === val);
+            const idx = this.selectableValues.findIndex((item) => item.id === value);
             // not found? but the value is truthy ?
-            if (idx === -1 && val) {
+            if (idx === -1 && value) {
                 // generate and add invalid value
-                if (!this.invalidPossibleValueIds.includes(val)) {
-                    this.invalidPossibleValueIds.push(val);
+                if (!this.invalidPossibleValueIds.includes(value)) {
+                    this.invalidPossibleValueIds.push(value);
                 }
                 // select invalid value
-                this.selectedIndex = this.selectableValues.findIndex((item) => item.id === val);
+                this.selectedIndex = this.selectableValues.findIndex((item) => item.id === value);
             } else {
                 this.selectedIndex = idx;
             }

@@ -186,10 +186,10 @@ export default {
                 this.$emit('update:modelValue', bounds.value);
             }
         },
-        validate(val) {
+        validate(value) {
             let isValid = true;
             let errorMessage;
-            let value = typeof val === 'undefined' ? this.getValue() : val;
+            value = typeof value === 'undefined' ? this.getValue() : value;
             if (typeof value !== 'number' || isNaN(value)) {
                 isValid = false;
                 errorMessage = 'Current value is not a number.';

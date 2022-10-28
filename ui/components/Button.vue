@@ -79,7 +79,7 @@ export default {
   cursor: pointer;
   color: var(--knime-dove-gray);
   background-color: transparent;
-  
+
   /* best way to ensure pill shaped buttons with flexible 1/4 corners */
   border-radius: var(--theme-button-border-radius, 9999px);
 

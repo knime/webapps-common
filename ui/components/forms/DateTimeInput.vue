@@ -143,12 +143,12 @@ export default {
     watch: {
         modelValue: {
             // validates against min/max and sets appropriate state
-            handler(newVal) {
+            handler(newValue) {
                 // update internal value if min/max bounds are kept and value is valid
-                this.checkMinMax(newVal);
-                if (this.checkIsValid(newVal)) {
+                this.checkMinMax(newValue);
+                if (this.checkIsValid(newValue)) {
                     // convert to zoned time
-                    this.localValue = utcToZonedTime(newVal, this.timezone);
+                    this.localValue = utcToZonedTime(newValue, this.timezone);
                 }
             },
             immediate: true
