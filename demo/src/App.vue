@@ -1,5 +1,5 @@
 <script>
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, h as createElement } from 'vue';
 import './assets/index.css';
 
 import TabBar from 'webapps-common/ui/components/TabBar.vue';
@@ -13,6 +13,8 @@ import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
 
 import SearchField from 'webapps-common/ui/components/forms/InputField.vue';
 import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
+
+import NpmLink from './components/demo/NpmLink.vue';
 
 // TODO probably remove async loading due to content jumping, but for migration it's convinient
 const demoComponents = {
@@ -72,27 +74,25 @@ const demoComponents = {
     },
     misc: {
         NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
-        NodeFeatureList: defineAsyncComponent(() => import('./components/NodeFeatureList.vue'))
-        // OpenSourceCredits: defineAsyncComponent(() => import('./components/OpenSourceCredits.vue'))
-    }
-    /*
+        NodeFeatureList: defineAsyncComponent(() => import('./components/NodeFeatureList.vue')),
+        OpenSourceCredits: defineAsyncComponent(() => import('./components/OpenSourceCredits.vue'))
+    },
     npm: {
         knimeUiTable: {
             render() {
                 const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
                 const name = 'KNIME UI Table';
-                return <NpmLink link={link} name={name}/>;
+                return createElement(NpmLink, { link, name });
             }
         },
         knimeEsLint: {
             render() {
                 const link = 'https://www.npmjs.com/package/@knime/eslint-config';
                 const name = 'KNIME ESLint config';
-                return <NpmLink link={link} name={name}/>;
+                return createElement(NpmLink, { link, name });
             }
         }
     }
-    */
 };
 
 
