@@ -241,6 +241,7 @@ export default {
 .menu-wrapper {
   position: absolute;
   display: none;
+  z-index: var(--z-index-common-menu-items-expanded, 57);
 
   &.expanded {
     display: block;

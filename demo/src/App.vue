@@ -41,6 +41,7 @@ const demoComponents = {
         SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
         SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
+        // PlusButton: defineAsyncComponent(() => import('./components/PlusButton.vue')),
         // Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
         // TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue'))
         // TagList: defineAsyncComponent(() => import('./components/TagList.vue')),

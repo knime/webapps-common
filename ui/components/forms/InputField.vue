@@ -50,14 +50,6 @@ export default {
         disabled: {
             default: false,
             type: Boolean
-        },
-        /**
-         * Sets the error styling if the field is not valid, validity it's controlled by form submit event.
-         * Validity does not needs to be controlled by the parent component
-         */
-        required: {
-            default: false,
-            type: Boolean
         }
     },
     emits: ['update:modelValue'],
@@ -120,7 +112,6 @@ export default {
       :autofocus="autofocus"
       :autocomplete="autocomplete"
       :disabled="disabled"
-      :required="required"
       @input="onInput"
     >
     <span
@@ -160,19 +151,16 @@ input {
     border-color: var(--knime-masala);
   }
 
-  &.invalid,
-  &:focus:invalid {
-    & + .invalid-marker {
-      position: absolute;
-      display: block;
-      width: 3px;
-      left: 0;
-      margin: 0;
-      top: 0;
-      bottom: 0;
-      background-color: var(--theme-color-error);
-      pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
-    }
+  &.invalid + .invalid-marker {
+    position: absolute;
+    display: block;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--theme-color-error);
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 
   &:hover:not(:focus, :disabled) {
