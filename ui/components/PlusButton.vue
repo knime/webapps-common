@@ -33,8 +33,7 @@ export default {
   >
     <Button
       class="plus-button"
-      v-bind="[$attrs, $props]"
-      v-on="$listeners"
+      v-bind="$attrs"
     >
       <PlusIcon />
     </Button>

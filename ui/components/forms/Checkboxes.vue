@@ -2,6 +2,9 @@
 import Checkbox from '../forms/Checkbox.vue';
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         Checkbox
     },
@@ -40,14 +43,15 @@ export default {
         /**
          * selected value (which is a list of ids of entries)
          */
-        value: {
+        modelValue: {
             type: Array,
             default: () => []
         }
     },
+    emits: ['update:modelValue'],
     methods: {
-        onInput(value, toggled) {
-            let checkedValue = Array.from(this.value);
+        onUpdateModelValue(value, toggled) {
+            let checkedValue = Array.from(this.modelValue);
             if (toggled) {
                 if (checkedValue.indexOf(value) === -1) {
                     checkedValue.push(value);
@@ -63,7 +67,7 @@ export default {
              * @event input
              * @type {Array}
              */
-            this.$emit('input', checkedValue);
+            this.$emit('update:modelValue', checkedValue);
         },
         /**
          * Is at least one checkbox checked?
@@ -82,10 +86,10 @@ export default {
       v-for="item of possibleValues"
       ref="boxes"
       :key="`checkboxes-${item.id}`"
-      :value="value.indexOf(item.id) > -1"
+      :model-value="modelValue.indexOf(item.id) > -1"
       :title="item.text"
       class="box"
-      @input="onInput(item.id, $event)"
+      @update:model-value="onUpdateModelValue(item.id, $event)"
     >
       {{ item.text }}
     </Checkbox>

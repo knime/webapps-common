@@ -45,7 +45,7 @@ fieldset {
     overflow: hidden;
     display: block;
 
-    & svg {
+    & :slotted(svg) {
       margin-right: 0;
       height: 14px;
       width: 14px;

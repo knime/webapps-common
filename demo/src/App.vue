@@ -41,10 +41,10 @@ const demoComponents = {
         SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
         SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
-        // PlusButton: defineAsyncComponent(() => import('./components/PlusButton.vue')),
-        // Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
-        // TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue'))
-        // TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
+        PlusButton: defineAsyncComponent(() => import('./components/PlusButton.vue')),
+        Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
+        TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue')),
+        TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
         LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue'))
     },
     messages: {
@@ -52,23 +52,23 @@ const demoComponents = {
         Messages: defineAsyncComponent(() => import('./components/Messages.vue'))
     },
     forms: {
-        // Label: defineAsyncComponent(() => import('./components/Label.vue')),
-        // Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
+        Label: defineAsyncComponent(() => import('./components/Label.vue')),
+        Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
         InputField: defineAsyncComponent(() => import('./components/InputField.vue')),
-        // TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
-        // NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
-        Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue'))
-        // Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
-        // RadioButtons: defineAsyncComponent(() => import('./components/RadioButtons.vue')),
-        // ValueSwitch: defineAsyncComponent(() => import('./components/ValueSwitch.vue')),
+        TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
+        NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
+        Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
+        Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
+        RadioButtons: defineAsyncComponent(() => import('./components/RadioButtons.vue')),
+        ValueSwitch: defineAsyncComponent(() => import('./components/ValueSwitch.vue')),
         // DateTimeInput: defineAsyncComponent(() => import('./components/DateTimeInput.vue')),
-        // TimePartInput: defineAsyncComponent(() => import('./components/TimePartInput.vue')),
-        // ListBox: defineAsyncComponent(() => import('./components/ListBox.vue')),
-        // Dropdown: defineAsyncComponent(() => import('./components/Dropdown.vue')),
-        // Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
-        // MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
-        // ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
-        // Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
+        TimePartInput: defineAsyncComponent(() => import('./components/TimePartInput.vue')),
+        ListBox: defineAsyncComponent(() => import('./components/ListBox.vue')),
+        Dropdown: defineAsyncComponent(() => import('./components/Dropdown.vue')),
+        Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
+        MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
+        ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
+        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
     },
     misc: {
         NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),

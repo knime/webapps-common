@@ -2,6 +2,9 @@
 import BaseRadioButtons from './BaseRadioButtons.vue';
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         BaseRadioButtons
     },
@@ -11,7 +14,7 @@ export default {
             type: String,
             default: null
         },
-        value: {
+        modelValue: {
             type: String,
             default: null
         },
@@ -34,7 +37,8 @@ export default {
             type: Array,
             default: () => []
         }
-    }
+    },
+    emits: ['update:modelValue']
 };
 </script>
 
@@ -43,10 +47,10 @@ export default {
     :id="id"
     ref="radioButton"
     :possible-values="possibleValues"
-    :value="value"
+    :model-value="modelValue"
     :name="name"
     class="value-switch"
-    v-on="$listeners"
+    @update:model-value="$emit('update:modelValue', $event)"
   />
 </template>
 

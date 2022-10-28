@@ -1,5 +1,8 @@
 <script>
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
         id: {
             type: String,
@@ -9,7 +12,7 @@ export default {
             type: String,
             default: null
         },
-        value: {
+        modelValue: {
             type: Boolean,
             default: false
         },
@@ -24,8 +27,9 @@ export default {
             default: 'regular'
         }
     },
+    emits: ['update:modelValue'],
     methods: {
-        onInput($event) {
+        onChange($event) {
             /**
              * Fired when the toggle switch changes.
              *
@@ -34,7 +38,7 @@ export default {
              */
             let { checked } = $event.target;
             consola.trace('ToggleSwitch value changed to', checked);
-            this.$emit('input', checked);
+            this.$emit('update:modelValue', checked);
         },
         isChecked() {
             return this.$refs.input.checked;
@@ -50,8 +54,8 @@ export default {
       ref="input"
       :name="name"
       type="checkbox"
-      :checked="value"
-      @change="onInput"
+      :checked="modelValue"
+      @change="onChange"
     >
     <span>
       <slot />

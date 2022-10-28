@@ -7,11 +7,14 @@ const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         ArrowIcon
     },
     props: {
-        value: {
+        modelValue: {
             default: 0,
             type: [Number, String],
             validator(val) {
@@ -66,6 +69,7 @@ export default {
             type: Boolean
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
             clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
@@ -98,9 +102,9 @@ export default {
         }
     },
     watch: {
-        value: {
+        modelValue: {
             handler() {
-                this.localValue = this.parseValue(this.value);
+                this.localValue = this.parseValue(this.modelValue);
             },
             immediate: true
         }
@@ -110,7 +114,7 @@ export default {
          * This value is the last valid input value for the number input.
          * It is used as a fallback if the user enters invalid values.
          */
-        this.localValue = this.parseValue(this.value);
+        this.localValue = this.parseValue(this.modelValue);
         this.initialValue = this.localValue;
     },
     methods: {
@@ -134,7 +138,7 @@ export default {
             } else {
                 inputValue = this.getValue();
             }
-            this.$emit('input', inputValue);
+            this.$emit('update:modelValue', inputValue);
         },
         validate(val) {
             let isValid = true;

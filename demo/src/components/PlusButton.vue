@@ -1,8 +1,8 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
-import PlusButton from '../../ui/components/PlusButton.vue';
-import PlusButtonCode from '!!raw-loader!../../ui/components/PlusButton';
-import buttonCode from '!!raw-loader!../../ui/components/Button';
+import PlusButton from 'webapps-common/ui/components/PlusButton.vue';
+import PlusButtonCode from 'webapps-common/ui/components/PlusButton.vue?raw';
+import buttonCode from 'webapps-common/ui/components/Button.vue?raw';
 
 const codeExample =
 `

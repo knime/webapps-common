@@ -1,4 +1,5 @@
 <script>
+import { markRaw } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import MenuItems from 'webapps-common/ui/components/MenuItems.vue';
 import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
@@ -74,30 +75,30 @@ export default {
 const menuItemsData = [{
     href: 'http://apple.com',
     text: 'Apples',
-    icon: HelpIcon,
+    icon: markRaw(HelpIcon),
     hotkeyText: 'Ctrl + 1'
 }, {
     href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
     text: 'Oranges',
-    icon: StarIcon,
+    icon: markRaw(StarIcon),
     hotkeyText: 'Ctrl + 2'
 }, {
     href: 'about:blank',
     text: 'Disabled Item',
     disabled: true,
-    icon: StarIcon,
+    icon: markRaw(StarIcon),
     hotkeyText: 'Ctrl + 3'
 }, {
     to: '/testing-nuxt-link',
     text: 'Ananas',
-    icon: HeartIcon
+    icon: markRaw(HeartIcon)
 }, {
     href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
     text: 'Bananas',
-    icon: LeaveIcon
+    icon: markRaw(LeaveIcon)
 }, {
     text: 'Item without href/to',
-    icon: HelpIcon
+    icon: markRaw(HelpIcon)
 }];
 
 export default {

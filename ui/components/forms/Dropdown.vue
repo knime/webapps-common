@@ -1,7 +1,8 @@
 <script>
-import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
 import { mixin as VueClickAway } from 'vue3-click-away';
+
+import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -14,6 +15,9 @@ const KEY_ENTER = 13;
 const TYPING_TIMEOUT = 1000; // in ms
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         DropdownIcon
     },
@@ -25,7 +29,7 @@ export default {
                 return `Dropdown-${count++}`;
             }
         },
-        value: {
+        modelValue: {
             type: String,
             default: null
         },
@@ -71,6 +75,7 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
             isExpanded: false,
@@ -79,10 +84,10 @@ export default {
     },
     computed: {
         selectedIndex() {
-            return this.possibleValues.map(x => x.id).indexOf(this.value);
+            return this.possibleValues.map(x => x.id).indexOf(this.modelValue);
         },
         showPlaceholder() {
-            return !this.value;
+            return !this.modelValue;
         },
         displayTextMap() {
             let map = {};
@@ -94,10 +99,10 @@ export default {
         displayText() {
             if (this.showPlaceholder) {
                 return this.placeholder;
-            } else if (this.displayTextMap.hasOwnProperty(this.value)) {
-                return this.displayTextMap[this.value];
+            } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
+                return this.displayTextMap[this.modelValue];
             } else {
-                return `(MISSING) ${this.value}`;
+                return `(MISSING) ${this.modelValue}`;
             }
         }
     },
@@ -106,18 +111,15 @@ export default {
     },
     methods: {
         isCurrentValue(candidate) {
-            return this.value === candidate;
+            return this.modelValue === candidate;
         },
         setSelected(id) {
             consola.trace('ListBox setSelected on', id);
 
             /**
              * Fired when the selection changes.
-             *
-             * @event input
-             * @type {String}
              */
-            this.$emit('input', id);
+            this.$emit('update:modelValue', id);
         },
         onOptionClick(id) {
             this.setSelected(id);
@@ -314,7 +316,7 @@ export default {
       :id="id"
       type="hidden"
       :name="name"
-      :value="value"
+      :value="modelValue"
     >
   </div>
 </template>

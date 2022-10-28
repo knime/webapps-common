@@ -16,11 +16,14 @@ const DEFAULT_STEP_SIZE_INTEGER = 1;
  *  - Format to fixed length with leading zeros.
  */
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         ArrowIcon
     },
     props: {
-        value: {
+        modelValue: {
             default: 0,
             type: Number
         },
@@ -56,12 +59,13 @@ export default {
             type: String
         }
     },
+    emits: ['update:modelValue', 'bounds'],
     data() {
         return {
             clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
             hovered: false, // if the input field is currently hovered or not
             /* @type {String|Number} */
-            localValue: this.value // value with leading zeros
+            localValue: this.modelValue // value with leading zeros
         };
     },
     computed: {
@@ -77,15 +81,8 @@ export default {
         }
     },
     watch: {
-        value: {
-            /**
-             * Value watcher handler
-             *
-             * @param {Number} newValue
-             * @param {Number} oldValue
-             * @returns {undefined}
-             */
-            handler(newValue, oldValue) {
+        modelValue: {
+            handler(newValue) {
                 this.localValue = this.padValue(newValue);
             },
             immediate: true
@@ -107,7 +104,7 @@ export default {
          * This value is the last valid input value for the number input.
          * It is used as a fallback if the user enters invalid values.
          */
-        this.initialValue = this.value;
+        this.initialValue = this.modelValue;
     },
     methods: {
         /**
@@ -156,9 +153,9 @@ export default {
         getValue() {
             return parseInt(this.$refs.input.value, 10);
         },
-        onBlur(event) {
+        onBlur() {
             // set display value back to value
-            this.localValue = this.padValue(this.value);
+            this.localValue = this.padValue(this.modelValue);
         },
         onInput(event) {
             // get input as number (this method is also called without a real event)
@@ -186,7 +183,7 @@ export default {
             if (bounds.type) {
                 this.$emit('bounds', bounds);
             } else {
-                this.$emit('input', bounds.value);
+                this.$emit('update:modelValue', bounds.value);
             }
         },
         validate(val) {

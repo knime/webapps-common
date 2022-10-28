@@ -107,7 +107,7 @@ export default {
               :is-valid="isValid1"
               type="integer"
               title="I am the integer"
-              @input="validate1"
+              @update:model-value="validate1"
             />
           </Label>
           <Label
@@ -123,7 +123,7 @@ export default {
               :is-valid="isValid2"
               type="double"
               title="I am the double"
-              @input="validate2"
+              @update:model-value="validate2"
             />
           </Label>
           <Label
@@ -139,7 +139,7 @@ export default {
               :is-valid="isValid3"
               type="integer"
               title="My starting value is invalid"
-              @input="validate3"
+              @update:model-value="validate3"
             />
           </Label>
           <Label
@@ -155,7 +155,7 @@ export default {
               type="integer"
               title="Disabled"
               disabled
-              @input="validate1"
+              @update:model-value="validate1"
             />
           </Label>
         </div>

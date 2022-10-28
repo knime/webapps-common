@@ -1,12 +1,15 @@
 <script>
 let count = 0;
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
         id: {
             type: String,
             default: null
         },
-        value: {
+        modelValue: {
             type: String,
             default: null
         },
@@ -40,6 +43,7 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
     computed: {
         inputName() {
             return this.name ? this.name : `wc-radio-${this.count}`;
@@ -58,7 +62,7 @@ export default {
              * @type {String}
              */
             let value = $event.target.value;
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         }
     }
 };
@@ -75,7 +79,7 @@ export default {
     >
       <input
         ref="input"
-        :checked="(value === item.id)"
+        :checked="(modelValue === item.id)"
         :value="item.id"
         :name="inputName"
         :disabled="disabled"

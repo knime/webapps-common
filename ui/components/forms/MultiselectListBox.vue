@@ -5,6 +5,10 @@ let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false,
+        WATCH_ARRAY: false
+    },
     props: {
         id: {
             type: String,
@@ -12,7 +16,7 @@ export default {
                 return `MultiselectListBox-${count++}`;
             }
         },
-        value: {
+        modelValue: {
             type: Array,
             default: () => []
         },
@@ -69,9 +73,10 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue', 'doubleClickOnItem', 'doubleClickShift', 'keyArrowLeft', 'keyArrowRight'],
     data() {
         return {
-            selectedValues: this.value,
+            selectedValues: this.modelValue,
             // indices for mouse and keyboard nav
             currentKeyNavIndex: 0,
             shiftStartIndex: -1,
@@ -89,15 +94,18 @@ export default {
         }
     },
     watch: {
-        value(newValue) {
-            this.selectedValues = newValue;
+        modelValue: {
+            handler(newValue) {
+                this.selectedValues = newValue;
+            },
+            deep: true
         }
     },
     mounted() {
         window.addEventListener('mouseup', this.onStopDrag);
         // set key nav index to last value
-        if (this.value.length > 0) {
-            let lastItem = this.value[this.value.length - 1];
+        if (this.modelValue.length > 0) {
+            let lastItem = this.modelValue[this.modelValue.length - 1];
             this.currentKeyNavIndex = this.possibleValues.map(x => x.id).indexOf(lastItem);
         }
     },
@@ -111,7 +119,7 @@ export default {
     },
     methods: {
         isCurrentValue(candidate) {
-            return this.value.includes(candidate);
+            return this.modelValue.includes(candidate);
         },
         handleCtrlClick(value, index) {
             this.currentKeyNavIndex = index;
@@ -163,7 +171,7 @@ export default {
                 this.setSelected(sectionValues);
             }
         },
-        onStopDrag(e) {
+        onStopDrag() {
             this.draggingStartIndex = -1;
             this.draggingInverseMode = false;
         },
@@ -234,7 +242,7 @@ export default {
         setSelectedNoShiftReset(values) {
             consola.trace('MultiselectListBox setSelected on', values);
             this.selectedValues = values;
-            this.$emit('input', values);
+            this.$emit('update:modelValue', values);
         },
         setSelected(values) {
             // reset shift start index on every change to selected values but shift operations itself

@@ -5,6 +5,9 @@ import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 const BLUR_TIMEOUT = 1;
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         Checkbox,
         DropdownIcon
@@ -38,7 +41,7 @@ export default {
         /**
          * selected value (which is a list of ids of entries)
          */
-        value: {
+        modelValue: {
             type: Array,
             default: () => []
         },
@@ -75,9 +78,10 @@ export default {
             default: null
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
-            checkedValue: this.value,
+            checkedValue: this.modelValue,
             collapsed: true
         };
     },
@@ -104,8 +108,11 @@ export default {
         }
     },
     watch: {
-        value(newValue) {
-            this.checkedValue = newValue;
+        modelValue: {
+            handler(newValue) {
+                this.checkedValue = newValue;
+            },
+            deep: true
         }
     },
     methods: {
@@ -121,7 +128,7 @@ export default {
                 ? this.focusOptions[this.focusOptions.length - 1]
                 : this.focusOptions[0]);
         },
-        onInput(value, toggled) {
+        onUpdateModelValue(value, toggled) {
             if (toggled) {
                 if (this.checkedValue.indexOf(value) === -1) {
                     this.checkedValue.push(value);
@@ -133,11 +140,8 @@ export default {
 
             /**
              * Fired when the selection changes.
-             *
-             * @event input
-             * @type {Array}
              */
-            this.$emit('input', this.checkedValue);
+            this.$emit('update:modelValue', this.checkedValue);
         },
         toggle() {
             this.collapsed = !this.collapsed;
@@ -225,10 +229,10 @@ export default {
         v-for="item of possibleValues"
         ref="option"
         :key="`multiselect-${item.id}`"
-        :value="isChecked(item.id)"
+        :model-value="isChecked(item.id)"
         :disabled="item.disabled"
         class="boxes"
-        @input="onInput(item.id, $event)"
+        @update:model-value="onUpdateModelValue(item.id, $event)"
       >
         {{ item.text }}
       </Checkbox>

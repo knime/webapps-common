@@ -9,6 +9,9 @@ const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         ArrowNextDoubleIcon,
         ArrowNextIcon,
@@ -17,7 +20,7 @@ export default {
         MultiselectListBox
     },
     props: {
-        value: {
+        modelValue: {
             type: Array,
             default: () => []
         },
@@ -74,9 +77,10 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
-            chosenValues: this.value,
+            chosenValues: this.modelValue,
             invalidPossibleValueIds: new Set(),
             selectedRight: [],
             selectedLeft: []
@@ -91,7 +95,7 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         invalidValueIds() {
-            return this.value.filter(x => !this.possibleValueMap[x]);
+            return this.modelValue.filter(x => !this.possibleValueMap[x]);
         },
         leftItems() {
             const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
@@ -149,7 +153,7 @@ export default {
             items = items || this.selectedLeft;
             this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
             this.clearSelections();
-            this.$emit('input', this.chosenValues);
+            this.$emit('update:modelValue', this.chosenValues);
         },
         moveLeft(items) {
             // remove all right values from or selectedValues
@@ -159,7 +163,7 @@ export default {
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
-            this.$emit('input', this.chosenValues);
+            this.$emit('update:modelValue', this.chosenValues);
         },
         onMoveRightButtonClick() {
             this.moveRight();
@@ -247,15 +251,15 @@ export default {
         ref="left"
         :size="listSize"
         class="listBox"
-        :value="selectedLeft"
+        :model-value="selectedLeft"
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="labelLeft"
         :disabled="disabled"
-        @doubleClickOnItem="onLeftListBoxDoubleClick"
-        @doubleClickShift="onLeftListBoxShiftDoubleClick"
-        @keyArrowRight="onKeyRightArrow"
-        @input="onLeftInput"
+        @double-click-on-item="onLeftListBoxDoubleClick"
+        @double-click-shift="onLeftListBoxShiftDoubleClick"
+        @key-arrow-right="onKeyRightArrow"
+        @update:model-value="onLeftInput"
       />
       <div class="buttons">
         <div
@@ -302,15 +306,15 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
-        :value="selectedRight"
+        :model-value="selectedRight"
         :possible-values="rightItems"
         :size="listSize"
         :aria-label="labelRight"
         :disabled="disabled"
-        @doubleClickOnItem="onRightListBoxDoubleClick"
-        @doubleClickShift="onRightListBoxShiftDoubleClick"
-        @keyArrowLeft="onKeyLeftArrow"
-        @input="onRightInput"
+        @double-click-on-item="onRightListBoxDoubleClick"
+        @double-click-shift="onRightListBoxShiftDoubleClick"
+        @key-arrow-left="onKeyLeftArrow"
+        @update:model-value="onRightInput"
       />
     </div>
   </div>

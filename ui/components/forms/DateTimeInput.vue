@@ -1,11 +1,15 @@
 <script>
-import CalendarIcon from '../../assets/img/icons/calendar.svg';
-import TimePartInput from './TimePartInput.vue';
 import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
 import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { DatePicker } from 'v-calendar';
+
+import { resolveClientOnlyComponent } from '../../util/nuxtComponentResolver';
+import CalendarIcon from '../../assets/img/icons/calendar.svg';
 import updateDate from '../../../util/updateDate';
 import { isBeforeMinDate, isAfterMaxDate } from '../../../util/dateMinMaxCheck';
 import getLocalTimeZone from '../../../util/localTimezone';
+
+import TimePartInput from './TimePartInput.vue';
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented
@@ -13,18 +17,23 @@ import getLocalTimeZone from '../../../util/localTimezone';
  * Uses DatePicker (<v-date-picker>) from v-calendar. See: https://vcalendar.io/
  */
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false,
+        RENDER_FUNCTION: false
+    },
     components: {
         CalendarIcon,
         TimePartInput,
         // eslint-disable-next-line import/extensions
-        DatePicker: () => import('v-calendar/lib/components/date-picker.umd') // needed in order for DatePicker to work
+        // DatePicker: () => import('v-calendar/lib/components/date-picker.umd') // needed in order for DatePicker to work
+        DatePicker
 
     },
     props: {
         /**
          * @type Date - date time in UTC.
          */
-        value: {
+        modelValue: {
             type: Date,
             required: true
         },
@@ -95,6 +104,7 @@ export default {
             default: getLocalTimeZone()
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
             popoverIsVisible: false,
@@ -109,6 +119,9 @@ export default {
         };
     },
     computed: {
+        clientOnlyComponent() {
+            return resolveClientOnlyComponent();
+        },
         legacyDateFormat() {
             // see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
             // this only works for simple patterns and turn the unicode format into the moment.js de-facto standard
@@ -128,9 +141,9 @@ export default {
         }
     },
     watch: {
-        value: {
+        modelValue: {
             // validates against min/max and sets appropriate state
-            handler(newVal, oldVal) {
+            handler(newVal) {
                 // update internal value if min/max bounds are kept and value is valid
                 this.checkMinMax(newVal);
                 if (this.checkIsValid(newVal)) {
@@ -157,7 +170,7 @@ export default {
         emitInput(value) {
             // check min/max
             this.checkMinMax(value);
-            this.$emit('input', zonedTimeToUtc(value, this.timezone));
+            this.$emit('update:modelValue', zonedTimeToUtc(value, this.timezone));
         },
         onDatePickerInput(date) {
             this.emitInput(updateDate(this.localValue, date));
@@ -237,34 +250,34 @@ export default {
             }
         },
         onTimeHoursChange(hours) {
-            let d = new Date(this.localValue);
+            let date = new Date(this.localValue);
             if (Number.isSafeInteger(hours)) {
-                d = setHours(d, hours);
+                date = setHours(date, hours);
             }
-            this.emitInput(d);
+            this.emitInput(date);
         },
         onTimeMinutesChange(minutes) {
-            let d = new Date(this.localValue);
+            let date = new Date(this.localValue);
             if (Number.isSafeInteger(minutes)) {
-                d = setMinutes(d, minutes);
+                date = setMinutes(date, minutes);
             }
-            this.emitInput(d);
+            this.emitInput(date);
         },
         onTimeSecondsChange(seconds) {
-            let d = new Date(this.localValue);
+            let date = new Date(this.localValue);
             if (Number.isSafeInteger(seconds)) {
-                d = setSeconds(d, seconds);
+                date = setSeconds(date, seconds);
             }
-            this.emitInput(d);
+            this.emitInput(date);
         },
         onTimeMillisecondsChange(milliseconds) {
-            let d = new Date(this.localValue);
+            let date = new Date(this.localValue);
             if (Number.isSafeInteger(milliseconds)) {
-                d = setMilliseconds(d, milliseconds);
+                date = setMilliseconds(date, milliseconds);
             }
-            this.emitInput(d);
+            this.emitInput(date);
         },
-        validate(val) {
+        validate() {
             let isValid = true;
             let errorMessage;
             if (this.required && this.isInvalid) {
@@ -296,19 +309,19 @@ export default {
       v-if="showDate"
       class="date-picker"
     >
-      <client-only>
+      <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
-          :value="localValue"
+          :model-value="localValue"
           :is-dark="false"
           color="masala"
           :popover="{ placement: 'bottom', visibility: 'click'}"
           :masks="{L: legacyDateFormat}"
           :max-date="max"
           :min-date="min"
-          @popoverWillHide="popoverIsVisible = false"
-          @popoverWillShow="popoverIsVisible = true"
-          @input="onDatePickerInput"
+          @popover-will-hide="popoverIsVisible = false"
+          @popover-will-show="popoverIsVisible = true"
+          @update:model-value="onDatePickerInput"
         >
           <!--Custom Input Slot-->
           <template #default="{ inputValue, inputEvents, hidePopover, togglePopover }">
@@ -329,7 +342,7 @@ export default {
             </div>
           </template>
         </DatePicker>
-      </client-only>
+      </Component>
       <span
         v-if="!isValid"
         class="invalid-marker"
@@ -345,9 +358,9 @@ export default {
         :min="0"
         :max="23"
         :min-digits="2"
-        :value="dateTimeHours"
+        :model-value="dateTimeHours"
         @bounds="onTimeHoursBounds"
-        @input="onTimeHoursChange"
+        @update:model-value="onTimeHoursChange"
       />
       <span class="time-colon">:</span>
       <TimePartInput
@@ -356,9 +369,9 @@ export default {
         :min="0"
         :max="59"
         :min-digits="2"
-        :value="dateTimeMinutes"
+        :model-value="dateTimeMinutes"
         @bounds="onTimeMinutesBounds"
-        @input="onTimeMinutesChange"
+        @update:model-value="onTimeMinutesChange"
       />
       <span
         v-if="showSeconds"
@@ -371,9 +384,9 @@ export default {
         :min="0"
         :max="59"
         :min-digits="2"
-        :value="dateTimeSeconds"
+        :model-value="dateTimeSeconds"
         @bounds="onTimeSecondsBounds"
-        @input="onTimeSecondsChange"
+        @update:model-value="onTimeSecondsChange"
       />
       <span
         v-if="showMilliseconds"
@@ -386,9 +399,9 @@ export default {
         :min="0"
         :max="999"
         :min-digits="3"
-        :value="dateTimeMilliseconds"
+        :model-value="dateTimeMilliseconds"
         @bounds="onTimeMillisecondsBounds"
-        @input="onTimeMillisecondsChange"
+        @update:model-value="onTimeMillisecondsChange"
       />
     </div>
   </div>

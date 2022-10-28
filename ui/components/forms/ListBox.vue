@@ -6,6 +6,9 @@ const KEY_HOME = 36;
 const KEY_END = 35;
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
         id: {
             type: String,
@@ -13,7 +16,7 @@ export default {
                 return `ListBox-${count++}`;
             }
         },
-        value: {
+        modelValue: {
             type: String,
             default: ''
         },
@@ -58,6 +61,7 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
     data() {
         return {
             selectedIndex: -1,
@@ -76,12 +80,12 @@ export default {
         }
     },
     watch: {
-        value(newValue) {
+        modelValue(newValue) {
             this.updateSelectedIndexAndInvalidValue(newValue);
         }
     },
     mounted() {
-        this.updateSelectedIndexAndInvalidValue(this.value);
+        this.updateSelectedIndexAndInvalidValue(this.modelValue);
     },
     methods: {
         updateSelectedIndexAndInvalidValue(val) {
@@ -100,7 +104,7 @@ export default {
             }
         },
         isCurrentValue(candidate) {
-            return this.value === candidate;
+            return this.modelValue === candidate;
         },
         setSelected(value, index) {
             consola.trace('ListBox setSelected on', value);
@@ -108,11 +112,8 @@ export default {
 
             /**
              * Fired when the selection changes.
-             *
-             * @event input
-             * @type {String}
              */
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
         scrollToCurrent() {
             let listBoxNode = this.$refs.ul;

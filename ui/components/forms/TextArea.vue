@@ -1,7 +1,10 @@
 <script>
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     props: {
-        value: {
+        modelValue: {
             default: '',
             type: [Number, String]
         },
@@ -41,12 +44,13 @@ export default {
             type: String
         }
     },
+    emits: ['update:modelValue'],
     methods: {
         getValue() {
             return this.$refs.input.value;
         },
-        onInput(e) {
-            this.$emit('input', this.getValue());
+        onInput() {
+            this.$emit('update:modelValue', this.getValue());
         }
     }
 };
@@ -59,7 +63,7 @@ export default {
       ref="input"
       :name="name"
       :title="title"
-      :value="value"
+      :value="modelValue"
       :class="inputClasses"
       :cols="cols"
       :rows="rows"

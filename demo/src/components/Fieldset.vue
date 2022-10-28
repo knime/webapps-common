@@ -24,7 +24,7 @@ const codeExample = `<Fieldset text="Login">
     <InputField
       :id="labelForId"
       type="password"
-      value="secret-password"
+      model-value="secret-password"
     />
   </Label>
 </Fieldset>`;
@@ -82,7 +82,7 @@ export default {
               <InputField
                 :id="labelForId"
                 type="password"
-                value="secret-password"
+                model-value="secret-password"
               />
             </Label>
           </Fieldset>

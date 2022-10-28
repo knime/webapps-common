@@ -56,7 +56,7 @@ export default {
           <p>
             Labels for form fields. Beside their default size, they come with a smaller one as well which can be enabled
             by setting the <code>compact</code> prop or
-            <a href="https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection">providing</a>
+            <a href="https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection">providing</a>&nbsp;
             <code>compactLabels: true</code>.
           </p>
         </div>

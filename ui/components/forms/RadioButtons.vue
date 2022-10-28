@@ -2,6 +2,9 @@
 import BaseRadioButtons from './BaseRadioButtons.vue';
 
 export default {
+    compatConfig: {
+        COMPONENT_V_MODEL: false
+    },
     components: {
         BaseRadioButtons
     },
@@ -11,7 +14,7 @@ export default {
             type: String,
             default: null
         },
-        value: {
+        modelValue: {
             type: String,
             default: ''
         },
@@ -44,6 +47,7 @@ export default {
             }
         }
     },
+    emits: ['update:modelValue'],
     methods: {
         hasSelection() {
             /* looks in the DOM if one radio button is checked */
@@ -58,10 +62,10 @@ export default {
     :id="id"
     ref="radioButton"
     :possible-values="possibleValues"
-    :value="value"
+    :model-value="modelValue"
     :disabled="disabled"
     :class="['radio-buttons', alignment, {disabled}]"
-    v-on="$listeners"
+    @update:model-value="$emit('update:modelValue', $event)"
   />
 </template>
 
