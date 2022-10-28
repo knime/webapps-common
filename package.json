@@ -10,42 +10,46 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
-    "audit": "check-audit --production --json > target/audit.json || true",
-    "lint": "run-p lint:*",
-    "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "lint:json": "eslint . --ext .json --fix",
-    "lint:css": "stylelint '**/*.{css,vue}' --fix",
+    "lint": "run-p 'lint:* -- --fix'",
+    "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json",
+    "lint:css": "stylelint '**/*.{css,vue}'",
+    "ci:lint": "run-p lint:*",
+    "audit": "npm audit --omit dev",
     "test:unit": "TZ='Europe/Berlin' jest",
     "coverage": "TZ='Europe/Berlin' jest --coverage",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
-    "@fontsource/roboto": "4.x",
-    "@fontsource/roboto-mono": "4.x",
-    "@popperjs/core": "^2.11.6",
-    "consola": "^2.15.3",
+    "@fontsource/roboto": "4.5.8",
+    "@fontsource/roboto-mono": "4.5.8",
+    "@popperjs/core": "2.11.6",
+    "consola": "2.15.3",
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0",
-    "focus-trap": "^6.9.4",
-    "focus-trap-vue": "^3.3.1",
-    "modern-normalize": "^1.1.0",
-    "v-calendar": "^3.0.0-alpha.8",
-    "vue3-click-away": "^1.2.4"
+    "focus-trap": "6.9.4",
+    "focus-trap-vue": "3.3.1",
+    "modern-normalize": "1.1.0",
+    "v-calendar": "3.0.0-alpha.8",
+    "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
     "@knime/eslint-config": "file:lint",
-    "eslint": "8.23.0",
-    "npm-run-all": "^4.1.5",
-    "postcss-preset-env": "7.x",
-    "stylelint": "^14.11.0",
-    "typescript": "4.5.4",
-    "vue": "^3.2.39"
+    "@vue/tsconfig": "0.1.3",
+    "eslint": "8.25.0",
+    "npm-run-all": "4.1.5",
+    "postcss-import": "15.0.0",
+    "postcss-preset-env": "7.8.2",
+    "postcss-url": "10.1.3",
+    "stylelint": "14.14.0",
+    "typescript": "4.8.4",
+    "vue": "3.2.41",
+    "vue-tsc": "1.0.8"
   },
   "engines": {
     "node": "18.x"
   },
   "volta": {
-    "node": "18.7.0"
+    "node": "18.11.0"
   }
 }

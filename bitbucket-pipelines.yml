@@ -1,4 +1,4 @@
-image: node:18.7.0
+image: node:18.11.0
 
 definitions:
   steps:
@@ -8,7 +8,7 @@ definitions:
           - node
         script:
           - npm ci
-          - npm run lint
+          - npm run ci:lint
           - npm run coverage -- --ci
           - npm run audit
 

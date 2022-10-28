@@ -35,7 +35,9 @@ export default {
     >
       <div class="contents-side-drawer">
         <h4>something here</h4>
-        <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa sint alias.</p>
+        <p>And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo nostrum repellat voluptas,
+          nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt exercitationem aut sapiente quas culpa
+          sint alias.</p>
         <Button
           with-border
           @click="isExpanded = false"

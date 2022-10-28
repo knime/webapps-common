@@ -44,7 +44,7 @@ export default {
             consola.trace(`Collapser: setting height to 0px to trigger collapsing`);
             el.style.height = 0;
         },
-        onTrigger(e) {
+        onTrigger() {
             this.isExpanded = !this.isExpanded;
         }
     }
