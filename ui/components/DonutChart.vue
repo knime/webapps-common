@@ -1,7 +1,5 @@
 <script>
-
 export default {
-
     props: {
         /** The value of the wedge to be displayed, can exceed the maximum value */
         value: {
@@ -108,7 +106,6 @@ export default {
         }
     }
 };
-
 </script>
 
 <template>
@@ -245,5 +242,4 @@ svg {
   width: 100%;
   text-align: center;
 }
-
 </style>

@@ -1,8 +1,8 @@
 <script>
 
 import CodeExample from './demo/CodeExample.vue';
-import DonutChart from '../../ui/components/DonutChart.vue';
-import code from '!!raw-loader!../../ui/components/DonutChart';
+import DonutChart from 'webapps-common/ui/components/DonutChart.vue';
+import code from 'webapps-common/ui/components/DonutChart.vue?raw';
 
 const codeExample = `<DonutChart
   :value="3"
@@ -37,7 +37,7 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Donut Chart</h2>
+          <h2>DonutChart</h2>
           <p>
             Displays a donut chart.
 
