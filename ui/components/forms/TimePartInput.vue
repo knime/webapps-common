@@ -12,7 +12,6 @@ const DEFAULT_STEP_SIZE_INTEGER = 1;
  * Some special features like:
  *  - @bounds event with detection of min/max violations and handling by parent.
  *  - Limit input to number of chars that max input has.
- *  - Mousewheel supports bounds (scroll over min/max).
  *  - Format to fixed length with leading zeros.
  */
 export default {
@@ -289,13 +288,6 @@ export default {
         },
         toggleHover() {
             this.hovered = !this.hovered;
-        },
-        handleWheel(e) {
-            if (e.deltaY > 0) {
-                this.changeValue(this.stepSize * -1);
-            } else if (e.deltaY < 0) {
-                this.changeValue(this.stepSize);
-            }
         }
     }
 };
@@ -317,7 +309,6 @@ export default {
       @blur="onBlur"
       @mouseenter="toggleHover"
       @mouseleave="toggleHover"
-      @wheel.prevent="handleWheel"
     >
     <span
       v-if="!isValid"
