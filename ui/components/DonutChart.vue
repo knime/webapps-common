@@ -102,6 +102,9 @@ export default {
             let maxValueExceedsLarge = Number.isFinite(this.maxValue) && this.maxValue > this.regularLabelMaxValue;
             let size = valueExceedsLarge || maxValueExceedsLarge ? this.smallLabelFontSize : this.regularLabelFontSize;
             return `font-size: ${size}px; line-height: ${size}px;`;
+        },
+        disabled() {
+            return !Number.isFinite(this.maxValue);
         }
     }
 };
@@ -114,6 +117,31 @@ export default {
     :style="containerStyle"
   >
     <svg
+      v-if="disabled"
+      :height="diameter"
+      :width="diameter"
+      :viewBox="viewBox"
+      class="donut-chart"
+    >
+      <circle
+        class="disabled-circle"
+        :cx="radius"
+        :cy="radius"
+        :r="radius - 0.5"
+        stroke-width="1"
+        fill="transparent"
+      />
+      <circle
+        class="disabled-inner-circle"
+        :cx="radius"
+        :cy="radius"
+        :r="innerRadius + 0.5"
+        stroke-width="1"
+        fill="transparent"
+      />
+    </svg>
+    <svg
+      v-else
       :height="diameter"
       :width="diameter"
       :viewBox="viewBox"
@@ -139,6 +167,7 @@ export default {
         :transform="transformWedge"
       />
     </svg>
+
     <div class="labelContainer">
       <div
         v-if="displayValues"
@@ -167,6 +196,14 @@ export default {
 
   & .value-wedge {
     stroke: var(--theme-donut-chart-value-color);
+  }
+
+  & .disabled-circle {
+    stroke: var(--theme-donut-chart-disabled-color);
+  }
+
+  & .disabled-inner-circle {
+    stroke: var(--theme-donut-chart-disabled-color);
   }
 }
 
