@@ -10,7 +10,10 @@ export default defineConfig({
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
             '@@': fileURLToPath(new URL('.', import.meta.url))
-        }
+        },
+        dedupe: [
+            'vue' // needed for v-calendar to work
+        ]
     },
     envPrefix: 'KNIME_',
     server: {

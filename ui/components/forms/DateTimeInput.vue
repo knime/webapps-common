@@ -14,7 +14,7 @@ import TimePartInput from './TimePartInput.vue';
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented
  * with multiple TimePartInputs for hour, minute etc.
- * Uses DatePicker (<v-date-picker>) from v-calendar. See: https://vcalendar.io/
+ * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
 export default {
     compatConfig: {
@@ -24,10 +24,7 @@ export default {
     components: {
         CalendarIcon,
         TimePartInput,
-        // eslint-disable-next-line import/extensions
-        // DatePicker: () => import('v-calendar/lib/components/date-picker.umd') // needed in order for DatePicker to work
         DatePicker
-
     },
     props: {
         /**
@@ -313,6 +310,7 @@ export default {
         <DatePicker
           ref="datePicker"
           :model-value="localValue"
+          :is-required="true"
           :is-dark="false"
           color="masala"
           :popover="{ placement: 'bottom', visibility: 'click'}"
@@ -408,6 +406,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import "v-calendar/dist/style.css";
+
 .date-time-input {
   display: flex;
   width: auto;
@@ -588,4 +588,3 @@ export default {
   }
 }
 </style>
-
