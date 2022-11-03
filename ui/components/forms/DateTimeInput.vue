@@ -405,9 +405,11 @@ export default {
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style lang="postcss">
 @import "v-calendar/dist/style.css";
+</style>
 
+<style lang="postcss" scoped>
 .date-time-input {
   display: flex;
   width: auto;
