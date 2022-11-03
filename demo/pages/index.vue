@@ -226,7 +226,11 @@ export default {
     watch: {
         searchQuery(newSearchQuery, oldSearchQuery) {
             if (newSearchQuery !== oldSearchQuery) {
-                this.$router.replace({ path: `/?q=${encodeURIComponent(this.searchQuery)}` });
+                const query = {};
+                if (newSearchQuery) {
+                    query.q = this.searchQuery;
+                }
+                this.$router.replace({ query });
             }
         }
     },
@@ -236,7 +240,7 @@ export default {
 
     mounted() {
         if (this.$route.query.q) {
-            this.searchQuery = decodeURIComponent(this.$route.query.q);
+            this.searchQuery = this.$route.query.q;
         }
     }
 };
