@@ -592,9 +592,9 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.findAll(SearchBar).length).toBe(0);
-            expect(wrapper.findAll('div.search-wrapper label.search').length).toBe(0);
-            expect(wrapper.findAll('div.search-wrapper input[type=text].with-icon').length).toBe(0);
+            expect(wrapper.find(SearchBar).exists()).toBe(false);
+            expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
+            expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
         });
 
         it('can render the search bar if wanted', () => {
@@ -611,9 +611,9 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.findAll(SearchBar).length).toBe(1);
-            expect(wrapper.findAll('div.search-wrapper label').length).toBe(1);
-            expect(wrapper.findAll('div.search-wrapper label').at(0).text()).toBe('Filter entries');
+            expect(wrapper.find(SearchBar).exists()).toBe(true);
+            expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
+            expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
         });
 
         it('can include initial search term', () => {
