@@ -15,6 +15,14 @@ export default {
         LensIcon
     },
     props: {
+        id: {
+            type: String,
+            default: null
+        },
+        name: {
+            type: String,
+            default: null
+        },
         value: {
             type: String,
             default: ''
@@ -56,11 +64,14 @@ export default {
       <LensIcon />
     </div>
     <input
+      :id="id"
       ref="searchInput"
+      :name="name"
       :value="value"
       :placeholder="placeholder"
       :autofocus="autofocus"
       :disabled="disabled"
+      autocomplete="off"
       role="searchbox"
       @input="$emit('input', $event.target.value)"
     >

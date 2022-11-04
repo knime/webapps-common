@@ -285,6 +285,7 @@ export default {
     >
       <SearchBar
         v-if="showSearch"
+        :id="labelForId"
         ref="search"
         :size="listSize"
         :placeholder="searchPlaceholder"
