@@ -66,7 +66,6 @@ export default {
     >
     <FunctionButton
       class="clear-search"
-      data-test-clear-search
       @click="clearSearch"
     >
       <CloseIcon />
