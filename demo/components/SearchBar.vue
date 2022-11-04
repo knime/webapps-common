@@ -47,7 +47,7 @@ export default {
           <SearchBar
             v-model="inputValue"
             label="Search things"
-            placeholder="Pattern"
+            placeholder="Placeholder"
           />
           <SearchBar
             v-model="inputValue2"
@@ -62,7 +62,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show InputField.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show SearchBar.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>
