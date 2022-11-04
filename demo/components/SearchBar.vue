@@ -8,7 +8,11 @@ const codeExample = `<SearchBar
   label="Search things"
   placeholder="Pattern"
 />
-<SearchBar />`;
+<SearchBar />
+<SearchBar
+  value="disabled: no search possible here"
+  disabled
+/>`;
 
 export default {
     components: {
@@ -51,6 +55,10 @@ export default {
           />
           <SearchBar
             v-model="inputValue2"
+          />
+          <SearchBar
+            value="disabled: no search possible here"
+            disabled
           />
         </div>
         <div class="grid-item-6">
