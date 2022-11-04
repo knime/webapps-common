@@ -131,7 +131,7 @@ export default {
             let filtered = {};
             for (let [category, componentByName] of Object.entries(this.demoComponents)) {
                 for (let [name, component] of Object.entries(componentByName)) {
-                    if (name.toLowerCase().includes(this.searchQuery.trim().toLowerCase())) {
+                    if (name.toLowerCase().includes(this.searchQuery.toLowerCase())) {
                         if (!filtered.hasOwnProperty(category)) {
                             filtered[category] = {};
                         }
@@ -142,7 +142,7 @@ export default {
             return filtered;
         },
         isSearchActive() {
-            return this.searchQuery.trim() !== '';
+            return this.searchQuery !== '';
         },
         possibleTabValues() {
             return [{
@@ -187,13 +187,11 @@ export default {
             }
         }
     },
-    created() {
+    async created() {
         this.demoComponents = demoComponents;
-    },
-
-    mounted() {
+        await this.$router.isReady();
         if (this.$route.query.q) {
-            this.searchQuery = this.$route.query.q;
+            this.searchQuery = this.$route.query.q.trim();
         }
     }
 };
@@ -225,7 +223,7 @@ export default {
               :possible-values="possibleTabValues"
             />
             <SearchField
-              v-model="searchQuery"
+              v-model.trim="searchQuery"
               autofocus
               type="search"
               placeholder="Filter by component name…"

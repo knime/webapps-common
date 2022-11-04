@@ -20,6 +20,7 @@
     "gh-pages": "3.2.3",
     "prismjs": "1.29.0",
     "vue": "3.2.41",
+    "vue-router": "4.1.6",
     "webapps-common": "file:.."
   },
   "devDependencies": {
