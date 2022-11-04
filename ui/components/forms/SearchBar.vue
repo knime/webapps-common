@@ -61,6 +61,7 @@ export default {
       :placeholder="placeholder"
       :autofocus="autofocus"
       :disabled="disabled"
+      role="searchbox"
       @input="$emit('input', $event.target.value)"
     >
     <FunctionButton
