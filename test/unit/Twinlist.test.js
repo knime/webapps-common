@@ -633,18 +633,18 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             let right = boxes.at(1);
 
-            expect(left.vm.$props.possibleValues.length).toBe(1);
-            expect(left.vm.$props.possibleValues[0].text).toStrictEqual('Text 3');
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
 
-            expect(right.vm.$props.possibleValues.length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
 
             // Remove search term
             let search = wrapper.find('input');
             search.setValue('');
 
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
-            expect(right.vm.$props.possibleValues[0].text).toStrictEqual('Text 2');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
         });
 
         it('can handle basic search requests', () => {
@@ -663,43 +663,43 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             let right = boxes.at(1);
 
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
-            expect(right.vm.$props.possibleValues[0].text).toStrictEqual('Text 2');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
 
             let search = wrapper.find('input');
 
             search.setValue('noresult');
-            expect(left.vm.$props.possibleValues.length).toBe(0);
-            expect(right.vm.$props.possibleValues.length).toBe(0);
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
 
             search.setValue('');
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
 
             search.setValue('text');
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
 
             search.setValue(' text');
-            expect(left.vm.$props.possibleValues.length).toBe(0);
-            expect(right.vm.$props.possibleValues.length).toBe(0);
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
 
             search.setValue('1');
-            expect(left.vm.$props.possibleValues.length).toBe(1);
-            expect(right.vm.$props.possibleValues.length).toBe(0);
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues').length).toBe(0);
 
             search.setValue('2');
-            expect(left.vm.$props.possibleValues.length).toBe(0);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(1);
 
             search.setValue(' ');
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
 
             search.setValue('TEXT');
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
         });
 
         it('moves only all filtered values to right on all button click', async () => {
@@ -722,13 +722,13 @@ describe('Twinlist.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
 
-            expect(left.vm.$props.possibleValues.length).toBe(0);
+            expect(left.props('possibleValues').length).toBe(0);
 
             let search = wrapper.find('input');
 
             search.setValue('');
-            expect(left.vm.$props.possibleValues.length).toBe(2);
-            expect(right.vm.$props.possibleValues.length).toBe(1);
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
         });
     });
 });
