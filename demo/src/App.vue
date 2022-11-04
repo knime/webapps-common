@@ -176,8 +176,25 @@ export default {
             }];
         }
     },
+    watch: {
+        searchQuery(newSearchQuery, oldSearchQuery) {
+            if (newSearchQuery !== oldSearchQuery) {
+                const query = {};
+                if (newSearchQuery) {
+                    query.q = this.searchQuery;
+                }
+                this.$router.replace({ query });
+            }
+        }
+    },
     created() {
         this.demoComponents = demoComponents;
+    },
+
+    mounted() {
+        if (this.$route.query.q) {
+            this.searchQuery = this.$route.query.q;
+        }
     }
 };
 </script>
@@ -214,7 +231,9 @@ export default {
               placeholder="Filter by component name…"
               class="search"
             >
-              <template #icon><SearchIcon /></template>
+              <template #icon>
+                <SearchIcon />
+              </template>
             </SearchField>
           </div>
         </div>
