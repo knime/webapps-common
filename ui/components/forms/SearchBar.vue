@@ -86,10 +86,6 @@ export default {
 
 <style lang="postcss" scoped>
 .search-bar {
-  margin-bottom: 10px;
-}
-
-.search-bar {
   display: flex;
   align-items: center;
   position: relative;
@@ -97,6 +93,7 @@ export default {
   background-color: var(--knime-white);
   font-size: 13px;
   font-weight: 300;
+  margin-bottom: 10px;
   height: 40px;
 
   & .lens-icon {
