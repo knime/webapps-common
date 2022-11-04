@@ -123,13 +123,13 @@ export default {
                 .map(possibleValue => possibleValue.id);
         },
         leftItems() {
-            const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
+            const invalidItems = [...this.invalidPossibleValueIds].map(valueId => this.generateInvalidItem(valueId));
             return [...this.possibleValues, ...invalidItems]
-                .filter(x => !this.hiddenValueIds.includes(x.id) && !this.chosenValues.includes(x.id));
+                .filter(value => !this.hiddenValueIds.includes(value.id) && !this.chosenValues.includes(value.id));
         },
         rightItems() {
-            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x))
-                .filter(x => !this.hiddenValueIds.includes(x.id));
+            return this.chosenValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
+                .filter(value => !this.hiddenValueIds.includes(value.id));
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
