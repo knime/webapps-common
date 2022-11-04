@@ -2,7 +2,6 @@
 import CloseIcon from '../../assets/img/icons/close.svg';
 import LensIcon from '../../assets/img/icons/lens.svg';
 
-import Label from './Label.vue';
 import FunctionButton from '../FunctionButton.vue';
 
 /**
@@ -11,7 +10,6 @@ import FunctionButton from '../FunctionButton.vue';
  */
 export default {
     components: {
-        Label,
         FunctionButton,
         CloseIcon,
         LensIcon
@@ -25,11 +23,6 @@ export default {
             type: String,
             // A pseudo-placeholder to allow hiding the clear-button without any input
             default: ' '
-        },
-        label: {
-            type: String,
-            required: false,
-            default: ''
         },
         autofocus: {
             default: false,
@@ -55,41 +48,33 @@ export default {
 </script>
 
 <template>
-  <Label
-    v-slot="{ labelForId }"
-    :text="label"
-    class="search-wrapper"
-    compact
+  <div
+    id="search-bar"
+    class="search-bar"
   >
-    <div
-      id="search-bar"
-      class="search-bar"
-    >
-      <div class="lens-icon">
-        <LensIcon />
-      </div>
-      <input
-        :id="labelForId"
-        ref="searchInput"
-        :value="value"
-        :placeholder="placeholder"
-        :autofocus="autofocus"
-        :disabled="disabled"
-        @input="$emit('input', $event.target.value)"
-      >
-      <FunctionButton
-        class="clear-search"
-        data-test-clear-search
-        @click="clearSearch"
-      >
-        <CloseIcon />
-      </FunctionButton>
+    <div class="lens-icon">
+      <LensIcon />
     </div>
-  </Label>
+    <input
+      ref="searchInput"
+      :value="value"
+      :placeholder="placeholder"
+      :autofocus="autofocus"
+      :disabled="disabled"
+      @input="$emit('input', $event.target.value)"
+    >
+    <FunctionButton
+      class="clear-search"
+      data-test-clear-search
+      @click="clearSearch"
+    >
+      <CloseIcon />
+    </FunctionButton>
+  </div>
 </template>
 
 <style lang="postcss" scoped>
-.search-wrapper {
+.search-bar {
   margin-bottom: 10px;
 }
 

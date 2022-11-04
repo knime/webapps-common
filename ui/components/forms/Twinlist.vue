@@ -1,4 +1,5 @@
 <script>
+import Label from './Label.vue';
 import SearchBar from '../forms/SearchBar.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
@@ -16,6 +17,7 @@ export default {
         ArrowPrevDoubleIcon,
         ArrowPrevIcon,
         MultiselectListBox,
+        Label,
         SearchBar
     },
     props: {
@@ -275,17 +277,24 @@ export default {
 
 <template>
   <div class="twinlist">
-    <SearchBar
-      v-if="showSearch"
-      ref="search"
-      :size="listSize"
-      :placeholder="searchPlaceholder"
-      :value="searchTerm"
-      :label="labelSearch"
-      :disabled="disabled"
-      class="search"
-      @input="onSearchInput"
-    />
+    <Label
+      v-slot="{ labelForId }"
+      :text="labelSearch"
+      class="search-wrapper"
+      compact
+    >
+      <SearchBar
+        v-if="showSearch"
+        ref="search"
+        :size="listSize"
+        :placeholder="searchPlaceholder"
+        :value="searchTerm"
+        :label="labelSearch"
+        :disabled="disabled"
+        class="search"
+        @input="onSearchInput"
+      />
+    </Label>
     <div class="header">
       <div class="title">{{ labelLeft }}</div>
       <div class="space" />
