@@ -44,9 +44,8 @@ export default {
         clearSearch() {
             this.$emit('clear');
             this.$emit('input', '');
-            this.$refs.searchInput.focus();
+            this.focus();
         },
-        // publicly accessible
         focus() {
             this.$refs.searchInput.focus();
         }
