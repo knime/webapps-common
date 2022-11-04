@@ -164,5 +164,9 @@ input {
   &:placeholder-shown + button {
     visibility: hidden;
   }
+
+  &:disabled + button {
+    visibility: hidden;
+  }
 }
 </style>
