@@ -25,7 +25,7 @@ const codeExample = `<Twinlist
   label-left="Select stuff here"
   label-right="The selected stuff"
   label-search="Search items"
-  search-placeholder="Pattern"
+  search-placeholder="Placeholder"
   initial-search-term="bar"
   :possible-values="[{
     id: 'foo',
@@ -195,7 +195,7 @@ export default {
             label-left="Select from the 7 visible items (size)"
             label-right="The selected stuff"
             label-search="Search items"
-            search-placeholder="Pattern"
+            search-placeholder="Placeholder"
             initial-search-term="bar"
             :possible-values="[{
               id: 'foo',
