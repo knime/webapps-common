@@ -103,6 +103,7 @@ export default {
     pointer-events: none;
     --icon-size: 18;
 
+    /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
     & svg {
       vertical-align: top;
       stroke: var(--theme-button-function-foreground-color);
