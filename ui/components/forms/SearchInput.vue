@@ -91,19 +91,18 @@ export default {
   & .clear-search {
     position: absolute;
     --icon-size: 12;
-    margin-right: calc(var(--icon-size) / 2 * 1px);
-    /* Move clear-all button up 6px to be centered with FunctionButton in use. */
-    top: -2px;
 
-    /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+    margin-right: calc(var(--icon-size) / 2 * 1px);
+    top: -2px; /* Move clear-all button up 6px to be centered with FunctionButton in use. */
+
     & >>> svg {
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
-      stroke-width: calc(32px / var(--icon-size));
+      stroke-width: calc(32px / var(--icon-size)); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
     }
   }
 
-  &:has( input:placeholder-shown) .clear-search {
+  &:has(input:placeholder-shown) .clear-search {
     visibility: hidden;
   }
 }

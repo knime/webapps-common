@@ -204,8 +204,7 @@ input {
   & svg {
     width: 18px;
     height: 18px;
-    /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-    stroke-width: calc(32px / 18);
+    stroke-width: calc(32px / 18); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
     stroke: var(--knime-masala);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
   }
