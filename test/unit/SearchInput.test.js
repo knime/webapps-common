@@ -5,6 +5,7 @@ import LensIcon from '~/ui/assets/img/icons/lens.svg';
 import FunctionButton from '~/ui/components/FunctionButton.vue';
 
 import SearchInput from '~/ui/components/forms/SearchInput.vue';
+import InputField from '~/ui/components/forms/InputField.vue';
 
 describe('SearchInput', () => {
     let doShallowMount, wrapper, propsData;
@@ -22,7 +23,7 @@ describe('SearchInput', () => {
 
         expect(wrapper.find(LensIcon).exists()).toBe(true);
         expect(wrapper.find(FunctionButton).find(CloseIcon).exists()).toBe(true);
-        expect(wrapper.find('input').exists()).toBe(true);
+        expect(wrapper.find(SearchInput).exists()).toBe(true);
     });
 
     it('sets placeholder', () => {

@@ -44,7 +44,29 @@ describe('InputField.vue', () => {
             }
         });
         expect(wrapper.find('input').classes()).toContain('with-icon');
-        expect(wrapper.find('svg').exists()).toBeTruthy();
+        expect(wrapper.findAll('svg').length).toBe(1);
+    });
+
+    it('renders with right-aligned icon slot', () => {
+        const wrapper = mount(InputField, {
+            slots: {
+                iconRight: '<svg />'
+            }
+        });
+        expect(wrapper.find('input').classes()).toContain('with-icon-right');
+        expect(wrapper.findAll('svg').length).toBe(1);
+    });
+
+    it('renders with both left- and  right-aligned icon slot', () => {
+        const wrapper = mount(InputField, {
+            slots: {
+                icon: '<svg />',
+                iconRight: '<svg />'
+            }
+        });
+        expect(wrapper.find('input').classes()).toContain('with-icon');
+        expect(wrapper.find('input').classes()).toContain('with-icon-right');
+        expect(wrapper.findAll('svg').length).toBe(2);
     });
 
     it('renders custom type', () => {
