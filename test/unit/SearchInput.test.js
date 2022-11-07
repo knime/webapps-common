@@ -24,6 +24,7 @@ describe('SearchInput', () => {
         expect(wrapper.find(LensIcon).exists()).toBe(true);
         expect(wrapper.find(FunctionButton).find(CloseIcon).exists()).toBe(true);
         expect(wrapper.find(SearchInput).exists()).toBe(true);
+        expect(wrapper.find(InputField).exists()).toBe(true);
     });
 
     it('sets placeholder', () => {
