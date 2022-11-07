@@ -69,7 +69,7 @@ export default {
     class="search-input"
     autocomplete="off"
     role="searchbox"
-    @input="$emit('input', value)"
+    @input="$emit('input', $event)"
   >
     <template #icon>
       <LensIcon />
@@ -98,7 +98,9 @@ export default {
     & >>> svg {
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
-      stroke-width: calc(32px / var(--icon-size)); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+
+      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke-width: calc(32px / var(--icon-size));
     }
   }
 
