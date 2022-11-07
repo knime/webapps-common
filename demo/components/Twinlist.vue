@@ -53,6 +53,48 @@ export default {
     computed: {
         code() {
             return code;
+        },
+        demoValues() {
+            return [{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'baz2',
+              text: 'Baz 2'
+            }, {
+              id: 'baz3',
+              text: 'Baz 3'
+            }, {
+              id: 'baz4',
+              text: 'Baz 4'
+            }, {
+              id: 'baz5',
+              text: 'Baz 5'
+            }, {
+              id: 'baz6',
+              text: 'Baz 6'
+            }, {
+              id: 'baz7',
+              text: 'Baz 7'
+            }, {
+              id: 'baz8',
+              text: 'Baz 8'
+            }, {
+              id: 'baz9',
+              text: 'Baz 9'
+            }, {
+              id: 'baz10',
+              text: 'Baz 10'
+            }, {
+              id: 'baz11',
+              text: 'Baz 11'
+            }];
         }
     }
 };
@@ -79,46 +121,7 @@ export default {
             :size="7"
             label-left="Select from the 7 visible items (size)"
             label-right="The selected stuff"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
-            }, {
-              id: 'baz2',
-              text: 'Baz 2'
-            }, {
-              id: 'baz3',
-              text: 'Baz 3'
-            }, {
-              id: 'baz4',
-              text: 'Baz 4'
-            }, {
-              id: 'baz5',
-              text: 'Baz 5'
-            }, {
-              id: 'baz6',
-              text: 'Baz 6'
-            }, {
-              id: 'baz7',
-              text: 'Baz 7'
-            }, {
-              id: 'baz8',
-              text: 'Baz 8'
-            }, {
-              id: 'baz9',
-              text: 'Baz 9'
-            }, {
-              id: 'baz10',
-              text: 'Baz 10'
-            }, {
-              id: 'baz11',
-              text: 'Baz 11'
-            }]"
+            :possible-values="demoValues"
           />
         </div>
         <div class="grid-item-6">
@@ -133,46 +136,7 @@ export default {
             :size="7"
             label-left="Select from the 7 visible items (size)"
             label-right="The selected stuff"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
-            }, {
-              id: 'baz2',
-              text: 'Baz 2'
-            }, {
-              id: 'baz3',
-              text: 'Baz 3'
-            }, {
-              id: 'baz4',
-              text: 'Baz 4'
-            }, {
-              id: 'baz5',
-              text: 'Baz 5'
-            }, {
-              id: 'baz6',
-              text: 'Baz 6'
-            }, {
-              id: 'baz7',
-              text: 'Baz 7'
-            }, {
-              id: 'baz8',
-              text: 'Baz 8'
-            }, {
-              id: 'baz9',
-              text: 'Baz 9'
-            }, {
-              id: 'baz10',
-              text: 'Baz 10'
-            }, {
-              id: 'baz11',
-              text: 'Baz 11'
-            }]"
+            :possible-values="demoValues"
             disabled
           />
         </div>
@@ -197,46 +161,7 @@ export default {
             label-search="Search items"
             search-placeholder="Placeholder"
             initial-search-term="bar"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
-            }, {
-              id: 'baz2',
-              text: 'Baz 2'
-            }, {
-              id: 'baz3',
-              text: 'Baz 3'
-            }, {
-              id: 'baz4',
-              text: 'Baz 4'
-            }, {
-              id: 'baz5',
-              text: 'Baz 5'
-            }, {
-              id: 'baz6',
-              text: 'Baz 6'
-            }, {
-              id: 'baz7',
-              text: 'Baz 7'
-            }, {
-              id: 'baz8',
-              text: 'Baz 8'
-            }, {
-              id: 'baz9',
-              text: 'Baz 9'
-            }, {
-              id: 'baz10',
-              text: 'Baz 10'
-            }, {
-              id: 'baz11',
-              text: 'Baz 11'
-            }]"
+            :possible-values="demoValues"
           />
         </div>
         <div class="grid-item-6">
