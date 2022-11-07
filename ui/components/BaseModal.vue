@@ -30,7 +30,8 @@ export default {
             /**
              * 'showContent' is used to animate the modal content separately
              */
-            showContent: false
+            showContent: false,
+            focusTrapActive: false
         };
     },
     watch: {
@@ -43,6 +44,9 @@ export default {
                 window.removeEventListener('keyup', this.onGlobalKeyUp);
             }
         }
+    },
+    mounted() {
+        this.focusTrapActive = this.active;
     },
     methods: {
         onGlobalKeyUp(e) {
@@ -80,7 +84,7 @@ export default {
     @leave="showContent = false"
   >
     <FocusTrap
-      :active="active"
+      :active="focusTrapActive"
       class="container"
     >
       <div
