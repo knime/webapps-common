@@ -50,10 +50,19 @@ export default {
         }
     },
     computed: {
+        hasLeftIcon() {
+            return this.$slots.icon && this.$slots.icon.length;
+        },
+        hasRightIcon() {
+            return this.$slots.iconRight && this.$slots.iconRight.length;
+        },
         inputClassList() {
             let classes = this.inputClasses;
-            if (this.$slots.icon && this.$slots.icon.length) {
+            if (this.hasLeftIcon) {
                 classes += ' with-icon';
+            }
+            if (this.hasRightIcon) {
+                classes += ' with-icon-right';
             }
             if (!this.isValid) {
                 classes += ' invalid';
@@ -95,7 +104,18 @@ export default {
 
 <template>
   <div>
-    <slot name="icon" />
+    <div
+      v-if="hasLeftIcon"
+      class="icon"
+    >
+      <slot name="icon" />
+    </div>
+    <div
+      v-if="hasRightIcon"
+      class="icon icon-right"
+    >
+      <slot name="iconRight" />
+    </div>
     <input
       :id="id"
       ref="input"
@@ -166,16 +186,32 @@ input {
   &.with-icon {
     padding: 10px 10px 10px 38px;
   }
+
+  &.with-icon-right {
+    padding: 10px 38px 10px 10px;
+  }
+
+  &.with-icon.with-icon-right {
+    padding: 10px 38px 10px 38px;
+  }
 }
 
-svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: calc(32px / 18);
-  stroke: var(--knime-masala);
+.icon {
   position: absolute;
   left: 12px;
   top: 10px;
-  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
+
+  & svg {
+    width: 18px;
+    height: 18px;
+    /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+    stroke-width: calc(32px / 18);
+    stroke: var(--knime-masala);
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
+  }
+}
+
+.icon-right {
+  left: calc(100% - 12px - 18px);
 }
 </style>

@@ -2,6 +2,7 @@
 import CloseIcon from '../../assets/img/icons/close.svg';
 import LensIcon from '../../assets/img/icons/lens.svg';
 
+import InputField from './InputField.vue';
 import FunctionButton from '../FunctionButton.vue';
 
 /**
@@ -10,6 +11,7 @@ import FunctionButton from '../FunctionButton.vue';
  */
 export default {
     components: {
+        InputField,
         FunctionButton,
         CloseIcon,
         LensIcon
@@ -56,68 +58,44 @@ export default {
 </script>
 
 <template>
-  <div
-    id="search-bar"
-    class="search-bar"
+  <InputField
+    :id="id"
+    ref="searchInput"
+    :name="name"
+    :value="value"
+    :placeholder="placeholder"
+    :autofocus="autofocus"
+    :disabled="disabled"
+    class="search-input"
+    autocomplete="off"
+    role="searchbox"
+    @input="$emit('input', value)"
   >
-    <div class="lens-icon">
+    <template #icon>
       <LensIcon />
-    </div>
-    <input
-      :id="id"
-      ref="searchInput"
-      :name="name"
-      :value="value"
-      :placeholder="placeholder"
-      :autofocus="autofocus"
-      :disabled="disabled"
-      autocomplete="off"
-      role="searchbox"
-      @input="$emit('input', $event.target.value)"
-    >
-    <FunctionButton
-      class="clear-search"
-      @click="clearSearch"
-    >
-      <CloseIcon />
-    </FunctionButton>
-  </div>
+    </template>
+    <template #iconRight>
+      <FunctionButton
+        v-show="!disabled"
+        class="clear-search"
+        @click="clearSearch"
+      >
+        <CloseIcon />
+      </FunctionButton>
+    </template>
+  </InputField>
 </template>
 
 <style lang="postcss" scoped>
-.search-bar {
-  display: flex;
-  align-items: center;
-  position: relative;
-  border: 1px solid var(--knime-stone-gray);
-  background-color: var(--knime-white);
-  font-size: 13px;
-  font-weight: 300;
-  margin-bottom: 10px;
-  height: 40px;
-
-  & .lens-icon {
-    display: flex;
-    padding: 6px;
-    margin-left: 3px;
-    pointer-events: none;
-    --icon-size: 18;
+.search-input {
+  & .clear-search {
+    position: absolute;
+    --icon-size: 12;
+    margin-right: calc(var(--icon-size) / 2 * 1px);
+    /* Move clear-all button up 6px to be centered with FunctionButton in use. */
+    top: -2px;
 
     /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-    & svg {
-      vertical-align: top;
-      stroke: var(--theme-button-function-foreground-color);
-      width: calc(var(--icon-size) * 1px);
-      height: calc(var(--icon-size) * 1px);
-      stroke-width: calc(32px / var(--icon-size));
-    }
-  }
-
-  & .clear-search {
-    --icon-size: 12;
-
-    margin-right: calc(var(--icon-size) / 2 * 1px);
-
     & >>> svg {
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
@@ -125,42 +103,9 @@ export default {
     }
   }
 
-  & .search-wrapper {
-    margin-bottom: 10px;
-  }
-
-  &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-input-field-background-color-focus);
-  }
-}
-
-input {
-  flex-grow: 1;
-  height: 100%;
-  border: 0;
-  padding-right: 6px;
-  color: var(--knime-masala);
-  background-color: transparent;
-
-  &::placeholder {
-    color: var(--knime-dove-gray);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-  }
-
-  &:focus {
-    outline: none;
-    border-color: var(--knime-masala);
-  }
-
-  &:placeholder-shown + button {
-    visibility: hidden;
-  }
-
-  &:disabled + button {
+  &:has( input:placeholder-shown) .clear-search {
     visibility: hidden;
   }
 }
+
 </style>
