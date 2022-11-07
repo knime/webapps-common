@@ -1,19 +1,19 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
-import SearchBar from '../../ui/components/forms/SearchBar.vue';
-import code from '!!raw-loader!../../ui/components/forms/SearchBar';
+import SearchInput from '../../ui/components/forms/SearchInput.vue';
+import code from '!!raw-loader!../../ui/components/forms/SearchInput';
 
-const codeExample = `<SearchBar
+const codeExample = `<SearchInput
   v-model="inputValue"
   label="Search things"
   placeholder="Pattern"
 />
-<SearchBar />
-<SearchBar
+<SearchInput />
+<SearchInput
   value="disabled: no search possible here"
   disabled
 />
-<SearchBar
+<SearchInput
   v-model="inputValue3"
   placeholder="Placeholder"
   @clear="alert('Search cleared')"
@@ -22,7 +22,7 @@ const codeExample = `<SearchBar
 
 export default {
     components: {
-        SearchBar,
+        SearchInput,
         CodeExample
     },
     data() {
@@ -51,7 +51,7 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>SearchBar</h2>
+          <h2>SearchInput</h2>
           <p>
             Single line string search input with search icon and clear button.
             It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
@@ -60,20 +60,20 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <SearchBar
+          <SearchInput
             v-model="inputValue"
             label="Search things"
             placeholder="Placeholder"
           />
-          <SearchBar
+          <SearchInput
             v-model="inputValue2"
           />
-          <SearchBar
+          <SearchInput
             value="disabled: no search possible here"
             disabled
           />
           The clear-all button emits a "clear" event that can be listend to:
-          <SearchBar
+          <SearchInput
             v-model="inputValue3"
             placeholder="Placeholder"
             @clear="alert('Search cleared')"
@@ -88,7 +88,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show SearchBar.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show SearchInput.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
     </section>

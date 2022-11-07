@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 
-import SearchBar from '~/ui/components/forms/SearchBar.vue';
+import SearchInput from '~/ui/components/forms/SearchInput.vue';
 import Twinlist from '~/ui/components/forms/Twinlist.vue';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
 
@@ -592,7 +592,7 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.find(SearchBar).exists()).toBe(false);
+            expect(wrapper.find(SearchInput).exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
         });
@@ -611,7 +611,7 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.find(SearchBar).exists()).toBe(true);
+            expect(wrapper.find(SearchInput).exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
         });

@@ -1,6 +1,6 @@
 <script>
 import Label from './Label.vue';
-import SearchBar from '../forms/SearchBar.vue';
+import SearchInput from '../forms/SearchInput.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
@@ -18,7 +18,7 @@ export default {
         ArrowPrevIcon,
         MultiselectListBox,
         Label,
-        SearchBar
+        SearchInput
     },
     props: {
         value: {
@@ -284,7 +284,7 @@ export default {
       class="search-wrapper"
       compact
     >
-      <SearchBar
+      <SearchInput
         :id="labelForId"
         ref="search"
         :size="listSize"

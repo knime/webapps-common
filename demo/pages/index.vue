@@ -41,7 +41,7 @@ import RadioButtons from '../components/RadioButtons.vue';
 import SideDrawer from '../components/SideDrawer.vue';
 import ValueSwitch from '../components/ValueSwitch.vue';
 import MenuItems from '../components/MenuItems.vue';
-import SearchBarDemo from '../components/SearchBar.vue';
+import SearchInputDemo from '../components/SearchInput.vue';
 import SubMenu from '../components/SubMenu.vue';
 import TabBarDemo from '../components/TabBar.vue';
 import TagList from '../components/TagList.vue';
@@ -51,7 +51,7 @@ import ToggleSwitch from '../components/ToggleSwitch.vue';
 import Tooltip from '../components/Tooltip.vue';
 import Twinlist from '../components/Twinlist.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
-import SearchBar from '../../ui/components/forms/SearchBar.vue';
+import SearchInput from '../../ui/components/forms/SearchInput.vue';
 
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
@@ -105,7 +105,7 @@ const demoComponents = {
         Fieldset,
         InputField,
         TextArea,
-        SearchBarDemo,
+        SearchInputDemo,
         NumberInput,
         Checkbox,
         Checkboxes,
@@ -157,7 +157,7 @@ const flattenComponents = (componentsByCategory) => {
 // Transform the components into a flat object
 const components = {
     TabBar,
-    SearchBar,
+    SearchInput,
     ...flattenComponents(demoComponents)
 };
 
@@ -265,7 +265,7 @@ export default {
               :value.sync="activeTab"
               :possible-values="possibleTabValues"
             />
-            <SearchBar
+            <SearchInput
               v-model="searchQuery"
               autofocus
               placeholder="Filter by component name…"

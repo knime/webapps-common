@@ -4,16 +4,16 @@ import CloseIcon from '~/ui/assets/img/icons/close.svg';
 import LensIcon from '~/ui/assets/img/icons/lens.svg';
 import FunctionButton from '~/ui/components/FunctionButton.vue';
 
-import SearchBar from '~/ui/components/forms/SearchBar.vue';
+import SearchInput from '~/ui/components/forms/SearchInput.vue';
 
-describe('SearchBar', () => {
+describe('SearchInput', () => {
     let doShallowMount, wrapper, propsData;
 
     beforeEach(() => {
         wrapper = null;
 
         doShallowMount = () => {
-            wrapper = mount(SearchBar, { propsData });
+            wrapper = mount(SearchInput, { propsData });
         };
     });
 
