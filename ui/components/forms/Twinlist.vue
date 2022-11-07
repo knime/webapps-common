@@ -279,12 +279,12 @@ export default {
   <div class="twinlist">
     <Label
       v-slot="{ labelForId }"
+      v-if="showSearch"
       :text="labelSearch"
       class="search-wrapper"
       compact
     >
       <SearchBar
-        v-if="showSearch"
         :id="labelForId"
         ref="search"
         :size="listSize"
