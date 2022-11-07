@@ -12,7 +12,13 @@ const codeExample = `<SearchBar
 <SearchBar
   value="disabled: no search possible here"
   disabled
-/>`;
+/>
+<SearchBar
+  v-model="inputValue3"
+  placeholder="Placeholder"
+  @clear="alert('Search cleared')"
+/>
+`;
 
 export default {
     components: {
@@ -23,13 +29,19 @@ export default {
         return {
             codeExample,
             inputValue: '',
-            inputValue2: ''
+            inputValue2: '',
+            inputValue3: 'Demo'
         };
     },
     computed: {
         code() {
             return code;
         }
+    },
+    methods: {
+      alert(msg) {
+        window.alert(msg);
+      }
     }
 };
 </script>
@@ -59,6 +71,12 @@ export default {
           <SearchBar
             value="disabled: no search possible here"
             disabled
+          />
+          The clear-all button emits a "clear" event that can be listend to:
+          <SearchBar
+            v-model="inputValue3"
+            placeholder="Placeholder"
+            @clear="alert('Search cleared')"
           />
         </div>
         <div class="grid-item-6">
