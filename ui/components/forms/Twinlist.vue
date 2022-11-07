@@ -492,6 +492,10 @@ export default {
       }
     }
   }
+
+  & .search-wrapper {
+    margin-bottom: 10px;
+  }
 }
 
 </style>
