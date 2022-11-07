@@ -56,44 +56,44 @@ export default {
         },
         demoValues() {
             return [{
-              id: 'foo',
-              text: 'Foo'
+                id: 'foo',
+                text: 'Foo'
             }, {
-              id: 'bar',
-              text: 'Bar'
+                id: 'bar',
+                text: 'Bar'
             }, {
-              id: 'baz',
-              text: 'Baz'
+                id: 'baz',
+                text: 'Baz'
             }, {
-              id: 'baz2',
-              text: 'Baz 2'
+                id: 'baz2',
+                text: 'Baz 2'
             }, {
-              id: 'baz3',
-              text: 'Baz 3'
+                id: 'baz3',
+                text: 'Baz 3'
             }, {
-              id: 'baz4',
-              text: 'Baz 4'
+                id: 'baz4',
+                text: 'Baz 4'
             }, {
-              id: 'baz5',
-              text: 'Baz 5'
+                id: 'baz5',
+                text: 'Baz 5'
             }, {
-              id: 'baz6',
-              text: 'Baz 6'
+                id: 'baz6',
+                text: 'Baz 6'
             }, {
-              id: 'baz7',
-              text: 'Baz 7'
+                id: 'baz7',
+                text: 'Baz 7'
             }, {
-              id: 'baz8',
-              text: 'Baz 8'
+                id: 'baz8',
+                text: 'Baz 8'
             }, {
-              id: 'baz9',
-              text: 'Baz 9'
+                id: 'baz9',
+                text: 'Baz 9'
             }, {
-              id: 'baz10',
-              text: 'Baz 10'
+                id: 'baz10',
+                text: 'Baz 10'
             }, {
-              id: 'baz11',
-              text: 'Baz 11'
+                id: 'baz11',
+                text: 'Baz 11'
             }];
         }
     }

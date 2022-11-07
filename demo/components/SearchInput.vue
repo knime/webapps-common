@@ -39,9 +39,9 @@ export default {
         }
     },
     methods: {
-      alert(msg) {
-        window.alert(msg);
-      }
+        alert(msg) {
+            window.alert(msg);
+        }
     }
 };
 </script>
