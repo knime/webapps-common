@@ -32,7 +32,7 @@ export default {
              */
             showContent: false,
             /**
-             * 'focusTrapActive' used to activate the FocusTrap
+             * 'focusTrapActive' is used to activate the FocusTrap.
              * it's false by default until component is mounted
              */
             focusTrapActive: false
@@ -41,18 +41,23 @@ export default {
     watch: {
         // Set and remove global event handlers on modal activation.
         // Only manual activation is supported.
-        active(newVal) {
+        active(newVal, oldVal) {
             if (newVal === true) {
                 window.addEventListener('keyup', this.onGlobalKeyUp);
             } else {
                 window.removeEventListener('keyup', this.onGlobalKeyUp);
             }
+     
+            if (newVal !== oldVal) {
+                // set FocusTrap's active prop on BaseModel's prop change
+                this.focusTrapActive = newVal;
+            }
         }
     },
     mounted() {
         /**
-        *set FocusTrap's active prop on mounted
-        *to ensure that the component is focusable when the focus trap component mounts.
+        * set FocusTrap's active prop on mounted to ensure that the component
+        * is focusable when the focus trap component mounts.
         */
         this.focusTrapActive = this.active;
     },
