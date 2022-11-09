@@ -91,10 +91,10 @@ export default {
   & .clear-search {
     position: absolute;
     --icon-size: 12;
-    pointer-events: auto; /* otherwise, we won't be able to :hover the button */
 
     margin-right: calc(var(--icon-size) / 2 * 1px);
     top: -2px; /* Move clear-all button up 6px to be centered with FunctionButton in use. */
+    pointer-events: auto; /* otherwise, we won't be able to :hover the button */
 
     & >>> svg {
       width: calc(var(--icon-size) * 1px);

@@ -196,7 +196,7 @@ input {
 
 /* This is handled outside of the input element, because hovering inside slots
  * would otherwise not be noticed within the input element. */
-.input-wrapper:hover:not(:focus):not(disabled) input:not(:focus) {
+.input-wrapper:hover:not(:focus):not(:disabled) input:not(:focus) {
   background-color: var(--theme-input-field-background-color-focus);
 }
 
