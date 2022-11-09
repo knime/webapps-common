@@ -31,6 +31,10 @@ export default {
              * 'showContent' is used to animate the modal content separately
              */
             showContent: false,
+            /**
+             * 'focusTrapActive' used to activate the FocusTrap
+             * it's false by default until component is mounted
+             */
             focusTrapActive: false
         };
     },
@@ -46,6 +50,10 @@ export default {
         }
     },
     mounted() {
+        /**
+        *set FocusTrap's active prop on mounted
+        *to ensure that the component is focusable when the focus trap component mounts.
+        */
         this.focusTrapActive = this.active;
     },
     methods: {
