@@ -37,7 +37,31 @@ const codeExample = `<Twinlist
     id: 'baz',
     text: 'Baz'
   }]"
-/>`;
+/>
+<Twinlist
+  v-model="selected"
+  show-search
+  show-search-mode
+  show-case-sensitive-button
+  left-label="Select from the 7 visible items (size)"
+  righ-label="The selected stuff"
+  search-label="Search items"
+  search-mode-label="Search mode"
+  search-placeholder="Placeholder"
+  initial-search-term="^.*a[rz]$"
+  initial-search-mode="regex"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+/>
+`;
 
 export default {
     components: {
@@ -95,6 +119,15 @@ export default {
                 id: 'baz11',
                 text: 'Baz 11'
             }];
+        },
+        demoValuesWithSpecialChars() {
+            return [...this.demoValues, {
+                id: 'spec1',
+                text: 'Special *.^'
+            }, {
+                id: 'spec2',
+                text: 'Special $?]'
+            }];
         }
     }
 };
@@ -119,8 +152,8 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            label-left="Select from the 7 visible items (size)"
-            label-right="The selected stuff"
+            left-label="Select from the 7 visible items (size)"
+            right-label="The selected stuff"
             :possible-values="demoValues"
           />
         </div>
@@ -147,7 +180,11 @@ export default {
       <br>
       <div class="grid-container">
         <div class="grid-item-6">
-          <p>With search/filter enabled and an initial search term defined:</p>
+          <p>
+            The Twinlist with a basic search field enabled and an initial
+            search term defined. Case-sensitive search as well as inverse search
+            can be enabled through the respective search field buttons.
+          </p>
         </div>
       </div>
       <div class="grid-container">
@@ -162,6 +199,38 @@ export default {
             search-placeholder="Placeholder"
             initial-search-term="bar"
             :possible-values="demoValues"
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>
+            With search enabled along with the option to configure the search
+            mode and an example regular expression search. The demo list also
+            include items with special characters that need to be escaped for
+            regular expression filters:
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            v-model="selected"
+            :size="7"
+            show-search
+            show-search-mode
+            initial-case-sensitive-search
+            left-label="Select from the 7 visible items (size)"
+            right-label="The selected stuff"
+            search-label="Search items"
+            search-mode-label="Search mode"
+            search-placeholder="Placeholder"
+            initial-search-term="^[ab].*[357]$|\$"
+            initial-search-mode="regex"
+            :possible-values="demoValuesWithSpecialChars"
           />
         </div>
         <div class="grid-item-6">

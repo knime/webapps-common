@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import SearchInput from '~/ui/components/forms/SearchInput.vue';
 import Twinlist from '~/ui/components/forms/Twinlist.vue';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
+import ValueSwitch from '~/ui/components/forms/ValueSwitch.vue';
 
 describe('Twinlist.vue', () => {
     let defaultPossibleValues;
@@ -592,6 +593,7 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
+            expect(wrapper.find(ValueSwitch).exists()).toBe(false);
             expect(wrapper.find(SearchInput).exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
@@ -611,6 +613,7 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
+            expect(wrapper.find(ValueSwitch).exists()).toBe(false);
             expect(wrapper.find(SearchInput).exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
@@ -729,6 +732,177 @@ describe('Twinlist.vue', () => {
             search.setValue('');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
+        });
+    });
+
+    describe('search options', () => {
+        it('doesn\'t render the search options by default', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test3'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            expect(wrapper.find(ValueSwitch).exists()).toBeFalsy();
+        });
+
+        it('can render the search options if wanted', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test3'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                showSearchMode: true,
+                searchLabel: 'Filter entries',
+                searchModeLabel: 'Filter options',
+                searchPlaceholder: 'Enter search term'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            expect(wrapper.find(ValueSwitch).exists()).toBeTruthy();
+            expect(wrapper.find(SearchInput).exists()).toBe(true);
+            expect(wrapper.findAll('div.search-wrapper label').length).toBe(5);
+            expect(wrapper.findAll('div.search-wrapper label').at(0).text()).toBe('Filter options');
+            expect(wrapper.findAll('div.search-wrapper label').at(1).text()).toBe('Manual');
+            expect(wrapper.findAll('div.search-wrapper label').at(2).text()).toBe('Wildcard');
+            expect(wrapper.findAll('div.search-wrapper label').at(3).text()).toBe('Regex');
+            expect(wrapper.findAll('div.search-wrapper label').at(4).text()).toBe('Filter entries');
+        });
+
+        it('can include initial search mode option and initial regex search term', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                showSearchMode: true,
+                initialSearchTerm: '^.*3$',
+                initialSearchMode: 'regex'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
+
+            expect(right.props('possibleValues').length).toBe(0);
+
+            // Remove search term
+            let search = wrapper.find('input[type=text]');
+            search.setValue('');
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+        });
+
+        it('can do wildcard searches', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                showSearchMode: true,
+                initialSearchTerm: '*3',
+                initialSearchMode: 'wildcard'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
+
+            expect(right.props('possibleValues').length).toBe(0);
+
+            // Remove search term
+            wrapper.vm.searchTerm = '';
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+        });
+
+        it('can do case-sensitive searches', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                showSearchMode: true,
+                initialSearchTerm: 'text',
+                initialSearchMode: 'manual'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 1');
+            expect(left.props('possibleValues')[1].text).toStrictEqual('Text 3');
+
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+
+            // Make case-sensitive
+            wrapper.vm.caseSensitiveSearch = true;
+
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
+        });
+
+        it('can do inverse searches', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                initialSearchTerm: '3'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
+
+            expect(right.props('possibleValues').length).toBe(0);
+
+            // Set inverse search
+            wrapper.vm.inverseSearch = true;
+
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 1');
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
         });
     });
 });

@@ -2,6 +2,7 @@
 import Label from './Label.vue';
 import SearchInput from '../forms/SearchInput.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
+import ValueSwitch from '../forms/ValueSwitch.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
@@ -18,7 +19,8 @@ export default {
         ArrowPrevIcon,
         MultiselectListBox,
         Label,
-        SearchInput
+        SearchInput,
+        ValueSwitch
     },
     props: {
         value: {
@@ -30,6 +32,10 @@ export default {
             type: Boolean
         },
         showSearch: {
+            default: false,
+            type: Boolean
+        },
+        showSearchMode: {
             default: false,
             type: Boolean
         },
@@ -65,10 +71,28 @@ export default {
             required: false,
             default: 'Search values'
         },
+        searchModeLabel: {
+            type: String,
+            required: false,
+            default: 'Search type'
+        },
         initialSearchTerm: {
             type: String,
             required: false,
             default: ''
+        },
+        initialCaseSensitiveSearch: {
+            default: false,
+            type: Boolean
+        },
+        initialInverseSearch: {
+            default: false,
+            type: Boolean
+        },
+        initialSearchMode: {
+            type: String,
+            required: false,
+            default: 'manual'
         },
         searchPlaceholder: {
             type: String,
@@ -103,7 +127,10 @@ export default {
             invalidPossibleValueIds: new Set(),
             rightSelected: [],
             selectedLeft: [],
-            searchTerm: this.initialSearchTerm
+            searchTerm: this.initialSearchTerm,
+            searchMode: this.initialSearchMode,
+            caseSensitiveSearch: this.initialCaseSensitiveSearch,
+            inverseSearch: this.initialInverseSearch
         };
     },
     computed: {
@@ -150,7 +177,70 @@ export default {
             return this.rightSelected.length === 0;
         },
         normalizedSearchTerm() {
-            return this.searchTerm.toLowerCase();
+            const searchMode = this.possibleSearchModeMap[this.searchMode];
+            return searchMode.normalize(this.searchTerm, this.caseSensitiveSearch);
+        },
+        possibleSearchModes() {
+            return [{
+                id: 'manual',
+                text: 'Manual',
+                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+                    return caseSensitiveSearch ? searchTerm : searchTerm.toLowerCase();
+                },
+                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
+                    const testText = caseSensitiveSearch ? text : text.toLowerCase();
+                    const matches = testText.includes(normalizedSearchTerm);
+                    return inverseSearch ? !matches : matches;
+                }
+            }, {
+                id: 'wildcard',
+                text: 'Wildcard',
+                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+                    // Do a regex search, explicitly matching start and end of the search term.
+                    // All regex special character except from "*" (wildcard) are escaped.
+                    if (searchTerm.length > 0) {
+                        const escapedSearchTerm = searchTerm.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+                        const wildcardSearchTerm = escapedSearchTerm.replace(/\*/g, '.*');
+                        searchTerm = `^${wildcardSearchTerm}$`;
+                    }
+                    try {
+                        const flags = caseSensitiveSearch ? '' : 'i';
+                        return new RegExp(searchTerm, flags);
+                    } catch (error) {
+                        // In case of an invalid regular expression, an impossible
+                        // regex is returned, not matching anything.
+                        return new RegExp('$^');
+                    }
+                },
+                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
+                    const matches = normalizedSearchTerm.test(text);
+                    return inverseSearch ? !matches : matches;
+                }
+            }, {
+                id: 'regex',
+                text: 'Regex',
+                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+                    try {
+                        const flags = caseSensitiveSearch ? '' : 'i';
+                        return new RegExp(searchTerm, flags);
+                    } catch (error) {
+                        // In case of an invalid regular expression, an impossible
+                        // regex is returned, not matching anything.
+                        return new RegExp('$^');
+                    }
+                },
+                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
+                    const matches = normalizedSearchTerm.test(text);
+                    return inverseSearch ? !matches : matches;
+                }
+            }];
+        },
+        possibleSearchModeIds() {
+            return this.possibleSearchModes.map(searchMode => searchMode.id);
+        },
+        possibleSearchModeMap() {
+            // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
+            return Object.assign({}, ...this.possibleSearchModes.map(obj => ({ [obj.id]: obj })));
         }
     },
     watch: {
@@ -261,6 +351,17 @@ export default {
         onSearchInput(value) {
             this.searchTerm = value;
         },
+        onSearchModeChange(value) {
+            if (this.possibleSearchModeIds.indexOf(value) !== -1) {
+                this.searchMode = value;
+            }
+        },
+        onToggleCaseSensitiveSearch(value) {
+            this.caseSensitiveSearch = value;
+        },
+        onToggleInvserseSearch(value) {
+            this.inverseSearch = value;
+        },
         hasSelection() {
             return this.chosenValues.length > 0;
         },
@@ -269,7 +370,9 @@ export default {
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-            return item.text.toLowerCase().includes(this.normalizedSearchTerm);
+            const searchMode = this.possibleSearchModeMap[this.searchMode];
+            return searchMode.test(item.text, this.normalizedSearchTerm,
+                this.caseSensitiveSearch, this.inverseSearch);
         }
     }
 };
@@ -277,6 +380,24 @@ export default {
 
 <template>
   <div class="twinlist">
+    <Label
+      v-if="showSearchMode"
+      v-slot="{ labelForId }"
+      :text="searchModeLabel"
+      class="search-wrapper"
+      compact
+    >
+      <ValueSwitch
+        :id="labelForId"
+        ref="searchMode"
+        :size="listSize"
+        :value="searchMode"
+        :disabled="disabled"
+        class="search"
+        :possible-values="possibleSearchModes"
+        @input="onSearchModeChange"
+      />
+    </Label>
     <Label
       v-if="showSearch"
       v-slot="{ labelForId }"
@@ -291,9 +412,15 @@ export default {
         :placeholder="searchPlaceholder"
         :value="searchTerm"
         :label="searchLabel"
+        :case-sensitive-search="caseSensitiveSearch"
+        :inverse-search="inverseSearch"
+        show-case-sensitive-search-button
+        show-inverse-search-button
         :disabled="disabled"
         class="search"
         @input="onSearchInput"
+        @toggle-case-sensitive-search="onToggleCaseSensitiveSearch"
+        @toggle-inverse-search="onToggleInvserseSearch"
       />
     </Label>
     <div class="header">
