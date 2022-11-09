@@ -6,7 +6,7 @@ import code from '!!raw-loader!../../ui/components/forms/SearchInput';
 const codeExample = `<SearchInput
   v-model="inputValue"
   label="Search things"
-  placeholder="Pattern"
+  placeholder="Placeholder"
 />
 <SearchInput />
 <SearchInput
