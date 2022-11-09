@@ -2,6 +2,7 @@
 import CodeExample from './demo/CodeExample.vue';
 import InputField from '../../ui/components/forms/InputField.vue';
 import MailIcon from '../../ui/assets/img/icons/mail.svg';
+import CloseIcon from '../../ui/assets/img/icons/close.svg';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField
@@ -41,11 +42,18 @@ const codeExample = `<InputField
   type="text"
 >
   <template v-slot:icon><MailIcon /></template>
+</InputField>
+<InputField
+  v-model="inputValue"
+  type="text"
+>
+  <template v-slot:iconRight><CloseIcon /></template>
 </InputField>`;
 
 export default {
     components: {
         InputField,
+        CloseIcon,
         MailIcon,
         CodeExample
     },
@@ -112,6 +120,14 @@ export default {
             type="text"
           >
             <template #icon><MailIcon /></template>
+          </InputField>
+          <InputField
+            value="demo"
+            type="text"
+          >
+            <template #iconRight>
+              <CloseIcon />
+            </template>
           </InputField>
         </div>
         <div class="grid-item-6">
