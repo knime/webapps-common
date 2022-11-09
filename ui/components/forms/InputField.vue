@@ -103,7 +103,9 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div
+    class="input-wrapper"
+  >
     <div
       v-if="hasLeftIcon"
       class="icon"
@@ -179,10 +181,6 @@ input {
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 
-  &:hover:not(:focus):not(:disabled) {
-    background-color: var(--theme-input-field-background-color-focus);
-  }
-
   &.with-icon {
     padding: 10px 10px 10px 38px;
   }
@@ -196,17 +194,23 @@ input {
   }
 }
 
+/* This is handled outside of the input element, because hovering inside slots
+ * would otherwise not be noticed within the input element. */
+.input-wrapper:hover:not(:focus):not(disabled) input:not(:focus) {
+  background-color: var(--theme-input-field-background-color-focus);
+}
+
 .icon {
   position: absolute;
   left: 12px;
   top: 10px;
+  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
 
   & svg {
     width: 18px;
     height: 18px;
     stroke-width: calc(32px / 18); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
     stroke: var(--knime-masala);
-    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
   }
 }
 
