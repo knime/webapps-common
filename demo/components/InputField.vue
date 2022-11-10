@@ -2,7 +2,7 @@
 import CodeExample from './demo/CodeExample.vue';
 import InputField from '../../ui/components/forms/InputField.vue';
 import MailIcon from '../../ui/assets/img/icons/mail.svg';
-import CloseIcon from '../../ui/assets/img/icons/close.svg';
+import CircleCheckIcon from '../../ui/assets/img/icons/circle-check.svg';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField
@@ -44,16 +44,17 @@ const codeExample = `<InputField
   <template v-slot:icon><MailIcon /></template>
 </InputField>
 <InputField
+  value="demo with right aligned slot"
   v-model="inputValue"
   type="text"
 >
-  <template v-slot:iconRight><CloseIcon /></template>
+  <template v-slot:iconRight><CircleCheckIcon /></template>
 </InputField>`;
 
 export default {
     components: {
         InputField,
-        CloseIcon,
+        CircleCheckIcon,
         MailIcon,
         CodeExample
     },
@@ -122,11 +123,11 @@ export default {
             <template #icon><MailIcon /></template>
           </InputField>
           <InputField
-            value="demo"
+            value="demo with right aligned slot"
             type="text"
           >
             <template #iconRight>
-              <CloseIcon />
+              <CircleCheckIcon />
             </template>
           </InputField>
         </div>
