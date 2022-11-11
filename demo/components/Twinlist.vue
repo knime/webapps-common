@@ -21,7 +21,7 @@ const codeExample = `<Twinlist
 />
 <Twinlist
   v-model="selected"
-  show-search="true"
+  show-search
   left-label="Select stuff here"
   right-label="The selected stuff"
   search-label="Search items"
@@ -155,7 +155,7 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            :show-search="true"
+            show-search
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             search-label="Search items"
