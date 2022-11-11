@@ -5,8 +5,8 @@ import code from '!!raw-loader!../../ui/components/forms/Twinlist';
 
 const codeExample = `<Twinlist
   v-model="selected"
-  label-left="Select stuff here"
-  label-right="The selected stuff"
+  left-label="Select stuff here"
+  right-label="The selected stuff"
   initial-search-term=""
   :possible-values="[{
     id: 'foo',
@@ -22,9 +22,9 @@ const codeExample = `<Twinlist
 <Twinlist
   v-model="selected"
   show-search="true"
-  label-left="Select stuff here"
-  label-right="The selected stuff"
-  label-search="Search items"
+  left-label="Select stuff here"
+  right-label="The selected stuff"
+  search-label="Search items"
   search-placeholder="Placeholder"
   initial-search-term="bar"
   :possible-values="[{
@@ -134,8 +134,8 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            label-left="Select from the 7 visible items (size)"
-            label-right="The selected stuff"
+            left-label="Select from the 7 visible items (size)"
+            right-label="The selected stuff"
             :possible-values="demoValues"
             disabled
           />
@@ -156,9 +156,9 @@ export default {
             v-model="selected"
             :size="7"
             :show-search="true"
-            label-left="Select from the 7 visible items (size)"
-            label-right="The selected stuff"
-            label-search="Search items"
+            left-label="Select from the 7 visible items (size)"
+            right-label="The selected stuff"
+            search-label="Search items"
             search-placeholder="Placeholder"
             initial-search-term="bar"
             :possible-values="demoValues"

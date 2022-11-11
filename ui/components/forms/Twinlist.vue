@@ -50,17 +50,17 @@ export default {
             default: true,
             type: Boolean
         },
-        labelLeft: {
+        leftLabel: {
             type: String,
             required: true,
             default: 'Possible values'
         },
-        labelRight: {
+        rightLabel: {
             type: String,
             required: true,
             default: 'Selected values'
         },
-        labelSearch: {
+        searchLabel: {
             type: String,
             required: false,
             default: 'Search values'
@@ -101,7 +101,7 @@ export default {
         return {
             chosenValues: this.value,
             invalidPossibleValueIds: new Set(),
-            selectedRight: [],
+            rightSelected: [],
             selectedLeft: [],
             searchTerm: this.initialSearchTerm
         };
@@ -147,7 +147,7 @@ export default {
             return this.rightItems.length === 0;
         },
         moveLeftButtonDisabled() {
-            return this.selectedRight.length === 0;
+            return this.rightSelected.length === 0;
         },
         normalizedSearchTerm() {
             return this.searchTerm.toLowerCase();
@@ -187,7 +187,7 @@ export default {
         },
         moveLeft(items) {
             // remove all right values from or selectedValues
-            items = items || this.selectedRight;
+            items = items || this.rightSelected;
             // add the invalid items to the possible items
             let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
@@ -250,7 +250,7 @@ export default {
             if (value.length > 0) {
                 this.$refs.left.clearSelection();
             }
-            this.selectedRight = value;
+            this.rightSelected = value;
         },
         onKeyRightArrow() {
             this.moveRight();
@@ -280,7 +280,7 @@ export default {
     <Label
       v-if="showSearch"
       v-slot="{ labelForId }"
-      :text="labelSearch"
+      :text="searchLabel"
       class="search-wrapper"
       compact
     >
@@ -290,16 +290,16 @@ export default {
         :size="listSize"
         :placeholder="searchPlaceholder"
         :value="searchTerm"
-        :label="labelSearch"
+        :label="searchLabel"
         :disabled="disabled"
         class="search"
         @input="onSearchInput"
       />
     </Label>
     <div class="header">
-      <div class="title">{{ labelLeft }}</div>
+      <div class="title">{{ leftLabel }}</div>
       <div class="space" />
-      <div class="title">{{ labelRight }}</div>
+      <div class="title">{{ rightLabel }}</div>
     </div>
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
@@ -309,7 +309,7 @@ export default {
         :value="selectedLeft"
         :is-valid="isValid"
         :possible-values="leftItems"
-        :aria-label="labelLeft"
+        :aria-label="leftLabel"
         :disabled="disabled"
         @doubleClickOnItem="onLeftListBoxDoubleClick"
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
@@ -361,10 +361,10 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
-        :value="selectedRight"
+        :value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"
-        :aria-label="labelRight"
+        :aria-label="rightLabel"
         :disabled="disabled"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"

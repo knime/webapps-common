@@ -24,8 +24,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: ['test3'],
-            labelLeft: 'Choose',
-            labelRight: 'The value',
+            leftLabel: 'Choose',
+            rightLabel: 'The value',
             size: 3
         };
         const wrapper = mount(Twinlist, {
@@ -44,8 +44,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: [defaultPossibleValues[0]], // one element
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -77,8 +77,8 @@ describe('Twinlist.vue', () => {
                 text: 'test1'
             }],
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value',
+            leftLabel: 'Choose',
+            rightLabel: 'The value',
             isValid: false
         };
         const wrapper = mount(Twinlist, {
@@ -100,8 +100,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -126,8 +126,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -153,8 +153,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -174,8 +174,8 @@ describe('Twinlist.vue', () => {
         const wrapper = mount(Twinlist, {
             propsData: {
                 possibleValues: defaultPossibleValues,
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             }
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
@@ -191,8 +191,8 @@ describe('Twinlist.vue', () => {
             propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
         });
 
@@ -267,8 +267,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -290,8 +290,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: ['test2', 'test3'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -312,8 +312,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -335,8 +335,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -356,8 +356,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -375,8 +375,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['invalidId'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -400,8 +400,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -419,8 +419,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -442,8 +442,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -493,8 +493,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -514,8 +514,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -533,8 +533,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -554,8 +554,8 @@ describe('Twinlist.vue', () => {
             propsData: {
                 possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             }
         };
 
@@ -585,8 +585,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value',
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
                 size: 3
             };
             const wrapper = mount(Twinlist, {
@@ -601,11 +601,11 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value',
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
                 size: 3,
                 showSearch: true,
-                labelSearch: 'Filter entries',
+                searchLabel: 'Filter entries',
                 searchPlaceholder: 'Enter search term'
             };
             const wrapper = mount(Twinlist, {
@@ -620,8 +620,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2'],
-                labelLeft: 'Choose',
-                labelRight: 'The value',
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
                 size: 3,
                 showSearch: true,
                 initialSearchTerm: '3'
@@ -651,8 +651,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2'],
-                labelLeft: 'Choose',
-                labelRight: 'The value',
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
                 size: 3,
                 showSearch: true
             };
@@ -706,8 +706,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value',
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
                 showSearch: true,
                 initialSearchTerm: '3'
             };
