@@ -89,23 +89,6 @@ export default {
 
 <style lang="postcss" scoped>
 .search-input {
-  & .clear-search {
-    position: absolute;
-    --icon-size: 12;
-
-    margin-right: calc(var(--icon-size) / 2 * 1px);
-    top: -2px; /* Move clear-all button up 2px to be centered with FunctionButton in use. */
-    pointer-events: auto; /* otherwise, we won't be able to :hover the button */
-
-    & >>> svg {
-      width: calc(var(--icon-size) * 1px);
-      height: calc(var(--icon-size) * 1px);
-
-      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-      stroke-width: calc(32px / var(--icon-size));
-    }
-  }
-
   &:has(input:placeholder-shown) .clear-search {
     visibility: hidden;
   }

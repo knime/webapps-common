@@ -3,6 +3,8 @@ import CodeExample from './demo/CodeExample.vue';
 import InputField from '../../ui/components/forms/InputField.vue';
 import MailIcon from '../../ui/assets/img/icons/mail.svg';
 import CircleCheckIcon from '../../ui/assets/img/icons/circle-check.svg';
+import CloseIcon from '../../ui/assets/img/icons/close.svg';
+import FunctionButton from '../../ui/components/FunctionButton.vue';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField
@@ -53,12 +55,32 @@ const codeExample = `<InputField
   type="text"
 >
   <template v-slot:iconRight><CircleCheckIcon /></template>
+</InputField>
+<InputField
+  value="demo with right aligned button"
+  type="text"
+  ref="buttonDemo"
+>
+  <template #iconRight>
+    <FunctionButton
+      @click="alert('demo')"
+    >
+      <CircleCheckIcon />
+    </FunctionButton>
+    <FunctionButton
+      @click="alert('demo 2')"
+    >
+      <CloseIcon />
+    </FunctionButton>
+  </template>
 </InputField>`;
 
 export default {
     components: {
         InputField,
+        FunctionButton,
         CircleCheckIcon,
+        CloseIcon,
         MailIcon,
         CodeExample
     },
@@ -73,6 +95,12 @@ export default {
     computed: {
         code() {
             return code;
+        }
+    },
+    methods: {
+        alert(message) {
+            window.alert(message);
+            this.$refs.buttonDemo.focus();
         }
     }
 };
@@ -132,6 +160,24 @@ export default {
           >
             <template #iconRight>
               <CircleCheckIcon />
+            </template>
+          </InputField>
+          <InputField
+            value="demo with right aligned buttons"
+            type="text"
+            ref="buttonDemo"
+          >
+            <template #iconRight>
+              <FunctionButton
+                @click="alert('demo')"
+              >
+                <CircleCheckIcon />
+              </FunctionButton>
+              <FunctionButton
+                @click="alert('demo 2')"
+              >
+                <CloseIcon />
+              </FunctionButton>
             </template>
           </InputField>
         </div>
