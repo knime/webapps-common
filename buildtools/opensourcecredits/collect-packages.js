@@ -6,8 +6,11 @@ const path = require('path');
 const outFile = path.resolve(__dirname, 'used-packages.json');
 const semver = require('semver');
 const pkgUp = require('pkg-up');
-// find the package.json file path of the webapps-common parent project
-const parentPkgPath = pkgUp.sync({ cwd: '../..' });
+const parentPkgPath =
+    // find the package.json file path of the webapps-common parent project
+    pkgUp.sync({ cwd: '../..' }) ||
+    // if used in development, there will be no parent project, so fallback to the root dir
+    pkgUp.sync({ cwd: '..' });
 const parentRoot = path.resolve(parentPkgPath, '..');
 
 const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
