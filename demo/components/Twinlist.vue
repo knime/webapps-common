@@ -20,7 +20,7 @@ const codeExample = `<Twinlist
   }]"
 />
 <Twinlist
-  v-model="selected"
+  v-model="selected2"
   show-search
   left-label="Select stuff here"
   right-label="The selected stuff"
@@ -39,7 +39,7 @@ const codeExample = `<Twinlist
   }]"
 />
 <Twinlist
-  v-model="selected"
+  v-model="selected3"
   show-search
   show-search-mode
   show-case-sensitive-button
@@ -71,7 +71,10 @@ export default {
     data() {
         return {
             codeExample,
-            selected: []
+            selected: [],
+            selected2: [],
+            selected3: [],
+            selected4: []
         };
     },
     computed: {
@@ -165,7 +168,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model="selected2"
             :size="7"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
@@ -174,7 +177,7 @@ export default {
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected }}
+          selected ids: {{ selected2 }}
         </div>
       </div>
       <br>
@@ -190,7 +193,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model="selected3"
             :size="7"
             show-search
             left-label="Select from the 7 visible items (size)"
@@ -202,7 +205,7 @@ export default {
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected }}
+          selected ids: {{ selected3 }}
         </div>
       </div>
       <div class="grid-container">
@@ -218,7 +221,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model="selected4"
             :size="7"
             show-search
             show-search-mode
@@ -234,7 +237,7 @@ export default {
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected }}
+          selected ids: {{ selected4 }}
         </div>
       </div>
     </section>
