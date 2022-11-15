@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 
+import SearchInput from '~/ui/components/forms/SearchInput.vue';
 import Twinlist from '~/ui/components/forms/Twinlist.vue';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
 
@@ -23,8 +24,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: ['test3'],
-            labelLeft: 'Choose',
-            labelRight: 'The value',
+            leftLabel: 'Choose',
+            rightLabel: 'The value',
             size: 3
         };
         const wrapper = mount(Twinlist, {
@@ -43,8 +44,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: [defaultPossibleValues[0]], // one element
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -76,8 +77,8 @@ describe('Twinlist.vue', () => {
                 text: 'test1'
             }],
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value',
+            leftLabel: 'Choose',
+            rightLabel: 'The value',
             isValid: false
         };
         const wrapper = mount(Twinlist, {
@@ -99,8 +100,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -125,8 +126,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -152,8 +153,8 @@ describe('Twinlist.vue', () => {
                 text: 'Some Text'
             }],
             value: ['invalidId', 'test1'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -173,8 +174,8 @@ describe('Twinlist.vue', () => {
         const wrapper = mount(Twinlist, {
             propsData: {
                 possibleValues: defaultPossibleValues,
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             }
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
@@ -190,8 +191,8 @@ describe('Twinlist.vue', () => {
             propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
         });
 
@@ -266,8 +267,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: [],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -289,8 +290,8 @@ describe('Twinlist.vue', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
             value: ['test2', 'test3'],
-            labelLeft: 'Choose',
-            labelRight: 'The value'
+            leftLabel: 'Choose',
+            rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
             propsData
@@ -311,8 +312,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -334,8 +335,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -355,8 +356,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -374,8 +375,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['invalidId'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -399,8 +400,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -418,8 +419,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -441,8 +442,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -492,8 +493,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -513,8 +514,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: [],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -532,8 +533,8 @@ describe('Twinlist.vue', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
                 propsData
@@ -553,8 +554,8 @@ describe('Twinlist.vue', () => {
             propsData: {
                 possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
                 value: ['test2', 'test3'],
-                labelLeft: 'Choose',
-                labelRight: 'The value'
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
             }
         };
 
@@ -577,5 +578,157 @@ describe('Twinlist.vue', () => {
         // select something on the left, leads to empty on the right
         wrapper.vm.onLeftInput(['test1', 'test4']);
         expect(right.emitted().input[0][0]).toStrictEqual([]);
+    });
+
+    describe('search', () => {
+        it('doesn\'t render the search bar by default', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test3'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            expect(wrapper.find(SearchInput).exists()).toBe(false);
+            expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
+            expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
+        });
+
+        it('can render the search bar if wanted', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test3'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                searchLabel: 'Filter entries',
+                searchPlaceholder: 'Enter search term'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            expect(wrapper.find(SearchInput).exists()).toBe(true);
+            expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
+            expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
+        });
+
+        it('can include initial search term', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true,
+                initialSearchTerm: '3'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
+
+            expect(right.props('possibleValues').length).toBe(0);
+
+            // Remove search term
+            let search = wrapper.find('input');
+            search.setValue('');
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+        });
+
+        it('can handle basic search requests', () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+
+            let search = wrapper.find('input');
+
+            search.setValue('noresult');
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
+
+            search.setValue('');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+
+            search.setValue('text');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+
+            search.setValue(' text');
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(0);
+
+            search.setValue('1');
+            expect(left.props('possibleValues').length).toBe(1);
+            expect(right.props('possibleValues').length).toBe(0);
+
+            search.setValue('2');
+            expect(left.props('possibleValues').length).toBe(0);
+            expect(right.props('possibleValues').length).toBe(1);
+
+            search.setValue(' ');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+
+            search.setValue('TEXT');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+        });
+
+        it('moves only all filtered values to right on all button click', async () => {
+            let propsData = {
+                possibleValues: defaultPossibleValues,
+                value: [],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                showSearch: true,
+                initialSearchTerm: '3'
+            };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+            wrapper.find({ ref: 'moveAllRight' }).trigger('click');
+            await wrapper.vm.$nextTick();
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+
+            expect(left.props('possibleValues').length).toBe(0);
+
+            let search = wrapper.find('input');
+
+            search.setValue('');
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+        });
     });
 });

@@ -1,4 +1,6 @@
 <script>
+import Label from './Label.vue';
+import SearchInput from '../forms/SearchInput.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
@@ -17,7 +19,9 @@ export default {
         ArrowNextIcon,
         ArrowPrevDoubleIcon,
         ArrowPrevIcon,
-        MultiselectListBox
+        MultiselectListBox,
+        Label,
+        SearchInput
     },
     props: {
         modelValue: {
@@ -25,6 +29,10 @@ export default {
             default: () => []
         },
         disabled: {
+            default: false,
+            type: Boolean
+        },
+        showSearch: {
             default: false,
             type: Boolean
         },
@@ -45,15 +53,30 @@ export default {
             default: true,
             type: Boolean
         },
-        labelLeft: {
+        leftLabel: {
             type: String,
             required: true,
             default: 'Possible values'
         },
-        labelRight: {
+        rightLabel: {
             type: String,
             required: true,
             default: 'Selected values'
+        },
+        searchLabel: {
+            type: String,
+            required: false,
+            default: 'Search values'
+        },
+        initialSearchTerm: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        searchPlaceholder: {
+            type: String,
+            required: false,
+            default: 'Search'
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -82,8 +105,9 @@ export default {
         return {
             chosenValues: this.modelValue,
             invalidPossibleValueIds: new Set(),
-            selectedRight: [],
-            selectedLeft: []
+            rightSelected: [],
+            leftSelected: [],
+            searchTerm: this.initialSearchTerm
         };
     },
     computed: {
@@ -97,12 +121,19 @@ export default {
         invalidValueIds() {
             return this.modelValue.filter(x => !this.possibleValueMap[x]);
         },
+        hiddenValueIds() {
+            return this.possibleValues
+                .filter(possibleValue => !this.itemMatchesSearch(possibleValue))
+                .map(possibleValue => possibleValue.id);
+        },
         leftItems() {
-            const invalidItems = [...this.invalidPossibleValueIds].map(x => this.generateInvalidItem(x));
-            return [...this.possibleValues, ...invalidItems].filter(x => !this.chosenValues.includes(x.id));
+            const invalidItems = [...this.invalidPossibleValueIds].map(valueId => this.generateInvalidItem(valueId));
+            return [...this.possibleValues, ...invalidItems]
+                .filter(value => !this.hiddenValueIds.includes(value.id) && !this.chosenValues.includes(value.id));
         },
         rightItems() {
-            return this.chosenValues.map(x => this.possibleValueMap[x] || this.generateInvalidItem(x));
+            return this.chosenValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
+                .filter(value => !this.hiddenValueIds.includes(value.id));
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -114,13 +145,16 @@ export default {
             return this.leftItems.length === 0;
         },
         moveRightButtonDisabled() {
-            return this.selectedLeft.length === 0;
+            return this.leftSelected.length === 0;
         },
         moveAllLeftButtonDisabled() {
             return this.rightItems.length === 0;
         },
         moveLeftButtonDisabled() {
-            return this.selectedRight.length === 0;
+            return this.rightSelected.length === 0;
+        },
+        normalizedSearchTerm() {
+            return this.searchTerm.toLowerCase();
         }
     },
     watch: {
@@ -150,14 +184,14 @@ export default {
         },
         moveRight(items) {
             // add all left items to our values
-            items = items || this.selectedLeft;
+            items = items || this.leftSelected;
             this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
             this.clearSelections();
             this.$emit('update:modelValue', this.chosenValues);
         },
         moveLeft(items) {
             // remove all right values from or selectedValues
-            items = items || this.selectedRight;
+            items = items || this.rightSelected;
             // add the invalid items to the possible items
             let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
@@ -214,13 +248,13 @@ export default {
             if (value.length > 0) {
                 this.$refs.right.clearSelection();
             }
-            this.selectedLeft = value;
+            this.leftSelected = value;
         },
         onRightInput(value) {
             if (value.length > 0) {
                 this.$refs.left.clearSelection();
             }
-            this.selectedRight = value;
+            this.rightSelected = value;
         },
         onKeyRightArrow() {
             this.moveRight();
@@ -228,12 +262,18 @@ export default {
         onKeyLeftArrow() {
             this.moveLeft();
         },
+        onSearchInput(value) {
+            this.searchTerm = value;
+        },
         hasSelection() {
             return this.chosenValues.length > 0;
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
+        },
+        itemMatchesSearch(item) {
+            return item.text.toLowerCase().includes(this.normalizedSearchTerm);
         }
     }
 };
@@ -241,20 +281,39 @@ export default {
 
 <template>
   <div class="twinlist">
+    <Label
+      v-if="showSearch"
+      #default="{ labelForId }"
+      :text="searchLabel"
+      class="search-wrapper"
+      compact
+    >
+      <SearchInput
+        :id="labelForId"
+        ref="search"
+        :size="listSize"
+        :placeholder="searchPlaceholder"
+        :model-value="searchTerm"
+        :label="searchLabel"
+        :disabled="disabled"
+        class="search"
+        @update:model-value="onSearchInput"
+      />
+    </Label>
     <div class="header">
-      <div class="title">{{ labelLeft }}</div>
+      <div class="title">{{ leftLabel }}</div>
       <div class="space" />
-      <div class="title">{{ labelRight }}</div>
+      <div class="title">{{ rightLabel }}</div>
     </div>
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
         :size="listSize"
         class="listBox"
-        :model-value="selectedLeft"
+        :model-value="leftSelected"
         :is-valid="isValid"
         :possible-values="leftItems"
-        :aria-label="labelLeft"
+        :aria-label="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
         @double-click-shift="onLeftListBoxShiftDoubleClick"
@@ -306,10 +365,10 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
-        :model-value="selectedRight"
+        :model-value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"
-        :aria-label="labelRight"
+        :aria-label="rightLabel"
         :disabled="disabled"
         @double-click-on-item="onRightListBoxDoubleClick"
         @double-click-shift="onRightListBoxShiftDoubleClick"
@@ -436,6 +495,10 @@ export default {
         color: var(--theme-select-control-foreground-color);
       }
     }
+  }
+
+  & .search-wrapper {
+    margin-bottom: 10px;
   }
 }
 

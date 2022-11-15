@@ -11,8 +11,7 @@ import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
 
-import SearchField from 'webapps-common/ui/components/forms/InputField.vue';
-import SearchIcon from 'webapps-common/ui/assets/img/icons/lens.svg';
+import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
 
 import NpmLink from './components/demo/NpmLink.vue';
 
@@ -71,7 +70,8 @@ const demoComponents = {
         Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
         MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
         ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
-        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
+        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue')),
+        SearchInputDemo: defineAsyncComponent(() => import('./components/SearchInput.vue'))
     },
     misc: {
         NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
@@ -110,8 +110,7 @@ const flattenComponents = (componentsByCategory) => {
 // Transform the components into a flat object
 const components = {
     TabBar,
-    SearchField,
-    SearchIcon,
+    SearchInput,
     ...flattenComponents(demoComponents)
 };
 
@@ -222,17 +221,12 @@ export default {
               :disabled="isSearchActive"
               :possible-values="possibleTabValues"
             />
-            <SearchField
-              v-model.trim="searchQuery"
+            <SearchInput
+              v-model="searchQuery"
               autofocus
-              type="search"
               placeholder="Filter by component name…"
               class="search"
-            >
-              <template #icon>
-                <SearchIcon />
-              </template>
-            </SearchField>
+            />
           </div>
         </div>
       </div>
