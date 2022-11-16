@@ -112,7 +112,7 @@ export default {
   >
     <div
       v-if="hasLeftIcon"
-      class="icon"
+      class="icon icon-left"
     >
       <slot name="icon" />
     </div>
@@ -206,7 +206,6 @@ input {
 
 .icon {
   position: absolute;
-  left: 12px;
   top: 10px;
   pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
 
@@ -218,7 +217,11 @@ input {
   }
 }
 
+.icon-left {
+  left: 12px;
+}
+
 .icon-right {
-  left: calc(100% - 12px - 18px);
+  right: 30px;
 }
 </style>

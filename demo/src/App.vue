@@ -58,6 +58,7 @@ const demoComponents = {
         Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
         InputField: defineAsyncComponent(() => import('./components/InputField.vue')),
         TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
+        SearchInputDemo: defineAsyncComponent(() => import('./components/SearchInput.vue')),
         NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
         Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
         Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
@@ -70,8 +71,7 @@ const demoComponents = {
         Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
         MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
         ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
-        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue')),
-        SearchInputDemo: defineAsyncComponent(() => import('./components/SearchInput.vue'))
+        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
     },
     misc: {
         NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
@@ -222,7 +222,7 @@ export default {
               :possible-values="possibleTabValues"
             />
             <SearchInput
-              v-model="searchQuery"
+              v-model.trim="searchQuery"
               autofocus
               placeholder="Filter by component name…"
               class="search"
