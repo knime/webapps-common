@@ -2,6 +2,7 @@
 import CodeExample from './demo/CodeExample.vue';
 import InputField from '../../ui/components/forms/InputField.vue';
 import MailIcon from '../../ui/assets/img/icons/mail.svg';
+import CircleCheckIcon from '../../ui/assets/img/icons/circle-check.svg';
 import code from '!!raw-loader!../../ui/components/forms/InputField';
 
 const codeExample = `<InputField
@@ -41,11 +42,19 @@ const codeExample = `<InputField
   type="text"
 >
   <template v-slot:icon><MailIcon /></template>
+</InputField>
+<InputField
+  value="demo with right aligned slot"
+  v-model="inputValue"
+  type="text"
+>
+  <template v-slot:iconRight><CircleCheckIcon /></template>
 </InputField>`;
 
 export default {
     components: {
         InputField,
+        CircleCheckIcon,
         MailIcon,
         CodeExample
     },
@@ -112,6 +121,14 @@ export default {
             type="text"
           >
             <template #icon><MailIcon /></template>
+          </InputField>
+          <InputField
+            value="demo with right aligned slot"
+            type="text"
+          >
+            <template #iconRight>
+              <CircleCheckIcon />
+            </template>
           </InputField>
         </div>
         <div class="grid-item-6">
