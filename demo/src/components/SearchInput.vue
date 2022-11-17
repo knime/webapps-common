@@ -10,7 +10,7 @@ const codeExample = `<SearchInput
 />
 <SearchInput />
 <SearchInput
-  value="disabled: no search possible here"
+  model-value="disabled: no search possible here"
   disabled
 />
 <SearchInput
@@ -67,7 +67,7 @@ export default {
           />
           <SearchInput v-model="inputValue2" />
           <SearchInput
-            value="disabled: no search possible here"
+            model-value="disabled: no search possible here"
             disabled
           />
           The clear-all button emits a "clear" event that can be listend to:

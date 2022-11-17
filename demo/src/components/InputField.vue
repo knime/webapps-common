@@ -44,8 +44,7 @@ const codeExample = `<InputField
   <template v-slot:icon><MailIcon /></template>
 </InputField>
 <InputField
-  value="demo with right aligned slot"
-  v-model="inputValue"
+  model-value="demo with right aligned slot"
   type="text"
 >
   <template v-slot:iconRight><CircleCheckIcon /></template>
@@ -123,7 +122,7 @@ export default {
             <template #icon><MailIcon /></template>
           </InputField>
           <InputField
-            value="demo with right aligned slot"
+            model-value="demo with right aligned slot"
             type="text"
           >
             <template #iconRight>

@@ -222,6 +222,6 @@ input {
 }
 
 .icon-right {
-  right: 30px;
+  right: 12px;
 }
 </style>
