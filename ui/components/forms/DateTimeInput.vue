@@ -409,6 +409,7 @@ export default {
     display: flex;
     width: auto;
     flex-wrap: wrap;
+    align-items: center;
 
     & >>> .wrapper {
       width: 5rem;
