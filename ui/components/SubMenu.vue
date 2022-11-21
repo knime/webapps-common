@@ -59,14 +59,14 @@ export default {
          */
         maxMenuWidth: {
             type: Number,
-            default: 0
+            default: null
         },
         /**
-         * Prevent overflow of the popper on the main axis regarding the SubMenu Button
+         * Allow overflow of the popper on the main axis regarding the SubMenu Button
          */
-        preventOverflowMainAxis: {
+        allowOverflowMainAxis: {
             type: Boolean,
-            default: true
+            default: false
         }
     },
     data() {
@@ -104,7 +104,7 @@ export default {
                 placement: this.popperPlacement,
                 modifiers: [{
                     name: 'preventOverflow',
-                    options: { mainAxis: this.preventOverflowMainAxis }
+                    options: { mainAxis: !this.allowOverflowMainAxis }
                 }]
             });
         },
@@ -137,7 +137,6 @@ export default {
         toggleMenu() {
             this.expanded = !this.expanded;
             this.popperInstance.update();
-            this.$emit('menu-toggled', this.expanded);
 
             setTimeout(() => {
                 if (this.$refs['submenu-toggle']) {
@@ -191,7 +190,6 @@ export default {
         closeMenu(refocusToggle = true) {
             setTimeout(() => {
                 this.expanded = false;
-                this.$emit('menu-toggled', this.expanded);
                 if (refocusToggle && this.$refs['submenu-toggle']) {
                     this.$refs['submenu-toggle'].focus();
                 }

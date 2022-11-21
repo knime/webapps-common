@@ -71,12 +71,12 @@ export default {
          */
         maxMenuWidth: {
             type: Number,
-            default: 0
+            default: null
         }
     },
     computed: {
         useMaxMenuWidth() {
-            return this.maxMenuWidth !== 0;
+            return Boolean(this.maxMenuWidth);
         }
     },
     methods: {
@@ -211,7 +211,7 @@ export default {
       v-for="(item, index) in items"
       :key="index"
       :class="[{ separator: item.separator }]"
-      :style="{ 'max-width': `${maxMenuWidth}px` }"
+      :style="{ 'max-width': useMaxMenuWidth ? `${maxMenuWidth}px` : null }"
       :title="item.title"
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
@@ -295,17 +295,21 @@ ul {
         pointer-events: none;
       }
 
-      &.selected {
-        background-color: var(--knime-masala);
-        color: var(--knime-white);
-      }
-
       & .item-icon {
         stroke: var(--theme-dropdown-foreground-color);
         stroke-width: calc(32px / 18);
         width: 18px;
         height: 18px;
         margin-right: 7px;
+      }
+
+      &.selected {
+        background-color: var(--theme-dropdown-foreground-color);
+        color: var(--theme-dropdown-background-color); /* background and foreground are switched on selection */
+
+        & .item-icon {
+          stroke: var(--theme-dropdown-background-color);
+        }
       }
 
       & .label {

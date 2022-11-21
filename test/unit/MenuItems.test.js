@@ -105,7 +105,7 @@ describe('MenuItems.vue', () => {
             separator: true
         }, {
             text: 'Ananas',
-            hotkeyText: 'F9',
+            hotkeyText: 'F9'
         }];
         const wrapper = shallowMount(MenuItems, {
             propsData: {
@@ -117,7 +117,7 @@ describe('MenuItems.vue', () => {
             }
         });
         expect(wrapper.html()).toBeTruthy();
-        const listItems = wrapper.findAll({ ref: 'listItem' })
+        const listItems = wrapper.findAll({ ref: 'listItem' });
         expect(listItems.at(0).classes()).toContain('section-headline');
         expect(listItems.at(1).classes()).toContain('section-headline');
         expect(listItems.at(2).classes()).not.toContain('section-headline');
@@ -130,10 +130,10 @@ describe('MenuItems.vue', () => {
             selected: true
         }, {
             text: 'Oranges',
-            disabled: true,
+            disabled: true
         }, {
             text: 'Ananas',
-            hotkeyText: 'F9',
+            hotkeyText: 'F9'
         }];
         const wrapper = shallowMount(MenuItems, {
             propsData: {

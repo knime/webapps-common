@@ -124,6 +124,23 @@ export default {
                 const hasSeparator = index === 2 || index === 4;
                 return hasSeparator ? { ...item, separator: true } : item;
             });
+        },
+        menuItemsWithSelectedEntries() {
+            return menuItemsData.map((item, index) => {
+                // eslint-disable-next-line no-magic-numbers
+                const selected = index === 1 || index === 3;
+                return selected ? { ...item, selected: true } : item;
+            });
+        },
+        menuItemsWithSections() {
+            return [
+                { text: 'Round-shaped', sectionHeadline: true, separator: true },
+                menuItemsData[0],
+                menuItemsData[1],
+                { text: 'Different-shaped', sectionHeadline: true, separator: true },
+                menuItemsData[3],
+                menuItemsData[4]
+            ];
         }
     },
     methods: {
@@ -178,6 +195,32 @@ export default {
                 id="WITH_SEPARATORS"
                 :items="menuItemsWithSeparator"
                 aria-label="Menu items with separators"
+                @item-click="onItemClick"
+                @item-active="onItemActive"
+              />
+            </div>
+          </div>
+
+          <div class="menu-item-wrapper">
+            <div class="menu-name">With selected entries</div>
+            <div class="card">
+              <MenuItems
+                id="WITH_SELECTED_ENTRIES"
+                :items="menuItemsWithSelectedEntries"
+                aria-label="Menu items with selected entries"
+                @item-click="onItemClick"
+                @item-active="onItemActive"
+              />
+            </div>
+          </div>
+
+          <div class="menu-item-wrapper">
+            <div class="menu-name">With sections</div>
+            <div class="card">
+              <MenuItems
+                id="WITH_SECTIONS"
+                :items="menuItemsWithSections"
+                aria-label="Menu items with sections"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />
