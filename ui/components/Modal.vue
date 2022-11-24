@@ -46,6 +46,7 @@ export default {
   <BaseModal
     v-bind="$attrs"
     :class="['modal', styleType]"
+    @cancel="$emit('cancel', $event)"
   >
     <div class="header">
       <span class="header-icon">

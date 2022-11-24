@@ -1,5 +1,5 @@
 <script>
-// import { FocusTrap } from 'focus-trap-vue';
+import { FocusTrap } from 'focus-trap-vue';
 
 const KEY_ESC = 27;
 
@@ -14,7 +14,7 @@ const KEY_ESC = 27;
  */
 export default {
     components: {
-        // FocusTrap
+        FocusTrap
     },
     props: {
         /**
@@ -97,49 +97,42 @@ export default {
     @leave="showContent = false"
   >
     <FocusTrap
-      :active="active"
+      v-if="active"
+      :active="active && showContent"
+      :initial-focus="() => $refs.dialog"
+      :allow-outside-click="true"
       class="container"
     >
-      <!--
-      TODO: Focus trap requires vue internally, which breaks when using compat-mode.
-      Replace this div with the FocusTrap component once vue-compat is phased out
-    -->
       <div
-        v-if="active"
-        class="container"
+        ref="dialog"
+        tabindex="-1"
       >
         <div
-          ref="dialog"
-          @click.stop
-        >
+          class="overlay"
+          @click.stop="onOverlayClick"
+        />
+        <Transition name="slide">
           <div
-            class="overlay"
-            @click="onOverlayClick"
-          />
-          <transition name="slide">
-            <div
-              v-if="showContent"
-              class="wrapper"
-            >
-              <div class="inner">
-                <slot />
-              </div>
+            v-if="showContent"
+            class="wrapper"
+          >
+            <div class="inner">
+              <slot />
             </div>
-          </transition>
-        </div>
+          </div>
+        </Transition>
       </div>
-      <!-- </FocusTrap> -->
-    </focustrap>
+    </Focustrap>
   </Transition>
 </template>
 
 <style lang="postcss" scoped>
-.fade-enter,
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
-.slide-enter,
+.slide-enter-from,
 .slide-leave-to {
   transform: translateY(25%);
   opacity: 0;
