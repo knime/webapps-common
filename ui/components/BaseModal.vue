@@ -31,19 +31,36 @@ export default {
             /**
              * 'showContent' is used to animate the modal content separately
              */
-            showContent: false
+            showContent: false,
+            /**
+             * 'focusTrapActive' is used to activate the FocusTrap.
+             * it's false by default until component is mounted
+             */
+            focusTrapActive: false
         };
     },
     watch: {
         // Set and remove global event handlers on modal activation.
         // Only manual activation is supported.
-        active(newValue) {
-            if (newValue === true) {
+        active(newVal, oldVal) {
+            if (newVal === true) {
                 window.addEventListener('keyup', this.onGlobalKeyUp);
             } else {
                 window.removeEventListener('keyup', this.onGlobalKeyUp);
             }
+     
+            if (newVal !== oldVal) {
+                // set FocusTrap's active prop on BaseModel's prop change
+                this.focusTrapActive = newVal;
+            }
         }
+    },
+    mounted() {
+        /**
+        * set FocusTrap's active prop on mounted to ensure that the component
+        * is focusable when the focus trap component mounts.
+        */
+        this.focusTrapActive = this.active;
     },
     methods: {
         onGlobalKeyUp(e) {
@@ -79,40 +96,40 @@ export default {
     @after-enter="showContent = true"
     @leave="showContent = false"
   >
-    <!-- <FocusTrap
+    <FocusTrap
       :active="active"
       class="container"
-    > -->
-
-    <!--
+    >
+      <!--
       TODO: Focus trap requires vue internally, which breaks when using compat-mode.
       Replace this div with the FocusTrap component once vue-compat is phased out
     -->
-    <div
-      v-if="active"
-      class="container"
-    >
       <div
-        ref="dialog"
-        @click.stop
+        v-if="active"
+        class="container"
       >
         <div
-          class="overlay"
-          @click="onOverlayClick"
-        />
-        <transition name="slide">
+          ref="dialog"
+          @click.stop
+        >
           <div
-            v-if="showContent"
-            class="wrapper"
-          >
-            <div class="inner">
-              <slot />
+            class="overlay"
+            @click="onOverlayClick"
+          />
+          <transition name="slide">
+            <div
+              v-if="showContent"
+              class="wrapper"
+            >
+              <div class="inner">
+                <slot />
+              </div>
             </div>
-          </div>
-        </transition>
+          </transition>
+        </div>
       </div>
-    </div>
-    <!-- </FocusTrap> -->
+      <!-- </FocusTrap> -->
+    </focustrap>
   </Transition>
 </template>
 

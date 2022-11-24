@@ -53,6 +53,20 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Set max-width for the menu and truncate larger text
+         */
+        maxMenuWidth: {
+            type: Number,
+            default: null
+        },
+        /**
+         * Allow overflow of the popper on the main axis regarding the SubMenu Button
+         */
+        allowOverflowMainAxis: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['item-click'],
@@ -88,7 +102,11 @@ export default {
             const targetEl = this.$refs['menu-wrapper'];
 
             this.popperInstance = createPopper(referenceEl, targetEl, {
-                placement: this.popperPlacement
+                placement: this.popperPlacement,
+                modifiers: [{
+                    name: 'preventOverflow',
+                    options: { mainAxis: !this.allowOverflowMainAxis }
+                }]
             });
         },
         setPopperOrientation() {
@@ -226,6 +244,7 @@ export default {
         ref="menuItems"
         :class="['menu-items', `orient-${orientation}`]"
         :items="items"
+        :max-menu-width="maxMenuWidth"
         aria-label="sub menu"
         @item-click="onItemClick"
       />

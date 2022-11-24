@@ -133,6 +133,9 @@ export default {
                 const hasSeparator = index === 2 || index === 4;
                 return hasSeparator ? { ...item, separator: true } : item;
             });
+        },
+        subMenuItemsWithoutIcons() {
+            return subMenuItems.map(({ icon, hotkeyText, ...rest }) => rest);
         }
     }
 };
@@ -188,6 +191,17 @@ export default {
               :items="subMenuItems"
               disabled
               button-title="Open my submenu with icons"
+            >
+              <MenuIcon class="open-icon" />
+            </SubMenu>
+          </div>
+
+          <div class="card">
+            <span class="menu-name">Normal (reduced width)</span>
+            <SubMenu
+              :items="subMenuItemsWithoutIcons"
+              :max-menu-width="100"
+              button-title="Open my submenu"
             >
               <MenuIcon class="open-icon" />
             </SubMenu>

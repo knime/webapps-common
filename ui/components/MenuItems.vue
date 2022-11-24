@@ -24,22 +24,28 @@ export default {
          * The optional title will be shown on menu items on hover
          * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
          * The optional separator will add a separator below the item if it's not the last in the list.
+         * The optional sectionHeadline adds another styling to the item-font by reducing size and brightening color
+         * The optional selected visually emphasizes an item by inverting the color of the item
          * @example
-         [{
-         href: 'http://apple.com',
-         text: 'Apples',
-         icon: HelpIcon
-         hotkeyText: 'CTRL + H',
-         title: 'Tastier Apples',
-         }, {
-           href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-              text: 'Oranges',
-              icon: StarIcon,
-              disabled: true,
-              separator: true
-           },  {
-             to: '/testing-nuxt-link',
-              text: 'Ananas'
+          [{
+            text: Example
+            sectionHeadline: true
+          }, {
+            href: 'http://apple.com',
+            text: 'Apples',
+            icon: HelpIcon
+            hotkeyText: 'CTRL + H',
+            title: 'Tastier Apples'
+          }, {
+            href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
+            text: 'Oranges',
+            icon: StarIcon,
+            disabled: true,
+            separator: true
+          }, {
+            to: '/testing-nuxt-link',
+            text: 'Ananas',
+            selected: true
            }]
          */
         items: {
@@ -59,6 +65,18 @@ export default {
         id: {
             default: '',
             type: String
+        },
+        /**
+         * Maximum width in px of the menu
+         */
+        maxMenuWidth: {
+            type: Number,
+            default: null
+        }
+    },
+    computed: {
+        useMaxMenuWidth() {
+            return Boolean(this.maxMenuWidth);
         }
     },
     emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
@@ -155,7 +173,7 @@ export default {
          * @emits {item-click}
          */
         onItemClick(event, item) {
-            if (item.disabled) {
+            if (item.disabled || item.sectionHeadline) {
                 return;
             }
 
@@ -174,7 +192,6 @@ export default {
                 let newEvent = new Event('click');
                 event.target.dispatchEvent(newEvent);
             }
-            
             this.$emit('item-click', event, item, this.id);
         }
     }
@@ -195,18 +212,20 @@ export default {
       v-for="(item, index) in items"
       :key="index"
       :class="[{ separator: item.separator }]"
+      :style="{ 'max-width': useMaxMenuWidth ? `${maxMenuWidth}px` : null }"
       :title="item.title"
       @click="onItemClick($event, item)"
       @keydown.enter="onItemClick($event, item)"
       @keydown.space="onItemClick($event, item)"
-      @focusin="$emit('item-active', item.disabled ? null : item, id)"
-      @pointerenter="$emit('item-active', item.disabled ? null : item, id)"
+      @focusin="$emit('item-active', item.disabled || item.sectionHeadline ? null : item, id)"
+      @pointerenter="$emit('item-active', item.disabled || item.sectionHeadline ? null : item, id)"
     >
       <Component
         :is="linkTagByType(item)"
         ref="listItem"
         :tabindex="item.disabled ? null: '0'"
-        :class="['clickable-item', { disabled: item.disabled }]"
+        :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
+          disabled: item.disabled, selected: item.selected }]"
         :to="item.to || null"
         :href="item.href || null"
       >
@@ -216,7 +235,9 @@ export default {
           class="item-icon"
         />
         <div class="label">
-          <span class="text">{{ item.text }}</span>
+          <span :class="['text', { truncate: useMaxMenuWidth }]">
+            {{ item.text }}
+          </span>
           <span
             v-if="item.hotkeyText"
             class="hotkey"
@@ -253,7 +274,7 @@ ul {
     border-bottom: 1px solid var(--knime-porcelain);
   }
 
-  & .clickable-item {
+  & .list-item {
     border: none;
     background: none;
     width: 100%;
@@ -263,68 +284,101 @@ ul {
     font-weight: 500;
     display: flex;
     text-decoration: none;
-    cursor: pointer;
     white-space: nowrap;
     color: var(--theme-text-normal-color);
 
-    &.disabled {
-      opacity: 0.5;
-      cursor: default;
-      pointer-events: none;
-    }
+    &.clickable-item {
+      cursor: pointer;
 
-    & .item-icon {
-      stroke: var(--theme-dropdown-foreground-color);
-      stroke-width: calc(32px / 18);
-      width: 18px;
-      height: 18px;
-      margin-right: 7px;
-    }
-
-    & .label {
-      display: flex;
-      text-align: left;
-      width: 100%;
-
-      & .text {
-        flex-shrink: 1;
-        flex-basis: 100%;
+      &.disabled {
+        opacity: 0.5;
+        cursor: default;
+        pointer-events: none;
       }
-
-      & .hotkey {
-        margin-left: 40px;
-      }
-    }
-
-    &:hover {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
 
       & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-hover);
+        stroke: var(--theme-dropdown-foreground-color);
+        stroke-width: calc(32px / 18);
+        width: 18px;
+        height: 18px;
+        margin-right: 7px;
+      }
+
+      &.selected {
+        background-color: var(--theme-dropdown-foreground-color);
+        color: var(--theme-dropdown-background-color); /* background and foreground are switched on selection */
+
+        & .item-icon {
+          stroke: var(--theme-dropdown-background-color);
+        }
+      }
+
+      & .label {
+        display: flex;
+        text-align: left;
+        width: 100%;
 
         & .text {
+          flex-shrink: 1;
+          flex-basis: 100%;
+
+          &.truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        & .hotkey {
+          margin-left: 40px;
+        }
+      }
+
+      &:hover {
+        outline: none;
+        background-color: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+
+        & .item-icon {
           stroke: var(--theme-dropdown-foreground-color-hover);
+
+          & .text {
+            stroke: var(--theme-dropdown-foreground-color-hover);
+          }
+        }
+      }
+
+      &:active,
+      &:focus {
+        outline: none;
+        background-color: var(--theme-dropdown-background-color-focus);
+        color: var(--theme-dropdown-foreground-color-focus);
+
+        & .item-icon {
+          stroke: var(--theme-dropdown-foreground-color-focus);
+
+          & .text {
+            stroke: var(--theme-dropdown-foreground-color-focus);
+          }
         }
       }
     }
 
-    &:active,
-    &:focus {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
+    &.section-headline {
+      color: var(--knime-stone);
+      padding-top: 13px;
+      pointer-events: none;
+      height: 30px;
+      font-size: 10px;
+      line-height: 15px;
+      display: flex;
+      align-items: center;
 
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-focus);
-
-        & .text {
-          stroke: var(--theme-dropdown-foreground-color-focus);
-        }
+      &:hover,
+      &:focus,
+      &:active {
+        outline: none;
       }
     }
   }
 }
-
 </style>
