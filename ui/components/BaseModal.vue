@@ -37,8 +37,8 @@ export default {
     watch: {
         // Set and remove global event handlers on modal activation.
         // Only manual activation is supported.
-        active(newVal) {
-            if (newVal === true) {
+        active() {
+            if (this.active) {
                 window.addEventListener('keyup', this.onGlobalKeyUp);
             } else {
                 window.removeEventListener('keyup', this.onGlobalKeyUp);
@@ -83,7 +83,7 @@ export default {
       v-if="active"
       :active="active && showContent"
       :initial-focus="() => $refs.dialog"
-      :allow-outside-click="true"
+      allow-outside-click
       class="container"
     >
       <div
