@@ -30,36 +30,19 @@ export default {
             /**
              * 'showContent' is used to animate the modal content separately
              */
-            showContent: false,
-            /**
-             * 'focusTrapActive' is used to activate the FocusTrap.
-             * it's false by default until component is mounted
-             */
-            focusTrapActive: false
+            showContent: false
         };
     },
     watch: {
         // Set and remove global event handlers on modal activation.
         // Only manual activation is supported.
-        active(newVal, oldVal) {
+        active(newVal) {
             if (newVal === true) {
                 window.addEventListener('keyup', this.onGlobalKeyUp);
             } else {
                 window.removeEventListener('keyup', this.onGlobalKeyUp);
             }
-     
-            if (newVal !== oldVal) {
-                // set FocusTrap's active prop on BaseModel's prop change
-                this.focusTrapActive = newVal;
-            }
         }
-    },
-    mounted() {
-        /**
-        * set FocusTrap's active prop on mounted to ensure that the component
-        * is focusable when the focus trap component mounts.
-        */
-        this.focusTrapActive = this.active;
     },
     methods: {
         onGlobalKeyUp(e) {
@@ -97,11 +80,15 @@ export default {
     @leave="showContent = false"
   >
     <FocusTrap
-      :active="focusTrapActive"
+      v-if="active"
+      :active="active && showContent"
+      :initial-focus="() => $refs.dialog"
+      :allow-outside-click="true"
       class="container"
     >
       <div
         ref="dialog"
+        tabindex="-1"
         @click.stop
       >
         <div
