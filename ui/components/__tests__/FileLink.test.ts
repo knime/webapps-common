@@ -1,11 +1,12 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest'; // TODO enable globals?
 
-import FileLink from '~/ui/components/FileLink.vue';
+import { mount, shallowMount } from '@vue/test-utils';
+import FileLink from '../FileLink.vue';
 
-describe('FileLink.vue', () => {
+describe('FileLink', () => {
     it('renders link', () => {
         const wrapper = shallowMount(FileLink, {
-            propsData: {
+            props: {
                 text: 'Dl Some Stuff',
                 href: 'https://example.com/file.pdf'
             }
@@ -19,7 +20,6 @@ describe('FileLink.vue', () => {
         expect(a.attributes('href')).toBe('https://example.com/file.pdf');
         expect(a.attributes('download')).toBe('');
     });
-
 
     it('renders with icon', () => {
         const wrapper = mount(FileLink, {
