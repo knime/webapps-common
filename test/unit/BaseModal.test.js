@@ -44,7 +44,6 @@ describe('BaseModal', () => {
             // activate
             expect(wrapper.find('.overlay').exists()).toBeTruthy();
             expect(wrapper.find('.content-item').exists()).toBeFalsy();
-            expect(wrapper.vm.focusTrapActive).toBe(true);
 
             // show content
             wrapper.setData({ showContent: true });
@@ -55,7 +54,6 @@ describe('BaseModal', () => {
             wrapper.setProps({ active: false });
             expect(window.removeEventListener).toHaveBeenCalled();
             expect(wrapper.html()).toBeFalsy();
-            expect(wrapper.vm.focusTrapActive).toBe(false);
         });
     });
 
