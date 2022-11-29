@@ -1,4 +1,6 @@
-import { capitalize } from '~/util/capitalize';
+import { describe, it, expect } from 'vitest';
+
+import { capitalize } from '../capitalize';
 
 describe('capitalize', () => {
     it('capitalizes first letter of string', () => {

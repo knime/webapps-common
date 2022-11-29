@@ -1,6 +1,7 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons.vue';
+import BaseRadioButtons from '../BaseRadioButtons.vue';
 
 describe('BaseRadioButtons.vue', () => {
     let possibleValues;
@@ -26,7 +27,7 @@ describe('BaseRadioButtons.vue', () => {
 
     it('renders', () => {
         const wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
@@ -43,7 +44,7 @@ describe('BaseRadioButtons.vue', () => {
     it('renders a name value', () => {
         let value = 'test3';
         let wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues,
                 value
             }
@@ -53,7 +54,7 @@ describe('BaseRadioButtons.vue', () => {
         expect(wrapper.find('input').attributes('name')).toBe('wc-radio-2');
 
         wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues,
                 value,
                 name: 'custom-name'
@@ -68,12 +69,12 @@ describe('BaseRadioButtons.vue', () => {
 
     it('two render with different name attributes', () => {
         let w1 = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
         let w2 = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
@@ -85,7 +86,7 @@ describe('BaseRadioButtons.vue', () => {
     it('renders selected value', () => {
         let value = 'test3';
         const wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues,
                 value
             }
@@ -103,7 +104,7 @@ describe('BaseRadioButtons.vue', () => {
 
     it('emits event for selected value', () => {
         const wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
@@ -115,7 +116,7 @@ describe('BaseRadioButtons.vue', () => {
 
     it('validation of possibleValues', () => {
         const wrapper = mount(BaseRadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });

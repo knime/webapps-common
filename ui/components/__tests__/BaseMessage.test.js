@@ -1,5 +1,7 @@
-import BaseMessage from '~/ui/components/BaseMessage.vue';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
+
+import BaseMessage from '../BaseMessage.vue';
 
 describe('BaseMessage.vue', () => {
     let wrapper;
@@ -17,7 +19,7 @@ describe('BaseMessage.vue', () => {
 
     it('renders success', () => {
         wrapper = mount(BaseMessage, {
-            propsData: {
+            props: {
                 type: 'success'
             }
         });
@@ -27,7 +29,7 @@ describe('BaseMessage.vue', () => {
 
     it('renders error', () => {
         wrapper = mount(BaseMessage, {
-            propsData: {
+            props: {
                 type: 'error'
             }
         });

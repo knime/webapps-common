@@ -1,19 +1,20 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import NodePreview from '../../../ui/components/node/NodePreview.vue';
-import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal.vue';
-import PortIcon from '../../../ui/components/node/PortIcon.vue';
+import NodePreview from '../NodePreview.vue';
+import NodeTorsoNormal from '../NodeTorsoNormal.vue';
+import PortIcon from '../PortIcon.vue';
 
 describe('NodePreview.vue', () => {
     it('renders node torso', () => {
         const wrapper = shallowMount(NodePreview, {
-            propsData: {
+            props: {
                 type: 'A',
                 isComponent: true,
                 icon: 'data:image/icon'
             }
         });
-        expect(wrapper.find(NodeTorsoNormal).props()).toStrictEqual({
+        expect(wrapper.findComponent(NodeTorsoNormal).props()).toStrictEqual({
             type: 'A',
             isComponent: true,
             icon: 'data:image/icon'
@@ -22,7 +23,7 @@ describe('NodePreview.vue', () => {
 
     it('creates port icons', () => {
         const wrapper = shallowMount(NodePreview, {
-            propsData: {
+            props: {
                 inPorts: [{
                     color: '#000',
                     optional: true,
@@ -39,7 +40,7 @@ describe('NodePreview.vue', () => {
                 }]
             }
         });
-        let portIcons = wrapper.findAll(PortIcon);
+        let portIcons = wrapper.findAllComponents(PortIcon);
         expect(portIcons.at(0).props()).toStrictEqual({
             color: '#000',
             filled: false,
@@ -64,7 +65,7 @@ describe('NodePreview.vue', () => {
 
     it('renders dynamic Ports indicator', () => {
         const wrapper = shallowMount(NodePreview, {
-            propsData: {
+            props: {
                 hasDynPorts: true
             }
         });

@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest'; // TODO enable globals?
+import { describe, it, expect } from 'vitest';
 
 import { mount, shallowMount } from '@vue/test-utils';
 import FileLink from '../FileLink.vue';
 
-describe('FileLink', () => {
+describe('FileLink.vue', () => { // TODO .vue or not?
     it('renders link', () => {
         const wrapper = shallowMount(FileLink, {
             props: {
@@ -20,10 +20,9 @@ describe('FileLink', () => {
         expect(a.attributes('href')).toBe('https://example.com/file.pdf');
         expect(a.attributes('download')).toBe('');
     });
-
     it('renders with icon', () => {
         const wrapper = mount(FileLink, {
-            propsData: {
+            props: {
                 text: 'Dl Some Stuff',
                 href: 'https://example.com/file.pdf',
                 fileExt: 'pdf',
@@ -33,10 +32,9 @@ describe('FileLink', () => {
         expect(wrapper.find('a').find('svg').exists()).toBeTruthy();
         expect(wrapper.find('a').attributes('type')).toBe('application/pdf');
     });
-
     it('renders with size', () => {
         const wrapper = mount(FileLink, {
-            propsData: {
+            props: {
                 text: 'Dl Some Stuff',
                 href: 'https://example.com/file.pdf',
                 fileExt: 'pdf',
@@ -50,7 +48,7 @@ describe('FileLink', () => {
 
     it('renders with size in Bytes', () => {
         const wrapper = shallowMount(FileLink, {
-            propsData: {
+            props: {
                 text: 'A Word File',
                 href: 'https://example.com/file.doc',
                 fileExt: 'doc',
@@ -64,7 +62,7 @@ describe('FileLink', () => {
 
     it('renders with size in Kilobytes', () => {
         const wrapper = shallowMount(FileLink, {
-            propsData: {
+            props: {
                 text: 'A Word File',
                 href: 'https://example.com/file.doc',
                 fileExt: 'doc',
@@ -78,7 +76,7 @@ describe('FileLink', () => {
 
     it('renders with size in Megabytes', () => {
         const wrapper = shallowMount(FileLink, {
-            propsData: {
+            props: {
                 text: 'A Word File',
                 href: 'https://example.com/file.doc',
                 fileExt: 'doc',
@@ -92,7 +90,7 @@ describe('FileLink', () => {
 
     it('renders with size in Gigabytes', () => {
         const wrapper = shallowMount(FileLink, {
-            propsData: {
+            props: {
                 text: 'A Word File',
                 href: 'https://example.com/file.doc',
                 fileExt: 'doc',

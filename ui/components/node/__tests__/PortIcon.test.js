@@ -1,21 +1,23 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import PortIcon from '../../../ui/components/node/PortIcon.vue';
-import * as portColors from '../../../ui/colors/portColors.mjs';
+import PortIcon from '../PortIcon.vue';
+import * as portColors from '../../../colors/portColors.mjs';
 
 describe('PortIcon', () => {
     let wrapper;
 
     it('renders holey port', () => {
         wrapper = shallowMount(PortIcon, {
-            propsData: {
+            props: {
                 type: 'other',
                 color: 'yellow',
                 filled: false
             }
         });
-        expect(wrapper.attributes().stroke).toBe('yellow');
-        expect(wrapper.attributes().fill).toBe('transparent');
+        const attributes = wrapper.find('rect').attributes();
+        expect(attributes.stroke).toBe('yellow');
+        expect(attributes.fill).toBe('transparent');
     });
 
     it.each([
@@ -24,13 +26,14 @@ describe('PortIcon', () => {
         ['other', 'rect', '']
     ])('Renders filled port: DataType %s', (type, tag, color) => {
         wrapper = shallowMount(PortIcon, {
-            propsData: {
+            props: {
                 type,
                 filled: true
             }
         });
         expect(wrapper.find(tag).exists()).toBeTruthy();
-        expect(wrapper.attributes().stroke).toBe(color);
-        expect(wrapper.attributes().fill).toBe(color);
+        const attributes = wrapper.find(tag).attributes();
+        expect(attributes.stroke).toBe(color);
+        expect(attributes.fill).toBe(color);
     });
 });

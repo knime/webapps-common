@@ -1,4 +1,6 @@
-import { isAfterMaxDate, isBeforeMinDate } from '~/util/dateMinMaxCheck';
+import { describe, it, expect } from 'vitest';
+
+import { isAfterMaxDate, isBeforeMinDate } from '../dateMinMaxCheck';
 
 describe('dateMinMaxCheck.js', () => {
     describe('isAfterMaxDate', () => {

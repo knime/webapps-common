@@ -1,10 +1,11 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import NodeTorsoNormal from '../../../ui/components/node/NodeTorsoNormal.vue';
-import * as nodeColors from '../../../ui/colors/nodeColors.mjs';
+import NodeTorsoNormal from '../NodeTorsoNormal.vue';
+import * as nodeColors from '../../../colors/nodeColors.mjs';
 
 describe('NodeTorsoNormal.vue', () => {
-    let doShallowMount = propsData => shallowMount(NodeTorsoNormal, { propsData });
+    let doShallowMount = props => shallowMount(NodeTorsoNormal, { props });
 
     it('sets background color', () => {
         let wrapper = doShallowMount({
@@ -51,14 +52,14 @@ describe('NodeTorsoNormal.vue', () => {
             kind: 'node',
             icon: 'data:image/0000'
         });
+
         const nodeIcon = wrapper.find('image');
-        expect(nodeIcon.attributes().href).toBe('data:image/0000');
-        expect(nodeIcon.html()).toContain('xlink:href=');
+        expect(nodeIcon.attributes('xlink:href')).toBe('data:image/0000');
     });
 
     it('uses the correct background and path', () => {
         let wrapper = shallowMount(NodeTorsoNormal, {
-            propsData: {
+            props: {
                 type: 'Predictor',
                 isComponent: false
             }
@@ -71,7 +72,7 @@ describe('NodeTorsoNormal.vue', () => {
             ',32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H2.8C1.3,32,0,30.7,0,29.2z');
 
         wrapper = shallowMount(NodeTorsoNormal, {
-            propsData: {
+            props: {
                 type: 'ScopeEnd',
                 isComponent: false
             }

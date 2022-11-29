@@ -1,42 +1,43 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import PortsList from '../../../ui/components/node/PortsList.vue';
-import PortGroup from '../../../ui/components/node/PortGroup.vue';
+import PortsList from '../PortsList.vue';
+import PortGroup from '../PortGroup.vue';
 
 describe('PortsList.vue', () => {
     it('renders', () => {
         const wrapper = shallowMount(PortsList);
-        expect(wrapper.find(PortsList)).toBeTruthy();
+        expect(wrapper.findComponent(PortsList)).toBeTruthy();
     });
 
     it('accepts inPorts', () => {
         const wrapper = shallowMount(PortsList, {
-            propsData: {
+            props: {
                 inPorts: [{
                     foo: 'bar'
                 }]
             }
         });
-        expect(wrapper.is('div')).toBeTruthy();
-        expect(wrapper.findAll(PortGroup).length).toEqual(1);
-        expect(wrapper.find(PortGroup).props('ports')).toEqual([{ foo: 'bar' }]);
+        expect(wrapper.element.tagName).toBe('DIV');
+        expect(wrapper.findAllComponents(PortGroup).length).toEqual(1);
+        expect(wrapper.findComponent(PortGroup).props('ports')).toEqual([{ foo: 'bar' }]);
     });
 
     it('accepts outPorts', () => {
         const wrapper = shallowMount(PortsList, {
-            propsData: {
+            props: {
                 outPorts: [{
                     baz: 'qux'
                 }]
             }
         });
-        expect(wrapper.findAll(PortGroup).length).toEqual(1);
-        expect(wrapper.find(PortGroup).props('ports')).toEqual([{ baz: 'qux' }]);
+        expect(wrapper.findAllComponents(PortGroup).length).toEqual(1);
+        expect(wrapper.findComponent(PortGroup).props('ports')).toEqual([{ baz: 'qux' }]);
     });
 
     it('accepts inPorts and outPorts', () => {
         const wrapper = shallowMount(PortsList, {
-            propsData: {
+            props: {
                 inPorts: [{
                     foo: 'bar'
                 }],
@@ -45,7 +46,7 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        let allPortsListItems = wrapper.findAll(PortGroup);
+        let allPortsListItems = wrapper.findAllComponents(PortGroup);
         expect(allPortsListItems.length).toEqual(2);
         expect(allPortsListItems.at(0).props('ports')).toEqual([{ foo: 'bar' }]);
         expect(allPortsListItems.at(1).props('ports')).toEqual([{ baz: 'qux' }]);
@@ -53,7 +54,7 @@ describe('PortsList.vue', () => {
 
     it('accepts dynInPorts and dynOutPorts', () => {
         const wrapper = shallowMount(PortsList, {
-            propsData: {
+            props: {
                 dynInPorts: [{
                     types: [{ foo: 'bar' }]
 
@@ -70,7 +71,7 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        let allPortsListItems = wrapper.findAll(PortGroup);
+        let allPortsListItems = wrapper.findAllComponents(PortGroup);
         // eslint-disable-next-line no-magic-numbers
         expect(allPortsListItems.length).toEqual(4);
         expect(allPortsListItems.at(2).props('ports')).toEqual([{ foo: 'bar' }]);

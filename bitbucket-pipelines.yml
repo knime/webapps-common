@@ -9,7 +9,7 @@ definitions:
         script:
           - npm ci
           - npm run ci:lint
-          - npm run coverage -- --ci
+          - npm run coverage
           - npm run audit
 
 pipelines:

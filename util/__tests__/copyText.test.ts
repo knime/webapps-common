@@ -1,9 +1,10 @@
-import { copyText } from '~/util/copyText';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 
+import { copyText } from '../copyText';
 
 describe('copyText', () => {
     beforeAll(() => {
-        document.execCommand = jest.fn();
+        document.execCommand = vi.fn();
     });
 
     it('copies text', () => {

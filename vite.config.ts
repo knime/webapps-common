@@ -1,19 +1,25 @@
-import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
+// https://vitest.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader()],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    plugins: [vue(), svgLoader()],
+    test: {
+        include: ['**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        environment: 'jsdom',
+        reporters: ['default', 'junit'],
+        coverage: {
+            all: true,
+            exclude: [
+                'demo/', 'lint/', 'buildtools/', 'install-subDependencies.js', 'coverage/**', 'dist/**',
+                '**/*.d.ts', '**/__tests__/**', '**/{vite,vitest}.config.{js,cjs,mjs,ts}',
+                '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
+            ]
+        },
+        outputFile: {
+            junit: 'test-results/junit.xml' // needed for Bitbucket Pipeline, see https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/
+        }
     }
-  },
-  test: {
-    include: ['**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    environment: 'jsdom'
-  }
 });

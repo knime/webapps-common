@@ -1,14 +1,16 @@
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import BaseModal from '~/ui/components/BaseModal.vue';
 
-jest.mock('focus-trap-vue', () => ({}), { virtual: true });
+import BaseModal from '../BaseModal.vue';
+
+vi.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('BaseModal', () => {
     describe('rendering', () => {
         /* eslint-disable no-global-assign */
         beforeAll(() => {
-            window.addEventListener = jest.fn();
-            window.removeEventListener = jest.fn();
+            window.addEventListener = vi.fn();
+            window.removeEventListener = vi.fn();
         });
 
         afterAll(() => {
@@ -96,7 +98,7 @@ describe('BaseModal', () => {
 
         wrapper.setProps({ active: true });
         wrapper.setData({ showContent: true });
-        let fakeEvent = { stopPropagation: jest.fn() };
+        let fakeEvent = { stopPropagation: vi.fn() };
 
         wrapper.find({ ref: 'dialog' }).trigger('click', fakeEvent);
         expect(fakeEvent.stopPropagation).toHaveBeenCalled();
