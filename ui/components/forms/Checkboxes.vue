@@ -102,8 +102,7 @@ export default {
 
   &.horizontal {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
 
     & :deep(label) {
       text-overflow: ellipsis;

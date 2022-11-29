@@ -196,6 +196,10 @@ input:disabled + span {
   }
 }
 
+input:not(:checked, :disabled) + span {
+  cursor: pointer;
+}
+
 input:not(:disabled):checked + span,
 input:not(:disabled) + span:hover {
   color: var(--knime-masala);
@@ -214,10 +218,6 @@ input:checked:not(:disabled) + span::after {
   right: 0;
   border-top: 3px solid var(--knime-masala);
   z-index: 1; /* local stacking context because Carousel.vue has isolation: isolate; */
-}
-
-input:not(:checked, :disabled) + span {
-  cursor: pointer;
 }
 
 </style>

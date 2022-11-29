@@ -48,12 +48,16 @@ export default {
   overflow-wrap: anywhere;
   word-break: break-word; /* Safari needs this */
 
+  /* stylelint-disable max-line-length */
+
   /*
     possible markup in Node description: a,b,br,h3,h4,hr,i,li,ol,p,pre,sub,sup,table,td,th,tr,tt,u,ul
     see https://bitbucket.org/KNIME/knime-core/src/3207ad3e20e242550d4c775e1af6d69cd521d9fd/org.knime.core/src/eclipse/org/knime/core/node/Node_v3.6.xsd#lines-334
     possible markup in Port description: a,b,br,hr,i,ol,p,pre,sub,sup,tt,u,ul
     see https://bitbucket.org/KNIME/knime-core/src/3207ad3e20e242550d4c775e1af6d69cd521d9fd/org.knime.core/src/eclipse/org/knime/core/node/Node_v3.6.xsd#lines-316
   */
+
+  /* stylelint-enable max-line-length */
   & :deep(p) {
     margin: 0 0 20px;
   }

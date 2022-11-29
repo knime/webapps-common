@@ -17,7 +17,7 @@ export default {
   <transition name="slide">
     <div
       v-if="isExpanded"
-      class="sideDrawer"
+      class="side-drawer"
     >
       <div class="content">
         <slot />
@@ -37,7 +37,7 @@ export default {
   transform: translateX(calc(100% + 10px)); /* extra 10px to hide box shadow when collapsed */
 }
 
-.sideDrawer {
+.side-drawer {
   position: fixed;
   top: 0;
   width: 500px;

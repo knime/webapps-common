@@ -91,6 +91,7 @@ export default {
 .search-input {
   & .clear-search {
     --icon-size: 12;
+
     margin-top: -2px; /* Move clear-all button up 2px to be centered with FunctionButton in use. */
     margin-right: -6px;
     pointer-events: auto; /* otherwise, we won't be able to :hover the button */

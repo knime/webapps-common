@@ -194,13 +194,13 @@ input {
   }
 
   &.with-icon.with-icon-right {
-    padding: 10px 38px 10px 38px;
+    padding: 10px 38px;
   }
 }
 
 /* This is handled outside of the input element, because hovering inside slots
  * would otherwise not be noticed within the input element. */
-.input-wrapper:hover:not(:focus) input:not(:focus):not(:disabled) {
+.input-wrapper:hover:not(:focus) input:not(:focus, :disabled) {
   background-color: var(--theme-input-field-background-color-focus);
 }
 

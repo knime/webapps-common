@@ -90,7 +90,7 @@ export default {
 
   & :deep(a) {
     color: var(--theme-text-link-foreground-color);
-    background: var(--theme-text-link-background-color);
+    background-color: var(--theme-text-link-background-color);
 
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
@@ -161,26 +161,6 @@ export default {
     }
   }
 
-  &.info {
-    & .header {
-      background: var(--knime-masala);
-    }
-
-    & .notice {
-      background-color: var(--knime-porcelain);
-    }
-  }
-
-  &.warn {
-    & .header {
-      background: var(--theme-color-error);
-    }
-
-    & .notice {
-      background-color: var(--theme-color-error-semi);
-    }
-  }
-
   & .notice {
     padding: var(--modal-padding);
     font-weight: 300;
@@ -206,6 +186,26 @@ export default {
       &:last-child {
         margin-bottom: 0;
       }
+    }
+  }
+
+  &.info {
+    & .header {
+      background-color: var(--knime-masala);
+    }
+
+    & .notice {
+      background-color: var(--knime-porcelain);
+    }
+  }
+
+  &.warn {
+    & .header {
+      background-color: var(--theme-color-error);
+    }
+
+    & .notice {
+      background-color: var(--theme-color-error-semi);
     }
   }
 

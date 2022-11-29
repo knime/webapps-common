@@ -165,7 +165,7 @@ export default {
       />
     </svg>
 
-    <div class="labelContainer">
+    <div class="label-container">
       <div
         v-if="displayValues"
         class="value-label"
@@ -212,7 +212,7 @@ svg {
   }
 }
 
-.labelContainer {
+.label-container {
   position: absolute;
   top: 0;
   left: 0;

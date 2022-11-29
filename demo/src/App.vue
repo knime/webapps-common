@@ -15,7 +15,6 @@ import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
 
 import NpmLink from './components/demo/NpmLink.vue';
 
-// TODO probably remove async loading due to content jumping, but for migration it's convinient
 const demoComponents = {
     layout: {
         Fonts: defineAsyncComponent(() => import('./components/Fonts.vue')),

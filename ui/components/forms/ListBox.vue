@@ -202,7 +202,7 @@ export default {
 </script>
 
 <template>
-  <div :class="['listBox', { 'invalid': !isValid }]">
+  <div :class="['list-box', { 'invalid': !isValid }]">
     <ul
       :id="id"
       ref="ul"
@@ -237,7 +237,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.listBox {
+.list-box {
   position: relative;
   isolation: isolate;
 

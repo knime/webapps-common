@@ -309,7 +309,7 @@ export default {
       <MultiselectListBox
         ref="left"
         :size="listSize"
-        class="listBox"
+        class="list-box"
         :model-value="leftSelected"
         :is-valid="isValid"
         :possible-values="leftItems"
@@ -364,7 +364,7 @@ export default {
       </div>
       <MultiselectListBox
         ref="right"
-        class="listBox"
+        class="list-box"
         :model-value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"
@@ -412,12 +412,12 @@ export default {
   }
 
   & .title,
-  & .listBox {
+  & .list-box {
     flex: 3 1 auto;
     max-width: calc(50% - (var(--button-bar-width) / 2));
   }
 
-  & .listBox {
+  & .list-box {
     display: flex;
     align-items: stretch;
     flex-direction: row;

@@ -74,12 +74,12 @@ export default {
             default: null
         }
     },
+    emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
     computed: {
         useMaxMenuWidth() {
             return Boolean(this.maxMenuWidth);
         }
     },
-    emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
     methods: {
         /**
          * @returns {Array<Element>} - HTML Elements to use for focus and events.

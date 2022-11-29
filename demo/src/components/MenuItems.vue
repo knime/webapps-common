@@ -117,6 +117,7 @@ export default {
     },
     computed: {
         menuItemsWithoutIcons() {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             return menuItemsData.map(({ icon, hotkeyText, ...rest }) => rest);
         },
         menuItemsWithSeparator() {

@@ -44,7 +44,7 @@ export default {
 <template>
   <nav
     v-if="items && items.length"
-    :class="['breadcrumb', { greyStyle }]"
+    :class="['breadcrumb', { 'grey-style': greyStyle }]"
   >
     <ul>
       <li
@@ -165,7 +165,7 @@ export default {
     }
   }
 
-  &.greyStyle {
+  &.grey-style {
     color: var(--theme-text-bold-color);
 
     /* Linked breadcrumb item */

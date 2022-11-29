@@ -135,6 +135,7 @@ export default {
             });
         },
         subMenuItemsWithoutIcons() {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             return subMenuItems.map(({ icon, hotkeyText, ...rest }) => rest);
         }
     }
