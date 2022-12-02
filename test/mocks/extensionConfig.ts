@@ -60,5 +60,6 @@ export const extensionConfig: ExtensionConfig = {
     flowVariableSettings: {
         modelVariables: {},
         viewVariables: {}
-    }
+    },
+    hasNodeView: true
 };

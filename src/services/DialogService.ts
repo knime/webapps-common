@@ -23,4 +23,11 @@ export class DialogService<T = any> {
         const flowSettings = await Promise.resolve(this.knimeService.extensionConfig?.flowVariableSettings || {});
         return createFlowVariablesMap(flowSettings);
     }
+
+    /**
+     * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
+     */
+    hasNodeView() {
+        return this.knimeService.extensionConfig?.hasNodeView;
+    }
 }

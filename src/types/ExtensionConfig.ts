@@ -18,6 +18,8 @@ import { ResourceInfo } from './ResourceInfo';
  * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
  * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
+ * @property {FlowVariableSettings} [flowVariableSettings]
+ * @property {boolean} hasNodeView
  * @template T
  */
 export type ExtensionConfig<T = any> = {
@@ -30,4 +32,5 @@ export type ExtensionConfig<T = any> = {
     initialData?: T;
     initialSelection?: T;
     flowVariableSettings?: FlowVariableSettings;
+    hasNodeView: boolean;
 };
