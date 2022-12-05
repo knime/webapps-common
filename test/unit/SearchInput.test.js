@@ -102,11 +102,9 @@ describe('SearchInput', () => {
 
             const caseSensitiveButton = wrapper.findAll(FunctionButton).at(1);
             expect(caseSensitiveButton.find(UpperLowerCaseIcon).exists()).toBeTruthy();
-            expect(wrapper.vm.caseSensitiveSearch).toBeFalsy();
 
             caseSensitiveButton.vm.$emit('click');
             expect(wrapper.emitted('toggle-case-sensitive-search')).toStrictEqual([[true]]);
-            expect(wrapper.vm.caseSensitiveSearch).toBeTruthy();
         });
 
         it('sets inverse search on inverse search button click', () => {
@@ -118,11 +116,9 @@ describe('SearchInput', () => {
 
             const inverseSearchButton = wrapper.findAll(FunctionButton).at(1);
             expect(inverseSearchButton.find(InverseSearchIcon).exists()).toBeTruthy();
-            expect(wrapper.vm.inverseSearchSearch).toBeFalsy();
 
             inverseSearchButton.vm.$emit('click');
             expect(wrapper.emitted('toggle-inverse-search')).toStrictEqual([[true]]);
-            expect(wrapper.vm.inverseSearch).toBeTruthy();
         });
     });
 });
