@@ -1,0 +1,6 @@
+autoEnabled=true
+eclipse.preferences.version=1
+idePrefixKey=
+projectKey=org.knime\:knime-core-ui
+serverId=sonar.knime.com
+sqPrefixKey=org.knime.core.ui.testing

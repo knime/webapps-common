@@ -1,29 +1,12 @@
-# README #
+# ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME views & dialogs
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This repository contains the core UI functionality.
 
-### What is this repository for? ###
+For the frontend parts, see [org.knime.core.ui/js-src/README.md](org.knime.core.ui/js-src/README.md).
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+In case Eclipse complains about missing libs, have a look here:
+[org.knime.core.ui/lib/WHERE_ARE_THE_JARS.txt](org.knime.core.ui/lib/WHERE_ARE_THE_JARS.txt) and
+[org.knime.core.ui.tests/lib/WHERE_ARE_THE_JARS.txt](org.knime.core.ui.tests/lib/WHERE_ARE_THE_JARS.txt)
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+# Join the Community!
+* [KNIME Forum](https://forum.knime.com/)
