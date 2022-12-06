@@ -192,12 +192,8 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
      */
     @Override
     public String getPageId(final NodeWrapper nw, final Page p) {
-        final var nc = nw.get();
-        if (nc instanceof SubNodeContainer) {
-            return "defaultdialog";
-        } else {
-            return PageUtil.getPageId((NativeNodeContainer)nc, p.isCompletelyStatic(), PageType.DIALOG);
-        }
+        return p.getPageIdForReusablePage()
+            .orElseGet(() -> PageUtil.getPageId(nw, p.isCompletelyStatic(), PageType.DIALOG));
     }
 
 }

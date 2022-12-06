@@ -66,6 +66,9 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
@@ -85,6 +88,7 @@ import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.core.webui.node.view.table.data.TableViewInitialDataImpl;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
+import org.knime.core.webui.page.Resource;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
 import org.knime.testing.node.view.TableTestUtil.ObjectColumn;
@@ -151,31 +155,31 @@ class TableViewTest {
         // get page path to 'register' the page
         nodeViewManager.getPagePath(NodeWrapper.of(nnc));
 
-        // TODO UIEXT-588 Enable code block below again
         // request a cell image resource
-        // var img =
-        //     IOUtils.toString(nodeViewManager.getPageResource(imgPath).get().getInputStream(), StandardCharsets.UTF_8);
-        // assertThat(img).startsWith("�PNG");
-        // request same image again (won't work, because it isn't kept)
-        // var ex = assertThrows(NoSuchElementException.class, () -> nodeViewManager.getPageResource(imgPath));
-        // assertThat(ex).hasMessageContaining("There is no image");
-        // assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(1);
+        var img = toString(nodeViewManager.getPageResource(imgPath).orElse(null));
+        assertThat(img).startsWith("�PNG");
+        // request same image again
+        img = toString(nodeViewManager.getPageResource(imgPath).orElse(null));
+        assertThat(img).startsWith("�PNG");
+        assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
-        // TODO UIEXT-588 Enable code block below again
         // request cell image resource with custom dimension
-        // try (final var is = nodeViewManager.getPageResource(imgPath2 + "?w=12&h=13").get().getInputStream()) {
-        //     var bufferedImage = ImageIO.read(is);
-        //     assertThat(bufferedImage.getWidth()).isEqualTo(12);
-        //     assertThat(bufferedImage.getHeight()).isEqualTo(13);
-        // }
+        try (final var is = nodeViewManager.getPageResource(imgPath2 + "?w=12&h=13").get().getInputStream()) {
+            var bufferedImage = ImageIO.read(is);
+            assertThat(bufferedImage.getWidth()).isEqualTo(12);
+            assertThat(bufferedImage.getHeight()).isEqualTo(13);
+        }
 
-        // TODO UIEXT-588 Enable code block below again
         // request an image through an invalid path
-        // var invalidImgPath = imgPath.substring(0, imgPath.lastIndexOf("/") + 1) + "0.png";
-        // var ex2 = assertThrows(NoSuchElementException.class, () -> nodeViewManager.getPageResource(invalidImgPath));
-        // assertThat(ex2).hasMessageContaining("There is no image");
+        var invalidImgPath = imgPath.substring(0, imgPath.lastIndexOf("/") + 1) + "0.png";
+        var emptyImg = toString(nodeViewManager.getPageResource(invalidImgPath).orElse(null));
+        assertThat(emptyImg).isEmpty();
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    private static String toString(final Resource resource) throws IOException {
+        return resource == null ? null : IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
     }
 
     /**

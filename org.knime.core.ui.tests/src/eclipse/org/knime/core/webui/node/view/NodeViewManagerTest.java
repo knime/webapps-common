@@ -144,6 +144,8 @@ public class NodeViewManagerTest {
             .assertThatThrownBy(() -> NodeViewManager.getInstance().callTextInitialDataService(NodeWrapper.of(nc)))
             .isInstanceOf(IllegalStateException.class).hasMessageContaining("No text initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
+        assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc), nodeView.getPage()))
+            .isEqualTo("view_" + nc.getID().toString().replace(":", "_"));
 
         hasView.set(false);
         assertThat(NodeViewManager.hasNodeView(nc)).as("node not expected to have a node view").isFalse();

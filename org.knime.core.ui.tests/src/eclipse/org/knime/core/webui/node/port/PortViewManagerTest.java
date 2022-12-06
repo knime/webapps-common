@@ -96,7 +96,9 @@ public class PortViewManagerTest {
         PortViewManager.registerPortViewFactory(FlowVariablePortObject.TYPE, portViewFactory0);
         PortViewManager.registerPortViewFactory(BufferedDataTable.TYPE, portViewFactory1);
         assertThat(portViewManager.getBaseUrl().orElse(null)).isEqualTo("http://org.knime.core.ui.port/");
-        assertThat(portViewManager.getPagePath(NodePortWrapper.of(nnc, 0))).isEqualTo("blub/page.html");
+        var npw = NodePortWrapper.of(nnc, 0);
+        assertThat(portViewManager.getPagePath(npw)).isEqualTo("port_view_page_name/page.js");
+        assertThat(portViewManager.getPageId(npw, portViewManager.getPage(npw))).isEqualTo("port_view_page_name");
 
         var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0));
         assertThat(portView).isNotNull();
@@ -135,12 +137,8 @@ public class PortViewManagerTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(() -> "", "page.html").build();
-            }
-
-            @Override
-            public String getPageId() {
-                return "blub";
+                return Page.builder(PortViewManagerTest.class, "blub", "page.js").markAsReusable("port_view_page_name")
+                    .build();
             }
 
         };

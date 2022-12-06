@@ -85,6 +85,7 @@ import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewTest;
 import org.knime.core.webui.page.Page;
@@ -152,7 +153,7 @@ public class NodeViewEntTest {
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.HTML.toString());
-        assertThat(resourceInfo.getId()).isEqualTo(PageUtil.getPageId(nnc, false, PageType.VIEW));
+        assertThat(resourceInfo.getId()).isEqualTo(PageUtil.getPageId(NodeWrapper.of(nnc), false, PageType.VIEW));
         var nodeInfo = ent.getNodeInfo();
         assertThat(nodeInfo.getNodeName()).isEqualTo("NodeView");
         assertThat(nodeInfo.getNodeAnnotation()).isEqualTo("node annotation");

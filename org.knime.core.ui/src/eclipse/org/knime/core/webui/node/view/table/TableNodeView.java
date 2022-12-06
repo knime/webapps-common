@@ -110,7 +110,7 @@ public final class TableNodeView implements NodeView {
 
     @Override
     public Page getPage() {
-        return TableViewUtil.createPage();
+        return TableViewUtil.PAGE;
     }
 
     @Override

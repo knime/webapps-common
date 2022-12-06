@@ -67,11 +67,10 @@ import org.knime.core.webui.page.Page;
 public final class DefaultNodeDialog extends NodeDialog {
 
     /**
-     * @return the {@link Page} used by this dialog
+     * The page representing the default node dialog.
      */
-    public static Page buildPage() {
-        return Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.min.js").build();
-    }
+    public static final Page PAGE = Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.min.js")
+        .markAsReusable("defaultdialog").build();
 
     private final DefaultNodeSettingsService m_settingsDataService;
 
@@ -106,7 +105,7 @@ public final class DefaultNodeDialog extends NodeDialog {
 
     @Override
     public Page getPage() {
-        return buildPage();
+        return PAGE;
     }
 
     @Override

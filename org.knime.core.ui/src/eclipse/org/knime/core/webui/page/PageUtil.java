@@ -49,6 +49,7 @@
 package org.knime.core.webui.page;
 
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.webui.node.NodeWrapper;
 
 /**
  * Utility methods around {@link Page}s.
@@ -86,18 +87,25 @@ public final class PageUtil {
     /**
      * Determines the page id. The page id is a valid file name!
      *
-     * @param nnc the node providing the node view page
+     * @param nw the node wrapper providing the page (for a node view, port view or node dialog)
      * @param isStaticPage whether it's a static page
      * @param pageType the kind of the page
      * @return the page id
      */
     @SuppressWarnings("java:S2301")
-    public static String getPageId(final NativeNodeContainer nnc, final boolean isStaticPage, final PageType pageType) {
-        if (isStaticPage) {
-            return getStaticPageId(nnc.getNode().getFactory().getClass(), pageType);
+    public static String getPageId(final NodeWrapper nw, final boolean isStaticPage, final PageType pageType) {
+        if (pageType == PageType.VIEW || pageType == PageType.DIALOG) {
+            var nnc = (NativeNodeContainer)nw.get();
+            if (isStaticPage) {
+                return getStaticPageId(nnc.getNode().getFactory().getClass(), pageType);
+            } else {
+                return getPageId(nnc.getID().toString().replace(":", "_"), pageType);
+            }
         } else {
-            return getPageId(nnc.getID().toString().replace(":", "_"), pageType);
+            throw new UnsupportedOperationException(
+                "Automatic page id determination not yet implemented for pages of type " + pageType);
         }
+
     }
 
     /**

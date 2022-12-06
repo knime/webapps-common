@@ -61,15 +61,6 @@ import org.knime.core.webui.data.DataServiceProvider;
  */
 public interface PortView extends UIExtension, DataServiceProvider {
 
-    /**
-     * Allows one to provide a custom page id (mainly into order to manually specify a page id to map the vue component
-     * to be used on the FE-side). Will need to be created automatically at some point (especially for third party port
-     * views).
-     *
-     * @return the page id
-     */
-    String getPageId();
-
     @Override
     default Optional<ApplyDataService> createApplyDataService() {
         // not available to port views

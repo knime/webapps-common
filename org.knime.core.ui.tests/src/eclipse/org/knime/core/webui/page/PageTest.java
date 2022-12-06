@@ -80,8 +80,10 @@ public class PageTest {
         var page = Page.builder(BUNDLE_ID, "files", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
         assertThat(page.isCompletelyStatic()).isFalse();
+        assertThat(page.getPageIdForReusablePage()).isEmpty();
         page = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         assertThat(page.isCompletelyStatic()).isTrue();
+        assertThat(page.getPageIdForReusablePage()).isEmpty();
     }
 
     /**
@@ -146,6 +148,30 @@ public class PageTest {
             .isEqualTo("resource supplier 2 - path/to/another/resource");
         assertThat(page.getResource("path/prefix/2/path/to/another/resource").get().isStatic()).isFalse();
         assertThat(page.getResource("path/to/nonexisting/resource")).isEmpty();
+    }
+
+    /**
+     * Tests {@link FromFilePageBuilder#markAsReusable(String)} and the impact on the resulting {@link Page}.
+     */
+    @Test
+    public void testMarkAsResuable() {
+        final var pageName = "page-name";
+        var page = Page.builder(BUNDLE_ID, "files", "page.html").markAsReusable(pageName).build();
+        assertThat(page.getPageIdForReusablePage().orElse(null))
+            .isEqualTo(pageName + ":" + System.identityHashCode(page));
+
+        page = Page.builder(BUNDLE_ID, "files", "page.html").markAsReusable(null).build();
+        assertThat(page.getPageIdForReusablePage()).isEmpty();
+
+        page = Page.builder(BUNDLE_ID, "files", "page.js").markAsReusable(pageName).build();
+        assertThat(page.getPageIdForReusablePage().orElse(null)).isEqualTo(pageName);
+        page = Page.builder(BUNDLE_ID, "files", "vue_component_reference").markAsReusable(pageName).build();
+        assertThat(page.getPageIdForReusablePage().orElse(null)).isEqualTo(pageName);
+
+        var illegalStatePage = Page.builder(BUNDLE_ID, "files", "page.html").addResource(() -> null, "resource.html")
+            .markAsReusable(pageName).build();
+        Assertions.assertThatThrownBy(() -> illegalStatePage.getPageIdForReusablePage().orElse(null))
+            .isInstanceOf(IllegalStateException.class).withFailMessage("test");
     }
 
     private static InputStream stringToInputStream(final String s) {

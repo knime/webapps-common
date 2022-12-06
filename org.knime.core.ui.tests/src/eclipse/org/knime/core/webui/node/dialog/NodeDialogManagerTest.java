@@ -134,6 +134,8 @@ public class NodeDialogManagerTest {
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node expected to have a node dialog").isTrue();
         var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(nc);
         assertThat(nodeDialog.getPage() == page).isTrue();
+        assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc), nodeDialog.getPage()))
+            .isEqualTo("dialog_" + nc.getID().toString().replace(":", "_"));
 
         assertThat(NodeDialogManager.getInstance().callTextInitialDataService(NodeWrapper.of(nc))).isEqualTo("test settings");
         assertThat(nodeDialog.getPage().isCompletelyStatic()).isFalse();

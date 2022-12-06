@@ -80,8 +80,11 @@ public final class Page implements Resource {
 
     private Boolean m_isCompletelyStatic;
 
+    private final String m_pageNameForReusablePage;
+
     Page(final Resource pageResource, final List<Resource> resources,
-        final Map<String, Function<String, Resource>> dynamicResources, final boolean dynamicResourcesAreStatic) {
+        final Map<String, Function<String, Resource>> dynamicResources, final boolean dynamicResourcesAreStatic,
+        final String pageNameForReusablePage) {
         m_pageResource = pageResource;
         m_resources = resources == null ? Collections.emptyMap()
             : resources.stream().collect(Collectors.toMap(Resource::getRelativePath, r -> r));
@@ -96,6 +99,7 @@ public final class Page implements Resource {
         } else {
             m_dynamicResources = Collections.emptyMap();
         }
+        m_pageNameForReusablePage = pageNameForReusablePage;
     }
 
     /**
@@ -154,6 +158,37 @@ public final class Page implements Resource {
             m_isCompletelyStatic = isStatic() && m_resources.values().stream().allMatch(Resource::isStatic);
         }
         return m_isCompletelyStatic;
+    }
+
+    /**
+     * Creates the page id for a re-usuable and completely static page.
+     *
+     * Will only return a page-id if the page is marked as re-usable (see
+     * {@link FromFilePageBuilder#markAsReusable(String)}).
+     *
+     * @return the page-id or an empty optional if the page is not marked as re-usable
+     * @throws IllegalStateException if the page is marked as re-usable but not completely static (see
+     *             {@link Page#isCompletelyStatic()}); or if 're-usability' is not supported for the page's
+     *             {@link ContentType}.
+     */
+    public Optional<String> getPageIdForReusablePage() {
+        if (m_pageNameForReusablePage == null) {
+            return Optional.empty();
+        } else if (!isCompletelyStatic()) {
+            throw new IllegalStateException("Page is marked as 're-usable' but not completely static.");
+        }
+
+        switch (getContentType()) {
+            case VUE_COMPONENT_LIB:
+            case VUE_COMPONENT_REFERENCE:
+                return Optional.of(m_pageNameForReusablePage);
+            case HTML:
+                // combine page-name with identity hash code of this object in order to guarantee global uniqueness
+                return Optional.of(m_pageNameForReusablePage)
+                    .map(id -> id + ":" + Integer.toString(System.identityHashCode(this)));
+            default:
+                throw new IllegalStateException("Page with content type " + getContentType() + " can't be re-used.");
+        }
     }
 
     /**

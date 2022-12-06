@@ -209,7 +209,7 @@ public class PageBuilder {
      * @return a new page instance
      */
     public Page build() {
-        return new Page(m_pageResource, m_resources, m_dynamicResources, m_dynamicResourcesAreStatic);
+        return new Page(m_pageResource, m_resources, m_dynamicResources, m_dynamicResourcesAreStatic, null);
     }
 
 }

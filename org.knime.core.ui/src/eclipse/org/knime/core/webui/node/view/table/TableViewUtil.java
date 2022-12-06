@@ -80,42 +80,29 @@ import org.knime.core.webui.page.Page;
  */
 public final class TableViewUtil {
 
+    // Note on the 'static' page id: the entire TableView-page can be considered 'completely static'
+    // because the page, represented by a vue component, is just a file (won't change at runtime)
+    // And the image resources associated with a page of an individual table view instance are
+    // served with a globally unique 'table id' in the path.
+    private static final String TABLEVIEW_PAGE_ID = "tableview";
+
+    /**
+     * The page representing the table view.
+     */
+    public static final Page PAGE = Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.min.js")
+        .markAsReusable(TABLEVIEW_PAGE_ID).addResources(createTableCellImageResourceSupplier(),
+            DataValueImageRendererRegistry.RENDERED_CELL_IMAGES_PATH_PREFIX, true)
+        .build();
+
     // This is workaround/hack for the lack of proper random-access functionality for a (BufferedData)Table.
     // For more details see the class' javadoc.
     // It's static because it's registered and kept with the page which in turn is assumed to be static
     // (i.e. doesn't change between node instances and, hence, won't be re-created for each node instance).
     static final DataValueImageRendererRegistry RENDERER_REGISTRY =
-        new DataValueImageRendererRegistry(createPageIdSupplier());
+        new DataValueImageRendererRegistry(() -> TABLEVIEW_PAGE_ID);
 
     private TableViewUtil() {
         // utility class
-    }
-
-    private static Supplier<String> createPageIdSupplier() {
-        return TableViewUtil::getPageId;
-    }
-
-    /**
-     * @return the table view's page id
-     */
-    public static String getPageId() {
-        // Note on the 'static' page id: the entire TableView-page can be considered 'completely static'
-        // because the page, represented by a vue component, is just a file (won't change at runtime)
-        // And the image resources associated with a page of an individual table view instance are
-        // served with a globally unique 'table id' in the path.
-        // TODO should not be named after node factory; see followup ticket
-        // TODO UIEXT-588
-        return "view_org.knime.base.views.node.tableview.TableViewNodeFactory";
-    }
-
-    /**
-     * @return the page representing the table view
-     */
-    public static Page createPage() {
-        return Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.min.js")
-            .addResources(createTableCellImageResourceSupplier(),
-                DataValueImageRendererRegistry.RENDERED_CELL_IMAGES_PATH_PREFIX, true)
-            .build();
     }
 
     private static Function<String, InputStream> createTableCellImageResourceSupplier() {

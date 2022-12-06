@@ -83,6 +83,8 @@ public final class FromFilePageBuilder extends PageBuilder {
 
     private final String m_basePath;
 
+    private String m_pageName;
+
     FromFilePageBuilder(final Class<?> clazz, final String basePath, final String relativeFilePath) {
         super(createFileResource(clazz, null, basePath, relativeFilePath));
         m_clazz = clazz;
@@ -118,6 +120,25 @@ public final class FromFilePageBuilder extends PageBuilder {
     public FromFilePageBuilder addResourceDirectory(final String relativeDirPath) {
         var root = getAbsoluteBasePath(m_clazz, m_bundleID, m_basePath);
         createResourcesFromDir(root, root.resolve(relativeDirPath), m_resources);
+        return this;
+    }
+
+    /**
+     * Marks this page as being re-usable by different nodes (e.g., as node dialog and/or view) and/or port (as port
+     * view). A benefit of re-using pages is that the resources associated with the page only need to be requested once
+     * for different nodes/ports.
+     *
+     * Note that page re-use is only possible if the page itself and all associated resources are static (see
+     * {@link Resource#isStatic()}).
+     *
+     * And also note that in order for a page to be truly re-used, the very same instance of the page, created with this
+     * page builder, must be used by the different nodes/ports.
+     *
+     * @param pageName a name for the re-usable page; must not be {@code null}, otherwise it's not marked as re-usable
+     * @return this page builder instance
+     */
+    public FromFilePageBuilder markAsReusable(final String pageName) {
+        m_pageName = pageName;
         return this;
     }
 
@@ -175,7 +196,7 @@ public final class FromFilePageBuilder extends PageBuilder {
 
     @Override
     public Page build() {
-        return new Page(m_pageResource, m_resources, m_dynamicResources, m_dynamicResourcesAreStatic);
+        return new Page(m_pageResource, m_resources, m_dynamicResources, m_dynamicResourcesAreStatic, m_pageName);
     }
 
     /*

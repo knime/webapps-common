@@ -73,6 +73,7 @@ import org.knime.core.util.ui.converter.JsonFormsDialogBuilder;
 import org.knime.core.util.ui.converter.UiComponentConverterRegistry;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.DataServiceContext;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeDialog;
 import org.knime.core.webui.page.Page;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -185,9 +186,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
 
         @Override
         public Page getPage() {
-            // TODO: use the same files as referenced by the DefaultNodeDialog after this ticket has been closed:
-            //       https://knime-com.atlassian.net/browse/UIEXT-437
-            return Page.builder(SubNodeContainerDialogFactory.class, "js-src/vue/dist", "NodeDialog.umd.min.js").build();
+            return DefaultNodeDialog.PAGE;
         }
 
         @Override

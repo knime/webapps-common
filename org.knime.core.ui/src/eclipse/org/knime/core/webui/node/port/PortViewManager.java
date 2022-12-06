@@ -61,6 +61,7 @@ import org.knime.core.webui.node.AbstractNodeUIManager;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
+import org.knime.core.webui.page.PageUtil;
 import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
@@ -180,7 +181,8 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      */
     @Override
     public String getPageId(final NodePortWrapper w, final Page p) {
-        return getPortView(w).getPageId();
+        return p.getPageIdForReusablePage()
+            .orElseGet(() -> PageUtil.getPageId(w, p.isCompletelyStatic(), PageType.PORT));
     }
 
     /**
