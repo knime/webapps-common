@@ -46,6 +46,14 @@ describe('SearchInput', () => {
         expect(focusMock).toHaveBeenCalled();
     });
 
+    it('emits focus event', () => {
+        doShallowMount();
+
+        wrapper.find(InputField).vm.$emit('focus');
+
+        expect(wrapper.emitted().focus).toBeTruthy();
+    });
+
     describe('searching event', () => {
         it('searches on input in search box', () => {
             doShallowMount();

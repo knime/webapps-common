@@ -69,6 +69,7 @@ export default {
     class="search-input"
     autocomplete="off"
     role="searchbox"
+    @focus="$emit('focus', $event)"
     @input="$emit('input', $event)"
   >
     <template #icon>
