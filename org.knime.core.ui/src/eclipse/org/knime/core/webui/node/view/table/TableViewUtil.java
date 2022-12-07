@@ -143,7 +143,7 @@ public final class TableViewUtil {
      * @param tableId
      * @return the {@link TableViewDataService} associated to the node
      */
-    public static TableViewDataService createTableViewDataService(final Supplier<BufferedDataTable> tableSupplier,
+    static TableViewDataService createTableViewDataService(final Supplier<BufferedDataTable> tableSupplier,
         final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
         return new TableViewDataServiceImpl(tableSupplier, selectionSupplier, tableId, new SwingBasedRendererFactory(),
             RENDERER_REGISTRY);
@@ -155,21 +155,9 @@ public final class TableViewUtil {
      * @param tableId a globally unique id to be able to uniquely identify the images belonging to the table used here
      * @return the table view's initial data object
      */
-    public static TableViewInitialData createInitialData(final TableViewViewSettings settings,
+    static TableViewInitialData createInitialData(final TableViewViewSettings settings,
         final BufferedDataTable table, final String tableId) {
         return new TableViewInitialDataImpl(settings, () -> table, tableId, new SwingBasedRendererFactory(),
-            RENDERER_REGISTRY);
-    }
-
-    /**
-     * @param settings table view view settings
-     * @param tableSupplier the supplier for the table to create the data service for
-     * @param tableId a globally unique id to be able to uniquely identify the images belonging to the table used here
-     * @return the table view's initial data object
-     */
-    public static TableViewInitialData createInitialData(final TableViewViewSettings settings,
-        final Supplier<BufferedDataTable> tableSupplier, final String tableId) {
-        return new TableViewInitialDataImpl(settings, tableSupplier, tableId, new SwingBasedRendererFactory(),
             RENDERER_REGISTRY);
     }
 
