@@ -88,7 +88,7 @@ public interface Resource {
              */
             VUE_COMPONENT_REFERENCE;
 
-        private static final Map<String, ContentType> FILE_EXTENSION_TO_CONTENT_TYPE_MAP = Map.of( //
+        static final Map<String, ContentType> FILE_EXTENSION_TO_CONTENT_TYPE_MAP = Map.of( //
             ".js", VUE_COMPONENT_LIB, //
             ".html", HTML, //
             ".svg", SVG, //
