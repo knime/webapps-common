@@ -173,9 +173,12 @@ public final class DataValueImageRendererRegistry {
      * certain images belong which latter helps to partially clear the cache (e.g. only removing images from the oldest
      * batch).
      *
-     * @param tableId the table to strat the new batch for
+     * @param tableId the table to start the new batch for
      */
     public void startNewBatchOfTableRows(final String tableId) {
+        if (tableId == null) {
+            return;
+        }
         m_imagesPerTable.computeIfAbsent(tableId, id -> new Images()).startNewBatch();
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debugWithFormat("New batch of to-be-rendered images started for table with id '%s'.", tableId);
@@ -224,7 +227,10 @@ public final class DataValueImageRendererRegistry {
         } else {
             return 0;
         }
+    }
 
+    int numRegisteredTables() {
+        return m_imagesPerTable.size();
     }
 
     StatsPerTable getStatsPerTable(final String tableId) {

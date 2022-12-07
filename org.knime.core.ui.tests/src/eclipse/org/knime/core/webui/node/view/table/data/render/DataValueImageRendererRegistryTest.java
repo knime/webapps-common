@@ -163,6 +163,12 @@ public class DataValueImageRendererRegistryTest {
         stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isZero();
         assertThat(stats.batchSizes()).isEqualTo(new int[1]);
+        assertThat(imgReg.numRegisteredTables()).isEqualTo(1);
+
+        // what if table-id is null?
+        imgReg.clearImageDataCache(tableId);
+        imgReg.startNewBatchOfTableRows(null);
+        assertThat(imgReg.numRegisteredTables()).isZero();
     }
 
     /**
