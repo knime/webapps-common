@@ -14,7 +14,7 @@ properties([
 ])
 
 try {
-    node('maven && java11 && large') {
+    node('maven && java17 && large') {
         knimetools.defaultTychoBuild(updateSiteProject: 'org.knime.update.core.ui')
 
         junit '**/coverage/junit.xml'
