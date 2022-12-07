@@ -98,6 +98,14 @@ final class JsonFormsSettingsImpl implements JsonFormsSettings {
         m_context = context;
     }
 
+    JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings, final SettingsCreationContext context) {
+        m_modelSettings = settings.get(SettingsType.MODEL);
+        m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
+        m_viewSettings = settings.get(SettingsType.VIEW);
+        m_viewSettingsClass = m_viewSettings == null ? null : m_viewSettings.getClass();
+        m_context = context;
+    }
+
     private static DefaultNodeSettings fromNodeSettings(final Class<? extends DefaultNodeSettings> clazz,
         final NodeSettingsRO settings) {
         if (clazz == null) {

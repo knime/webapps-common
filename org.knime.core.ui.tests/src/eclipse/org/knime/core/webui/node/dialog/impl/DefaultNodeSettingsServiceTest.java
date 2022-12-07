@@ -56,7 +56,9 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
@@ -99,7 +101,9 @@ class DefaultNodeSettingsServiceTest {
         // try to obtain initial data using empty node settings
         Assertions
             .assertThatThrownBy(
-                () -> obtainAndCheckInitialData(null, nodeSettings, new PortObjectSpec[]{new DataTableSpec()}))
+                () -> obtainAndCheckInitialData(null, nodeSettings,
+                    new PortObjectSpec[]{
+                        new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())}))
             .isInstanceOf(IllegalStateException.class);
     }
 

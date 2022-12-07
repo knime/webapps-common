@@ -60,6 +60,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializerFactory;
 
 /**
  * The {@link NodeModel} for simple WebUI nodes, see {@link WebUINodeFactory}.
@@ -70,11 +72,11 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends NodeModel {
 
-    private DataTableSpec[] m_inSpecs;
-
     private S m_modelSettings;
 
     private final Class<S> m_modelSettingsClass;
+
+    private final NodeSettingsSerializer<S> m_modelSettingsSerializer;
 
     /**
      * @param configuration the {@link WebUINodeConfiguration} for this factory
@@ -83,12 +85,11 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
         super(configuration.getInPortDescriptions().length, configuration.getOutPortDescriptions().length);
         m_modelSettingsClass = modelSettingsClass;
-        m_inSpecs = new DataTableSpec[configuration.getInPortDescriptions().length];
+        m_modelSettingsSerializer = NodeSettingsSerializerFactory.createSerializer(modelSettingsClass);
     }
 
     @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
-        m_inSpecs = inSpecs;
         if (m_modelSettings == null) {
             m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
         }
@@ -135,7 +136,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_modelSettings != null) {
-            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
+            m_modelSettingsSerializer.save(m_modelSettings, settings);
         }
     }
 
@@ -156,7 +157,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
+        m_modelSettings = m_modelSettingsSerializer.load(settings);
     }
 
     @Override

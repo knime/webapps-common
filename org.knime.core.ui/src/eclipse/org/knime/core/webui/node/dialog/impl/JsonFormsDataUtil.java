@@ -81,6 +81,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
  */
 final class JsonFormsDataUtil {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonFormsDataUtil.class);
+
     private static ObjectMapper MAPPER; // NOSONAR
 
     private JsonFormsDataUtil() {
@@ -137,8 +139,7 @@ final class JsonFormsDataUtil {
         try {
             return getMapper().treeToValue(jsonFormsData, clazz);
         } catch (JsonProcessingException e) {
-            NodeLogger.getLogger(JsonFormsDataUtil.class)
-                .error(String.format("Error when creating class %s from settings. Error message is: %s.",
+            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
                     clazz.getName(), e.getMessage()), e);
             return null;
         }
@@ -163,8 +164,7 @@ final class JsonFormsDataUtil {
         try {
             return createInstance(clazz.getDeclaredConstructor());
         } catch (NoSuchMethodException e) {
-            NodeLogger.getLogger(JsonFormsDataUtil.class)
-                .error(String.format("No default constructor found for class %s.", clazz.getName()), e);
+            LOGGER.error(String.format("No default constructor found for class %s.", clazz.getName()), e);
             return null;
         }
     }
@@ -175,8 +175,7 @@ final class JsonFormsDataUtil {
             return constructor.newInstance(initArgs);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            NodeLogger.getLogger(JsonFormsDataUtil.class)
-                .error(String.format("Failed to instantiate class %s.", constructor.getDeclaringClass().getName()), e);
+            LOGGER.error(String.format("Failed to instantiate class %s.", constructor.getDeclaringClass().getName()), e);
             return null;
         }
     }

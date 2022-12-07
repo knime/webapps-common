@@ -48,9 +48,9 @@
  */
 package org.knime.core.webui.node.dialog.serialization;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
@@ -68,15 +68,18 @@ final class ReflectionDefaultNodeSettingsSerializer<S extends DefaultNodeSetting
     }
 
     @Override
-    public S load(final NodeSettingsRO nodeSettings, final PortObjectSpec[] specs) {
+    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
+            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
+            // by the JSON
+            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
+        }
         return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClass);
     }
 
     @Override
     public void save(final S settings, final NodeSettingsWO nodeSettings) {
-        // FIXME we don't have specs here
-        // They are used for generating the JSON schema that is then used to convert the JSON into NodeSettings
-        DefaultNodeSettings.saveSettings(m_settingsClass, settings, new PortObjectSpec[0], nodeSettings);
+        DefaultNodeSettings.saveSettings(m_settingsClass, settings, nodeSettings);
     }
 
 }
