@@ -1,18 +1,68 @@
 <script>
+import { createPopper } from '@popperjs/core';
+
+const availablePositions = [
+    'top-start', 'top', 'top-end',
+    'right-start', 'right', 'right-end',
+    'bottom-start', 'bottom', 'bottom-end',
+    'left-start', 'left', 'left-end'
+];
+const popperPadding = 8;
+const popperOffset = 12;
+
 export default {
     props: {
         text: {
             type: String,
             required: true
+        },
+        placement: {
+            type: String,
+            default: 'top',
+            validator(value) {
+                return availablePositions.includes(value);
+            }
+        }
+    },
+    methods: {
+        initPopper() {
+            createPopper(this.$refs.slot, this.$refs.text, {
+                placement: this.placement,
+                modifiers: [{
+                    name: 'preventOverflow',
+                    options: {
+                        padding: popperPadding
+                    }
+                }, {
+                    name: 'offset',
+                    options: {
+                        offset: [0, popperOffset]
+                    }
+                }]
+            });
         }
     }
 };
 </script>
 
 <template>
-  <div class="tooltip">
-    <slot />
-    <span class="text">{{ text }}</span>
+  <div
+    class="tooltip"
+    @mouseenter="initPopper"
+  >
+    <div ref="slot">
+      <slot />
+    </div>
+    <div
+      ref="text"
+      class="text"
+    >
+      {{ text }}
+      <div
+        id="arrow"
+        data-popper-arrow
+      />
+    </div>
   </div>
 </template>
 
@@ -32,9 +82,6 @@ export default {
 
   /* positioning and styling */
   position: absolute;
-  top: calc(var(--arrow-size) * -1);
-  left: 50%;
-  transform: translateX(-50%) translateY(-100%);
   opacity: 0;
   background-color: var(--theme-tooltip-background-color);
   white-space: nowrap;
@@ -46,16 +93,39 @@ export default {
   pointer-events: none;
 
   /* arrow */
-  &::after {
+  & #arrow,
+  & #arrow::before {
+    position: absolute;
     width: var(--arrow-size);
     height: var(--arrow-size);
-    content: '';
-    position: absolute;
     z-index: -1;
-    left: 50%;
     background-color: var(--theme-tooltip-background-color);
-    bottom: 2px;
-    transform: translate(-50%, 50%) rotate(135deg);
+  }
+
+  & #arrow {
+    visibility: hidden;
+  }
+
+  & #arrow::before {
+    visibility: visible;
+    content: '';
+    transform: rotate(45deg);
+  }
+
+  &[data-popper-placement^='top'] > #arrow {
+    bottom: calc(var(--arrow-size) * -.5);
+  }
+
+  &[data-popper-placement^='bottom'] > #arrow {
+    top: calc(var(--arrow-size) * -.5);
+  }
+
+  &[data-popper-placement^='left'] > #arrow {
+    right: calc(var(--arrow-size) * -.5);
+  }
+
+  &[data-popper-placement^='right'] > #arrow {
+    left: calc(var(--arrow-size) * -.5);
   }
 }
 
