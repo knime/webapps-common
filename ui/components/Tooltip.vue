@@ -113,19 +113,19 @@ export default {
   }
 
   &[data-popper-placement^='top'] > #arrow {
-    bottom: calc(var(--arrow-size) * -.5);
+    bottom: calc(var(--arrow-size) * -0.5);
   }
 
   &[data-popper-placement^='bottom'] > #arrow {
-    top: calc(var(--arrow-size) * -.5);
+    top: calc(var(--arrow-size) * -0.5);
   }
 
   &[data-popper-placement^='left'] > #arrow {
-    right: calc(var(--arrow-size) * -.5);
+    right: calc(var(--arrow-size) * -0.5);
   }
 
   &[data-popper-placement^='right'] > #arrow {
-    left: calc(var(--arrow-size) * -.5);
+    left: calc(var(--arrow-size) * -0.5);
   }
 }
 
