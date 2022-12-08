@@ -197,6 +197,17 @@ public interface DefaultNodeSettings {
     }
 
     /**
+     * Creates a new {@link DefaultNodeSettings} object of the specified type.
+     *
+     * @param <S> the type of DefaultNodeSettings
+     * @param clazz the class of the DefaultNodeSettings type
+     * @return a new instance of the DefaultNodeSettingsType
+     */
+    static <S extends DefaultNodeSettings> S createSettings(final Class<S> clazz) {
+        return JsonFormsDataUtil.createInstance(clazz);
+    }
+
+    /**
      * Helper to serialize a {@link DefaultNodeSettings}-instance into a {@link NodeSettingsWO}-object.
      *
      * @param settingsClass the setting object's class
