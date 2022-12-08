@@ -10,7 +10,8 @@ describe('Tooltip', () => {
     let wrapper;
 
     const placement = 'top-end';
-    const slotComponent = '<span class="special">Can you feel the thunder inside?</span>';
+    const slotText = 'Can you feel the thunder inside?';
+    const slotComponent = `<span class="ramrod">${slotText}</span>`;
     const text = 'Make a lightning crack as you ride!';
 
     const popperPadding = 8;
@@ -29,9 +30,9 @@ describe('Tooltip', () => {
     });
 
     it('renders', () => {
-        expect(wrapper.find('.special').exists()).toBe(true);
-        expect(wrapper.find('.special').text()).toBe('sometext');
-        expect(wrapper.text()).toContain('My text');
+        expect(wrapper.find('.ramrod').exists()).toBe(true);
+        expect(wrapper.find('.ramrod').text()).toBe(slotText);
+        expect(wrapper.text()).toContain(text);
     });
 
     it('initializes popper on mouse enter', () => {
