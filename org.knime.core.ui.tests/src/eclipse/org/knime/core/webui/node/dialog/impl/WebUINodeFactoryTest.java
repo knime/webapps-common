@@ -99,7 +99,7 @@ class WebUINodeFactoryTest {
         final var modelSettings = new TestWebUINodeModelSettings();
         modelSettings.m_someModelSetting = 42;
         final var nodeSettings42 = new NodeSettings("test");
-        DefaultNodeSettings.saveSettings(TestWebUINodeModelSettings.class, modelSettings, testSpecs, nodeSettings42);
+        DefaultNodeSettings.saveSettings(TestWebUINodeModelSettings.class, modelSettings, nodeSettings42);
         model.validateSettings(nodeSettings42);
         model.loadValidatedSettingsFrom(nodeSettings42);
         model.configure(testSpecs);

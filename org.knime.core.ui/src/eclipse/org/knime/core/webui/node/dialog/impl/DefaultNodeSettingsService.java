@@ -134,7 +134,7 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
         var settingsClass = m_settingsClasses.get(settingsType);
         if (nodeSettings != null && settingsClass != null) {
             var settings = DefaultNodeSettings.createSettings(settingsClass, specs);
-            DefaultNodeSettings.saveSettings(settingsClass, settings, specs, nodeSettings);
+            DefaultNodeSettings.saveSettings(settingsClass, settings, nodeSettings);
         }
     }
 

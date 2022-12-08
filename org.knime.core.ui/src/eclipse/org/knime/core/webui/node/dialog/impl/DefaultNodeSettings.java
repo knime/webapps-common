@@ -212,14 +212,12 @@ public interface DefaultNodeSettings {
      *
      * @param settingsClass the setting object's class
      * @param settingsObject the default node settings object to serialize
-     * @param specs the specs with which to create the schema. NOTE: can contain {@code null}-values, e.g., if input
-     *            port is not connected
      * @param settings the settings to write to
      */
     static void saveSettings(final Class<? extends DefaultNodeSettings> settingsClass,
-        final DefaultNodeSettings settingsObject, final PortObjectSpec[] specs, final NodeSettingsWO settings) {
+        final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
         var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(settingsObject);
-        var schemaNode = JsonFormsSchemaUtil.buildSchema(settingsClass, createSettingsCreationContext(specs));
+        var schemaNode = JsonFormsSchemaUtil.buildSchema(settingsClass);
         JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, settings);
     }
 
