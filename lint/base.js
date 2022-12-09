@@ -218,7 +218,7 @@ module.exports = {
         yoda: ['error', 'never', { exceptRange: true }]
     },
     overrides: [{
-        files: ['.eslintrc*.js'],
+        files: ['.eslintrc*.{js,cjs}'],
         // this is required for .eslintrc-legacy, which overrides parserOptions in root
         parserOptions: { ...parserOptions },
         env: {
@@ -229,7 +229,7 @@ module.exports = {
             'no-magic-numbers': 'off'
         }
     }, {
-        files: ['config.{js,ts}', '*.config.{js,ts}', 'config.mjs', '*.config.mjs', 'config/**'],
+        files: ['config.{js,ts,mjs,cjs}', '*.config.{js,ts,mjs,cjs}', 'config/**'],
         rules: {
             camelcase: 'off',
             'no-magic-numbers': 'off',
