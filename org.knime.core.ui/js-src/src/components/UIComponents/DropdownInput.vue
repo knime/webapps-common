@@ -55,6 +55,7 @@ export default DropdownInput;
 
 <template>
   <LabeledInput
+    v-if="control.visible"
     :text="control.label"
     :show-reexecution-icon="isModelSettingAndHasNodeView"
     :scope="control.uischema.scope"

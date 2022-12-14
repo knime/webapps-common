@@ -63,7 +63,7 @@ describe('CheckboxInput.vue', () => {
 
     it('renders the description popover', async () => {
         expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(false);
-        wrapper.setProps({ control: { description: 'foo' } });
+        wrapper.setProps({ control: { ...defaultPropsData.control, description: 'foo' } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(true);
     });
@@ -199,5 +199,16 @@ describe('CheckboxInput.vue', () => {
 
         const icon = localWrapper.findComponent(OnlyFlowVariable);
         expect(icon.exists()).toBe(true);
+    });
+
+    it('does not render content of CheckboxInput when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control,
+            visible: false,
+            errors: 'errors',
+            description: 'description' } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(Checkbox).exists()).toBe(false);
+        expect(wrapper.findComponent(ErrorMessage).exists()).toBe(false);
+        expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(false);
     });
 });

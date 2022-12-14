@@ -119,4 +119,10 @@ describe('TextInput.vue', () => {
         const localWrapper = mountJsonFormsComponent(TextInput, localDefaultPropsData);
         expect(localWrapper.vm.disabled).toBeTruthy();
     });
+
+    it('does not render content of TextInput when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
 });

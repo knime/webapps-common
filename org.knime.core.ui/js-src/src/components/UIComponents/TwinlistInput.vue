@@ -69,6 +69,7 @@ export default TwinlistInput;
 
 <template>
   <LabeledInput
+    v-if="control.visible"
     :text="control.label"
     :show-reexecution-icon="isModelSettingAndHasNodeView"
     :scope="control.uischema.scope"

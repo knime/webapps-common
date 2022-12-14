@@ -53,12 +53,12 @@ export default CheckboxInput;
 
 <template>
   <div
+    v-if="control.visible"
     class="checkbox-input"
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
     <Checkbox
-      v-if="control.visible"
       class="checkbox"
       :disabled="!control.enabled"
       :value="control.data"

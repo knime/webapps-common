@@ -3,6 +3,7 @@ import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsCom
 import NumberInput from '@/components/UIComponents/NumberInput.vue';
 import NumberInputBase from '@/components/UIComponents/NumberInputBase.vue';
 import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
+import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
 
 describe('NumberInput.vue', () => {
     const defaultPropsData = {
@@ -51,6 +52,7 @@ describe('NumberInput.vue', () => {
     it('renders', () => {
         expect(wrapper.getComponent(NumberInput).exists()).toBe(true);
         expect(wrapper.getComponent(NumberInputBase).exists()).toBe(true);
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
         expect(wrapper.getComponent(NumberInput).getComponent(ErrorMessage).exists()).toBe(true);
     });
    
@@ -117,5 +119,11 @@ describe('NumberInput.vue', () => {
 
         const localWrapper = mountJsonFormsComponent(NumberInput, localDefaultPropsData);
         expect(localWrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
+    });
+
+    it('does not render content of NumberInputBase when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 });

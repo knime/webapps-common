@@ -17,6 +17,7 @@ describe('DropdownInput.vue', () => {
             control: {
                 path: 'test',
                 enabled: true,
+                visible: true,
                 data: 'Universe_0_0',
                 label: 'defaultLabel',
                 schema: {
@@ -137,5 +138,11 @@ describe('DropdownInput.vue', () => {
         defaultPropsData.control.rootSchema
             .flowVariablesMap[defaultPropsData.control.path] = {};
         expect(wrapper.vm.disabled).toBeFalsy();
+    });
+
+    it('does not render content of DropdownInput when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 });

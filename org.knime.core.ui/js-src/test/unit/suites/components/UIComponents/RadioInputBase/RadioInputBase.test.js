@@ -224,4 +224,10 @@ describe('RadioInputBase.vue', () => {
         const icon = localWrapper.findComponent(OnlyFlowVariable);
         expect(icon.exists()).toBe(true);
     });
+
+    it('does not render content of RadioInputBase when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
 });

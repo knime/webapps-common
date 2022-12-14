@@ -152,4 +152,10 @@ describe('TwinlistInput.vue', () => {
         localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3']);
     });
+
+    it('does not render content of TwinlistInput when visible is false', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
 });
