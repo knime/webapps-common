@@ -83,6 +83,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
         super(configuration.getInPortDescriptions().length, configuration.getOutPortDescriptions().length);
         m_modelSettingsClass = modelSettingsClass;
+        m_inSpecs = new DataTableSpec[configuration.getInPortDescriptions().length];
     }
 
     @Override
