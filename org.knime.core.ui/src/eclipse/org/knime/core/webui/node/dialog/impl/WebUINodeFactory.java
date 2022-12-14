@@ -184,14 +184,16 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         }
         node.appendChild(ports);
 
-        // create view
-        final var views = doc.createElement("views");
-        var view = doc.createElement("view");
-        view.setAttribute("index", "0");
-        view.setAttribute("name", name);
-        view.appendChild(parseDocumentFragment(viewDescription, docBuilder, doc));
-        views.appendChild(view);
-        node.appendChild(views);
+        // create view (if exists)
+        if (viewDescription != null) {
+            final var views = doc.createElement("views");
+            var view = doc.createElement("view");
+            view.setAttribute("index", "0");
+            view.setAttribute("name", name);
+            view.appendChild(parseDocumentFragment(viewDescription, docBuilder, doc));
+            views.appendChild(view);
+            node.appendChild(views);
+        }
 
         doc.appendChild(node);
         try {
