@@ -141,6 +141,17 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     @Override
     protected final void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+        validateSettings(DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass));
+    }
+
+    /**
+     * Allows extending classes to validate the settings before they are loaded into the NodeModel.
+     *
+     * @param settings to validate
+     * @throws InvalidSettingsException if the settings are invalid
+     */
+    protected void validateSettings(final S settings) throws InvalidSettingsException {
+        // hook that can be overwritten by extending classes
     }
 
     @Override
