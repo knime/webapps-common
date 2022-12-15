@@ -5,34 +5,7 @@ import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
 import InputField from '~/webapps-common/ui/components/forms/InputField.vue';
 
 describe('TextInput.vue', () => {
-    const defaultPropsData = {
-        control: {
-            path: 'test',
-            enabled: true,
-            visible: true,
-            label: 'defaultLabel',
-            data: 'test',
-            schema: {
-                properties: {
-                    xAxisLabel: {
-                        type: 'string',
-                        title: 'X Axis Label'
-                    }
-                },
-                default: 'default value'
-            },
-            uischema: {
-                type: 'Control',
-                scope: '#/properties/view/properties/xAxisLabel'
-            },
-            rootSchema: {
-                hasNodeView: true,
-                flowVariablesMap: {}
-            }
-        }
-    };
-
-    let wrapper, onChangeSpy, handleChangeSpy;
+    let defaultPropsData, wrapper, onChangeSpy, handleChangeSpy;
 
     beforeAll(() => {
         onChangeSpy = jest.spyOn(TextInput.methods, 'onChange');
@@ -40,6 +13,36 @@ describe('TextInput.vue', () => {
     });
     
     beforeEach(async () => {
+        defaultPropsData = {
+            control: {
+                path: 'test',
+                enabled: true,
+                visible: true,
+                label: 'defaultLabel',
+                data: 'test',
+                schema: {
+                    properties: {
+                        xAxisLabel: {
+                            type: 'string',
+                            title: 'X Axis Label'
+                        }
+                    },
+                    default: 'default value'
+                },
+                uischema: {
+                    type: 'Control',
+                    scope: '#/properties/view/properties/xAxisLabel',
+                    options: {
+                        isAdvanced: false
+                    }
+                },
+                rootSchema: {
+                    hasNodeView: true,
+                    flowVariablesMap: {}
+                }
+            }
+        };
+
         wrapper = await mountJsonFormsComponent(TextInput, defaultPropsData);
     });
 
@@ -124,5 +127,18 @@ describe('TextInput.vue', () => {
         wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(TextInput, defaultPropsData);
+        expect(wrapper.getComponent(TextInput).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(TextInput, defaultPropsData);
+        expect(wrapper.getComponent(TextInput).isVisible()).toBe(true);
     });
 });

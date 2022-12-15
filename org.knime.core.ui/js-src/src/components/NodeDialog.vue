@@ -4,6 +4,7 @@ import { JsonDataService, DialogService } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue2-vanilla';
 import { JsonForms } from '@jsonforms/vue2';
 import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
+import { hasAdvancedOptions } from '../utils/nodeDialogUtils';
 import Button from '~/webapps-common/ui/components/Button.vue';
 import { createAjv } from '@jsonforms/core';
 
@@ -35,6 +36,7 @@ export default {
 
         settings.schema.flowVariablesMap = await this.dialogService.getFlowVariableSettings();
         settings.schema.hasNodeView = this.dialogService.hasNodeView();
+        settings.schema.showAdvancedSettings = false;
         this.settings = settings;
 
         this.originalSettingsData = JSON.stringify(this.settings?.data || {});
@@ -73,6 +75,15 @@ export default {
         },
         closeDialog() {
             window.closeCEFWindow();
+        },
+        changeAdvancedSettings() {
+            this.settings.schema.showAdvancedSettings = !this.settings.schema.showAdvancedSettings;
+        },
+        hasAdvancedOptions() {
+            if (!this.settings) {
+                return false;
+            }
+            return hasAdvancedOptions(this.settings.ui_schema);
         }
     }
 };
@@ -90,6 +101,13 @@ export default {
         :ajv="ajv"
         @change="onSettingsChanged"
       />
+      <a
+        v-if="hasAdvancedOptions()"
+        class="advancedOptions"
+        @click="changeAdvancedSettings"
+      >
+        {{ settings.schema.showAdvancedSettings ? '<- Hide' : '-> Show' }} advanced settings
+      </a>
     </div>
     <div class="controls">
       <Button
@@ -139,6 +157,15 @@ export default {
     padding: 13px 20px 5px;
     background-color: var(--knime-gray-light-semi);
     border-top: 1px solid var(--knime-silver-sand);
+  }
+  & .advancedOptions {
+    display: flex;
+    justify-content: space-between;
+    text-decoration: underline;
+    margin-left: -10px;
+    margin-top: auto;
+    font-size: 14px;
+    cursor: pointer;
   }
 }
 </style>

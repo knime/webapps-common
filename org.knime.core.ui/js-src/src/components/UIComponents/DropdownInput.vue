@@ -4,6 +4,7 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
 import Dropdown from '~/webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
+import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -11,6 +12,7 @@ const DropdownInput = defineComponent({
         Dropdown,
         LabeledInput
     },
+    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         optionsGenerator: {
@@ -55,12 +57,13 @@ export default DropdownInput;
 
 <template>
   <LabeledInput
-    v-if="control.visible"
+    v-if="isVisible"
     :text="control.label"
     :show-reexecution-icon="isModelSettingAndHasNodeView"
     :scope="control.uischema.scope"
     :flow-settings="flowSettings"
     :description="control.description"
+    :class="{fadeContainer: isAdvanced}"
   >
     <Dropdown
       v-if="options"
@@ -72,3 +75,7 @@ export default DropdownInput;
     />
   </LabeledInput>
 </template>
+
+<style lang="postcss" scoped>
+@import "../../utils/animation.css";
+</style>

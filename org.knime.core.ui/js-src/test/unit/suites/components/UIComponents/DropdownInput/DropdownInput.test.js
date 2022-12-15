@@ -145,4 +145,17 @@ describe('DropdownInput.vue', () => {
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(DropdownInput, defaultPropsData);
+        expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(DropdownInput, defaultPropsData);
+        expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);
+    });
 });

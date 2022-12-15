@@ -1,4 +1,5 @@
-import { optionsMapper, createFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
+import { optionsMapper, createFlowVariablesMap,
+    isModelSettingAndHasNodeView, hasAdvancedOptions } from '@/utils/nodeDialogUtils';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -66,5 +67,54 @@ describe('Utils', () => {
             }
         };
         expect(createFlowVariablesMap({ viewVariables, modelVariables })).toEqual(expectedResult);
+    });
+
+    it('checks that ui_schema with advanced settings returns true', () => {
+        const uiSchema = {
+            elements: [
+                {
+                    type: 'Section',
+                    label: 'Some Section',
+                    description: 'test',
+                    elements: [
+                        {
+                            type: 'Control',
+                            scope: '#/properties/model/properties/categoryColumn',
+                            options: {
+                                format: 'columnSelection',
+                                showRowKeys: false,
+                                showNoneColumn: false,
+                                isAdvanced: true
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+        expect(hasAdvancedOptions(uiSchema)).toBeTruthy();
+    });
+
+    it('checks that ui_schema without advanced settings returns false', () => {
+        const uiSchema = {
+            elements: [
+                {
+                    type: 'Section',
+                    label: 'Some Section',
+                    description: 'test',
+                    elements: [
+                        {
+                            type: 'Control',
+                            scope: '#/properties/model/properties/categoryColumn',
+                            options: {
+                                format: 'columnSelection',
+                                showRowKeys: false,
+                                showNoneColumn: false
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+        expect(hasAdvancedOptions(uiSchema)).not.toBeTruthy();
     });
 });

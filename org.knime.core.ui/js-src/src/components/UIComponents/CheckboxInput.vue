@@ -7,6 +7,7 @@ import ReexecutionIcon from '~/webapps-common/ui/assets/img/icons/reexecution.sv
 import FlowVariableIcon from './FlowVariableIcon.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import DescriptionPopover from './DescriptionPopover.vue';
+import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
 
 const CheckboxInput = defineComponent({
     name: 'CheckboxInput',
@@ -17,6 +18,7 @@ const CheckboxInput = defineComponent({
         DescriptionPopover,
         ReexecutionIcon
     },
+    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps()
     },
@@ -53,8 +55,9 @@ export default CheckboxInput;
 
 <template>
   <div
-    v-if="control.visible"
+    v-if="isVisible"
     class="checkbox-input"
+    :class="{fadeContainer: isAdvanced}"
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
@@ -86,6 +89,7 @@ export default CheckboxInput;
 </template>
 
 <style lang="postcss" scoped>
+@import "../../utils/animation.css";
 .checkbox-input {
   margin-bottom: 10px;
   position: relative;

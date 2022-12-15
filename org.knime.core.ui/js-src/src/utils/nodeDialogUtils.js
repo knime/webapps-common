@@ -36,3 +36,5 @@ export const createFlowVariablesMap = ({ viewVariables, modelVariables } = {}) =
 export const getFlowVariablesMap = ({ rootSchema, path }) => rootSchema?.flowVariablesMap
     ? rootSchema.flowVariablesMap[path]
     : null;
+
+export const hasAdvancedOptions = (uischema) => JSON.stringify(uischema).includes('isAdvanced');

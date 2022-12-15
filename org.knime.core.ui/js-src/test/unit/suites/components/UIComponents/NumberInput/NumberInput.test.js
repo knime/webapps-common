@@ -6,35 +6,7 @@ import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
 
 describe('NumberInput.vue', () => {
-    const defaultPropsData = {
-        control: {
-            path: 'test',
-            enabled: true,
-            visible: true,
-            label: 'defaultLabel',
-            schema: {
-                properties: {
-                    maxRows: {
-                        type: 'double',
-                        title: 'Show tooltip'
-                    }
-                }
-            },
-            uischema: {
-                type: 'Control',
-                scope: '#/properties/view/properties/maxRows',
-                options: {
-                    format: 'double'
-                }
-            },
-            rootSchema: {
-                hasNodeView: true,
-                flowVariablesMap: {}
-            }
-        }
-    };
-
-    let wrapper, onChangeSpy;
+    let defaultPropsData, wrapper, onChangeSpy;
 
     beforeAll(() => {
         onChangeSpy = jest.spyOn(NumberInputBase.methods, 'onChange');
@@ -42,6 +14,34 @@ describe('NumberInput.vue', () => {
     });
 
     beforeEach(async () => {
+        defaultPropsData = {
+            control: {
+                path: 'test',
+                enabled: true,
+                visible: true,
+                label: 'defaultLabel',
+                schema: {
+                    properties: {
+                        maxRows: {
+                            type: 'double',
+                            title: 'Show tooltip'
+                        }
+                    }
+                },
+                uischema: {
+                    type: 'Control',
+                    scope: '#/properties/view/properties/maxRows',
+                    options: {
+                        format: 'double'
+                    }
+                },
+                rootSchema: {
+                    hasNodeView: true,
+                    flowVariablesMap: {}
+                }
+            }
+        };
+        
         wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
     });
 
@@ -125,5 +125,18 @@ describe('NumberInput.vue', () => {
         wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
+        expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
+        expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

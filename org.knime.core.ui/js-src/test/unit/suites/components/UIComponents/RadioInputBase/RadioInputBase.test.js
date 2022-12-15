@@ -10,42 +10,7 @@ import BothFlowVariables from '~/webapps-common/ui/assets/img/icons/both-flow-va
 import ExposeFlowVariable from '~/webapps-common/ui/assets/img/icons/expose-flow-variables.svg?inline';
 
 describe('RadioInputBase.vue', () => {
-    const defaultPropsData = {
-        type: 'radio',
-        control: {
-            path: 'test',
-            enabled: true,
-            visible: true,
-            label: 'defaultLabel',
-            data: 'LOG',
-            schema: {
-                oneOf: [
-                    {
-                        const: 'LOG',
-                        title: 'Logarithmic'
-                    },
-                    {
-                        const: 'VALUE',
-                        title: 'Linear'
-                    }
-                ]
-            },
-            uischema: {
-                type: 'Control',
-                scope: '#/properties/testScale',
-                options: {
-                    format: 'radio',
-                    radioLayout: 'horizontal'
-                }
-            },
-            rootSchema: {
-                hasNodeView: true,
-                flowVariablesMap: {}
-            }
-        }
-    };
-
-    let wrapper, onChangeSpy, handleChangeSpy;
+    let defaultPropsData, wrapper, onChangeSpy, handleChangeSpy;
 
     beforeAll(() => {
         onChangeSpy = jest.spyOn(RadioInputBase.methods, 'onChange');
@@ -53,6 +18,41 @@ describe('RadioInputBase.vue', () => {
     });
 
     beforeEach(async () => {
+        defaultPropsData = {
+            type: 'radio',
+            control: {
+                path: 'test',
+                enabled: true,
+                visible: true,
+                label: 'defaultLabel',
+                data: 'LOG',
+                schema: {
+                    oneOf: [
+                        {
+                            const: 'LOG',
+                            title: 'Logarithmic'
+                        },
+                        {
+                            const: 'VALUE',
+                            title: 'Linear'
+                        }
+                    ]
+                },
+                uischema: {
+                    type: 'Control',
+                    scope: '#/properties/testScale',
+                    options: {
+                        format: 'radio',
+                        radioLayout: 'horizontal'
+                    }
+                },
+                rootSchema: {
+                    hasNodeView: true,
+                    flowVariablesMap: {}
+                }
+            }
+        };
+
         wrapper = await mountJsonFormsComponent(RadioInputBase, defaultPropsData);
     });
 
@@ -229,5 +229,18 @@ describe('RadioInputBase.vue', () => {
         wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(RadioInputBase, defaultPropsData);
+        expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(RadioInputBase, defaultPropsData);
+        expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(true);
     });
 });

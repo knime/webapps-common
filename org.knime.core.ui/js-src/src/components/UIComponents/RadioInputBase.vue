@@ -5,6 +5,7 @@ import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from
 import RadioButtons from '~/webapps-common/ui/components/forms/RadioButtons.vue';
 import ValueSwitch from '~/webapps-common/ui/components/forms/ValueSwitch.vue';
 import LabeledInput from './LabeledInput.vue';
+import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
 
 const RadioInputBase = defineComponent({
     name: 'RadioInputBase',
@@ -13,6 +14,7 @@ const RadioInputBase = defineComponent({
         ValueSwitch,
         LabeledInput
     },
+    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         type: {
@@ -67,12 +69,13 @@ export default RadioInputBase;
 
 <template>
   <LabeledInput
-    v-if="control.visible"
+    v-if="isVisible"
     :text="control.label"
     :show-reexecution-icon="isModelSettingAndHasNodeView"
     :scope="control.uischema.scope"
     :flow-settings="flowSettings"
     :description="control.description"
+    :class="{fadeContainer: isAdvanced}"
   >
     <component
       :is="uiComponent"
@@ -86,6 +89,7 @@ export default RadioInputBase;
 </template>
 
 <style lang="postcss" scoped>
+@import "../../utils/animation.css";
 .labeled-input {
   margin-bottom: 10px;
 }

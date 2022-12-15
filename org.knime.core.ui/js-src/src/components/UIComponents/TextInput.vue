@@ -4,6 +4,7 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
 import InputField from '~/webapps-common/ui/components/forms/InputField.vue';
 import LabeledInput from './LabeledInput.vue';
+import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
 
 const TextInput = defineComponent({
     name: 'TextInput',
@@ -11,6 +12,7 @@ const TextInput = defineComponent({
         InputField,
         LabeledInput
     },
+    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps()
     },
@@ -44,13 +46,14 @@ export default TextInput;
 
 <template>
   <LabeledInput
-    v-if="control.visible"
+    v-if="isVisible"
     :text="control.label"
     :description="control.description"
     :errors="[control.errors]"
     :show-reexecution-icon="isModelSettingAndHasNodeView"
     :scope="control.uischema.scope"
     :flow-settings="flowSettings"
+    :class="{fadeContainer: isAdvanced}"
   >
     <InputField
       :value="control.data"
@@ -59,3 +62,7 @@ export default TextInput;
     />
   </LabeledInput>
 </template>
+
+<style>
+@import "../../utils/animation.css";
+</style>

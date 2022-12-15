@@ -211,4 +211,17 @@ describe('CheckboxInput.vue', () => {
         expect(wrapper.findComponent(ErrorMessage).exists()).toBe(false);
         expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(false);
     });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(CheckboxInput, defaultPropsData);
+        expect(wrapper.getComponent(CheckboxInput).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
+        defaultPropsData.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(CheckboxInput, defaultPropsData);
+        expect(wrapper.getComponent(CheckboxInput).isVisible()).toBe(true);
+    });
 });

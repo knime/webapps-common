@@ -12,13 +12,26 @@ const SectionLayout = defineComponent({
     },
     setup(props) {
         return useJsonFormsLayout(props);
+    },
+    computed: {
+        isVisible() {
+            return this.layout.visible &&
+                (this.layout.schema.showAdvancedSettings || !this.isAdvanced);
+        },
+        isAdvanced() {
+            return this.layout.uischema.options?.isAdvanced;
+        }
     }
 });
 export default SectionLayout;
 </script>
 
 <template>
-  <div class="section">
+  <div
+    v-if="isVisible"
+    class="section"
+    :class="{fadeContainer: isAdvanced}"
+  >
     <h3>{{ layout.uischema.label }}</h3>
     <div
       v-for="(element, index) in layout.uischema.elements"
@@ -37,6 +50,7 @@ export default SectionLayout;
 </template>
 
 <style lang="postcss" scoped>
+@import "../../utils/animation.css";
 .section {
   margin-bottom: 30px;
 
