@@ -38,7 +38,7 @@ export default {
             // A pseudo-placeholder to allow hiding the clear-button without any input
             default: ' '
         },
-        initialCaseSensitveSearch: {
+        initialCaseSensitiveSearch: {
             default: false,
             type: Boolean
         },
@@ -65,7 +65,7 @@ export default {
     },
     data() {
         return {
-            caseSensitiveSearch: this.initialCaseSensitive,
+            caseSensitiveSearch: this.initialCaseSensitiveSearch,
             inverseSearch: this.initialInverseSearch
         };
     },

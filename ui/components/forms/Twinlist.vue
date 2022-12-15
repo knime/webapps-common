@@ -2,6 +2,7 @@
 import Label from './Label.vue';
 import SearchInput from '../forms/SearchInput.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
+import Checkboxes from '../forms/Checkboxes.vue';
 import ValueSwitch from '../forms/ValueSwitch.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
@@ -20,14 +21,54 @@ export default {
         MultiselectListBox,
         Label,
         SearchInput,
+        Checkboxes,
         ValueSwitch
     },
     props: {
-        value: {
+
+        /**
+         * initial values
+         */
+        initialMode: {
+            type: String,
+            required: false,
+            default: 'manual'
+        },
+        initialManuallySelected: {
             type: Array,
             default: () => []
         },
-        disabled: {
+        initialPattern: {
+            type: String,
+            default: ''
+        },
+        initialCaseSensitiveSearch: {
+            default: false,
+            type: Boolean
+        },
+        initialInverseSearch: {
+            default: false,
+            type: Boolean
+        },
+        withTypes: {
+            type: Boolean,
+            default: true
+        },
+        initialSelectedTypes: {
+            type: Array,
+            default: () => []
+        },
+        initialSearchTerm: {
+            type: String,
+            required: false,
+            default: ''
+        },
+
+        /**
+         * Hiding and disabling
+         */
+
+        showMode: {
             default: false,
             type: Boolean
         },
@@ -35,10 +76,51 @@ export default {
             default: false,
             type: Boolean
         },
-        showSearchMode: {
+        disabled: {
             default: false,
             type: Boolean
         },
+
+        /**
+         * Labels
+         */
+
+        leftLabel: {
+            type: String,
+            required: true,
+            default: 'Possible values'
+        },
+        rightLabel: {
+            type: String,
+            required: true,
+            default: 'Selected values'
+        },
+        searchLabel: {
+            type: String,
+            required: false,
+            default: 'Search values'
+        },
+        searchPlaceholder: {
+            type: String,
+            required: false,
+            default: 'Search'
+        },
+        modeLabel: {
+            type: String,
+            required: false,
+            default: 'Selection mode'
+        },
+        patternLabel: {
+            type: String,
+            required: false,
+            default: 'Pattern'
+        },
+        selectedTypesLabel: {
+            type: String,
+            required: false,
+            default: 'Selected types'
+        },
+
         /**
          * Controls the size of the list.
          * Number of visible items (for others user need to scroll)
@@ -55,49 +137,6 @@ export default {
         isValid: {
             default: true,
             type: Boolean
-        },
-        leftLabel: {
-            type: String,
-            required: true,
-            default: 'Possible values'
-        },
-        rightLabel: {
-            type: String,
-            required: true,
-            default: 'Selected values'
-        },
-        searchLabel: {
-            type: String,
-            required: false,
-            default: 'Search values'
-        },
-        searchModeLabel: {
-            type: String,
-            required: false,
-            default: 'Search type'
-        },
-        initialSearchTerm: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        initialCaseSensitiveSearch: {
-            default: false,
-            type: Boolean
-        },
-        initialInverseSearch: {
-            default: false,
-            type: Boolean
-        },
-        initialSearchMode: {
-            type: String,
-            required: false,
-            default: 'manual'
-        },
-        searchPlaceholder: {
-            type: String,
-            required: false,
-            default: 'Search'
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -123,12 +162,14 @@ export default {
     },
     data() {
         return {
-            chosenValues: this.value,
+            chosenValues: this.initialManuallySelected,
+            chosenPattern: this.initialPattern,
+            chosenTypes: this.initialSelectedTypes,
             invalidPossibleValueIds: new Set(),
             rightSelected: [],
             selectedLeft: [],
             searchTerm: this.initialSearchTerm,
-            searchMode: this.initialSearchMode,
+            mode: this.initialMode,
             caseSensitiveSearch: this.initialCaseSensitiveSearch,
             inverseSearch: this.initialInverseSearch
         };
@@ -141,22 +182,39 @@ export default {
         possibleValueIds() {
             return this.possibleValues.map(x => x.id);
         },
-        invalidValueIds() {
-            return this.value.filter(x => !this.possibleValueMap[x]);
+        possibleTypes() {
+            return [...new Set(this.possibleValues.map(x => x.type))]
+                .filter(type => type !== '')
+                .map(type => ({ text: type, id: type }));
         },
-        hiddenValueIds() {
+        invalidValueIds() {
+            return this.chosenValues.filter(x => !this.possibleValueMap[x]);
+        },
+        matchingValueIds() {
             return this.possibleValues
-                .filter(possibleValue => !this.itemMatchesSearch(possibleValue))
+                .filter(possibleValue => this.itemMatchesSearch(possibleValue))
                 .map(possibleValue => possibleValue.id);
         },
+        visibleValueIds() {
+            if (this.mode === 'manual') {
+                const matchingInvalidValueIds = this.invalidValueIds.filter(
+                    item => this.itemMatchesSearch(this.generateInvalidItem(item))
+                );
+                return [...this.matchingValueIds, ...matchingInvalidValueIds];
+            }
+            return this.possibleValueIds;
+        },
+        selectedValues() {
+            return this.mode === 'manual' ? this.chosenValues : this.matchingValueIds;
+        },
         leftItems() {
-            const invalidItems = [...this.invalidPossibleValueIds].map(valueId => this.generateInvalidItem(valueId));
-            return [...this.possibleValues, ...invalidItems]
-                .filter(value => !this.hiddenValueIds.includes(value.id) && !this.chosenValues.includes(value.id));
+            return this.possibleValues.filter(value => this.visibleValueIds.includes(value.id) &&
+            !this.selectedValues.includes(value.id));
         },
         rightItems() {
-            return this.chosenValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
-                .filter(value => !this.hiddenValueIds.includes(value.id));
+            const x = this.selectedValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
+                .filter(value => this.visibleValueIds.includes(value.id));
+            return x;
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -176,11 +234,22 @@ export default {
         moveLeftButtonDisabled() {
             return this.rightSelected.length === 0;
         },
-        normalizedSearchTerm() {
-            const searchMode = this.possibleSearchModeMap[this.searchMode];
-            return searchMode.normalize(this.searchTerm, this.caseSensitiveSearch);
+        selectionDisabled() {
+            return this.disabled || this.mode !== 'manual';
         },
-        possibleSearchModes() {
+        normalizedSearchTerm() {
+            const mode = this.possibleModeMap[this.mode];
+            let searchTerm;
+            if (this.mode === 'manual') {
+                searchTerm = this.searchTerm;
+            } else if (this.mode === 'type') {
+                searchTerm = this.chosenTypes;
+            } else {
+                searchTerm = this.chosenPattern;
+            }
+            return mode.normalize(searchTerm, this.caseSensitiveSearch);
+        },
+        possibleModes() {
             return [{
                 id: 'manual',
                 text: 'Manual',
@@ -202,6 +271,8 @@ export default {
                         const escapedSearchTerm = searchTerm.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
                         const wildcardSearchTerm = escapedSearchTerm.replace(/\*/g, '.*');
                         searchTerm = `^${wildcardSearchTerm}$`;
+                    } else {
+                        return { test: () => false };
                     }
                     try {
                         const flags = caseSensitiveSearch ? '' : 'i';
@@ -222,7 +293,7 @@ export default {
                 normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
                     try {
                         const flags = caseSensitiveSearch ? '' : 'i';
-                        return new RegExp(searchTerm, flags);
+                        return new RegExp(`^${searchTerm}$`, flags);
                     } catch (error) {
                         // In case of an invalid regular expression, an impossible
                         // regex is returned, not matching anything.
@@ -233,18 +304,45 @@ export default {
                     const matches = normalizedSearchTerm.test(text);
                     return inverseSearch ? !matches : matches;
                 }
-            }];
+            }, ...this.withTypes
+                ? [{
+                    id: 'type',
+                    text: 'Type',
+                    normalize(selectedTypes) {
+                        return { test: (type) => selectedTypes.includes(type) };
+                    },
+                    test(type, normalizedSearchTerm) {
+                        return normalizedSearchTerm.test(type);
+                    }
+                }]
+                : []];
         },
-        possibleSearchModeIds() {
-            return this.possibleSearchModes.map(searchMode => searchMode.id);
+        possibleModeIds() {
+            return this.possibleModes.map(mode => mode.id);
         },
-        possibleSearchModeMap() {
+        possibleModeMap() {
             // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
-            return Object.assign({}, ...this.possibleSearchModes.map(obj => ({ [obj.id]: obj })));
+            return Object.assign({}, ...this.possibleModes.map(obj => ({ [obj.id]: obj })));
+        },
+        inputDescription() {
+            if (this.mode === 'manual') {
+                return this.searchLabel;
+            } else if (this.mode === 'type') {
+                return this.selectedTypesLabel;
+            } else {
+                return this.patternLabel;
+            }
+        },
+        value() {
+            if (this.mode === 'manual') {
+                return this.chosenValues;
+            } else {
+                return this.rightItems.map(item => item.id);
+            }
         }
     },
     watch: {
-        value(newValue) {
+        manuallySelected(newValue) {
             this.chosenValues = newValue;
         },
         possibleValues(newPossibleValues) {
@@ -255,6 +353,11 @@ export default {
             }, []);
             // Reset chosenValues as subset of original to prevent re-execution from resetting value
             this.chosenValues = this.chosenValues.filter(item => allValues.includes(item));
+        },
+        value(newVal, oldVal) {
+            if (newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
+                this.$emit('input', newVal, this.mode === 'manual');
+            }
         }
     },
     methods: {
@@ -273,7 +376,6 @@ export default {
             items = items || this.selectedLeft;
             this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
             this.clearSelections();
-            this.$emit('input', this.chosenValues);
         },
         moveLeft(items) {
             // remove all right values from or selectedValues
@@ -283,7 +385,6 @@ export default {
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
             this.clearSelections();
-            this.$emit('input', this.chosenValues);
         },
         onMoveRightButtonClick() {
             this.moveRight();
@@ -349,29 +450,44 @@ export default {
             this.moveLeft();
         },
         onSearchInput(value) {
-            this.searchTerm = value;
+            if (this.mode === 'manual') {
+                this.searchTerm = value;
+            } else {
+                this.chosenPattern = value;
+                this.$emit('patternInput', value);
+            }
         },
-        onSearchModeChange(value) {
-            if (this.possibleSearchModeIds.indexOf(value) !== -1) {
-                this.searchMode = value;
+        onTypeInput(value) {
+            this.chosenTypes = value;
+            this.$emit('typesInput', value);
+        },
+        onModeChange(value) {
+            if (this.possibleModeIds.indexOf(value) !== -1) {
+                this.mode = value;
+                if (this.mode !== 'manual') {
+                    this.searchTerm = '';
+                }
+                this.$emit('modeInput', value);
             }
         },
         onToggleCaseSensitiveSearch(value) {
             this.caseSensitiveSearch = value;
+            this.$emit('caseSensitiveSearchInput', value);
         },
         onToggleInvserseSearch(value) {
             this.inverseSearch = value;
+            this.$emit('inverseSearchInput', value);
         },
         hasSelection() {
-            return this.chosenValues.length > 0;
+            return this.selectedValues.length > 0;
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-            const searchMode = this.possibleSearchModeMap[this.searchMode];
-            return searchMode.test(item.text, this.normalizedSearchTerm,
+            const mode = this.possibleModeMap[this.mode];
+            return mode.test(item[this.mode === 'type' ? 'type' : 'text'], this.normalizedSearchTerm,
                 this.caseSensitiveSearch, this.inverseSearch);
         }
     }
@@ -381,46 +497,55 @@ export default {
 <template>
   <div class="twinlist">
     <Label
-      v-if="showSearchMode"
+      v-if="showMode"
       v-slot="{ labelForId }"
-      :text="searchModeLabel"
+      :text="modeLabel"
       class="search-wrapper"
       compact
     >
       <ValueSwitch
         :id="labelForId"
-        ref="searchMode"
+        ref="mode"
         :size="listSize"
-        :value="searchMode"
+        :value="mode"
         :disabled="disabled"
-        class="search"
-        :possible-values="possibleSearchModes"
-        @input="onSearchModeChange"
+        :possible-values="possibleModes"
+        @input="onModeChange"
       />
     </Label>
     <Label
-      v-if="showSearch"
+      v-if="(mode === 'manual' && showSearch) ||
+        mode === 'regex' ||
+        mode === 'wildcard' ||
+        (mode === 'type' && possibleTypes.length > 0)"
       v-slot="{ labelForId }"
-      :text="searchLabel"
+      :text="inputDescription"
       class="search-wrapper"
       compact
     >
       <SearchInput
+        v-if="mode !== 'type'"
         :id="labelForId"
         ref="search"
         :size="listSize"
         :placeholder="searchPlaceholder"
-        :value="searchTerm"
+        :value="mode === 'manual' ? searchTerm : chosenPattern"
         :label="searchLabel"
-        :case-sensitive-search="caseSensitiveSearch"
-        :inverse-search="inverseSearch"
+        :initial-case-sensitive-search="initialCaseSensitiveSearch"
+        :initial-inverse-search="initialInverseSearch"
         show-case-sensitive-search-button
         show-inverse-search-button
         :disabled="disabled"
-        class="search"
         @input="onSearchInput"
         @toggle-case-sensitive-search="onToggleCaseSensitiveSearch"
         @toggle-inverse-search="onToggleInvserseSearch"
+      />
+      <Checkboxes
+        v-else
+        :value="chosenTypes"
+        :possible-values="possibleTypes"
+        :disabled="disabled"
+        @input="onTypeInput"
       />
     </Label>
     <div class="header">
@@ -437,16 +562,18 @@ export default {
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="leftLabel"
-        :disabled="disabled"
+        :disabled="selectionDisabled"
         @doubleClickOnItem="onLeftListBoxDoubleClick"
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
         @keyArrowRight="onKeyRightArrow"
         @input="onLeftInput"
       />
-      <div class="buttons">
+      <div
+        class="buttons"
+      >
         <div
           ref="moveRight"
-          :class="{ disabled: moveRightButtonDisabled || disabled }"
+          :class="{ disabled: moveRightButtonDisabled || selectionDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveRightButtonClick"
@@ -456,7 +583,7 @@ export default {
         </div>
         <div
           ref="moveAllRight"
-          :class="{ disabled: moveAllRightButtonDisabled || disabled }"
+          :class="{ disabled: moveAllRightButtonDisabled || selectionDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllRightButtonClick"
@@ -466,7 +593,7 @@ export default {
         </div>
         <div
           ref="moveLeft"
-          :class="{ disabled: moveLeftButtonDisabled || disabled }"
+          :class="{ disabled: moveLeftButtonDisabled || disselectionDisabledabled }"
           role="button"
           tabindex="0"
           @click="onMoveLeftButtonClick"
@@ -476,7 +603,7 @@ export default {
         </div>
         <div
           ref="moveAllLeft"
-          :class="{ disabled: moveAllLeftButtonDisabled || disabled }"
+          :class="{ disabled: moveAllLeftButtonDisabled || selectionDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllLeftButtonClick"
@@ -492,7 +619,7 @@ export default {
         :possible-values="rightItems"
         :size="listSize"
         :aria-label="rightLabel"
-        :disabled="disabled"
+        :disabled="selectionDisabled"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"
         @keyArrowLeft="onKeyLeftArrow"

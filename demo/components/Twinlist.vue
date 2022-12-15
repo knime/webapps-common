@@ -4,10 +4,9 @@ import Twinlist from '../../ui/components/forms/Twinlist.vue';
 import code from '!!raw-loader!../../ui/components/forms/Twinlist';
 
 const codeExample = `<Twinlist
-  v-model="selected"
+  :size="7"
   left-label="Select stuff here"
   right-label="The selected stuff"
-  initial-search-term=""
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -20,7 +19,7 @@ const codeExample = `<Twinlist
   }]"
 />
 <Twinlist
-  v-model="selected2"
+  :size="7"
   show-search
   left-label="Select stuff here"
   right-label="The selected stuff"
@@ -38,27 +37,28 @@ const codeExample = `<Twinlist
     text: 'Baz'
   }]"
 />
+
 <Twinlist
-  v-model="selected3"
-  show-search
-  show-search-mode
-  show-case-sensitive-button
+  :size="7"
+  show-mode
+  initial-case-sensitive-search
   left-label="Select from the 7 visible items (size)"
-  righ-label="The selected stuff"
-  search-label="Search items"
-  search-mode-label="Search mode"
-  search-placeholder="Placeholder"
-  initial-search-term="^.*a[rz]$"
-  initial-search-mode="regex"
+  right-label="The selected stuff"
+  mode-label="Selection mode"
+  initial-pattern="^[ab].*[357]$|\$"
+  :initial-selected-types="['Type1', 'Type3']"
   :possible-values="[{
     id: 'foo',
-    text: 'Foo'
+    text: 'Foo',
+    type: 'Type1'
   }, {
     id: 'bar',
-    text: 'Bar'
+    text: 'Bar',
+    type: 'Type2'
   }, {
     id: 'baz',
-    text: 'Baz'
+    text: 'Baz',
+    type: 'Type1'
   }]"
 />
 `;
@@ -71,10 +71,7 @@ export default {
     data() {
         return {
             codeExample,
-            selected: [],
-            selected2: [],
-            selected3: [],
-            selected4: []
+            selectedTypes: ['Type1', 'Type3']
         };
     },
     computed: {
@@ -84,52 +81,67 @@ export default {
         demoValues() {
             return [{
                 id: 'foo',
-                text: 'Foo'
+                text: 'Foo',
+                type: 'Type1'
             }, {
                 id: 'bar',
-                text: 'Bar'
+                text: 'Bar',
+                type: 'Type2'
             }, {
                 id: 'baz',
-                text: 'Baz'
+                text: 'Baz',
+                type: 'Type1'
             }, {
                 id: 'baz2',
-                text: 'Baz 2'
+                text: 'Baz 2',
+                type: 'Type2'
             }, {
                 id: 'baz3',
-                text: 'Baz 3'
+                text: 'Baz 3',
+                type: 'Type3'
             }, {
                 id: 'baz4',
-                text: 'Baz 4'
+                text: 'Baz 4',
+                type: 'Type3'
             }, {
                 id: 'baz5',
-                text: 'Baz 5'
+                text: 'Baz 5',
+                type: 'Type3'
             }, {
                 id: 'baz6',
-                text: 'Baz 6'
+                text: 'Baz 6',
+                type: 'Type4'
             }, {
                 id: 'baz7',
-                text: 'Baz 7'
+                text: 'Baz 7',
+                type: 'Type5'
             }, {
                 id: 'baz8',
-                text: 'Baz 8'
+                text: 'Baz 8',
+                type: 'Type6'
             }, {
                 id: 'baz9',
-                text: 'Baz 9'
+                text: 'Baz 9',
+                type: 'Type6'
             }, {
                 id: 'baz10',
-                text: 'Baz 10'
+                text: 'Baz 10',
+                type: 'Type6'
             }, {
                 id: 'baz11',
-                text: 'Baz 11'
+                text: 'Baz 11',
+                type: 'Type6'
             }];
         },
         demoValuesWithSpecialChars() {
             return [...this.demoValues, {
                 id: 'spec1',
-                text: 'Special *.^'
+                text: 'Special *.^',
+                type: 'Type1'
             }, {
                 id: 'spec2',
-                text: 'Special $?]'
+                text: 'Special $?]',
+                type: 'Type2'
             }];
         }
     }
@@ -153,22 +165,17 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
             :size="7"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected }}
-        </div>
       </div>
       <br>
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected2"
             :size="7"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
@@ -176,15 +183,12 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected2 }}
-        </div>
       </div>
       <br>
       <div class="grid-container">
         <div class="grid-item-6">
           <p>
-            The Twinlist with a basic search field enabled and an initial
+            The Twinlist with a search field enabled and an initial
             search term defined. Case-sensitive search as well as inverse search
             can be enabled through the respective search field buttons.
           </p>
@@ -193,7 +197,6 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected3"
             :size="7"
             show-search
             left-label="Select from the 7 visible items (size)"
@@ -204,15 +207,11 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected3 }}
-        </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
           <p>
-            With search enabled along with the option to configure the search
-            mode and an example regular expression search. The demo list also
+            A Twinlist with mode selection enabled and set to initial regex selection. The demo list also
             include items with special characters that need to be escaped for
             regular expression filters:
           </p>
@@ -221,23 +220,16 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected4"
             :size="7"
-            show-search
-            show-search-mode
+            show-mode
             initial-case-sensitive-search
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
-            search-label="Search items"
-            search-mode-label="Search mode"
-            search-placeholder="Placeholder"
-            initial-search-term="^[ab].*[357]$|\$"
-            initial-search-mode="regex"
+            mode-label="Selection mode"
+            initial-pattern="^[ab].*[357]$|\$"
+            :initial-selected-types="selectedTypes"
             :possible-values="demoValuesWithSpecialChars"
           />
-        </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected4 }}
         </div>
       </div>
     </section>
