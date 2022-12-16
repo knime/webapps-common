@@ -55,16 +55,17 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistorFactory;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
@@ -176,11 +177,11 @@ public interface DefaultNodeSettings {
      * @param settings the settings-object to create the instance from
      * @param clazz default node settings class
      * @return a new {@link DefaultNodeSettings}-instance
+     * @throws InvalidSettingsException if the settings are invalid
      */
-    static <S extends DefaultNodeSettings> S loadSettings(final NodeSettingsRO settings, final Class<S> clazz) {
-        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
-        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(settings, node);
-        return JsonFormsDataUtil.toDefaultNodeSettings(node, clazz);
+    static <S extends DefaultNodeSettings> S loadSettings(final NodeSettingsRO settings, final Class<S> clazz)
+        throws InvalidSettingsException {
+        return NodeSettingsPersistorFactory.createPersistor(clazz).load(settings);
     }
 
     /**
@@ -216,9 +217,16 @@ public interface DefaultNodeSettings {
      */
     static void saveSettings(final Class<? extends DefaultNodeSettings> settingsClass,
         final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
-        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(settingsObject);
-        var schemaNode = JsonFormsSchemaUtil.buildSchema(settingsClass);
-        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, settings);
+        castAndSaveSettings(settingsClass, settingsObject, settings);
+    }
+
+    @SuppressWarnings("unchecked")// we check that the cast is save
+    private static <S extends DefaultNodeSettings> void castAndSaveSettings(final Class<S> settingsClass,
+        final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
+        CheckUtils.checkArgument(settingsClass.isInstance(settingsObject),
+                "The provided settingsObject is not an instance of the provided settingsClass.");
+        NodeSettingsPersistorFactory.createPersistor(settingsClass).save((S)settingsObject, settings);
+
     }
 
     /**

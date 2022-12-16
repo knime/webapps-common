@@ -139,7 +139,11 @@ public final class TableNodeView implements NodeView {
 
     @Override
     public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
-        m_settings = DefaultNodeSettings.loadSettings(settings, TableViewViewSettings.class);
+        try {
+            m_settings = DefaultNodeSettings.loadSettings(settings, TableViewViewSettings.class);
+        } catch (InvalidSettingsException ex) {
+            throw new IllegalStateException("The settings should have been validated first.", ex);
+        }
     }
 
 }
