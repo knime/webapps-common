@@ -60,8 +60,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializerFactory;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistorFactory;
 
 /**
  * The {@link NodeModel} for simple WebUI nodes, see {@link WebUINodeFactory}.
@@ -76,7 +76,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     private final Class<S> m_modelSettingsClass;
 
-    private final NodeSettingsSerializer<S> m_modelSettingsSerializer;
+    private final NodeSettingsPersistor<S> m_modelSettingsPersistor;
 
     /**
      * @param configuration the {@link WebUINodeConfiguration} for this factory
@@ -85,7 +85,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
         super(configuration.getInPortDescriptions().length, configuration.getOutPortDescriptions().length);
         m_modelSettingsClass = modelSettingsClass;
-        m_modelSettingsSerializer = NodeSettingsSerializerFactory.createSerializer(modelSettingsClass);
+        m_modelSettingsPersistor = NodeSettingsPersistorFactory.createPersistor(modelSettingsClass);
     }
 
     @Override
@@ -136,7 +136,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_modelSettings != null) {
-            m_modelSettingsSerializer.save(m_modelSettings, settings);
+            m_modelSettingsPersistor.save(m_modelSettings, settings);
         }
     }
 
@@ -157,7 +157,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_modelSettings = m_modelSettingsSerializer.load(settings);
+        m_modelSettings = m_modelSettingsPersistor.load(settings);
     }
 
     @Override

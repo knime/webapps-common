@@ -46,7 +46,7 @@
  * History
  *   Dec 1, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,19 +69,19 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.serialization.CustomNodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
 
 
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class FieldBasedNodeSettingsSerializerTest {
+public class FieldBasedNodeSettingsPersistorTest {
 
     private static final String ROOT_KEY = "Test";
 
     @Test
-    void testFlatDefaultSerialization() throws InvalidSettingsException {
+    void testFlatDefaultPersistance() throws InvalidSettingsException {
         var obj = new FlatNodeSettingsObject();
         obj.m_intSetting = 4;
         obj.m_doubleSetting = 3.4;
@@ -90,7 +90,7 @@ public class FieldBasedNodeSettingsSerializerTest {
     }
 
     @Test
-    void testFlatCustomKeysSerialization() throws InvalidSettingsException {
+    void testFlatCustomKeysPersistance() throws InvalidSettingsException {
         var obj = new FlatCustomKeysNodeSettingsObject();
         obj.m_intSetting = 42;
         obj.m_longSetting = 32;
@@ -101,7 +101,7 @@ public class FieldBasedNodeSettingsSerializerTest {
     }
 
     @Test
-    void testFlatSettingsModelSerialization() throws InvalidSettingsException {
+    void testFlatSettingsModelPersistance() throws InvalidSettingsException {
         var obj = new FlatSettingsModelSettingsObject();
         obj.m_booleanSetting = true;
         obj.m_stringSetting = "baz";
@@ -114,15 +114,15 @@ public class FieldBasedNodeSettingsSerializerTest {
     }
 
     @Test
-    void testCustomFieldSerializer() throws InvalidSettingsException {
-        var obj = new SettingsWithCustomFieldSerializer();
+    void testCustomFieldPersistor() throws InvalidSettingsException {
+        var obj = new SettingsWithCustomFieldPersistor();
         obj.m_foo = "fuchs";
         testSaveLoad(obj);
     }
 
     /**
      * Simulates package-private fields that are defined in a client package that is different from the package of
-     * {@link FieldBasedNodeSettingsSerializer} (which will be virtually all implementations that are production
+     * {@link FieldBasedNodeSettingsPersistor} (which will be virtually all implementations that are production
      * relevant).
      *
      * @throws InvalidSettingsException not thrown here
@@ -138,41 +138,41 @@ public class FieldBasedNodeSettingsSerializerTest {
         throws InvalidSettingsException {
         @SuppressWarnings("unchecked")
         Class<S> objClass = (Class<S>)obj.getClass();
-        var serializer = new FieldBasedNodeSettingsSerializer<>(objClass);
+        var persistor = new FieldBasedNodeSettingsPersistor<>(objClass);
         var expected = new NodeSettings(ROOT_KEY);
         obj.saveExpected(expected);
 
         var actual = new NodeSettings(ROOT_KEY);
-        serializer.save(obj, actual);
+        persistor.save(obj, actual);
 
         assertEquals(expected, actual);
 
-        var loaded = serializer.load(expected);
+        var loaded = persistor.load(expected);
 
         assertEquals(obj, loaded);
     }
 
     @Test
-    void testCustomSerializerWithoutEmptyConstructor() {
+    void testCustomPersistorWithoutEmptyConstructor() {
         assertThrows(IllegalStateException.class,
-            () -> new FieldBasedNodeSettingsSerializer<>(NoEmptyConstuctorFieldSerializerSetings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(NoEmptyConstuctorFieldPersistorSetings.class));
     }
 
     @Test
-    void testCustomSerializerWithFailingConstructor() {
+    void testCustomPersistorWithFailingConstructor() {
         assertThrows(IllegalStateException.class,
-            () -> new FieldBasedNodeSettingsSerializer<>(FailingConstructorFieldSerializerSettings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(FailingConstructorFieldPersistorSettings.class));
     }
 
     @Test
-    void testAbstractCustomFieldSerializer() {
+    void testAbstractCustomFieldPersistor() {
         assertThrows(IllegalStateException.class,
-            () -> new FieldBasedNodeSettingsSerializer<>(AbstractCustomFieldSerializerSettings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(AbstractCustomFieldPersistorSettings.class));
     }
 
     @Test
-    void testPrivateConstructorCustomFieldSerializer() throws InvalidSettingsException {
-        var obj = new PrivateConstructorSerializerSettings();
+    void testPrivateConstructorCustomFieldPersistor() throws InvalidSettingsException {
+        var obj = new PrivateConstructorPersistorSettings();
         obj.m_foo = "bar";
         testSaveLoad(obj);
     }
@@ -180,7 +180,7 @@ public class FieldBasedNodeSettingsSerializerTest {
     @Test
     void testNestedSettingsNotSupported() {
         assertThrows(UnsupportedOperationException.class,
-            () -> new FieldBasedNodeSettingsSerializer<>(OuterNodeSettings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(OuterNodeSettings.class));
     }
 
     private interface TestNodeSettings extends DefaultNodeSettings {
@@ -262,19 +262,19 @@ public class FieldBasedNodeSettingsSerializerTest {
     static final class FlatCustomKeysNodeSettingsObject
         extends AbstractTestNodeSettings<FlatCustomKeysNodeSettingsObject> {
 
-        @FieldSerialization(configKey = "my_int_setting")
+        @Persist(configKey = "my_int_setting")
         int m_intSetting;
 
-        @FieldSerialization(configKey = "my_double_setting")
+        @Persist(configKey = "my_double_setting")
         double m_doubleSetting;
 
-        @FieldSerialization(configKey = "my_long_setting")
+        @Persist(configKey = "my_long_setting")
         long m_longSetting;
 
-        @FieldSerialization(configKey = "my_string_setting")
+        @Persist(configKey = "my_string_setting")
         String m_stringSetting;
 
-        @FieldSerialization(configKey = "my_boolean_setting")
+        @Persist(configKey = "my_boolean_setting")
         boolean m_booleanSetting;
 
         @Override
@@ -310,25 +310,25 @@ public class FieldBasedNodeSettingsSerializerTest {
         extends AbstractTestNodeSettings<FlatSettingsModelSettingsObject> {
 
         // no config key provided to test correct extraction of the settings name
-        @FieldSerialization(settingsModel = SettingsModelBoolean.class)
+        @Persist(settingsModel = SettingsModelBoolean.class)
         boolean m_booleanSetting;
 
-        @FieldSerialization(configKey = "my_string_setting", settingsModel = SettingsModelString.class)
+        @Persist(configKey = "my_string_setting", settingsModel = SettingsModelString.class)
         String m_stringSetting;
 
-        @FieldSerialization(configKey = "my_enum_setting", settingsModel = SettingsModelString.class)
+        @Persist(configKey = "my_enum_setting", settingsModel = SettingsModelString.class)
         TestEnum m_enumSetting;
 
-        @FieldSerialization(configKey = "my_included_columns", settingsModel = SettingsModelColumnFilter2.class)
+        @Persist(configKey = "my_included_columns", settingsModel = SettingsModelColumnFilter2.class)
         String[] m_includedColumnsSetting;
 
-        @FieldSerialization(configKey = "my_int_setting", settingsModel = SettingsModelInteger.class)
+        @Persist(configKey = "my_int_setting", settingsModel = SettingsModelInteger.class)
         int m_intSetting;
 
-        @FieldSerialization(configKey = "my_double_setting", settingsModel = SettingsModelDouble.class)
+        @Persist(configKey = "my_double_setting", settingsModel = SettingsModelDouble.class)
         double m_doubleSetting;
 
-        @FieldSerialization(configKey = "my_long_setting", settingsModel = SettingsModelLong.class)
+        @Persist(configKey = "my_long_setting", settingsModel = SettingsModelLong.class)
         long m_longSetting;
 
         @Override
@@ -363,10 +363,10 @@ public class FieldBasedNodeSettingsSerializerTest {
 
     }
 
-    private static final class SettingsWithCustomFieldSerializer
-        extends AbstractTestNodeSettings<SettingsWithCustomFieldSerializer> {
+    private static final class SettingsWithCustomFieldPersistor
+        extends AbstractTestNodeSettings<SettingsWithCustomFieldPersistor> {
 
-        @FieldSerialization(customSerializer = CustomFieldSerializer.class)
+        @Persist(customPersistor = CustomFieldPersistor.class)
         String m_foo;
 
         @Override
@@ -380,12 +380,12 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
 
         @Override
-        protected boolean equalSettings(final SettingsWithCustomFieldSerializer settings) {
+        protected boolean equalSettings(final SettingsWithCustomFieldPersistor settings) {
             return Objects.equals(m_foo, settings.m_foo);
         }
     }
 
-    private static final class CustomFieldSerializer implements CustomNodeSettingsSerializer<String> {
+    private static final class CustomFieldPersistor implements CustomNodeSettingsPersistor<String> {
 
         @Override
         public String load(final NodeSettingsRO settings)
@@ -421,9 +421,9 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
     }
 
-    private static final class NoEmptyConstructorFieldSerializer implements CustomNodeSettingsSerializer<String> {
+    private static final class NoEmptyConstructorFieldPersistor implements CustomNodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
-        NoEmptyConstructorFieldSerializer(final String arg) {
+        NoEmptyConstructorFieldPersistor(final String arg) {
             // the argument is just there to test that the framework reacts appropriately
         }
 
@@ -439,14 +439,14 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
     }
 
-    private static final class NoEmptyConstuctorFieldSerializerSetings implements DefaultNodeSettings {
-        @FieldSerialization(customSerializer = NoEmptyConstructorFieldSerializer.class)
+    private static final class NoEmptyConstuctorFieldPersistorSetings implements DefaultNodeSettings {
+        @Persist(customPersistor = NoEmptyConstructorFieldPersistor.class)
         String m_foo;
     }
 
-    private static final class FailingConstructorFieldSerializer implements CustomNodeSettingsSerializer<String> {
+    private static final class FailingConstructorFieldPersistor implements CustomNodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
-        public FailingConstructorFieldSerializer() {
+        public FailingConstructorFieldPersistor() {
             throw new IllegalArgumentException("Failing constructor.");
         }
 
@@ -462,22 +462,22 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
     }
 
-    private static final class FailingConstructorFieldSerializerSettings implements DefaultNodeSettings {
-        @FieldSerialization(customSerializer = FailingConstructorFieldSerializer.class)
+    private static final class FailingConstructorFieldPersistorSettings implements DefaultNodeSettings {
+        @Persist(customPersistor = FailingConstructorFieldPersistor.class)
         String m_foo;
     }
 
-    private abstract static class AbstractCustomFieldSerializer implements CustomNodeSettingsSerializer<String> {
+    private abstract static class AbstractCustomFieldPersistor implements CustomNodeSettingsPersistor<String> {
 
     }
 
-    private static final class AbstractCustomFieldSerializerSettings implements DefaultNodeSettings {
-        @FieldSerialization(customSerializer = AbstractCustomFieldSerializer.class)
+    private static final class AbstractCustomFieldPersistorSettings implements DefaultNodeSettings {
+        @Persist(customPersistor = AbstractCustomFieldPersistor.class)
         String m_foo;
     }
 
-    private static final class PrivateConstructorSerializer implements CustomNodeSettingsSerializer<String> {
-        private PrivateConstructorSerializer() {
+    private static final class PrivateConstructorPersistor implements CustomNodeSettingsPersistor<String> {
+        private PrivateConstructorPersistor() {
             // make private to provoke an access exception
         }
 
@@ -493,9 +493,9 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
     }
 
-    private static final class PrivateConstructorSerializerSettings
-        extends AbstractTestNodeSettings<PrivateConstructorSerializerSettings> {
-        @FieldSerialization(customSerializer = PrivateConstructorSerializer.class)
+    private static final class PrivateConstructorPersistorSettings
+        extends AbstractTestNodeSettings<PrivateConstructorPersistorSettings> {
+        @Persist(customPersistor = PrivateConstructorPersistor.class)
         String m_foo;
 
         @Override
@@ -509,7 +509,7 @@ public class FieldBasedNodeSettingsSerializerTest {
         }
 
         @Override
-        protected boolean equalSettings(final PrivateConstructorSerializerSettings settings) {
+        protected boolean equalSettings(final PrivateConstructorPersistorSettings settings) {
             return Objects.equals(m_foo, settings.m_foo);
         }
     }

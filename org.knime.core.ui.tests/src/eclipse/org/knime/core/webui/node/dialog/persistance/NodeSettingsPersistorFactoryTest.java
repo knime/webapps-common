@@ -46,7 +46,7 @@
  * History
  *   Dec 6, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -61,59 +61,59 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.serialization.field.FieldBasedNodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
 
 /**
- * Contains tests for {@link NodeSettingsSerializerFactory}.
+ * Contains tests for {@link NodeSettingsPersistorFactory}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class NodeSettingsSerializerFactoryTest {
+public class NodeSettingsPersistorFactoryTest {
 
     @Test
-    void testFieldBasedSerialization() throws InvalidSettingsException {
-        var settings = new FieldBasedSerializerSettings();
+    void testFieldBasedPersistance() throws InvalidSettingsException {
+        var settings = new FieldBasedPersistorSettings();
         settings.m_foo = "foo";
         testSaveLoad(settings);
     }
 
     @Test
-    void testCustomSerialization() throws InvalidSettingsException {
-        var settings = new CustomSerializerSettings();
+    void testCustomPersistance() throws InvalidSettingsException {
+        var settings = new CustomPersistorSettings();
         settings.m_foo = "bar";
         testSaveLoad(settings);
     }
 
     @Test
-    void testFallbackSerialization() throws InvalidSettingsException {
-        var settings = new FallbackSerializerSettings();
+    void testFallbackPersistance() throws InvalidSettingsException {
+        var settings = new FallbackPersistorSettings();
         settings.m_foo = "baz";
         testSaveLoad(settings);
     }
 
     @Test
-    void testInvalidCustomSerializer() {
+    void testInvalidCustomPersistor() {
         assertThrows(IllegalArgumentException.class,
-            () -> NodeSettingsSerializerFactory.createSerializer(InvalidCustomSerializerSettings.class));
+            () -> NodeSettingsPersistorFactory.createPersistor(InvalidCustomPersistorSettings.class));
     }
 
     private static <S extends DefaultNodeSettings> void testSaveLoad(final S settings) throws InvalidSettingsException {
         @SuppressWarnings("unchecked")
         var settingsClass = (Class<S>)settings.getClass();
-        var serializer = NodeSettingsSerializerFactory.createSerializer(settingsClass);
+        var persistor = NodeSettingsPersistorFactory.createPersistor(settingsClass);
         var nodeSettings = new NodeSettings("test");
-        serializer.save(settings, nodeSettings);
-        var loaded = serializer.load(nodeSettings);
+        persistor.save(settings, nodeSettings);
+        var loaded = persistor.load(nodeSettings);
         assertFalse(loaded == settings);
         assertEquals(settings, loaded);
     }
 
-    @Serialization(serializer = FieldBasedNodeSettingsSerializer.class)
-    private static final class FieldBasedSerializerSettings extends AbstractTestSettings<FieldBasedSerializerSettings> {
+    @Persistor(FieldBasedNodeSettingsPersistor.class)
+    private static final class FieldBasedPersistorSettings extends AbstractTestSettings<FieldBasedPersistorSettings> {
         String m_foo;
 
         @Override
-        protected boolean internalEquals(final FieldBasedSerializerSettings other) {
+        protected boolean internalEquals(final FieldBasedPersistorSettings other) {
             return Objects.equals(m_foo, other.m_foo);
         }
     }
@@ -137,60 +137,60 @@ public class NodeSettingsSerializerFactoryTest {
         protected abstract boolean internalEquals(final S other);
     }
 
-    @Serialization(serializer = CustomSerializer.class)
-    private static final class CustomSerializerSettings extends AbstractTestSettings<CustomSerializerSettings> {
+    @Persistor(CustomPersistor.class)
+    private static final class CustomPersistorSettings extends AbstractTestSettings<CustomPersistorSettings> {
         String m_foo;
 
         @Override
-        protected boolean internalEquals(final CustomSerializerSettings other) {
+        protected boolean internalEquals(final CustomPersistorSettings other) {
             return Objects.equals(m_foo, other.m_foo);
         }
 
     }
 
-    private static final class CustomSerializer implements CustomNodeSettingsSerializer<CustomSerializerSettings> {
+    private static final class CustomPersistor implements CustomNodeSettingsPersistor<CustomPersistorSettings> {
 
         @Override
-        public void save(final CustomSerializerSettings obj, final NodeSettingsWO settings) {
+        public void save(final CustomPersistorSettings obj, final NodeSettingsWO settings) {
             settings.addString("custom_foo", obj.m_foo);
         }
 
         @Override
-        public CustomSerializerSettings load(final NodeSettingsRO settings)
+        public CustomPersistorSettings load(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            var obj = new CustomSerializerSettings();
+            var obj = new CustomPersistorSettings();
             obj.m_foo = settings.getString("custom_foo");
             return obj;
         }
     }
 
-    private static final class FallbackSerializerSettings extends AbstractTestSettings<FallbackSerializerSettings> {
+    private static final class FallbackPersistorSettings extends AbstractTestSettings<FallbackPersistorSettings> {
 
         String m_foo;
 
         @Override
-        protected boolean internalEquals(final FallbackSerializerSettings other) {
+        protected boolean internalEquals(final FallbackPersistorSettings other) {
             return Objects.equals(m_foo, other.m_foo);
         }
     }
 
-    private static final class InvalidCustomSerializer
-        implements NodeSettingsSerializer<InvalidCustomSerializerSettings> {
+    private static final class InvalidCustomPersistor
+        implements NodeSettingsPersistor<InvalidCustomPersistorSettings> {
 
         @Override
-        public InvalidCustomSerializerSettings load(final NodeSettingsRO settings)
+        public InvalidCustomPersistorSettings load(final NodeSettingsRO settings)
             throws InvalidSettingsException {
             throw new NotImplementedException("This class should not be instantiated by the test.");
         }
 
         @Override
-        public void save(final InvalidCustomSerializerSettings obj, final NodeSettingsWO settings) {
+        public void save(final InvalidCustomPersistorSettings obj, final NodeSettingsWO settings) {
             throw new NotImplementedException("This class should not be instantiated by the test.");
         }
 
     }
 
-    @Serialization(serializer = InvalidCustomSerializer.class)
-    private static final class InvalidCustomSerializerSettings implements DefaultNodeSettings {
+    @Persistor(InvalidCustomPersistor.class)
+    private static final class InvalidCustomPersistorSettings implements DefaultNodeSettings {
     }
 }

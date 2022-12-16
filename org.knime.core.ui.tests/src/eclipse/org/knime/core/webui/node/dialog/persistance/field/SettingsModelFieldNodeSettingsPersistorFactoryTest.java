@@ -46,7 +46,7 @@
  * History
  *   Dec 9, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -63,20 +63,20 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class SettingsModelFieldNodeSettingsSerializerFactoryTest {
+public class SettingsModelFieldNodeSettingsPersistorFactoryTest {
 
     private static final String CFG_KEY = "test";
 
     @Test
     void testUnsupportedFieldSettingsModelTypeCombination() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> SettingsModelFieldNodeSettingsSerializerFactory
-            .createSerializer(TestEnum.class, SettingsModelInteger.class, CFG_KEY));
+        assertThrows(IllegalArgumentException.class, () -> SettingsModelFieldNodeSettingsPersistorFactory
+            .createPersistor(TestEnum.class, SettingsModelInteger.class, CFG_KEY));
     }
 
     @Test
@@ -126,15 +126,15 @@ public class SettingsModelFieldNodeSettingsSerializerFactoryTest {
     private static <T> void testSaveLoad(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final T value, final BiConsumer<T, T> assertFn)
         throws InvalidSettingsException {
-        var serializer = createSerializer(fieldType, settingsModelType);
+        var persistor = createPersistor(fieldType, settingsModelType);
         var nodeSettings = new NodeSettings(CFG_KEY);
-        serializer.save(value, nodeSettings);
-        assertFn.accept(value, serializer.load(nodeSettings));
+        persistor.save(value, nodeSettings);
+        assertFn.accept(value, persistor.load(nodeSettings));
     }
 
-    private static <T> NodeSettingsSerializer<T> createSerializer(final Class<T> fieldType,
+    private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType) {
-        return SettingsModelFieldNodeSettingsSerializerFactory.createSerializer(fieldType, settingsModelType, CFG_KEY);
+        return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(fieldType, settingsModelType, CFG_KEY);
     }
 
     private enum TestEnum {

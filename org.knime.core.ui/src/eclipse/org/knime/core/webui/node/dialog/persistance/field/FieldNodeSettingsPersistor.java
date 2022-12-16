@@ -44,57 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance.field;
 
-import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.serialization.field.FieldBasedNodeSettingsSerializer;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 /**
- * Creates NodeSettingsSerializers for DefaultNodeSettings.
+ * {@link NodeSettingsPersistor} for fields that composes the config key with the implementation of the persistor.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
-public final class NodeSettingsSerializerFactory {
+final class FieldNodeSettingsPersistor<T> implements NodeSettingsPersistor<T> {
+    private final String m_configKey;
 
-    private NodeSettingsSerializerFactory() {
+    private final FieldPersistor m_impl;
 
+    FieldNodeSettingsPersistor(final String configKey, final FieldPersistor impl) {
+        m_impl = impl;
+        m_configKey = configKey;
     }
 
-    /**
-     * Creates the {@link NodeSettingsSerializer serializer} for a {@link DefaultNodeSettings settings} class. <br>
-     * <br>
-     * If the {@link DefaultNodeSettings settings} are annotated with a {@link Serialization}, then an instance of the
-     * {@link Serialization#serializer()} is created.<br>
-     * Otherwise the existing reflection based serialization is used for backwards compatibility.
-     *
-     * @param <S> the type of {@link DefaultNodeSettings} the serializer is for
-     * @param settingsClass the class of {@link DefaultNodeSettings} to create a serializer for
-     * @return the serializer for the provided settingsClass
-     * @throws IllegalArgumentException if the provided class references an unsupported serializer (e.g. a custom
-     *             serializer that extends NodeSettingsSerializer directly)
-     */
-    public static <S extends DefaultNodeSettings> NodeSettingsSerializer<S>
-        createSerializer(final Class<S> settingsClass) {
-        var serialization = settingsClass.getAnnotation(Serialization.class);
-        if (serialization == null) {
-            // no annotation means we use the old serialization
-            return new ReflectionDefaultNodeSettingsSerializer<>(settingsClass);
-        } else {
-            var serializerClass = serialization.serializer();
-            if (FieldBasedNodeSettingsSerializer.class.equals(serializerClass)) {
-                return new FieldBasedNodeSettingsSerializer<>(settingsClass);
-            } else if (CustomNodeSettingsSerializer.class.isAssignableFrom(serializerClass)) {
-                @SuppressWarnings("unchecked")
-                var customSerializer = CustomNodeSettingsSerializer
-                    .createInstance((Class<? extends CustomNodeSettingsSerializer<S>>)serializerClass);
-                return customSerializer;
-            } else {
-                throw new IllegalArgumentException(String
-                    .format("The DefaultNodeSettings class '%s' does not specify a valid serializer.", settingsClass));
-            }
-        }
+    @Override
+    public void save(final T obj, final NodeSettingsWO settings) {
+        m_impl.save(obj, settings, m_configKey);
     }
+
+    @Override
+    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        return m_impl.load(settings, m_configKey);
+    }
+
 }

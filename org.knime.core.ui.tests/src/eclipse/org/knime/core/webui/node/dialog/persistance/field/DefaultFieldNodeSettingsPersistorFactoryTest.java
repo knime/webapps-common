@@ -46,7 +46,7 @@
  * History
  *   Dec 7, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,30 +55,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 /**
- * Contains unit tests for the {@link DefaultFieldNodeSettingsSerializerFactory}.
+ * Contains unit tests for the {@link DefaultFieldNodeSettingsPersistorFactory}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class DefaultFieldNodeSettingsSerializerFactoryTest {
+public class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     private static final String KEY = "test";
 
     @Test
     void testFailsOnUnsupportedType() throws Exception {
         assertThrows(IllegalArgumentException.class,
-            () -> createSerializer(UnsupportedType.class));
+            () -> createPersistor(UnsupportedType.class));
     }
 
 
     @Test
     void testInt() throws InvalidSettingsException {
-        var serializer = createSerializer(int.class);
+        var persistor = createPersistor(int.class);
         var nodeSettings = new NodeSettings(KEY);
-        serializer.save(3, nodeSettings);
-        assertEquals(3, serializer.load(nodeSettings));
+        persistor.save(3, nodeSettings);
+        assertEquals(3, persistor.load(nodeSettings));
     }
 
     @Test
@@ -186,17 +186,17 @@ public class DefaultFieldNodeSettingsSerializerFactoryTest {
     }
 
     private static <T> T saveLoad(final Class<T> type, final T value) throws InvalidSettingsException {
-        var serializer = createSerializer(type);
+        var persistor = createPersistor(type);
         var nodeSettings = new NodeSettings(KEY);
-        serializer.save(value, nodeSettings);
-        T loaded = serializer.load(nodeSettings);
+        persistor.save(value, nodeSettings);
+        T loaded = persistor.load(nodeSettings);
         return loaded;
     }
 
 
 
-    private static <T> NodeSettingsSerializer<T> createSerializer(final Class<T> type) {
-        return DefaultFieldNodeSettingsSerializerFactory.createSerializer(type, KEY);
+    private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> type) {
+        return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, KEY);
     }
 
     private static final class UnsupportedType {

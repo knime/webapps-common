@@ -44,42 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 1, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance.field;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
- * Serializer that uses the existing reflection-based serialization mechanism for backwards compatibility.
+ * Saves a value into a {@link NodeSettingsWO} under a specific key
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-final class ReflectionDefaultNodeSettingsSerializer<S extends DefaultNodeSettings>
-    implements NodeSettingsSerializer<S> {
+@FunctionalInterface
+interface FieldSaver<T> {
 
-    private final Class<S> m_settingsClass;
-
-    ReflectionDefaultNodeSettingsSerializer(final Class<S> settingsClass) {
-        m_settingsClass = settingsClass;
-    }
-
-    @Override
-    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
-        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
-            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
-            // by the JSON
-            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
-        }
-        return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClass);
-    }
-
-    @Override
-    public void save(final S settings, final NodeSettingsWO nodeSettings) {
-        DefaultNodeSettings.saveSettings(m_settingsClass, settings, nodeSettings);
-    }
-
+    void save(T value, NodeSettingsWO settings, String configKey);
 }

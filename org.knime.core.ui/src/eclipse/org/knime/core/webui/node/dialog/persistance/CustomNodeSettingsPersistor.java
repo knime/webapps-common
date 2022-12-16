@@ -46,36 +46,47 @@
  * History
  *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * {@link NodeSettingsSerializer} for fields that composes the config key with the implementation of the serializer.
+ * Must provide an empty constructor for instantiation, the empty default constructor does not suffice.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @param <T> the type of object the persistor operates on
+ * @noreference non-public API
+ * @noimplement non-public API
  */
-final class FieldNodeSettingsSerializer<T> implements NodeSettingsSerializer<T> {
-    private final String m_configKey;
+public interface CustomNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> {
 
-    private final FieldSerializerImpl m_impl;
-
-    FieldNodeSettingsSerializer(final String configKey, final FieldSerializerImpl impl) {
-        m_impl = impl;
-        m_configKey = configKey;
+    /**
+     * Creates a new instance from the provided CustomNodeSettingsPersistor class by calling its empty constructor.
+     *
+     * @param <S> the type CustomNodeSettingsPersistor
+     * @param persistorClass the class of CustomNodeSettingsPersistor
+     * @return a new instance of the provided class
+     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
+     *             raises an exception
+     */
+    static <S extends CustomNodeSettingsPersistor<?>> S createInstance(final Class<S> persistorClass) {
+        try {
+            var constructor = persistorClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
+        } catch (NoSuchMethodException ex) {
+            throw new IllegalStateException("Coding issue: The persistor '" + persistorClass.getName()
+                + "' does not provide an empty constructor.", ex);
+        } catch (IllegalAccessException ex) {
+            // not reachable because we use black-magic to ensure accessibility
+            throw new IllegalStateException(
+                String.format("Can't access the empty constructor of '%s'.", persistorClass));
+        } catch (InstantiationException ex) {
+            throw new IllegalStateException(
+                String.format("Can't instantiate persistors of abstract class '%s'.", persistorClass), ex);
+        } catch (InvocationTargetException ex) {
+            throw new IllegalStateException(
+                String.format("The empty constructor of '%s' raised an exception.", persistorClass), ex);
+        }
     }
-
-    @Override
-    public void save(final T obj, final NodeSettingsWO settings) {
-        m_impl.save(obj, settings, m_configKey);
-    }
-
-    @Override
-    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return m_impl.load(settings, m_configKey);
-    }
-
 }

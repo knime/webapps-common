@@ -46,7 +46,7 @@
  * History
  *   Nov 14, 2022 ("Adrian Nembach, KNIME GmbH, Konstanz, Germany"): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -59,52 +59,52 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.serialization.CustomNodeSettingsSerializer;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 /**
- * Performs serialization of DefaultNodeSettings on a per-field basis. The serialization of individual fields can be
- * controlled with the {@link FieldSerialization} annotation.
+ * Performs persistance of DefaultNodeSettings on a per-field basis. The persistance of individual fields can be
+ * controlled with the {@link Persist} annotation.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <S> The concrete {@link DefaultNodeSettings} class
  * @noreference non-public API
  * @noinstantiate non-public API
  */
-public final class FieldBasedNodeSettingsSerializer<S extends DefaultNodeSettings>
-    implements NodeSettingsSerializer<S> {
+public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
+    implements NodeSettingsPersistor<S> {
 
-    private final Map<String, NodeSettingsSerializer<?>> m_serializers;
+    private final Map<String, NodeSettingsPersistor<?>> m_persistors;
 
     private final Class<S> m_settingsClass;
 
     /**
      * Constructor.
      *
-     * @param settingsClass the class of settings to serialize
+     * @param settingsClass the class of settings to persist
      */
-    public FieldBasedNodeSettingsSerializer(final Class<S> settingsClass) {
-        m_serializers = createSerializers(settingsClass);
+    public FieldBasedNodeSettingsPersistor(final Class<S> settingsClass) {
+        m_persistors = createPersistors(settingsClass);
         m_settingsClass = settingsClass;
     }
 
-    private static Map<String, NodeSettingsSerializer<?>>
-        createSerializers(final Class<? extends DefaultNodeSettings> settingsClass) {
+    private static Map<String, NodeSettingsPersistor<?>>
+        createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
         return Stream.of(settingsClass.getDeclaredFields())//
-            .collect(toMap(Field::getName, FieldBasedNodeSettingsSerializer::createSerializerForField));
+            .collect(toMap(Field::getName, FieldBasedNodeSettingsPersistor::createPersistorForField));
     }
 
-    private static NodeSettingsSerializer<?> createSerializerForField(final Field field) {
-        var serialization = field.getAnnotation(FieldSerialization.class);
+    private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+        var persistance = field.getAnnotation(Persist.class);
         var type = field.getType();
         if (DefaultNodeSettings.class.isAssignableFrom(type)) {
             // TODO support nested DefaultNodeSettings i.e. fields that are themselves DefaultNodeSettings
             throw new UnsupportedOperationException("Nested DefaultNodeSettings aren't supported yet.");
         }
-        if (serialization != null) {
-            return createSerializerFromSerializationAnnotation(serialization, field);
+        if (persistance != null) {
+            return createPersistorFromPersistanceAnnotation(persistance, field);
         } else {
-            return DefaultFieldNodeSettingsSerializerFactory.createSerializer(field.getType(),
+            return DefaultFieldNodeSettingsPersistorFactory.createPersistor(field.getType(),
                 extractConfigKeyFromFieldName(field.getName()));
         }
     }
@@ -117,36 +117,36 @@ public final class FieldBasedNodeSettingsSerializer<S extends DefaultNodeSetting
         }
     }
 
-    private static NodeSettingsSerializer<?>
-        createSerializerFromSerializationAnnotation(final FieldSerialization serialization, final Field field) {
-        var customSerializerClass = serialization.customSerializer();
-        if (!customSerializerClass.equals(CustomNodeSettingsSerializer.class)) {
-            return CustomNodeSettingsSerializer.createInstance(customSerializerClass);
+    private static NodeSettingsPersistor<?>
+        createPersistorFromPersistanceAnnotation(final Persist persistance, final Field field) {
+        var customPersistorClass = persistance.customPersistor();
+        if (!customPersistorClass.equals(CustomNodeSettingsPersistor.class)) {
+            return CustomNodeSettingsPersistor.createInstance(customPersistorClass);
         }
-        var settingsModelClass = serialization.settingsModel();
-        var configKey = serialization.configKey();
+        var settingsModelClass = persistance.settingsModel();
+        var configKey = persistance.configKey();
         if (configKey.strip().equals("")) {
             configKey = extractConfigKeyFromFieldName(field.getName());
         }
         if (!settingsModelClass.equals(SettingsModel.class)) {
-            return SettingsModelFieldNodeSettingsSerializerFactory.createSerializer(field.getType(), settingsModelClass,
+            return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(field.getType(), settingsModelClass,
                 configKey);
         }
-        return DefaultFieldNodeSettingsSerializerFactory.createSerializer(field.getType(), configKey);
+        return DefaultFieldNodeSettingsPersistorFactory.createPersistor(field.getType(), configKey);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void uncheckedSave(final NodeSettingsSerializer<T> serializer, final Object value,
+    private static <T> void uncheckedSave(final NodeSettingsPersistor<T> persistor, final Object value,
         final NodeSettingsWO nodeSettings) {
-        serializer.save((T)value, nodeSettings);
+        persistor.save((T)value, nodeSettings);
     }
 
     @Override
     public void save(final S obj, final NodeSettingsWO settings) {
         try {
-            useBlackMagicToAccessFields((serializer, field) -> uncheckedSave(serializer, field.get(obj), settings));
+            useBlackMagicToAccessFields((persistor, field) -> uncheckedSave(persistor, field.get(obj), settings));
         } catch (InvalidSettingsException ex) {
-            // because the origin of the InvalidSettingsException would be our SerializerConsumer which does not
+            // because the origin of the InvalidSettingsException would be our PersistorConsumer which does not
             // throw such an exception
             throw new IllegalStateException("This catch block is not supposed to be reachable.");
         }
@@ -155,22 +155,22 @@ public final class FieldBasedNodeSettingsSerializer<S extends DefaultNodeSetting
     @Override
     public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
         final var loaded = DefaultNodeSettings.createSettings(m_settingsClass);
-        useBlackMagicToAccessFields((serializer, field) -> field.set(loaded, serializer.load(settings)));
+        useBlackMagicToAccessFields((persistor, field) -> field.set(loaded, persistor.load(settings)));
         return loaded;
     }
 
     @FunctionalInterface
-    private interface SerializerConsumer {
-        void accept(final NodeSettingsSerializer<?> serializer, final Field field)
+    private interface PersistorConsumer {
+        void accept(final NodeSettingsPersistor<?> persistor, final Field field)
             throws InvalidSettingsException, IllegalAccessException;
     }
 
-    private void useBlackMagicToAccessFields(final SerializerConsumer consumer) throws InvalidSettingsException {
+    private void useBlackMagicToAccessFields(final PersistorConsumer consumer) throws InvalidSettingsException {
         for (var field : m_settingsClass.getDeclaredFields()) {
             try {
                 field.setAccessible(true);
-                var serializer = m_serializers.get(field.getName());
-                consumer.accept(serializer, field);
+                var persistor = m_persistors.get(field.getName());
+                consumer.accept(persistor, field);
             } catch (IllegalAccessException ex) {
                 // because we use black magic (Field#setAccessible) to make the field accessible
                 throw new IllegalStateException("This catch block is not supposed to be reachable.");

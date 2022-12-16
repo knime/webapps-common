@@ -46,21 +46,16 @@
  * History
  *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Interface for the implementation of FieldSerializers that allows convenient implementation by an enum.
+ * Loads a value with a specific key from a {@link NodeSettingsRO}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-interface FieldSerializerImpl {
-
-    <T> T load(final NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
-
-    <T> void save(final T obj, NodeSettingsWO settings, String configKey);
-
+interface FieldLoader<T> {
+    T load(NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
 }

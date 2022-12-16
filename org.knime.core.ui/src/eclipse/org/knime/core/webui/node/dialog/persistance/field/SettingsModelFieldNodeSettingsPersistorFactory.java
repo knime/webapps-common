@@ -46,7 +46,7 @@
  * History
  *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -60,71 +60,71 @@ import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 /**
- * Factory for serializers that mimic the behavior of SettingsModels.
+ * Factory for persistors that mimic the behavior of SettingsModels.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @noreference non-public API
  */
-final class SettingsModelFieldNodeSettingsSerializerFactory {
+final class SettingsModelFieldNodeSettingsPersistorFactory {
 
-    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldSerializerImpl> IMPL_TABLE =
+    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> IMPL_TABLE =
         createImplTable();
 
-    private static Table<Class<?>, Class<? extends SettingsModel>, FieldSerializerImpl> createImplTable() {
-        Table<Class<?>, Class<? extends SettingsModel>, FieldSerializerImpl> table = HashBasedTable.create();
-        for (var value : SettingsModelFieldSerializer.values()) {
+    private static Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> createImplTable() {
+        Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> table = HashBasedTable.create();
+        for (var value : SettingsModelFieldPersistor.values()) {
             table.put(value.getFieldType(), value.getSettingsModelType(), value);
         }
         return table;
     }
 
     /**
-     * @param <T> the type of the field that needs a serializer
-     * @param fieldType the type of field to serialize
-     * @param settingsModelType the type of SettingsModel previously used for serialization
+     * @param <T> the type of the field that needs a persistor
+     * @param fieldType the type of field to persist
+     * @param settingsModelType the type of SettingsModel previously used for persistance
      * @param configKey the key under which to store the field
-     * @return a serializer for the field
-     * @throws IllegalArgumentException if there is no serializer available for the fieldType-settingsModelType
+     * @return a persistor for the field
+     * @throws IllegalArgumentException if there is no persistor available for the fieldType-settingsModelType
      *             combination
      */
-    public static final <T> NodeSettingsSerializer<T> createSerializer(final Class<T> fieldType,
+    public static final <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final String configKey) {
         if (fieldType.isEnum() && settingsModelType.equals(SettingsModelString.class)) {
-            return createEnumSerializer(fieldType, configKey);
+            return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new FieldNodeSettingsSerializer<>(configKey, impl);
+            return new FieldNodeSettingsPersistor<>(configKey, impl);
         }
         throw new IllegalArgumentException(
-            String.format("There is no serializer registered for the type '%s' and the SettingModel type '%s'.",
+            String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
                 fieldType, settingsModelType));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> NodeSettingsSerializer<T> createEnumSerializer(final Class<T> fieldType,
+    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final Class<T> fieldType,
         final String configKey) {
-        return new EnumSettingsModelStringSerializer<>((Class)fieldType, configKey);
+        return new EnumSettingsModelStringPersistor<>((Class)fieldType, configKey);
     }
 
-    private enum SettingsModelFieldSerializer implements FieldSerializerImpl {
-            INT(int.class, SettingsModelInteger.class, SettingsModelFieldSerializer::loadInt,
-                SettingsModelFieldSerializer::saveInt),
-            STRING(String.class, SettingsModelString.class, SettingsModelFieldSerializer::loadString,
-                SettingsModelFieldSerializer::saveString),
-            LONG(long.class, SettingsModelLong.class, SettingsModelFieldSerializer::loadLong,
-                SettingsModelFieldSerializer::saveLong),
-            DOUBLE(double.class, SettingsModelDouble.class, SettingsModelFieldSerializer::loadDouble,
-                SettingsModelFieldSerializer::saveDouble),
-            BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldSerializer::loadBoolean,
-                SettingsModelFieldSerializer::saveBoolean),
+    private enum SettingsModelFieldPersistor implements FieldPersistor {
+            INT(int.class, SettingsModelInteger.class, SettingsModelFieldPersistor::loadInt,
+                SettingsModelFieldPersistor::saveInt),
+            STRING(String.class, SettingsModelString.class, SettingsModelFieldPersistor::loadString,
+                SettingsModelFieldPersistor::saveString),
+            LONG(long.class, SettingsModelLong.class, SettingsModelFieldPersistor::loadLong,
+                SettingsModelFieldPersistor::saveLong),
+            DOUBLE(double.class, SettingsModelDouble.class, SettingsModelFieldPersistor::loadDouble,
+                SettingsModelFieldPersistor::saveDouble),
+            BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldPersistor::loadBoolean,
+                SettingsModelFieldPersistor::saveBoolean),
             COLUMN_FILTER2(String[].class, SettingsModelColumnFilter2.class,
-                SettingsModelFieldSerializer::loadColumnFilter2, SettingsModelFieldSerializer::saveColumnFilter2);
+                SettingsModelFieldPersistor::loadColumnFilter2, SettingsModelFieldPersistor::saveColumnFilter2);
 
         private final Class<?> m_fieldType;
 
@@ -134,7 +134,7 @@ final class SettingsModelFieldNodeSettingsSerializerFactory {
 
         private final FieldSaver<?> m_saver;
 
-        private <T> SettingsModelFieldSerializer(final Class<T> fieldType,
+        private <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
             m_fieldType = fieldType;
@@ -143,7 +143,7 @@ final class SettingsModelFieldNodeSettingsSerializerFactory {
             m_saver = saver;
         }
 
-        @SuppressWarnings("unchecked") // type-safety is ensured by createSerializer
+        @SuppressWarnings("unchecked") // type-safety is ensured by createPersistor
         @Override
         public <T> T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
             return (T)m_loader.load(settings, configKey);
@@ -151,7 +151,7 @@ final class SettingsModelFieldNodeSettingsSerializerFactory {
 
         @Override
         public <T> void save(final T obj, final NodeSettingsWO settings, final String configKey) {
-            @SuppressWarnings("unchecked") // type-safety is ensured by createSerializer
+            @SuppressWarnings("unchecked") // type-safety is ensured by createPersistor
             var saver = (FieldSaver<T>)m_saver;
             saver.save(obj, settings, configKey);
         }
@@ -230,14 +230,14 @@ final class SettingsModelFieldNodeSettingsSerializerFactory {
 
     }
 
-    private static final class EnumSettingsModelStringSerializer<E extends Enum<E>>
-        implements NodeSettingsSerializer<E> {
+    private static final class EnumSettingsModelStringPersistor<E extends Enum<E>>
+        implements NodeSettingsPersistor<E> {
 
         private final Class<E> m_enumType;
 
         private final SettingsModelString m_model;
 
-        EnumSettingsModelStringSerializer(final Class<E> enumType, final String configKey) {
+        EnumSettingsModelStringPersistor(final Class<E> enumType, final String configKey) {
             m_enumType = enumType;
             m_model = new SettingsModelString(configKey, "");
         }
@@ -257,7 +257,7 @@ final class SettingsModelFieldNodeSettingsSerializerFactory {
 
     }
 
-    private SettingsModelFieldNodeSettingsSerializerFactory() {
+    private SettingsModelFieldNodeSettingsPersistorFactory() {
 
     }
 }

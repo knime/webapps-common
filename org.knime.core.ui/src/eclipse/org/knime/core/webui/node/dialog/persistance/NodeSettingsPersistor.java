@@ -46,7 +46,7 @@
  * History
  *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -56,10 +56,10 @@ import org.knime.core.node.NodeSettingsWO;
  * Implementing classes save objects to and load objects from NodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <T> type of object loaded by the serializer
+ * @param <T> type of object loaded by the persistor
  */
 // TODO seal?
-public interface NodeSettingsSerializer<T> {
+public interface NodeSettingsPersistor<T> {
 
 
     /**

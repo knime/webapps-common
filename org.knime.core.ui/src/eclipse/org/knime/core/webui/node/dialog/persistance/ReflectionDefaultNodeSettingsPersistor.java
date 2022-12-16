@@ -44,43 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 1, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.serialization.field.FieldBasedNodeSettingsSerializer;
-import org.knime.core.webui.node.dialog.serialization.field.FieldSerialization;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
- * Annotates a class with a serializer that is used to save and load objects of the class to and from NodeSettings. If
- * no serialization is provided, we fall back to the previous JSON based serialization. For most use-cases
- * {@link FieldBasedNodeSettingsSerializer} is a good choice. It performs serialization of all fields independently and
- * allows further customization on a per field basis via the {@link FieldSerialization} annotation. <br>
- * <br>
- * If you find the FieldBasedNodeSettingsSerializer to be insufficient for your needs, you can also implement your own
- * {@link CustomNodeSettingsSerializer} and provide it here.
+ * Persistor that uses the existing reflection-based persistance mechanism for backwards compatibility.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface Serialization {
+final class ReflectionDefaultNodeSettingsPersistor<S extends DefaultNodeSettings>
+    implements NodeSettingsPersistor<S> {
 
-    /**
-     * The type of serializer to use for storing and loading the annotated object to and from NodeSettings. Either
-     * {@link FieldBasedNodeSettingsSerializer} or your own implementation of {@link CustomNodeSettingsSerializer}. If
-     * you want to use the previous JSON based serialization simply provide no Serialization at all.
-     *
-     * @return the class of the serializer
-     */
-    @SuppressWarnings("rawtypes") // even wildcards prohibit generic serializers from being returned
-    Class<? extends NodeSettingsSerializer> serializer();
+    private final Class<S> m_settingsClass;
+
+    ReflectionDefaultNodeSettingsPersistor(final Class<S> settingsClass) {
+        m_settingsClass = settingsClass;
+    }
+
+    @Override
+    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
+            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
+            // by the JSON
+            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
+        }
+        return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClass);
+    }
+
+    @Override
+    public void save(final S settings, final NodeSettingsWO nodeSettings) {
+        DefaultNodeSettings.saveSettings(m_settingsClass, settings, nodeSettings);
+    }
 
 }

@@ -44,57 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2022 ("Adrian Nembach, KNIME GmbH, Konstanz, Germany"): created
+ *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.webui.node.dialog.serialization.CustomNodeSettingsSerializer;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Allows to define the serialization of individual fields to NodeSettings if field based serialization is used.
+ * Interface for the implementation of FieldPersistors that allows convenient implementation by an enum.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface FieldSerialization {
+interface FieldPersistor {
 
-    /**
-     * Optional argument that defines the key under which to store the field in the NodeSettings. The key is generated
-     * from the field name by stripping any leading 'm_' prefix if this argument is left empty (the default) or consists
-     * only of whitespaces.
-     *
-     * @return the key under which to store the field in the NodeSettings.
-     */
-    String configKey() default "";
+    <T> T load(final NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
 
-    /**
-     * Optional argument that allows to specify a custom serializer for a field. The {@link #configKey()} will be
-     * ignored if this argument is specified.
-     *
-     * @return the class of the customSerializer
-     */
-    @SuppressWarnings("rawtypes") // annotations and generics don't mix well
-    // TODO dedicated marker interface for CustomNodeSettingsSerializers?
-    Class<? extends CustomNodeSettingsSerializer> customSerializer() default CustomNodeSettingsSerializer.class;
-
-    /**
-     * Optional argument for nodes that previously used SettingsModels for serialization. Provide the class of the
-     * {@link SettingsModel} used previously in order to get an equivalent serializer.
-     *
-     * @return the type of SettingsModel previously used for serialization
-     * @throws IllegalArgumentException if there is no equivalent serializer available for the combination of field type
-     *             and SettingsModel
-     */
-    // TODO could be an annotation of its own
-    Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
+    <T> void save(final T obj, NodeSettingsWO settings, String configKey);
 
 }

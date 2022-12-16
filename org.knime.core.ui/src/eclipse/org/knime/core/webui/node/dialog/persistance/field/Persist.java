@@ -44,49 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Nov 14, 2022 ("Adrian Nembach, KNIME GmbH, Konstanz, Germany"): created
  */
-package org.knime.core.webui.node.dialog.serialization;
+package org.knime.core.webui.node.dialog.persistance.field;
 
-import java.lang.reflect.InvocationTargetException;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
 
 /**
- * Must provide an empty constructor for instantiation, the empty default constructor does not suffice.
+ * Allows to define the persistance of individual fields to NodeSettings if field based persistance is used.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <T> the type of object the serializer operates on
  * @noreference non-public API
- * @noimplement non-public API
  */
-public interface CustomNodeSettingsSerializer<T> extends NodeSettingsSerializer<T> {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface Persist {
 
     /**
-     * Creates a new instance from the provided CustomNodeSettingsSerializer class by calling its empty constructor.
+     * Optional argument that defines the key under which to store the field in the NodeSettings. The key is generated
+     * from the field name by stripping any leading 'm_' prefix if this argument is left empty (the default) or consists
+     * only of whitespaces.
      *
-     * @param <S> the type CustomNodeSettingsSerializer
-     * @param serializerClass the class of CustomNodeSettingsSerializer
-     * @return a new instance of the provided class
-     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
-     *             raises an exception
+     * @return the key under which to store the field in the NodeSettings.
      */
-    static <S extends CustomNodeSettingsSerializer<?>> S createInstance(final Class<S> serializerClass) {
-        try {
-            var constructor = serializerClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-        } catch (NoSuchMethodException ex) {
-            throw new IllegalStateException("Coding issue: The serializer '" + serializerClass.getName()
-                + "' does not provide an empty constructor.", ex);
-        } catch (IllegalAccessException ex) {
-            // not reachable because we use black-magic to ensure accessibility
-            throw new IllegalStateException(
-                String.format("Can't access the empty constructor of '%s'.", serializerClass));
-        } catch (InstantiationException ex) {
-            throw new IllegalStateException(
-                String.format("Can't instantiate serializers of abstract class '%s'.", serializerClass), ex);
-        } catch (InvocationTargetException ex) {
-            throw new IllegalStateException(
-                String.format("The empty constructor of '%s' raised an exception.", serializerClass), ex);
-        }
-    }
+    String configKey() default "";
+
+    /**
+     * Optional argument that allows to specify a custom persistor for a field. The {@link #configKey()} will be
+     * ignored if this argument is specified.
+     *
+     * @return the class of the customPersistor
+     */
+    @SuppressWarnings("rawtypes") // annotations and generics don't mix well
+    Class<? extends CustomNodeSettingsPersistor> customPersistor() default CustomNodeSettingsPersistor.class;
+
+    /**
+     * Optional argument for nodes that previously used SettingsModels for persistance. Provide the class of the
+     * {@link SettingsModel} used previously in order to get an equivalent persistor.
+     *
+     * @return the type of SettingsModel previously used for persistance
+     * @throws IllegalArgumentException if there is no equivalent persistor available for the combination of field type
+     *             and SettingsModel
+     */
+    // TODO could be an annotation of its own
+    Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
+
 }

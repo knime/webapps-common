@@ -46,7 +46,7 @@
  * History
  *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance.field;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -57,45 +57,45 @@ import java.util.stream.Stream;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.serialization.NodeSettingsSerializer;
+import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
 
 /**
- * Factory for default serializers that store values directly in NodeSettings.
+ * Factory for default persistors that store values directly in NodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @noreference non-public API
  */
-final class DefaultFieldNodeSettingsSerializerFactory {
+final class DefaultFieldNodeSettingsPersistorFactory {
 
-    private static final Map<Class<?>, SerializerImpl> IMPL_MAP = Stream.of(SerializerImpl.values())//
-        .collect(toMap(SerializerImpl::getFieldType, Function.identity()));
+    private static final Map<Class<?>, PersistorImpl> IMPL_MAP = Stream.of(PersistorImpl.values())//
+        .collect(toMap(PersistorImpl::getFieldType, Function.identity()));
 
     /**
-     * Creates a serializer for the provided type that uses the configKey to store and retrieve the value.
+     * Creates a persistor for the provided type that uses the configKey to store and retrieve the value.
      *
      * @param <T> the type of field
-     * @param fieldType the type of field the created serializer should serialize
+     * @param fieldType the type of field the created persistor should persist
      * @param configKey the key to use for storing and retrieving the value to and from the NodeSettings
-     * @return a new serializer
-     * @throws IllegalArgumentException if there is no serializer available for the provided fieldType
+     * @return a new persistor
+     * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    public static <T> NodeSettingsSerializer<T> createSerializer(final Class<T> fieldType, final String configKey) {
+    public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         var impl = IMPL_MAP.get(fieldType);
         if (impl != null) {
-            return new FieldNodeSettingsSerializer<>(configKey, impl);
+            return new FieldNodeSettingsPersistor<>(configKey, impl);
         } else {
             throw new IllegalArgumentException(
-                String.format("No default serializer available for type '%s'.", fieldType));
+                String.format("No default persistor available for type '%s'.", fieldType));
         }
     }
 
     /**
      * When extending this enum only use lambdas if the definition fits a single line, otherwise use function references
-     * as is done for {@link SerializerImpl#CHARACTER}.
+     * as is done for {@link PersistorImpl#CHARACTER}.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
-    private enum SerializerImpl implements FieldSerializerImpl {
+    private enum PersistorImpl implements FieldPersistor {
             INT(int.class, (s, k) -> s.getInt(k), (v, s, k) -> s.addInt(k, v)),
             DOUBLE(double.class, (s, k) -> s.getDouble(k), (v, s, k) -> s.addDouble(k, v)),
             LONG(long.class, (s, k) -> s.getLong(k), (v, s, k) -> s.addLong(k, v)),
@@ -103,7 +103,7 @@ final class DefaultFieldNodeSettingsSerializerFactory {
             BOOLEAN(boolean.class, (s, k) -> s.getBoolean(k), (v, s, k) -> s.addBoolean(k, v)),
             FLOAT(float.class, (s, k) -> s.getFloat(k), (v, s, k) -> s.addFloat(k, v)),
             CHAR(char.class, (s, k) -> s.getChar(k), (v, s, k) -> s.addChar(k, v)),
-            CHARACTER(Character.class, SerializerImpl::loadCharacter, SerializerImpl::saveCharacter),
+            CHARACTER(Character.class, PersistorImpl::loadCharacter, PersistorImpl::saveCharacter),
             // TODO how to handle CharSequence properly?
             BYTE(byte.class, (s, k) -> s.getByte(k), (v, s, k) -> s.addByte(k, v)),
             // TODO how to handle null values in boxed Byte objects? Store an array?
@@ -114,7 +114,7 @@ final class DefaultFieldNodeSettingsSerializerFactory {
             BOOLEAN_ARRAY(boolean[].class, (s, k) -> s.getBooleanArray(k), (v, s, k) -> s.addBooleanArray(k, v)),
             FLOAT_ARRAY(float[].class, (s, k) -> s.getFloatArray(k), (v, s, k) -> s.addFloatArray(k, v)),
             CHAR_ARRAY(char[].class, (s, k) -> s.getCharArray(k), (v, s, k) -> s.addCharArray(k, v)),
-            CHARACTER_ARRAY(Character[].class, SerializerImpl::loadCharacterArray, SerializerImpl::saveCharacterArray),
+            CHARACTER_ARRAY(Character[].class, PersistorImpl::loadCharacterArray, PersistorImpl::saveCharacterArray),
             BYTE_ARRAY(byte[].class, (s, k) -> s.getByteArray(k), (v, s, k) -> s.addByteArray(k, v));
 
         private Class<?> m_type;
@@ -123,7 +123,7 @@ final class DefaultFieldNodeSettingsSerializerFactory {
 
         private FieldSaver<?> m_saver;
 
-        private <T> SerializerImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
+        private <T> PersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
             m_type = type;
             m_loader = loader;
             m_saver = saver;
@@ -180,7 +180,7 @@ final class DefaultFieldNodeSettingsSerializerFactory {
 
     }
 
-    private DefaultFieldNodeSettingsSerializerFactory() {
+    private DefaultFieldNodeSettingsPersistorFactory() {
 
     }
 

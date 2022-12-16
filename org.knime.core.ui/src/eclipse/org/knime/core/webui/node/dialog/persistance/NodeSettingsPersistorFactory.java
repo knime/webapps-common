@@ -44,18 +44,57 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.serialization.field;
+package org.knime.core.webui.node.dialog.persistance;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
 
 /**
- * Loads a value with a specific key from a {@link NodeSettingsRO}.
+ * Creates NodeSettingsPersistors for DefaultNodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @noreference non-public API
  */
-interface FieldLoader<T> {
-    T load(NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
+public final class NodeSettingsPersistorFactory {
+
+    private NodeSettingsPersistorFactory() {
+
+    }
+
+    /**
+     * Creates the {@link NodeSettingsPersistor persistor} for a {@link DefaultNodeSettings settings} class. <br>
+     * <br>
+     * If the {@link DefaultNodeSettings settings} are annotated with a {@link Persistor}, then an instance of the
+     * {@link Persistor#value()} is created.<br>
+     * Otherwise the existing reflection based persistance is used for backwards compatibility.
+     *
+     * @param <S> the type of {@link DefaultNodeSettings} the persistor is for
+     * @param settingsClass the class of {@link DefaultNodeSettings} to create a persistor for
+     * @return the persistor for the provided settingsClass
+     * @throws IllegalArgumentException if the provided class references an unsupported persistor (e.g. a custom
+     *             persistor that extends NodeSettingsPersistor directly)
+     */
+    public static <S extends DefaultNodeSettings> NodeSettingsPersistor<S>
+        createPersistor(final Class<S> settingsClass) {
+        var persistance = settingsClass.getAnnotation(Persistor.class);
+        if (persistance == null) {
+            // no annotation means we use the old persistance
+            return new ReflectionDefaultNodeSettingsPersistor<>(settingsClass);
+        } else {
+            var persistorClass = persistance.value();
+            if (FieldBasedNodeSettingsPersistor.class.equals(persistorClass)) {
+                return new FieldBasedNodeSettingsPersistor<>(settingsClass);
+            } else if (CustomNodeSettingsPersistor.class.isAssignableFrom(persistorClass)) {
+                @SuppressWarnings("unchecked")
+                var customPersistor = CustomNodeSettingsPersistor
+                    .createInstance((Class<? extends CustomNodeSettingsPersistor<S>>)persistorClass);
+                return customPersistor;
+            } else {
+                throw new IllegalArgumentException(String
+                    .format("The DefaultNodeSettings class '%s' does not specify a valid persistor.", settingsClass));
+            }
+        }
+    }
 }
