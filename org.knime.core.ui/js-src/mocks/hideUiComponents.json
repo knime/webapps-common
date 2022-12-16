@@ -1,0 +1,467 @@
+{
+  "result": {
+    "name": "Hide UI Components",
+    "data": {
+      "view": {
+        "showCheckboxInput": false,
+        "checkboxInput": false,
+        "showColumnFilter": false,
+        "columnFilter": [
+          "Option1",
+          "Option2"
+        ],
+        "showColumnSelect": false,
+        "columnSelect": "Option1",
+        "showDropdownInput": false,
+        "dropdownInput": "Option1",
+        "showIntegerInput": false,
+        "integerInput": 0,
+        "showNumberInput": false,
+        "numberInput": 0,
+        "showRadioInput": false,
+        "radioInput": "Option1",
+        "showTextInput": false,
+        "textInput": "Dummy text",
+        "showTwinlistInput": false,
+        "twinlistInput": [
+          "Option1",
+          "Option2"
+        ],
+        "showValueSwitchInput": false,
+        "valueSwitchInput": "Option1"
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "showCheckboxInput": {
+              "type": "boolean",
+              "title": "Show checkbox input",
+              "description": "Show/hide a checkbox input ui component"
+            },
+            "checkboxInput": {
+              "type": "boolean",
+              "title": "Checkbox input",
+              "description": "Checkbox input description (inputFormat: \"checkbox\")"
+            },
+            "showColumnFilter": {
+              "type": "boolean",
+              "title": "Show column filter",
+              "description": "Show/hide a column filter ui component"
+            },
+            "columnFilter": {
+              "anyOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Column filter",
+              "description": "Column filter description  (inputFormat: \"columnFilter\")"
+            },
+            "showColumnSelect": {
+              "type": "boolean",
+              "title": "Show column select",
+              "description": "Show/hide a column select ui component"
+            },
+            "columnSelect": {
+              "oneOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Column select",
+              "description": "Column select description (inputFormat: \"columnSelection\")"
+            },
+            "showDropdownInput": {
+              "type": "boolean",
+              "title": "Show dropdown input",
+              "description": "Show/hide a dropdown input ui component"
+            },
+            "dropdownInput": {
+              "oneOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Dropdown input",
+              "description": "Dropdown input description (inputFormat: \"dropDown\")"
+            },
+            "showIntegerInput": {
+              "type": "boolean",
+              "title": "Show integer input",
+              "description": "Show/hide a integer input ui component"
+            },
+            "integerInput": {
+              "type": "integer",
+              "title": "Integer input",
+              "description": "Integer input description (min: -10, max: 10) (inputFormat: \"integer\")",
+              "minimum": -10,
+              "maximum": 10
+            },
+            "showNumberInput": {
+              "type": "boolean",
+              "title": "Show number input",
+              "description": "Show/hide a number input ui component"
+            },
+            "numberInput": {
+              "type": "number",
+              "title": "Number input",
+              "description": "Number input description (min: -10, max: 10) (inputFormat: \"number\")",
+              "minimum": -10,
+              "maximum": 10
+            },
+            "showRadioInput": {
+              "type": "boolean",
+              "title": "Show radio input",
+              "description": "Show/hide a radio input ui component"
+            },
+            "radioInput": {
+              "oneOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Radio input",
+              "description": "Radio input description (inputFormat: \"radio\")"
+            },
+            "showTextInput": {
+              "type": "boolean",
+              "title": "Show text input",
+              "description": "Show/hide a text input ui component"
+            },
+            "textInput": {
+              "type": "string",
+              "title": "Text input",
+              "description": "Text input description (inputFormat: \"string\")"
+            },
+            "showTwinlistInput": {
+              "type": "boolean",
+              "title": "Show twinlist input",
+              "description": "Show/hide a twinlist input ui component"
+            },
+            "twinlistInput": {
+              "anyOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Twinlist input",
+              "description": "Twinlist input description (inputFormat: \"twinList\")"
+            },
+            "showValueSwitchInput": {
+              "type": "boolean",
+              "title": "Show value switch input",
+              "description": "Show/hide a value switch input ui component"
+            },
+            "valueSwitchInput": {
+              "oneOf": [
+                {
+                  "const": "Option1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "Option2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "Option3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Value switch input",
+              "description": "Value switch input description (inputFormat: \"valueSwitch\")"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Plot",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showCheckboxInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/checkboxInput",
+              "options": {
+                "format": "checkbox"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showCheckboxInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showColumnFilter",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/columnFilter",
+              "options": {
+                "format": "columnFilter"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showColumnFilter",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showColumnSelect",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/columnSelect",
+              "options": {
+                "format": "columnSelection"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showColumnSelect",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showDropdownInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/dropdownInput",
+              "options": {
+                "format": "columnSelection"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showDropdownInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showIntegerInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/integerInput",
+              "options": {
+                "format": "integer"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showIntegerInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showNumberInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/numberInput",
+              "options": {
+                "format": "number"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showNumberInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showRadioInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/radioInput",
+              "options": {
+                "format": "radio"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showRadioInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showTextInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/textInput",
+              "options": {
+                "format": "string"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showTextInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showTwinlistInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/twinlistInput",
+              "options": {
+                "format": "twinList"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showTwinlistInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showValueSwitchInput",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/valueSwitchInput",
+              "options": {
+                "format": "valueSwitch"
+              },
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/view/properties/showValueSwitchInput",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
