@@ -44,62 +44,87 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   15 Dec 2022 Paul Bärnreuther: created
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * An annotation for indicating controlling the schema of a given field.
+ * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
+ * modes of {@link ColumnFilterMode}. For using this class in order to render a twinlist, one has to create a
+ * subclass with a member "selected" with the 'columns' Schema annotation.
  *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Schema {
+public class ColumnFilter {
+
 
     /**
-     * @return the provider for the list of possible values (for multiple choice fields only)
+     * The setting representing the selected columns
      */
-    Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
+    @Schema(takeChoicesFromParent = true, multiple = true)
+    public String[] m_selected;
 
     /**
-     * @return true if the choices have a type by which they can be filtered in the dialog
+     * The way the selection is determined by
      */
-    boolean withTypes() default true;
+    public ColumnFilterMode m_mode; //NOSONAR
 
     /**
-     * @return true if a parent contains the annotation for the choices of this field
+     * Settings regarding selection by pattern matching (regex or wildcard)
      */
-    boolean takeChoicesFromParent() default false;
+    public PatternColumnFilter m_patternFilter;
 
     /**
-     * @return the title / label of the field
+     * Settings regarding manual selection
      */
-    String title() default "";
+    public ManualColumnFilter m_manualFilter;
 
     /**
-     * @return the description of the field (for tooltips or node descriptions)
+     * Settings regarding selection per type
      */
-    String description() default "";
+    public TypeColumnFilter m_typeFilter;
 
     /**
-     * @return true for a multiple choice selection/enum, false for a single choice selection/enum
+     * Initialises the column selection with an initial array of columns which are manually selected
+     *
+     * @param initialSelected the initial manually selected columns
      */
-    boolean multiple() default false;
+    public ColumnFilter(final String[] initialSelected) {
+        m_mode = ColumnFilterMode.MANUAL;
+        m_manualFilter = new ManualColumnFilter(initialSelected);
+        m_patternFilter = new PatternColumnFilter();
+        m_typeFilter = new TypeColumnFilter();
+    }
+
+    @SuppressWarnings("javadoc")
+    public ColumnFilter() {
+        this(new String[0]);
+    }
+
+    @SuppressWarnings("javadoc")
+    public ColumnFilter(final SettingsCreationContext context) {
+        this();
+    }
 
     /**
-     * @return an optional minimum value for a numeric field
+     * @param choices the list of all possible column names
+     * @param spec of the input data table (for type selection)
+     * @return the array of currently selected columns with respect to the mode
      */
-    double min() default Double.NaN;
-
-    /**
-     * @return an optional maximum value for a numeric field
-     */
-    double max() default Double.NaN;
-
+    @JsonIgnore
+    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
+        switch (m_mode) {
+            case MANUAL:
+                return m_manualFilter.getSelected();
+            case TYPE:
+                return m_typeFilter.getSelected(choices, spec);
+            default:
+                return m_patternFilter.getSelected(m_mode, choices);
+        }
+    }
 }

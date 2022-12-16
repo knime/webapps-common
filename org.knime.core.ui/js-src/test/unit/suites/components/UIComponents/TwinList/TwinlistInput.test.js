@@ -13,27 +13,57 @@ describe('TwinlistInput.vue', () => {
             label: 'defaultLabel',
             data: {
                 selected: ['test_1'],
-                manuallySelected: ['test_1'],
-                isCaseSensitive: false,
-                isInverted: false,
-                mode: 'MANUAL',
-                pattern: '',
-                selectedTypes: ['String']
+                manualFilter: {
+                    manuallySelected: ['test_1']
+                },
+                patternFilter: {
+                    isCaseSensitive: false,
+                    isInverted: false,
+                    pattern: ''
+                },
+                typeFilter: {
+                    selectedTypes: ['String']
+                },
+                mode: 'MANUAL'
             },
             schema: {
                 type: 'object',
                 properties: {
-                    isCaseSensitive: {
-                        type: 'boolean'
+                    patternFilter: {
+                        type: 'object',
+                        properties: {
+                            isCaseSensitive: {
+                                type: 'boolean'
+                            },
+                            isInverted: {
+                                type: 'boolean'
+                            },
+                            pattern: {
+                                type: 'string'
+                            }
+                        }
                     },
-                    isInverted: {
-                        type: 'boolean'
+                    manualFilter: {
+                        type: 'object',
+                        properties: {
+                            manuallySelected: {
+                                items: {
+                                    type: 'string'
+                                },
+                                type: 'array'
+                            }
+                        }
                     },
-                    manuallySelected: {
-                        items: {
-                            type: 'string'
-                        },
-                        type: 'array'
+                    typeFilter: {
+                        type: 'object',
+                        properties: {
+                            selectedTypes: {
+                                items: {
+                                    type: 'string'
+                                },
+                                type: 'array'
+                            }
+                        }
                     },
                     mode: {
                         oneOf: [
@@ -72,9 +102,6 @@ describe('TwinlistInput.vue', () => {
                                 title: 'test_3',
                                 columnType: 'String'
                             }]
-                    },
-                    pattern: {
-                        type: 'string'
                     }
                 }
             },
@@ -171,12 +198,14 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Twinlist).vm.initialPattern).toBe(defaultPropsData.control.data.pattern);
+        expect(wrapper.findComponent(Twinlist).vm.initialPattern).toBe(
+            defaultPropsData.control.data.patternFilter.pattern
+        );
         expect(wrapper.findComponent(Twinlist).vm.initialSelectedTypes).toBe(
-            defaultPropsData.control.data.selectedTypes
+            defaultPropsData.control.data.typeFilter.selectedTypes
         );
         expect(wrapper.findComponent(Twinlist).vm.initialManuallySelected).toBe(
-            defaultPropsData.control.data.manuallySelected
+            defaultPropsData.control.data.manualFilter.manuallySelected
         );
         expect(wrapper.findComponent(Twinlist).vm.initialMode).toBe('manual');
     });
@@ -203,19 +232,19 @@ describe('TwinlistInput.vue', () => {
         const dirtySettingsMock = jest.fn();
         const localProps = { ...defaultPropsData,
             control: { ...defaultPropsData.control,
-                data: { ...defaultPropsData.control.data, manuallySelected: ['missing'] } } };
+                data: { ...defaultPropsData.control.data, manualFilter: { manuallySelected: ['missing'] } } } };
         const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, localProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        expect(localWrapper.props().control.data).toMatchObject({ manuallySelected: ['missing'] });
+        expect(localWrapper.props().control.data.manualFilter).toMatchObject({ manuallySelected: ['missing'] });
         await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
-        expect(onChangeSpy).toBeCalledWith({ manuallySelected: [], selected: [] });
+        expect(onChangeSpy).toBeCalledWith({ manualFilter: { manuallySelected: [] }, selected: [] });
         await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith({
-            manuallySelected: ['test_1', 'test_2', 'test_3'],
+            manualFilter: { manuallySelected: ['test_1', 'test_2', 'test_3'] },
             selected: ['test_1', 'test_2', 'test_3']
         });
     });

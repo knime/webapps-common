@@ -81,6 +81,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         m_settings = settings;
     }
 
+    private Schema m_lastSchemaWithColumns;
+
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
         final SchemaGenerationContext context) {
@@ -88,8 +90,16 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var type = field.getType();
         final var erasedType = type.getErasedType();
         final var schema = field.getAnnotation(Schema.class);
+
         if (schema != null && !schema.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope()) {
-            arrayNode = determineChoicesValues(field, context, schema);
+            if (type.canCreateSubtype(ColumnFilter.class)) {
+                m_lastSchemaWithColumns = schema;
+            } else {
+                arrayNode = determineChoicesValues(field, context, schema);
+            }
+        }
+        if (schema != null && schema.takeChoicesFromParent()) {
+            arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns);
         }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
             arrayNode = determineEnumValues(context, erasedType);
@@ -107,10 +117,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     private ArrayNode determineChoicesValues(final FieldScope field, final SchemaGenerationContext context,
         final Schema schema) {
         ArrayNode arrayNode;
+        final var choices = schema.choices(); // TODO
+        final var withTypes = schema.withTypes(); // TODO
         Supplier<String[]> savedChoicesSupplier =
             m_settings == null ? null : (() -> getSavedChoices(field, m_settings));
-        arrayNode = determineChoiceValues(context.getGeneratorConfig(), schema.choices(), schema.withTypes(), m_context,
-            savedChoicesSupplier);
+        arrayNode =
+            determineChoiceValues(context.getGeneratorConfig(), choices, withTypes, m_context, savedChoicesSupplier);
         return arrayNode;
     }
 
@@ -157,7 +169,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private static String getType(final DataTableSpec spec, final String choice) {
-        return ColumnSelection.typeToString(spec.getColumnSpec(choice).getType());
+        return TypeColumnFilter.typeToString(spec.getColumnSpec(choice).getType());
     }
 
     private static ArrayNode createArrayNodeWithCurrentOrEmptyChoice(final SchemaGeneratorConfig config,

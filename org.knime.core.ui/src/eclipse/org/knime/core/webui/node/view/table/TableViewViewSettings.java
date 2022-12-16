@@ -50,7 +50,7 @@ package org.knime.core.webui.node.view.table;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.impl.ChoicesProvider;
-import org.knime.core.webui.node.dialog.impl.ColumnSelection;
+import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.impl.Schema;
@@ -76,39 +76,14 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         }
     }
 
-
-    /**
-     * A class solely for adding an annotation to one of the members of the class of selected columns
-     * @author Paul Bärnreuther
-     */
-    public static class TableColumnChoices extends ColumnSelection {
-
-        @SuppressWarnings("javadoc")
-        public TableColumnChoices(final String[] initialSelected) {
-            super(initialSelected);
-            m_selected = initialSelected;
-        }
-
-        @SuppressWarnings("javadoc")
-        public TableColumnChoices(final SettingsCreationContext context) {
-            super(context);
-        }
-
-        @SuppressWarnings("javadoc")
-        public TableColumnChoices() {
-            super();
-        }
-
-        @SuppressWarnings("javadoc")
-        @Schema(choices = ColumnChoicesProvider.class, multiple = true)
-        public String[] m_selected;
-    }
-
     /**
      * The selected columns to be displayed.
      */
-    @Schema(title = "Displayed columns", description = "Select the columns that should be displayed in the table")
-    public TableColumnChoices m_displayedColumns;
+
+    @Schema(choices = ColumnChoicesProvider.class, title = "Displayed columns",
+        description = "Select the columns that should be displayed in the table")
+    //@Persist(customPersistor=MyCustomPersistor.class)
+    public ColumnFilter m_displayedColumns;
 
     /**
      * If the rows keys should be displayed
@@ -219,7 +194,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * @param spec
      */
     public TableViewViewSettings(final DataTableSpec spec) {
-        m_displayedColumns = new TableColumnChoices(ColumnChoicesProvider.choices(spec));
+        m_displayedColumns = new ColumnFilter(ColumnChoicesProvider.choices(spec));
     }
 
     @SuppressWarnings("javadoc")

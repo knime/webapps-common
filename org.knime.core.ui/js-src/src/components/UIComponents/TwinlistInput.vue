@@ -17,7 +17,6 @@ const TwinlistInput = defineComponent({
         Twinlist,
         LabeledInput,
         DialogComponentWrapper
-        
     },
     props: {
         ...rendererProps(),
@@ -68,30 +67,35 @@ const TwinlistInput = defineComponent({
         }
     },
     methods: {
-        onChange(obj) {
-            const newData = { ...this.control.data, ...obj };
+        onChange(obj, attr = '') {
+            let newData = { ...this.control.data };
+            if (attr === '') {
+                newData = { ...newData, ...obj };
+            } else {
+                newData[attr] = { ...newData[attr], ...obj };
+            }
             this.handleChange(this.control.path, newData);
         },
         onSelectedChange(selected, isManual) {
-            this.onChange({ selected, ...isManual ? { manuallySelected: selected } : {} });
+            this.onChange({ selected, ...isManual ? { manualFilter: { manuallySelected: selected } } : {} });
             if (this.isModelSettingAndHasNodeView) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
         },
         onPatternChange(pattern) {
-            this.onChange({ pattern });
+            this.onChange({ pattern }, 'patternFilter');
         },
         onModeChange(mode) {
             this.onChange({ mode: mode.toUpperCase() });
         },
         onSelectedTypesChange(selectedTypes) {
-            this.onChange({ selectedTypes });
+            this.onChange({ selectedTypes }, 'typeFilter');
         },
         onInverseSearchChange(isInverted) {
-            this.onChange({ isInverted });
+            this.onChange({ isInverted }, 'patternFilter');
         },
         onCaseSensitiveChange(isCaseSensitive) {
-            this.onChange({ isCaseSensitive });
+            this.onChange({ isCaseSensitive }, 'patternFilter');
         }
     }
 });
@@ -115,12 +119,12 @@ export default TwinlistInput;
       :disabled="disabled"
       :value="control.data.selected"
       :with-types="withTypes"
-      :initial-selected-types="control.data.selectedTypes"
-      :initial-pattern="control.data.pattern"
+      :initial-selected-types="control.data.typeFilter.selectedTypes"
+      :initial-pattern="control.data.patternFilter.pattern"
       :initial-mode="control.data.mode.toLowerCase()"
-      :initial-case-sensitive-search="control.data.isCaseSensitive"
+      :initial-case-sensitive-search="control.data.patternFilter.isCaseSensitive"
       :initial-inverse-search="control.data.isInverted"
-      :initial-manually-selected="control.data.manuallySelected"
+      :initial-manually-selected="control.data.manualFilter.manuallySelected"
       :mode-label="'Selection mode'"
       :possible-values="possibleValues"
       :size="twinlistSize"
