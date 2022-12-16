@@ -48,19 +48,39 @@
  */
 package org.knime.core.webui.node.dialog.persistance;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
 
 /**
- * Creates NodeSettingsPersistors for DefaultNodeSettings.
+ * Creates and caches NodeSettingsPersistors for DefaultNodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @noreference non-public API
  */
 public final class NodeSettingsPersistorFactory {
 
+    private static final Map<Class<? extends DefaultNodeSettings>, NodeSettingsPersistor<?>> CACHE =
+        new ConcurrentHashMap<>();
+
     private NodeSettingsPersistorFactory() {
 
+    }
+
+    /**
+     * Gets the persistor for the provided settingsClass. Persistors are cached i.e. subsequent calls to
+     * {@link #getPersistor(Class)} will return the same persistor instance.
+     *
+     * @param <S> the type of the settings
+     * @param settingsClass class of the settings
+     * @return the persistor for the settings
+     */
+    @SuppressWarnings("unchecked")
+    public static <S extends DefaultNodeSettings> NodeSettingsPersistor<S> getPersistor(final Class<S> settingsClass) {
+        return (NodeSettingsPersistor<S>)CACHE.computeIfAbsent(settingsClass,
+            NodeSettingsPersistorFactory::createPersistor);
     }
 
     /**
@@ -76,8 +96,7 @@ public final class NodeSettingsPersistorFactory {
      * @throws IllegalArgumentException if the provided class references an unsupported persistor (e.g. a custom
      *             persistor that extends NodeSettingsPersistor directly)
      */
-    public static <S extends DefaultNodeSettings> NodeSettingsPersistor<S>
-        createPersistor(final Class<S> settingsClass) {
+    static <S extends DefaultNodeSettings> NodeSettingsPersistor<S> createPersistor(final Class<S> settingsClass) {
         var persistance = settingsClass.getAnnotation(Persistor.class);
         if (persistance == null) {
             // no annotation means we use the old persistance

@@ -181,7 +181,7 @@ public interface DefaultNodeSettings {
      */
     static <S extends DefaultNodeSettings> S loadSettings(final NodeSettingsRO settings, final Class<S> clazz)
         throws InvalidSettingsException {
-        return NodeSettingsPersistorFactory.createPersistor(clazz).load(settings);
+        return NodeSettingsPersistorFactory.getPersistor(clazz).load(settings);
     }
 
     /**
@@ -225,7 +225,7 @@ public interface DefaultNodeSettings {
         final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
         CheckUtils.checkArgument(settingsClass.isInstance(settingsObject),
                 "The provided settingsObject is not an instance of the provided settingsClass.");
-        NodeSettingsPersistorFactory.createPersistor(settingsClass).save((S)settingsObject, settings);
+        NodeSettingsPersistorFactory.getPersistor(settingsClass).save((S)settingsObject, settings);
 
     }
 

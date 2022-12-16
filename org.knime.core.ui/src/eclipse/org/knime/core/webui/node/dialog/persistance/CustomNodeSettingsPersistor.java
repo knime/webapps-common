@@ -52,6 +52,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Must provide an empty constructor for instantiation, the empty default constructor does not suffice.
+ * CustomNodeSettingsPersistors must be immutable.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <T> the type of object the persistor operates on

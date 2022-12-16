@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.persistance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Objects;
@@ -71,6 +72,19 @@ import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettings
 public class NodeSettingsPersistorFactoryTest {
 
     @Test
+    void testDefaultPersistance() throws InvalidSettingsException {
+        var settings = new DefaultPersistorSettings();
+        settings.m_foo = "baz";
+        testSaveLoad(settings);
+    }
+
+    @Test
+    void testCaching() throws Exception {
+        assertSame(NodeSettingsPersistorFactory.getPersistor(DefaultPersistorSettings.class),
+            NodeSettingsPersistorFactory.getPersistor(DefaultPersistorSettings.class));
+    }
+
+    @Test
     void testFieldBasedPersistance() throws InvalidSettingsException {
         var settings = new FieldBasedPersistorSettings();
         settings.m_foo = "foo";
@@ -78,16 +92,16 @@ public class NodeSettingsPersistorFactoryTest {
     }
 
     @Test
-    void testCustomPersistance() throws InvalidSettingsException {
-        var settings = new CustomPersistorSettings();
+    void testJsonBasedPersistance() throws Exception {
+        var settings = new JsonPersistorSettings();
         settings.m_foo = "bar";
         testSaveLoad(settings);
     }
 
     @Test
-    void testFallbackPersistance() throws InvalidSettingsException {
-        var settings = new FallbackPersistorSettings();
-        settings.m_foo = "baz";
+    void testCustomPersistance() throws InvalidSettingsException {
+        var settings = new CustomPersistorSettings();
+        settings.m_foo = "bar";
         testSaveLoad(settings);
     }
 
@@ -156,30 +170,39 @@ public class NodeSettingsPersistorFactoryTest {
         }
 
         @Override
-        public CustomPersistorSettings load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        public CustomPersistorSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
             var obj = new CustomPersistorSettings();
             obj.m_foo = settings.getString("custom_foo");
             return obj;
         }
     }
 
-    private static final class FallbackPersistorSettings extends AbstractTestSettings<FallbackPersistorSettings> {
+    private static final class DefaultPersistorSettings extends AbstractTestSettings<DefaultPersistorSettings> {
 
         String m_foo;
 
         @Override
-        protected boolean internalEquals(final FallbackPersistorSettings other) {
+        protected boolean internalEquals(final DefaultPersistorSettings other) {
             return Objects.equals(m_foo, other.m_foo);
         }
     }
 
-    private static final class InvalidCustomPersistor
-        implements NodeSettingsPersistor<InvalidCustomPersistorSettings> {
+    @Persistor(JsonBasedNodeSettingsPersistor.class)
+    private static final class JsonPersistorSettings extends AbstractTestSettings<JsonPersistorSettings> {
+
+        String m_foo;
 
         @Override
-        public InvalidCustomPersistorSettings load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        protected boolean internalEquals(final JsonPersistorSettings other) {
+            return Objects.equals(m_foo, other.m_foo);
+        }
+
+    }
+
+    private static final class InvalidCustomPersistor implements NodeSettingsPersistor<InvalidCustomPersistorSettings> {
+
+        @Override
+        public InvalidCustomPersistorSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
             throw new NotImplementedException("This class should not be instantiated by the test.");
         }
 
