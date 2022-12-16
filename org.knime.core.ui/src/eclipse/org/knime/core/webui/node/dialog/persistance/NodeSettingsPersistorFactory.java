@@ -99,12 +99,14 @@ public final class NodeSettingsPersistorFactory {
     static <S extends DefaultNodeSettings> NodeSettingsPersistor<S> createPersistor(final Class<S> settingsClass) {
         var persistance = settingsClass.getAnnotation(Persistor.class);
         if (persistance == null) {
-            // no annotation means we use the old persistance
-            return new ReflectionDefaultNodeSettingsPersistor<>(settingsClass);
+            // no annotation means we use field based persistance
+            return new FieldBasedNodeSettingsPersistor<>(settingsClass);
         } else {
             var persistorClass = persistance.value();
             if (FieldBasedNodeSettingsPersistor.class.equals(persistorClass)) {
                 return new FieldBasedNodeSettingsPersistor<>(settingsClass);
+            } else if (JsonBasedNodeSettingsPersistor.class.equals(persistorClass)) {
+                return new JsonBasedNodeSettingsPersistor<>(settingsClass);
             } else if (CustomNodeSettingsPersistor.class.isAssignableFrom(persistorClass)) {
                 @SuppressWarnings("unchecked")
                 var customPersistor = CustomNodeSettingsPersistor
