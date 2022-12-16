@@ -79,7 +79,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-final class JsonFormsDataUtil {
+public final class JsonFormsDataUtil {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonFormsDataUtil.class);
 
@@ -118,14 +118,21 @@ final class JsonFormsDataUtil {
         return module;
     }
 
-    static ObjectMapper getMapper() {
+    /**
+     * @return the configured mapper
+     */
+    public static ObjectMapper getMapper() {
         if (MAPPER == null) {
             MAPPER = createMapper();
         }
         return MAPPER;
     }
 
-    static JsonNode toJsonData(final DefaultNodeSettings settings) {
+    /**
+     * @param settings to convert to JSON
+     * @return the JSON node representing settings
+     */
+    public static JsonNode toJsonData(final DefaultNodeSettings settings) {
         return getMapper().valueToTree(settings);
     }
 
@@ -135,7 +142,7 @@ final class JsonFormsDataUtil {
         return root;
     }
 
-    static <T extends DefaultNodeSettings> T toDefaultNodeSettings(final JsonNode jsonFormsData, final Class<T> clazz) {
+    public static <T extends DefaultNodeSettings> T toDefaultNodeSettings(final JsonNode jsonFormsData, final Class<T> clazz) {
         try {
             return getMapper().treeToValue(jsonFormsData, clazz);
         } catch (JsonProcessingException e) {

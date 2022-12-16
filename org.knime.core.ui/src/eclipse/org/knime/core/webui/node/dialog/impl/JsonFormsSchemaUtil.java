@@ -72,7 +72,7 @@ import com.github.victools.jsonschema.generator.SchemaVersion;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-final class JsonFormsSchemaUtil {
+public final class JsonFormsSchemaUtil {
 
     private static final Set<Class<?>> PROHIBITED_TYPES =
         Stream.of(Boolean.class, Integer.class, Long.class, short.class, Short.class, Double.class, Float.class)
@@ -141,7 +141,7 @@ final class JsonFormsSchemaUtil {
      * @param settingsClass a POJO class for which to build the schema
      * @return an incomplete json schema
      */
-    static synchronized ObjectNode buildSchema(final Class<?> settingsClass) {
+    public static synchronized ObjectNode buildSchema(final Class<?> settingsClass) {
         return buildSchema(settingsClass, null, null);
     }
 

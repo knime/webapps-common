@@ -52,18 +52,23 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.impl.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil;
+import org.knime.core.webui.node.dialog.impl.JsonNodeSettingsMapperUtil;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Persistor that uses the existing reflection-based persistance mechanism for backwards compatibility.
+ * Persistor that does persistance via JSON. Should not be used for new nodes.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @param <S> the type of settings
  */
-final class ReflectionDefaultNodeSettingsPersistor<S extends DefaultNodeSettings>
-    implements NodeSettingsPersistor<S> {
+public final class JsonBasedNodeSettingsPersistor<S extends DefaultNodeSettings> implements NodeSettingsPersistor<S> {
 
     private final Class<S> m_settingsClass;
 
-    ReflectionDefaultNodeSettingsPersistor(final Class<S> settingsClass) {
+    JsonBasedNodeSettingsPersistor(final Class<S> settingsClass) {
         m_settingsClass = settingsClass;
     }
 
@@ -74,12 +79,16 @@ final class ReflectionDefaultNodeSettingsPersistor<S extends DefaultNodeSettings
             // by the JSON
             throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
         }
-        return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClass);
+        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
+        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(nodeSettings, node);
+        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
     }
 
     @Override
     public void save(final S settings, final NodeSettingsWO nodeSettings) {
-        DefaultNodeSettings.saveSettings(m_settingsClass, settings, nodeSettings);
+        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(settings);
+        var schemaNode = JsonFormsSchemaUtil.buildSchema(m_settingsClass);
+        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, nodeSettings);
     }
 
 }

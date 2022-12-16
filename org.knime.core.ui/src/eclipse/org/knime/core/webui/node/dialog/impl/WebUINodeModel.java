@@ -60,8 +60,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistorFactory;
 
 /**
  * The {@link NodeModel} for simple WebUI nodes, see {@link WebUINodeFactory}.
@@ -76,8 +74,6 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     private final Class<S> m_modelSettingsClass;
 
-    private final NodeSettingsPersistor<S> m_modelSettingsPersistor;
-
     /**
      * @param configuration the {@link WebUINodeConfiguration} for this factory
      * @param modelSettingsClass the type of the model settings for this node
@@ -85,7 +81,6 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
         super(configuration.getInPortDescriptions().length, configuration.getOutPortDescriptions().length);
         m_modelSettingsClass = modelSettingsClass;
-        m_modelSettingsPersistor = NodeSettingsPersistorFactory.createPersistor(modelSettingsClass);
     }
 
     @Override
@@ -136,7 +131,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
         if (m_modelSettings != null) {
-            m_modelSettingsPersistor.save(m_modelSettings, settings);
+            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
         }
     }
 
@@ -157,7 +152,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     @Override
     protected final void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
-        m_modelSettings = m_modelSettingsPersistor.load(settings);
+        m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
     }
 
     @Override

@@ -50,9 +50,7 @@ package org.knime.core.webui.node.dialog.impl;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.util.EnumMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -62,11 +60,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.JsonNodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.TextNodeSettingsService;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistorFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -84,27 +79,14 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
 
     static final String FIELD_NAME_UI_SCHEMA = "ui_schema";
 
-    private final Map<SettingsType, TypeAwareNodeSettingsPersistor<? extends DefaultNodeSettings>> m_settingsPersistors;
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     /**
      * @param settingsClasses map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
      */
     public DefaultNodeSettingsService(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        m_settingsPersistors = settingsClasses.entrySet().stream()//
-            .collect(Collectors.toMap(//
-                Map.Entry::getKey, //
-                e -> createSerializer(e.getValue()), //
-                (l, r) -> l, // merger that isn't used because there are no collisions
-                () -> new EnumMap<>(SettingsType.class)//
-            ));
+        m_settingsClasses = settingsClasses;
     }
-
-    private static <S extends DefaultNodeSettings> TypeAwareNodeSettingsPersistor<S>
-        createSerializer(final Class<S> settingsClass) {
-        var delegate = NodeSettingsPersistorFactory.createPersistor(settingsClass);
-        return new TypeAwareNodeSettingsPersistor<>(delegate, settingsClass);
-    }
-
 
     @Override
     public void toNodeSettingsFromObject(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
@@ -122,15 +104,10 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
         final Map<SettingsType, NodeSettingsWO> settings) {
         if (settings.containsKey(settingsType)) {
             final var node = rootNode.get(settingsType.getConfigKey());
-            var settingsSerializer = m_settingsPersistors.get(settingsType);
-            saveSettings(settings.get(settingsType), node, settingsSerializer);
+            var settingsClass = m_settingsClasses.get(settingsType);
+            var settingsObj = JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
+            DefaultNodeSettings.saveSettings(settingsClass, settingsObj, settings.get(settingsType));
         }
-    }
-
-    private static <S extends DefaultNodeSettings> void saveSettings(final NodeSettingsWO nodeSettings,
-        final JsonNode node, final TypeAwareNodeSettingsPersistor<S> settingsSerializer) {
-        var settingsObj = JsonFormsDataUtil.toDefaultNodeSettings(node, settingsSerializer.getSettingsClass());
-        settingsSerializer.save(settingsObj, nodeSettings);
     }
 
     @Override
@@ -149,29 +126,13 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
 
     private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeSettingsRO> nodeSettings,
         final SettingsType settingsType) {
-        var serializer = getSerializer(settingsType);
         try {
-            return loadGenericSettings(nodeSettings.get(settingsType), serializer);
+            return DefaultNodeSettings.loadSettings(nodeSettings.get(settingsType), m_settingsClasses.get(settingsType));
         } catch (InvalidSettingsException ex) {
-            throw new IllegalStateException("Failed to load settings for dialog.", ex);
+            throw new IllegalStateException("The settings are invalid.", ex);
         }
     }
 
-    private TypeAwareNodeSettingsPersistor<?> getSerializer(final SettingsType settingsType) {
-        var serializer = m_settingsPersistors.get(settingsType);
-        if (serializer == null) {
-            throw new IllegalStateException("No serializer available for SettingsType " + settingsType
-                + ". This is most likely an implementation error.");
-        }
-        return serializer;
-    }
-
-
-    private static <S extends DefaultNodeSettings> S loadGenericSettings(final NodeSettingsRO settings,
-        final TypeAwareNodeSettingsPersistor<S> serializer)
-        throws InvalidSettingsException {
-        return serializer.load(settings);
-    }
 
     @Override
     public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
@@ -182,17 +143,15 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     private void saveDefaultSettings(final Map<SettingsType, NodeSettingsWO> settingsMap,
         final SettingsType settingsType, final PortObjectSpec[] specs) {
         var nodeSettings = settingsMap.get(settingsType);
-        var settingsSerializer = getSerializer(settingsType);
         if (nodeSettings != null) {
-            saveDefaultSettings(settingsSerializer, nodeSettings, specs);
+            saveDefaultSettings(m_settingsClasses.get(settingsType), nodeSettings, specs);
         }
     }
 
-    private static <S extends DefaultNodeSettings> void saveDefaultSettings(
-        final TypeAwareNodeSettingsPersistor<S> serializer, final NodeSettingsWO nodeSettings,
-        final PortObjectSpec[] specs) {
-        var settingsObj = DefaultNodeSettings.createSettings(serializer.getSettingsClass(), specs);
-        serializer.save(settingsObj, nodeSettings);
+    private static <S extends DefaultNodeSettings> void saveDefaultSettings(final Class<S> settingsClass,
+        final NodeSettingsWO nodeSettings, final PortObjectSpec[] specs) {
+        var settingsObj = DefaultNodeSettings.createSettings(settingsClass, specs);
+        DefaultNodeSettings.saveSettings(settingsClass, settingsObj, nodeSettings);
     }
 
     @Override
@@ -203,34 +162,6 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     @Override
     public String toJson(final String obj) {
         return obj;
-    }
-
-    private static final class TypeAwareNodeSettingsPersistor<S extends DefaultNodeSettings>
-        implements NodeSettingsPersistor<S> {
-
-        private final NodeSettingsPersistor<S> m_delegate;
-
-        private final Class<S> m_settingsClass;
-
-        TypeAwareNodeSettingsPersistor(final NodeSettingsPersistor<S> delegate, final Class<S> settingsType) {
-            m_delegate = delegate;
-            m_settingsClass = settingsType;
-        }
-
-        @Override
-        public void save(final S obj, final NodeSettingsWO settings) {
-            m_delegate.save(obj, settings);
-        }
-
-        @Override
-        public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return m_delegate.load(settings);
-        }
-
-        Class<S> getSettingsClass() {
-            return m_settingsClass;
-        }
-
     }
 
 }
