@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import Modal from '~/ui/components/Modal.vue';
-jest.mock('focus-trap-vue', () => ({}), { virtual: true });
+import Modal from '../Modal.vue';
+vi.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {
     describe('rendering', () => {
@@ -9,7 +9,7 @@ describe('Modal', () => {
             expect(wrapper.classes()).toContain('info');
 
             wrapper = shallowMount(Modal, {
-                propsData: {
+                props: {
                     styleType: 'warn'
                 }
             });
@@ -18,7 +18,7 @@ describe('Modal', () => {
 
         it('renders title, icon and controls', () => {
             let wrapper = shallowMount(Modal, {
-                propsData: {
+                props: {
                     title: 'Modal title'
                 },
                 slots: {
@@ -70,26 +70,30 @@ describe('Modal', () => {
 
         it('passes-through props to BaseModal', () => {
             let wrapper = shallowMount(Modal, {
-                propsData: {
+                props: {
                     active: true
                 },
-                stubs: {
-                    BaseModal
+                global: {
+                    stubs: {
+                        BaseModal
+                    }
                 }
             });
-            expect(wrapper.find(BaseModal).props().active).toBeTruthy();
+            expect(wrapper.findComponent(BaseModal).props().active).toBeTruthy();
         });
 
         it('passes-through event listeners to BaseModal', () => {
             let wrapper = shallowMount(Modal, {
                 listeners: {
-                    fakeEvent: jest.fn()
+                    fakeEvent: vi.fn()
                 },
-                stubs: {
-                    BaseModal
+                global: {
+                    stubs: {
+                        BaseModal
+                    }
                 }
             });
-            expect(wrapper.find(BaseModal).vm.$listeners).toHaveProperty('fakeEvent');
+            expect(wrapper.findComponent(BaseModal).vm.$listeners).toHaveProperty('fakeEvent');
         });
     });
 

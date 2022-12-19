@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 
 import BaseButton from '../BaseButton.vue';
 
 // TODO fix and improve test
-describe.skip('BaseButton.vue', () => {
+describe('BaseButton.vue', () => {
     it('renders a button', () => {
         const wrapper = shallowMount(BaseButton);
         expect(typeof wrapper.attributes().href === 'undefined').toBeTruthy();
@@ -22,21 +22,41 @@ describe.skip('BaseButton.vue', () => {
             }
         });
         
-        expect(wrapper.find('a').attributes('href')).toEqual('testhref');
+        expect(wrapper.get('a').attributes('href')).toEqual('testhref');
     });
 
-    it('has native and generic click handler events', () => {
-        /* Depending on the `to` and `href` attributes, the component renders either a native button or a (nuxt-)link.
-        * To make sure click handlers work with both, we need to set the `@click` handler
+    it('emits events', () => {
+        /* Depending on the `to` and `href` attributes and if it runs in a Nuxt application, the component renders
+        * either a native <button>, a native <a> or a <router-link>/<nuxt-link> component.
+        * To make sure click handlers work in all cases, we need to set the `@click` handler
         * cf. https://stackoverflow.com/a/41476882/5134084 */
 
-        // test for nuxt-link
+        // test for router-link
         let wrapper = shallowMount(BaseButton, {
             props: {
                 to: 'route-test'
+            },
+            global: {
+                stubs: {
+                    RouterLink: '<div></div>'
+                }
             }
         });
-        wrapper.$emit('click');
+        wrapper.findComponent('router-link-stub').trigger('click');
+        expect(wrapper.emitted('click')).toBeDefined();
+
+        // test for nuxt-link
+        wrapper = shallowMount(BaseButton, {
+            props: {
+                to: 'route-test'
+            },
+            global: {
+                stubs: {
+                    NuxtLink: '<div></div>'
+                }
+            }
+        });
+        wrapper.findComponent('nuxt-link-stub').trigger('click');
         expect(wrapper.emitted('click')).toBeDefined();
 
         // test for a element
@@ -45,34 +65,35 @@ describe.skip('BaseButton.vue', () => {
                 href: 'http://www.test.de'
             }
         });
-        expect(wrapper.vnode.data.on.click).toBeDefined();
+        wrapper.find('a').trigger('click');
+        expect(wrapper.emitted('click')).toBeDefined();
 
         // test for button element
         wrapper = shallowMount(BaseButton);
-        expect(wrapper.vnode.data.on.click).toBeDefined();
+        wrapper.find('button').trigger('click');
+        expect(wrapper.emitted('click')).toBeDefined();
     });
 
-    it('emits events', () => {
-        let wrapper = shallowMount(BaseButton);
-        let button = wrapper.find('button');
-        button.vm.$emit('click');
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
-    });
-
-    it('allows preventing default', () => {
+    it.skip('allows preventing default', () => {
+        // TODO refactor BaseButton see https://router.vuejs.org/guide/migration/index.html#removal-of-event-and-tag-props-in-router-link
         let wrapper = shallowMount(BaseButton, {
             props: {
                 to: '/test',
                 preventDefault: true
+            },
+            global: {
+                stubs: {
+                    RouterLink: '<div></div>'
+                }
             }
         });
-        let button = wrapper.find(RouterLinkStub);
-        expect(button.props('event')).toStrictEqual([]);
+        let button = wrapper.findComponent('router-link-stub');
+        expect(button.attributes('event')).toBeUndefined();
     });
 
     it('gets focused when focus method is called', () => {
-        const wrapper = mount(BaseButton);
+        const wrapper = mount(BaseButton, { attachTo: document.body });
         wrapper.vm.focus();
-        expect(document.activeElement).toBe(wrapper.vm.$el);
+        expect(document.activeElement).toBe(wrapper.get('button').wrapperElement);
     });
 });

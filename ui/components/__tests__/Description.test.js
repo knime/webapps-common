@@ -1,16 +1,16 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import Description from '~/ui/components/Description.vue';
+import Description from '../Description.vue';
 
 describe('Description.vue', () => {
     it('renders plain text', () => {
         const text = '<p>testtext</p>';
         const wrapper = mount(Description, {
-            propsData: {
+            props: {
                 text
             }
         });
-        expect(wrapper.is('div')).toBeTruthy();
         expect(wrapper.classes()).toContain('plain');
         expect(wrapper.text()).toEqual(text);
     });
@@ -18,12 +18,11 @@ describe('Description.vue', () => {
     it('renders html', () => {
         const html = '<p>testtext</p>';
         const wrapper = mount(Description, {
-            propsData: {
+            props: {
                 text: html,
                 renderAsHtml: true
             }
         });
-        expect(wrapper.is('div')).toBeTruthy();
         expect(wrapper.classes()).not.toContain('plain');
         expect(wrapper.html()).toContain(html);
     });
@@ -35,7 +34,6 @@ describe('Description.vue', () => {
                 default: [html]
             }
         });
-        expect(wrapper.is('div')).toBeTruthy();
         expect(wrapper.classes()).not.toContain('plain');
         expect(wrapper.html()).toContain(html);
     });

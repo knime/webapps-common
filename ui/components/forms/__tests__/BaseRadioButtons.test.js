@@ -67,37 +67,37 @@ describe('BaseRadioButtons.vue', () => {
         expect(mount(BaseRadioButtons).html()).toBeTruthy();
     });
 
-    it('two render with different name attributes', () => {
-        let w1 = mount(BaseRadioButtons, {
+    it('renders unique name attributes', () => {
+        let wrapper1 = mount(BaseRadioButtons, {
             props: {
                 possibleValues
             }
         });
-        let w2 = mount(BaseRadioButtons, {
+        let wrapper2 = mount(BaseRadioButtons, {
             props: {
                 possibleValues
             }
         });
 
-        expect(w1.vm.count).not.toBe(w2.vm.count);
-        expect(w1.find('input').attributes().name).not.toBe(w2.find('input').attributes().name);
+        expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
+        expect(wrapper1.find('input').attributes().name).not.toBe(wrapper2.find('input').attributes().name);
     });
 
     it('renders selected value', () => {
-        let value = 'test3';
+        let modelValue = 'test3';
         const wrapper = mount(BaseRadioButtons, {
             props: {
                 possibleValues,
-                value
+                modelValue
             }
         });
 
         let radioInputs = wrapper.findAll('input[type=radio]');
         possibleValues.forEach((option, i) => {
-            if (option.id === value) {
-                expect(radioInputs.at(i).element.checked).toBeTruthy();
+            if (option.id === modelValue) {
+                expect(radioInputs[i].element.checked).toBeTruthy();
             } else {
-                expect(radioInputs.at(i).element.checked).not.toBeTruthy();
+                expect(radioInputs[i].element.checked).not.toBeTruthy();
             }
         });
     });
@@ -111,10 +111,10 @@ describe('BaseRadioButtons.vue', () => {
         let newValue = 'test2';
         let input = wrapper.find(`input[value=${newValue}]`);
         input.setChecked(true);
-        expect(wrapper.emitted().input[0][0]).toEqual(newValue);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(newValue);
     });
 
-    it('validation of possibleValues', () => {
+    it('validates possibleValues', () => {
         const wrapper = mount(BaseRadioButtons, {
             props: {
                 possibleValues

@@ -1,13 +1,13 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import IdleReadyButton from '~/ui/components/IdleReadyButton.vue';
-import Button from '~/ui/components/Button.vue';
-import DownIcon from '~/ui/assets/img/icons/circle-arrow-down.svg';
+import IdleReadyButton from '../IdleReadyButton.vue';
+import Button from '../Button.vue';
+import DownIcon from '../../assets/img/icons/circle-arrow-down.svg';
 
 describe('IdleReadyButton.vue', () => {
     it('doesn’t render when not needed', () => {
         let wrapper = shallowMount(IdleReadyButton, {
-            propsData: {
+            props: {
                 ready: false,
                 idle: false
             }
@@ -17,7 +17,7 @@ describe('IdleReadyButton.vue', () => {
 
     it('handles idle state correctly', () => {
         let wrapper = shallowMount(IdleReadyButton, {
-            propsData: {
+            props: {
                 ready: true,
                 idle: true
             }
@@ -33,7 +33,7 @@ describe('IdleReadyButton.vue', () => {
 
     it('accepts button text', () => {
         let wrapper = shallowMount(IdleReadyButton, {
-            propsData: {
+            props: {
                 readyText: 'test text',
                 idleText: 'Idle',
                 idle: true
@@ -49,38 +49,38 @@ describe('IdleReadyButton.vue', () => {
 
     it('renders an icon', () => {
         let wrapper = shallowMount(IdleReadyButton, {
-            propsData: {
+            props: {
                 withDownIcon: false
             }
         });
-        expect(wrapper.find(DownIcon).exists()).toBeFalsy();
+        expect(wrapper.findComponent(DownIcon).exists()).toBeFalsy();
 
         wrapper = shallowMount(IdleReadyButton, {
-            propsData: {
+            props: {
                 withDownIcon: true
             }
         });
-        expect(wrapper.find(DownIcon).exists()).toBeTruthy();
+        expect(wrapper.findComponent(DownIcon).exists()).toBeTruthy();
     });
 
     it('renders border', () => {
         let wrapper = shallowMount(IdleReadyButton);
-        expect(wrapper.find(Button).attributes('withborder')).toBeDefined();
+        expect(wrapper.findComponent(Button).attributes('withborder')).toBeDefined();
 
         wrapper.setProps({
             withBorder: false
         });
-        expect(wrapper.find(Button).attributes('withborder')).not.toBeDefined();
+        expect(wrapper.findComponent(Button).attributes('withborder')).not.toBeDefined();
     });
 
     it('emits events', () => {
         let wrapper = mount(IdleReadyButton, {
-            propsData: {
+            props: {
                 idle: false,
                 ready: true
             }
         });
-        wrapper.find(Button).vm.$emit('click');
+        wrapper.findComponent(Button).vm.$emit('click');
         expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
     });
 });

@@ -53,13 +53,11 @@ export default {
 
 <template>
   <div>
-    <!-- ".left" needed to prevent firing two events when hitting space -->
     <BaseButton
       class="button"
       :aria-expanded="String(isExpanded)"
       @click.prevent="onTrigger"
     >
-      <!-- @slot title slot -->
       <slot name="title" />
       <div class="dropdown">
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
@@ -77,7 +75,6 @@ export default {
         v-show="isExpanded"
         class="panel"
       >
-        <!-- @slot Panel content goes into default slot -->
         <slot />
       </div>
     </Transition>

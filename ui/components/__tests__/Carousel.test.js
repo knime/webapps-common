@@ -1,6 +1,7 @@
+import { describe, it, expect, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import Carousel from '~/ui/components/Carousel.vue';
+import Carousel from '../Carousel.vue';
 
 describe('Carousel.vue', () => {
     it('renders default', () => {
@@ -20,12 +21,11 @@ describe('Carousel.vue', () => {
     });
 
     it('calls scroll methods', () => {
-        const dragStartSpy = jest.spyOn(Carousel.methods, 'onDragStart');
-        const mouseLeaveSpy = jest.spyOn(Carousel.methods, 'onMouseEnd');
-        const mouseDownSpy = jest.spyOn(Carousel.methods, 'onMouseDown');
-        const mouseMoveSpy = jest.spyOn(Carousel.methods, 'onMouseMove');
-        const clickSpy = jest.spyOn(Carousel.methods, 'onMouseEnd');
-
+        const dragStartSpy = vi.spyOn(Carousel.methods, 'onDragStart');
+        const mouseLeaveSpy = vi.spyOn(Carousel.methods, 'onMouseEnd');
+        const mouseDownSpy = vi.spyOn(Carousel.methods, 'onMouseDown');
+        const mouseMoveSpy = vi.spyOn(Carousel.methods, 'onMouseMove');
+        const clickSpy = vi.spyOn(Carousel.methods, 'onMouseEnd');
 
         const wrapper = shallowMount(Carousel);
 

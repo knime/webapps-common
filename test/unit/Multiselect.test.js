@@ -2,13 +2,13 @@ import { mount, createLocalVue } from '@vue/test-utils';
 
 const localVue = createLocalVue();
 
-import Multiselect from '~/ui/components/forms/Multiselect.vue';
-import Checkbox from '~/ui/components/forms/Checkbox.vue';
+import Multiselect from '../Multiselect.vue';
+import Checkbox from '../Checkbox.vue';
 
 describe('Multiselect.vue', () => {
     it('renders', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -29,7 +29,7 @@ describe('Multiselect.vue', () => {
 
     it('renders invalid style', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 isValid: false
             },
             localVue
@@ -42,7 +42,7 @@ describe('Multiselect.vue', () => {
 
     it('renders placeholder until options have been selected', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -74,7 +74,7 @@ describe('Multiselect.vue', () => {
 
     it('emits input events', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -89,12 +89,12 @@ describe('Multiselect.vue', () => {
             localVue
         });
         wrapper.vm.onInput('test1', true);
-        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted('update:modelValue')).toBeTruthy();
     });
 
     it('toggles properly', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -117,7 +117,7 @@ describe('Multiselect.vue', () => {
 
     it('adds values to the checked values', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -137,7 +137,7 @@ describe('Multiselect.vue', () => {
 
     it('removes values from the checked values', () => {
         const wrapper = mount(Multiselect, {
-            propsData: {
+            props: {
                 possibleValues: [{
                     id: 'test1',
                     text: 'test1'
@@ -161,7 +161,7 @@ describe('Multiselect.vue', () => {
     describe('keyboard interaction', () => {
         it('show options on space', () => {
             const wrapper = mount(Multiselect, {
-                propsData: {
+                props: {
                     possibleValues: [{
                         id: 'test1',
                         text: 'test1'
@@ -181,9 +181,9 @@ describe('Multiselect.vue', () => {
         });
 
         it('hide options on esc', () => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
             const wrapper = mount(Multiselect, {
-                propsData: {
+                props: {
                     possibleValues: [{
                         id: 'test1',
                         text: 'test1'
@@ -197,20 +197,20 @@ describe('Multiselect.vue', () => {
                 },
                 localVue
             });
-            let toggleFocusMock = jest.spyOn(wrapper.vm.$refs.toggle, 'focus');
+            let toggleFocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
             let button = wrapper.find('[role=button]');
             wrapper.vm.collapsed = false;
             button.trigger('keydown.esc');
-            jest.runAllTimers();
+            vi.runAllTimers();
             expect(wrapper.vm.collapsed).toBe(true);
             expect(toggleFocusMock).toHaveBeenCalled();
         });
 
         it('hide options when focus leaves the component', () => {
-            jest.useFakeTimers();
+            vi.useFakeTimers();
 
             const wrapper = mount(Multiselect, {
-                propsData: {
+                props: {
                     possibleValues: [{
                         id: 'test1',
                         text: 'test1'
@@ -224,16 +224,16 @@ describe('Multiselect.vue', () => {
                 },
                 localVue
             });
-            let refocusMock = jest.spyOn(wrapper.vm.$refs.toggle, 'focus');
-            let onFocusOutMock = jest.spyOn(wrapper.vm, 'onFocusOut');
-            let closeMenuMock = jest.spyOn(wrapper.vm, 'closeOptions');
+            let refocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
+            let onFocusOutMock = vi.spyOn(wrapper.vm, 'onFocusOut');
+            let closeMenuMock = vi.spyOn(wrapper.vm, 'closeOptions');
             expect(wrapper.vm.collapsed).toBe(true);
             wrapper.setData({ collapsed: false });
             expect(wrapper.vm.collapsed).toBe(false);
 
             wrapper.trigger('focusout');
 
-            jest.runAllTimers();
+            vi.runAllTimers();
 
             expect(onFocusOutMock).toHaveBeenCalled();
             expect(closeMenuMock).toHaveBeenCalledWith(false);
@@ -244,7 +244,7 @@ describe('Multiselect.vue', () => {
         describe('arrow key navigation', () => {
             it('gets next item to focus', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1'
@@ -277,7 +277,7 @@ describe('Multiselect.vue', () => {
     
             it('focuses next element on key down', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1'
@@ -291,7 +291,7 @@ describe('Multiselect.vue', () => {
                     },
                     localVue
                 });
-                let onDownMock = jest.spyOn(wrapper.vm, 'onDown');
+                let onDownMock = vi.spyOn(wrapper.vm, 'onDown');
                 expect(wrapper.vm.collapsed).toBe(true);
                 wrapper.setData({ collapsed: false });
                 expect(wrapper.vm.collapsed).toBe(false);
@@ -308,7 +308,7 @@ describe('Multiselect.vue', () => {
     
             it('focuses previous element on key up', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1'
@@ -322,7 +322,7 @@ describe('Multiselect.vue', () => {
                     },
                     localVue
                 });
-                let onUpMock = jest.spyOn(wrapper.vm, 'onUp');
+                let onUpMock = vi.spyOn(wrapper.vm, 'onUp');
                 expect(wrapper.vm.collapsed).toBe(true);
                 wrapper.setData({ collapsed: false });
                 expect(wrapper.vm.collapsed).toBe(false);
@@ -339,7 +339,7 @@ describe('Multiselect.vue', () => {
 
             it('focuses first element on key down at list end', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1'
@@ -353,7 +353,7 @@ describe('Multiselect.vue', () => {
                     },
                     localVue
                 });
-                let onDownMock = jest.spyOn(wrapper.vm, 'onDown');
+                let onDownMock = vi.spyOn(wrapper.vm, 'onDown');
                 expect(wrapper.vm.collapsed).toBe(true);
                 wrapper.setData({ collapsed: false });
                 expect(wrapper.vm.collapsed).toBe(false);
@@ -370,7 +370,7 @@ describe('Multiselect.vue', () => {
     
             it('focuses last element on key up at list start', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1'
@@ -384,7 +384,7 @@ describe('Multiselect.vue', () => {
                     },
                     localVue
                 });
-                let onUpMock = jest.spyOn(wrapper.vm, 'onUp');
+                let onUpMock = vi.spyOn(wrapper.vm, 'onUp');
                 expect(wrapper.vm.collapsed).toBe(true);
                 wrapper.setData({ collapsed: false });
                 expect(wrapper.vm.collapsed).toBe(false);
@@ -401,7 +401,7 @@ describe('Multiselect.vue', () => {
 
             it('disables options if `disabled` is set', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'test1',
@@ -418,16 +418,16 @@ describe('Multiselect.vue', () => {
                     localVue
                 });
 
-                const checkboxes = wrapper.findAll(Checkbox);
+                const checkboxes = wrapper.findAllComponents(Checkbox);
         
-                expect(checkboxes.at(0).props('disabled')).toBe(true);
-                expect(checkboxes.at(1).props('disabled')).toBe(false);
-                expect(checkboxes.at(2).props('disabled')).toBe(true);
+                expect(checkboxes[0].props('disabled')).toBe(true);
+                expect(checkboxes[1].props('disabled')).toBe(false);
+                expect(checkboxes[2].props('disabled')).toBe(true);
             });
 
             it('renders custom seperator', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'Test1'
@@ -435,7 +435,7 @@ describe('Multiselect.vue', () => {
                             id: 'test2',
                             text: 'Test2'
                         }],
-                        value: ['test1', 'test2'],
+                        modelValue: ['test1', 'test2'],
                         separator: ' & '
                     },
                     localVue
@@ -447,7 +447,7 @@ describe('Multiselect.vue', () => {
 
             it('renders count and placeholder if summaryMaxItemCount is set', () => {
                 const wrapper = mount(Multiselect, {
-                    propsData: {
+                    props: {
                         possibleValues: [{
                             id: 'test1',
                             text: 'Test1'
@@ -461,7 +461,7 @@ describe('Multiselect.vue', () => {
                             id: 'test4',
                             text: 'Test4'
                         }],
-                        value: ['test1', 'test2', 'test4'],
+                        modelValue: ['test1', 'test2', 'test4'],
                         summaryMaxItemCount: 2,
                         summaryName: 'Fische'
                     },

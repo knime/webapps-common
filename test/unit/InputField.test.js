@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
 
-import InputField from '~/ui/components/forms/InputField.vue';
+import InputField from '../InputField.vue';
 
 describe('InputField.vue', () => {
     it('renders', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'Test value'
+            props: {
+                modelValue: 'Test value'
             }
         });
         expect(wrapper.html()).toBeTruthy();
@@ -19,8 +19,8 @@ describe('InputField.vue', () => {
 
     it('renders invalid style', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'Test value',
+            props: {
+                modelValue: 'Test value',
                 isValid: false
             }
         });
@@ -29,8 +29,8 @@ describe('InputField.vue', () => {
 
     it('renders with autofocus attribute', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: '',
+            props: {
+                modelValue: '',
                 autofocus: true
             }
         });
@@ -71,7 +71,7 @@ describe('InputField.vue', () => {
 
     it('renders custom type', () => {
         const wrapper = mount(InputField, {
-            propsData: {
+            props: {
                 type: 'password'
             }
         });
@@ -81,8 +81,8 @@ describe('InputField.vue', () => {
 
     it('validates without pattern', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'b'
+            props: {
+                modelValue: 'b'
             }
         });
         expect(wrapper.vm.validate().isValid).toBe(true);
@@ -90,8 +90,8 @@ describe('InputField.vue', () => {
 
     it('invalidates non-matching pattern', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'b',
+            props: {
+                modelValue: 'b',
                 pattern: '^a'
             }
         });
@@ -102,8 +102,8 @@ describe('InputField.vue', () => {
 
     it('validates unicode', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off!',
+            props: {
+                modelValue: 'Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off!',
                 pattern: `[\u0000-\uFFFF]*`
             }
         });
@@ -112,8 +112,8 @@ describe('InputField.vue', () => {
 
     it('validates unicode pattern', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'te%tString!"$<>',
+            props: {
+                modelValue: 'te%tString!"$<>',
                 pattern: '[\u0000-\u007F]+'
             }
         });
@@ -127,8 +127,8 @@ describe('InputField.vue', () => {
      */
     xit('invalidates wrong unicode pattern', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'te%tSætring!"$<>',
+            props: {
+                modelValue: 'te%tSætring!"$<>',
                 pattern: '[\u0000-\u007F]+'
             }
         });
@@ -137,8 +137,8 @@ describe('InputField.vue', () => {
 
     it('validates emojis', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: '👌',
+            props: {
+                modelValue: '👌',
                 pattern: `\\p{Emoji_Presentation}+`
             }
         });
@@ -147,8 +147,8 @@ describe('InputField.vue', () => {
 
     it('validates placeholders', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: '2A_% S',
+            props: {
+                modelValue: '2A_% S',
                 pattern: `\\d\\D\\w\\W\\s\\S+`
             }
         });
@@ -157,8 +157,8 @@ describe('InputField.vue', () => {
 
     it('validates multiple unicode ranges', () => {
         const wrapper = mount(InputField, {
-            propsData: {
-                value: 'adaሑtest',
+            props: {
+                modelValue: 'adaሑtest',
                 pattern: `([\u1200-\u12BF]|[\u0000-\u007F])*`
             }
         });
@@ -170,7 +170,7 @@ describe('InputField.vue', () => {
         const newValue = 'new value';
         let input = wrapper.find('input');
         input.setValue(newValue);
-        expect(wrapper.emitted().input[0][0]).toEqual(newValue);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(newValue);
     });
 
     it('focuses on focus call', () => {

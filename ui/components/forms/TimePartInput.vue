@@ -24,7 +24,7 @@ export default {
     props: {
         modelValue: {
             default: 0,
-            type: Number
+            type: [Number, String]
         },
         id: {
             type: String,

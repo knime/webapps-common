@@ -158,7 +158,7 @@ export default {
         }
     },
     watch: {
-        value(newValue) {
+        modelValue(newValue) {
             this.chosenValues = newValue;
         },
         possibleValues(newPossibleValues) {

@@ -1,9 +1,9 @@
 import { mount } from '@vue/test-utils';
 
-import OpenSourceCredits from '~/ui/components/OpenSourceCredits.vue';
-import Description from '~/ui/components/Description.vue';
+import OpenSourceCredits from '../OpenSourceCredits.vue';
+import Description from '../Description.vue';
 
-jest.mock('../../buildtools/opensourcecredits/used-packages.json', () => [
+vi.mock('../../buildtools/opensourcecredits/used-packages.json', () => [
     {
         name: 'a-package',
         repository: '/',
@@ -29,16 +29,16 @@ describe('OpenSourceCredits.vue', () => {
     });
 
     it('renders', () => {
-        expect(wrapper.find(Description).exists()).toBe(true);
-        expect(wrapper.find(Description).props('text')).toContain('This project uses open source software components.');
+        expect(wrapper.findComponent(Description).exists()).toBe(true);
+        expect(wrapper.findComponent(Description).props('text')).toContain('This project uses open source software components.');
     });
 
     it('de-duplicates packages', () => {
         expect(wrapper.vm.packages.length).toBe(2);
         let packages = wrapper.findAll('button');
         expect(packages.length).toBe(2);
-        expect(packages.at(0).text()).toContain('a-package');
-        expect(packages.at(1).text()).toContain('b-package');
+        expect(packages[0].text()).toContain('a-package');
+        expect(packages[1].text()).toContain('b-package');
     });
 
     it('toggles expandable details', () => {

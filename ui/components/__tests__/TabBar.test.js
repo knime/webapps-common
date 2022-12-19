@@ -1,9 +1,11 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
+import { markRaw } from 'vue';
 
-import TabBar from '~/ui/components/TabBar.vue';
-import WorkflowIcon from '~/ui/assets/img/icons/workflow.svg';
-import NodeIcon from '~/ui/assets/img/icons/node.svg';
-import Carousel from '~/ui/components/Carousel.vue';
+import TabBar from '../TabBar.vue';
+import WorkflowIcon from '../../assets/img/icons/workflow.svg';
+import NodeIcon from '../../assets/img/icons/node.svg';
+import Carousel from '../Carousel.vue';
 
 describe('TabBar.vue', () => {
     let possibleValues = [{
@@ -14,31 +16,31 @@ describe('TabBar.vue', () => {
     }, {
         value: 'nodes',
         label: 'Nodes',
-        icon: NodeIcon,
+        icon: markRaw(NodeIcon),
         title: 'A title',
         disabled: true
     }, {
         value: 'workflows',
         label: 'Workflows',
-        icon: WorkflowIcon,
+        icon: markRaw(WorkflowIcon),
         disabled: false
     }];
 
     it('renders defaults', () => {
         let wrapper = shallowMount(TabBar);
-        expect(wrapper.find('input').length).toBeFalsy();
+        expect(wrapper.find('input').exists()).toBeFalsy();
     });
 
     it('renders', () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues,
-                value: 'all'
+                modelValue: 'all'
             }
         });
 
-        expect(wrapper.find(Carousel).exists()).toBe(true);
-        expect(wrapper.find(NodeIcon).exists()).toBeTruthy();
+        expect(wrapper.findComponent(Carousel).exists()).toBeTruthy();
+        expect(wrapper.findComponent(NodeIcon).exists()).toBeTruthy();
         expect(wrapper.find('.tab-bar').exists()).toBeTruthy();
         expect(wrapper.find('.overflow').exists()).toBeTruthy();
         expect(wrapper.find('input:checked').attributes('value')).toEqual('all');
@@ -46,62 +48,62 @@ describe('TabBar.vue', () => {
 
     it('can be disabled', () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues,
-                value: 'all',
+                modelValue: 'all',
                 disabled: true
             }
         });
-        wrapper.findAll('input[type="radio"]').wrappers.forEach(input => {
-            expect(input.attributes('disabled')).toBeTruthy();
+        wrapper.findAll('input[type="radio"]').forEach(input => {
+            expect(input.attributes('disabled')).toBeDefined();
         });
     });
 
-    it('can be updated', () => {
+    it('can be updated', async () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues,
-                value: 'nodes'
+                modelValue: 'nodes'
             }
         });
-        wrapper.setProps({
-            value: 'workflows'
+        await wrapper.setProps({
+            modelValue: 'workflows'
         });
         expect(wrapper.find('input:checked').attributes('value')).toEqual('workflows');
     });
 
-    it('reacts to selections', () => {
+    it('reacts to selections', async () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues,
-                value: 'nodes'
+                modelValue: 'nodes'
             }
         });
 
         expect(wrapper.find('input:checked').attributes('value')).toEqual('nodes');
-        wrapper.find('input[type="radio"][value="workflows"]').setChecked();
-        expect(wrapper.emitted('update:value')).toBeTruthy();
-        expect(wrapper.emitted('update:value')[0]).toEqual(['workflows']);
+        await wrapper.find('input[type="radio"][value="workflows"]').setChecked();
+        expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+        expect(wrapper.emitted('update:modelValue')[0]).toEqual(['workflows']);
     });
 
     it('disables tab if empty', () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
 
-        expect(wrapper.findAll('input[disabled="disabled"]')).toHaveLength(2);
+        expect(wrapper.findAll('input[disabled]')).toHaveLength(2);
     });
 
     it('renders titles', () => {
         let wrapper = shallowMount(TabBar, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
         let titledInputs = wrapper.findAll('label[title]');
         expect(titledInputs).toHaveLength(1);
-        expect(titledInputs.at(0).element.title).toBe('A title');
+        expect(titledInputs[0].element.title).toBe('A title');
     });
 });

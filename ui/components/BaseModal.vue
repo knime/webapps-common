@@ -106,7 +106,7 @@ export default {
           </div>
         </Transition>
       </div>
-    </Focustrap>
+    </FocusTrap>
   </Transition>
 </template>
 

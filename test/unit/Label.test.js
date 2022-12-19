@@ -1,32 +1,32 @@
 import { shallowMount } from '@vue/test-utils';
 
-import Label from '~/ui/components/forms/Label.vue';
+import Label from '../Label.vue';
 
 describe('Label.vue', () => {
-    let propsData;
+    let props;
 
     beforeEach(() => {
-        propsData = {
+        props = {
             text: 'Testing Label'
         };
     });
 
     it('renders', () => {
         let wrapper = shallowMount(Label, {
-            propsData,
+            props,
             slots: {
                 default: 'slot content'
             }
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.text()).toContain(propsData.text);
+        expect(wrapper.text()).toContain(props.text);
         expect(wrapper.text()).toContain('slot content');
     });
 
     it('renders compact class if prop set', () => {
         let wrapper = shallowMount(Label, {
-            propsData: {
+            props: {
                 compact: true
             }
         });

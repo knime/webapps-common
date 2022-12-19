@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import svgLoader from 'vite-svg-loader';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vitejs.dev/config/
 // https://vitest.dev/config/
@@ -10,6 +11,10 @@ export default defineConfig({
         include: ['**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         environment: 'jsdom',
         reporters: ['default', 'junit'],
+        deps: { inline: ['consola'] },
+        setupFiles: [
+            fileURLToPath(new URL('vitest.setup.ts', import.meta.url))
+        ],
         coverage: {
             all: true,
             exclude: [

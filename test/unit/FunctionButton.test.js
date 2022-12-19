@@ -1,7 +1,7 @@
 import { shallowMount, mount } from '@vue/test-utils';
 
-import FunctionButton from '~/ui/components/FunctionButton.vue';
-import BaseButton from '~/ui/components/BaseButton.vue';
+import FunctionButton from '../FunctionButton.vue';
+import BaseButton from '../BaseButton.vue';
 
 describe('FunctionButton.vue', () => {
     it('renders a FunctionButton', () => {
@@ -10,13 +10,13 @@ describe('FunctionButton.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
+        expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();
         expect(wrapper.classes()).toEqual(['function-button']);
     });
 
     it('forwards props', () => {
         const wrapper = shallowMount(FunctionButton, {
-            propsData: {
+            props: {
                 to: 'test-to',
                 href: 'test-to'
             },
@@ -24,14 +24,14 @@ describe('FunctionButton.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.find(BaseButton).exists()).toBeTruthy();
-        expect(wrapper.find(BaseButton).props('to')).toEqual('test-to');
-        expect(wrapper.find(BaseButton).props('href')).toEqual('test-to');
+        expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();
+        expect(wrapper.findComponent(BaseButton).props('to')).toEqual('test-to');
+        expect(wrapper.findComponent(BaseButton).props('href')).toEqual('test-to');
     });
 
     it('renders a class if props is set', () => {
         const wrapper = shallowMount(FunctionButton, {
-            propsData: {
+            props: {
                 active: true
             },
             slots: {
@@ -52,7 +52,7 @@ describe('FunctionButton.vue', () => {
 
     it('renders a classes if props is set and one child is present', () => {
         const wrapper = shallowMount(FunctionButton, {
-            propsData: {
+            props: {
                 active: true
             },
             slots: {
@@ -64,9 +64,9 @@ describe('FunctionButton.vue', () => {
     });
 
     it('triggers events', () => {
-        const clicker = jest.fn();
+        const clicker = vi.fn();
         const wrapper = mount(FunctionButton, {
-            propsData: {
+            props: {
                 active: true
             },
             slots: {
@@ -92,7 +92,7 @@ describe('FunctionButton.vue', () => {
 
     it('renders disabled button', () => {
         const wrapper = mount(FunctionButton, {
-            propsData: {
+            props: {
                 disabled: true
             },
             slots: {

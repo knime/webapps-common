@@ -1,10 +1,12 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
-import Tooltip from '~/ui/components/Tooltip.vue';
+
+import Tooltip from '../Tooltip.vue';
 
 describe('Tooltip', () => {
     it('renders', () => {
         const wrapper = mount(Tooltip, {
-            propsData: {
+            props: {
                 text: 'My text'
             },
             slots: {

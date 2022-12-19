@@ -1,4 +1,4 @@
-import MessageLink from '~/ui/components/MessageLink.vue';
+import MessageLink from '../MessageLink.vue';
 import { shallowMount } from '@vue/test-utils';
 
 describe('MessageLink.vue', () => {
@@ -6,7 +6,7 @@ describe('MessageLink.vue', () => {
 
     it('renders with href', () => {
         wrapper = shallowMount(MessageLink, {
-            propsData: {
+            props: {
                 link: {
                     text: 'I\'m a link',
                     href: 'localhost:3000'
@@ -22,7 +22,7 @@ describe('MessageLink.vue', () => {
 
     it('renders with to', () => {
         wrapper = shallowMount(MessageLink, {
-            propsData: {
+            props: {
                 link: {
                     text: 'I\'m a link',
                     to: {
@@ -40,7 +40,7 @@ describe('MessageLink.vue', () => {
 
     it('sets target', () => {
         wrapper = shallowMount(MessageLink, {
-            propsData: {
+            props: {
                 link: {
                     text: 'I\'m a link',
                     href: 'localhost:3000',

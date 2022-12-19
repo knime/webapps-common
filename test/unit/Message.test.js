@@ -1,12 +1,12 @@
-import Message from '~/ui/components/Message.vue';
-import Button from '~/ui/components/Button.vue';
+import Message from '../Message.vue';
+import Button from '../Button.vue';
 import { shallowMount, mount } from '@vue/test-utils';
-import WarnIcon from '~/ui/assets/img/icons/sign-warning.svg';
+import WarnIcon from '../../assets/img/icons/sign-warning.svg';
 
 describe('Message.vue', () => {
     let wrapper;
 
-    let copyTextMock = jest.fn();
+    let copyTextMock = vi.fn();
 
     it('renders default', () => {
         wrapper = shallowMount(Message);
@@ -21,7 +21,7 @@ describe('Message.vue', () => {
 
     it('renders success', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'success'
             }
         });
@@ -33,7 +33,7 @@ describe('Message.vue', () => {
 
     it('renders error', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error'
             }
         });
@@ -46,12 +46,12 @@ describe('Message.vue', () => {
     it('renders button', () => {
         let buttonText = 'Okay';
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 button: buttonText
             }
         });
 
-        expect(wrapper.find(Button).text()).toEqual(buttonText);
+        expect(wrapper.findComponent(Button).text()).toEqual(buttonText);
     });
 
     it('renders icon', () => {
@@ -61,12 +61,12 @@ describe('Message.vue', () => {
             }
         });
 
-        expect(wrapper.find(WarnIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(WarnIcon).exists()).toBe(true);
     });
 
     it('hides count if message is unique', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error'
             }
         });
@@ -77,7 +77,7 @@ describe('Message.vue', () => {
 
     it('shows count if message is repeated', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 count: 2
             }
@@ -89,7 +89,7 @@ describe('Message.vue', () => {
 
     it('renders collapser', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 details: 'test message'
             },
@@ -107,7 +107,7 @@ describe('Message.vue', () => {
 
     it('renders details in banner if showCollapser is false', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 details: 'test message',
                 showCollapser: false
@@ -125,7 +125,7 @@ describe('Message.vue', () => {
             href: 'localhost:3000'
         };
         wrapper = mount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 details: {
                     text: 'test message',
@@ -144,7 +144,7 @@ describe('Message.vue', () => {
             href: 'localhost:3000'
         };
         wrapper = mount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 details: {
                     text: 'test message',
@@ -160,7 +160,7 @@ describe('Message.vue', () => {
 
     it('renders without close button when not dismissible', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 showCloseButton: false
             }
@@ -170,9 +170,9 @@ describe('Message.vue', () => {
     });
 
     it('copies text by enter key', () => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 details: 'test message'
             },
@@ -186,7 +186,7 @@ describe('Message.vue', () => {
 
     it('closes', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 count: 2
             }
@@ -199,7 +199,7 @@ describe('Message.vue', () => {
 
     it('closes on space key', () => {
         wrapper = shallowMount(Message, {
-            propsData: {
+            props: {
                 type: 'error',
                 count: 2
             }

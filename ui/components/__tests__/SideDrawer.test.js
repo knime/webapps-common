@@ -1,13 +1,16 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
-import SideDrawer from '~/ui/components/SideDrawer.vue';
+
+import SideDrawer from '../SideDrawer.vue';
 
 const assertExpandStatus = (wrapper, isExpanded) => {
-    expect(wrapper.find('.sideDrawer').exists()).toBe(isExpanded);
+    expect(wrapper.find('.side-drawer').exists()).toBe(isExpanded);
     expect(wrapper.find('.content').exists()).toBe(isExpanded);
 };
 
 describe('SideDrawer.vue', () => {
     let wrapper;
+
     beforeEach(() => {
         wrapper = shallowMount(SideDrawer);
     });
@@ -16,13 +19,11 @@ describe('SideDrawer.vue', () => {
         assertExpandStatus(wrapper, false);
     });
 
-    it('can toggle', () => {
-        wrapper.setProps({ isExpanded: true });
-
+    it('can toggle', async () => {
+        await wrapper.setProps({ isExpanded: true });
         assertExpandStatus(wrapper, true);
 
-        wrapper.setProps({ isExpanded: false });
-
+        await wrapper.setProps({ isExpanded: false });
         assertExpandStatus(wrapper, false);
     });
 });

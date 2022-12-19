@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
-import MenuItems from '~/ui/components/MenuItems.vue';
+import MenuItems from '../MenuItems.vue';
 
 describe('MenuItems.vue', () => {
     it('renders the items', () => {
@@ -10,12 +10,14 @@ describe('MenuItems.vue', () => {
             { to: '/relative/route', text: 'Everything is relative' }
         ];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items
             },
-            stubs: {
-                NuxtLink: RouterLinkStub
+            global: {
+                stubs: {
+                    NuxtLink: RouterLinkStub
+                }
             }
         });
         expect(wrapper.findAll('li').length).toBe(items.length);
@@ -47,20 +49,22 @@ describe('MenuItems.vue', () => {
             hotkeyText: 'F9'
         }];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items
             },
-            stubs: {
-                NuxtLink: RouterLinkStub
+            global: {
+                stubs: {
+                    NuxtLink: RouterLinkStub
+                }
             }
         });
         expect(wrapper.html()).toBeTruthy();
         const menuEntries = wrapper.findAll('.clickable-item');
-        const menuEntry1 = menuEntries.at(1);
+        const menuEntry1 = menuEntries[1];
         expect(menuEntry1.classes()).toContain('disabled');
         expect(menuEntry1.attributes('tabindex')).toBeFalsy();
-        expect(menuEntries.at(0).attributes('tabindex')).toBe('0');
+        expect(menuEntries[0].attributes('tabindex')).toBe('0');
     });
 
     it('renders with separators', () => {
@@ -77,19 +81,21 @@ describe('MenuItems.vue', () => {
             separator: true
         }];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items
             },
-            stubs: {
-                NuxtLink: RouterLinkStub
+            global: {
+                stubs: {
+                    NuxtLink: RouterLinkStub
+                }
             }
         });
         expect(wrapper.html()).toBeTruthy();
         const menuLineItems = wrapper.findAll('li');
-        expect(menuLineItems.at(0).classes()).toContain('separator');
-        expect(menuLineItems.at(1).classes()).not.toContain('separator');
-        expect(menuLineItems.at(2).classes()).toContain('separator');
+        expect(menuLineItems[0].classes()).toContain('separator');
+        expect(menuLineItems[1].classes()).not.toContain('separator');
+        expect(menuLineItems[2].classes()).toContain('separator');
     });
 
     it('renders with sectionHeadlines', () => {
@@ -108,19 +114,21 @@ describe('MenuItems.vue', () => {
             hotkeyText: 'F9'
         }];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items
             },
-            stubs: {
-                NuxtLink: RouterLinkStub
+            global: {
+                stubs: {
+                    NuxtLink: RouterLinkStub
+                }
             }
         });
         expect(wrapper.html()).toBeTruthy();
         const listItems = wrapper.findAll({ ref: 'listItem' });
-        expect(listItems.at(0).classes()).toContain('section-headline');
-        expect(listItems.at(1).classes()).toContain('section-headline');
-        expect(listItems.at(2).classes()).not.toContain('section-headline');
+        expect(listItems[0].classes()).toContain('section-headline');
+        expect(listItems[1].classes()).toContain('section-headline');
+        expect(listItems[2].classes()).not.toContain('section-headline');
     });
 
     it('renders with selected items', () => {
@@ -136,19 +144,21 @@ describe('MenuItems.vue', () => {
             hotkeyText: 'F9'
         }];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items
             },
-            stubs: {
-                NuxtLink: RouterLinkStub
+            global: {
+                stubs: {
+                    NuxtLink: RouterLinkStub
+                }
             }
         });
         expect(wrapper.html()).toBeTruthy();
         const clickableItems = wrapper.findAll('.clickable-item');
-        expect(clickableItems.at(0).classes()).toContain('selected');
-        expect(clickableItems.at(1).classes()).not.toContain('selected');
-        expect(clickableItems.at(2).classes()).not.toContain('selected');
+        expect(clickableItems[0].classes()).toContain('selected');
+        expect(clickableItems[1].classes()).not.toContain('selected');
+        expect(clickableItems[2].classes()).not.toContain('selected');
     });
 
     it('can display hotkeys', () => {
@@ -158,14 +168,14 @@ describe('MenuItems.vue', () => {
             { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
         ];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items,
                 id
             }
         });
         const spans = wrapper.findAll('span');
-        const span = spans.at(1);
+        const span = spans[1];
         expect(span.classes('hotkey')).toBe(true);
     });
 
@@ -176,7 +186,7 @@ describe('MenuItems.vue', () => {
             { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items,
                 id
@@ -194,14 +204,14 @@ describe('MenuItems.vue', () => {
             { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
         const wrapper = shallowMount(MenuItems, {
-            propsData: {
+            props: {
                 ariaLabel: 'label',
                 items,
                 id
             }
         });
-        expect(wrapper.findAll('li').at(0).attributes('title')).toMatch('This is an example title');
-        expect(wrapper.findAll('li').at(1).attributes('title')).toBeUndefined();
+        expect(wrapper.findAll('li')[0].attributes('title')).toMatch('This is an example title');
+        expect(wrapper.findAll('li')[1].attributes('title')).toBeUndefined();
     });
 
     describe('interactions', () => {
@@ -215,7 +225,7 @@ describe('MenuItems.vue', () => {
             ];
 
             wrapper = shallowMount(MenuItems, {
-                propsData: {
+                props: {
                     ariaLabel: 'label',
                     items,
                     id: 'menu'
@@ -299,17 +309,17 @@ describe('MenuItems.vue', () => {
                 let listElements = wrapper.findAll('li');
 
                 // enabled element
-                listElements.at(0).trigger('focusin');
+                listElements[0].trigger('focusin');
                 expect(wrapper.emitted('item-active')[0]).toStrictEqual([items[0], 'menu']);
 
-                listElements.at(0).trigger('pointerenter');
+                listElements[0].trigger('pointerenter');
                 expect(wrapper.emitted('item-active')[1]).toStrictEqual([items[0], 'menu']);
 
                 // disabled element
-                listElements.at(1).trigger('focusin');
+                listElements[1].trigger('focusin');
                 expect(wrapper.emitted('item-active')[2]).toStrictEqual([null, 'menu']);
 
-                listElements.at(1).trigger('pointerenter');
+                listElements[1].trigger('pointerenter');
                 expect(wrapper.emitted('item-active')[2]).toStrictEqual([null, 'menu']);
             });
 

@@ -1,10 +1,12 @@
 /* eslint-disable no-magic-numbers */
-import debounce from '~/util/debounce';
+import { describe, it, expect, vi } from 'vitest';
 
-jest.useFakeTimers();
+import debounce from '../debounce';
+
+vi.useFakeTimers();
 
 describe('debounce', () => {
-    let method = jest.fn();
+    let method = vi.fn();
 
     it('debounces many calls to a few', () => {
         const debouncedMethod = debounce(method, 100);
@@ -16,13 +18,13 @@ describe('debounce', () => {
 
         expect(method).toHaveBeenCalledTimes(1);
 
-        jest.advanceTimersByTime(10);
+        vi.advanceTimersByTime(10);
         expect(method).toHaveBeenCalledTimes(1);
 
-        jest.advanceTimersByTime(20);
+        vi.advanceTimersByTime(20);
         expect(method).toHaveBeenCalledTimes(1);
 
-        jest.advanceTimersByTime(300);
+        vi.advanceTimersByTime(300);
         expect(method).toHaveBeenCalledTimes(2);
     });
 });

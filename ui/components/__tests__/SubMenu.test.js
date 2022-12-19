@@ -1,13 +1,15 @@
+import { describe, it, expect, vi } from 'vitest';
 import { mount, shallowMount } from '@vue/test-utils';
+
 import { createPopper as createPopperMock } from '@popperjs/core';
 
-import SubMenu from '~/ui/components/SubMenu.vue';
-import FunctionButton from '~/ui/components/FunctionButton.vue';
+import SubMenu from '../SubMenu.vue';
+import FunctionButton from '../FunctionButton.vue';
 
-jest.mock('@popperjs/core');
+vi.mock('@popperjs/core');
 
 describe('SubMenu.vue', () => {
-    const setOptionsMock = jest.fn();
+    const setOptionsMock = vi.fn();
     createPopperMock.mockImplementation(() => ({ setOptions: setOptionsMock }));
 
     it('renders the menu toggle', () => {
@@ -15,14 +17,14 @@ describe('SubMenu.vue', () => {
             slots: {
                 default: '<svg />click me please <strong>right there</strong>'
             },
-            propsData: {
+            props: {
                 items: [],
                 buttonTitle: 'test button title'
             }
         });
-        expect(wrapper.find(FunctionButton).find('svg').exists()).toBeTruthy();
-        expect(wrapper.find(FunctionButton).text()).toContain('click me please right there');
-        expect(wrapper.find(FunctionButton).attributes('title')).toBe('test button title');
+        expect(wrapper.findComponent(FunctionButton).find('svg').exists()).toBeTruthy();
+        expect(wrapper.findComponent(FunctionButton).text()).toContain('click me please right there');
+        expect(wrapper.findComponent(FunctionButton).attributes('title')).toBe('test button title');
         expect(createPopperMock).toHaveBeenCalled();
     });
 
@@ -31,7 +33,7 @@ describe('SubMenu.vue', () => {
             slots: {
                 default: 'buttontext'
             },
-            propsData: {
+            props: {
                 items: [],
                 orientation: 'right'
             }

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 
-import RadioButtons from '~/ui/components/forms/RadioButtons.vue';
-import BaseRadioButtons from '~/ui/components/forms/BaseRadioButtons.vue';
+import RadioButtons from '../RadioButtons.vue';
+import BaseRadioButtons from '../BaseRadioButtons.vue';
 
 describe('RadioButtons.vue', () => {
     let possibleValues;
@@ -28,7 +28,7 @@ describe('RadioButtons.vue', () => {
     it('renders and passes props to BaseRadioButtons', () => {
         let value = 'test3';
         const wrapper = mount(RadioButtons, {
-            propsData: {
+            props: {
                 possibleValues,
                 value
             }
@@ -36,7 +36,7 @@ describe('RadioButtons.vue', () => {
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
 
-        const baseComponent = wrapper.find(BaseRadioButtons);
+        const baseComponent = wrapper.findComponent(BaseRadioButtons);
         expect(baseComponent.props('possibleValues')).toBe(possibleValues);
         expect(baseComponent.props('value')).toBe(value);
     });
@@ -44,15 +44,15 @@ describe('RadioButtons.vue', () => {
     it('passes-through all listeners', () => {
         let wrapper = mount(RadioButtons, {
             listeners: {
-                fakeEvent: jest.fn()
+                fakeEvent: vi.fn()
             }
         });
-        expect(wrapper.find(BaseRadioButtons).vm.$listeners).toHaveProperty('fakeEvent');
+        expect(wrapper.findComponent(BaseRadioButtons).vm.$listeners).toHaveProperty('fakeEvent');
     });
 
     it('renders horizontal by default', () => {
         const wrapper = mount(RadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });
@@ -62,7 +62,7 @@ describe('RadioButtons.vue', () => {
 
     it('renders vertical', () => {
         const wrapper = mount(RadioButtons, {
-            propsData: {
+            props: {
                 possibleValues,
                 alignment: 'vertical'
             }
@@ -72,7 +72,7 @@ describe('RadioButtons.vue', () => {
 
     it('provides a valid hasSelection method', () => {
         const wrapper = mount(RadioButtons, {
-            propsData: {
+            props: {
                 possibleValues
             }
         });

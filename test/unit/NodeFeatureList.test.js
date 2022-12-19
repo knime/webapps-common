@@ -9,7 +9,7 @@ import ViewsList from '../../ui/components/node/ViewsList.vue';
 describe('NodeFeatureList.vue', () => {
     it('renders ports and options', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 inPorts: [{
                     dummy: 'inPort'
                 }],
@@ -31,48 +31,48 @@ describe('NodeFeatureList.vue', () => {
             }
         });
 
-        expect(wrapper.find(TabBar).props('value')).toEqual('ports');
-        expect(wrapper.find(PortsList).props('inPorts')).toEqual([{ dummy: 'inPort' }]);
-        expect(wrapper.find(PortsList).props('outPorts')).toEqual([{ dummy: 'outPort' }]);
-        expect(wrapper.find(PortsList).props('dynInPorts')).toEqual([{ dummy: 'dynInPort' }]);
-        expect(wrapper.find(PortsList).props('dynOutPorts')).toEqual([{ dummy: 'dynOutPort' }]);
-        wrapper.find(TabBar).vm.$emit('update:value', 'node-dialog-options');
-        expect(wrapper.find(DialogOptions).props('options')).toEqual([{ dummy: 'dialog' }]);
-        wrapper.find(TabBar).vm.$emit('update:value', 'views');
-        expect(wrapper.find(ViewsList).props('views')).toEqual([{ dummy: 'view' }]);
+        expect(wrapper.findComponent(TabBar).props('value')).toEqual('ports');
+        expect(wrapper.findComponent(PortsList).props('inPorts')).toEqual([{ dummy: 'inPort' }]);
+        expect(wrapper.findComponent(PortsList).props('outPorts')).toEqual([{ dummy: 'outPort' }]);
+        expect(wrapper.findComponent(PortsList).props('dynInPorts')).toEqual([{ dummy: 'dynInPort' }]);
+        expect(wrapper.findComponent(PortsList).props('dynOutPorts')).toEqual([{ dummy: 'dynOutPort' }]);
+        wrapper.findComponent(TabBar).vm.$emit('update:value', 'node-dialog-options');
+        expect(wrapper.findComponent(DialogOptions).props('options')).toEqual([{ dummy: 'dialog' }]);
+        wrapper.findComponent(TabBar).vm.$emit('update:value', 'views');
+        expect(wrapper.findComponent(ViewsList).props('views')).toEqual([{ dummy: 'view' }]);
     });
 
     it('displays default placeholder if all tabs are empty', () => {
         const wrapper = shallowMount(NodeFeatureList);
-        expect(wrapper.find(TabBar).props('value')).toEqual(null);
+        expect(wrapper.findComponent(TabBar).props('value')).toEqual(null);
         expect(wrapper.find('.placeholder').text()).toEqual('This node does not provide any ports, options or views.');
     });
 
     it('displays custom placeholder text if all tabs are empty', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 emptyText: 'This is a placeholder text!'
             }
         });
-        expect(wrapper.find(TabBar).props('value')).toEqual(null);
+        expect(wrapper.findComponent(TabBar).props('value')).toEqual(null);
         expect(wrapper.find('.placeholder').text()).toEqual('This is a placeholder text!');
     });
 
     it('selects second tab if first is empty', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 options: [{
                     dummy: 'dialog'
                 }]
             }
         });
 
-        expect(wrapper.find(TabBar).props('value')).toEqual('node-dialog-options');
+        expect(wrapper.findComponent(TabBar).props('value')).toEqual('node-dialog-options');
     });
 
     it('disables ports tab if there are no ports', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 options: [{
                     dummy: 'dialog'
                 }]
@@ -83,7 +83,7 @@ describe('NodeFeatureList.vue', () => {
 
     it('enables ports tab if there are ports', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 inPorts: [{
                     dummy: 'port'
                 }]
@@ -94,7 +94,7 @@ describe('NodeFeatureList.vue', () => {
 
     it('disables views tab if there are no views', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 options: [{
                     dummy: 'dialog'
                 }]
@@ -105,7 +105,7 @@ describe('NodeFeatureList.vue', () => {
 
     it('enables views tab if there are views', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 views: [{
                     dummy: 'view'
                 }]
@@ -116,7 +116,7 @@ describe('NodeFeatureList.vue', () => {
 
     it('disables options tab if there are no options', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 views: [{
                     dummy: 'dialog'
                 }]
@@ -127,7 +127,7 @@ describe('NodeFeatureList.vue', () => {
 
     it('enables views tab if there are views', () => {
         const wrapper = shallowMount(NodeFeatureList, {
-            propsData: {
+            props: {
                 options: [{
                     dummy: 'view'
                 }]

@@ -1,6 +1,7 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import DonutChart from '../../ui/components/DonutChart.vue';
+import DonutChart from '../DonutChart.vue';
 
 describe('DonutChart.vue', () => {
     const defaultValue = 3;
@@ -24,11 +25,12 @@ describe('DonutChart.vue', () => {
             transform: 'rotate(-90, 50, 50)'
         };
 
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue
         } });
         expect(wrapper.exists()).toBe(true);
+        
         // props
         expect(wrapper.vm.radius).toBe(expectedValues.radius);
         expect(wrapper.vm.innerRadius).toBe(expectedValues.innerRadius);
@@ -84,7 +86,7 @@ describe('DonutChart.vue', () => {
         let expectedWidth = '200';
         let expectedR = '65';
         
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue,
             radius
@@ -106,7 +108,7 @@ describe('DonutChart.vue', () => {
         let expectedWidth = '100';
         let expectedR = '45';
         
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue,
             innerRadius
@@ -124,7 +126,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('displays value labels', () => {
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue,
             displayValues: true
@@ -141,7 +143,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('displays small labels for large values', () => {
-        let wrapper = mount(DonutChart, { propsData: {
+        let wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: 1023,
             displayValues: true
@@ -153,7 +155,7 @@ describe('DonutChart.vue', () => {
         expect(label.text()).toBe('3 / 1023');
         expect(label.attributes('style')).toContain('font-size: 20px');
 
-        wrapper = mount(DonutChart, { propsData: {
+        wrapper = mount(DonutChart, { props: {
             value: 1021,
             maxValue: 1023,
             displayValues: true
@@ -167,7 +169,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('does not display a label when values are not shown', () => {
-        let wrapper = mount(DonutChart, { propsData: {
+        let wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue,
             displayValues: false,
@@ -180,7 +182,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('displays an additional label', () => {
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: defaultMaxValue,
             displayValues: true,
@@ -199,7 +201,7 @@ describe('DonutChart.vue', () => {
     it('handles infinity as maximum value', () => {
         const radius = 100;
         const innerRadius = 40;
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: 42,
             maxValue: Infinity,
             displayValues: true,
@@ -227,7 +229,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('handles values larger than maximum', () => {
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: 1021,
             maxValue: defaultMaxValue,
             displayValues: true,
@@ -243,7 +245,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('handles values smaller than 0', () => {
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: -42,
             maxValue: defaultMaxValue,
             displayValues: true
@@ -258,7 +260,7 @@ describe('DonutChart.vue', () => {
     });
 
     it('handles maximum of 0', () => {
-        const wrapper = mount(DonutChart, { propsData: {
+        const wrapper = mount(DonutChart, { props: {
             value: defaultValue,
             maxValue: 0,
             displayValues: true

@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import Error from '~/ui/components/Error.vue';
+import Error from '../Error.vue';
 
 describe('Error.vue', () => {
     it('renders default', () => {
@@ -13,7 +13,7 @@ describe('Error.vue', () => {
 
     it('renders props', () => {
         const wrapper = shallowMount(Error, {
-            propsData: {
+            props: {
                 statusCode: '500',
                 headline: 'Hot dang!',
                 message: 'An error occurred.'

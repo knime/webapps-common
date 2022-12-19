@@ -1,6 +1,6 @@
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
-import MenuItems from '~/ui/components/MenuItems.vue';
+import MenuItems from '../MenuItems.vue';
 
 describe('MenuItems.vue', () => {
     describe('clicking menu items', () => {
@@ -12,21 +12,23 @@ describe('MenuItems.vue', () => {
             const id = 'testfoobar543';
 
             const wrapper = shallowMount(MenuItems, {
-                propsData: {
+                props: {
                     ariaLabel: id,
                     items,
                     id
                 },
-                stubs: {
-                    NuxtLink: RouterLinkStub
+                global: {
+                    stubs: {
+                        NuxtLink: RouterLinkStub
+                    }
                 }
             });
-            wrapper.findAll('li').at(0).trigger('click');
+            wrapper.findAll('li')[0].trigger('click');
             expect(typeof wrapper.emittedByOrder()[0].args[0]).toBe('object'); // event objectd
             expect(wrapper.emittedByOrder()[0].args[1]).toEqual(items[0]);
             expect(wrapper.emittedByOrder()[0].args[2]).toEqual(id);
 
-            wrapper.findAll('li').at(1).trigger('click');
+            wrapper.findAll('li')[1].trigger('click');
             expect(typeof wrapper.emittedByOrder()[1].args[0]).toBe('object'); // event object
             expect(wrapper.emittedByOrder()[1].args[1]).toEqual(items[1]);
             expect(wrapper.emittedByOrder()[1].args[2]).toEqual(id);
@@ -40,19 +42,21 @@ describe('MenuItems.vue', () => {
             const id = 'testfoobar543';
 
             const wrapper = shallowMount(MenuItems, {
-                propsData: {
+                props: {
                     ariaLabel: id,
                     items,
                     id
                 },
-                stubs: {
-                    NuxtLink: RouterLinkStub
+                global: {
+                    stubs: {
+                        NuxtLink: RouterLinkStub
+                    }
                 }
             });
-            wrapper.findAll('li').at(0).trigger('click');
+            wrapper.findAll('li')[0].trigger('click');
             expect(wrapper.emitted('item-click')).toBeFalsy();
 
-            wrapper.findAll('li').at(1).trigger('click');
+            wrapper.findAll('li')[1].trigger('click');
             expect(wrapper.emitted('item-click')).toBeFalsy();
         });
 
@@ -65,25 +69,27 @@ describe('MenuItems.vue', () => {
                 const id = 'testfoobar543';
 
                 const wrapper = mount(MenuItems, {
-                    propsData: {
+                    props: {
                         ariaLabel: id,
                         items,
                         id
                     },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
+                    global: {
+                        stubs: {
+                            NuxtLink: RouterLinkStub
+                        }
                     }
                 });
                 let fakeEvent = {
                     code: 'Enter',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    stopImmediatePropagation: vi.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
+                let onItemClickMock = vi.spyOn(wrapper.vm, 'onItemClick');
                 wrapper.vm.$refs.listItem[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
+                wrapper.findAll('.clickable-item')[0].trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
@@ -99,25 +105,27 @@ describe('MenuItems.vue', () => {
                 const id = 'testfoobar543';
 
                 const wrapper = mount(MenuItems, {
-                    propsData: {
+                    props: {
                         ariaLabel: id,
                         items,
                         id
                     },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
+                    global: {
+                        stubs: {
+                            NuxtLink: RouterLinkStub
+                        }
                     }
                 });
                 let fakeEvent = {
                     code: 'Enter',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    stopImmediatePropagation: vi.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
+                let onItemClickMock = vi.spyOn(wrapper.vm, 'onItemClick');
                 wrapper.vm.$refs.listItem[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.enter', fakeEvent);
+                wrapper.findAll('.clickable-item')[0].trigger('keydown.enter', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).toHaveBeenCalled();
@@ -135,25 +143,27 @@ describe('MenuItems.vue', () => {
                 const id = 'testfoobar543';
 
                 const wrapper = mount(MenuItems, {
-                    propsData: {
+                    props: {
                         ariaLabel: id,
                         items,
                         id
                     },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
+                    global: {
+                        stubs: {
+                            NuxtLink: RouterLinkStub
+                        }
                     }
                 });
                 let fakeEvent = {
                     code: 'Space',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    stopImmediatePropagation: vi.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
+                let onItemClickMock = vi.spyOn(wrapper.vm, 'onItemClick');
                 wrapper.vm.$refs.listItem[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
+                wrapper.findAll('.clickable-item')[0].trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeTruthy();
                 expect(fakeEvent.preventDefault).toHaveBeenCalled();
@@ -169,25 +179,27 @@ describe('MenuItems.vue', () => {
                 const id = 'testfoobar543';
 
                 const wrapper = mount(MenuItems, {
-                    propsData: {
+                    props: {
                         ariaLabel: id,
                         items,
                         id
                     },
-                    stubs: {
-                        NuxtLink: RouterLinkStub
+                    global: {
+                        stubs: {
+                            NuxtLink: RouterLinkStub
+                        }
                     }
                 });
                 let fakeEvent = {
                     code: 'Space',
-                    preventDefault: jest.fn(),
-                    stopPropagation: jest.fn(),
-                    stopImmediatePropagation: jest.fn()
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    stopImmediatePropagation: vi.fn()
                 };
-                let onItemClickMock = jest.spyOn(wrapper.vm, 'onItemClick');
+                let onItemClickMock = vi.spyOn(wrapper.vm, 'onItemClick');
                 wrapper.vm.$refs.listItem[0].focus();
                 expect(document.activeElement).toBe(wrapper.vm.$refs.listItem[0]);
-                wrapper.findAll('.clickable-item').at(0).trigger('keydown.space', fakeEvent);
+                wrapper.findAll('.clickable-item')[0].trigger('keydown.space', fakeEvent);
                 expect(onItemClickMock).toHaveBeenCalled();
                 expect(wrapper.emitted('item-click')).toBeFalsy();
                 expect(fakeEvent.preventDefault).not.toHaveBeenCalled();

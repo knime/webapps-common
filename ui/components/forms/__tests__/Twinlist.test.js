@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import SearchInput from '~/ui/components/forms/SearchInput.vue';
-import Twinlist from '~/ui/components/forms/Twinlist.vue';
-import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
+import SearchInput from '../SearchInput.vue';
+import Twinlist from '../Twinlist.vue';
+import MultiselectListBox from '../MultiselectListBox.vue';
 
 describe('Twinlist.vue', () => {
     let defaultPossibleValues;
@@ -21,77 +22,77 @@ describe('Twinlist.vue', () => {
     });
 
     it('renders', () => {
-        let propsData = {
+        let props = {
             possibleValues: defaultPossibleValues,
-            value: ['test3'],
+            modelValue: ['test3'],
             leftLabel: 'Choose',
             rightLabel: 'The value',
             size: 3
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll(MultiselectListBox).length).toBe(2);
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.possibleValues.length).toBe(2);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.possibleValues).toStrictEqual(
+        expect(wrapper.findAllComponents(MultiselectListBox)[0].props('possibleValues').length).toBe(2);
+        expect(wrapper.findAllComponents(MultiselectListBox)[1].props('possibleValues')).toStrictEqual(
             [defaultPossibleValues[2]]
         );
     });
 
-    it('actual list sizes must be 5 or bigger', () => {
-        let propsData = {
+    it('actual list sizes must be 5 or bigger', async () => {
+        let props = {
             possibleValues: [defaultPossibleValues[0]], // one element
-            value: [],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
         const defaultListSize = 5; // see Twinlist.vue
 
+        const list1 = wrapper.findAllComponents(MultiselectListBox)[0];
+        const list2 = wrapper.findAllComponents(MultiselectListBox)[1];
+
         // with no size set it is still 5 even if we only have one element
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
+        expect(list1.props('size')).toBe(defaultListSize);
+        expect(list2.props('size')).toBe(defaultListSize);
 
         // defaults to 5 (see Twinlist)
         const smallListSize = 3;
-        wrapper.setProps({ size: smallListSize });
+        await wrapper.setProps({ size: smallListSize });
 
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(defaultListSize);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(defaultListSize);
+        expect(list1.props('size')).toBe(defaultListSize);
+        expect(list2.props('size')).toBe(defaultListSize);
 
         const bigSize = 12;
-        wrapper.setProps({ size: bigSize });
+        await wrapper.setProps({ size: bigSize });
 
-        expect(wrapper.findAll(MultiselectListBox).at(0).vm.$props.size).toBe(bigSize);
-        expect(wrapper.findAll(MultiselectListBox).at(1).vm.$props.size).toBe(bigSize);
+        expect(list1.props('size')).toBe(bigSize);
+        expect(list2.props('size')).toBe(bigSize);
     });
 
-    it('isValid causes invalid style on left box', () => {
-        let propsData = {
+    it('isValid causes invalid style on left box', async () => {
+        let props = {
             possibleValues: [{
                 id: 'test1',
                 text: 'test1'
             }],
-            value: [],
             leftLabel: 'Choose',
             rightLabel: 'The value',
             isValid: false
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
-        let left = wrapper.find({ ref: 'left' });
+        let left = wrapper.findComponent({ ref: 'left' });
         expect(left.vm.isValid).toBe(false);
-        wrapper.setProps({ isValid: true });
+        await wrapper.setProps({ isValid: true });
         expect(left.vm.isValid).toBe(true);
     });
 
-    it('has invalid state if invalid values are selected', () => {
-        let propsData = {
+    it('has invalid state if invalid values are selected', async () => {
+        let props = {
             possibleValues: [{
                 id: 'test1',
                 text: 'Text'
@@ -99,12 +100,12 @@ describe('Twinlist.vue', () => {
                 id: 'test2',
                 text: 'Some Text'
             }],
-            value: ['invalidId', 'test1'],
+            modelValue: ['invalidId', 'test1'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'One or more of the selected items is invalid.', isValid: false }
@@ -112,12 +113,12 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.invalidValueIds).toStrictEqual(['invalidId']);
 
         // make it valid again
-        wrapper.setProps({ value: ['test1'] });
+        await wrapper.setProps({ modelValue: ['test1'] });
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('clears its internal state when there is a change in the possible values', () => {
-        let propsData = {
+    it('clears its internal state when there is a change in the possible values', async () => {
+        let props = {
             possibleValues: [{
                 id: 'test1',
                 text: 'Text'
@@ -125,16 +126,16 @@ describe('Twinlist.vue', () => {
                 id: 'test2',
                 text: 'Some Text'
             }],
-            value: ['invalidId', 'test1'],
+            modelValue: ['invalidId', 'test1'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
         expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
 
-        wrapper.setProps({
+        await wrapper.setProps({
             possibleValues: [{
                 id: 'newValue',
                 text: 'newValue'
@@ -143,8 +144,8 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.chosenValues).toStrictEqual([]);
     });
 
-    it('keeps valid state but removes invalid chosen values when there is a change in the possible values', () => {
-        let propsData = {
+    it('keeps valid state but removes invalid chosen values when there is a change in the possible values', async () => {
+        let props = {
             possibleValues: [{
                 id: 'test1',
                 text: 'Text'
@@ -152,16 +153,16 @@ describe('Twinlist.vue', () => {
                 id: 'test2',
                 text: 'Some Text'
             }],
-            value: ['invalidId', 'test1'],
+            modelValue: ['invalidId', 'test1'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
         expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
 
-        wrapper.setProps({
+        await wrapper.setProps({
             possibleValues: [{
                 id: 'test1',
                 text: 'validValue'
@@ -170,9 +171,9 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.chosenValues).toStrictEqual(['test1']);
     });
 
-    it('provides a valid hasSelection method', () => {
+    it('provides a valid hasSelection method', async () => {
         const wrapper = mount(Twinlist, {
-            propsData: {
+            props: {
                 possibleValues: defaultPossibleValues,
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
@@ -180,17 +181,17 @@ describe('Twinlist.vue', () => {
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
 
-        wrapper.setProps({ value: ['test1'] });
+        await wrapper.setProps({ modelValue: ['test1'] });
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
     describe('double click', () => {
-        let propsData;
+        let props;
 
         beforeEach(() => {
-            propsData = {
+            props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test3'],
+                modelValue: ['test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -198,260 +199,260 @@ describe('Twinlist.vue', () => {
 
         it('adds to value on double click in left box', async () => {
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             left.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[1], propsData.possibleValues[2]
+                props.possibleValues[1], props.possibleValues[2]
             ]);
         });
 
         it('adds values on shift double click in left box', async () => {
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             left.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[0], propsData.possibleValues[1], propsData.possibleValues[2]
+                props.possibleValues[0], props.possibleValues[1], props.possibleValues[2]
             ]);
         });
 
         it('removes from value on double click in right box', async () => {
-            propsData.value = ['test2', 'test3'];
+            props.value = ['test2', 'test3'];
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             right.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[0], propsData.possibleValues[1]
+                props.possibleValues[0], props.possibleValues[1]
             ]);
         });
 
         it('removes from values on shift double click in right box', async () => {
-            propsData.value = ['test1', 'test2', 'test3'];
+            props.value = ['test1', 'test2', 'test3'];
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             right.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[0], propsData.possibleValues[1]
+                props.possibleValues[0], props.possibleValues[1]
             ]);
         });
     });
 
     it('moves selected values to right on right arrow key', async () => {
-        let propsData = {
+        let props = {
             possibleValues: defaultPossibleValues,
-            value: [],
+            modelValue: [],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
 
-        let boxes = wrapper.findAll(MultiselectListBox);
-        let left = boxes.at(0);
-        let right = boxes.at(1);
+        let boxes = wrapper.findAllComponents(MultiselectListBox);
+        let left = boxes[0];
+        let right = boxes[1];
         left.vm.setSelected(['test2', 'test3']);
         left.vm.$emit('keyArrowRight');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2', 'test3']);
         expect(right.vm.$props.possibleValues).toStrictEqual([
-            propsData.possibleValues[1], propsData.possibleValues[2]
+            props.possibleValues[1], props.possibleValues[2]
         ]);
     });
 
     it('moves selected values to left on left arrow key', async () => {
-        let propsData = {
+        let props = {
             possibleValues: defaultPossibleValues,
-            value: ['test2', 'test3'],
+            modelValue: ['test2', 'test3'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
         const wrapper = mount(Twinlist, {
-            propsData
+            props
         });
 
-        let boxes = wrapper.findAll(MultiselectListBox);
-        let left = boxes.at(0);
-        let right = boxes.at(1);
+        let boxes = wrapper.findAllComponents(MultiselectListBox);
+        let left = boxes[0];
+        let right = boxes[1];
         right.vm.setSelected(['test2', 'test3']);
         right.vm.$emit('keyArrowLeft');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
-        expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual([]);
+        expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
 
     describe('controls', () => {
         it('moves selected values to right on move button click', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[1], propsData.possibleValues[2]
+                props.possibleValues[1], props.possibleValues[2]
             ]);
         });
 
         it('moves selected values to left on move button click', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2', 'test3'],
+                modelValue: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
-            expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual([]);
+            expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
 
         it('moves all values to right on all button click', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let right = boxes[1];
             wrapper.find({ ref: 'moveAllRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
-            expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(right.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
 
-        it('keeps invalid values on the left side on move all right action', () => {
-            let propsData = {
+        it('keeps invalid values on the left side on move all right action', async () => {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['invalidId'],
+                modelValue: ['invalidId'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
 
             // move all left to get the invalid left
-            wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
-            expect(left.vm.$props.possibleValues.map(x => x.id)).toContain('invalidId');
+            await wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
+            expect(left.props('possibleValues').map(x => x.id)).toContain('invalidId');
 
             // move all back to right side, but the invalid will not be there
-            wrapper.find({ ref: 'moveAllRight' }).trigger('click');
-            expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
-            expect(left.vm.$props.possibleValues.map(x => x.id)).toStrictEqual(['invalidId']);
+            await wrapper.find({ ref: 'moveAllRight' }).trigger('click');
+            expect(right.props('possibleValues')).toStrictEqual(props.possibleValues);
+            expect(left.props('possibleValues').map(x => x.id)).toStrictEqual(['invalidId']);
         });
 
         it('moves all values to left on all button click', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2', 'test3'],
+                modelValue: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
             wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
-            expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual([]);
+            expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
 
         it('moves selected values to right on move button enter', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
-                propsData.possibleValues[1], propsData.possibleValues[2]
+                props.possibleValues[1], props.possibleValues[2]
             ]);
         });
 
-        it('non applicable buttons are disabled', () => {
-            let propsData = {
+        it('non applicable buttons are disabled', async () => {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
 
             const moveRight = wrapper.find({ ref: 'moveRight' });
             const moveLeft = wrapper.find({ ref: 'moveLeft' });
@@ -468,13 +469,13 @@ describe('Twinlist.vue', () => {
             // move all left is not possible as right (the values) is empty
             expect(moveAllLeft.classes()).toContain('disabled');
 
-            left.vm.setSelected(['test2', 'test3']);
+            await left.vm.setSelected(['test2', 'test3']);
 
             // now we can move right
             expect(moveRight.classes()).not.toContain('disabled');
 
             // move all right
-            wrapper.vm.moveRight(['test1', 'test2', 'test3']);
+            await wrapper.vm.moveRight(['test1', 'test2', 'test3']);
 
             // now we can move all to the left (as we have values)
             expect(moveAllLeft.classes()).not.toContain('disabled');
@@ -483,77 +484,77 @@ describe('Twinlist.vue', () => {
             expect(moveAllRight.classes()).toContain('disabled');
 
             // select something on the right
-            right.vm.setSelected(['test2']);
+            await right.vm.setSelected(['test2']);
 
             // move selected to left is now possible
             expect(moveLeft.classes()).not.toContain('disabled');
         });
 
         it('moves selected values to left on move button enter', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2', 'test3'],
+                modelValue: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
-            expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual([]);
+            expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
 
         it('moves all values to right on all button enter', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let right = boxes[1];
             wrapper.find({ ref: 'moveAllRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
-            expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(right.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
 
         it('moves all values to left on all button enter', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2', 'test3'],
+                modelValue: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
             wrapper.find({ ref: 'moveAllLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
-            expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual([]);
+            expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
         });
     });
 
-    it('clears selection of the other side on select', () => {
+    it('clears selection of the other side on select', async () => {
         const mountOptions = {
-            propsData: {
+            props: {
                 possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
-                value: ['test2', 'test3'],
+                modelValue: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             }
@@ -561,46 +562,46 @@ describe('Twinlist.vue', () => {
 
         const wrapper = mount(Twinlist, mountOptions);
 
-        let boxes = wrapper.findAll(MultiselectListBox);
-        let left = boxes.at(0);
-        let right = boxes.at(1);
+        let boxes = wrapper.findAllComponents(MultiselectListBox);
+        let left = boxes[0];
+        let right = boxes[1];
 
         // select something on the left
-        wrapper.vm.onLeftInput(['test1']);
-        expect(wrapper.vm.$refs.left.value).toStrictEqual(['test1']);
+        await wrapper.vm.onLeftInput(['test1']);
+        expect(wrapper.vm.$refs.left.modelValue).toStrictEqual(['test1']);
 
         // select something on the right
-        wrapper.vm.onRightInput(['test2']);
-        expect(wrapper.vm.$refs.right.value).toStrictEqual(['test2']);
+        await wrapper.vm.onRightInput(['test2']);
+        expect(wrapper.vm.$refs.right.modelValue).toStrictEqual(['test2']);
         // the left should now be deselecting all
-        expect(left.emitted().input[0][0]).toStrictEqual([]);
+        expect(left.emitted('update:modelValue')[0][0]).toStrictEqual([]);
 
         // select something on the left, leads to empty on the right
-        wrapper.vm.onLeftInput(['test1', 'test4']);
-        expect(right.emitted().input[0][0]).toStrictEqual([]);
+        await wrapper.vm.onLeftInput(['test1', 'test4']);
+        expect(right.emitted('update:modelValue')[0][0]).toStrictEqual([]);
     });
 
     describe('search', () => {
         it('doesn\'t render the search bar by default', () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test3'],
+                modelValue: ['test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
-            expect(wrapper.find(SearchInput).exists()).toBe(false);
+            expect(wrapper.findComponent(SearchInput).exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
         });
 
         it('can render the search bar if wanted', () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test3'],
+                modelValue: ['test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3,
@@ -609,17 +610,17 @@ describe('Twinlist.vue', () => {
                 searchPlaceholder: 'Enter search term'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
-            expect(wrapper.find(SearchInput).exists()).toBe(true);
+            expect(wrapper.findComponent(SearchInput).exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
         });
 
-        it('can include initial search term', () => {
-            let propsData = {
+        it('can include initial search term', async () => {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2'],
+                modelValue: ['test2'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3,
@@ -627,11 +628,11 @@ describe('Twinlist.vue', () => {
                 initialSearchTerm: '3'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
 
             expect(left.props('possibleValues').length).toBe(1);
             expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
@@ -640,28 +641,28 @@ describe('Twinlist.vue', () => {
 
             // Remove search term
             let search = wrapper.find('input');
-            search.setValue('');
+            await search.setValue('');
 
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
             expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
         });
 
-        it('can handle basic search requests', () => {
-            let propsData = {
+        it('can handle basic search requests', async () => {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2'],
+                modelValue: ['test2'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3,
                 showSearch: true
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
 
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
@@ -669,64 +670,63 @@ describe('Twinlist.vue', () => {
 
             let search = wrapper.find('input');
 
-            search.setValue('noresult');
+            await search.setValue('noresult');
             expect(left.props('possibleValues').length).toBe(0);
             expect(right.props('possibleValues').length).toBe(0);
 
-            search.setValue('');
+            await search.setValue('');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
 
-            search.setValue('text');
+            await search.setValue('text');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
 
-            search.setValue(' text');
+            await search.setValue(' text');
             expect(left.props('possibleValues').length).toBe(0);
             expect(right.props('possibleValues').length).toBe(0);
 
-            search.setValue('1');
+            await search.setValue('1');
             expect(left.props('possibleValues').length).toBe(1);
             expect(right.props('possibleValues').length).toBe(0);
 
-            search.setValue('2');
+            await search.setValue('2');
             expect(left.props('possibleValues').length).toBe(0);
             expect(right.props('possibleValues').length).toBe(1);
 
-            search.setValue(' ');
+            await search.setValue(' ');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
 
-            search.setValue('TEXT');
+            await search.setValue('TEXT');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
         });
 
         it('moves only all filtered values to right on all button click', async () => {
-            let propsData = {
+            let props = {
                 possibleValues: defaultPossibleValues,
-                value: [],
+                modelValue: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 showSearch: true,
                 initialSearchTerm: '3'
             };
             const wrapper = mount(Twinlist, {
-                propsData
+                props
             });
 
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
-            wrapper.find({ ref: 'moveAllRight' }).trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            let boxes = wrapper.findAllComponents(MultiselectListBox);
+            let left = boxes[0];
+            let right = boxes[1];
+            await wrapper.find({ ref: 'moveAllRight' }).trigger('click');
+            expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test3']);
 
             expect(left.props('possibleValues').length).toBe(0);
 
             let search = wrapper.find('input');
 
-            search.setValue('');
+            await search.setValue('');
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
         });

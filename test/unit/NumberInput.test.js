@@ -1,14 +1,14 @@
 /* eslint-disable no-magic-numbers */
 import { shallowMount } from '@vue/test-utils';
 
-import NumberInput from '~/ui/components/forms/NumberInput.vue';
+import NumberInput from '../NumberInput.vue';
 
 describe('NumberInput.vue', () => {
-    let propsData, wrapper;
+    let props, wrapper;
 
     beforeEach(() => {
-        propsData = {
-            value: 10,
+        props = {
+            modelValue: 10,
             min: 0,
             max: 20,
             title: 'knime',
@@ -16,7 +16,7 @@ describe('NumberInput.vue', () => {
         };
 
         wrapper = shallowMount(NumberInput, {
-            propsData
+            props
         });
     });
 
@@ -34,27 +34,27 @@ describe('NumberInput.vue', () => {
 
     it('has validate logic to check min/max values', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ value: -5 });
+        wrapper.setProps({ modelValue: -5 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
-        wrapper.setProps({ value: 25 });
+        wrapper.setProps({ modelValue: 25 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
-        wrapper.setProps({ value: 5 });
+        wrapper.setProps({ modelValue: 5 });
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
     it('has validate logic to check non-numeric values', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ value: 'test' });
+        wrapper.setProps({ modelValue: 'test' });
         expect(wrapper.vm.validate()).toStrictEqual({ errorMessage: 'Current value is not a number.', isValid: false });
     });
 
     it('prevents changing value with spinners when result would be invalid', () => {
         expect(wrapper.vm.getValue()).toBe(10);
-        wrapper.setProps({ value: -5 });
+        wrapper.setProps({ modelValue: -5 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
@@ -63,7 +63,7 @@ describe('NumberInput.vue', () => {
         wrapper.vm.changeValue(1);
         expect(wrapper.vm.getValue()).toBe(1);
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ value: 25 });
+        wrapper.setProps({ modelValue: 25 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
@@ -75,18 +75,18 @@ describe('NumberInput.vue', () => {
     });
 
     it('increments up and down properly with spinner controls', () => {
-        jest.useFakeTimers();
+        vi.useFakeTimers();
         let event = {
             type: 'mousedown'
         };
 
         expect(wrapper.vm.getValue()).toBe(10);
         wrapper.vm.mouseEvent(event, 'increase');
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
         wrapper.vm.mouseEvent({}, 'increase');
         expect(wrapper.vm.getValue()).toBe(10.1);
         wrapper.vm.mouseEvent(event, 'decrease');
-        jest.advanceTimersByTime(50);
+        vi.advanceTimersByTime(50);
         wrapper.vm.mouseEvent({}, 'decrease');
         expect(wrapper.vm.getValue()).toBe(10);
     });
@@ -101,9 +101,9 @@ describe('NumberInput.vue', () => {
     });
 
     it('transforms to (standard) scientific notation', () => {
-        wrapper.setProps({ value: '3e5' });
+        wrapper.setProps({ modelValue: '3e5' });
         expect(wrapper.vm.getValue()).toStrictEqual(300000);
-        wrapper.setProps({ value: '4.423532523e5' });
+        wrapper.setProps({ modelValue: '4.423532523e5' });
         expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
     });
 
@@ -112,14 +112,14 @@ describe('NumberInput.vue', () => {
             data: '5',
             inputType: '',
             target: {
-                value: '1.5'
+                modelValue: '1.5'
             }
         };
         wrapper.vm.$refs.input.value = '1.5';
        
         wrapper.vm.onInput(mockEvent);
-        expect(wrapper.emitted().input).toBeTruthy();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(1.5);
+        expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(1.5);
     });
 
     it('converts invalid decimal point to number', () => {
@@ -127,13 +127,13 @@ describe('NumberInput.vue', () => {
             data: '.',
             inputType: '',
             target: {
-                value: ''
+                modelValue: ''
             }
         };
         wrapper.vm.$refs.input.value = '1.';
         
         wrapper.vm.onInput(mockEvent);
-        expect(wrapper.emitted().input).toBeFalsy();
+        expect(wrapper.emitted('update:modelValue')).toBeFalsy();
     });
 
     it('accepts decimal point as separator on delete', () => {
@@ -141,13 +141,13 @@ describe('NumberInput.vue', () => {
             data: null,
             inputType: 'deleteContentBackward',
             target: {
-                value: ''
+                modelValue: ''
             }
         };
         wrapper.vm.$refs.input.value = '0';
 
         wrapper.vm.onInput(mockEvent);
-        expect(wrapper.emitted().input).toBeTruthy();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(1);
+        expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(1);
     });
 });

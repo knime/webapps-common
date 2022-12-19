@@ -1,12 +1,13 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import TextArea from '~/ui/components/forms/TextArea.vue';
+import TextArea from '../TextArea.vue';
 
 describe('TextArea.vue', () => {
     it('renders', () => {
         const wrapper = mount(TextArea, {
-            propsData: {
-                value: 'Test value'
+            props: {
+                modelValue: 'Test value'
             }
         });
         expect(wrapper.html()).toBeTruthy();
@@ -17,8 +18,8 @@ describe('TextArea.vue', () => {
 
     it('renders invalid style', () => {
         const wrapper = mount(TextArea, {
-            propsData: {
-                value: 'Test value',
+            props: {
+                modelValue: 'Test value',
                 isValid: false
             }
         });
@@ -30,6 +31,6 @@ describe('TextArea.vue', () => {
         const newValue = 'new value';
         let textArea = wrapper.find('textarea');
         textArea.setValue(newValue);
-        expect(wrapper.emitted().input[0][0]).toEqual(newValue);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(newValue);
     });
 });

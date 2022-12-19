@@ -1,6 +1,7 @@
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import Collapser from '~/ui/components/Collapser.vue';
+import Collapser from '../Collapser.vue';
 
 describe('Collapser.vue', () => {
     it('renders content and title', () => {
@@ -28,37 +29,37 @@ describe('Collapser.vue', () => {
         expect(wrapper.find('.icon').exists()).toBeTruthy();
     });
 
-    it('calls transition handlers and expands', done => {
-        const triggerSpy = jest.spyOn(Collapser.methods, 'onTrigger');
-        const enterSpy = jest.spyOn(Collapser.methods, 'onEnter');
-        const leaveSpy = jest.spyOn(Collapser.methods, 'onLeave');
+    it('calls transition handlers and expands', async () => {
+        const triggerSpy = vi.spyOn(Collapser.methods, 'onTrigger');
+        const enterSpy = vi.spyOn(Collapser.methods, 'onEnter');
+        const leaveSpy = vi.spyOn(Collapser.methods, 'onLeave');
 
         const wrapper = mount(Collapser, {
             slots: {
                 title: 'yet another title',
                 default: '<p>some test content <strong>here</strong></p>'
+            },
+            global: {
+                stubs: {
+                    transition: false
+                }
             }
         });
 
         // open collapser
-        wrapper.find('.button').trigger('click');
+        await wrapper.find('.button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
+        expect(enterSpy).toHaveBeenCalled();
+        expect(wrapper.vm.isExpanded).toEqual(true);
 
-        wrapper.vm.$nextTick(() => {
-            expect(enterSpy).toHaveBeenCalled();
-            expect(wrapper.vm.isExpanded).toEqual(true);
+        // only check if height style property is set as height will be always 0 with vue test utils
+        expect(wrapper.find('.panel').attributes('style')).toContain('height');
 
-            // only check if height style property is set as height will be always 0 with vue test utils
-            expect(wrapper.find('.panel').attributes('style')).toContain('height');
-
-            // close it again
-            wrapper.find('.button').trigger('click');
-            wrapper.vm.$nextTick(() => {
-                expect(leaveSpy).toHaveBeenCalled();
-                expect(wrapper.vm.isExpanded).toBeFalsy();
-                expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
-                done();
-            });
-        });
+        // close it again
+        await wrapper.find('.button').trigger('click');
+        await wrapper.vm.$nextTick();
+        expect(leaveSpy).toHaveBeenCalled();
+        expect(wrapper.vm.isExpanded).toBeFalsy();
+        expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
     });
 });

@@ -1,6 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 
-import LinkList from '~/ui/components/LinkList.vue';
+import LinkList from '../LinkList.vue';
 
 describe('LinkList.vue', () => {
     it('renders links', () => {
@@ -12,7 +12,7 @@ describe('LinkList.vue', () => {
             url: 'https://www.youtube.com/watch?v=1Dilumi6X2I&t=1s'
         }];
         const wrapper = mount(LinkList, {
-            propsData: {
+            props: {
                 links
             }
         });
@@ -33,7 +33,7 @@ describe('LinkList.vue', () => {
             url: 'https://www.knime.com/blog/beauty-and-the-monster.com'
         }];
         const wrapper = shallowMount(LinkList, {
-            propsData: {
+            props: {
                 links
             }
         });

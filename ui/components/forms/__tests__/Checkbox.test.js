@@ -1,24 +1,25 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import Checkbox from '~/ui/components/forms/Checkbox.vue';
+import Checkbox from '../Checkbox.vue';
 
 describe('Checkbox.vue', () => {
     it('renders', () => {
         const wrapper = mount(Checkbox, {
-            propsData: {
-                value: false
+            props: {
+                modelValue: false
             }
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.is('label')).toBeTruthy();
+        expect(wrapper.find('label').exists()).toBeTruthy();
         expect(wrapper.find('input').element.checked).toBe(false);
     });
 
     it('renders checked state', () => {
         const wrapper = mount(Checkbox, {
-            propsData: {
-                value: true
+            props: {
+                modelValue: true
             }
         });
         expect(wrapper.find('input').element.checked).toBe(true);
@@ -27,11 +28,11 @@ describe('Checkbox.vue', () => {
 
     it('emits input events', () => {
         const wrapper = mount(Checkbox, {
-            propsData: {
-                value: true
+            props: {
+                modelValue: true
             }
         });
         wrapper.vm.onInput({ target: false });
-        expect(wrapper.emitted().input).toBeTruthy();
+        expect(wrapper.emitted('update:modelValue')).toBeTruthy();
     });
 });
