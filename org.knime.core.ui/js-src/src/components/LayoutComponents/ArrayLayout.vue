@@ -45,7 +45,7 @@ const ArrayLayout = defineComponent({
         },
         returnLabel(index) {
             let convertedIndex = parseInt(index, 10);
-            return `Reference line ${convertedIndex + 1}`;
+            return `${this.control.uischema.options.arrayElementTitle} ${convertedIndex + 1}`;
         }
     }
 });
@@ -92,7 +92,7 @@ export default ArrayLayout;
       @click="addDefaultItem"
     >
       <PlusIcon />
-      Add reference line
+      {{ control.uischema.options.addButtonText }}
     </Button>
   </div>
 </template>
