@@ -835,7 +835,7 @@ public final class JsonNodeSettingsMapperUtil {
      * @param schemaNode the Json schema node to obtain types from
      * @param settings the node settings to write into
      */
-    public static void jsonObjectToNodeSettings(final ObjectNode node, final ObjectNode schemaNode,
+    static void jsonObjectToNodeSettings(final ObjectNode node, final ObjectNode schemaNode,
         final NodeSettingsWO settings) {
         Type.addFieldsToSettings(node, schemaNode, settings);
     }
@@ -869,7 +869,7 @@ public final class JsonNodeSettingsMapperUtil {
      * @param settings the node settings to read from
      * @param node the Json object node to write into
      */
-    public static void nodeSettingsToJsonObject(final NodeSettingsRO settings, final ObjectNode node) {
+    static void nodeSettingsToJsonObject(final NodeSettingsRO settings, final ObjectNode node) {
         try {
             Type.putFieldsFromSettings(settings, node);
         } catch (InvalidSettingsException e) {

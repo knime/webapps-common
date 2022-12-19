@@ -46,15 +46,12 @@
  * History
  *   Dec 1, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistence;
+package org.knime.core.webui.node.dialog.impl;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.impl.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil;
-import org.knime.core.webui.node.dialog.impl.JsonNodeSettingsMapperUtil;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -68,7 +65,12 @@ public final class JsonBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
 
     private final Class<S> m_settingsClass;
 
-    JsonBasedNodeSettingsPersistor(final Class<S> settingsClass) {
+    /**
+     * Constructor.
+     *
+     * @param settingsClass the settings class to persist
+     */
+    public JsonBasedNodeSettingsPersistor(final Class<S> settingsClass) {
         m_settingsClass = settingsClass;
     }
 

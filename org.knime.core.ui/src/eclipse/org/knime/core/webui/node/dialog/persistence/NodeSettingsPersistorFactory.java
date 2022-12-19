@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
