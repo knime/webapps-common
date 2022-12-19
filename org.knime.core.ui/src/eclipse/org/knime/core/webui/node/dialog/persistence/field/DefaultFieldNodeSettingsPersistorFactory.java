@@ -82,6 +82,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         var impl = IMPL_MAP.get(fieldType);
         if (impl != null) {
             return new FieldNodeSettingsPersistor<>(configKey, impl);
+        } else if (fieldType.isEnum()) {
+            return createEnumPersistor(configKey, fieldType);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -139,6 +141,41 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             @SuppressWarnings("unchecked") // type-safety is ensured via the constructor
             var saver = (FieldSaver<T>)m_saver;
             saver.save(obj, settings, configKey);
+        }
+
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final String configKey,
+        final Class<T> fieldType) {
+        return new EnumFieldPersistor<>(configKey, (Class)fieldType);
+    }
+
+    private static final class EnumFieldPersistor<E extends Enum<E>> implements NodeSettingsPersistor<E> {
+
+        private final String m_configKey;
+
+        private final Class<E> m_enumClass;
+
+        EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
+            m_enumClass = enumClass;
+            m_configKey = configKey;
+        }
+
+        @Override
+        public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            var name = settings.getString(m_configKey);
+            try {
+                return name == null ? null : Enum.valueOf(m_enumClass, name);
+            } catch (IllegalArgumentException ex) {
+                throw new InvalidSettingsException(
+                    String.format("There is no enum constant with name '%s' in enum '%s'.", name, m_enumClass), ex);
+            }
+        }
+
+        @Override
+        public void save(final E obj, final NodeSettingsWO settings) {
+            settings.addString(m_configKey, obj == null ? null : obj.name());
         }
 
     }

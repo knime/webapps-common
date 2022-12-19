@@ -62,6 +62,7 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("javadoc")
 public class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     private static final String KEY = "test";
@@ -114,6 +115,24 @@ public class DefaultFieldNodeSettingsPersistorFactoryTest {
     @Test
     void testByte() throws InvalidSettingsException {
         testSaveLoad(byte.class, (byte)15);
+    }
+
+    @Test
+    void testEnum() throws InvalidSettingsException {
+        testSaveLoad(TestEnum.class, TestEnum.BAR);
+        testSaveLoad(TestEnum.class, null);
+    }
+
+    @Test
+    void testInvalidEnumConstant() throws InvalidSettingsException {
+        var persistor = createPersistor(TestEnum.class);
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, "BAZ");
+        assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings));
+    }
+
+    private enum TestEnum {
+        FOO, BAR;
     }
 
     @Test
