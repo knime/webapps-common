@@ -15,6 +15,9 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
 
     private boundOnMessageFromIFrame: any;
 
+    // TODO UIEXT-687 will introduce a general mechanism to forward method calls from parent to child iframe
+    private imageGeneratedCallback: (image: string) => void;
+
     constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
         pushNotification: CallableService = null) {
         super(extensionConfig, callableService, pushNotification);
@@ -81,9 +84,25 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
                     this.pushNotification(notification);
                 }
                 break;
+            case `imageGenerated`:
+                if (this.imageGeneratedCallback !== null) {
+                    this.imageGeneratedCallback(data.payload);
+                }
+                this.imageGeneratedCallback = null;
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * Registers a method that is to be called when the next 'imageGenerated' message is received.
+     *
+     * @param {Function} callback the to-be-registered callback
+     * @returns {void}
+     */
+    registerImageGeneratedCallback(callback: (image: string) => void): void {
+        this.imageGeneratedCallback = callback;
     }
 
     onServiceNotification(notification: Notification | string) {

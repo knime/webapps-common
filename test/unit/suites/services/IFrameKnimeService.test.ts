@@ -196,5 +196,14 @@ describe('IFrameKnimeService', () => {
                 type: `${UI_EXT_POST_MESSAGE_PREFIX}:callService`
             }, '*');
         });
+
+        it('posts imageGenerated message when imageGenerated method is invoked', () => {
+            const postSpy = jest.spyOn(window, 'postMessage');
+            IFrameKnimeService.imageGenerated('foo');
+            expect(postSpy).toHaveBeenCalledWith({
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:imageGenerated`,
+                payload: 'foo'
+            }, '*');
+        });
     });
 });

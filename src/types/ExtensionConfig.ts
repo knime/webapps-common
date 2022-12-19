@@ -33,4 +33,5 @@ export type ExtensionConfig<T = any> = {
     initialSelection?: T;
     flowVariableSettings?: FlowVariableSettings;
     hasNodeView: boolean;
+    imageGeneration?: boolean;
 };

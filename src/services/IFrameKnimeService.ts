@@ -159,4 +159,14 @@ export class IFrameKnimeService extends KnimeService {
     destroy() {
         window.removeEventListener('message', this.boundOnMessageFromParent);
     }
+
+    /**
+     * Called when an image has been generated. Posts the generated image to the parent via an 'imageGenerated' message.
+     *
+     * @param {string} generatedImage - the generated PNG image (as string)
+     * @returns {void}
+     */
+    static imageGenerated(generatedImage: string): void {
+        IFrameKnimeService.postMessage({ payload: generatedImage, messageType: 'imageGenerated' });
+    }
 }

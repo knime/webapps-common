@@ -131,5 +131,24 @@ describe('IFrameKnimeServiceAdapter', () => {
             });
             iFrameKnimeServiceAdapter.destroy();
         });
+
+        it('calls registered imageGeneratedCallback function when receiving imageGenerated message', async () => {
+            const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
+
+            let generatedImage: string;
+            iFrameKnimeServiceAdapter.registerImageGeneratedCallback(image => {
+                generatedImage = image;
+            });
+
+            // receive 'imageGenerated' message from child
+            window.postMessage({
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:imageGenerated`,
+                payload: 'foo'
+            }, '*');
+
+            await sleep();
+            expect(generatedImage).toBe('foo');
+            iFrameKnimeServiceAdapter.destroy();
+        });
     });
 });
