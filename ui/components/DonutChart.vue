@@ -8,6 +8,11 @@ export default {
             type: Number,
             required: true
         },
+        /** An optional secondary value for a second wedge to be displayed, can exceed the maximum value */
+        secondaryValue: {
+            type: Number,
+            default: 0
+        },
         /** The maximum value on which the wedge size is calculated. Also 'Infinity' can be passed here */
         maxValue: {
             type: Number,
@@ -56,6 +61,11 @@ export default {
             let value = Math.max(0, this.value);
             return this.acceptValuesLargerThanMax ? value : Math.min(value, this.maxValue);
         },
+        secondaryClippedValue() {
+            // calculate secondary value including the first value (to overlap the two svgs)
+            let value = Math.max(0, this.secondaryValue + this.clippedValue);
+            return this.acceptValuesLargerThanMax ? value : Math.min(value, this.maxValue);
+        },
         strokeWidth() {
             return this.radius - this.innerRadius;
         },
@@ -76,13 +86,10 @@ export default {
             return 2 * Math.PI * this.r;
         },
         strokeDashOffset() {
-            // if the maximum is 0 or infinity, the circle is never filled
-            if (this.maxValue <= 0 || !Number.isFinite(this.maxValue)) {
-                return this.circumference;
-            }
-            // otherwise calculate the difference
-            const strokeDiff = Math.min(this.clippedValue / this.maxValue * this.circumference, this.circumference);
-            return Math.max(this.circumference - strokeDiff, 0);
+            return this.calcStrokeDashOffset(this.clippedValue);
+        },
+        secondaryStrokeDashOffset() {
+            return this.calcStrokeDashOffset(this.secondaryClippedValue);
         },
         transformWedge() {
             return `rotate(-90, ${this.radius}, ${this.radius})`;
@@ -105,6 +112,17 @@ export default {
         },
         disabled() {
             return !Number.isFinite(this.maxValue);
+        }
+    },
+    methods: {
+        calcStrokeDashOffset(value) {
+            // if the maximum is 0 or infinity, the circle is never filled
+            if (this.maxValue <= 0 || !Number.isFinite(this.maxValue)) {
+                return this.circumference;
+            }
+            // otherwise calculate the difference
+            const strokeDiff = Math.min(value / this.maxValue * this.circumference, this.circumference);
+            return Math.max(this.circumference - strokeDiff, 0);
         }
     }
 };
@@ -156,7 +174,19 @@ export default {
         fill="transparent"
       />
       <circle
-        class="value-wedge"
+        v-if="secondaryValue"
+        class="value-wedge secondary-value-wedge"
+        :cx="radius"
+        :cy="radius"
+        :r="r"
+        :stroke-width="strokeWidth"
+        :stroke-dasharray="circumference"
+        :stroke-dashoffset="secondaryStrokeDashOffset"
+        fill="transparent"
+        :transform="transformWedge"
+      />
+      <circle
+        class="value-wedge primary-value-wedge"
         :cx="radius"
         :cy="radius"
         :r="r"
@@ -194,8 +224,12 @@ export default {
     stroke: var(--theme-donut-chart-background-color);
   }
 
-  & .value-wedge {
+  & .primary-value-wedge {
     stroke: var(--theme-donut-chart-value-color);
+  }
+
+  & .secondary-value-wedge {
+    stroke: var(--knime-aquamarine-dark);
   }
 
   & .disabled-circle {
