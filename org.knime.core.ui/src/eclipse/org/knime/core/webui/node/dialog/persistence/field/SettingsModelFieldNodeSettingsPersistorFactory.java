@@ -69,7 +69,6 @@ import com.google.common.collect.Table;
  * Factory for persistors that mimic the behavior of SettingsModels.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
 final class SettingsModelFieldNodeSettingsPersistorFactory {
 

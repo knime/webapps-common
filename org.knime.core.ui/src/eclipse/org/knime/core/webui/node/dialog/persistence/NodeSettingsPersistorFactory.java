@@ -59,7 +59,6 @@ import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettings
  * Creates and caches NodeSettingsPersistors for DefaultNodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
 public final class NodeSettingsPersistorFactory {
 

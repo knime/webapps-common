@@ -63,7 +63,6 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
  * Factory for default persistors that store values directly in NodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
 final class DefaultFieldNodeSettingsPersistorFactory {
 

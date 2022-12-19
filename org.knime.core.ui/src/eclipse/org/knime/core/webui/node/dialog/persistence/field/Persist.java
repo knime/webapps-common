@@ -61,7 +61,6 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
  * Allows to define the persistence of individual fields to NodeSettings if field based persistence is used.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
 @Retention(RUNTIME)
 @Target(FIELD)
@@ -93,7 +92,6 @@ public @interface Persist {
      * @throws IllegalArgumentException if there is no equivalent persistor available for the combination of field type
      *             and SettingsModel
      */
-    // TODO could be an annotation of its own
     Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
 
 }

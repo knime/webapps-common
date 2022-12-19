@@ -67,7 +67,6 @@ import org.knime.core.webui.node.dialog.persistence.field.Persist;
  * {@link NodeSettingsPersistor} and provide it here.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -80,7 +79,6 @@ public @interface Persistor {
      *
      * @return the class of the persistor
      */
-    // TODO rename to value to allow specification without key
     @SuppressWarnings("rawtypes") // even wildcards prohibit generic persistors from being returned
     Class<? extends NodeSettingsPersistor> value();
 

@@ -67,8 +67,6 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <S> The concrete {@link DefaultNodeSettings} class
- * @noreference non-public API
- * @noinstantiate non-public API
  */
 public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
     implements NodeSettingsPersistor<S> {
@@ -97,7 +95,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
         var persistence = field.getAnnotation(Persist.class);
         var type = field.getType();
         if (DefaultNodeSettings.class.isAssignableFrom(type)) {
-            // TODO support nested DefaultNodeSettings i.e. fields that are themselves DefaultNodeSettings
+            // TODO AP-19871: support for nested DefaultNodeSettings
             throw new UnsupportedOperationException("Nested DefaultNodeSettings aren't supported yet.");
         }
         if (persistence != null) {
