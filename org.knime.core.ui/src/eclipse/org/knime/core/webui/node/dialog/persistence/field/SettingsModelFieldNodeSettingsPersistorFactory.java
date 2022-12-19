@@ -46,7 +46,7 @@
  * History
  *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence.field;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -60,7 +60,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -87,7 +87,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
     /**
      * @param <T> the type of the field that needs a persistor
      * @param fieldType the type of field to persist
-     * @param settingsModelType the type of SettingsModel previously used for persistance
+     * @param settingsModelType the type of SettingsModel previously used for persistence
      * @param configKey the key under which to store the field
      * @return a persistor for the field
      * @throws IllegalArgumentException if there is no persistor available for the fieldType-settingsModelType

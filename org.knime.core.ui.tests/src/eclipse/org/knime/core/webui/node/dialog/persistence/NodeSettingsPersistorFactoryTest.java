@@ -46,7 +46,7 @@
  * History
  *   Dec 6, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance;
+package org.knime.core.webui.node.dialog.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

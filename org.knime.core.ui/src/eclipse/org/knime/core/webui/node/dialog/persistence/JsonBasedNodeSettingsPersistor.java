@@ -44,19 +44,51 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 1, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence;
 
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.impl.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil;
+import org.knime.core.webui.node.dialog.impl.JsonNodeSettingsMapperUtil;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Saves a value into a {@link NodeSettingsWO} under a specific key
+ * Persistor that does persistence via JSON. Should not be used for new nodes.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @param <S> the type of settings
  */
-@FunctionalInterface
-interface FieldSaver<T> {
+public final class JsonBasedNodeSettingsPersistor<S extends DefaultNodeSettings> implements NodeSettingsPersistor<S> {
 
-    void save(T value, NodeSettingsWO settings, String configKey);
+    private final Class<S> m_settingsClass;
+
+    JsonBasedNodeSettingsPersistor(final Class<S> settingsClass) {
+        m_settingsClass = settingsClass;
+    }
+
+    @Override
+    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
+            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
+            // by the JSON
+            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
+        }
+        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
+        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(nodeSettings, node);
+        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+    }
+
+    @Override
+    public void save(final S settings, final NodeSettingsWO nodeSettings) {
+        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(settings);
+        var schemaNode = JsonFormsSchemaUtil.buildSchema(m_settingsClass);
+        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, nodeSettings);
+    }
+
 }

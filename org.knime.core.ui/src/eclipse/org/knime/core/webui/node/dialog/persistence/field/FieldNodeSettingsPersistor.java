@@ -44,18 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence.field;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
- * Loads a value with a specific key from a {@link NodeSettingsRO}.
+ * {@link NodeSettingsPersistor} for fields that composes the config key with the implementation of the persistor.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-interface FieldLoader<T> {
-    T load(NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
+final class FieldNodeSettingsPersistor<T> implements NodeSettingsPersistor<T> {
+    private final String m_configKey;
+
+    private final FieldPersistor m_impl;
+
+    FieldNodeSettingsPersistor(final String configKey, final FieldPersistor impl) {
+        m_impl = impl;
+        m_configKey = configKey;
+    }
+
+    @Override
+    public void save(final T obj, final NodeSettingsWO settings) {
+        m_impl.save(obj, settings, m_configKey);
+    }
+
+    @Override
+    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        return m_impl.load(settings, m_configKey);
+    }
+
 }

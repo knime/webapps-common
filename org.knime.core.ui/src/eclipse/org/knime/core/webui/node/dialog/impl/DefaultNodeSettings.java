@@ -65,7 +65,7 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to

@@ -44,38 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 /**
- * {@link NodeSettingsPersistor} for fields that composes the config key with the implementation of the persistor.
+ * Annotates a class with a persistor that is used to save and load objects of the class to and from NodeSettings. If
+ * no persistence is provided, we fall back to the previous JSON based persistence. For most use-cases
+ * {@link FieldBasedNodeSettingsPersistor} is a good choice. It performs persistence of all fields independently and
+ * allows further customization on a per field basis via the {@link Persist} annotation. <br>
+ * <br>
+ * If you find the FieldBasedNodeSettingsPersistor to be insufficient for your needs, you can also implement your own
+ * {@link CustomNodeSettingsPersistor} and provide it here.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @noreference non-public API
  */
-final class FieldNodeSettingsPersistor<T> implements NodeSettingsPersistor<T> {
-    private final String m_configKey;
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Persistor {
 
-    private final FieldPersistor m_impl;
-
-    FieldNodeSettingsPersistor(final String configKey, final FieldPersistor impl) {
-        m_impl = impl;
-        m_configKey = configKey;
-    }
-
-    @Override
-    public void save(final T obj, final NodeSettingsWO settings) {
-        m_impl.save(obj, settings, m_configKey);
-    }
-
-    @Override
-    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return m_impl.load(settings, m_configKey);
-    }
+    /**
+     * The type of persistor to use for storing and loading the annotated object to and from NodeSettings. Either
+     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link CustomNodeSettingsPersistor}. If
+     * you want to use the previous JSON based persistence simply provide no persistence at all.
+     *
+     * @return the class of the persistor
+     */
+    // TODO rename to value to allow specification without key
+    @SuppressWarnings("rawtypes") // even wildcards prohibit generic persistors from being returned
+    Class<? extends NodeSettingsPersistor> value();
 
 }

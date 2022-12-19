@@ -46,7 +46,7 @@
  * History
  *   Dec 7, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence.field;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
  * Contains unit tests for the {@link DefaultFieldNodeSettingsPersistorFactory}.

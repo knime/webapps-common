@@ -46,7 +46,7 @@
  * History
  *   Nov 14, 2022 ("Adrian Nembach, KNIME GmbH, Konstanz, Germany"): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence.field;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -59,11 +59,11 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.CustomNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
- * Performs persistance of DefaultNodeSettings on a per-field basis. The persistance of individual fields can be
+ * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
  * controlled with the {@link Persist} annotation.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
@@ -95,14 +95,14 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
-        var persistance = field.getAnnotation(Persist.class);
+        var persistence = field.getAnnotation(Persist.class);
         var type = field.getType();
         if (DefaultNodeSettings.class.isAssignableFrom(type)) {
             // TODO support nested DefaultNodeSettings i.e. fields that are themselves DefaultNodeSettings
             throw new UnsupportedOperationException("Nested DefaultNodeSettings aren't supported yet.");
         }
-        if (persistance != null) {
-            return createPersistorFromPersistanceAnnotation(persistance, field);
+        if (persistence != null) {
+            return createPersistorFrompersistenceAnnotation(persistence, field);
         } else {
             return DefaultFieldNodeSettingsPersistorFactory.createPersistor(field.getType(),
                 extractConfigKeyFromFieldName(field.getName()));
@@ -118,13 +118,13 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     private static NodeSettingsPersistor<?>
-        createPersistorFromPersistanceAnnotation(final Persist persistance, final Field field) {
-        var customPersistorClass = persistance.customPersistor();
+        createPersistorFrompersistenceAnnotation(final Persist persistence, final Field field) {
+        var customPersistorClass = persistence.customPersistor();
         if (!customPersistorClass.equals(CustomNodeSettingsPersistor.class)) {
             return CustomNodeSettingsPersistor.createInstance(customPersistorClass);
         }
-        var settingsModelClass = persistance.settingsModel();
-        var configKey = persistance.configKey();
+        var settingsModelClass = persistence.settingsModel();
+        var configKey = persistence.configKey();
         if (configKey.strip().equals("")) {
             configKey = extractConfigKeyFromFieldName(field.getName());
         }

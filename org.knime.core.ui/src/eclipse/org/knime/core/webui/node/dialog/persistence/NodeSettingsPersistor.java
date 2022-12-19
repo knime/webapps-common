@@ -44,56 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 14, 2022 ("Adrian Nembach, KNIME GmbH, Konstanz, Germany"): created
+ *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance.field;
+package org.knime.core.webui.node.dialog.persistence;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Allows to define the persistance of individual fields to NodeSettings if field based persistance is used.
+ * Implementing classes save objects to and load objects from NodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
+ * @param <T> type of object loaded by the persistor
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface Persist {
+// TODO seal?
+public interface NodeSettingsPersistor<T> {
+
 
     /**
-     * Optional argument that defines the key under which to store the field in the NodeSettings. The key is generated
-     * from the field name by stripping any leading 'm_' prefix if this argument is left empty (the default) or consists
-     * only of whitespaces.
+     * Loads the object from the provided settings.
      *
-     * @return the key under which to store the field in the NodeSettings.
+     * @param settings to load from
+     * @return the loaded object
+     * @throws InvalidSettingsException if the settings are invalid
      */
-    String configKey() default "";
+    T load(NodeSettingsRO settings) throws InvalidSettingsException;
 
     /**
-     * Optional argument that allows to specify a custom persistor for a field. The {@link #configKey()} will be
-     * ignored if this argument is specified.
+     * Saves the provided object into the settings.
      *
-     * @return the class of the customPersistor
+     * @param obj to save
+     * @param settings to save into
      */
-    @SuppressWarnings("rawtypes") // annotations and generics don't mix well
-    Class<? extends CustomNodeSettingsPersistor> customPersistor() default CustomNodeSettingsPersistor.class;
-
-    /**
-     * Optional argument for nodes that previously used SettingsModels for persistance. Provide the class of the
-     * {@link SettingsModel} used previously in order to get an equivalent persistor.
-     *
-     * @return the type of SettingsModel previously used for persistance
-     * @throws IllegalArgumentException if there is no equivalent persistor available for the combination of field type
-     *             and SettingsModel
-     */
-    // TODO could be an annotation of its own
-    Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
-
+    void save(T obj, NodeSettingsWO settings);
 }

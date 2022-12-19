@@ -44,44 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance;
+package org.knime.core.webui.node.dialog.persistence.field;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistance.field.Persist;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Annotates a class with a persistor that is used to save and load objects of the class to and from NodeSettings. If
- * no persistance is provided, we fall back to the previous JSON based persistance. For most use-cases
- * {@link FieldBasedNodeSettingsPersistor} is a good choice. It performs persistance of all fields independently and
- * allows further customization on a per field basis via the {@link Persist} annotation. <br>
- * <br>
- * If you find the FieldBasedNodeSettingsPersistor to be insufficient for your needs, you can also implement your own
- * {@link CustomNodeSettingsPersistor} and provide it here.
+ * Interface for the implementation of FieldPersistors that allows convenient implementation by an enum.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @noreference non-public API
  */
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface Persistor {
+interface FieldPersistor {
 
-    /**
-     * The type of persistor to use for storing and loading the annotated object to and from NodeSettings. Either
-     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link CustomNodeSettingsPersistor}. If
-     * you want to use the previous JSON based persistance simply provide no persistance at all.
-     *
-     * @return the class of the persistor
-     */
-    // TODO rename to value to allow specification without key
-    @SuppressWarnings("rawtypes") // even wildcards prohibit generic persistors from being returned
-    Class<? extends NodeSettingsPersistor> value();
+    <T> T load(final NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
+
+    <T> void save(final T obj, NodeSettingsWO settings, String configKey);
 
 }

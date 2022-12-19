@@ -46,13 +46,13 @@
  * History
  *   Dec 2, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance;
+package org.knime.core.webui.node.dialog.persistence;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
  * Creates and caches NodeSettingsPersistors for DefaultNodeSettings.
@@ -88,7 +88,7 @@ public final class NodeSettingsPersistorFactory {
      * <br>
      * If the {@link DefaultNodeSettings settings} are annotated with a {@link Persistor}, then an instance of the
      * {@link Persistor#value()} is created.<br>
-     * Otherwise the existing reflection based persistance is used for backwards compatibility.
+     * Otherwise the existing reflection based persistence is used for backwards compatibility.
      *
      * @param <S> the type of {@link DefaultNodeSettings} the persistor is for
      * @param settingsClass the class of {@link DefaultNodeSettings} to create a persistor for
@@ -97,12 +97,12 @@ public final class NodeSettingsPersistorFactory {
      *             persistor that extends NodeSettingsPersistor directly)
      */
     static <S extends DefaultNodeSettings> NodeSettingsPersistor<S> createPersistor(final Class<S> settingsClass) {
-        var persistance = settingsClass.getAnnotation(Persistor.class);
-        if (persistance == null) {
-            // no annotation means we use field based persistance
+        var persistence = settingsClass.getAnnotation(Persistor.class);
+        if (persistence == null) {
+            // no annotation means we use field based persistence
             return new FieldBasedNodeSettingsPersistor<>(settingsClass);
         } else {
-            var persistorClass = persistance.value();
+            var persistorClass = persistence.value();
             if (FieldBasedNodeSettingsPersistor.class.equals(persistorClass)) {
                 return new FieldBasedNodeSettingsPersistor<>(settingsClass);
             } else if (JsonBasedNodeSettingsPersistor.class.equals(persistorClass)) {

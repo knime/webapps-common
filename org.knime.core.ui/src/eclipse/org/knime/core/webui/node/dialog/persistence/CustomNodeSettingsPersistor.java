@@ -44,38 +44,50 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistance;
+package org.knime.core.webui.node.dialog.persistence;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import java.lang.reflect.InvocationTargetException;
 
 /**
- * Implementing classes save objects to and load objects from NodeSettings.
+ * Must provide an empty constructor for instantiation, the empty default constructor does not suffice.
+ * CustomNodeSettingsPersistors must be immutable.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <T> type of object loaded by the persistor
+ * @param <T> the type of object the persistor operates on
+ * @noreference non-public API
+ * @noimplement non-public API
  */
-// TODO seal?
-public interface NodeSettingsPersistor<T> {
-
+public interface CustomNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> {
 
     /**
-     * Loads the object from the provided settings.
+     * Creates a new instance from the provided CustomNodeSettingsPersistor class by calling its empty constructor.
      *
-     * @param settings to load from
-     * @return the loaded object
-     * @throws InvalidSettingsException if the settings are invalid
+     * @param <S> the type CustomNodeSettingsPersistor
+     * @param persistorClass the class of CustomNodeSettingsPersistor
+     * @return a new instance of the provided class
+     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
+     *             raises an exception
      */
-    T load(NodeSettingsRO settings) throws InvalidSettingsException;
-
-    /**
-     * Saves the provided object into the settings.
-     *
-     * @param obj to save
-     * @param settings to save into
-     */
-    void save(T obj, NodeSettingsWO settings);
+    static <S extends CustomNodeSettingsPersistor<?>> S createInstance(final Class<S> persistorClass) {
+        try {
+            var constructor = persistorClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
+        } catch (NoSuchMethodException ex) {
+            throw new IllegalStateException("Coding issue: The persistor '" + persistorClass.getName()
+                + "' does not provide an empty constructor.", ex);
+        } catch (IllegalAccessException ex) {
+            // not reachable because we use black-magic to ensure accessibility
+            throw new IllegalStateException(
+                String.format("Can't access the empty constructor of '%s'.", persistorClass));
+        } catch (InstantiationException ex) {
+            throw new IllegalStateException(
+                String.format("Can't instantiate persistors of abstract class '%s'.", persistorClass), ex);
+        } catch (InvocationTargetException ex) {
+            throw new IllegalStateException(
+                String.format("The empty constructor of '%s' raised an exception.", persistorClass), ex);
+        }
+    }
 }
