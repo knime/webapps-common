@@ -63,7 +63,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.webui.node.dialog.persistance.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
  *

@@ -48,19 +48,23 @@
  */
 package org.knime.core.webui.node.dialog.persistence;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Implementing classes save objects to and load objects from NodeSettings.
+ * Implementing classes save objects to and load objects from NodeSettings.</br>
+ * Custom implementations must be immutable and provide either an empty or a constructor that accepts the {@link Class}
+ * of the persisted object as input.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <T> type of object loaded by the persistor
  */
-// TODO seal?
 public interface NodeSettingsPersistor<T> {
-
 
     /**
      * Loads the object from the provided settings.
@@ -78,4 +82,45 @@ public interface NodeSettingsPersistor<T> {
      * @param settings to save into
      */
     void save(T obj, NodeSettingsWO settings);
+
+    /**
+     * Creates a new instance from the provided NodeSettingsPersistor class by calling its empty constructor.
+     *
+     * @param <S> the type of object to persist
+     * @param <P> the type of persistor to instantiate
+     * @param persistorClass the class of NodeSettingsPersistor
+     * @param persistedObjectClass
+     * @return a new instance of the provided class
+     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
+     *             raises an exception
+     */
+    static <S, P extends NodeSettingsPersistor<S>> P createInstance(final Class<P> persistorClass,
+        final Class<S> persistedObjectClass) {
+        return invokeConstructor(persistorClass, persistedObjectClass)//
+            .orElseGet(
+                () -> invokeConstructor(persistorClass).orElseThrow(() -> new IllegalArgumentException(String.format(
+                    "The provided persistor class '%s' provides neither a constructor accepting the persisted object "
+                    + "class nor an empty constructor.",
+                    persistorClass))));
+    }
+
+    private static <P> Optional<P> invokeConstructor(final Class<P> clazz, final Object... arguments) {
+        try {
+            var constructor =
+                clazz.getDeclaredConstructor(Stream.of(arguments).map(Object::getClass).toArray(Class<?>[]::new));
+            constructor.setAccessible(true);
+            return Optional.of(constructor.newInstance(arguments));
+        } catch (NoSuchMethodException ex) {
+            return Optional.empty();
+        } catch (IllegalAccessException ex) {
+            // not reachable because we use black-magic to ensure accessibility
+            throw new IllegalStateException(String.format("Can't access the constructor of '%s'.", clazz));
+        } catch (InstantiationException ex) {
+            throw new IllegalStateException(String.format("Can't instantiate object of abstract class '%s'.", clazz),
+                ex);
+        } catch (InvocationTargetException ex) {
+            throw new IllegalStateException(String.format("The empty constructor of '%s' raised an exception.", clazz),
+                ex);
+        }
+    }
 }

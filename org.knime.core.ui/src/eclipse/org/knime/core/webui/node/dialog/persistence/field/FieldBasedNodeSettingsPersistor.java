@@ -59,7 +59,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.persistence.CustomNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
@@ -117,11 +116,12 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static NodeSettingsPersistor<?>
         createPersistorFrompersistenceAnnotation(final Persist persistence, final Field field) {
         var customPersistorClass = persistence.customPersistor();
-        if (!customPersistorClass.equals(CustomNodeSettingsPersistor.class)) {
-            return CustomNodeSettingsPersistor.createInstance(customPersistorClass);
+        if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
+            return NodeSettingsPersistor.createInstance(customPersistorClass, field.getType());
         }
         var settingsModelClass = persistence.settingsModel();
         var configKey = persistence.configKey();

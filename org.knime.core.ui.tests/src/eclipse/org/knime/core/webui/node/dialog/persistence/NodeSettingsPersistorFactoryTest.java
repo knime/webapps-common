@@ -51,18 +51,17 @@ package org.knime.core.webui.node.dialog.persistence;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Objects;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.persistance.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
  * Contains tests for {@link NodeSettingsPersistorFactory}.
@@ -103,12 +102,6 @@ public class NodeSettingsPersistorFactoryTest {
         var settings = new CustomPersistorSettings();
         settings.m_foo = "bar";
         testSaveLoad(settings);
-    }
-
-    @Test
-    void testInvalidCustomPersistor() {
-        assertThrows(IllegalArgumentException.class,
-            () -> NodeSettingsPersistorFactory.createPersistor(InvalidCustomPersistorSettings.class));
     }
 
     private static <S extends DefaultNodeSettings> void testSaveLoad(final S settings) throws InvalidSettingsException {
@@ -162,7 +155,7 @@ public class NodeSettingsPersistorFactoryTest {
 
     }
 
-    private static final class CustomPersistor implements CustomNodeSettingsPersistor<CustomPersistorSettings> {
+    private static final class CustomPersistor implements NodeSettingsPersistor<CustomPersistorSettings> {
 
         @Override
         public void save(final CustomPersistorSettings obj, final NodeSettingsWO settings) {
@@ -199,21 +192,4 @@ public class NodeSettingsPersistorFactoryTest {
 
     }
 
-    private static final class InvalidCustomPersistor implements NodeSettingsPersistor<InvalidCustomPersistorSettings> {
-
-        @Override
-        public InvalidCustomPersistorSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            throw new NotImplementedException("This class should not be instantiated by the test.");
-        }
-
-        @Override
-        public void save(final InvalidCustomPersistorSettings obj, final NodeSettingsWO settings) {
-            throw new NotImplementedException("This class should not be instantiated by the test.");
-        }
-
-    }
-
-    @Persistor(InvalidCustomPersistor.class)
-    private static final class InvalidCustomPersistorSettings implements DefaultNodeSettings {
-    }
 }

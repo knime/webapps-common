@@ -69,7 +69,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.persistance.CustomNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 
 /**
@@ -154,7 +154,7 @@ public class FieldBasedNodeSettingsPersistorTest {
 
     @Test
     void testCustomPersistorWithoutEmptyConstructor() {
-        assertThrows(IllegalStateException.class,
+        assertThrows(IllegalArgumentException.class,
             () -> new FieldBasedNodeSettingsPersistor<>(NoEmptyConstuctorFieldPersistorSetings.class));
     }
 
@@ -385,7 +385,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         }
     }
 
-    private static final class CustomFieldPersistor implements CustomNodeSettingsPersistor<String> {
+    private static final class CustomFieldPersistor implements NodeSettingsPersistor<String> {
 
         @Override
         public String load(final NodeSettingsRO settings)
@@ -421,7 +421,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         }
     }
 
-    private static final class NoEmptyConstructorFieldPersistor implements CustomNodeSettingsPersistor<String> {
+    private static final class NoEmptyConstructorFieldPersistor implements NodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
         NoEmptyConstructorFieldPersistor(final String arg) {
             // the argument is just there to test that the framework reacts appropriately
@@ -444,7 +444,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private static final class FailingConstructorFieldPersistor implements CustomNodeSettingsPersistor<String> {
+    private static final class FailingConstructorFieldPersistor implements NodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
         public FailingConstructorFieldPersistor() {
             throw new IllegalArgumentException("Failing constructor.");
@@ -467,7 +467,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private abstract static class AbstractCustomFieldPersistor implements CustomNodeSettingsPersistor<String> {
+    private abstract static class AbstractCustomFieldPersistor implements NodeSettingsPersistor<String> {
 
     }
 
@@ -476,7 +476,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private static final class PrivateConstructorPersistor implements CustomNodeSettingsPersistor<String> {
+    private static final class PrivateConstructorPersistor implements NodeSettingsPersistor<String> {
         private PrivateConstructorPersistor() {
             // make private to provoke an access exception
         }

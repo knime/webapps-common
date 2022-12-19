@@ -64,7 +64,7 @@ import org.knime.core.webui.node.dialog.persistence.field.Persist;
  * allows further customization on a per field basis via the {@link Persist} annotation. <br>
  * <br>
  * If you find the FieldBasedNodeSettingsPersistor to be insufficient for your needs, you can also implement your own
- * {@link CustomNodeSettingsPersistor} and provide it here.
+ * {@link NodeSettingsPersistor} and provide it here.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @noreference non-public API
@@ -75,7 +75,7 @@ public @interface Persistor {
 
     /**
      * The type of persistor to use for storing and loading the annotated object to and from NodeSettings. Either
-     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link CustomNodeSettingsPersistor}. If
+     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link NodeSettingsPersistor}. If
      * you want to use the previous JSON based persistence simply provide no persistence at all.
      *
      * @return the class of the persistor

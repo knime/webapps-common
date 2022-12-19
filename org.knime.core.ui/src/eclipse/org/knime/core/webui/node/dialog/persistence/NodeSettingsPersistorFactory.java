@@ -108,14 +108,11 @@ public final class NodeSettingsPersistorFactory {
                 return new FieldBasedNodeSettingsPersistor<>(settingsClass);
             } else if (JsonBasedNodeSettingsPersistor.class.equals(persistorClass)) {
                 return new JsonBasedNodeSettingsPersistor<>(settingsClass);
-            } else if (CustomNodeSettingsPersistor.class.isAssignableFrom(persistorClass)) {
-                @SuppressWarnings("unchecked")
-                var customPersistor = CustomNodeSettingsPersistor
-                    .createInstance((Class<? extends CustomNodeSettingsPersistor<S>>)persistorClass);
-                return customPersistor;
             } else {
-                throw new IllegalArgumentException(String
-                    .format("The DefaultNodeSettings class '%s' does not specify a valid persistor.", settingsClass));
+                @SuppressWarnings("unchecked")
+                NodeSettingsPersistor<S> customPersistor =
+                    NodeSettingsPersistor.createInstance(persistorClass, settingsClass);
+                return customPersistor;
             }
         }
     }
