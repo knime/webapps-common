@@ -77,7 +77,7 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory
  * {@link SettingsCreationContext}.
  * <li>Fields must be of any of the following supported types:
  * <ul>
- * <li>boolean, int, long, double, float, String, Character, char, CharSequence, Byte, or byte
+ * <li>boolean, int, long, double, float, String, char, or byte
  * <li>POJOs, arrays or Collections holding other supported types
  * </ul>
  * </ol>

@@ -103,10 +103,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             BOOLEAN(boolean.class, (s, k) -> s.getBoolean(k), (v, s, k) -> s.addBoolean(k, v)),
             FLOAT(float.class, (s, k) -> s.getFloat(k), (v, s, k) -> s.addFloat(k, v)),
             CHAR(char.class, (s, k) -> s.getChar(k), (v, s, k) -> s.addChar(k, v)),
-            CHARACTER(Character.class, PersistorImpl::loadCharacter, PersistorImpl::saveCharacter),
-            // TODO how to handle CharSequence properly?
             BYTE(byte.class, (s, k) -> s.getByte(k), (v, s, k) -> s.addByte(k, v)),
-            // TODO how to handle null values in boxed Byte objects? Store an array?
             INT_ARRAY(int[].class, (s, k) -> s.getIntArray(k), (v, s, k) -> s.addIntArray(k, v)),
             DOUBLE_ARRAY(double[].class, (s, k) -> s.getDoubleArray(k), (v, s, k) -> s.addDoubleArray(k, v)),
             LONG_ARRAY(long[].class, (s, k) -> s.getLongArray(k), (v, s, k) -> s.addLongArray(k, v)),
@@ -114,7 +111,6 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             BOOLEAN_ARRAY(boolean[].class, (s, k) -> s.getBooleanArray(k), (v, s, k) -> s.addBooleanArray(k, v)),
             FLOAT_ARRAY(float[].class, (s, k) -> s.getFloatArray(k), (v, s, k) -> s.addFloatArray(k, v)),
             CHAR_ARRAY(char[].class, (s, k) -> s.getCharArray(k), (v, s, k) -> s.addCharArray(k, v)),
-            CHARACTER_ARRAY(Character[].class, PersistorImpl::loadCharacterArray, PersistorImpl::saveCharacterArray),
             BYTE_ARRAY(byte[].class, (s, k) -> s.getByteArray(k), (v, s, k) -> s.addByteArray(k, v));
 
         private Class<?> m_type;
@@ -144,38 +140,6 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             @SuppressWarnings("unchecked") // type-safety is ensured via the constructor
             var saver = (FieldSaver<T>)m_saver;
             saver.save(obj, settings, configKey);
-        }
-
-        private static Character loadCharacter(final NodeSettingsRO settings, final String configKey)
-            throws InvalidSettingsException {
-            var stringRepresentation = settings.getString(configKey);
-            if (stringRepresentation == null) {
-                return null;
-            } else {
-                return stringRepresentation.charAt(0);
-            }
-        }
-
-        private static void saveCharacter(final Character value, final NodeSettingsWO settings,
-            final String configKey) {
-            if (value == null) {
-                settings.addString(configKey, null);
-            } else {
-                settings.addString(configKey, value.toString());
-            }
-        }
-
-        private static Character[] loadCharacterArray(final NodeSettingsRO settings, final String configKey)
-            throws InvalidSettingsException {
-            return Stream.of(settings.getStringArray(configKey))//
-                .map(s -> s == null ? null : s.charAt(0))//
-                .toArray(Character[]::new);
-        }
-
-        private static void saveCharacterArray(final Character[] value, final NodeSettingsWO settings,
-            final String configKey) {
-            var stringArray = Stream.of(value).map(c -> c == null ? null : c.toString()).toArray(String[]::new);
-            settings.addStringArray(configKey, stringArray);
         }
 
     }

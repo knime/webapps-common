@@ -112,11 +112,6 @@ public class DefaultFieldNodeSettingsPersistorFactoryTest {
     }
 
     @Test
-    void testCharacter() throws InvalidSettingsException {
-        testSaveLoadNullable(Character.class, Character.valueOf((char)3));
-    }
-
-    @Test
     void testByte() throws InvalidSettingsException {
         testSaveLoad(byte.class, (byte)15);
     }
@@ -161,12 +156,6 @@ public class DefaultFieldNodeSettingsPersistorFactoryTest {
     void testCharArray() throws InvalidSettingsException {
         var array = new char[] {(char)4};
         assertArrayEquals(array, saveLoad(char[].class, array));
-    }
-
-    @Test
-    void testCharacterArray() throws InvalidSettingsException {
-        var array = new Character[] {(char)7, null};
-        assertArrayEquals(array, saveLoad(Character[].class, array));
     }
 
     @Test
