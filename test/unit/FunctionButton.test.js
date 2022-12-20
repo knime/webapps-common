@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import FunctionButton from '../FunctionButton.vue';

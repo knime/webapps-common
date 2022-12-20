@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
 import MenuItems from '../MenuItems.vue';

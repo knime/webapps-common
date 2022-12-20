@@ -1,5 +1,8 @@
+import { describe, it, expect, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
+
 import Modal from '../Modal.vue';
+
 vi.mock('focus-trap-vue', () => ({}), { virtual: true });
 
 describe('Modal', () => {

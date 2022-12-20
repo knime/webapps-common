@@ -1,6 +1,8 @@
+import { describe, it, expect, vi } from 'vitest';
+import { shallowMount, mount } from '@vue/test-utils';
+
 import Message from '../Message.vue';
 import Button from '../Button.vue';
-import { shallowMount, mount } from '@vue/test-utils';
 import WarnIcon from '../../assets/img/icons/sign-warning.svg';
 
 describe('Message.vue', () => {

@@ -1,4 +1,5 @@
 /* eslint-disable no-magic-numbers */
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import MultiselectListBox from '../MultiselectListBox.vue';

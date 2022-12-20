@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from 'vitest';
 import { mount, createLocalVue } from '@vue/test-utils';
 
 vi.mock('vue-clickaway2', () => ({
