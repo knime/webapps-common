@@ -29,6 +29,13 @@ export default {
         preventDefault: {
             type: Boolean,
             default: false
+        },
+        /**
+         * toggle to set disabled state on button
+         */
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['click'],
