@@ -99,10 +99,7 @@ class DefaultNodeSettingsServiceTest {
 
         // try to obtain initial data using empty node settings
         obtainAndCheckInitialData(MAPPER.createObjectNode(), nodeSettings,
-            new PortObjectSpec[]{
-                new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())
-            }
-        )
+            new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())});
     }
 
     @Test
