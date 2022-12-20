@@ -8,7 +8,10 @@ export default {
             type: Number,
             required: true
         },
-        /** An optional secondary value for a second wedge to be displayed, can exceed the maximum value */
+        /**
+        * An optional secondary value for a second wedge to be displayed, can exceed the maximum value.
+        * Note this will not be displayed as inner value.
+        */
         secondaryValue: {
             type: Number,
             default: 0
@@ -279,5 +282,4 @@ svg {
   width: 100%;
   text-align: center;
 }
-
 </style>
