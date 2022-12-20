@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
 import NumberInput from '../NumberInput.vue';
@@ -26,36 +26,36 @@ describe('NumberInput.vue', () => {
         expect(wrapper.isVisible()).toBeTruthy();
     });
 
-    it('renders invalid style', () => {
-        wrapper.setProps({ isValid: false });
+    it('renders invalid style', async () => {
+        await wrapper.setProps({ isValid: false });
         expect(wrapper.find('.invalid-marker').exists()).toBe(true);
-        wrapper.setProps({ isValid: true });
+        await wrapper.setProps({ isValid: true });
         expect(wrapper.find('.invalid-marker').exists()).toBe(false);
     });
 
-    it('has validate logic to check min/max values', () => {
+    it('has validate logic to check min/max values', async () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ modelValue: -5 });
+        await wrapper.setProps({ modelValue: -5 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
-        wrapper.setProps({ modelValue: 25 });
+        await wrapper.setProps({ modelValue: 25 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
-        wrapper.setProps({ modelValue: 5 });
+        await wrapper.setProps({ modelValue: 5 });
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('has validate logic to check non-numeric values', () => {
+    it('has validate logic to check non-numeric values', async () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ modelValue: 'test' });
+        await wrapper.setProps({ modelValue: 'test' });
         expect(wrapper.vm.validate()).toStrictEqual({ errorMessage: 'Current value is not a number.', isValid: false });
     });
 
-    it('prevents changing value with spinners when result would be invalid', () => {
+    it('prevents changing value with spinners when result would be invalid', async () => {
         expect(wrapper.vm.getValue()).toBe(10);
-        wrapper.setProps({ modelValue: -5 });
+        await wrapper.setProps({ modelValue: -5 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
@@ -64,7 +64,7 @@ describe('NumberInput.vue', () => {
         wrapper.vm.changeValue(1);
         expect(wrapper.vm.getValue()).toBe(1);
         expect(wrapper.vm.validate().isValid).toBe(true);
-        wrapper.setProps({ modelValue: 25 });
+        await wrapper.setProps({ modelValue: 25 });
         expect(wrapper.vm.validate()).toStrictEqual(
             { errorMessage: 'Current value is outside allowed range.', isValid: false }
         );
@@ -92,19 +92,19 @@ describe('NumberInput.vue', () => {
         expect(wrapper.vm.getValue()).toBe(10);
     });
 
-    it('applies hover class', () => {
+    it('applies hover class', async () => {
         const input = wrapper.find('input');
-        expect(input.find('.hover').exists()).toBe(false);
-        input.trigger('mouseenter');
-        expect(input.find('.hover').exists()).toBe(true);
-        input.trigger('mouseleave');
-        expect(input.find('.hover').exists()).toBe(false);
+        expect(input.classes()).not.toContain('hover');
+        await input.trigger('mouseenter');
+        expect(input.classes()).toContain('hover');
+        await input.trigger('mouseleave');
+        expect(input.classes()).not.toContain('hover');
     });
 
-    it('transforms to (standard) scientific notation', () => {
-        wrapper.setProps({ modelValue: '3e5' });
+    it('transforms to (standard) scientific notation', async () => {
+        await wrapper.setProps({ modelValue: '3e5' });
         expect(wrapper.vm.getValue()).toStrictEqual(300000);
-        wrapper.setProps({ modelValue: '4.423532523e5' });
+        await wrapper.setProps({ modelValue: '4.423532523e5' });
         expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
     });
 

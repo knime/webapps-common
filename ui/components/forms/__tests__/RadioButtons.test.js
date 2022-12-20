@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import RadioButtons from '../RadioButtons.vue';
@@ -27,28 +27,28 @@ describe('RadioButtons.vue', () => {
     });
 
     it('renders and passes props to BaseRadioButtons', () => {
-        let value = 'test3';
+        let modelValue = 'test3';
         const wrapper = mount(RadioButtons, {
             props: {
                 possibleValues,
-                value
+                modelValue
             }
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
 
         const baseComponent = wrapper.findComponent(BaseRadioButtons);
-        expect(baseComponent.props('possibleValues')).toBe(possibleValues);
-        expect(baseComponent.props('value')).toBe(value);
+        expect(baseComponent.props('possibleValues')).toStrictEqual(possibleValues);
+        expect(baseComponent.props('modelValue')).toBe(modelValue);
     });
 
     it('passes-through all listeners', () => {
         let wrapper = mount(RadioButtons, {
-            listeners: {
-                fakeEvent: vi.fn()
+            attrs: {
+                onfakeevent: vi.fn()
             }
         });
-        expect(wrapper.findComponent(BaseRadioButtons).vm.$listeners).toHaveProperty('fakeEvent');
+        expect(wrapper.findComponent(BaseRadioButtons).attributes('onfakeevent')).toBeDefined();
     });
 
     it('renders horizontal by default', () => {

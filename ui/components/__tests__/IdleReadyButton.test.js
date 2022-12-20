@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import IdleReadyButton from '../IdleReadyButton.vue';
@@ -15,7 +16,7 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.find('div').exists()).toEqual(false);
     });
 
-    it('handles idle state correctly', () => {
+    it('handles idle state correctly', async () => {
         let wrapper = shallowMount(IdleReadyButton, {
             props: {
                 ready: true,
@@ -26,12 +27,12 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.text()).not.toContain('More results');
 
         // Idle complete
-        wrapper.setProps({ idle: false });
+        await wrapper.setProps({ idle: false });
         expect(wrapper.text()).not.toContain('Loading...');
         expect(wrapper.text()).toContain('More results');
     });
 
-    it('accepts button text', () => {
+    it('accepts button text', async () => {
         let wrapper = shallowMount(IdleReadyButton, {
             props: {
                 readyText: 'test text',
@@ -42,7 +43,7 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.text()).toContain('Idle');
 
         // Idle complete
-        wrapper.setProps({ idle: false });
+        await wrapper.setProps({ idle: false });
         expect(wrapper.text()).not.toContain('Idle');
         expect(wrapper.text()).toContain('test text');
     });
@@ -63,14 +64,14 @@ describe('IdleReadyButton.vue', () => {
         expect(wrapper.findComponent(DownIcon).exists()).toBeTruthy();
     });
 
-    it('renders border', () => {
+    it('renders border', async () => {
         let wrapper = shallowMount(IdleReadyButton);
-        expect(wrapper.findComponent(Button).attributes('withborder')).toBeDefined();
+        expect(wrapper.findComponent(Button).props('withBorder')).toBeTruthy();
 
-        wrapper.setProps({
+        await wrapper.setProps({
             withBorder: false
         });
-        expect(wrapper.findComponent(Button).attributes('withborder')).not.toBeDefined();
+        expect(wrapper.findComponent(Button).props('withBorder')).toBeFalsy();
     });
 
     it('emits events', () => {
@@ -81,6 +82,6 @@ describe('IdleReadyButton.vue', () => {
             }
         });
         wrapper.findComponent(Button).vm.$emit('click');
-        expect(wrapper.emittedByOrder().map(e => e.name)).toEqual(['click']);
+        expect(wrapper.emitted('click')).toBeDefined();
     });
 });

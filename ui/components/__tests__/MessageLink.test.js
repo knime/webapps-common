@@ -1,5 +1,7 @@
+import { describe, it, expect } from 'vitest';
+import { shallowMount, RouterLinkStub } from '@vue/test-utils';
+
 import MessageLink from '../MessageLink.vue';
-import { shallowMount } from '@vue/test-utils';
 
 describe('MessageLink.vue', () => {
     let wrapper;
@@ -25,17 +27,21 @@ describe('MessageLink.vue', () => {
             props: {
                 link: {
                     text: 'I\'m a link',
-                    to: {
-                        href: 'localhost:3000'
-                    }
+                    to: 'localhost:3000'
+                }
+            },
+            global: {
+                stubs: {
+                    RouterLink: RouterLinkStub
                 }
             }
         });
 
-        expect(wrapper.find('a').exists()).toBe(true);
-        expect(wrapper.find('a').text()).toBe('I\'m a link');
-        expect(wrapper.find('a').attributes('href')).not.toBeDefined();
-        expect(wrapper.find('a').attributes('target')).not.toBeDefined();
+        expect(wrapper.findComponent(RouterLinkStub).exists()).toBe(true);
+        expect(wrapper.findComponent(RouterLinkStub).text()).toBe('I\'m a link');
+        expect(wrapper.findComponent(RouterLinkStub).props('to')).toBe('localhost:3000');
+        expect(wrapper.findComponent(RouterLinkStub).props('href')).not.toBeDefined();
+        expect(wrapper.findComponent(RouterLinkStub).attributes('target')).not.toBeDefined();
     });
 
     it('sets target', () => {

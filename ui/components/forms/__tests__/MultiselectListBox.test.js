@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import MultiselectListBox from '../MultiselectListBox.vue';
@@ -44,7 +44,7 @@ describe('MultiselectListBox.vue', () => {
         });
     });
 
-    it('renders invalid style', () => {
+    it('renders invalid style', async () => {
         let props = {
             possibleValues,
             modelValue: [],
@@ -56,7 +56,7 @@ describe('MultiselectListBox.vue', () => {
         });
         let root = wrapper.find('.multiselect-list-box');
         expect(root.classes()).toContain('invalid');
-        wrapper.setProps({ isValid: true });
+        await wrapper.setProps({ isValid: true });
         expect(root.classes()).not.toContain('invalid');
     });
 
@@ -94,8 +94,7 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
 
-            wrapper.findAll('[role=option]')[3].trigger('click');
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[3].trigger('click');
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test4']);
         });
 
@@ -107,8 +106,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.findAll('[role=option]')[3].trigger('click', { shiftKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[3].trigger('click', { shiftKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test3', 'test4']);
         });
 
@@ -120,9 +118,8 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
-            wrapper.findAll('[role=option]')[1].trigger('click', { ctrlKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
+            await wrapper.findAll('[role=option]')[1].trigger('click', { ctrlKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test4', 'test2']);
         });
 
@@ -134,8 +131,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test2']);
         });
 
@@ -166,24 +162,18 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
 
-            wrapper.findAll('[role=option]')[3].trigger('click');
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
-            wrapper.findAll('[role=option]')[1].trigger('click', { shiftKey: true });
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
-            wrapper.findAll('[role=option]')[3].trigger('click', { metaKey: true });
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
-            wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
-            wrapper.findAll('[role=option]')[1].trigger('dblclick');
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
-            wrapper.findAll('[role=option]')[1].trigger('dblclick', { shiftKey: true });
-            await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[3].trigger('click');
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[1].trigger('click', { shiftKey: true });
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[3].trigger('click', { metaKey: true });
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[3].trigger('click', { ctrlKey: true });
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[1].trigger('dblclick');
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
+            await wrapper.findAll('[role=option]')[1].trigger('dblclick', { shiftKey: true });
+            expect(wrapper.props('modelValue')).toStrictEqual(['test1', 'test3']);
         });
     });
 
@@ -196,8 +186,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.a', { ctrlKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.a', { ctrlKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1', 'test2', 'test3', 'test4']);
         });
 
@@ -209,8 +198,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.up');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.up');
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2']);
         });
 
@@ -222,8 +210,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.up', { shiftKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.up', { shiftKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test2', 'test3']);
         });
 
@@ -235,8 +222,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.down');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.down');
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test4']);
         });
 
@@ -248,8 +234,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.down', { shiftKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.down', { shiftKey: true });
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test3', 'test4']);
         });
 
@@ -261,8 +246,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.home');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.home');
             expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(['test1']);
         });
 
@@ -274,8 +258,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.end');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.end');
             // NOTE:
             // this seems to generate more than one input event even if it shouldn't
             // the keydown.end seems to trigger keydown.home and then keydown.end - nobody really knows why.
@@ -303,7 +286,7 @@ describe('MultiselectListBox.vue', () => {
             wrapper.find('[role=listbox]').trigger('keydown.a', { ctrlKey: true });
 
             await wrapper.vm.$nextTick();
-            expect(wrapper.props().value).toStrictEqual([]);
+            expect(wrapper.props('modelValue')).toStrictEqual([]);
         });
     });
 
@@ -344,10 +327,10 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
             wrapper.vm.clearSelection();
-            expect(wrapper.props().value).toStrictEqual(['test2', 'test3', 'test4']);
+            expect(wrapper.props('modelValue')).toStrictEqual(['test2', 'test3', 'test4']);
         });
 
-        it('provides hasSelection method', () => {
+        it('provides hasSelection method', async () => {
             const wrapper = mount(MultiselectListBox, {
                 props: {
                     possibleValues,
@@ -356,7 +339,7 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
             expect(wrapper.vm.hasSelection()).toStrictEqual(false);
-            wrapper.setProps({ modelValue: ['test2', 'test3', 'test4'] });
+            await wrapper.setProps({ modelValue: ['test2', 'test3', 'test4'] });
             expect(wrapper.vm.hasSelection()).toStrictEqual(true);
         });
 
@@ -369,8 +352,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.left');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.left');
             expect(wrapper.emitted().keyArrowLeft[0][0]).toStrictEqual(['test3']);
         });
 
@@ -382,8 +364,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.find('[role=listbox]').trigger('keydown.right');
-            await wrapper.vm.$nextTick();
+            await wrapper.find('[role=listbox]').trigger('keydown.right');
             expect(wrapper.emitted().keyArrowRight[0][0]).toStrictEqual(['test3']);
         });
 
@@ -395,8 +376,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.findAll('[role=option]')[2].trigger('dblclick');
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[2].trigger('dblclick');
             expect(wrapper.emitted().doubleClickOnItem[0][0]).toStrictEqual('test3');
         });
 
@@ -408,8 +388,7 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            wrapper.findAll('[role=option]')[1].trigger('dblclick', { shiftKey: true });
-            await wrapper.vm.$nextTick();
+            await wrapper.findAll('[role=option]')[1].trigger('dblclick', { shiftKey: true });
             expect(wrapper.emitted().doubleClickShift[0][0]).toStrictEqual(['test1', 'test2']);
         });
     });
@@ -493,7 +472,7 @@ describe('MultiselectListBox.vue', () => {
             wrapper.findAll('[role=option]')[3].trigger('mousemove');
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.props().value).toStrictEqual([]);
+            expect(wrapper.props('modelValue')).toStrictEqual([]);
         });
     });
 });

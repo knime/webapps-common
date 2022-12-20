@@ -1,10 +1,10 @@
 /* eslint-disable no-magic-numbers */
-
+import { describe, it, expect, beforeEach } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
-import PortGroup from '../../ui/components/node/PortGroup.vue';
-import PortIcon from '../../ui/components/node/PortIcon.vue';
-import Description from '../../ui/components/Description.vue';
+import PortGroup from '../PortGroup.vue';
+import PortIcon from '../PortIcon.vue';
+import Description from '../../Description.vue';
 
 describe('PortsListItem.vue', () => {
     let props, wrapper;

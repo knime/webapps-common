@@ -3,6 +3,7 @@
  * This component uses the <template> HTML tag to show a message banner only in outdated browsers.
  * Modern browsers will not render the <template> tag by default.
  */
+// TODO add to demo page
 export default {
     props: {
         text: {

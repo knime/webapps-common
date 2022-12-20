@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
 import Label from '../Label.vue';
@@ -12,7 +13,7 @@ describe('Label.vue', () => {
     });
 
     it('renders', () => {
-        let wrapper = shallowMount(Label, {
+        const wrapper = shallowMount(Label, {
             props,
             slots: {
                 default: 'slot content'
@@ -25,7 +26,7 @@ describe('Label.vue', () => {
     });
 
     it('renders compact class if prop set', () => {
-        let wrapper = shallowMount(Label, {
+        const wrapper = shallowMount(Label, {
             props: {
                 compact: true
             }
@@ -34,9 +35,11 @@ describe('Label.vue', () => {
     });
 
     it('renders compact class if compactLabels is provided by a parent component', () => {
-        let wrapper = shallowMount(Label, {
-            provide: {
-                compactLabels: true
+        const wrapper = shallowMount(Label, {
+            global: {
+                provide: {
+                    compactLabels: true
+                }
             }
         });
         expect(wrapper.find('label').classes()).toContain('compact');

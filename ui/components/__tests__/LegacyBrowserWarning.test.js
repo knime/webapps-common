@@ -1,8 +1,9 @@
+import { describe, it, expect, beforeEach } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 
 import LegacyBrowserWarning from '../LegacyBrowserWarning.vue';
 
-describe('Label.vue', () => {
+describe('LegacyBrowserWarning.vue', () => {
     let props;
 
     beforeEach(() => {
