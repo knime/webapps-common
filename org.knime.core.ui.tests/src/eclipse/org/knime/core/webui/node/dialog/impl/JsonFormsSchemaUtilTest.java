@@ -138,7 +138,8 @@ class JsonFormsSchemaUtilTest {
 
     private static class TestChoicesSetting {
         private static String SNAPSHOT = "{\"test\":{\"oneOf\":[" + //
-            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
+            "{\"columnType\":\"StringValue\"," + //
+            "\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
         @Schema(choices = TestChoices.class)
@@ -153,7 +154,8 @@ class JsonFormsSchemaUtilTest {
 
     private static class TestMultipleChoicesSetting {
         private static String SNAPSHOT = "{\"test\":{\"anyOf\":[" + //
-            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
+            "{\"columnType\":\"StringValue\"," + //
+            "\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
         @Schema(choices = TestChoices.class, multiple = true)

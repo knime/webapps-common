@@ -65,6 +65,7 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.image.png.PNGImageCellFactory;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.TableColumnChoices;
 import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.testing.node.view.TableTestUtil;
@@ -83,7 +84,8 @@ class TableViewInitialDataTest {
 
     private final BufferedDataTable table = TableTestUtil.createDefaultTestTable(numRows).get();
 
-    private final String[] displayedColumns = new String[]{"double", "string", "date"};
+    private final TableColumnChoices displayedColumns =
+        new TableColumnChoices(new String[]{"double", "string", "date"});
 
     private MockedConstruction<TableViewDataServiceImpl> dataServiceMock;
 
@@ -105,8 +107,8 @@ class TableViewInitialDataTest {
         settings.m_pageSize = 8;
         final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(displayedColumns), eq(0L), eq(settings.m_pageSize),
-            any(String[].class), eq(true), eq(true));
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(displayedColumns.m_selected), eq(0L),
+            eq(settings.m_pageSize), any(String[].class), eq(true), eq(true));
     }
 
     @Test
@@ -116,7 +118,7 @@ class TableViewInitialDataTest {
         settings.m_enablePagination = false;
         final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(displayedColumns), eq(0L), eq(0),
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(displayedColumns.m_selected), eq(0L), eq(0),
             any(String[].class), eq(true), eq(true));
     }
 
