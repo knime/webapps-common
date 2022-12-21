@@ -1,5 +1,5 @@
 <script>
-import filesize from 'filesize';
+import { partial } from 'filesize';
 import { icons } from '../util/fileTypeIcons';
 
 export default {
@@ -37,13 +37,17 @@ export default {
             return this.fileExt && this.$options.components[candidate] ? candidate : 'fileIcon';
         },
         humanFileSizeObject() {
-            return filesize.partial({
-                output: 'object'
+            return partial({
+                output: 'object',
+                standard: 'jedec',
+                base: 2
             })(this.size);
         },
         humanFileSizeUnitFull() {
-            return filesize.partial({
+            return partial({
                 output: 'object',
+                standard: 'jedec',
+                base: 2,
                 fullform: true
             })(this.size).symbol;
         },
