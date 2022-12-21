@@ -19,7 +19,7 @@ export default defineConfig({
             all: true,
             exclude: [
                 'demo/', 'lint/', 'buildtools/', 'install-subDependencies.js', 'coverage/**', 'dist/**',
-                '**/*.d.ts', '**/__tests__/**', '**/{vite,vitest}.config.{js,cjs,mjs,ts}',
+                '**/*.d.ts', '**/__tests__/**', '**/*.config.{js,cjs,mjs,ts}',
                 '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
             ]
         },

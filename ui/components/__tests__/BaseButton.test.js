@@ -65,6 +65,8 @@ describe('BaseButton.vue', () => {
                 href: 'http://www.test.de'
             }
         });
+        // preventDefault to omit console error, see https://github.com/jsdom/jsdom/issues/2112#issuecomment-1019402961
+        wrapper.find('a').wrapperElement.addEventListener('click', (event) => event.preventDefault(), false);
         wrapper.find('a').trigger('click');
         expect(wrapper.emitted('click')).toBeDefined();
 
