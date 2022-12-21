@@ -22,7 +22,7 @@ describe('NodeTorsoNormal.vue', () => {
         });
         let bgs = wrapper.findAll('.bg');
         expect(bgs.length).toBe(1);
-        expect(bgs.at(0).attributes().fill).toBe(color);
+        expect(bgs[0].attributes().fill).toBe(color);
     });
 
     it('renders plain components', () => {
@@ -31,7 +31,7 @@ describe('NodeTorsoNormal.vue', () => {
         });
         let bgs = wrapper.findAll('.bg');
         expect(bgs.length).toBe(1);
-        expect(bgs.at(0).attributes().fill).toBe(nodeColors.Component);
+        expect(bgs[0].attributes().fill).toBe(nodeColors.Component);
         expect(wrapper.find('image').exists()).toBeFalsy();
     });
 
@@ -42,8 +42,8 @@ describe('NodeTorsoNormal.vue', () => {
         });
         let bgs = wrapper.findAll('.bg');
         expect(bgs.length).toBe(2);
-        expect(bgs.at(0).attributes().fill).toBe(nodeColors.Component);
-        expect(bgs.at(1).attributes().fill).toBe(nodeColors.Learner);
+        expect(bgs[0].attributes().fill).toBe(nodeColors.Component);
+        expect(bgs[1].attributes().fill).toBe(nodeColors.Learner);
     });
 
     it('renders icon', () => {

@@ -1,4 +1,7 @@
+import { describe, it, expect } from 'vitest';
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
+import { markRaw } from 'vue';
+
 import Messages from '../Messages.vue';
 import MessageLink from '../MessageLink.vue';
 import Message from '../Message.vue';
@@ -20,7 +23,7 @@ const messages = [
         message: 'Info of something',
         type: 'info',
         button: 'Okay',
-        icon: SuccessIcon,
+        icon: markRaw(SuccessIcon),
         id: 3,
         details: 'test detail text'
     }
@@ -30,7 +33,7 @@ const linkedMessageHref = {
     message: 'Info of something',
     type: 'info',
     button: 'Okay',
-    icon: SuccessIcon,
+    icon: markRaw(SuccessIcon),
     id: 4,
     link: {
         text: 'Linked text.',
@@ -42,7 +45,7 @@ const linkedMessageTo = {
     message: 'Info of something',
     type: 'info',
     button: 'Okay',
-    icon: SuccessIcon,
+    icon: markRaw(SuccessIcon),
     id: 4,
     link: {
         text: 'Linked text.',
@@ -54,7 +57,7 @@ describe('Messages.vue', () => {
     let wrapper;
 
     it('renders notifications', () => {
-        wrapper = shallowMount(Messages, {
+        wrapper = mount(Messages, {
             props: { messages },
             global: {
                 stubs: {
@@ -63,20 +66,21 @@ describe('Messages.vue', () => {
             }
         });
 
-        expect(wrapper.findAllComponents(Message).length).toBe(messages.length);
+        const messageComponents = wrapper.findAllComponents(Message);
+        expect(messageComponents.length).toBe(messages.length);
         messages.forEach((message, i) => {
-            const element = wrapper.findAllComponents(Message)[i];
-            expect(element.props('type')).toEqual(message.type);
+            const messageComponent = messageComponents[i];
+            expect(messageComponent.props('type')).toEqual(message.type);
             if (message.button) {
-                expect(element.props('button')).toEqual(message.button);
+                expect(messageComponent.props('button')).toEqual(message.button);
             }
             if (message.icon) {
-                expect(element.find(message.icon).exists()).toBe(true);
+                expect(messageComponent.findComponent(message.icon).exists()).toBe(true);
             }
             if (message.details) {
-                expect(element.props('details')).toEqual(message.details);
+                expect(messageComponent.props('details')).toEqual(message.details);
             }
-            expect(element.text()).toContain(message.message);
+            expect(messageComponent.text()).toContain(message.message);
         });
 
         expect(wrapper.find('a').exists()).toBe(false);
@@ -118,12 +122,13 @@ describe('Messages.vue', () => {
             }
         });
 
-        expect(wrapper.findAllComponents(Message)[0].find('.message-count').isVisible()).toBe(true);
-        expect(wrapper.findAllComponents(Message)[0].vm.count).toBe(2);
-        expect(wrapper.findAllComponents(Message)[1].find('.message-count').isVisible()).toBe(false);
-        expect(wrapper.findAllComponents(Message)[1].vm.count).toBe(1);
-        expect(wrapper.findAllComponents(Message)[2].find('.message-count').isVisible()).toBe(false);
-        expect(wrapper.findAllComponents(Message)[2].vm.count).toBe(1);
+        const messageComponents = wrapper.findAllComponents(Message);
+        expect(messageComponents[0].find('.message-count').isVisible()).toBe(true);
+        expect(messageComponents[0].vm.count).toBe(2);
+        expect(messageComponents[1].find('.message-count').isVisible()).toBe(false);
+        expect(messageComponents[1].vm.count).toBe(1);
+        expect(messageComponents[2].find('.message-count').isVisible()).toBe(false);
+        expect(messageComponents[2].vm.count).toBe(1);
 
         expect(wrapper.find('a').exists()).toBe(false);
         expect(wrapper.findComponent(MessageLink).exists()).toBe(false);
@@ -140,12 +145,13 @@ describe('Messages.vue', () => {
             }
         });
 
+        const messageComponents = wrapper.findAllComponents(Message);
         for (let i of [0, 1, 2]) {
-            expect(wrapper.findAllComponents(Message)[i].find('a').exists()).toBe(false);
+            expect(messageComponents[i].find('a').exists()).toBe(false);
         }
 
         // eslint-disable-next-line no-magic-numbers
-        let link = wrapper.findAllComponents(Message)[3].find('a');
+        let link = messageComponents[3].find('a');
         expect(link.exists()).toBe(true);
         expect(link.text()).toBe('Linked text.');
         expect(link.attributes('href')).toBe('some_link');
@@ -163,13 +169,14 @@ describe('Messages.vue', () => {
             }
         });
 
+        const messageComponents = wrapper.findAllComponents(Message);
         for (let i of [0, 1, 2]) {
-            expect(wrapper.findAllComponents(Message)[i].find('a').exists()).toBe(false);
-            expect(wrapper.findAllComponents(Message)[i].findComponent(RouterLinkStub).exists()).toBe(false);
+            expect(messageComponents[i].find('a').exists()).toBe(false);
+            expect(messageComponents[i].findComponent(RouterLinkStub).exists()).toBe(false);
         }
 
         // eslint-disable-next-line no-magic-numbers
-        let link = wrapper.findAllComponents(Message)[3].findComponent(RouterLinkStub);
+        let link = messageComponents[3].findComponent(RouterLinkStub);
         expect(link.exists()).toBe(true);
         expect(link.text()).toBe('Linked text.');
         expect(link.props('to')).toBe('some_link');

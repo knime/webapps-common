@@ -25,12 +25,11 @@ describe('FunctionButton.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();
         expect(wrapper.findComponent(BaseButton).props('to')).toEqual('test-to');
         expect(wrapper.findComponent(BaseButton).props('href')).toEqual('test-to');
     });
 
-    it('renders a class if props is set', () => {
+    it('renders active class', () => {
         const wrapper = shallowMount(FunctionButton, {
             props: {
                 active: true
@@ -42,7 +41,7 @@ describe('FunctionButton.vue', () => {
         expect(wrapper.classes()).toContain('active');
     });
 
-    it('renders a class if it only has one slot child', () => {
+    it('renders single class if it only has one slot child', () => {
         const wrapper = shallowMount(FunctionButton, {
             slots: {
                 default: ['<svg/>']
@@ -51,48 +50,31 @@ describe('FunctionButton.vue', () => {
         expect(wrapper.classes()).toContain('single');
     });
 
-    it('renders a classes if props is set and one child is present', () => {
+    it('passes-through event listeners to BaseButton', () => {
         const wrapper = shallowMount(FunctionButton, {
-            props: {
-                active: true
-            },
-            slots: {
-                default: ['<span>text</span>']
-            }
-        });
-        expect(wrapper.classes()).toContain('single');
-        expect(wrapper.classes()).toContain('active');
-    });
-
-    it('triggers events', () => {
-        const clicker = vi.fn();
-        const wrapper = mount(FunctionButton, {
-            props: {
-                active: true
-            },
             slots: {
                 default: ['<span>text</span>']
             },
-            listeners: {
-                click: clicker
+            attrs: {
+                onfakeevent: vi.fn()
             }
         });
-        wrapper.trigger('click');
-        expect(clicker).toHaveBeenCalled();
+        expect(wrapper.findComponent(BaseButton).attributes('onfakeevent')).toBeDefined();
     });
 
     it('gets focused when focus method is called', () => {
         const wrapper = mount(FunctionButton, {
             slots: {
                 default: ['<span>text</span>']
-            }
+            },
+            attachTo: document.body
         });
         wrapper.vm.focus();
-        expect(document.activeElement).toBe(wrapper.vm.$el);
+        expect(document.activeElement).toBe(wrapper.get('button').wrapperElement);
     });
 
     it('renders disabled button', () => {
-        const wrapper = mount(FunctionButton, {
+        const wrapper = shallowMount(FunctionButton, {
             props: {
                 disabled: true
             },

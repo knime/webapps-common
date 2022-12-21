@@ -41,26 +41,26 @@ describe('NodePreview.vue', () => {
             }
         });
         let portIcons = wrapper.findAllComponents(PortIcon);
-        expect(portIcons.at(0).props()).toStrictEqual({
+        expect(portIcons[0].props()).toStrictEqual({
             color: '#000',
             filled: false,
             type: 'flowVariable'
         });
-        expect(portIcons.at(0).attributes().transform).toBe('translate(-4.5, 16)');
+        expect(portIcons[0].attributes().transform).toBe('translate(-4.5, 16)');
 
-        expect(portIcons.at(1).props()).toStrictEqual({
+        expect(portIcons[1].props()).toStrictEqual({
             color: '#fff',
             filled: true,
             type: 'table'
         });
-        expect(portIcons.at(1).attributes().transform).toBe('translate(36.5, 5.5)');
+        expect(portIcons[1].attributes().transform).toBe('translate(36.5, 5.5)');
 
-        expect(portIcons.at(2).props()).toStrictEqual({
+        expect(portIcons[2].props()).toStrictEqual({
             color: '#888',
             filled: false,
             type: 'other'
         });
-        expect(portIcons.at(2).attributes().transform).toBe('translate(36.5, 26.5)');
+        expect(portIcons[2].attributes().transform).toBe('translate(36.5, 26.5)');
     });
 
     it('renders dynamic Ports indicator', () => {

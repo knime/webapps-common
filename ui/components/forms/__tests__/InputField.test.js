@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import InputField from '../InputField.vue';
@@ -11,7 +12,7 @@ describe('InputField.vue', () => {
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.is('div')).toBeTruthy();
+        expect(wrapper.find('.input-wrapper').exists()).toBeTruthy();
         let input = wrapper.find('input');
         expect(input.attributes('type')).toBe('text'); // default
         expect(input.element.value).toBe('Test value');
@@ -120,12 +121,7 @@ describe('InputField.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    /**
-     * This fails due to bug in jsdom https://github.com/jsdom/jsdom/issues/2494
-     * The bug is fixed with jest 26.5.0 https://github.com/facebook/jest/pull/10578
-     * The test can be reactivated when we upgrade
-     */
-    xit('invalidates wrong unicode pattern', () => {
+    it('invalidates wrong unicode pattern', () => {
         const wrapper = mount(InputField, {
             props: {
                 modelValue: 'te%tSætring!"$<>',
@@ -174,7 +170,9 @@ describe('InputField.vue', () => {
     });
 
     it('focuses on focus call', () => {
-        const wrapper = mount(InputField);
+        const wrapper = mount(InputField, {
+            attachTo: document.body
+        });
         wrapper.vm.focus();
         expect(document.activeElement).toEqual(wrapper.find('input').element);
     });

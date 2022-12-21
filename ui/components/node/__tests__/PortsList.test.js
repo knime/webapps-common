@@ -48,8 +48,8 @@ describe('PortsList.vue', () => {
         });
         let allPortsListItems = wrapper.findAllComponents(PortGroup);
         expect(allPortsListItems.length).toEqual(2);
-        expect(allPortsListItems.at(0).props('ports')).toEqual([{ foo: 'bar' }]);
-        expect(allPortsListItems.at(1).props('ports')).toEqual([{ baz: 'qux' }]);
+        expect(allPortsListItems[0].props('ports')).toEqual([{ foo: 'bar' }]);
+        expect(allPortsListItems[1].props('ports')).toEqual([{ baz: 'qux' }]);
     });
 
     it('accepts dynInPorts and dynOutPorts', () => {
@@ -74,8 +74,8 @@ describe('PortsList.vue', () => {
         let allPortsListItems = wrapper.findAllComponents(PortGroup);
         // eslint-disable-next-line no-magic-numbers
         expect(allPortsListItems.length).toEqual(4);
-        expect(allPortsListItems.at(2).props('ports')).toEqual([{ foo: 'bar' }]);
+        expect(allPortsListItems[2].props('ports')).toEqual([{ foo: 'bar' }]);
         // eslint-disable-next-line no-magic-numbers
-        expect(allPortsListItems.at(3).props('ports')).toEqual([{ baz: 'qux' }]);
+        expect(allPortsListItems[3].props('ports')).toEqual([{ baz: 'qux' }]);
     });
 });

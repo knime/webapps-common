@@ -1,48 +1,46 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mount, createLocalVue } from '@vue/test-utils';
-
-const localVue = createLocalVue();
+import { mount } from '@vue/test-utils';
 
 import Multiselect from '../Multiselect.vue';
 import Checkbox from '../Checkbox.vue';
 
+const doMount = (options) => mount(Multiselect, {
+    props: {
+        possibleValues: [{
+            id: 'test1',
+            text: 'test1'
+        }, {
+            id: 'test2',
+            text: 'test2'
+        }, {
+            id: 'test3',
+            text: 'test3'
+        }]
+    },
+    ...options
+});
+
 describe('Multiselect.vue', () => {
     it('renders', () => {
-        const wrapper = mount(Multiselect, {
-            props: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }]
-            },
-            localVue
-        });
+        const wrapper = doMount();
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
         expect(wrapper.classes()).toContain('multiselect');
     });
 
     it('renders invalid style', () => {
-        const wrapper = mount(Multiselect, {
+        const wrapper = doMount({
             props: {
                 isValid: false
-            },
-            localVue
+            }
         });
 
         let root = wrapper.find('div');
         expect(root.classes()).toContain('invalid');
     });
 
-
-    it('renders placeholder until options have been selected', () => {
-        const wrapper = mount(Multiselect, {
+    it('renders placeholder until options have been selected', async () => {
+        const wrapper = doMount({
             props: {
                 possibleValues: [{
                     id: 'test1',
@@ -56,59 +54,30 @@ describe('Multiselect.vue', () => {
                     text: 'test3'
                 }],
                 placeholder: 'Test Title'
-            },
-            localVue
+            }
         });
 
         let button = wrapper.find('[role="button"]');
         expect(button.text()).toBe('Test Title');
         expect(button.classes()).toContain('placeholder');
 
-        wrapper.vm.onInput('test1', true);
+        await wrapper.vm.onUpdateModelValue('test1', true);
         expect(button.text()).toBe('test1');
         expect(button.classes()).not.toContain('placeholder');
         
-        wrapper.vm.onInput('test2', true);
+        await wrapper.vm.onUpdateModelValue('test2', true);
         expect(button.text()).toBe('test1, Test2');
         expect(button.classes()).not.toContain('placeholder');
     });
 
-    it('emits input events', () => {
-        const wrapper = mount(Multiselect, {
-            props: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }]
-            },
-            localVue
-        });
-        wrapper.vm.onInput('test1', true);
+    it('emits input events', async () => {
+        const wrapper = doMount();
+        await wrapper.vm.onUpdateModelValue('test1', true);
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
     });
 
     it('toggles properly', () => {
-        const wrapper = mount(Multiselect, {
-            props: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }]
-            },
-            localVue
-        });
+        const wrapper = doMount();
         expect(wrapper.vm.collapsed).toBe(true);
         wrapper.vm.toggle();
         expect(wrapper.vm.collapsed).toBe(false);
@@ -117,65 +86,23 @@ describe('Multiselect.vue', () => {
     });
 
     it('adds values to the checked values', () => {
-        const wrapper = mount(Multiselect, {
-            props: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }]
-            },
-            localVue
-        });
-        wrapper.vm.onInput('test1', true);
+        const wrapper = doMount();
+        wrapper.vm.onUpdateModelValue('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
     });
 
     it('removes values from the checked values', () => {
-        const wrapper = mount(Multiselect, {
-            props: {
-                possibleValues: [{
-                    id: 'test1',
-                    text: 'test1'
-                }, {
-                    id: 'test2',
-                    text: 'test2'
-                }, {
-                    id: 'test3',
-                    text: 'test3'
-                }]
-            },
-            localVue
-        });
-        wrapper.vm.onInput('test1', true);
+        const wrapper = doMount();
+        wrapper.vm.onUpdateModelValue('test1', true);
         expect(wrapper.vm.checkedValue).toContain('test1');
         expect(wrapper.vm.checkedValue).toHaveLength(1);
-        wrapper.vm.onInput('test1', false);
+        wrapper.vm.onUpdateModelValue('test1', false);
         expect(wrapper.vm.checkedValue).toHaveLength(0);
     });
 
     describe('keyboard interaction', () => {
         it('show options on space', () => {
-            const wrapper = mount(Multiselect, {
-                props: {
-                    possibleValues: [{
-                        id: 'test1',
-                        text: 'test1'
-                    }, {
-                        id: 'test2',
-                        text: 'test2'
-                    }, {
-                        id: 'test3',
-                        text: 'test3'
-                    }]
-                },
-                localVue
-            });
+            const wrapper = doMount();
             let button = wrapper.find('[role=button]');
             button.trigger('keydown.space');
             expect(wrapper.vm.collapsed).toBe(false);
@@ -183,21 +110,7 @@ describe('Multiselect.vue', () => {
 
         it('hide options on esc', () => {
             vi.useFakeTimers();
-            const wrapper = mount(Multiselect, {
-                props: {
-                    possibleValues: [{
-                        id: 'test1',
-                        text: 'test1'
-                    }, {
-                        id: 'test2',
-                        text: 'test2'
-                    }, {
-                        id: 'test3',
-                        text: 'test3'
-                    }]
-                },
-                localVue
-            });
+            const wrapper = doMount();
             let toggleFocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
             let button = wrapper.find('[role=button]');
             wrapper.vm.collapsed = false;
@@ -209,22 +122,7 @@ describe('Multiselect.vue', () => {
 
         it('hide options when focus leaves the component', () => {
             vi.useFakeTimers();
-
-            const wrapper = mount(Multiselect, {
-                props: {
-                    possibleValues: [{
-                        id: 'test1',
-                        text: 'test1'
-                    }, {
-                        id: 'test2',
-                        text: 'test2'
-                    }, {
-                        id: 'test3',
-                        text: 'test3'
-                    }]
-                },
-                localVue
-            });
+            const wrapper = doMount();
             let refocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
             let onFocusOutMock = vi.spyOn(wrapper.vm, 'onFocusOut');
             let closeMenuMock = vi.spyOn(wrapper.vm, 'closeOptions');
@@ -244,20 +142,8 @@ describe('Multiselect.vue', () => {
 
         describe('arrow key navigation', () => {
             it('gets next item to focus', () => {
-                const wrapper = mount(Multiselect, {
-                    props: {
-                        possibleValues: [{
-                            id: 'test1',
-                            text: 'test1'
-                        }, {
-                            id: 'test2',
-                            text: 'test2'
-                        }, {
-                            id: 'test3',
-                            text: 'test3'
-                        }]
-                    },
-                    localVue
+                const wrapper = doMount({
+                    attachTo: document.body
                 });
                 // up and down
                 wrapper.vm.focusOptions[1].focus();
@@ -277,20 +163,8 @@ describe('Multiselect.vue', () => {
             });
     
             it('focuses next element on key down', () => {
-                const wrapper = mount(Multiselect, {
-                    props: {
-                        possibleValues: [{
-                            id: 'test1',
-                            text: 'test1'
-                        }, {
-                            id: 'test2',
-                            text: 'test2'
-                        }, {
-                            id: 'test3',
-                            text: 'test3'
-                        }]
-                    },
-                    localVue
+                const wrapper = doMount({
+                    attachTo: document.body
                 });
                 let onDownMock = vi.spyOn(wrapper.vm, 'onDown');
                 expect(wrapper.vm.collapsed).toBe(true);
@@ -308,20 +182,8 @@ describe('Multiselect.vue', () => {
             });
     
             it('focuses previous element on key up', () => {
-                const wrapper = mount(Multiselect, {
-                    props: {
-                        possibleValues: [{
-                            id: 'test1',
-                            text: 'test1'
-                        }, {
-                            id: 'test2',
-                            text: 'test2'
-                        }, {
-                            id: 'test3',
-                            text: 'test3'
-                        }]
-                    },
-                    localVue
+                const wrapper = doMount({
+                    attachTo: document.body
                 });
                 let onUpMock = vi.spyOn(wrapper.vm, 'onUp');
                 expect(wrapper.vm.collapsed).toBe(true);
@@ -339,20 +201,8 @@ describe('Multiselect.vue', () => {
             });
 
             it('focuses first element on key down at list end', () => {
-                const wrapper = mount(Multiselect, {
-                    props: {
-                        possibleValues: [{
-                            id: 'test1',
-                            text: 'test1'
-                        }, {
-                            id: 'test2',
-                            text: 'test2'
-                        }, {
-                            id: 'test3',
-                            text: 'test3'
-                        }]
-                    },
-                    localVue
+                const wrapper = doMount({
+                    attachTo: document.body
                 });
                 let onDownMock = vi.spyOn(wrapper.vm, 'onDown');
                 expect(wrapper.vm.collapsed).toBe(true);
@@ -370,20 +220,8 @@ describe('Multiselect.vue', () => {
             });
     
             it('focuses last element on key up at list start', () => {
-                const wrapper = mount(Multiselect, {
-                    props: {
-                        possibleValues: [{
-                            id: 'test1',
-                            text: 'test1'
-                        }, {
-                            id: 'test2',
-                            text: 'test2'
-                        }, {
-                            id: 'test3',
-                            text: 'test3'
-                        }]
-                    },
-                    localVue
+                const wrapper = doMount({
+                    attachTo: document.body
                 });
                 let onUpMock = vi.spyOn(wrapper.vm, 'onUp');
                 expect(wrapper.vm.collapsed).toBe(true);
@@ -401,7 +239,7 @@ describe('Multiselect.vue', () => {
             });
 
             it('disables options if `disabled` is set', () => {
-                const wrapper = mount(Multiselect, {
+                const wrapper = doMount({
                     props: {
                         possibleValues: [{
                             id: 'test1',
@@ -416,7 +254,7 @@ describe('Multiselect.vue', () => {
                             disabled: true
                         }]
                     },
-                    localVue
+                    attachTo: document.body
                 });
 
                 const checkboxes = wrapper.findAllComponents(Checkbox);
@@ -427,7 +265,7 @@ describe('Multiselect.vue', () => {
             });
 
             it('renders custom seperator', () => {
-                const wrapper = mount(Multiselect, {
+                const wrapper = doMount({
                     props: {
                         possibleValues: [{
                             id: 'test1',
@@ -438,8 +276,7 @@ describe('Multiselect.vue', () => {
                         }],
                         modelValue: ['test1', 'test2'],
                         separator: ' & '
-                    },
-                    localVue
+                    }
                 });
 
                 const button = wrapper.find('[role="button"]');
@@ -447,7 +284,7 @@ describe('Multiselect.vue', () => {
             });
 
             it('renders count and placeholder if summaryMaxItemCount is set', () => {
-                const wrapper = mount(Multiselect, {
+                const wrapper = doMount({
                     props: {
                         possibleValues: [{
                             id: 'test1',
@@ -465,8 +302,7 @@ describe('Multiselect.vue', () => {
                         modelValue: ['test1', 'test2', 'test4'],
                         summaryMaxItemCount: 2,
                         summaryName: 'Fische'
-                    },
-                    localVue
+                    }
                 });
 
                 const button = wrapper.find('[role="button"]');

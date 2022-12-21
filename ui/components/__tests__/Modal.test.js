@@ -3,8 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 
 import Modal from '../Modal.vue';
 
-vi.mock('focus-trap-vue', () => ({}), { virtual: true });
-
 describe('Modal', () => {
     describe('rendering', () => {
         it('renders style type classes', () => {
@@ -87,8 +85,8 @@ describe('Modal', () => {
 
         it('passes-through event listeners to BaseModal', () => {
             let wrapper = shallowMount(Modal, {
-                listeners: {
-                    fakeEvent: vi.fn()
+                attrs: {
+                    onfakeevent: vi.fn()
                 },
                 global: {
                     stubs: {
@@ -96,15 +94,15 @@ describe('Modal', () => {
                     }
                 }
             });
-            expect(wrapper.findComponent(BaseModal).vm.$listeners).toHaveProperty('fakeEvent');
+            expect(wrapper.findComponent(BaseModal).attributes('onfakeevent')).toBeDefined();
         });
     });
 
     it('emits cancel event on close button click', async () => {
         let wrapper = shallowMount(Modal);
 
-        expect(wrapper.emitted().cancel).toBeFalsy();
-        await wrapper.find('.header .closer').vm.$emit('click');
-        expect(wrapper.emitted().cancel).toBeTruthy();
+        expect(wrapper.emitted('cancel')).toBeFalsy();
+        await wrapper.findComponent('.header .closer').vm.$emit('click');
+        expect(wrapper.emitted('cancel')).toBeTruthy();
     });
 });

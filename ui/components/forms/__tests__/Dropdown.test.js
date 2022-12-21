@@ -1,14 +1,14 @@
-import { describe, it, expect, vi } from 'vitest';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
 
+/*
 vi.mock('vue-clickaway2', () => ({
     mixin: {}
-}), { virtual: true });
-
-const localVue = createLocalVue();
-localVue.directive('onClickaway', () => {});
+}));
+*/
 
 import Dropdown from '../Dropdown.vue';
+
 vi.useFakeTimers();
 
 describe('Dropdown.vue', () => {
@@ -38,8 +38,7 @@ describe('Dropdown.vue', () => {
 
     it('renders', () => {
         const wrapper = mount(Dropdown, {
-            props,
-            localVue
+            props
         });
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
@@ -48,31 +47,29 @@ describe('Dropdown.vue', () => {
 
     it('sets the correct aria-* attributes', () => {
         const wrapper = mount(Dropdown, {
-            props,
-            localVue
+            props
         });
 
         let button = wrapper.find('[role=button]');
         expect(button.attributes('aria-label')).toBe(props.ariaLabel);
     });
 
-    it('renders value text or placeholder if no or empty value set', () => {
+    it('renders value text or placeholder if no or empty value set', async () => {
         let placeholder = 'my-placeholder';
         const wrapper = mount(Dropdown, {
             props: {
                 ...props,
                 placeholder,
                 modelValue: 'test3'
-            },
-            localVue
+            }
         });
 
         let button = wrapper.find('[role=button]');
         expect(button.text()).toBe('Text 3');
 
-        wrapper.setProps({ modelValue: null });
+        await wrapper.setProps({ modelValue: null });
         expect(button.text()).toBe(placeholder);
-        wrapper.setProps({ modelValue: '' });
+        await wrapper.setProps({ modelValue: '' });
         expect(button.text()).toBe(placeholder);
     });
 
@@ -84,8 +81,7 @@ describe('Dropdown.vue', () => {
                 placeholder,
                 modelValue: 'test66',
                 name: 'test-name'
-            },
-            localVue
+            }
         });
         expect(wrapper.find('input').exists()).toBe(true);
         expect(wrapper.find('input').element.value).toBe('test66');
@@ -97,8 +93,7 @@ describe('Dropdown.vue', () => {
             props: {
                 ...props,
                 modelValue: 'no'
-            },
-            localVue
+            }
         });
 
         let button = wrapper.find('[role=button]');
@@ -110,28 +105,26 @@ describe('Dropdown.vue', () => {
             props: {
                 ...props,
                 isValid: false
-            },
-            localVue
+            }
         });
 
         let root = wrapper.find('div');
         expect(root.classes()).toContain('invalid');
     });
 
-    it('opens the listbox on click of button and emits event for clicked value', () => {
+    it('opens the listbox on click of button and emits event for clicked value', async () => {
         const wrapper = mount(Dropdown, {
-            props,
-            localVue
+            props
         });
         let newValueIndex = 1;
         let listbox = wrapper.find('[role=listbox]');
 
         // open list
-        wrapper.find('[role=button]').trigger('click');
+        await wrapper.find('[role=button]').trigger('click');
         expect(listbox.isVisible()).toBe(true);
 
-        let input = wrapper.findAll('li[role=option]').at(newValueIndex);
-        input.trigger('click');
+        let input = wrapper.findAll('li[role=option]')[newValueIndex];
+        await input.trigger('click');
 
         expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(props.possibleValues[newValueIndex].id);
 
@@ -139,31 +132,29 @@ describe('Dropdown.vue', () => {
         expect(listbox.isVisible()).toBe(false);
     });
 
-    it('provides a valid hasSelection method', () => {
+    it('provides a valid hasSelection method', async () => {
         const wrapper = mount(Dropdown, {
-            props,
-            localVue
+            props
         });
         expect(wrapper.vm.hasSelection()).toBe(false);
-        wrapper.setProps({ modelValue: 'test2' });
+        await wrapper.setProps({ modelValue: 'test2' });
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
     describe('keyboard navigation', () => {
-        it('opens and closes the listbox on enter/esc', () => {
+        it('opens and closes the listbox on enter/esc', async () => {
             const wrapper = mount(Dropdown, {
-                props,
-                localVue
+                props
             });
 
             let listbox = wrapper.find('[role=listbox]');
 
             // open list
-            wrapper.find('[role=button]').trigger('keydown.enter');
+            await wrapper.find('[role=button]').trigger('keydown.enter');
             expect(listbox.isVisible()).toBe(true);
 
             // close listbox
-            listbox.trigger('keydown.esc');
+            await listbox.trigger('keydown.esc');
             expect(listbox.isVisible()).toBe(false);
         });
 
@@ -172,8 +163,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test2' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -186,8 +176,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test2' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -200,8 +189,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test1' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -214,8 +202,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test5' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -228,8 +215,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test3' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -242,8 +228,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test3' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -258,15 +243,11 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test2' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
-
-            ul.find('ul').trigger('keydown', {
-                key: 't'
-            });
+            ul.trigger('keydown', { key: 't' });
 
             expect(wrapper.emitted('update:modelValue')[0][0]).toBe('test1');
         });
@@ -276,8 +257,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test2' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');
@@ -298,8 +278,7 @@ describe('Dropdown.vue', () => {
                 props: {
                     ...props,
                     modelValue: 'test2' // defines start point
-                },
-                localVue
+                }
             });
 
             let ul = wrapper.find('ul');

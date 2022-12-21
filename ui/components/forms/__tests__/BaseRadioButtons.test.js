@@ -37,7 +37,7 @@ describe('BaseRadioButtons.vue', () => {
         let labels = wrapper.findAll('label');
         expect(labels.length).toBe(possibleValues.length);
         possibleValues.forEach((value, i) => {
-            expect(labels.at(i).text()).toContain(value.text);
+            expect(labels[i].text()).toContain(value.text);
         });
     });
 

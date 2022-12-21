@@ -223,7 +223,8 @@ export default {
         :title="item.text"
         :class="{
           'focused': isCurrentValue(item.id),
-          'noselect': true, 'invalid': item.invalid,
+          'noselect': true,
+          'invalid': item.invalid,
           'empty': item.text.trim() === ''
         }"
         :aria-selected="isCurrentValue(item.id)"

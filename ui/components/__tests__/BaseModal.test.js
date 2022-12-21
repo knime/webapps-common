@@ -16,8 +16,7 @@ describe('BaseModal', () => {
             let wrapper = shallowMount(BaseModal, {
                 slots: {
                     default: '<p>test</p>'
-                },
-                attachToDocument: true
+                }
             });
             expect(window.addEventListener).not.toHaveBeenCalled();
             expect(wrapper.findComponent(FocusTrap).exists()).toBeFalsy();
@@ -28,8 +27,7 @@ describe('BaseModal', () => {
             let wrapper = shallowMount(BaseModal, {
                 slots: {
                     default: '<p class="content-item">test</p>'
-                },
-                attachToDocument: true
+                }
             });
 
             // only manual activation is supported
@@ -55,9 +53,7 @@ describe('BaseModal', () => {
     });
 
     it('emits cancel event on ESC key', async () => {
-        let wrapper = shallowMount(BaseModal, {
-            attachToDocument: true
-        });
+        let wrapper = shallowMount(BaseModal);
 
         // only manual activation is supported
         await wrapper.setProps({ active: true });
@@ -67,9 +63,7 @@ describe('BaseModal', () => {
     });
 
     it('emits cancel event on overlay click', async () => {
-        let wrapper = shallowMount(BaseModal, {
-            attachToDocument: true
-        });
+        let wrapper = shallowMount(BaseModal);
 
         // only manual activation is supported
         await wrapper.setProps({ active: true });
@@ -82,8 +76,7 @@ describe('BaseModal', () => {
         let wrapper = shallowMount(BaseModal, {
             slots: {
                 default: '<p class="content-item">test</p>'
-            },
-            attachToDocument: true
+            }
         });
 
         await wrapper.setProps({ active: true });

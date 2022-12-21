@@ -61,13 +61,13 @@ export default {
       </FunctionButton>
     </div>
     <div
-      v-if="$slots.notice()"
+      v-if="$slots.notice"
       class="notice"
     >
       <slot name="notice" />
     </div>
     <div
-      v-if="$slots.confirmation()"
+      v-if="$slots.confirmation"
       class="confirmation"
     >
       <slot name="confirmation" />

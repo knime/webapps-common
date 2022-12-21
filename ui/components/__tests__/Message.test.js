@@ -5,14 +5,18 @@ import Message from '../Message.vue';
 import Button from '../Button.vue';
 import WarnIcon from '../../assets/img/icons/sign-warning.svg';
 
+import { copyText } from '../../../util/copyText';
+vi.mock('../../../util/copyText', () => ({
+    copyText: vi.fn()
+}));
+
+// TODO split tests up into MessageTitle.test.js
+
 describe('Message.vue', () => {
     let wrapper;
 
-    let copyTextMock = vi.fn();
-
     it('renders default', () => {
-        wrapper = shallowMount(Message);
-
+        wrapper = mount(Message);
         expect(wrapper.classes()).toEqual(['info']);
         expect(wrapper.find('.message-count').classes()).toContain('info');
         expect(wrapper.find('.close').classes()).toContain('info');
@@ -22,7 +26,7 @@ describe('Message.vue', () => {
     });
 
     it('renders success', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'success'
             }
@@ -34,7 +38,7 @@ describe('Message.vue', () => {
     });
 
     it('renders error', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error'
             }
@@ -47,17 +51,17 @@ describe('Message.vue', () => {
 
     it('renders button', () => {
         let buttonText = 'Okay';
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 button: buttonText
             }
         });
 
-        expect(wrapper.findComponent(Button).text()).toEqual(buttonText);
+        expect(wrapper.findComponent(Button).text()).toContain(buttonText);
     });
 
     it('renders icon', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             slots: {
                 icon: WarnIcon
             }
@@ -67,7 +71,7 @@ describe('Message.vue', () => {
     });
 
     it('hides count if message is unique', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error'
             }
@@ -78,7 +82,7 @@ describe('Message.vue', () => {
     });
 
     it('shows count if message is repeated', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error',
                 count: 2
@@ -94,17 +98,11 @@ describe('Message.vue', () => {
             props: {
                 type: 'error',
                 details: 'test message'
-            },
-            methods: {
-                copyMessage: copyTextMock
             }
         });
         expect(wrapper.find('.copy-button').exists()).toBe(true);
         expect(wrapper.find('.collapser').exists()).toBe(true);
         expect(wrapper.find('.detail-text').text()).toEqual('test message');
-        wrapper.find('.copy-button').trigger('click');
-
-        expect(copyTextMock).toHaveBeenCalled();
     });
 
     it('renders details in banner if showCollapser is false', () => {
@@ -172,22 +170,18 @@ describe('Message.vue', () => {
     });
 
     it('copies text by enter key', () => {
-        vi.clearAllMocks();
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error',
                 details: 'test message'
-            },
-            methods: {
-                copyMessage: copyTextMock
             }
         });
         wrapper.find('.copy-button').trigger('keyup.space');
-        expect(copyTextMock).toHaveBeenCalled();
+        expect(vi.mocked(copyText)).toHaveBeenCalledWith('test message');
     });
 
     it('closes', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error',
                 count: 2
@@ -200,7 +194,7 @@ describe('Message.vue', () => {
     });
 
     it('closes on space key', () => {
-        wrapper = shallowMount(Message, {
+        wrapper = mount(Message, {
             props: {
                 type: 'error',
                 count: 2
