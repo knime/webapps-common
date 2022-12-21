@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.persistence.field;
 import static java.util.stream.Collectors.toMap;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -68,8 +70,7 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <S> The concrete {@link DefaultNodeSettings} class
  */
-public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
-    implements NodeSettingsPersistor<S> {
+public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> implements NodeSettingsPersistor<S> {
 
     private final Map<String, NodeSettingsPersistor<?>> m_persistors;
 
@@ -88,7 +89,12 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     private static Map<String, NodeSettingsPersistor<?>>
         createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
         return Stream.of(settingsClass.getDeclaredFields())//
-            .collect(toMap(Field::getName, FieldBasedNodeSettingsPersistor::createPersistorForField));
+            .filter(FieldBasedNodeSettingsPersistor::isPersistable).collect(toMap(Field::getName,
+                FieldBasedNodeSettingsPersistor::createPersistorForField, (a, b) -> a, LinkedHashMap::new));
+    }
+
+    private static boolean isPersistable(final Field field) {
+        return !Modifier.isStatic(field.getModifiers());
     }
 
     private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
@@ -115,8 +121,8 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     @SuppressWarnings("unchecked")
-    private static NodeSettingsPersistor<?>
-        createPersistorFrompersistenceAnnotation(final Persist persistence, final Field field) {
+    private static NodeSettingsPersistor<?> createPersistorFrompersistenceAnnotation(final Persist persistence,
+        final Field field) {
         var customPersistorClass = persistence.customPersistor();
         if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
             return NodeSettingsPersistor.createInstance(customPersistorClass, field.getType());
@@ -164,16 +170,30 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     private void useBlackMagicToAccessFields(final PersistorConsumer consumer) throws InvalidSettingsException {
-        for (var field : m_settingsClass.getDeclaredFields()) {
+        for (var entry : m_persistors.entrySet()) {
+            var fieldName = entry.getKey();
             try {
+                var field = m_settingsClass.getDeclaredField(entry.getKey());
                 field.setAccessible(true);
-                var persistor = m_persistors.get(field.getName());
+                var persistor = entry.getValue();
                 consumer.accept(persistor, field);
             } catch (IllegalAccessException ex) {
                 // because we use black magic (Field#setAccessible) to make the field accessible
-                throw new IllegalStateException("This catch block is not supposed to be reachable.");
+                throw new IllegalStateException(String.format(
+                    "Could not access the field '%s' although reflection was used to make it accessible.", fieldName));
+            } catch (NoSuchFieldException ex) {
+                throw new IllegalStateException(String.format(
+                    "The field '%s' no longer exists in class '%s' although it existed during creation of the persistor."
+                        + " Most likely an implementation error.",
+                    fieldName, m_settingsClass));
+            } catch (SecurityException ex) {
+                throw new IllegalStateException(
+                    "Security exception while accessing field although it was possible to access it during creation of"
+                        + " the persistor. Most likely an implementation error.",
+                    ex);
             }
         }
+
     }
 
 }

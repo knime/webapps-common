@@ -71,7 +71,6 @@ import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
-
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
@@ -134,8 +133,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         testSaveLoad(settings);
     }
 
-    private static <S extends TestNodeSettings> void testSaveLoad(final S obj)
-        throws InvalidSettingsException {
+    private static <S extends TestNodeSettings> void testSaveLoad(final S obj) throws InvalidSettingsException {
         @SuppressWarnings("unchecked")
         Class<S> objClass = (Class<S>)obj.getClass();
         var persistor = new FieldBasedNodeSettingsPersistor<>(objClass);
@@ -181,6 +179,16 @@ public class FieldBasedNodeSettingsPersistorTest {
     void testNestedSettingsNotSupported() {
         assertThrows(UnsupportedOperationException.class,
             () -> new FieldBasedNodeSettingsPersistor<>(OuterNodeSettings.class));
+    }
+
+    @Test
+    void testStaticFieldsAreIgnored() throws Exception {
+        testSaveLoad(new SettingsWithStaticField());
+    }
+
+    @Test
+    void testStaticFinalFieldsAreIgnored() throws Exception {
+        testSaveLoad(new SettingsWithStaticFinalField());
     }
 
     private interface TestNodeSettings extends DefaultNodeSettings {
@@ -388,8 +396,7 @@ public class FieldBasedNodeSettingsPersistorTest {
     private static final class CustomFieldPersistor implements NodeSettingsPersistor<String> {
 
         @Override
-        public String load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
             return settings.getString("foo");
         }
 
@@ -428,8 +435,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         }
 
         @Override
-        public String load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
             throw new NotImplementedException("This method should not be called.");
         }
 
@@ -451,8 +457,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         }
 
         @Override
-        public String load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
             throw new NotImplementedException("This method should not be called.");
         }
 
@@ -482,8 +487,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         }
 
         @Override
-        public String load(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
             return settings.getString("foo");
         }
 
@@ -520,5 +524,49 @@ public class FieldBasedNodeSettingsPersistorTest {
     private static final class OuterNodeSettings implements DefaultNodeSettings {
         @SuppressWarnings("unused")
         InnerNodeSettings m_inner;
+    }
+
+    private static final class SettingsWithStaticField extends AbstractTestNodeSettings<SettingsWithStaticField> {
+        
+    	@SuppressWarnings("unused")
+        private static String STATIC_FIELD = "foo";
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            // no settings
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return 0;
+        }
+
+        @Override
+        protected boolean equalSettings(final SettingsWithStaticField settings) {
+            return true;
+        }
+
+    }
+
+    private static final class SettingsWithStaticFinalField
+        extends AbstractTestNodeSettings<SettingsWithStaticFinalField> {
+
+        @SuppressWarnings("unused")
+        private static final String STATIC_FINAL_FIELD = "bar";
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            // no settings
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return 0;
+        }
+
+        @Override
+        protected boolean equalSettings(final SettingsWithStaticFinalField settings) {
+            return true;
+        }
     }
 }
