@@ -14,7 +14,7 @@ export default {
 </script>
 
 <template>
-  <transition name="slide">
+  <Transition name="slide">
     <div
       v-if="isExpanded"
       class="side-drawer"
@@ -23,7 +23,7 @@ export default {
         <slot />
       </div>
     </div>
-  </transition>
+  </Transition>
 </template>
 
 <style lang="postcss" scoped>
@@ -32,7 +32,7 @@ export default {
   transition: transform 0.15s ease-in-out;
 }
 
-.slide-enter,
+.slide-enter-from,
 .slide-leave-to {
   transform: translateX(calc(100% + 10px)); /* extra 10px to hide box shadow when collapsed */
 }

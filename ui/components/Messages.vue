@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-  <transition-group
+  <TransitionGroup
     :class="[{'active': messages.length > 0}, 'messages' ]"
     tag="div"
     name="messages"
@@ -80,7 +80,7 @@ export default {
         />
       </Message>
     </template>
-  </transition-group>
+  </TransitionGroup>
 </template>
 
 <style lang="postcss" scoped>
@@ -106,7 +106,7 @@ export default {
   transition: all 0.3s;
 }
 
-.messages-enter,
+.messages-enter-from,
 .messages-leave-to {
   opacity: 0;
   transform: translateY(50px);
