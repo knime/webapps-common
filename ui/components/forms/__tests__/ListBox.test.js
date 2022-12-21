@@ -125,7 +125,6 @@ describe('ListBox.vue', () => {
         });
 
         let options = wrapper.findAll('li[role=option]');
-        console.log(wrapper.html());
         const selectableValues = [{ id: modelValue }, ...props.possibleValues];
 
         selectableValues.forEach((option, i) => {
