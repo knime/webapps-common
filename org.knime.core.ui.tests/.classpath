@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/eclipse"/>
+	<classpathentry kind="src" path="src/eclipse">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/byte-buddy-1.11.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/byte-buddy-agent-1.11.12.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mockito-core-3.12.0.jar"/>
