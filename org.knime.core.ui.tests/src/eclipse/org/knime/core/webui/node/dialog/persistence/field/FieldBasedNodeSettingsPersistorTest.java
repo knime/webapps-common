@@ -70,6 +70,7 @@ import org.knime.core.node.util.filter.NameFilterConfiguration;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.Persistor;
 
 /**
  * Tests for the {@link FieldBasedNodeSettingsPersistor}.
@@ -180,9 +181,19 @@ class FieldBasedNodeSettingsPersistorTest {
     }
 
     @Test
-    void testNestedSettingsNotSupported() {
-        assertThrows(UnsupportedOperationException.class,
-            () -> new FieldBasedNodeSettingsPersistor<>(OuterNodeSettings.class));
+    void testNestedSettings() throws InvalidSettingsException {
+        var obj = new OuterNodeSettings();
+        obj.m_bar = "baz";
+        obj.m_inner.m_foo = "bal";
+        testSaveLoad(obj);
+    }
+
+    @Test
+    void testNestedSettignsWithCustomInnerPersistor() throws InvalidSettingsException {
+        var obj = new OuterSettingsWithCustomPersistorInnerSettings();
+        obj.m_bar = "bimms";
+        obj.m_inner.m_foo = "bamms";
+        testSaveLoad(obj);
     }
 
     @Test
@@ -522,12 +533,47 @@ class FieldBasedNodeSettingsPersistorTest {
         }
     }
 
-    private static final class InnerNodeSettings implements DefaultNodeSettings {
+    private static final class InnerNodeSettings extends AbstractTestNodeSettings<InnerNodeSettings> {
+
+        String m_foo;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            settings.addString("foo", m_foo);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hashCode(m_foo);
+        }
+
+        @Override
+        protected boolean equalSettings(final InnerNodeSettings settings) {
+            return Objects.equals(m_foo, settings.m_foo);
+        }
     }
 
-    private static final class OuterNodeSettings implements DefaultNodeSettings {
-        @SuppressWarnings("unused")
-        InnerNodeSettings m_inner;
+    private static final class OuterNodeSettings extends AbstractTestNodeSettings<OuterNodeSettings> {
+
+        InnerNodeSettings m_inner = new InnerNodeSettings();
+
+        String m_bar;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            m_inner.saveExpected(settings.addNodeSettings("inner"));
+            settings.addString("bar", m_bar);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hash(m_inner, m_bar);
+        }
+
+        @Override
+        protected boolean equalSettings(final OuterNodeSettings settings) {
+            return Objects.equals(m_inner, settings.m_inner) && Objects.equals(m_bar, settings.m_bar);
+        }
     }
 
     private static final class SettingsWithStaticField extends AbstractTestNodeSettings<SettingsWithStaticField> {
@@ -552,6 +598,46 @@ class FieldBasedNodeSettingsPersistorTest {
 
     }
 
+    @Persistor(InnerSettingsWithCustomPersistor.CustomPersistor.class)
+    private static final class InnerSettingsWithCustomPersistor
+        extends AbstractTestNodeSettings<InnerSettingsWithCustomPersistor> {
+
+        String m_foo;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            settings.addString("custom_foo", m_foo);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hashCode(m_foo);
+        }
+
+        @Override
+        protected boolean equalSettings(final InnerSettingsWithCustomPersistor settings) {
+            return Objects.equals(m_foo, settings.m_foo);
+        }
+
+        private static final class CustomPersistor implements NodeSettingsPersistor<InnerSettingsWithCustomPersistor> {
+
+            @Override
+            public InnerSettingsWithCustomPersistor load(final NodeSettingsRO settings)
+                throws InvalidSettingsException {
+                var loaded = new InnerSettingsWithCustomPersistor();
+                loaded.m_foo = settings.getString("custom_foo");
+                return loaded;
+            }
+
+            @Override
+            public void save(final InnerSettingsWithCustomPersistor obj, final NodeSettingsWO settings) {
+                settings.addString("custom_foo", obj.m_foo);
+            }
+
+        }
+
+    }
+
     private static final class SettingsWithStaticFinalField
         extends AbstractTestNodeSettings<SettingsWithStaticFinalField> {
 
@@ -572,5 +658,32 @@ class FieldBasedNodeSettingsPersistorTest {
         protected boolean equalSettings(final SettingsWithStaticFinalField settings) {
             return true;
         }
+
     }
+
+    private static final class OuterSettingsWithCustomPersistorInnerSettings
+        extends AbstractTestNodeSettings<OuterSettingsWithCustomPersistorInnerSettings> {
+
+        @Persist(configKey = "my-inner")
+        InnerSettingsWithCustomPersistor m_inner = new InnerSettingsWithCustomPersistor();
+
+        String m_bar;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            m_inner.saveExpected(settings.addNodeSettings("my-inner"));
+            settings.addString("bar", m_bar);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hash(m_inner, m_bar);
+        }
+
+        @Override
+        protected boolean equalSettings(final OuterSettingsWithCustomPersistorInnerSettings settings) {
+            return Objects.equals(m_bar, settings.m_bar) && Objects.equals(m_inner, settings.m_inner);
+        }
+    }
+
 }

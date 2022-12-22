@@ -62,6 +62,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
@@ -99,16 +100,10 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
 
     private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
         var persistence = field.getAnnotation(Persist.class);
-        var type = field.getType();
-        if (DefaultNodeSettings.class.isAssignableFrom(type)) {
-            // TODO AP-19871: support for nested DefaultNodeSettings
-            throw new UnsupportedOperationException("Nested DefaultNodeSettings aren't supported yet.");
-        }
         if (persistence != null) {
-            return createPersistorFrompersistenceAnnotation(persistence, field);
+            return createPersistorFromPersistenceAnnotation(persistence, field);
         } else {
-            return DefaultFieldNodeSettingsPersistorFactory.createPersistor(field.getType(),
-                extractConfigKeyFromFieldName(field.getName()));
+            return createDefaultPersistor(field.getType(), extractConfigKeyFromFieldName(field.getName()));
         }
     }
 
@@ -121,11 +116,12 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     @SuppressWarnings("unchecked")
-    private static NodeSettingsPersistor<?> createPersistorFrompersistenceAnnotation(final Persist persistence,
+    private static NodeSettingsPersistor<?> createPersistorFromPersistenceAnnotation(final Persist persistence,
         final Field field) {
         var customPersistorClass = persistence.customPersistor();
+        var type = field.getType();
         if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
-            return NodeSettingsPersistor.createInstance(customPersistorClass, field.getType());
+            return NodeSettingsPersistor.createInstance(customPersistorClass, type);
         }
         var settingsModelClass = persistence.settingsModel();
         var configKey = persistence.configKey();
@@ -133,10 +129,17 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
             configKey = extractConfigKeyFromFieldName(field.getName());
         }
         if (!settingsModelClass.equals(SettingsModel.class)) {
-            return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(field.getType(), settingsModelClass,
-                configKey);
+            return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
+        } else {
+            return createDefaultPersistor(type, configKey);
         }
-        return DefaultFieldNodeSettingsPersistorFactory.createPersistor(field.getType(), configKey);
+    }
+
+    private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type, final String configKey) {
+        if (DefaultNodeSettings.class.isAssignableFrom(type)) {
+            return new NestedFieldBasedNodeSettingsPersistor<>(configKey, type.asSubclass(DefaultNodeSettings.class));
+        }
+        return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, configKey);
     }
 
     @SuppressWarnings("unchecked")
@@ -194,6 +197,30 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
                         + " the persistor. Most likely an implementation error.",
                     ex);
             }
+        }
+
+    }
+
+    private static final class NestedFieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
+        implements NodeSettingsPersistor<S> {
+
+        private final String m_configKey;
+
+        private final NodeSettingsPersistor<S> m_persistor;
+
+        NestedFieldBasedNodeSettingsPersistor(final String configKey, final Class<S> settingsClass) {
+            m_configKey = configKey;
+            m_persistor = NodeSettingsPersistorFactory.getPersistor(settingsClass);
+        }
+
+        @Override
+        public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return m_persistor.load(settings.getNodeSettings(m_configKey));
+        }
+
+        @Override
+        public void save(final S obj, final NodeSettingsWO settings) {
+            m_persistor.save(obj, settings.addNodeSettings(m_configKey));
         }
 
     }
