@@ -3,8 +3,8 @@ import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
 import SubMenu from '../SubMenu.vue';
 
-describe.skip('SubMenu.vue', () => {
-    describe('clicking submenu items', () => {
+describe('SubMenu.vue', () => {
+    describe.skip('clicking submenu items', () => {
         it('emits item-click', async () => {
             const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -147,7 +147,7 @@ describe.skip('SubMenu.vue', () => {
             expect(document.activeElement).toBe(listItems[0]);
         });
 
-        it('does not focus first element on key up after expand if orientation bottom', async () => {
+        it.skip('does not focus first element on key up after expand if orientation bottom', async () => {
             let onUpMock = vi.spyOn(arrowKeyNavWrapper.vm, 'onUp');
             expect(arrowKeyNavWrapper.vm.expanded).toBe(false);
             await arrowKeyNavWrapper.setData({ expanded: true });
@@ -163,7 +163,7 @@ describe.skip('SubMenu.vue', () => {
             expect(onUpMock).toHaveBeenCalled();
         });
 
-        it('focuses first element on key up after expand if orientation top', async () => {
+        it.skip('focuses first element on key up after expand if orientation top', async () => {
             const id = 'testfoobar543';
             const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -198,7 +198,7 @@ describe.skip('SubMenu.vue', () => {
             expect(onUpMock).toHaveBeenCalled();
         });
 
-        it('does not focus first element on key down after expand if orientation top', async () => {
+        it.skip('does not focus first element on key down after expand if orientation top', async () => {
             const id = 'testfoobar543';
             const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -279,6 +279,9 @@ describe.skip('SubMenu.vue', () => {
             let closeMenuMock = vi.spyOn(closingMenuWrapper.vm, 'closeMenu');
 
             closingMenuWrapper.setData({ expanded: true });
+            // preventDefault to omit console error, see https://github.com/jsdom/jsdom/issues/2112#issuecomment-1019402961
+            closingMenuWrapper.find('ul a').wrapperElement
+                .addEventListener('click', (event) => event.preventDefault(), false);
             await closingMenuWrapper.find('ul a').trigger('click');
 
             vi.runAllTimers();
@@ -297,7 +300,7 @@ describe.skip('SubMenu.vue', () => {
             expect(closingMenuWrapper.vm.expanded).toBe(true);
         });
 
-        it('closes menu on escape', async () => {
+        it.skip('closes menu on escape', async () => {
             vi.useFakeTimers();
 
             let closeMenuMock = vi.spyOn(closingMenuWrapper.vm, 'closeMenu');
