@@ -1,9 +1,5 @@
 import { h, defineComponent, getCurrentInstance } from 'vue';
 
-const compatConfig = {
-    RENDER_FUNCTION: false
-};
-
 const getAppInstance = () => {
     const currentInstance = getCurrentInstance();
 
@@ -20,7 +16,6 @@ export const resolveClientOnlyComponent = () => {
     
     // fallback component when ClientOnly not available
     const fallbackComponent = defineComponent({
-        compatConfig,
         render() {
             return this.$slots.default();
         }
@@ -44,7 +39,6 @@ export const resolveNuxtLinkComponent = () => {
 
     // fallback component when neither NuxtLink nor RouterLink are available
     const fallbackComponent = defineComponent({
-        compatConfig,
         props: {
             to: {
                 type: String,

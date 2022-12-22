@@ -7,9 +7,6 @@ const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         ArrowIcon
     },

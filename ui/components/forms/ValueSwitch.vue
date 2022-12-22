@@ -2,9 +2,6 @@
 import BaseRadioButtons from './BaseRadioButtons.vue';
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         BaseRadioButtons
     },

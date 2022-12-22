@@ -6,9 +6,6 @@ const KEY_HOME = 36;
 const KEY_END = 35;
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     props: {
         id: {
             type: String,

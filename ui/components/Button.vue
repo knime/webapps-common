@@ -2,9 +2,6 @@
 import BaseButton from './BaseButton.vue';
 
 export default {
-    compatConfig: {
-        INSTANCE_LISTENERS: false
-    },
     components: {
         BaseButton
     },

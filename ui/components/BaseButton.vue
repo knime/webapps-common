@@ -2,10 +2,6 @@
 import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
 
 export default {
-    compatConfig: {
-        INSTANCE_LISTENERS: false,
-        COMPILER_V_BIND_OBJECT_ORDER: false
-    },
     props: {
         /**
          * If set, the button renders an <a> element instead of a <button> element

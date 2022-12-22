@@ -15,9 +15,6 @@ const DEFAULT_STEP_SIZE_INTEGER = 1;
  *  - Format to fixed length with leading zeros.
  */
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         ArrowIcon
     },

@@ -2,9 +2,6 @@
 import Checkbox from '../forms/Checkbox.vue';
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         Checkbox
     },

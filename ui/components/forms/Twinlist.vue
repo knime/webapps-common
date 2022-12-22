@@ -11,9 +11,6 @@ const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         ArrowNextDoubleIcon,
         ArrowNextIcon,

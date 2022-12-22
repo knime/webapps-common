@@ -14,9 +14,6 @@ const KEY_ENTER = 13;
 const TYPING_TIMEOUT = 1000; // in ms
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         DropdownIcon
     },

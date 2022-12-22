@@ -5,10 +5,6 @@ let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false,
-        WATCH_ARRAY: false
-    },
     props: {
         id: {
             type: String,

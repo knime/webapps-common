@@ -1,9 +1,6 @@
 <script>
 let count = 0;
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     props: {
         id: {
             type: String,

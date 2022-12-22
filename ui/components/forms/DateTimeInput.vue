@@ -17,10 +17,6 @@ import TimePartInput from './TimePartInput.vue';
  * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false,
-        RENDER_FUNCTION: false
-    },
     components: {
         CalendarIcon,
         TimePartInput,

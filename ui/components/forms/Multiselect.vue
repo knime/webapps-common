@@ -5,9 +5,6 @@ import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 const BLUR_TIMEOUT = 1;
 
 export default {
-    compatConfig: {
-        COMPONENT_V_MODEL: false
-    },
     components: {
         Checkbox,
         DropdownIcon
