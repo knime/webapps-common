@@ -149,7 +149,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     public void save(final S obj, final NodeSettingsWO settings) {
         try {
             useBlackMagicToAccessFields((persistor, field) -> uncheckedSave(persistor, field.get(obj), settings));
-        } catch (InvalidSettingsException ex) {
+        } catch (InvalidSettingsException ex) {//NOSONAR
             // because the origin of the InvalidSettingsException would be our PersistorConsumer which does not
             // throw such an exception
             throw new IllegalStateException("This catch block is not supposed to be reachable.");
@@ -159,7 +159,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     @Override
     public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
         final var loaded = DefaultNodeSettings.createSettings(m_settingsClass);
-        useBlackMagicToAccessFields((persistor, field) -> field.set(loaded, persistor.load(settings)));
+        useBlackMagicToAccessFields((persistor, field) -> field.set(loaded, persistor.load(settings)));//NOSONAR
         return loaded;
     }
 
@@ -174,18 +174,20 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
             var fieldName = entry.getKey();
             try {
                 var field = m_settingsClass.getDeclaredField(entry.getKey());
-                field.setAccessible(true);
+                field.setAccessible(true);//NOSONAR
                 var persistor = entry.getValue();
                 consumer.accept(persistor, field);
             } catch (IllegalAccessException ex) {
                 // because we use black magic (Field#setAccessible) to make the field accessible
-                throw new IllegalStateException(String.format(
-                    "Could not access the field '%s' although reflection was used to make it accessible.", fieldName));
+                throw new IllegalStateException(
+                    String.format("Could not access the field '%s' although reflection was used to make it accessible.",
+                        fieldName),
+                    ex);
             } catch (NoSuchFieldException ex) {
-                throw new IllegalStateException(String.format(
-                    "The field '%s' no longer exists in class '%s' although it existed during creation of the persistor."
-                        + " Most likely an implementation error.",
-                    fieldName, m_settingsClass));
+                throw new IllegalStateException(String
+                    .format("The field '%s' no longer exists in class '%s' although it existed during creation of the"
+                        + " persistor. Most likely an implementation error.", fieldName, m_settingsClass),
+                    ex);
             } catch (SecurityException ex) {
                 throw new IllegalStateException(
                     "Security exception while accessing field although it was possible to access it during creation of"

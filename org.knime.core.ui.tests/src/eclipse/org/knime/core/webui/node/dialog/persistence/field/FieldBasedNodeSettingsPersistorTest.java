@@ -72,10 +72,11 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
+ * Tests for the {@link FieldBasedNodeSettingsPersistor}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class FieldBasedNodeSettingsPersistorTest {
+class FieldBasedNodeSettingsPersistorTest {
 
     private static final String ROOT_KEY = "Test";
 
@@ -143,29 +144,32 @@ public class FieldBasedNodeSettingsPersistorTest {
         var actual = new NodeSettings(ROOT_KEY);
         persistor.save(obj, actual);
 
-        assertEquals(expected, actual);
+        assertEquals(expected, actual, "The settings saved by the persistor are not as expected.");
 
         var loaded = persistor.load(expected);
 
-        assertEquals(obj, loaded);
+        assertEquals(obj, loaded, "The loaded settings are not as expected");
     }
 
     @Test
     void testCustomPersistorWithoutEmptyConstructor() {
         assertThrows(IllegalArgumentException.class,
-            () -> new FieldBasedNodeSettingsPersistor<>(NoEmptyConstuctorFieldPersistorSetings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(NoEmptyConstuctorFieldPersistorSetings.class),
+            "Custom persistor without empty constructor was not detected.");
     }
 
     @Test
     void testCustomPersistorWithFailingConstructor() {
         assertThrows(IllegalStateException.class,
-            () -> new FieldBasedNodeSettingsPersistor<>(FailingConstructorFieldPersistorSettings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(FailingConstructorFieldPersistorSettings.class),
+            "Custom persistor whose constructor fails was not detected.");
     }
 
     @Test
     void testAbstractCustomFieldPersistor() {
         assertThrows(IllegalStateException.class,
-            () -> new FieldBasedNodeSettingsPersistor<>(AbstractCustomFieldPersistorSettings.class));
+            () -> new FieldBasedNodeSettingsPersistor<>(AbstractCustomFieldPersistorSettings.class),
+            "Abstract custom persistor was not detected.");
     }
 
     @Test
@@ -182,12 +186,12 @@ public class FieldBasedNodeSettingsPersistorTest {
     }
 
     @Test
-    void testStaticFieldsAreIgnored() throws Exception {
+    void testStaticFieldsAreIgnored() throws InvalidSettingsException {
         testSaveLoad(new SettingsWithStaticField());
     }
 
     @Test
-    void testStaticFinalFieldsAreIgnored() throws Exception {
+    void testStaticFinalFieldsAreIgnored() throws InvalidSettingsException {
         testSaveLoad(new SettingsWithStaticFinalField());
     }
 
@@ -240,7 +244,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         String m_stringSetting;
 
         // omit the m_ to test if settings without m_ prefix also work
-        boolean booleanSetting;
+        boolean booleanSetting; //NOSONAR
 
         @Override
         public void saveExpected(final NodeSettingsWO settings) {
@@ -472,7 +476,7 @@ public class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private abstract static class AbstractCustomFieldPersistor implements NodeSettingsPersistor<String> {
+    private abstract static class AbstractCustomFieldPersistor implements NodeSettingsPersistor<String> {//NOSONAR
 
     }
 
@@ -527,9 +531,9 @@ public class FieldBasedNodeSettingsPersistorTest {
     }
 
     private static final class SettingsWithStaticField extends AbstractTestNodeSettings<SettingsWithStaticField> {
-        
-    	@SuppressWarnings("unused")
-        private static String STATIC_FIELD = "foo";
+
+        @SuppressWarnings("unused")
+        private static String STATIC_FIELD = "foo"; //NOSONAR
 
         @Override
         public void saveExpected(final NodeSettingsWO settings) {
