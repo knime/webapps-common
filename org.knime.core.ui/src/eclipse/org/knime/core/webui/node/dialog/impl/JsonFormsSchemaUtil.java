@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -177,19 +178,34 @@ final class JsonFormsSchemaUtil {
                 .filter(d -> !field.isFakeContainerItemScope() && !d.isEmpty()).orElse(null));
 
         builder.forFields().withNumberInclusiveMinimumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class)).map(Schema::min)
-                .filter(min -> !field.isFakeContainerItemScope() && !Double.isNaN(min)).map(BigDecimal::valueOf)
-                .orElse(null));
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
+            .filter(schema -> !field.isFakeContainerItemScope())//
+            .map(schema -> resolveDouble(context, schema.minProvider(), schema.min()))//
+            .orElse(null));
+
 
         builder.forFields().withNumberInclusiveMaximumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class)).map(Schema::max)
-                .filter(max -> !field.isFakeContainerItemScope() && !Double.isNaN(max)).map(BigDecimal::valueOf)
-                .orElse(null));
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
+            .filter(schema -> !field.isFakeContainerItemScope())//
+            .map(schema -> resolveDouble(context, schema.maxProvider(), schema.max()))//
+            .orElse(null));
 
         builder.forFields().withPropertyNameOverrideResolver(
             field -> field.getName().startsWith("m_") ? field.getName().substring(2) : field.getName());
 
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
+    }
+
+    private static BigDecimal resolveDouble(final SettingsCreationContext context,
+        final Class<? extends DoubleProvider> providerClass, final double value) {
+        if (!DoubleProvider.class.equals(providerClass)) {
+            var provider = JsonFormsDataUtil.createInstance(providerClass);
+            return BigDecimal.valueOf(provider.getValue(context));
+        }
+        if (!Double.isNaN(value)) {
+            return BigDecimal.valueOf(value);
+        }
+        return null;
     }
 
 }

@@ -58,6 +58,7 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -191,6 +192,42 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testMinMax() throws JsonProcessingException {
         testSettings(MinMaxSetting.class);
+    }
+
+    private static final class MinMaxProviderSetting {
+
+        private static final String SNAPSHOT = "{"//
+                + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42},"//
+                + "\"testMax\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"maximum\":42},"//
+                + "\"testBoth\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42,\"maximum\":42},"//
+                + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0,\"minimum\":42,\"maximum\":42}"//
+                + "}";
+
+        @Schema(minProvider = TestProvider.class)
+        int testMin;
+
+        @Schema(maxProvider = TestProvider.class)
+        int testMax;
+
+        @Schema(min = 0, minProvider = TestProvider.class, max = 1000, maxProvider = TestProvider.class)
+        int testBoth;
+
+        @Schema(minProvider = TestProvider.class, maxProvider = TestProvider.class)
+        double testDouble;
+
+        private static final class TestProvider implements DoubleProvider {
+
+            @Override
+            public double getValue(final SettingsCreationContext context) {
+                return 42;
+            }
+
+        }
+    }
+
+    @Test
+    void testMinMaxProviders() throws JsonProcessingException {
+        testSettings(MinMaxProviderSetting.class);
     }
 
     private static class ContainerSetting {

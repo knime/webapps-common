@@ -53,6 +53,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+
 /**
  * An annotation for indicating controlling the schema of a given field.
  *
@@ -93,13 +95,47 @@ public @interface Schema {
     boolean multiple() default false;
 
     /**
+     * Use {@link #minProvider()} if the minimum value depends on the context of the node.
+     *
      * @return an optional minimum value for a numeric field
      */
     double min() default Double.NaN;
 
     /**
+     * Takes precedence over {@link #min()} if provided.
+     * No minimum is set if the DoubleProvider returns {@code Double.NaN}.
+     *
+     * @return an optional DoubleProvider that provides the min value given the current context of the node
+     */
+    Class<? extends DoubleProvider> minProvider() default DoubleProvider.class;
+
+    /**
+     * Use {@link #maxProvider()} if the maximum value depends on the context of the node.
+     *
      * @return an optional maximum value for a numeric field
      */
     double max() default Double.NaN;
+
+    /**
+     * Takes precedence over {@link #max()} if provided.
+     * No maximum is set if the DoubleProvider returns {@code Double.NaN}.
+     *
+     * @return an optional DoubleProvider that provides the max value given the current context of the node
+     */
+    Class<? extends DoubleProvider> maxProvider() default DoubleProvider.class;
+
+    /**
+     * Provides a double value given the context of the node.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     */
+    interface DoubleProvider {
+
+        /**
+         * @param context of the node
+         * @return the double value
+         */
+        double getValue(final SettingsCreationContext context);
+    }
 
 }

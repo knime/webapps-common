@@ -114,12 +114,31 @@ public interface DefaultNodeSettings extends PersistableSettings {
         }
 
         /**
+         * @param portIndex the port for which to retrieve the spec
+         * @return the {@link PortObjectSpec} at the given portIndex or {@link Optional#empty()} if it is not available
+         * @throws IndexOutOfBoundsException if the portIndex does not match the ports of the node
+         */
+        public Optional<PortObjectSpec> getPortObjectSpec(final int portIndex) {
+            return Optional.of(m_specs[portIndex]);
+        }
+
+        /**
          * @return the input {@link DataTableSpec DataTableSpecs} of the node; NOTE: array of specs can contain
          *         {@code null} values, e.g., if input port is not connected!
          * @throws ClassCastException if any of the node's input ports does not hold a {@link DataTableSpec}
          */
         public DataTableSpec[] getDataTableSpecs() {
             return Arrays.stream(m_specs).map(DataTableSpec.class::cast).toArray(DataTableSpec[]::new);
+        }
+
+        /**
+         * @param portIndex the port for which to retrieve the spec
+         * @return the {@link DataTableSpec} at the given portIndex or {@link Optional#empty()} if it is not available
+         * @throws ClassCastException if the requested port is not a table port
+         * @throws IndexOutOfBoundsException if the portIndex does not match the ports of the node
+         */
+        public Optional<DataTableSpec> getDataTableSpec(final int portIndex) {
+            return getPortObjectSpec(portIndex).map(DataTableSpec.class::cast);
         }
 
         /**
