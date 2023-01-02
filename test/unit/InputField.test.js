@@ -178,4 +178,11 @@ describe('InputField.vue', () => {
         wrapper.vm.focus();
         expect(document.activeElement).toEqual(wrapper.find('input').element);
     });
+
+    it('emits focus event', () => {
+        const wrapper = mount(InputField);
+        const input = wrapper.find('input');
+        input.trigger('focus');
+        expect(wrapper.emitted().focus).toBeTruthy();
+    });
 });

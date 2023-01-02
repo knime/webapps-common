@@ -73,4 +73,23 @@ describe('Breadcrumb.vue', () => {
 
         expect(wrapper.find('.greyStyle').exists()).toBe(true);
     });
+    
+    it('renders clickable breadcrumbs', () => {
+        const wrapper = mount(Breadcrumb, {
+            propsData: {
+                items: [
+                    { text: 'foo', clickable: true },
+                    { text: 'bar' }
+                ]
+            }
+        });
+
+        const breadcrumbs = wrapper.findAll('li > span');
+
+        breadcrumbs.at(0).trigger('click');
+        expect(wrapper.emitted('click-item')[0][0]).toEqual({ text: 'foo', clickable: true });
+
+        breadcrumbs.at(1).trigger('click');
+        expect(wrapper.emitted('click-item')[1]).toBeUndefined();
+    });
 });

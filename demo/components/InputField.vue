@@ -39,6 +39,10 @@ const codeExample = `<InputField
 />
 <InputField
   v-model="inputValue"
+  @focus="onFocus"
+/>
+<InputField
+  v-model="inputValue"
   type="text"
 >
   <template v-slot:icon><MailIcon /></template>

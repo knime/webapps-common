@@ -4,9 +4,15 @@ import FolderIcon from '../../ui/assets/img/icons/folder.svg';
 import Breadcrumb from '../../ui/components/Breadcrumb.vue';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
-const codeExample = `<Breadcrumb :items="[{ text: 'segment without link' },
+const codeExample = `<Breadcrumb 
+  :items="[
+    { text: 'segment without link' },
     { text: 'segment with link', href: '/' },
-    { text: 'segment with icon', icon: FolderIcon }]" greyStyle />
+    { text: 'segment with icon', icon: FolderIcon, clickable: true },
+    { text: 'segment with icon', icon: FolderIcon }
+  ]" 
+  greyStyle 
+/>
 `;
 
 export default {
@@ -21,11 +27,16 @@ export default {
                 { text: 'KNIME Hub', href: '/' },
                 { text: 'John Doe', href: '/john.doe' },
                 { text: 'Public Space', href: '/john.doe/space', icon: FolderIcon },
-                { text: 'Examples', icon: FolderIcon },
+                { text: 'Examples', icon: FolderIcon, clickable: true },
                 { text: 'Sentiment Prediction via REST' }
             ],
             codeExample
         };
+    },
+    methods: {
+        onItemClicked({ text }) {
+            window.alert(`You clicked on item ${JSON.stringify({ text })}`);
+        }
     }
 };
 </script>
@@ -37,7 +48,10 @@ export default {
         <h2>Breadcrumb</h2>
         <p>Breadcrumbs can have different focus/hover styles, these can be toggled via the "greyStyle"-property</p>
         <span>Default style:</span>
-        <Breadcrumb :items="breadcrumbItems" />
+        <Breadcrumb
+          :items="breadcrumbItems"
+          @click-item="onItemClicked"
+        />
         <span>"greyStyle" enabled:</span>
         <Breadcrumb
           :items="breadcrumbItems"

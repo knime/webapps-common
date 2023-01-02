@@ -18,6 +18,10 @@ const codeExample = `<SearchInput
   placeholder="Placeholder"
   @clear="alert('Search cleared')"
 />
+<SearchInput
+  v-model="inputValue"
+  @focus="onFocus"
+/>
 `;
 
 export default {

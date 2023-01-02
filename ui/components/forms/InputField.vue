@@ -131,6 +131,7 @@ export default {
       :autocomplete="autocomplete"
       :disabled="disabled"
       @input="onInput"
+      @focus="$emit('focus', $event)"
     >
     <span
       class="invalid-marker"
