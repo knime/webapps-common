@@ -50,7 +50,9 @@ package org.knime.core.webui.node.dialog.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -60,6 +62,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 
 /**
  * The {@link NodeModel} for simple WebUI nodes, see {@link WebUINodeFactory}.
@@ -79,7 +83,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      * @param modelSettingsClass the type of the model settings for this node
      */
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
-        super(configuration.getInPortDescriptions().length, configuration.getOutPortDescriptions().length);
+        super(configuration.getInputPortTypes(), configuration.getOutputPortTypes());
         m_modelSettingsClass = modelSettingsClass;
     }
 
@@ -92,19 +96,53 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     }
 
     /**
+     * @param inSpecs the input {@link PortObjectSpec PortObjectSpecs}
+     * @param modelSettings the current model settings
+     * @return the output {@link PortObjectSpec PortObjectSpecs}
+     * @throws InvalidSettingsException if the settings are inconsistent with the input specs
+     * @see NodeModel#configure(PortObjectSpec[])
+     */
+    protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs, final S modelSettings)
+        throws InvalidSettingsException {
+        var tableSpecs = Stream.of(inSpecs).map(DataTableSpec.class::cast).toArray(DataTableSpec[]::new);
+        return configure(tableSpecs, modelSettings);
+    }
+
+    /**
      * @param inSpecs the input {@link DataTableSpec DataTableSpecs}
      * @param modelSettings the current model settings
      * @return the output {@link DataTableSpec DataTableSpecs}
      * @throws InvalidSettingsException if the settings are inconsistent with the input specs
      * @see NodeModel#configure(DataTableSpec[])
      */
-    protected abstract DataTableSpec[] configure(final DataTableSpec[] inSpecs, S modelSettings)
-        throws InvalidSettingsException;
+    protected DataTableSpec[] configure(final DataTableSpec[] inSpecs, final S modelSettings)
+        throws InvalidSettingsException {
+        throw new NotImplementedException("NodeModel.configure() implementation missing!");
+    }
 
     @Override
-    protected final BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
+    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) throws Exception {
+        return execute(inObjects, exec, m_modelSettings);
+    }
+
+    @Override
+    protected BufferedDataTable[] execute(final BufferedDataTable[] inObjects, final ExecutionContext exec)
         throws Exception {
-        return execute(inData, exec, m_modelSettings);
+        return execute(inObjects, exec, m_modelSettings);
+    }
+
+    /**
+     * @param inObjects the input {@link PortObject PortObjects}
+     * @param exec the current {@link ExecutionContext}
+     * @param modelSettings the current model settings
+     * @return the output {@link PortObject PortObjects}
+     * @throws Exception if anything goes wrong during the execution
+     * @see NodeModel#execute(PortObject[], ExecutionContext)
+     */
+    protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec, final S modelSettings)
+        throws Exception {
+        var tables = Stream.of(inObjects).map(BufferedDataTable.class::cast).toArray(BufferedDataTable[]::new);
+        return execute(tables, exec, modelSettings);
     }
 
     /**
@@ -115,8 +153,10 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      * @throws Exception if anything goes wrong during the execution
      * @see NodeModel#execute(BufferedDataTable[], ExecutionContext)
      */
-    protected abstract BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec,
-        S modelSettings) throws Exception;
+    protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec,
+        final S modelSettings) throws Exception {//NOSONAR
+        throw new NotImplementedException("NodeModel.execute() implementation missing!");
+    }
 
     @Override
     protected final void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)

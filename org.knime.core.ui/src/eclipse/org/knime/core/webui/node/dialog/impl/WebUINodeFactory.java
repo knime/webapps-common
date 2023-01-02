@@ -115,8 +115,9 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
      * @return a description for this node
      */
     public static NodeDescription createNodeDescription(final String name, final String icon, // NOSONAR
-        final String[] inPortDescriptions, final String[] outPortDescriptions, final String shortDescription,
-        final String fullDescription, final Class<? extends DefaultNodeSettings> modelSettingsClass,
+        final PortDescription[] inPortDescriptions, final PortDescription[] outPortDescriptions,
+        final String shortDescription, final String fullDescription,
+        final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass, final String viewDescription,
         final NodeType type) {
         var fac = NodeDescription.getDocumentBuilderFactory();
@@ -170,16 +171,18 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         var ports = doc.createElement("ports");
         for (int i = 0; i < inPortDescriptions.length; i++) {
             var inPort = doc.createElement("inPort");
-            inPort.setAttribute("name", "Table Input Port");
+            var portDesc = inPortDescriptions[i];
+            inPort.setAttribute("name", portDesc.getName());
             inPort.setAttribute("index", Integer.toString(i));
-            inPort.appendChild(parseDocumentFragment(inPortDescriptions[i], docBuilder, doc));
+            inPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
             ports.appendChild(inPort);
         }
         for (int i = 0; i < outPortDescriptions.length; i++) {
             var outPort = doc.createElement("outPort");
-            outPort.setAttribute("name", "Table Output Port");
+            var portDesc = outPortDescriptions[i];
+            outPort.setAttribute("name", portDesc.getName());
             outPort.setAttribute("index", Integer.toString(i));
-            outPort.appendChild(parseDocumentFragment(outPortDescriptions[i], docBuilder, doc));
+            outPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
             ports.appendChild(outPort);
         }
         node.appendChild(ports);

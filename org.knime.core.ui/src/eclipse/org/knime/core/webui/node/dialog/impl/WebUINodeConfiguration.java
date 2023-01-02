@@ -50,6 +50,10 @@ package org.knime.core.webui.node.dialog.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortType;
 
 /**
  * Configuration for a {@link WebUINodeFactory WebUI node}.
@@ -75,20 +79,18 @@ public final class WebUINodeConfiguration {
 
     private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
 
-    private final String[] m_inPortDescriptions;
+    private final PortDescription[] m_inPortDescriptions;
 
-    private final String[] m_outPortDescriptions;
+    private final PortDescription[] m_outPortDescriptions;
 
-    WebUINodeConfiguration(final String name, final String icon, final String shortDescription,
-        final String fullDescription, final Class<? extends DefaultNodeSettings> modelSettingsClass,
-        final String[] inPortDescriptions, final String[] outPortDescriptions) {
-        m_name = name;
-        m_icon = icon;
-        m_shortDescription = shortDescription;
-        m_fullDescription = fullDescription;
-        m_modelSettingsClass = modelSettingsClass;
-        m_inPortDescriptions = inPortDescriptions;
-        m_outPortDescriptions = outPortDescriptions;
+    private WebUINodeConfiguration(final RequirePorts builder) {
+        m_name = builder.m_name;
+        m_icon = builder.m_icon;
+        m_shortDescription = builder.m_shortDescription;
+        m_fullDescription = builder.m_fullDescription;
+        m_modelSettingsClass = builder.m_modelSettingsClass;
+        m_inPortDescriptions = builder.m_inputPortDescriptions.toArray(PortDescription[]::new);
+        m_outPortDescriptions = builder.m_outputPortDescriptions.toArray(PortDescription[]::new);
     }
 
     String getName() {
@@ -111,12 +113,24 @@ public final class WebUINodeConfiguration {
         return m_modelSettingsClass;
     }
 
-    String[] getInPortDescriptions() {
+    PortDescription[] getInPortDescriptions() {
         return m_inPortDescriptions;
     }
 
-    String[] getOutPortDescriptions() {
+    PortDescription[] getOutPortDescriptions() {
         return m_outPortDescriptions;
+    }
+
+    PortType[] getInputPortTypes() {
+        return Stream.of(m_inPortDescriptions)//
+                .map(PortDescription::getType)//
+                .toArray(PortType[]::new);
+    }
+
+    PortType[] getOutputPortTypes() {
+        return Stream.of(m_outPortDescriptions)//
+                .map(PortDescription::getType)//
+                .toArray(PortType[]::new);
     }
 
     /**
@@ -201,9 +215,9 @@ public final class WebUINodeConfiguration {
 
         private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
 
-        private final List<String> m_inputPortDescriptions = new ArrayList<>();
+        private final List<PortDescription> m_inputPortDescriptions = new ArrayList<>();
 
-        private final List<String> m_outputPortDescriptions = new ArrayList<>();
+        private final List<PortDescription> m_outputPortDescriptions = new ArrayList<>();
 
         RequirePorts(final String name, final String icon, final String shortDescription, final String fullDescription,
             final Class<? extends DefaultNodeSettings> modelSettingsClass) {
@@ -215,24 +229,50 @@ public final class WebUINodeConfiguration {
         }
 
         /**
-         * Adds another input port to the node.
+         * Adds another input table to the node.
          *
-         * @param portDescription the description of the node's next input port
+         * @param name the name of the node's next input table
+         * @param description the description of the node's next input table
          * @return this build stage
          */
-        public RequirePorts addInputPort(final String portDescription) {
-            m_inputPortDescriptions.add(portDescription);
+        public RequirePorts addInputTable(final String name, final String description) {
+            return addInputPort(name, BufferedDataTable.TYPE, description);
+        }
+
+        /**
+         * Adds another input port to the node.
+         *
+         * @param name the name of the node's next input port
+         * @param type the type of the node's next input port
+         * @param description the description of the node's next input port
+         * @return this build stage
+         */
+        public RequirePorts addInputPort(final String name, final PortType type, final String description) {
+            m_inputPortDescriptions.add(new PortDescription(name, type, description));
             return this;
+        }
+
+        /**
+         * Adds another output table to the node.
+         *
+         * @param name the name of the node's next output table
+         * @param description the description of the node's next output table
+         * @return this build stage
+         */
+        public RequirePorts addOutputTable(final String name, final String description) {
+            return addOutputPort(name, BufferedDataTable.TYPE, description);
         }
 
         /**
          * Adds another output port to the node.
          *
-         * @param portDescription the description of the node's next output port
+         * @param name the name of the node's next output port
+         * @param type the type of the node's next output port
+         * @param description the description of the node's next output port
          * @return this build stage
          */
-        public RequirePorts addOutputPort(final String portDescription) {
-            m_outputPortDescriptions.add(portDescription);
+        public RequirePorts addOutputPort(final String name, final PortType type, final String description) {
+            m_outputPortDescriptions.add(new PortDescription(name, type, description));
             return this;
         }
 
@@ -240,9 +280,7 @@ public final class WebUINodeConfiguration {
          * @return the built node
          */
         public WebUINodeConfiguration build() {
-            return new WebUINodeConfiguration(m_name, m_icon, m_shortDescription, m_fullDescription,
-                m_modelSettingsClass, m_inputPortDescriptions.toArray(new String[0]),
-                m_outputPortDescriptions.toArray(new String[0]));
+            return new WebUINodeConfiguration(this);
         }
     }
 

@@ -42,31 +42,58 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Jan 2, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import org.knime.core.node.port.PortType;
+
 /**
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * Describes an input or output port of a node.
+ *
+ * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public final class TestWebUINodeFactory extends WebUINodeFactory<TestWebUINodeModel> {
+public final class PortDescription {
 
-    private static WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()//
-        .name("Template")//
-        .icon("./Template.png")//
-        .shortDescription("Short Description")//
-        .fullDescription("Full Description")//
-        .modelSettingsClass(TestWebUINodeModelSettings.class)//
-        .addInputTable("Input Table", "Input Port Description")//
-        .addOutputTable("Output Table", "Output Port Description")//
-        .build();
+    private final String m_name;
 
-    public TestWebUINodeFactory() {
-        super(CONFIGURATION);
+    private final String m_description;
+
+    private final PortType m_type;
+
+    /**
+     * Constructor.
+     *
+     * @param name the name of the port
+     * @param type the type of the port
+     * @param description the description of the port
+     */
+    public PortDescription(final String name, final PortType type, final String description) {
+        m_name = name;
+        m_description = description;
+        m_type = type;
     }
 
-    @Override
-    public TestWebUINodeModel createNodeModel() {
-        return new TestWebUINodeModel(CONFIGURATION);
+    /**
+     * @return the name of the port
+     */
+    public String getName() {
+        return m_name;
     }
 
+    /**
+     * @return the description of the port
+     */
+    public String getDescription() {
+        return m_description;
+    }
+
+    /**
+     * @return the type of the port
+     */
+    public PortType getType() {
+        return m_type;
+    }
 }
