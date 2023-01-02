@@ -173,7 +173,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             var inPort = doc.createElement("inPort");
             var portDesc = inPortDescriptions[i];
             inPort.setAttribute("name", portDesc.getName());
-            inPort.setAttribute("index", Integer.toString(i));
+            inPort.setAttribute("index", Integer.toString(i + 1));
             inPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
             ports.appendChild(inPort);
         }
@@ -181,7 +181,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             var outPort = doc.createElement("outPort");
             var portDesc = outPortDescriptions[i];
             outPort.setAttribute("name", portDesc.getName());
-            outPort.setAttribute("index", Integer.toString(i));
+            outPort.setAttribute("index", Integer.toString(i + 1));
             outPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
             ports.appendChild(outPort);
         }
