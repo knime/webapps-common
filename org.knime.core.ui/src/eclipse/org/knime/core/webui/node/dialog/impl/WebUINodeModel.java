@@ -88,6 +88,14 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     }
 
     @Override
+    protected final PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+        if (m_modelSettings == null) {
+            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
+        }
+        return configure(inSpecs, m_modelSettings);
+    }
+
+    @Override
     protected final DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
         if (m_modelSettings == null) {
             m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
