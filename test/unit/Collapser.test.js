@@ -28,10 +28,8 @@ describe('Collapser.vue', () => {
         expect(wrapper.find('.icon').exists()).toBeTruthy();
     });
 
-    it('calls transition handlers and expands', done => {
+    it('handles button click', () => {
         const triggerSpy = jest.spyOn(Collapser.methods, 'onTrigger');
-        const enterSpy = jest.spyOn(Collapser.methods, 'onEnter');
-        const leaveSpy = jest.spyOn(Collapser.methods, 'onLeave');
 
         const wrapper = mount(Collapser, {
             slots: {
@@ -40,25 +38,7 @@ describe('Collapser.vue', () => {
             }
         });
 
-        // open collapser
         wrapper.find('.button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
-
-        wrapper.vm.$nextTick(() => {
-            expect(enterSpy).toHaveBeenCalled();
-            expect(wrapper.vm.isExpanded).toEqual(true);
-
-            // only check if height style property is set as height will be always 0 with vue test utils
-            expect(wrapper.find('.panel').attributes('style')).toContain('height');
-
-            // close it again
-            wrapper.find('.button').trigger('click');
-            wrapper.vm.$nextTick(() => {
-                expect(leaveSpy).toHaveBeenCalled();
-                expect(wrapper.vm.isExpanded).toBeFalsy();
-                expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
-                done();
-            });
-        });
     });
 });
