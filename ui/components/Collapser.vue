@@ -1,11 +1,13 @@
 <script>
 import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg';
 import BaseButton from './BaseButton.vue';
+import ExpandTransition from './transitions/ExpandTransition.vue';
 
 export default {
     components: {
         DropdownIcon,
-        BaseButton
+        BaseButton,
+        ExpandTransition
     },
     props: {
         /**
@@ -22,28 +24,6 @@ export default {
         };
     },
     methods: {
-        onBeforeEnter(el) {
-            consola.trace(`Collapser: setting height to 0px before expanding`);
-            el.style.height = 0;
-        },
-        onEnter(el) {
-            consola.trace(`Collapser: expanding to ${el.scrollHeight}px`);
-            el.style.height = `${el.scrollHeight}px`;
-        },
-        onAfterEnter(el) {
-            consola.trace(`Collapser: fully expanded, removing fixed height`);
-            el.style.height = '';
-        },
-        onBeforeLeave(el) {
-            consola.trace(`Collapser: setting height to ${el.scrollHeight}px before collapsing`);
-            el.style.height = `${el.scrollHeight}px`;
-            // force repaint to trigger animation correctly
-            getComputedStyle(el).height; // eslint-disable-line no-unused-expressions
-        },
-        onLeave(el) {
-            consola.trace(`Collapser: setting height to 0px to trigger collapsing`);
-            el.style.height = 0;
-        },
         onTrigger(e) {
             this.isExpanded = !this.isExpanded;
         }
@@ -65,22 +45,9 @@ export default {
         <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
       </div>
     </BaseButton>
-    <Transition
-      name="expand"
-      @before-enter="onBeforeEnter"
-      @enter="onEnter"
-      @before-leave="onBeforeLeave"
-      @leave="onLeave"
-      @after-enter="onAfterEnter"
-    >
-      <div
-        v-show="isExpanded"
-        class="panel"
-      >
-        <!-- @slot Panel content goes into default slot -->
-        <slot />
-      </div>
-    </Transition>
+    <ExpandTransition :is-expanded="isExpanded">
+      <slot />
+    </ExpandTransition>
   </div>
 </template>
 
@@ -148,10 +115,5 @@ export default {
 >>> ol {
   margin: 0;
   padding-left: 40px;
-}
-
-.panel {
-  transition: height 0.4s ease-in-out;
-  overflow: hidden;
 }
 </style>
