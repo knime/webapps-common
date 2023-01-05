@@ -9,25 +9,20 @@ export default {
     },
     methods: {
         onBeforeEnter(el) {
-            consola.error('onBeforeEnter');
             el.style.height = 0;
         },
         onEnter(el) {
-            consola.error('onEnter');
             el.style.height = `${el.scrollHeight}px`;
         },
         onAfterEnter(el) {
-            consola.error('onAfterEnter');
             el.style.height = '';
         },
         onBeforeLeave(el) {
-            consola.error('onBeforeLeave');
             el.style.height = `${el.scrollHeight}px`;
             // force repaint to trigger animation correctly
             getComputedStyle(el).height; // eslint-disable-line no-unused-expressions
         },
         onLeave(el) {
-            consola.error('onLeave');
             el.style.height = 0;
         }
     }
