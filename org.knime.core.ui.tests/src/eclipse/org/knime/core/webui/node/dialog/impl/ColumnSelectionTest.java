@@ -62,6 +62,7 @@ import org.knime.testing.node.view.TableTestUtil;
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class ColumnSelectionTest {
 
     private static final DataTableSpec TABLE_SPEC = TableTestUtil.getDefaultTestSpec();

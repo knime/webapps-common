@@ -52,6 +52,7 @@ import static org.apache.commons.io.FilenameUtils.wildcardMatch;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -65,8 +66,9 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreatio
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A class used to store several representation of column choices. I.e. the columns can be determined using one of the modes of {@link ColumnSelectionMode}.
- * For using this class in order to render a twinlist, one has to create a subclass with a member "selected" with the 'columns' Schema annotation.
+ * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
+ * modes of {@link ColumnSelectionMode}. For using this class in order to render a twinlist, one has to create a
+ * subclass with a member "selected" with the 'columns' Schema annotation.
  *
  * @author Paul Bärnreuther
  */
@@ -74,35 +76,36 @@ public class ColumnSelection {
     /**
      * The way the selection is determined by
      */
-    public ColumnSelectionMode m_mode;
+    public ColumnSelectionMode m_mode; //NOSONAR
 
     /**
      * the manually selected columns in case of m_mode = "MANUAL"
      */
-    public String[] m_manuallySelected;
+    public String[] m_manuallySelected; //NOSONAR
 
     /**
-     *  the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
+     * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
      */
-    public String m_pattern;
+    public String m_pattern; //NOSONAR
 
     /**
      * whether m_pattern is case sensitive
      */
-    public boolean m_isCaseSensitive;
+    public boolean m_isCaseSensitive; //NOSONAR
 
     /**
      * whether the pattern determines the excluded columns or the included ones
      */
-    public boolean m_isInverted;
+    public boolean m_isInverted; //NOSONAR
 
     /**
      * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
      */
-    public List<String> m_selectedTypes;
+    public List<String> m_selectedTypes; //NOSONAR
 
     /**
      * Initialises the column selection with an initial array of columns which are manually selected
+     *
      * @param initialSelected the initial manually selected columns
      */
     public ColumnSelection(final String[] initialSelected) {
@@ -126,14 +129,13 @@ public class ColumnSelection {
 
     /**
      * @param choices the list of all possible column names
-     * @param spec the spec of the data table (for type selection)
+     * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
      */
     @JsonIgnore
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
         return getSelected(choices, new SettingsCreationContext(new PortObjectSpec[]{spec}, null));
     }
-
 
     /**
      * @param choices the list of all possible column names
@@ -142,41 +144,38 @@ public class ColumnSelection {
      */
     @JsonIgnore
     public String[] getSelected(final String[] choices, final SettingsCreationContext context) {
-            final Predicate<String> predicate;
-            final var casedPattern =
-                m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase();
-            switch (m_mode) {
-                case MANUAL:
-                    return m_manuallySelected;
-                case TYPE:
-                    final var types = getTypes(choices, context);
-                    return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
-                        .mapToObj(i -> choices[i]).toArray(String[]::new);
-                case REGEX:
-                    predicate = casedPattern.isEmpty() ? (choice) -> false : Pattern.compile(casedPattern).asPredicate();
-                    break;
-
-                case WILDCARD:
-                    predicate = choice -> wildcardMatch(choice, casedPattern);
-                    break;
-                default:
-                    return new String[0];
-            }
-            final var augmentedPredicate =
-                getAugmentedPredicate(predicate, m_isCaseSensitive, m_isInverted);
-            return Arrays.asList(choices).stream().filter(augmentedPredicate).toArray(String[]::new);
+        final Predicate<String> predicate;
+        final var casedPattern = m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase(Locale.getDefault());
+        switch (m_mode) {
+            case MANUAL:
+                return m_manuallySelected;
+            case TYPE:
+                final var types = getTypes(choices, context);
+                return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
+                    .mapToObj(i -> choices[i]).toArray(String[]::new);
+            case REGEX:
+                predicate = casedPattern.isEmpty() ? choice -> false : Pattern.compile(casedPattern).asPredicate();
+                break;
+            case WILDCARD:
+                predicate = choice -> wildcardMatch(choice, casedPattern);
+                break;
+            default:
+                return new String[0];
+        }
+        final var augmentedPredicate = getAugmentedPredicate(predicate, m_isCaseSensitive, m_isInverted);
+        return Arrays.asList(choices).stream().filter(augmentedPredicate).toArray(String[]::new);
     }
 
     private static Predicate<String> getAugmentedPredicate(final Predicate<String> originalPredicate,
         final boolean isCaseSensitive, final boolean isInverted) {
         final var directedPredicate = isInverted ? originalPredicate.negate() : originalPredicate;
-        return (string) -> directedPredicate.test(isCaseSensitive ? string : string.toLowerCase());
+        return string -> directedPredicate.test(isCaseSensitive ? string : string.toLowerCase(Locale.getDefault()));
     }
 
     private static String[] getTypes(final String[] choices, final SettingsCreationContext context) {
         final var spec = context.getDataTableSpecs()[0];
         return Arrays.asList(choices).stream() //
-            .map(choice -> spec.getColumnSpec(choice)) //
+            .map(spec::getColumnSpec) //
             .map(DataColumnSpec::getType) //
             .map(ColumnSelection::typeToString) //
             .toArray(String[]::new);

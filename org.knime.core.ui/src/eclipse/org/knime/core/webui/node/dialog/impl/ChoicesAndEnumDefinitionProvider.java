@@ -109,8 +109,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         ArrayNode arrayNode;
         Supplier<String[]> savedChoicesSupplier =
             m_settings == null ? null : (() -> getSavedChoices(field, m_settings));
-        arrayNode =
-            determineChoiceValues(context.getGeneratorConfig(), schema.choices(), schema.withTypes(), m_context, savedChoicesSupplier);
+        arrayNode = determineChoiceValues(context.getGeneratorConfig(), schema.choices(), schema.withTypes(), m_context,
+            savedChoicesSupplier);
         return arrayNode;
     }
 
@@ -131,8 +131,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
-        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes, final SettingsCreationContext context,
-        final Supplier<String[]> savedChoicesSupplier) {
+        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes,
+        final SettingsCreationContext context, final Supplier<String[]> savedChoicesSupplier) {
         if (context != null) {
             final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
             if (choicesProvider != null) {
@@ -145,7 +145,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return createArrayNodeWithCurrentOrEmptyChoice(config, savedChoicesSupplier);
     }
 
-    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices, final boolean withTypes, final SettingsCreationContext context) {
+    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices,
+        final boolean withTypes, final SettingsCreationContext context) {
         final var arrayNode = config.createArrayNode();
         final var spec = context.getDataTableSpecs()[0];
         for (var choice : choices) {
