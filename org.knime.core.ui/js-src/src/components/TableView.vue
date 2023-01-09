@@ -813,7 +813,7 @@ export default {
             if (displayedColumnsChanged) {
                 // sort on column (not rowKey column) and add/remove (different) column (not rowKey/rowIndex column)
                 if (this.columnSortColumnName !== ROW_KEYS_SORT_COL_NAME) {
-                    const newColIndexOfSortCol = displayedColumns.indexOf(this.columnSortColumnName);
+                    const newColIndexOfSortCol = displayedColumns.selected.indexOf(this.columnSortColumnName);
                     if (newColIndexOfSortCol === -1) {
                         this.resetSorting();
                         return true;

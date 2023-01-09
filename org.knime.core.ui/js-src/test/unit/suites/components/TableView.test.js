@@ -71,7 +71,7 @@ describe('TableView.vue', () => {
             currentSelection: [[false, false, false, false]],
             settings: {
                 pageSize: 2,
-                displayedColumns: ['col1', 'col2', 'col3', 'col4'],
+                displayedColumns: { selected: ['col1', 'col2', 'col3', 'col4'] },
                 enableRendererSelection: true,
                 showRowKeys: false,
                 showColumnDataType: false,
@@ -189,7 +189,7 @@ describe('TableView.vue', () => {
         it('does not render the TableUI when no columns are to be displayed', async () => {
             initialDataMock.settings = {
                 ...initialDataMock.settings,
-                displayedColumns: [],
+                displayedColumns: { selected: [] },
                 showRowIndices: false,
                 showRowKeys: false
             };
@@ -837,7 +837,7 @@ describe('TableView.vue', () => {
         });
 
         test.each([
-            ['displayedColumns', ['col3']],
+            ['displayedColumns', { selected: ['col3'] }],
             ['pageSize', 3], // eslint-disable-line no-magic-numbers
             ['enablePagination', false]
         ])('view setting %p change causes table to be refreshed',
@@ -903,13 +903,13 @@ describe('TableView.vue', () => {
 
         it('updates displayed columns on displayed columns change', () => {
             const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
-            settings.displayedColumns.push('missingCol');
+            settings.displayedColumns.selected.push('missingCol');
             wrapper.vm.onViewSettingsChange({
                 data: { data: { view: settings } }
             });
             expect(dataSpy).toHaveBeenCalledWith({
                 method: 'getTable',
-                options: [settings.displayedColumns, 0, 2, [null, null, null, null, null], true, true]
+                options: [settings.displayedColumns.selected, 0, 2, [null, null, null, null, null], true, true]
             });
             expect(wrapper.vm.displayedColumns).toStrictEqual(initialDataMock.table.displayedColumns);
         });
@@ -920,7 +920,7 @@ describe('TableView.vue', () => {
                     wrapper.vm.onColumnSort(2);
                     const updateSortingParamsSpy = jest.spyOn(wrapper.vm, 'updateSortingParams');
                     const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
-                    settings.displayedColumns = ['col2', 'col3', 'col4'];
+                    settings.displayedColumns = { selected: ['col2', 'col3', 'col4'] };
                     wrapper.vm.onViewSettingsChange({
                         data: { data: { view: settings } }
                     });
@@ -930,14 +930,14 @@ describe('TableView.vue', () => {
         
             it('does not update the sort parameters when no sorting is active', async () => {
                 const updateSortingParamsSpy = jest.spyOn(wrapper.vm, 'updateSortingParams');
-                await changeViewSetting(wrapper, 'displayedColumns', ['col2', 'col3', 'col4']);
+                await changeViewSetting(wrapper, 'displayedColumns', { selected: ['col2', 'col3', 'col4'] });
                 expect(updateSortingParamsSpy).not.toHaveBeenCalled();
             });
 
             it('resets the sort parameters when the sorted column gets removed', async () => {
                 const resetSortingSpy = jest.spyOn(wrapper.vm, 'resetSorting');
                 wrapper.vm.onColumnSort(2);
-                await changeViewSetting(wrapper, 'displayedColumns', ['col1', 'col2', 'col4']);
+                await changeViewSetting(wrapper, 'displayedColumns', { selected: ['col1', 'col2', 'col4'] });
                 expect(resetSortingSpy).toHaveBeenCalled();
             });
 
@@ -1360,13 +1360,13 @@ describe('TableView.vue', () => {
             const columnSearchTerm = 'entry1col1';
             wrapper.vm.onColumnFilter(0, columnSearchTerm);
             const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
-            settings.displayedColumns.push('missingCol');
+            settings.displayedColumns.selected.push('missingCol');
             wrapper.vm.onViewSettingsChange({
                 data: { data: { view: settings } }
             });
             expect(dataSpy).toHaveBeenNthCalledWith(2, {
                 method: 'getFilteredAndSortedTable',
-                options: [settings.displayedColumns,
+                options: [settings.displayedColumns.selected,
                     0,
                     2, // eslint-disable-line no-magic-numbers
                     null,
@@ -1440,7 +1440,7 @@ describe('TableView.vue', () => {
                 );
                 wrapper.vm.onViewSettingsChange({
                     data: { data: { view: { ...wrapper.vm.$data.settings,
-                        displayedColumns: ['col3', 'col4'] } } }
+                        displayedColumns: { selected: ['col3', 'col4'] } } } }
                 });
 
                 expect(dataSpy).toHaveBeenNthCalledWith(2, {
@@ -1556,7 +1556,7 @@ describe('TableView.vue', () => {
             let wrapper = await mount(TableView, context);
             wrapper.vm.settings.showRowKeys = false;
             wrapper.vm.settings.showRowIndices = false;
-            wrapper.vm.settings.displayedColumns = [];
+            wrapper.vm.settings.displayedColumns = { selected: [] };
             expect(wrapper.vm.columnSizes).toStrictEqual([]);
         });
 
