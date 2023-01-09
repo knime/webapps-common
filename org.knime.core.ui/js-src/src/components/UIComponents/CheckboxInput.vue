@@ -90,6 +90,7 @@ export default CheckboxInput;
 
 <style lang="postcss" scoped>
 @import "../../utils/animation.css";
+
 .checkbox-input {
   margin-bottom: 10px;
   position: relative;

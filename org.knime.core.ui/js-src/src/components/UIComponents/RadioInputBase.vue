@@ -90,6 +90,7 @@ export default RadioInputBase;
 
 <style lang="postcss" scoped>
 @import "../../utils/animation.css";
+
 .labeled-input {
   margin-bottom: 10px;
 }

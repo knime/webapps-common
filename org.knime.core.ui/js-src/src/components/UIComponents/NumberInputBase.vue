@@ -72,11 +72,12 @@ export default NumberInputBase;
 
 <style lang="postcss" scoped>
 @import "../../utils/animation.css";
-  .number-input {
-    height: 40px;
 
-    & >>> input[type="number"] {
-      height: 38px;
-    }
+.number-input {
+  height: 40px;
+
+  & >>> input[type="number"] {
+    height: 38px;
   }
+}
 </style>

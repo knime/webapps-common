@@ -103,7 +103,7 @@ export default {
       />
       <a
         v-if="hasAdvancedOptions()"
-        class="advancedOptions"
+        class="advanced-options"
         @click="changeAdvancedSettings"
       >
         {{ settings.schema.showAdvancedSettings ? '<- Hide' : '-> Show' }} advanced settings
@@ -158,7 +158,8 @@ export default {
     background-color: var(--knime-gray-light-semi);
     border-top: 1px solid var(--knime-silver-sand);
   }
-  & .advancedOptions {
+
+  & .advanced-options {
     display: flex;
     justify-content: space-between;
     text-decoration: underline;

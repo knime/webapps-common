@@ -154,9 +154,10 @@
               "options": {
                 "isAdvanced": true
               }
-            }]
-            },
-            {
+            }
+          ]
+        },
+        {
           "type": "Section",
           "label": "Some other section",
           "description": "test",

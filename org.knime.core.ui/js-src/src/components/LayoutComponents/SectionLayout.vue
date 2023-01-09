@@ -51,6 +51,7 @@ export default SectionLayout;
 
 <style lang="postcss" scoped>
 @import "../../utils/animation.css";
+
 .section {
   margin-bottom: 30px;
 

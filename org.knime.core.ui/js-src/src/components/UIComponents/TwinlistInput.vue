@@ -94,6 +94,7 @@ export default TwinlistInput;
 
 <style lang="postcss" scoped>
 @import "../../utils/animation.css";
+
 .twinlist >>> .lists >>> .multiselect-list-box >>> [role="listbox"] {
   font-size: 13px;
 }
