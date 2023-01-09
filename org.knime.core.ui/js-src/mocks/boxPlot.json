@@ -7,18 +7,31 @@
         "xAxisLabel": "Dimension",
         "yAxisLabel": "Value",
         "axisExtentMethod": "AUTO",
-        "displayLegend": true,
+        "showLegend": true,
         "allowImageDownload": true,
         "showTooltip": true,
         "enableAnimation": true
       },
       "model": {
-        "frequencyColumns": [
-          "Universe_0_0",
-          "Universe_0_1",
-          "Universe_1_0",
-          "Universe_1_1"
-        ],
+        "frequencyColumns": {
+          "mode": "MANUAL",
+          "manuallySelected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ],
+          "pattern": "",
+          "isCaseSensitive": false,
+          "isInverted": false,
+          "selectedTypes": [],
+          "selected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ]
+        },
         "categoryColumn": "<none>"
       }
     },
@@ -49,16 +62,16 @@
               "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Domain node before this node.",
               "default": "AUTO"
             },
-            "displayLegend": {
-              "type": "boolean",
-              "title": "Display legend",
-              "description": "When checked, the chart’s legend containing the categories of the condition column is displayed.",
-              "default": true
-            },
             "enableAnimation": {
               "type": "boolean",
               "title": "Enable animation",
               "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "showLegend": {
+              "type": "boolean",
+              "title": "Display legend",
+              "description": "When checked, the chart’s legend containing the categories of the condition column is displayed.",
               "default": true
             },
             "showTooltip": {
@@ -76,13 +89,13 @@
             "xAxisLabel": {
               "type": "string",
               "title": "Dimension axis label",
-              "description": "The label used for the horizontal dimension axis. If left blank, no title will be shown.",
+              "description": "The label used for the horizontal dimension axis. If left blank, no label will be shown.",
               "default": "Dimension"
             },
             "yAxisLabel": {
               "type": "string",
               "title": "Value axis label",
-              "description": "The label used for the vertical value axis. If left blank, no title will be shown.",
+              "description": "The label used for the vertical value axis. If left blank, no label will be shown.",
               "default": "Value"
             }
           }
@@ -94,7 +107,8 @@
               "oneOf": [
                 {
                   "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+                  "title": "Cluster Membership",
+                  "columnType": "StringValue"
                 }
               ],
               "title": "Condition column",
@@ -102,37 +116,107 @@
               "default": "<none>"
             },
             "frequencyColumns": {
-              "anyOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
+              "type": "object",
+              "properties": {
+                "isCaseSensitive": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
+                "isInverted": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
+                "manuallySelected": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "pattern": {
+                  "type": "string",
+                  "default": ""
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "selectedTypes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
-              ],
+              },
               "title": "Dimension columns",
               "description": "Select the columns with numerical values for which you wish to plot boxes. Note: Missing and NaN (not a number) values in a dimension column will be ignored with a corresponding warning message. If all values from which a box is computed are missing or NaN, the box will be excluded from the view and a warning message will be raised.",
-              "default": [
-                "Universe_0_0",
-                "Universe_0_1",
-                "Universe_1_0",
-                "Universe_1_1"
-              ]
+              "default": {
+                "m_mode": "MANUAL",
+                "m_manuallySelected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ],
+                "m_pattern": "",
+                "m_isCaseSensitive": false,
+                "m_isInverted": false,
+                "m_selectedTypes": [],
+                "m_selected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ]
+              }
             }
           }
         }
       },
-      "flowVariablesMap": {}
+      "flowVariablesMap": {},
+      "hasNodeView": true
     },
     "ui_schema": {
       "elements": [
@@ -184,7 +268,7 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/displayLegend",
+              "scope": "#/properties/view/properties/showLegend",
               "options": {
                 "format": "checkbox"
               },

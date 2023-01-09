@@ -2,163 +2,332 @@
   "result": {
     "name": "Stacked Area Chart Dialog",
     "data": {
-      "model": {
-        "aggregationMethod": "COUNT",
-        "frequencyColumns": [],
-        "horizontalColumn": "column1"
-      },
       "view": {
-        "allowImageDownload": true,
-        "dataPointMarkerSize": 5,
-        "displayLegend": true,
-        "enableDataZoom": true,
-        "lineSize": 2,
         "maxRows": 2500,
+        "title": "Stacked Area Chart",
+        "showLegend": true,
+        "lineSize": 2,
         "showDataPointMarkers": false,
-        "showTooltip": true,
+        "dataPointMarkerSize": 5,
         "timeFormat": "",
-        "title": "Area Chart",
+        "allowImageDownload": true,
+        "enableDataZoom": true,
+        "showTooltip": true,
         "enableAnimation": true
+      },
+      "model": {
+        "horizontalColumn": "StringCol",
+        "aggregationMethod": "NONE",
+        "frequencyColumns": {
+          "mode": "MANUAL",
+          "manuallySelected": [
+            "IntCol",
+            "LongCol",
+            "DoubleCol",
+            "BooleanCol",
+            "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
+          ],
+          "pattern": "",
+          "isCaseSensitive": false,
+          "isInverted": false,
+          "selectedTypes": [],
+          "selected": [
+            "IntCol",
+            "LongCol",
+            "DoubleCol",
+            "BooleanCol",
+            "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
+          ]
+        }
       }
     },
     "schema": {
-      "model": {
-        "type": "object",
-        "properties": {
-          "aggregationMethod": {
-            "oneOf": [
-              {
-                "const": "NONE",
-                "title": "None"
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "allowImageDownload": {
+              "type": "boolean",
+              "title": "Enable image download",
+              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
+              "default": true
+            },
+            "dataPointMarkerSize": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Marker size",
+              "description": "Numeric value that defines the marker size.",
+              "default": 5,
+              "minimum": 1
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "enableDataZoom": {
+              "type": "boolean",
+              "title": "Enable zoom",
+              "description": "When checked, zooming in the chart is enabled.",
+              "default": true
+            },
+            "lineSize": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Line thickness",
+              "description": "Numeric value that defines the line size.",
+              "default": 2,
+              "minimum": 1
+            },
+            "maxRows": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Max rows",
+              "description": "Numerical value that restricts the number of rows used for this visualization.",
+              "default": 2500,
+              "minimum": 1
+            },
+            "showDataPointMarkers": {
+              "type": "boolean",
+              "title": "Show data point markers",
+              "description": "When checked, markers show the location of each data point.",
+              "default": false
+            },
+            "showLegend": {
+              "type": "boolean",
+              "title": "Display legend",
+              "description": "When checked, the chart’s legend is displayed.",
+              "default": true
+            },
+            "showTooltip": {
+              "type": "boolean",
+              "title": "Show tooltip",
+              "description": "When checked, hovering over a data point will show information about the data.",
+              "default": true
+            },
+            "timeFormat": {
+              "type": "string",
+              "title": "Date & time format",
+              "description": "Format that determines how date &amp; time values should be displayed. At the moment only local date &amp; time and local date types are supported. In general it is done with putting string templates of the individual pieces in curly brackets like '{yyyy}-{MM}-{dd}'. Refer to the <a href=\"https://echarts.apache.org/en/option.html#xAxis.axisLabel.formatter\">echarts documentation</a> for further information on how to format the values.",
+              "default": ""
+            },
+            "title": {
+              "type": "string",
+              "title": "Title",
+              "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
+              "default": "Stacked Area Chart"
+            },
+            "xAxisLabel": {
+              "type": "string",
+              "title": "Horizontal axis label",
+              "description": "The label used for the horizontal axis. If left blank, no label will be shown."
+            },
+            "yAxisLabel": {
+              "type": "string",
+              "title": "Vertical axis label",
+              "description": "The label used for the frequency axis. If left blank, no label will be shown."
+            }
+          }
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "aggregationMethod": {
+              "oneOf": [
+                {
+                  "const": "NONE",
+                  "title": "None"
+                },
+                {
+                  "const": "COUNT",
+                  "title": "Occurrence count"
+                },
+                {
+                  "const": "SUM",
+                  "title": "Sum"
+                },
+                {
+                  "const": "AVG",
+                  "title": "Average"
+                }
+              ],
+              "title": "Aggregation",
+              "description": "Select the aggregation method used on the selected frequency columns. In case of “None” execution fails if the horizontal dimension contains duplicate values. In case of “Occurrence Count” the occurrence of the number of rows that share the same value in the horizontal dimension is determined.",
+              "default": "NONE"
+            },
+            "frequencyColumns": {
+              "type": "object",
+              "properties": {
+                "isCaseSensitive": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "isInverted": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "manuallySelected": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "pattern": {
+                  "type": "string",
+                  "default": ""
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "IntCol",
+                      "title": "IntCol",
+                      "columnType": "IntValue"
+                    },
+                    {
+                      "const": "LongCol",
+                      "title": "LongCol",
+                      "columnType": "LongValue"
+                    },
+                    {
+                      "const": "DoubleCol",
+                      "title": "DoubleCol",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "BooleanCol",
+                      "title": "BooleanCol",
+                      "columnType": "BooleanValue"
+                    },
+                    {
+                      "const": "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName",
+                      "title": "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "selectedTypes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
               },
-              {
-                "const": "COUNT",
-                "title": "Occurrence count"
-              },
-              {
-                "const": "SUM",
-                "title": "Sum"
-              },
-              {
-                "const": "AVG",
-                "title": "Average"
+              "title": "Frequency dimensions",
+              "description": "Select the columns with frequencies which you wish to plot in the stacked area chart. Note: Missing values in the frequency column will be ignored with a corresponding warning message. Also, columns which include both positive and negative values can not be used as frequency columns and therefore will be excluded as well.",
+              "default": {
+                "m_mode": "MANUAL",
+                "m_manuallySelected": [
+                  "IntCol",
+                  "LongCol",
+                  "DoubleCol",
+                  "BooleanCol",
+                  "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
+                ],
+                "m_pattern": "",
+                "m_isCaseSensitive": false,
+                "m_isInverted": false,
+                "m_selectedTypes": [],
+                "m_selected": [
+                  "IntCol",
+                  "LongCol",
+                  "DoubleCol",
+                  "BooleanCol",
+                  "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
+                ]
               }
-            ],
-            "title": "Aggregation",
-            "description": "Aggregation description",
-            "default": "NONE"
-          },
-          "frequencyColumns": {
-            "anyOf": [
-              {
-                "const": "",
-                "title": ""
-              }
-            ],
-            "title": "Frequency dimensions",
-            "description": "Frequency dimensions description",
-            "default": []
-          },
-          "horizontalColumn": {
-            "oneOf": [
-              {
-                "const": "column1",
-                "title": "column1"
-              }
-            ],
-            "title": "Horizontal dimension",
-            "description": "Select the column that contains the category values. Note: Missing values are treated as separate category.",
-            "default": "column1"
+            },
+            "horizontalColumn": {
+              "oneOf": [
+                {
+                  "const": "StringCol",
+                  "title": "StringCol",
+                  "columnType": "StringValue"
+                },
+                {
+                  "const": "TimestampCol",
+                  "title": "TimestampCol",
+                  "columnType": "DateAndTimeValue"
+                },
+                {
+                  "const": "UriCol",
+                  "title": "UriCol",
+                  "columnType": "URIDataValue"
+                },
+                {
+                  "const": "MissingValStringCol",
+                  "title": "MissingValStringCol",
+                  "columnType": "StringValue"
+                },
+                {
+                  "const": "LongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnName",
+                  "title": "LongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnName",
+                  "columnType": "StringValue"
+                },
+                {
+                  "const": "Local Date",
+                  "title": "Local Date",
+                  "columnType": "LocalDateValue"
+                },
+                {
+                  "const": "Local Time",
+                  "title": "Local Time",
+                  "columnType": "LocalTimeValue"
+                },
+                {
+                  "const": "Local Date Time",
+                  "title": "Local Date Time",
+                  "columnType": "LocalDateTimeValue"
+                },
+                {
+                  "const": "Zoned Date Time",
+                  "title": "Zoned Date Time",
+                  "columnType": "ZonedDateTimeValue"
+                },
+                {
+                  "const": "Period",
+                  "title": "Period",
+                  "columnType": "PeriodValue"
+                },
+                {
+                  "const": "Duration",
+                  "title": "Duration",
+                  "columnType": "DurationValue"
+                }
+              ],
+              "title": "Horizontal dimension",
+              "description": "Select the column that contains the values of the horizontal dimension. Note: Missing values are treated as separate values.",
+              "default": "StringCol"
+            }
           }
         }
       },
-      "view": {
-        "type": "object",
-        "properties": {
-          "allowImageDownload": {
-            "type": "boolean",
-            "title": "Enable image download",
-            "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
-            "default": true
-          },
-          "dataPointMarkerSize": {
-            "type": "integer",
-            "format": "int32",
-            "title": "Marker size",
-            "description": "Numeric value that defines the marker size.",
-            "default": 5,
-            "minimum": 1
-          },
-          "displayLegend": {
-            "type": "boolean",
-            "title": "Display legend",
-            "description": "When checked, the chart’s legend is displayed.",
-            "default": true
-          },
-          "enableDataZoom": {
-            "type": "boolean",
-            "title": "Enable zoom",
-            "description": "When checked, zooming in the chart is enabled.",
-            "default": true
-          },
-          "lineSize": {
-            "type": "integer",
-            "format": "int32",
-            "title": "Line thickness",
-            "description": "Numeric value that defines the line size.",
-            "default": 2,
-            "minimum": 1
-          },
-          "maxRows": {
-            "type": "integer",
-            "format": "int32",
-            "title": "Max rows",
-            "description": "Numerical value that restricts the number of rows used for this visualization.",
-            "default": 2500,
-            "minimum": 1
-          },
-          "showDataPointMarkers": {
-            "type": "boolean",
-            "title": "Show data point markers",
-            "description": "When checked, markers show the location of each data point.",
-            "default": false
-          },
-          "showTooltip": {
-            "type": "boolean",
-            "title": "Show tooltip",
-            "description": "When checked, hovering over a data point will show information about the data.",
-            "default": true
-          },
-          "timeFormat": {
-            "type": "string",
-            "title": "Date & time format",
-            "description": "Format that determines how date &amp; time values should be displayed. At the moment only local date &amp; time and local date types are supported. In general it is done with putting string templates of the individual pieces in curly brackets like '{yyyy}-{MM}-{dd}'. Refer to the <a href=\"https://echarts.apache.org/en/option.html#xAxis.axisLabel.formatter\">echarts documentation</a> for further information on how to format the values.",
-            "default": ""
-          },
-          "title": {
-            "type": "string",
-            "title": "Title",
-            "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
-            "default": "Area Chart"
-          },
-          "xAxisLabel": {
-            "type": "string",
-            "title": "Horizontal axis label",
-            "description": "The label used for the horizontal axis. If left blank, no title will be shown."
-          },
-          "yAxisLabel": {
-            "type": "string",
-            "title": "Vertical axis label",
-            "description": "The label used for the frequency axis. If left blank, no title will be shown."
-          },
-          "enableAnimation": {
-            "type": "boolean",
-            "title": "Enable animation",
-            "description": "Enable animation description",
-            "default": true
-          }
-        }
-      }
+      "flowVariablesMap": {},
+      "hasNodeView": true
     },
     "ui_schema": {
       "elements": [
@@ -230,7 +399,7 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/displayLegend",
+              "scope": "#/properties/view/properties/showLegend",
               "options": {
                 "format": "checkbox"
               }

@@ -4,10 +4,25 @@
     "data": {
       "view": {
         "xAxisColumn": "Universe_0_0",
-        "yAxisColumn": [
-          "Universe_0_0",
-          "Universe_0_1"
-        ],
+        "yAxisColumn": {
+          "mode": "MANUAL",
+          "manuallySelected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ],
+          "pattern": "",
+          "isCaseSensitive": false,
+          "isInverted": false,
+          "selectedTypes": [],
+          "selected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ]
+        },
         "maxRows": 2500,
         "title": "Line Plot",
         "xAxisLabel": "",
@@ -17,9 +32,10 @@
         "showDataPointMarkers": false,
         "dataPointMarkerSize": 5,
         "timeFormat": "",
-        "showTooltip": true,
-        "allowDataZoom": true,
         "allowImageDownload": true,
+        "enableDataZoom": true,
+        "showTooltip": true,
+        "axisExtentMethod": "AUTO",
         "enableAnimation": true
       }
     },
@@ -29,17 +45,26 @@
         "view": {
           "type": "object",
           "properties": {
-            "allowDataZoom": {
-              "type": "boolean",
-              "title": "Enable zoom",
-              "description": "When checked, zooming in the chart is enabled.",
-              "default": true
-            },
             "allowImageDownload": {
               "type": "boolean",
               "title": "Enable image download",
               "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
               "default": true
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Auto axis"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain values"
+                }
+              ],
+              "title": "Use axis range from",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Domain node before this node.",
+              "default": "AUTO"
             },
             "dataPointMarkerSize": {
               "type": "integer",
@@ -48,6 +73,18 @@
               "description": "Numeric value that defines the marker size.",
               "default": 5,
               "minimum": 1
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "enableDataZoom": {
+              "type": "boolean",
+              "title": "Enable data zoom",
+              "description": "When checked, zooming in the chart is enabled.",
+              "default": true
             },
             "lineSize": {
               "type": "integer",
@@ -65,29 +102,23 @@
               "default": 2500,
               "minimum": 1
             },
-            "showTooltip": {
-              "type": "boolean",
-              "title": "Show tooltip",
-              "description": "When checked, hovering over a data point will show information about the data.",
-              "default": true
-            },
             "showDataPointMarkers": {
               "type": "boolean",
               "title": "Show data point markers",
               "description": "When checked, markers show the location of each data point.",
               "default": false
             },
+            "showTooltip": {
+              "type": "boolean",
+              "title": "Show tooltip",
+              "description": "When checked, hovering over a line will show information about the data.",
+              "default": true
+            },
             "timeFormat": {
               "type": "string",
               "title": "Date & time format",
-              "description": "Format that determines how date & time values should be displayed. At the moment only local date & time and local date types are supported. In general it is done with putting string templates of the individual pieces in curly brackets like '{yyyy}-{MM}-{dd}'. Refer to the echarts documentation for further information on how to format the values. https://echarts.apache.org/en/option.html#xAxis.axisLabel.formatter",
+              "description": "Format that determines how date &amp; time values should be displayed. At the moment only local date &amp; time and local date types are supported. In general it is done with putting string templates of the individual pieces in curly brackets like '{yyyy}-{MM}-{dd}'. Refer to the <a href=\"https://echarts.apache.org/en/option.html#xAxis.axisLabel.formatter\">echarts documentation</a> for further information on how to format the values.",
               "default": ""
-            },
-            "enableAnimation": {
-              "type": "boolean",
-              "title": "Enable animation",
-              "description": "Enable animation description",
-              "default": true
             },
             "title": {
               "type": "string",
@@ -99,23 +130,28 @@
               "oneOf": [
                 {
                   "const": "Universe_0_0",
-                  "title": "Universe_0_0"
+                  "title": "Universe_0_0",
+                  "columnType": "DoubleValue"
                 },
                 {
                   "const": "Universe_0_1",
-                  "title": "Universe_0_1"
+                  "title": "Universe_0_1",
+                  "columnType": "DoubleValue"
                 },
                 {
                   "const": "Universe_1_0",
-                  "title": "Universe_1_0"
+                  "title": "Universe_1_0",
+                  "columnType": "DoubleValue"
                 },
                 {
                   "const": "Universe_1_1",
-                  "title": "Universe_1_1"
+                  "title": "Universe_1_1",
+                  "columnType": "DoubleValue"
                 },
                 {
                   "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+                  "title": "Cluster Membership",
+                  "columnType": "StringValue"
                 }
               ],
               "title": "Horizontal dimension",
@@ -129,31 +165,101 @@
               "default": ""
             },
             "yAxisColumn": {
-              "anyOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
+              "type": "object",
+              "properties": {
+                "isCaseSensitive": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
+                "isInverted": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
+                "manuallySelected": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
                 },
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+                "pattern": {
+                  "type": "string",
+                  "default": ""
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "selectedTypes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
-              ],
+              },
               "title": "Vertical dimension",
               "description": "Defines the columns that contain the values for vertical dimension.",
-              "default": "Universe_0_1"
+              "default": {
+                "m_mode": "MANUAL",
+                "m_manuallySelected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ],
+                "m_pattern": "",
+                "m_isCaseSensitive": false,
+                "m_isInverted": false,
+                "m_selectedTypes": [],
+                "m_selected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ]
+              }
             },
             "yAxisLabel": {
               "type": "string",
@@ -178,7 +284,9 @@
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true
     },
     "ui_schema": {
       "elements": [
@@ -191,7 +299,7 @@
               "scope": "#/properties/view/properties/xAxisColumn",
               "options": {
                 "format": "columnSelection",
-                "showRowKeys": false,
+                "showRowKeys": true,
                 "showNoneColumn": false
               }
             },
@@ -268,6 +376,14 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/timeFormat"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
             }
           ]
         },
@@ -284,7 +400,7 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/allowDataZoom",
+              "scope": "#/properties/view/properties/enableDataZoom",
               "options": {
                 "format": "checkbox"
               }
