@@ -26,6 +26,14 @@ it('twinlistTester', () => {
 
     expect(
         twinlistTester({
+            type: 'Control',
+            scope: '#/properties/view/properties/frequencyColumns'
+        },
+        dialogInitialData.schema)
+    ).toEqual(false);
+
+    expect(
+        twinlistTester({
             type: 'Section',
             scope: '#/properties/view/properties/frequencyColumns',
             options: {

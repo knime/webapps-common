@@ -76,22 +76,30 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         }
     }
 
+
+    /**
+     * A class solely for adding an annotation to one of the members of the class of selected columns
+     * @author Paul Bärnreuther
+     */
     public static class TableColumnChoices extends ColumnSelection {
 
+        @SuppressWarnings("javadoc")
         public TableColumnChoices(final String[] initialSelected) {
             super(initialSelected);
             m_selected = initialSelected;
         }
 
+        @SuppressWarnings("javadoc")
         public TableColumnChoices(final SettingsCreationContext context) {
             super(context);
         }
 
+        @SuppressWarnings("javadoc")
         public TableColumnChoices() {
             super();
         }
 
-        @SuppressWarnings("hiding")
+        @SuppressWarnings("javadoc")
         @Schema(choices = ColumnChoicesProvider.class, multiple = true)
         public String[] m_selected;
     }
@@ -214,13 +222,10 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         m_displayedColumns = new TableColumnChoices(ColumnChoicesProvider.choices(spec));
     }
 
-    /**
-     * @param spec
-     * @return the displayedColumns
-     */
+    @SuppressWarnings("javadoc")
     @JsonIgnore //
     public String[] getDisplayedColumns(final DataTableSpec spec) {
         final var choices = ColumnChoicesProvider.choices(spec);
-        return ColumnSelection.get(m_displayedColumns, choices, spec);
+        return m_displayedColumns.getSelected(choices, spec);
     }
 }

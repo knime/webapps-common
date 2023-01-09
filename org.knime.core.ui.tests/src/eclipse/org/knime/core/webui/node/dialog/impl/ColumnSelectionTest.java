@@ -74,10 +74,10 @@ class ColumnSelectionTest {
     @Test
     void testGetByManual() {
         final var selection = new ColumnSelection(CONTEXT);
-        assertThat(ColumnSelection.get(selection, null, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(null, TABLE_SPEC)).isEqualTo(new String[]{});
 
         selection.m_manuallySelected = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, null, TABLE_SPEC)).isEqualTo(selection.m_manuallySelected);
+        assertThat(selection.getSelected(null, TABLE_SPEC)).isEqualTo(selection.m_manuallySelected);
     }
 
     @Test
@@ -85,10 +85,10 @@ class ColumnSelectionTest {
         final var selection = new ColumnSelection(CONTEXT);
         selection.m_mode = ColumnSelectionMode.TYPE;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
 
         selection.m_selectedTypes = List.of(ColumnSelection.typeToString(COL_SPEC.getType()));
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
     }
 
     @Test
@@ -96,10 +96,10 @@ class ColumnSelectionTest {
         final var selection = new ColumnSelection(CONTEXT);
         selection.m_mode = ColumnSelectionMode.REGEX;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
 
         selection.m_pattern = ".*";
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
     }
 
     @Test
@@ -108,10 +108,10 @@ class ColumnSelectionTest {
         selection.m_mode = ColumnSelectionMode.REGEX;
         selection.m_isInverted = true;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
 
         selection.m_pattern = ".*";
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
     }
 
     @Test
@@ -119,10 +119,10 @@ class ColumnSelectionTest {
         final var selection = new ColumnSelection(CONTEXT);
         selection.m_mode = ColumnSelectionMode.WILDCARD;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
 
         selection.m_pattern = "*";
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
     }
 
     @Test
@@ -131,10 +131,10 @@ class ColumnSelectionTest {
         selection.m_mode = ColumnSelectionMode.WILDCARD;
         selection.m_isInverted = true;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
 
         selection.m_pattern = "*";
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
     }
 
     @Test
@@ -143,10 +143,10 @@ class ColumnSelectionTest {
         selection.m_mode = ColumnSelectionMode.WILDCARD;
         selection.m_pattern = COL_SPEC.getName().toUpperCase();
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(choices);
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
 
         selection.m_isCaseSensitive = true;
-        assertThat(ColumnSelection.get(selection, choices, TABLE_SPEC)).isEqualTo(new String[]{});
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
     }
 
 }

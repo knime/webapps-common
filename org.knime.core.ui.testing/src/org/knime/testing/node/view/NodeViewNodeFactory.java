@@ -148,8 +148,8 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_hasView = () -> true;
     }
 
-    public NodeViewNodeFactory(final int numInputs,
-        final int numOutputs, final Function<NodeViewNodeModel, NodeView> nodeViewCreator) {
+    public NodeViewNodeFactory(final int numInputs, final int numOutputs,
+        final Function<NodeViewNodeModel, NodeView> nodeViewCreator) {
         m_numInputs = numInputs;
         m_numOutputs = numOutputs;
         m_nodeViewCreator = nodeViewCreator;

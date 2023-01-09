@@ -65,23 +65,46 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreatio
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A class used to store several representation of column choices.
+ * A class used to store several representation of column choices. I.e. the columns can be determined using one of the modes of {@link ColumnSelectionMode}.
+ * For using this class in order to render a twinlist, one has to create a subclass with a member "selected" with the 'columns' Schema annotation.
  *
  * @author Paul Bärnreuther
  */
 public class ColumnSelection {
+    /**
+     * The way the selection is determined by
+     */
     public ColumnSelectionMode m_mode;
 
+    /**
+     * the manually selected columns in case of m_mode = "MANUAL"
+     */
     public String[] m_manuallySelected;
 
+    /**
+     *  the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
+     */
     public String m_pattern;
 
+    /**
+     * whether m_pattern is case sensitive
+     */
     public boolean m_isCaseSensitive;
 
+    /**
+     * whether the pattern determines the excluded columns or the included ones
+     */
     public boolean m_isInverted;
 
+    /**
+     * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
+     */
     public List<String> m_selectedTypes;
 
+    /**
+     * Initialises the column selection with an initial array of columns which are manually selected
+     * @param initialSelected the initial manually selected columns
+     */
     public ColumnSelection(final String[] initialSelected) {
         m_mode = ColumnSelectionMode.MANUAL;
         m_isCaseSensitive = false;
@@ -91,57 +114,57 @@ public class ColumnSelection {
         m_selectedTypes = List.of();
     }
 
+    @SuppressWarnings("javadoc")
     public ColumnSelection() {
         this(new String[0]);
     }
 
+    @SuppressWarnings("javadoc")
     public ColumnSelection(final SettingsCreationContext context) {
         this();
     }
 
     /**
-     * @param columnChoices
-     * @param choices
-     * @param spec
-     * @return
+     * @param choices the list of all possible column names
+     * @param spec the spec of the data table (for type selection)
+     * @return the array of currently selected columns with respect to the mode
      */
     @JsonIgnore
-    public static String[] get(final ColumnSelection columnChoices, final String[] choices, final DataTableSpec spec) {
-        return get(columnChoices, choices, new SettingsCreationContext(new PortObjectSpec[]{spec}, null));
+    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
+        return getSelected(choices, new SettingsCreationContext(new PortObjectSpec[]{spec}, null));
     }
 
+
     /**
-     * @param columnChoices
-     * @param choices
-     * @param context
-     * @return
+     * @param choices the list of all possible column names
+     * @param context the creation context (for type selection)
+     * @return the array of currently selected columns with respect to the mode
      */
     @JsonIgnore
-    public static String[] get(final ColumnSelection columnChoices, final String[] choices,
-        final SettingsCreationContext context) {
-        final Predicate<String> predicate;
-        final var casedPattern =
-            columnChoices.m_isCaseSensitive ? columnChoices.m_pattern : columnChoices.m_pattern.toLowerCase();
-        switch (columnChoices.m_mode) {
-            case MANUAL:
-                return columnChoices.m_manuallySelected;
-            case TYPE:
-                final var types = getTypes(choices, context);
-                return IntStream.range(0, types.length).filter(i -> columnChoices.m_selectedTypes.contains(types[i]))
-                    .mapToObj(i -> choices[i]).toArray(String[]::new);
-            case REGEX:
-                predicate = casedPattern.isEmpty() ? (choice) -> false : Pattern.compile(casedPattern).asPredicate();
-                break;
+    public String[] getSelected(final String[] choices, final SettingsCreationContext context) {
+            final Predicate<String> predicate;
+            final var casedPattern =
+                m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase();
+            switch (m_mode) {
+                case MANUAL:
+                    return m_manuallySelected;
+                case TYPE:
+                    final var types = getTypes(choices, context);
+                    return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
+                        .mapToObj(i -> choices[i]).toArray(String[]::new);
+                case REGEX:
+                    predicate = casedPattern.isEmpty() ? (choice) -> false : Pattern.compile(casedPattern).asPredicate();
+                    break;
 
-            case WILDCARD:
-                predicate = choice -> wildcardMatch(choice, casedPattern);
-                break;
-            default:
-                return new String[0];
-        }
-        final var augmentedPredicate =
-            getAugmentedPredicate(predicate, columnChoices.m_isCaseSensitive, columnChoices.m_isInverted);
-        return Arrays.asList(choices).stream().filter(augmentedPredicate).toArray(String[]::new);
+                case WILDCARD:
+                    predicate = choice -> wildcardMatch(choice, casedPattern);
+                    break;
+                default:
+                    return new String[0];
+            }
+            final var augmentedPredicate =
+                getAugmentedPredicate(predicate, m_isCaseSensitive, m_isInverted);
+            return Arrays.asList(choices).stream().filter(augmentedPredicate).toArray(String[]::new);
     }
 
     private static Predicate<String> getAugmentedPredicate(final Predicate<String> originalPredicate,
@@ -160,8 +183,8 @@ public class ColumnSelection {
     }
 
     /**
-     * @param type
-     * @return
+     * @param type the {@link DataType} of a column
+     * @return the string representation of the data type
      */
     public static String typeToString(final DataType type) {
         return type.getPreferredValueClass().getSimpleName();
