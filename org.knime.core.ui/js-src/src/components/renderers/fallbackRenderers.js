@@ -1,6 +1,5 @@
 import { rankWith,
     isOneOfControl,
-    isAnyOfControl,
     isNumberControl,
     isBooleanControl,
     isIntegerControl,
@@ -10,12 +9,12 @@ import { numberRenderer } from './numberRenderer';
 import { checkboxRenderer } from './checkboxRenderer';
 import { dropdownRenderer } from './dropdownRenderer';
 import { textRenderer } from './textRenderer';
-import { twinlistRenderer } from './twinlistRenderer';
+import { checkTwinlistStructure, twinlistRenderer } from './twinlistRenderer';
 import { integerRenderer } from './integerRenderer';
 
 export const fallbackRenderers = [
     { ...dropdownRenderer, tester: rankWith(priorityRanks.fallback, isOneOfControl) },
-    { ...twinlistRenderer, tester: rankWith(priorityRanks.fallback, isAnyOfControl) },
+    { ...twinlistRenderer, tester: rankWith(priorityRanks.fallback, checkTwinlistStructure) },
     { ...numberRenderer, tester: rankWith(priorityRanks.fallback, isNumberControl) },
     { ...checkboxRenderer, tester: rankWith(priorityRanks.fallback, isBooleanControl) },
     { ...integerRenderer, tester: rankWith(priorityRanks.fallback, isIntegerControl) },

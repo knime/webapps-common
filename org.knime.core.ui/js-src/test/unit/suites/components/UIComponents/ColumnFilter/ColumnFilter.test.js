@@ -8,18 +8,62 @@ describe('ColumnFilter.vue', () => {
         path: '',
         control: {
             schema: {
-                anyOf: [{
-                    const: 'test_1',
-                    title: 'test_1'
-                },
-                {
-                    const: 'test_2',
-                    title: 'test_2'
-                },
-                {
-                    const: 'test_3',
-                    title: 'test_3'
-                }]
+                type: 'object',
+                properties: {
+                    isCaseSensitive: {
+                        type: 'boolean'
+                    },
+                    isInverted: {
+                        type: 'boolean'
+                    },
+                    manuallySelected: {
+                        items: {
+                            type: 'string'
+                        },
+                        type: 'array'
+                    },
+                    mode: {
+                        oneOf: [
+                            {
+                                const: 'MANUAL',
+                                title: 'Manual'
+                            },
+                            {
+                                const: 'REGEX',
+                                title: 'Regex'
+                            },
+                            {
+                                const: 'WILDCARD',
+                                title: 'Wildcard'
+                            },
+                            {
+                                const: 'TYPE',
+                                title: 'Type'
+                            }
+                        ]
+                    },
+                    selected: {
+                        anyOf:
+                            [{
+                                const: 'test_1',
+                                title: 'test_1',
+                                columnType: 'String'
+                            },
+                            {
+                                const: 'test_2',
+                                title: 'test_2',
+                                columnType: 'Double'
+                            },
+                            {
+                                const: 'test_3',
+                                title: 'test_3',
+                                columnType: 'String'
+                            }]
+                    },
+                    pattern: {
+                        type: 'string'
+                    }
+                }
             },
             uischema: {
                 type: 'Control',

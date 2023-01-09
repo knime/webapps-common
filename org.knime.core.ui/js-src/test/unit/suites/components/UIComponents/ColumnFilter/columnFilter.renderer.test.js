@@ -9,20 +9,25 @@ describe('ColumnFilter', () => {
         type: 'object',
         properties: {
             columnFilter: {
-                anyOf: [
-                    {
-                        const: '1',
-                        title: 'One'
-                    },
-                    {
-                        const: '2',
-                        title: 'Two'
-                    },
-                    {
-                        const: '3',
-                        title: 'Three'
+                type: 'object',
+                properties: {
+                    selected: {
+                        anyOf: [
+                            {
+                                const: '1',
+                                title: 'One'
+                            },
+                            {
+                                const: '2',
+                                title: 'Two'
+                            },
+                            {
+                                const: '3',
+                                title: 'Three'
+                            }
+                        ]
                     }
-                ]
+                }
             }
         }
     };
@@ -39,7 +44,7 @@ describe('ColumnFilter', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnFilter');
     });
 
-    it('ColumnFilter without options uses anyOf fallback', () => {
+    it('ColumnFilter without options uses twinlist fallback', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnFilter'

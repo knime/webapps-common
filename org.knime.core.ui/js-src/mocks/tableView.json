@@ -1,37 +1,41 @@
 {
   "result": {
-    "name": "Scatter Plot Dialog",
+    "name": "",
     "data": {
       "view": {
-        "pageSize": 100,
         "displayedColumns": {
-			"mode": "Type",
-			"pattern": "",
-			"selectedtypes": [
-			
-			]
-			"displayedColumns": [
-			  "Universe_0_0",
-			  "Universe_0_1",
-			  "Universe_0_2",
-			  "Universe_0_3",
-			  "Universe_1_0",
-			  "Universe_1_1",
-			  "Universe_1_2",
-			  "Universe_1_3",
-			  "Cluster Membership"
-			]
-		},
+          "mode": "MANUAL",
+          "manuallySelected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1",
+            "Cluster Membership"
+          ],
+          "pattern": "",
+          "isCaseSensitive": false,
+          "isInverted": false,
+          "selectedTypes": [],
+          "selected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1",
+            "Cluster Membership"
+          ]
+        },
         "showRowKeys": true,
-        "showTitle": true,
         "showColumnDataType": true,
         "showRowIndices": false,
-        "enableSortingByHeader": true,
         "title": "Table View",
+        "showTitle": true,
         "enablePagination": true,
+        "pageSize": 10,
+        "compactMode": false,
         "enableGlobalSearch": true,
         "enableColumnSearch": true,
-        "enableRendererSelection": false,
+        "enableSortingByHeader": true,
+        "enableRendererSelection": true,
         "publishSelection": true,
         "subscribeToSelection": true
       }
@@ -42,63 +46,158 @@
         "view": {
           "type": "object",
           "properties": {
-            "displayedColumns": {
-              "anyOf": [
-                {
-                  "const": "{name: Universe_0_0, type: bla}",
-                  "title": "Universe_0_0",
-				  "columnType": "bla"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_0_2",
-                  "title": "Universe_0_2"
-                },
-                {
-                  "const": "Universe_0_3",
-                  "title": "Universe_0_3"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                },
-                {
-                  "const": "Universe_1_2",
-                  "title": "Universe_1_2"
-                },
-                {
-                  "const": "Universe_1_3",
-                  "title": "Universe_1_3"
-                },
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
-                }
-              ],
-              "title": "Displayed columns",
-              "default": [
-                "Universe_0_0",
-                "Universe_0_1",
-                "Universe_0_2",
-                "Universe_0_3",
-                "Universe_1_0",
-                "Universe_1_1",
-                "Universe_1_2",
-                "Universe_1_3",
-                "Cluster Membership"
-              ]
-            },
-            "showRowKeys": {
+            "compactMode": {
               "type": "boolean",
-              "title": "Show RowIDs",
-              "description": "Whether to display the RowIDs or not",
+              "title": "Compact rows",
+              "description": "Whether to display the rows in a more compact form or not",
+              "default": false
+            },
+            "displayedColumns": {
+              "type": "object",
+              "properties": {
+                "isCaseSensitive": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "isInverted": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "manuallySelected": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "pattern": {
+                  "type": "string",
+                  "default": ""
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership",
+                      "columnType": "StringValue"
+                    }
+                  ]
+                },
+                "selectedTypes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "title": "Displayed columns",
+              "description": "Select the columns that should be displayed in the table",
+              "default": {
+                "m_mode": "MANUAL",
+                "m_manuallySelected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1",
+                  "Cluster Membership"
+                ],
+                "m_pattern": "",
+                "m_isCaseSensitive": false,
+                "m_isInverted": false,
+                "m_selectedTypes": [],
+                "m_selected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1",
+                  "Cluster Membership"
+                ]
+              }
+            },
+            "enableColumnSearch": {
+              "type": "boolean",
+              "title": "Enable column search",
+              "description": "Enables or disables the ability to perform a column search inside the table.",
+              "default": true
+            },
+            "enableGlobalSearch": {
+              "type": "boolean",
+              "title": "Enable global search",
+              "description": "Enables or disables the ability to perform a global search inside the table.",
+              "default": true
+            },
+            "enablePagination": {
+              "type": "boolean",
+              "title": "Pagination",
+              "description": "Enables or disables the ability to only show a certain number of rows.",
+              "default": true
+            },
+            "enableRendererSelection": {
+              "type": "boolean",
+              "title": "Enable selection of column renderer",
+              "description": "Whether to enable the selection of a column renderer in the header or not",
+              "default": true
+            },
+            "enableSortingByHeader": {
+              "type": "boolean",
+              "title": "Enable sorting by header",
+              "description": "Enables or disables the ability to sort the table by clicking on the column headers",
+              "default": true
+            },
+            "pageSize": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Page size",
+              "description": "Select the amount of rows shown per page",
+              "default": 10,
+              "minimum": 1
+            },
+            "publishSelection": {
+              "type": "boolean",
+              "title": "Publish Selection",
+              "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
               "default": true
             },
             "showColumnDataType": {
@@ -113,61 +212,16 @@
               "description": "Whether to display the row indices or not",
               "default": false
             },
-            "title": {
-              "type": "string",
-              "title": "Title",
-              "description": "The title of the table shown above the generated image. If left blank, no title will be shown.",
-              "default": "Table View"
+            "showRowKeys": {
+              "type": "boolean",
+              "title": "Show RowIDs",
+              "description": "Whether to display the RowIDs or not",
+              "default": true
             },
             "showTitle": {
-              "type": "boolean"
-            },
-            "enablePagination": {
               "type": "boolean",
-              "title": "Pagination",
-              "description": "Enables or disables the ability to only show a certain number of rows.",
-              "default": true
-            },
-            "pageSize": {
-              "type": "integer",
-              "format": "int32",
-              "title": "Page size",
-              "default": 10
-            },
-            "compactMode": {
-              "type": "boolean",
-              "title": "Compact rows",
-              "description": "Whether to display the rows in a more compact form or not",
-              "default": false
-            },
-            "enableGlobalSearch": {
-              "type": "boolean",
-              "title": "Enable global search",
-              "description": "Enables or disables the ability to perform a global search inside the table.",
-              "default": true
-            },
-            "enableColumnSearch": {
-              "type": "boolean",
-              "title": "Enable column search",
-              "description": "Enables or disables the ability to perform a column search inside the table.",
-              "default": true
-            },
-            "enableSortingByHeader": {
-              "type": "boolean",
-              "title": "Enable sorting by header",
-              "description": "Enables or disables the ability to sort the table by clicking on the column headers",
-              "default": true
-            },
-            "enableRendererSelection": {
-              "type": "boolean",
-              "title": "Enable selection of column renderer",
-              "description": "Whether to enable the selection of a column renderer in the header or not",
-              "default": true
-            },
-            "publishSelection": {
-              "type": "boolean",
-              "title": "Publish Selection",
-              "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
+              "title": "Show title",
+              "description": "Whether to display the title or not.",
               "default": true
             },
             "subscribeToSelection": {
@@ -175,10 +229,18 @@
               "title": "Subscribe to Selection",
               "description": "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
               "default": true
+            },
+            "title": {
+              "type": "string",
+              "title": "Title",
+              "description": "The title of the table shown above the generated image. If left blank, no title will be shown.",
+              "default": "Table View"
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true
     },
     "ui_schema": {
       "type": "VerticalLayout",

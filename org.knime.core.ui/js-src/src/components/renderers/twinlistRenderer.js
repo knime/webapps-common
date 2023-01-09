@@ -1,11 +1,15 @@
-import { rankWith, schemaMatches } from '@jsonforms/core';
+import { uiTypeIs, rankWith, schemaMatches, and } from '@jsonforms/core';
 import TwinlistInput from '@/components/UIComponents/TwinlistInput.vue';
-import { priorityRanks } from '@/constants';
+import { priorityRanks, inputFormats } from '@/constants';
 
-export const twinlistTester = schemaMatches(
-    (schema) => schema.hasOwnProperty('properties') &&
-     Object.values(schema.properties).some(prop => prop.hasOwnProperty('anyOf'))
-);
+export const checkTwinlistStructure = and(uiTypeIs('Control'), schemaMatches(
+    (s) => s.hasOwnProperty('properties') &&
+     Object.values(s.properties).some(prop => prop.hasOwnProperty('anyOf'))
+));
+
+
+export const twinlistTester = (uischema, schema) => checkTwinlistStructure(uischema, schema) &&
+    uischema.options?.format === inputFormats.anyOfTwinList;
 
 
 export const twinlistRenderer = {

@@ -106,24 +106,85 @@ export const dialogInitialData = {
                         title: 'Show tooltip'
                     },
                     frequencyColumns: {
-                        anyOf: [
-                            {
-                                const: 'Universe_0_0',
-                                title: 'Universe_0_0'
+                        type: 'object',
+                        properties: {
+                            isCaseSensitive: {
+                                type: 'boolean',
+                                default: false
                             },
-                            {
-                                const: 'Universe_0_1',
-                                title: 'Universe_0_1'
+                            isInverted: {
+                                type: 'boolean',
+                                default: false
                             },
-                            {
-                                const: 'Universe_1_0',
-                                title: 'Universe_1_0'
+                            manuallySelected: {
+                                default: [],
+                                type: 'array',
+                                items: {
+                                    type: 'string'
+                                }
                             },
-                            {
-                                const: 'Universe_1_1',
-                                title: 'Universe_1_1'
+                            mode: {
+                                oneOf: [
+                                    {
+                                        const: 'MANUAL',
+                                        title: 'Manual'
+                                    },
+                                    {
+                                        const: 'REGEX',
+                                        title: 'Regex'
+                                    },
+                                    {
+                                        const: 'WILDCARD',
+                                        title: 'Wildcard'
+                                    },
+                                    {
+                                        const: 'TYPE',
+                                        title: 'Type'
+                                    }
+                                ],
+                                default: 'MANUAL'
+                            },
+                            pattern: {
+                                type: 'string',
+                                default: ''
+                            },
+                            selected: {
+                                anyOf: [
+                                    {
+                                        const: 'Universe_0_0',
+                                        title: 'Universe_0_0',
+                                        columnType: 'DoubleValue'
+                                    },
+                                    {
+                                        const: 'Universe_0_1',
+                                        title: 'Universe_0_1',
+                                        columnType: 'DoubleValue'
+                                    },
+                                    {
+                                        const: 'Universe_1_0',
+                                        title: 'Universe_1_0',
+                                        columnType: 'DoubleValue'
+                                    },
+                                    {
+                                        const: 'Universe_1_1',
+                                        title: 'Universe_1_1',
+                                        columnType: 'DoubleValue'
+                                    },
+                                    {
+                                        const: 'Cluster Membership',
+                                        title: 'Cluster Membership',
+                                        columnType: 'StringValue'
+                                    }
+                                ]
+                            },
+                            selectedTypes: {
+                                default: [],
+                                type: 'array',
+                                items: {
+                                    type: 'string'
+                                }
                             }
-                        ],
+                        },
                         title: 'Frequency column selection'
                     },
                     referenceLines: {

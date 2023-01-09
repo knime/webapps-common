@@ -9,20 +9,25 @@ describe('TwinlistInput', () => {
         type: 'object',
         properties: {
             twinlist: {
-                anyOf: [
-                    {
-                        const: '1',
-                        title: 'One'
-                    },
-                    {
-                        const: '2',
-                        title: 'Two'
-                    },
-                    {
-                        const: '3',
-                        title: 'Three'
+                type: 'object',
+                properties: {
+                    selected: {
+                        anyOf: [
+                            {
+                                const: '1',
+                                title: 'One'
+                            },
+                            {
+                                const: '2',
+                                title: 'Two'
+                            },
+                            {
+                                const: '3',
+                                title: 'Three'
+                            }
+                        ]
                     }
-                ]
+                }
             }
         }
     };
@@ -51,7 +56,7 @@ describe('TwinlistInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('TwinListInput');
     });
 
-    it('TwinListInput without options uses oneOf fallback', () => {
+    it('TwinListInput without options uses twinlist fallback', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/twinlist'

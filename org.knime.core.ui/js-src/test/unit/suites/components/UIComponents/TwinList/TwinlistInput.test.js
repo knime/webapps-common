@@ -11,21 +11,72 @@ describe('TwinlistInput.vue', () => {
             enabled: true,
             visible: true,
             label: 'defaultLabel',
-            data: ['test_1'],
+            data: {
+                selected: ['test_1'],
+                manuallySelected: ['test_1'],
+                isCaseSensitive: false,
+                isInverted: false,
+                mode: 'MANUAL',
+                pattern: '',
+                selectedTypes: ['String']
+            },
             schema: {
-                anyOf:
-                    [{
-                        const: 'test_1',
-                        title: 'test_1'
+                type: 'object',
+                properties: {
+                    isCaseSensitive: {
+                        type: 'boolean'
                     },
-                    {
-                        const: 'test_2',
-                        title: 'test_2'
+                    isInverted: {
+                        type: 'boolean'
                     },
-                    {
-                        const: 'test_3',
-                        title: 'test_3'
-                    }]
+                    manuallySelected: {
+                        items: {
+                            type: 'string'
+                        },
+                        type: 'array'
+                    },
+                    mode: {
+                        oneOf: [
+                            {
+                                const: 'MANUAL',
+                                title: 'Manual'
+                            },
+                            {
+                                const: 'REGEX',
+                                title: 'Regex'
+                            },
+                            {
+                                const: 'WILDCARD',
+                                title: 'Wildcard'
+                            },
+                            {
+                                const: 'TYPE',
+                                title: 'Type'
+                            }
+                        ]
+                    },
+                    selected: {
+                        anyOf:
+                            [{
+                                const: 'test_1',
+                                title: 'test_1',
+                                columnType: 'String'
+                            },
+                            {
+                                const: 'test_2',
+                                title: 'test_2',
+                                columnType: 'Double'
+                            },
+                            {
+                                const: 'test_3',
+                                title: 'test_3',
+                                columnType: 'String'
+                            }]
+                    },
+                    pattern: {
+                        type: 'string'
+                    }
+                }
             },
             uischema: {},
             rootSchema: {
@@ -68,7 +119,7 @@ describe('TwinlistInput.vue', () => {
                 namespaced: true
             }
         });
-        localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
@@ -94,7 +145,7 @@ describe('TwinlistInput.vue', () => {
                 }
             }
         );
-        localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true, expect.undefined);
     });
@@ -103,22 +154,33 @@ describe('TwinlistInput.vue', () => {
         expect(wrapper.findComponent(Twinlist).props().possibleValues).toEqual(
             [{
                 id: 'test_1',
-                text: 'test_1'
+                text: 'test_1',
+                type: 'String'
             },
             {
                 id: 'test_2',
-                text: 'test_2'
+                text: 'test_2',
+                type: 'Double'
             },
             {
                 id: 'test_3',
-                text: 'test_3'
+                text: 'test_3',
+                type: 'String'
             }]
         );
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Twinlist).vm.value).toBe(defaultPropsData.control.data);
+        expect(wrapper.findComponent(Twinlist).vm.initialPattern).toBe(defaultPropsData.control.data.pattern);
+        expect(wrapper.findComponent(Twinlist).vm.initialSelectedTypes).toBe(
+            defaultPropsData.control.data.selectedTypes
+        );
+        expect(wrapper.findComponent(Twinlist).vm.initialManuallySelected).toBe(
+            defaultPropsData.control.data.manuallySelected
+        );
+        expect(wrapper.findComponent(Twinlist).vm.initialMode).toBe('manual');
     });
+    
 
     it('sets correct label', () => {
         expect(wrapper.findComponent('label').text()).toBe(defaultPropsData.control.label);
@@ -139,18 +201,23 @@ describe('TwinlistInput.vue', () => {
 
     it('moves missing values correctly', async () => {
         const dirtySettingsMock = jest.fn();
-        const localProps = { ...defaultPropsData, control: { ...defaultPropsData.control, data: ['missing'] } };
+        const localProps = { ...defaultPropsData,
+            control: { ...defaultPropsData.control,
+                data: { ...defaultPropsData.control.data, manuallySelected: ['missing'] } } };
         const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, localProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        expect(localWrapper.props().control.data).toStrictEqual(['missing']);
-        localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
-        expect(onChangeSpy).toBeCalledWith([]);
-        localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
-        expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3']);
+        expect(localWrapper.props().control.data).toMatchObject({ manuallySelected: ['missing'] });
+        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
+        expect(onChangeSpy).toBeCalledWith({ manuallySelected: [], selected: [] });
+        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        expect(onChangeSpy).toBeCalledWith({
+            manuallySelected: ['test_1', 'test_2', 'test_3'],
+            selected: ['test_1', 'test_2', 'test_3']
+        });
     });
 
     it('does not render content of TwinlistInput when visible is false', async () => {
