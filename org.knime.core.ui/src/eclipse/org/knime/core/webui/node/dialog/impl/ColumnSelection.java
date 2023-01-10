@@ -154,7 +154,8 @@ public class ColumnSelection {
                 return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
                     .mapToObj(i -> choices[i]).toArray(String[]::new);
             case REGEX:
-                predicate = casedPattern.isEmpty() ? choice -> false : Pattern.compile(casedPattern).asPredicate();
+                predicate = casedPattern.isEmpty() ? choice -> false
+                    : Pattern.compile(String.format("^%s$", casedPattern)).asPredicate();
                 break;
             case WILDCARD:
                 predicate = choice -> wildcardMatch(choice, casedPattern);
