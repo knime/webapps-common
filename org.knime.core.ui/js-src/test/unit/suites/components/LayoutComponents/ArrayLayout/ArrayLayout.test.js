@@ -1,9 +1,14 @@
 import { mountJsonFormsComponent, initializesJsonFormsArrayControl } from '~/test/unit/suites/utils/jsonFormsTestUtils';
 import ArrayLayout from '@/components/LayoutComponents/ArrayLayout';
+import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
+import ArrowUpIcon from '~/webapps-common/ui/assets/img/icons/arrow-up.svg?inline';
+import ArrowDownIcon from '~/webapps-common/ui/assets/img/icons/arrow-down.svg?inline';
+import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
 
 describe('ArrayLayout.vue', () => {
     const defaultPropsData = {
         control: {
+            visible: true,
             cells: [],
             data: [{
                 borderStyle: 'DASHED',
@@ -11,6 +16,20 @@ describe('ArrayLayout.vue', () => {
                 label: undefined,
                 size: 1,
                 value: '0'
+            },
+            {
+                borderStyle: 'DOTTED',
+                color: 'red',
+                label: undefined,
+                size: 1,
+                value: '1'
+            },
+            {
+                borderStyle: 'SOLID',
+                color: 'green',
+                label: undefined,
+                size: 1,
+                value: '2'
             }],
             path: 'view/referenceLines',
             schema: {
@@ -135,4 +154,46 @@ describe('ArrayLayout.vue', () => {
         wrapper.vm.deleteItem();
         expect(deleteItemSpy).toHaveBeenCalled();
     });
+
+    it('does not render sort buttons when showSortButtons is not present or false', () => {
+        const itemControls = wrapper.findAll('.item-controls');
+        const itemControlsWithArrowUp = itemControls.filter(
+            wrapper => wrapper.findComponent(ArrowUpIcon).exists()
+        );
+        const itemControlsWithArrowDown = itemControls.filter(
+            wrapper => wrapper.findComponent(ArrowDownIcon).exists()
+        );
+        const itemControlsWithTrash = itemControls.filter(
+            wrapper => wrapper.findComponent(TrashIcon).exists()
+        );
+        const numberDataItems = defaultPropsData.control.data.length;
+
+        expect(itemControlsWithArrowUp).toHaveLength(0);
+        expect(itemControlsWithArrowDown).toHaveLength(0);
+        expect(itemControlsWithTrash).toHaveLength(numberDataItems);
+    });
+
+    test.each([
+        { button: 'move up button', position: 'the first', itemNum: 0, moveUpDisabled: true, moveDownDisabled: false },
+        { button: 'none of the sort buttons',
+            position: 'any non-boundary',
+            itemNum: 1,
+            moveUpDisabled: false,
+            moveDownDisabled: false },
+        { button: 'move down button', position: 'the last', itemNum: 2, moveUpDisabled: false, moveDownDisabled: true }
+    ])('disables $button for $position item when showSortButtons is true',
+        async ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
+            wrapper.setProps({ control: { ...defaultPropsData.control,
+                uischema: {
+                    ...defaultPropsData.control.uischema,
+                    options: {
+                        details: defaultPropsData.control.uischema.options.details, showSortButtons: true
+                    }
+                } } });
+            await wrapper.vm.$nextTick();
+            const itemControls = wrapper.findAll('.item-controls');
+            const itemControlsButtons = itemControls.at(itemNum).findAllComponents(FunctionButton);
+            expect(itemControlsButtons.at(0).vm.disabled).toBe(moveUpDisabled);
+            expect(itemControlsButtons.at(1).vm.disabled).toBe(moveDownDisabled);
+        });
 });

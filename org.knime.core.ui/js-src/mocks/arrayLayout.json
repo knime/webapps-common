@@ -5,9 +5,19 @@
       "view": {
         "dummyArrayLayout": [
           {
-            "doubleInput": 0,
+            "doubleInput": 1,
             "stringInput": "label 1",
             "radioInput": "OPTION1"
+          },
+          {
+            "doubleInput": 2,
+            "stringInput": "label 2",
+            "radioInput": "OPTION2"
+          },
+          {
+            "doubleInput": 3,
+            "stringInput": "label 3",
+            "radioInput": "OPTION3"
           }
         ]
       }
@@ -70,6 +80,7 @@
               "options": {
                 "addButtonText": "Add dummy element",
                 "arrayElementTitle": "Dummy element",
+                "showSortButtons": true,
                 "detail": {
                   "horizontalLayout": {
                     "type": "HorizontalLayout",
