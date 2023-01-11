@@ -7,9 +7,9 @@ Bundle-ClassPath: knime-core-ui-testing.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.testing.node.dialog,
  org.knime.testing.node.view
-Require-Bundle: org.knime.core;bundle-version="[4.7.0,5.0.0)",
- org.knime.core.ui;bundle-version="[4.7.0,5.0.0)",
- org.knime.testing;bundle-version="[4.7.0,5.0.0)",
+Require-Bundle: org.knime.core;bundle-version="[4.7.0,6.0.0)",
+ org.knime.core.ui;bundle-version="[4.7.0,6.0.0)",
+ org.knime.testing;bundle-version="[4.7.0,6.0.0)",
  org.hamcrest.library;bundle-version="[1.3.0,2.0.0)",
  assertj-core;bundle-version="[3.19.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-11
