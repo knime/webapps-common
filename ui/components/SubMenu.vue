@@ -235,20 +235,22 @@ export default {
     >
       <slot />
     </FunctionButton>
-    <div
-      ref="menu-wrapper"
-      :class="['menu-wrapper', { expanded }, { disabled } ]"
-    >
-      <MenuItems
-        :id="id"
-        ref="menuItems"
-        :class="['menu-items', `orient-${orientation}`]"
-        :items="items"
-        :max-menu-width="maxMenuWidth"
-        aria-label="sub menu"
-        @item-click="onItemClick"
-      />
-    </div>
+    <Teleport to="body">
+      <div
+        ref="menu-wrapper"
+        :class="['menu-wrapper', { expanded }, { disabled } ]"
+      >
+        <MenuItems
+          :id="id"
+          ref="menuItems"
+          :class="['menu-items', `orient-${orientation}`]"
+          :items="items"
+          :max-menu-width="maxMenuWidth"
+          aria-label="sub menu"
+          @item-click="onItemClick"
+        />
+      </div>
+    </Teleport>
   </div>
 </template>
 

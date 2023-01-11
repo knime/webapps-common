@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { shallowMount, mount, RouterLinkStub } from '@vue/test-utils';
 
 import SubMenu from '../SubMenu.vue';
+import MenuItems from '../MenuItems.vue';
 
 describe('SubMenu.vue', () => {
     describe.skip('clicking submenu items', () => {
@@ -278,11 +279,11 @@ describe('SubMenu.vue', () => {
             vi.useFakeTimers();
             let closeMenuMock = vi.spyOn(closingMenuWrapper.vm, 'closeMenu');
 
-            closingMenuWrapper.setData({ expanded: true });
+            await closingMenuWrapper.setData({ expanded: true });
             // preventDefault to omit console error, see https://github.com/jsdom/jsdom/issues/2112#issuecomment-1019402961
-            closingMenuWrapper.find('ul a').wrapperElement
+            closingMenuWrapper.findComponent(MenuItems).find('ul a').wrapperElement
                 .addEventListener('click', (event) => event.preventDefault(), false);
-            await closingMenuWrapper.find('ul a').trigger('click');
+            await closingMenuWrapper.findComponent(MenuItems).find('ul a').trigger('click');
 
             vi.runAllTimers();
             expect(closeMenuMock).toHaveBeenCalled();

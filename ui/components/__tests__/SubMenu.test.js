@@ -4,6 +4,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 import { createPopper as createPopperMock } from '@popperjs/core/dist/esm';
 
 import SubMenu from '../SubMenu.vue';
+import MenuItems from '../MenuItems.vue';
 import FunctionButton from '../FunctionButton.vue';
 
 vi.mock('@popperjs/core/dist/esm');
@@ -38,10 +39,11 @@ describe('SubMenu.vue', () => {
                 orientation: 'right'
             }
         });
-        expect(wrapper.find('.menu-items.orient-right').exists()).toBe(true);
+        await wrapper.vm.$nextTick();
+        expect(wrapper.findComponent(MenuItems).find('.menu-items.orient-right').exists()).toBe(true);
         await wrapper.setProps({ orientation: 'left' });
 
-        expect(wrapper.find('.menu-items.orient-left').exists()).toBe(true);
+        expect(wrapper.findComponent(MenuItems).find('.menu-items.orient-left').exists()).toBe(true);
         expect(setOptionsMock).toHaveBeenCalled();
     });
 });
