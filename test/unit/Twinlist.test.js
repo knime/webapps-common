@@ -742,4 +742,52 @@ describe('Twinlist.vue', () => {
             expect(right.props('possibleValues').length).toBe(0);
         });
     });
+
+    describe('Search info', () => {
+        let propsData;
+        beforeEach(() => {
+            propsData = {
+                possibleValues: defaultPossibleValues,
+                value: ['test2'],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true
+            };
+        });
+
+        it('shows no info search term is empty and mode is manual', () => {
+            const wrapper = mount(Twinlist, { propsData });
+            expect(wrapper.find('search-info').exists()).toBeFalsy();
+        });
+
+        it('shows number of visible items and total number on search', () => {
+            propsData.value = ['test2', 'Missing'];
+            propsData.initialSearchTerm = 't';
+            const wrapper = mount(Twinlist, { propsData });
+            expect(wrapper.find('.search-info').text()).toBe('Showing 3 of 4 items');
+        });
+
+        it('show indication that no items match the search', () => {
+            propsData.value = ['test2', 'Missing'];
+            propsData.initialSearchTerm = 'xyz';
+            const wrapper = mount(Twinlist, { propsData });
+            expect(wrapper.find('.search-info').text()).toBe('No items found (4 hidden)');
+        });
+
+        it('show indication that no items exist at all', () => {
+            propsData.possibleValues = [];
+            propsData.value = [];
+            propsData.initialSearchTerm = 't';
+            const wrapper = mount(Twinlist, { propsData });
+            expect(wrapper.find('.search-info').text()).toBe('No selectable items');
+        });
+
+        it('do not show search info if the mode is not manual', () => {
+            propsData.initialSearchTerm = 't';
+            propsData.initialMode = 'regex';
+            const wrapper = mount(Twinlist, { propsData });
+            expect(wrapper.find('.search-info').exists()).toBeFalsy();
+        });
+    });
 });

@@ -178,7 +178,22 @@ export default {
                 return '';
             }
             return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
+        },
+      numAllItems() {
+        return this.invalidValueIds.length + this.possibleValues.length;
+      },
+      numShownItems() {
+        return this.rightItems.length + this.leftItems.length;
+      },
+      searchInfo() {
+        if (this.numAllItems === 0) {
+          return 'No selectable items';
         }
+        if (this.numShownItems === 0) {
+          return `No items found (${this.numAllItems} hidden)`;
+        }
+        return `Showing ${this.numShownItems} of ${this.numAllItems} items`;
+      }
     },
     watch: {
         value(newValue) {
@@ -328,6 +343,12 @@ export default {
         @toggle-case-sensitive-search="(event) => caseSensitiveSearch = event"
       />
     </Label>
+    <div
+      v-if="showSearch && searchTerm !== ''"
+      class="search-info"
+    >
+      {{ searchInfo }}
+    </div>
     <div class="header">
       <div class="title">{{ leftLabel }}</div>
       <div class="space" />
@@ -523,6 +544,14 @@ export default {
         color: var(--theme-select-control-foreground-color);
       }
     }
+  }
+
+  & .search-info {
+    font-weight: 200;
+    font-size: 13px;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
+    line-height: 18px;
   }
 
   & .search-wrapper {
