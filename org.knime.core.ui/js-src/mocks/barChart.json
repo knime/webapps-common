@@ -4,21 +4,35 @@
     "data": {
       "model": {
         "categoryColumn": "Cluster Membership",
-        "frequencyColumns": [
-          "Universe_0_0",
-          "Universe_0_1",
-          "Universe_1_0",
-          "Universe_1_1"
-        ],
-        "aggregationMethod": "NONE"
+        "aggregationMethod": "NONE",
+        "frequencyColumns": {
+          "mode": "MANUAL",
+          "manuallySelected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ],
+          "pattern": "",
+          "isCaseSensitive": false,
+          "isInverted": false,
+          "selectedTypes": [],
+          "selected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ]
+        }
       },
       "view": {
         "title": "Bar Chart",
-        "chartType": "GROUPED",
         "direction": "VERTICAL",
-        "showTooltip": true,
-        "displayLegend": true,
+        "chartType": "GROUPED",
+        "showLegend": true,
+        "showValues": false,
         "allowImageDownload": true,
+        "showTooltip": true,
         "publishSelection": true,
         "subscribeToSelection": true,
         "enableAnimation": true
@@ -50,47 +64,117 @@
                 }
               ],
               "title": "Aggregation",
-              "description": "Aggregation method description",
-              "default": "AVG"
+              "description": "Select the aggregation method used on the selected frequency columns. In case of “None” every row of the table is treated as a separate category. Note that in this case duplicate categories can exist. In case of “Occurrence Count” the occurrence of the number of rows that share a given category is determined.",
+              "default": "NONE"
             },
             "categoryColumn": {
               "oneOf": [
                 {
                   "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+                  "title": "Cluster Membership",
+                  "columnType": "StringValue"
                 }
               ],
               "title": "Category dimension",
-              "description": "Category column description",
+              "description": "Select the column that contains the category values. Note: Missing values are treated as separate category.",
               "default": "Cluster Membership"
             },
             "frequencyColumns": {
-              "anyOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
+              "type": "object",
+              "properties": {
+                "isCaseSensitive": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
+                "isInverted": {
+                  "type": "boolean",
+                  "default": false
                 },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
+                "manuallySelected": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "pattern": {
+                  "type": "string",
+                  "default": ""
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "selectedTypes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
-              ],
+              },
               "title": "Frequency dimensions",
-              "description": "Frequency columns description",
-              "default": [
-                "Universe_0_0",
-                "Universe_0_1",
-                "Universe_1_0",
-                "Universe_1_1"
-              ]
+              "description": "Select the columns with frequencies for which you wish to plot bars. Note: Missing values in the frequency column will be ignored with a corresponding warning message. If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.",
+              "default": {
+                "m_mode": "MANUAL",
+                "m_manuallySelected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ],
+                "m_pattern": "",
+                "m_isCaseSensitive": false,
+                "m_isInverted": false,
+                "m_selectedTypes": [],
+                "m_selected": [
+                  "Universe_0_0",
+                  "Universe_0_1",
+                  "Universe_1_0",
+                  "Universe_1_1"
+                ]
+              }
             }
           }
         },
@@ -100,13 +184,13 @@
             "allowImageDownload": {
               "type": "boolean",
               "title": "Enable image download",
-              "description": "Allow image download description",
+              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
               "default": true
             },
             "categoryAxisLabel": {
               "type": "string",
               "title": "Category axis label",
-              "description": "Category axis label description"
+              "description": "The label used for the category axis. If left blank, no label will be shown."
             },
             "chartType": {
               "oneOf": [
@@ -120,7 +204,7 @@
                 }
               ],
               "title": "Arrange bars",
-              "description": "Chart type description",
+              "description": "When “Stacked” is selected, the bars of the same category are stacked on top of each other. ",
               "default": "GROUPED"
             },
             "direction": {
@@ -135,53 +219,61 @@
                 }
               ],
               "title": "Orientation",
-              "description": "Direction description",
+              "description": "When “Horizontal” is selected, the bar chart is plotted horizontally. By default bar chart is plotted with vertical bars.",
               "default": "VERTICAL"
             },
-            "displayLegend": {
+            "enableAnimation": {
               "type": "boolean",
-              "title": "Display legend",
-              "description": "Display legend description",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
               "default": true
             },
             "frequencyAxisLabel": {
               "type": "string",
               "title": "Frequency axis label",
-              "description": "Frequency axis label description"
+              "description": "The label used for the frequency axis. If left blank, no label will be shown."
             },
             "publishSelection": {
               "type": "boolean",
               "title": "Publish Selection",
-              "description": "Publish Selection description",
+              "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
+              "default": true
+            },
+            "showLegend": {
+              "type": "boolean",
+              "title": "Display legend",
+              "description": "When checked, the chart’s legend is displayed.",
               "default": true
             },
             "showTooltip": {
               "type": "boolean",
               "title": "Show tooltip",
-              "description": "Show tooltip description",
+              "description": "When checked, hovering over a bar will show information about the data.",
               "default": true
+            },
+            "showValues": {
+              "type": "boolean",
+              "title": "Show bar values",
+              "description": "When checked, the values will be shown on top of each bar.",
+              "default": false
             },
             "subscribeToSelection": {
               "type": "boolean",
               "title": "Subscribe to Selection",
-              "description": "Subscribe to Selection description",
-              "default": true
-            },
-            "enableAnimation": {
-              "type": "boolean",
-              "title": "Enable animation",
-              "description": "Enable animation description",
+              "description": "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
               "default": true
             },
             "title": {
               "type": "string",
               "title": "Title",
-              "description": "Title description",
+              "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
               "default": "Bar Chart"
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true
     },
     "ui_schema": {
       "elements": [
@@ -262,7 +354,14 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/displayLegend",
+              "scope": "#/properties/view/properties/showLegend",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showValues",
               "options": {
                 "format": "checkbox"
               }
