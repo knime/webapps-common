@@ -44,16 +44,13 @@ const isKeyValuePresentInObject = (object, parentKey, keyName, value, currentPar
         return false;
     }
 
-    for (const key of Object.keys(object)) {
-        if (parentKey === currentParentKey && key === keyName && object[key] === value) {
+    for (const [key, val] of Object.entries(object)) {
+        if (parentKey === currentParentKey && key === keyName && val === value) {
             return true;
-        } else {
-            const val = object[key];
-            if (typeof val === 'object') {
-                currentParentKey = key;
-                if (isKeyValuePresentInObject(val, parentKey, keyName, value, currentParentKey) === true) {
-                    return true;
-                }
+        } else if (typeof val === 'object') {
+            currentParentKey = key;
+            if (isKeyValuePresentInObject(val, parentKey, keyName, value, currentParentKey) === true) {
+                return true;
             }
         }
     }

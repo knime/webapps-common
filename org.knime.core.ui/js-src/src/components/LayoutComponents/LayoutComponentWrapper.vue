@@ -1,8 +1,8 @@
 <script>
 import { defineComponent } from '@vue/composition-api';
 
-const LayoutComponenWrapper = defineComponent({
-    name: 'LayoutComponenWrapper',
+const LayoutComponentWrapper = defineComponent({
+    name: 'LayoutComponentWrapper',
     inject: ['jsonforms'],
     props: {
         layout: {
@@ -23,7 +23,7 @@ const LayoutComponenWrapper = defineComponent({
         }
     }
 });
-export default LayoutComponenWrapper;
+export default LayoutComponentWrapper;
 </script>
 
 <template>

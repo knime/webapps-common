@@ -1,13 +1,13 @@
 <script>
 import { defineComponent } from '@vue/composition-api';
 import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue2';
-import LayoutComponenWrapper from './LayoutComponentWrapper.vue';
+import LayoutComponentWrapper from './LayoutComponentWrapper.vue';
 
 const SectionLayout = defineComponent({
     name: 'SectionLayout',
     components: {
         DispatchRenderer,
-        LayoutComponenWrapper
+        LayoutComponentWrapper
     },
     props: {
         ...rendererProps()
@@ -20,7 +20,7 @@ export default SectionLayout;
 </script>
 
 <template>
-  <LayoutComponenWrapper :layout="layout">
+  <LayoutComponentWrapper :layout="layout">
     <div
       class="section"
     >
@@ -39,7 +39,7 @@ export default SectionLayout;
         />
       </div>
     </div>
-  </LayoutComponenWrapper>
+  </LayoutComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>

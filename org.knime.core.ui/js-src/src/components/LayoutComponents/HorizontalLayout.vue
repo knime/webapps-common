@@ -1,13 +1,13 @@
 <script>
 import { defineComponent } from '@vue/composition-api';
 import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue2';
-import LayoutComponenWrapper from './LayoutComponentWrapper.vue';
+import LayoutComponentWrapper from './LayoutComponentWrapper.vue';
 
 const HorizontalLayout = defineComponent({
     name: 'HorizontalLayout',
     components: {
         DispatchRenderer,
-        LayoutComponenWrapper
+        LayoutComponentWrapper
     },
     props: {
         ...rendererProps()
@@ -20,7 +20,7 @@ export default HorizontalLayout;
 </script>
 
 <template>
-  <LayoutComponenWrapper :layout="layout">
+  <LayoutComponentWrapper :layout="layout">
     <div class="horizontal">
       <div
         v-for="(element, index) in layout.uischema.elements"
@@ -36,7 +36,7 @@ export default HorizontalLayout;
         />
       </div>
     </div>
-  </LayoutComponenWrapper>
+  </LayoutComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
