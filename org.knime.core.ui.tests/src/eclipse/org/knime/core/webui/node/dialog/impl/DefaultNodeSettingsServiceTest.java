@@ -54,6 +54,7 @@ import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.F
 
 import java.util.Map;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -69,7 +70,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Tests {@link DefaultNodeSettingsService}.
+ * Tests DefaultNodeSettingsService.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -98,8 +99,11 @@ class DefaultNodeSettingsServiceTest {
         final var nodeSettings = new NodeSettings("node_settings");
 
         // try to obtain initial data using empty node settings
-        obtainAndCheckInitialData(MAPPER.createObjectNode(), nodeSettings,
-            new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())});
+        Assertions
+            .assertThatThrownBy(() -> obtainAndCheckInitialData(null, nodeSettings,
+                new PortObjectSpec[]{
+                    new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())}))
+            .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
