@@ -144,16 +144,6 @@ export default {
   &:has(input:placeholder-shown) .clear-search {
     visibility: hidden;
   }
-
-  & button.toggle-case-sensitive-search {
-    & >>> svg {
-      fill: var(--theme-button-function-foreground-color);
-    }
-
-    &.active >>> svg {
-      fill: var(--theme-button-function-foreground-color-active);
-    }
-  }
 }
 
 </style>
