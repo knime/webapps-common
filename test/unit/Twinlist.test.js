@@ -748,7 +748,7 @@ describe('Twinlist.vue', () => {
         beforeEach(() => {
             propsData = {
                 possibleValues: defaultPossibleValues,
-                value: ['test2'],
+                initialManuallySelected: ['test2'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3,
@@ -756,38 +756,43 @@ describe('Twinlist.vue', () => {
             };
         });
 
-        it('shows no info search term is empty and mode is manual', () => {
+        it('shows no info if search term is empty and mode is manual', () => {
             const wrapper = mount(Twinlist, { propsData });
-            expect(wrapper.find('search-info').exists()).toBeFalsy();
+            expect(wrapper.find('info').exists()).toBeFalsy();
         });
 
         it('shows number of visible items and total number on search', () => {
-            propsData.value = ['test2', 'Missing'];
+            propsData.initialManuallySelected = ['test2', 'Missing'];
             propsData.initialSearchTerm = 't';
             const wrapper = mount(Twinlist, { propsData });
-            expect(wrapper.find('.search-info').text()).toBe('Showing 3 of 4 items');
+            const infos = wrapper.findAll('.info');
+            expect(infos.at(0).text()).toBe('2 of 2 entries');
+            expect(infos.at(1).text()).toBe('1 of 2 entries');
         });
 
         it('show indication that no items match the search', () => {
-            propsData.value = ['test2', 'Missing'];
-            propsData.initialSearchTerm = 'xyz';
+            propsData.initialManuallySelected = ['test2', 'Missing'];
+            propsData.initialSearchTerm = 'Missing';
             const wrapper = mount(Twinlist, { propsData });
-            expect(wrapper.find('.search-info').text()).toBe('No items found (4 hidden)');
+            const infos = wrapper.findAll('.info');
+            expect(infos.at(0).text()).toBe('No entries (2 hidden)');
+            expect(infos.at(1).text()).toBe('1 of 2 entries');
         });
 
-        it('show indication that no items exist at all', () => {
-            propsData.possibleValues = [];
-            propsData.value = [];
+        it('does not show info text above the box if it does not contain any element before the search', () => {
+            propsData.initialManuallySelected = [];
             propsData.initialSearchTerm = 't';
             const wrapper = mount(Twinlist, { propsData });
-            expect(wrapper.find('.search-info').text()).toBe('No selectable items');
+            const infos = wrapper.findAll('.info');
+            expect(infos.at(0).text()).toBe('3 of 3 entries');
+            expect(infos.wrappers.length).toBe(1);
         });
 
-        it('do not show search info if the mode is not manual', () => {
+        it('does not show info on non manual selection', () => {
             propsData.initialSearchTerm = 't';
             propsData.initialMode = 'regex';
             const wrapper = mount(Twinlist, { propsData });
-            expect(wrapper.find('.search-info').exists()).toBeFalsy();
+            expect(wrapper.find('.info').exists()).toBeFalsy();
         });
     });
 });

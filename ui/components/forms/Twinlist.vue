@@ -179,21 +179,30 @@ export default {
             }
             return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
         },
-      numAllItems() {
-        return this.invalidValueIds.length + this.possibleValues.length;
-      },
-      numShownItems() {
-        return this.rightItems.length + this.leftItems.length;
-      },
-      searchInfo() {
-        if (this.numAllItems === 0) {
-          return 'No selectable items';
+        numAllItems() {
+          return this.invalidValueIds.length + this.possibleValues.length;
+        },
+        numAllRightItems() {
+            return this.chosenValues.length;
+        },
+        numShownRightItems() {
+            return this.rightItems.length;
+        },
+        numAllLeftItems() {
+            return this.possibleValues.length + this.invalidValueIds.length - this.numAllRightItems;
+        },
+        numShownLeftItems() {
+            return this.leftItems.length;
+        },
+        hasActiveSearch() {
+            return this.mode === 'manual' && this.searchTerm !== '';
+        },
+        leftInfo() {
+            return this.getInfoText(this.numShownLeftItems, this.numAllLeftItems);
+        },
+        rightInfo() {
+            return this.getInfoText(this.numShownRightItems, this.numAllRightItems);
         }
-        if (this.numShownItems === 0) {
-          return `No items found (${this.numAllItems} hidden)`;
-        }
-        return `Showing ${this.numShownItems} of ${this.numAllItems} items`;
-      }
     },
     watch: {
         value(newValue) {
@@ -314,8 +323,17 @@ export default {
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-            return filters.search.test(item.text, this.normalizedSearchTerm,
-                this.caseSensitiveSearch, false);
+          filters.search.test(item[this.mode === 'type' ? 'type' : 'text'], this.normalizedSearchTerm,
+                this.caseSensitiveSearch, this.inverseSearch);
+        },
+        getInfoText(numShownItems, numAllItems) {
+            if (numAllItems === 0 || !this.hasActiveSearch) {
+                return '';
+            }
+            if (numShownItems === 0) {
+                return `No entries (${numAllItems} hidden)`;
+            }
+            return `${numShownItems} of ${numAllItems} entries`;
         }
     }
 };
@@ -343,16 +361,26 @@ export default {
         @toggle-case-sensitive-search="(event) => caseSensitiveSearch = event"
       />
     </Label>
-    <div
-      v-if="showSearch && searchTerm !== ''"
-      class="search-info"
-    >
-      {{ searchInfo }}
-    </div>
     <div class="header">
-      <div class="title">{{ leftLabel }}</div>
+      <div class="title">
+        <div class="label"> {{ leftLabel }}</div>
+        <div
+          v-if="leftInfo !== ''"
+          class="info"
+        >
+          {{ leftInfo }}
+        </div>
+      </div>
       <div class="space" />
-      <div class="title">{{ rightLabel }}</div>
+      <div class="title">
+        <div class="label"> {{ rightLabel }}</div>
+        <div
+          v-if="rightInfo !== ''"
+          class="info"
+        >
+          {{ rightInfo }}
+        </div>
+      </div>
     </div>
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
@@ -436,12 +464,34 @@ export default {
   --button-bar-width: 30px;
 
   & .title {
-    font-weight: 500;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    font-size: 13px;
     line-height: 18px;
     margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 5px;
+
+    & .label {
+        font-weight: 500;
+        font-family: var(--theme-text-medium-font-family);
+        color: var(--theme-text-medium-color);
+        font-size: 13px;
+        flex-shrink: 0;
+        flex-grow: 1;
+        flex-basis: 0px;
+        min-width: 0px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        min-width: 50px;
+    }
+    & .info {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        min-width: 0px;
+        font-size: 8px;
+        font-weight: 300;
+        white-space: nowrap;
+    }
   }
 
   & .lists,
@@ -544,14 +594,6 @@ export default {
         color: var(--theme-select-control-foreground-color);
       }
     }
-  }
-
-  & .search-info {
-    font-weight: 200;
-    font-size: 13px;
-    font-family: var(--theme-text-bold-font-family);
-    color: var(--theme-text-bold-color);
-    line-height: 18px;
   }
 
   & .search-wrapper {
