@@ -2,7 +2,7 @@
 import CodeExample from '../demo/CodeExample.vue';
 import ExpandTransition from '../../../ui/components/transitions/ExpandTransition.vue';
 import Button from '../../../ui/components/Button.vue';
-import code from '!!raw-loader!../../ui/components/transitions/ExpandTransition';
+import code from '!!raw-loader!../../../ui/components/transitions/ExpandTransition.vue';
 
 export default {
     components: {
