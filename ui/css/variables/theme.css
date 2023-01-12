@@ -112,6 +112,7 @@
 
   /* Multiselect Listbox */
   --theme-multiselect-listbox-background-color: var(--knime-white);
+  --theme-empty-multiselect-listbox-background-color: transparent;
 
   /* Text links */
   --theme-text-link-background-color: transparent;

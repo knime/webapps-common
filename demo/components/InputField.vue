@@ -163,9 +163,9 @@ export default {
             </template>
           </InputField>
           <InputField
+            ref="buttonDemo"
             value="demo with right aligned buttons"
             type="text"
-            ref="buttonDemo"
           >
             <template #iconRight>
               <FunctionButton

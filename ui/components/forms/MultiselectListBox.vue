@@ -20,6 +20,10 @@ export default {
             default: false,
             type: Boolean
         },
+        withIsEmptyState: {
+            default: false,
+            type: Boolean
+        },
         /**
          * If enabled the single click will allow the user to select multiple items, otherwise this only works with
          * CTRL + Click (similar to <select> html widgets)
@@ -86,6 +90,9 @@ export default {
             // add two pixel to prevent scrollbar bugs
             const pxSize = `${this.size * this.optionLineHeight + 2}px`;
             return this.size > 0 ? { height: pxSize } : {};
+        },
+        isEmpty() {
+            return this.withIsEmptyState && this.possibleValues.length === 0;
         }
     },
     watch: {
@@ -396,7 +403,7 @@ export default {
       ref="ul"
       role="listbox"
       tabindex="0"
-      :class="{ disabled }"
+      :class="{ disabled, 'empty-box': isEmpty }"
       :aria-label="ariaLabel"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.prevent.exact="onCtrlA"
@@ -433,6 +440,14 @@ export default {
       >
         {{ item.text }}
       </li>
+      <div
+        v-if="isEmpty"
+        class="empty-state"
+      >
+        <span>
+          &lt;no entries&gt;
+        </span>
+      </div>
     </ul>
   </div>
 </template>
@@ -467,6 +482,10 @@ export default {
     margin: 0;
     background: var(--theme-multiselect-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
+
+    &.empty-box {
+      background: var(--theme-empty-multiselect-listbox-background-color);
+    }
 
     &:focus {
       outline: none;
@@ -528,6 +547,19 @@ export default {
         background: var(--theme-color-error);
         color: var(--theme-dropdown-foreground-color-selected);
       }
+    }
+  }
+
+  & .empty-state {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & span {
+      color: var(--theme-dropdown-foreground-color);
+      font-size: 10px;
     }
   }
 

@@ -385,6 +385,7 @@ export default {
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
+        :with-is-empty-state="leftInfo === ''"
         :size="listSize"
         class="listBox"
         :value="selectedLeft"
@@ -442,6 +443,7 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
+        :with-is-empty-state="rightInfo === ''"
         :value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"
@@ -472,25 +474,25 @@ export default {
     gap: 5px;
 
     & .label {
-        font-weight: 500;
-        font-family: var(--theme-text-medium-font-family);
-        color: var(--theme-text-medium-color);
-        font-size: 13px;
-        flex-shrink: 0;
-        flex-grow: 1;
-        flex-basis: 0px;
-        min-width: 0px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        min-width: 50px;
+      font-weight: 500;
+      font-family: var(--theme-text-medium-font-family);
+      color: var(--theme-text-medium-color);
+      font-size: 13px;
+      flex-shrink: 0;
+      flex-grow: 1;
+      flex-basis: 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 50px;
     }
+
     & .info {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        min-width: 0px;
-        font-size: 8px;
-        font-weight: 300;
-        white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 0;
+      font-size: 8px;
+      font-weight: 300;
+      white-space: nowrap;
     }
   }
 

@@ -495,4 +495,34 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.props().value).toStrictEqual([]);
         });
     });
+
+    describe('empty state', () => {
+        let propsData;
+
+        beforeEach(() => {
+            propsData = {
+                possibleValues: [],
+                value: [],
+                ariaLabel: 'A Label'
+            };
+        });
+
+        it('does not display an empty state per default', () => {
+            const wrapper = mount(MultiselectListBox, { propsData });
+            expect(wrapper.find('.empty-state').exists()).toBeFalsy();
+        });
+
+        it('displays an empty state if wanted', () => {
+            propsData.withIsEmptyState = true;
+            const wrapper = mount(MultiselectListBox, { propsData });
+            expect(wrapper.find('.empty-state').text()).toBe('<no entries>');
+        });
+
+        it('does not displays an empty state if the box is not empty', () => {
+            propsData.withIsEmptyState = true;
+            propsData.possibleValues = possibleValues;
+            const wrapper = mount(MultiselectListBox, { propsData });
+            expect(wrapper.find('.empty-state').exists()).toBeFalsy();
+        });
+    });
 });

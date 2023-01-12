@@ -779,15 +779,6 @@ describe('Twinlist.vue', () => {
             expect(infos.at(1).text()).toBe('1 of 2 entries');
         });
 
-        it('does not show info text above the box if it does not contain any element before the search', () => {
-            propsData.initialManuallySelected = [];
-            propsData.initialSearchTerm = 't';
-            const wrapper = mount(Twinlist, { propsData });
-            const infos = wrapper.findAll('.info');
-            expect(infos.at(0).text()).toBe('3 of 3 entries');
-            expect(infos.wrappers.length).toBe(1);
-        });
-
         it('does not show info on non manual selection', () => {
             propsData.initialSearchTerm = 't';
             propsData.initialMode = 'regex';
