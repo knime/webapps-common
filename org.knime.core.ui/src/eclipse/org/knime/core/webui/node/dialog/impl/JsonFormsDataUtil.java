@@ -66,9 +66,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies.NamingBase;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
@@ -97,16 +99,15 @@ final class JsonFormsDataUtil {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
-        mapper.setPropertyNamingStrategy(
-            new NamingBase() {
-            private static final long serialVersionUID = 2L;
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
+            private static final long serialVersionUID = 1L;
 
             @Override
-            public String translate(final String defaultName) {
+            public String nameForField(final MapperConfig<?> config, final AnnotatedField field,
+                final String defaultName) {
                 return defaultName.startsWith("m_") ? defaultName.substring(2) : defaultName;
             }
-        }
-        );
+        });
 
         return mapper;
     }
