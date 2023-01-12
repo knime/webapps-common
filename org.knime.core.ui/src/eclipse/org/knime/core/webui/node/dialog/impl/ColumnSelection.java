@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.impl;
 import static org.apache.commons.io.FilenameUtils.wildcardMatch;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
@@ -60,7 +61,7 @@ import java.util.stream.IntStream;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -87,6 +88,8 @@ public class ColumnSelection {
      * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
      */
     public String m_pattern; //NOSONAR
+
+    private Pair<Pattern, String> m_compiledPattern;
 
     /**
      * whether m_pattern is case sensitive
@@ -134,28 +137,25 @@ public class ColumnSelection {
      */
     @JsonIgnore
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
-        return getSelected(choices, new SettingsCreationContext(new PortObjectSpec[]{spec}, null));
-    }
-
-    /**
-     * @param choices the list of all possible column names
-     * @param context the creation context (for type selection)
-     * @return the array of currently selected columns with respect to the mode
-     */
-    @JsonIgnore
-    public String[] getSelected(final String[] choices, final SettingsCreationContext context) {
         final Predicate<String> predicate;
         final var casedPattern = m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase(Locale.getDefault());
         switch (m_mode) {
             case MANUAL:
                 return m_manuallySelected;
             case TYPE:
-                final var types = getTypes(choices, context);
+                final var types = getTypes(choices, spec);
                 return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
                     .mapToObj(i -> choices[i]).toArray(String[]::new);
             case REGEX:
-                predicate = casedPattern.isEmpty() ? choice -> false
-                    : Pattern.compile(String.format("^%s$", casedPattern)).asPredicate();
+                final var completedPattern = String.format("^%s$", casedPattern);
+                final Pattern pattern;
+                if (m_compiledPattern != null && m_compiledPattern.getSecond() == completedPattern) {
+                    pattern = m_compiledPattern.getFirst();
+                } else {
+                    pattern = Pattern.compile(completedPattern);
+                    m_compiledPattern = new Pair<>(pattern, completedPattern);
+                }
+                predicate = casedPattern.isEmpty() ? choice -> false : pattern.asPredicate();
                 break;
             case WILDCARD:
                 predicate = choice -> wildcardMatch(choice, casedPattern);
@@ -173,10 +173,10 @@ public class ColumnSelection {
         return string -> directedPredicate.test(isCaseSensitive ? string : string.toLowerCase(Locale.getDefault()));
     }
 
-    private static String[] getTypes(final String[] choices, final SettingsCreationContext context) {
-        final var spec = context.getDataTableSpecs()[0];
-        return Arrays.asList(choices).stream() //
-            .map(spec::getColumnSpec) //
+    private static String[] getTypes(final String[] choices, final DataTableSpec spec) {
+        final var choicesSet = new HashSet<>(Arrays.asList(choices));
+        return spec.stream()//
+            .filter(colSpec -> choicesSet.contains(colSpec.getName())) //
             .map(DataColumnSpec::getType) //
             .map(ColumnSelection::typeToString) //
             .toArray(String[]::new);

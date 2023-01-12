@@ -156,7 +156,6 @@ final class JsonFormsSchemaUtil {
             Option.EXTRA_OPEN_API_FORMAT_VALUES, //
             Option.PUBLIC_NONSTATIC_FIELDS, //
             Option.NONPUBLIC_NONSTATIC_FIELDS_WITH_GETTERS, //
-            Option.NONPUBLIC_NONSTATIC_FIELDS_WITHOUT_GETTERS, //
             Option.INLINE_ALL_SCHEMAS, //
             Option.ALLOF_CLEANUP_AT_THE_END));
 
