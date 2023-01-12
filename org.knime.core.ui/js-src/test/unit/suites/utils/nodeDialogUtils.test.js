@@ -117,4 +117,8 @@ describe('Utils', () => {
         };
         expect(hasAdvancedOptions(uiSchema)).not.toBeTruthy();
     });
+
+    it('checks that it does not throw errors with an empty uischema', () => {
+        expect(hasAdvancedOptions(undefined)).not.toBeTruthy();
+    });
 });

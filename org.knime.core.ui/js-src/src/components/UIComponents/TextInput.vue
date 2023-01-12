@@ -4,15 +4,15 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
 import InputField from '~/webapps-common/ui/components/forms/InputField.vue';
 import LabeledInput from './LabeledInput.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const TextInput = defineComponent({
     name: 'TextInput',
     components: {
         InputField,
-        LabeledInput
+        LabeledInput,
+        DialogComponentWrapper
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps()
     },
@@ -45,24 +45,20 @@ export default TextInput;
 </script>
 
 <template>
-  <LabeledInput
-    v-if="isVisible"
-    :text="control.label"
-    :description="control.description"
-    :errors="[control.errors]"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :class="{fadeContainer: isAdvanced}"
-  >
-    <InputField
-      :value="control.data"
-      :disabled="disabled"
-      @input="onChange"
-    />
-  </LabeledInput>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      :text="control.label"
+      :description="control.description"
+      :errors="[control.errors]"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+    >
+      <InputField
+        :value="control.data"
+        :disabled="disabled"
+        @input="onChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
-
-<style>
-@import "../../utils/animation.css";
-</style>

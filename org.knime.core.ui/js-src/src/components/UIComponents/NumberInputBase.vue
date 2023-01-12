@@ -4,15 +4,15 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
 import NumberInput from '~/webapps-common/ui/components/forms/NumberInput.vue';
 import LabeledInput from './LabeledInput.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const NumberInputBase = defineComponent({
     name: 'NumberInputBase',
     components: {
         NumberInput,
-        LabeledInput
+        LabeledInput,
+        DialogComponentWrapper
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         type: {
@@ -48,31 +48,29 @@ export default NumberInputBase;
 </script>
 
 <template>
-  <LabeledInput
-    v-if="isVisible"
-    :text="control.label"
-    :description="control.description"
-    :errors="[control.errors]"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :class="{fadeContainer: isAdvanced}"
-  >
-    <NumberInput
-      class="number-input"
-      :disabled="!control.enabled"
-      :value="control.data"
-      :type="type"
-      :min="control.schema.minimum"
-      :max="control.schema.maximum"
-      @input="onChange"
-    />
-  </LabeledInput>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      :text="control.label"
+      :description="control.description"
+      :errors="[control.errors]"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+    >
+      <NumberInput
+        class="number-input"
+        :disabled="!control.enabled"
+        :value="control.data"
+        :type="type"
+        :min="control.schema.minimum"
+        :max="control.schema.maximum"
+        @input="onChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
-
 .number-input {
   height: 40px;
 

@@ -37,4 +37,27 @@ export const getFlowVariablesMap = ({ rootSchema, path }) => rootSchema?.flowVar
     ? rootSchema.flowVariablesMap[path]
     : null;
 
-export const hasAdvancedOptions = (uischema) => JSON.stringify(uischema).includes('isAdvanced');
+// eslint-disable-next-line max-params
+// recursive function to check if the object contains a key value pair with a given parent
+const isKeyValuePresentInObject = (object, parentKey, keyName, value, currentParentKey = '') => {
+    if (object === null || typeof object === 'undefined') {
+        return false;
+    }
+
+    for (const key of Object.keys(object)) {
+        if (parentKey === currentParentKey && key === keyName && object[key] === value) {
+            return true;
+        } else {
+            const val = object[key];
+            if (typeof val === 'object') {
+                currentParentKey = key;
+                if (isKeyValuePresentInObject(val, parentKey, keyName, value, currentParentKey) === true) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+};
+export const hasAdvancedOptions = (uischema) => isKeyValuePresentInObject(uischema, 'options', 'isAdvanced', true);
+

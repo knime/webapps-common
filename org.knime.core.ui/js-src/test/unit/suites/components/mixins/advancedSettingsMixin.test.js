@@ -1,8 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import MockComponent from './mockComponent.vue';
-import advancedSettingsMixin from '../../../../../src/components/mixins/advancedSettingsMixin';
+import isSettingsVisibleMixin from '../../../../../src/components/mixins/isSettingsVisibleMixin';
 
-describe('advancedSettingsMixin.js', () => {
+describe('isSettingsVisibleMixin.js', () => {
     let propsData;
 
     beforeEach(() => {
@@ -24,7 +24,7 @@ describe('advancedSettingsMixin.js', () => {
     it('shows settings that are not advanced', () => {
         const wrapper = shallowMount(MockComponent, {
             propsData,
-            mixins: [advancedSettingsMixin]
+            mixins: [isSettingsVisibleMixin]
         });
         expect(wrapper.vm.isVisible).toEqual(true);
     });
@@ -34,7 +34,7 @@ describe('advancedSettingsMixin.js', () => {
         propsData.control.rootSchema.showAdvancedSettings = true;
         const wrapper = shallowMount(MockComponent, {
             propsData,
-            mixins: [advancedSettingsMixin]
+            mixins: [isSettingsVisibleMixin]
         });
         expect(wrapper.vm.isVisible).toEqual(true);
     });
@@ -44,7 +44,7 @@ describe('advancedSettingsMixin.js', () => {
         propsData.control.rootSchema.showAdvancedSettings = false;
         const wrapper = shallowMount(MockComponent, {
             propsData,
-            mixins: [advancedSettingsMixin]
+            mixins: [isSettingsVisibleMixin]
         });
         expect(wrapper.vm.isVisible).toEqual(false);
     });
@@ -54,7 +54,7 @@ describe('advancedSettingsMixin.js', () => {
         propsData.control.visible = false;
         const wrapper = shallowMount(MockComponent, {
             propsData,
-            mixins: [advancedSettingsMixin]
+            mixins: [isSettingsVisibleMixin]
         });
         expect(wrapper.vm.isVisible).toEqual(false);
     });

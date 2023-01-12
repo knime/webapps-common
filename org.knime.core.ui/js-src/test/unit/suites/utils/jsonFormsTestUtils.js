@@ -8,7 +8,7 @@ import Vuex from 'vuex';
 
 const jsonFormsMock = require('@jsonforms/vue2');
 
-export const mountJsonFormsComponentWithStore = (component, propsData, modules) => {
+export const mountJsonFormsComponentWithStore = (component, propsData, modules, showAdvanced = false) => {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     localVue.use(CompositionApi);
@@ -20,13 +20,22 @@ export const mountJsonFormsComponentWithStore = (component, propsData, modules) 
         },
         mocks: {
             $store: new Vuex.Store({ modules })
+        },
+        provide: {
+            jsonforms: {
+                core: {
+                    schema: {
+                        showAdvancedSettings: showAdvanced
+                    }
+                }
+            }
         }
     });
 };
 
 // eslint-disable-next-line arrow-body-style
-export const mountJsonFormsComponent = (component, propsData) => {
-    return mountJsonFormsComponentWithStore(component, propsData, null);
+export const mountJsonFormsComponent = (component, propsData, showAdvanced) => {
+    return mountJsonFormsComponentWithStore(component, propsData, null, showAdvanced);
 };
 
 const hasBasicProps = (props) => {

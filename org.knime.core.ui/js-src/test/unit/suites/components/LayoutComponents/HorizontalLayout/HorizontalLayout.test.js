@@ -22,7 +22,8 @@ describe('HorizontalLayout.vue', () => {
                         scope: '#/properties/size'
                     }
                 ]
-            }
+            },
+            visible: true
         }
     };
 
@@ -42,5 +43,17 @@ describe('HorizontalLayout.vue', () => {
     
     it('initializes jsonforms', () => {
         initializesJsonFormsLayout(wrapper);
+    });
+
+    it('checks that it is not rendered if it is an advanced setting', async () => {
+        defaultPropsData.layout.uischema.options = { isAdvanced: true };
+        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultPropsData);
+        expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(false);
+    });
+
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+        defaultPropsData.layout.uischema.options = { isAdvanced: true };
+        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultPropsData, true);
+        expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(true);
     });
 });

@@ -61,9 +61,8 @@ describe('SectionLayout.vue', () => {
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
-        defaultPropsData.layout.schema = { showAdvancedSettings: true };
         defaultPropsData.layout.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(SectionLayout, defaultPropsData, true);
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(true);
     });
 });

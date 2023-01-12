@@ -7,6 +7,7 @@ import Button from '~/webapps-common/ui/components/Button.vue';
 import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
 import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
 import PlusIcon from '~/webapps-common/ui/assets/img/icons/plus.svg?inline';
+import DialogComponentWrapper from '../UIComponents/DialogComponentWrapper.vue';
 
 const ArrayLayout = defineComponent({
     name: 'ArrayLayout',
@@ -16,7 +17,8 @@ const ArrayLayout = defineComponent({
         Button,
         TrashIcon,
         PlusIcon,
-        FunctionButton
+        FunctionButton,
+        DialogComponentWrapper
     },
     props: {
         ...rendererProps()
@@ -53,48 +55,52 @@ export default ArrayLayout;
 </script>
 
 <template>
-  <div class="array">
+  <DialogComponentWrapper>
     <div
-      v-for="(obj, objIndex) in control.data"
-      :key="`${control.path}-${objIndex}`"
+      class="array"
     >
-      <div class="label">
-        <Label
-          :text="returnLabel(objIndex)"
-          :compact="true"
-        />
-        <FunctionButton
-          with-border
-          class="trashButton"
-          compact
-          @click="deleteItem(objIndex)"
-        >
-          <TrashIcon class="trash" />
-        </FunctionButton>
-      </div>
       <div
-        v-for="(element, elemIndex) in control.uischema.options.detail"
-        :key="`${control.path}-${objIndex}-${elemIndex}`"
+        v-for="(obj, objIndex) in control.data"
+        :key="`${control.path}-${objIndex}`"
       >
-        <DispatchRenderer
-          :schema="control.schema"
-          :uischema="element"
-          :path="createIndexedPath(objIndex)"
-          :enabled="control.enabled"
-          :renderers="control.renderers"
-          :cells="control.cells"
-        />
+        <div class="label">
+          <Label
+            :text="returnLabel(objIndex)"
+            :compact="true"
+          />
+          <FunctionButton
+            with-border
+            class="trashButton"
+            compact
+            @click="deleteItem(objIndex)"
+          >
+            <TrashIcon class="trash" />
+          </FunctionButton>
+        </div>
+        <div
+          v-for="(element, elemIndex) in control.uischema.options.detail"
+          :key="`${control.path}-${objIndex}-${elemIndex}`"
+        >
+          <DispatchRenderer
+            :schema="control.schema"
+            :uischema="element"
+            :path="createIndexedPath(objIndex)"
+            :enabled="control.enabled"
+            :renderers="control.renderers"
+            :cells="control.cells"
+          />
+        </div>
       </div>
+      <Button
+        with-border
+        compact
+        @click="addDefaultItem"
+      >
+        <PlusIcon />
+        {{ control.uischema.options.addButtonText }}
+      </Button>
     </div>
-    <Button
-      with-border
-      compact
-      @click="addDefaultItem"
-    >
-      <PlusIcon />
-      {{ control.uischema.options.addButtonText }}
-    </Button>
-  </div>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>

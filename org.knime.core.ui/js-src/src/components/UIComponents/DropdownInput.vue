@@ -4,15 +4,15 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
 import Dropdown from '~/webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
     components: {
         Dropdown,
-        LabeledInput
+        LabeledInput,
+        DialogComponentWrapper
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         optionsGenerator: {
@@ -56,26 +56,22 @@ export default DropdownInput;
 </script>
 
 <template>
-  <LabeledInput
-    v-if="isVisible"
-    :text="control.label"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :description="control.description"
-    :class="{fadeContainer: isAdvanced}"
-  >
-    <Dropdown
-      v-if="options"
-      :aria-label="control.label"
-      :disabled="!control.enabled"
-      :value="control.data"
-      :possible-values="options"
-      @input="onChange"
-    />
-  </LabeledInput>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      :text="control.label"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+      :description="control.description"
+    >
+      <Dropdown
+        v-if="options"
+        :aria-label="control.label"
+        :disabled="!control.enabled"
+        :value="control.data"
+        :possible-values="options"
+        @input="onChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
-
-<style lang="postcss" scoped>
-@import "../../utils/animation.css";
-</style>

@@ -4,7 +4,7 @@ import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
 import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = 'Excluded Values';
@@ -14,9 +14,10 @@ const TwinlistInput = defineComponent({
     name: 'TwinListInput',
     components: {
         Twinlist,
-        LabeledInput
+        LabeledInput,
+        DialogComponentWrapper
+        
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         twinlistSize: {
@@ -70,31 +71,29 @@ export default TwinlistInput;
 </script>
 
 <template>
-  <LabeledInput
-    v-if="isVisible"
-    :text="control.label"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :description="control.description"
-    :class="{fadeContainer: isAdvanced}"
-  >
-    <Twinlist
-      v-if="possibleValues"
-      :disabled="disabled"
-      :value="control.data"
-      :possible-values="possibleValues"
-      :size="twinlistSize"
-      :left-label="twinlistLeftLabel"
-      :right-label="twinlistRightLabel"
-      @input="onChange"
-    />
-  </LabeledInput>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      :text="control.label"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+      :description="control.description"
+    >
+      <Twinlist
+        v-if="possibleValues"
+        :disabled="disabled"
+        :value="control.data"
+        :possible-values="possibleValues"
+        :size="twinlistSize"
+        :left-label="twinlistLeftLabel"
+        :right-label="twinlistRightLabel"
+        @input="onChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
-
 .twinlist >>> .lists >>> .multiselect-list-box >>> [role="listbox"] {
   font-size: 13px;
 }

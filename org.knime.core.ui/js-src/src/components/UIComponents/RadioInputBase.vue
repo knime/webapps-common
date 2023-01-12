@@ -5,16 +5,16 @@ import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from
 import RadioButtons from '~/webapps-common/ui/components/forms/RadioButtons.vue';
 import ValueSwitch from '~/webapps-common/ui/components/forms/ValueSwitch.vue';
 import LabeledInput from './LabeledInput.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const RadioInputBase = defineComponent({
     name: 'RadioInputBase',
     components: {
         RadioButtons,
         ValueSwitch,
-        LabeledInput
+        LabeledInput,
+        DialogComponentWrapper
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps(),
         type: {
@@ -68,29 +68,27 @@ export default RadioInputBase;
 </script>
 
 <template>
-  <LabeledInput
-    v-if="isVisible"
-    :text="control.label"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :description="control.description"
-    :class="{fadeContainer: isAdvanced}"
-  >
-    <component
-      :is="uiComponent"
-      v-if="options"
-      :possible-values="options"
-      :disabled="disabled"
-      :value="control.data"
-      @input="onChange"
-    />
-  </LabeledInput>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      :text="control.label"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+      :description="control.description"
+    >
+      <component
+        :is="uiComponent"
+        v-if="options"
+        :possible-values="options"
+        :disabled="disabled"
+        :value="control.data"
+        @input="onChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
-
 .labeled-input {
   margin-bottom: 10px;
 }

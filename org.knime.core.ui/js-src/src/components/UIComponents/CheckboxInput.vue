@@ -7,7 +7,7 @@ import ReexecutionIcon from '~/webapps-common/ui/assets/img/icons/reexecution.sv
 import FlowVariableIcon from './FlowVariableIcon.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import DescriptionPopover from './DescriptionPopover.vue';
-import advancedSettingsMixin from '../mixins/advancedSettingsMixin';
+import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const CheckboxInput = defineComponent({
     name: 'CheckboxInput',
@@ -16,9 +16,9 @@ const CheckboxInput = defineComponent({
         ErrorMessage,
         FlowVariableIcon,
         DescriptionPopover,
-        ReexecutionIcon
+        ReexecutionIcon,
+        DialogComponentWrapper
     },
-    mixins: [advancedSettingsMixin],
     props: {
         ...rendererProps()
     },
@@ -54,43 +54,41 @@ export default CheckboxInput;
 </script>
 
 <template>
-  <div
-    v-if="isVisible"
-    class="checkbox-input"
-    :class="{fadeContainer: isAdvanced}"
-    @mouseover="hover = true"
-    @mouseleave="hover = false"
-  >
-    <Checkbox
-      class="checkbox"
-      :disabled="!control.enabled"
-      :value="control.data"
-      @input="onChange"
+  <DialogComponentWrapper :control="control">
+    <div
+      class="checkbox-input"
+      @mouseover="hover = true"
+      @mouseleave="hover = false"
     >
-      {{ control.label }}
-      <ReexecutionIcon
-        v-if="isModelSettingAndHasNodeView"
-        class="reexecution-icon"
+      <Checkbox
+        class="checkbox"
+        :disabled="!control.enabled"
+        :value="control.data"
+        @input="onChange"
+      >
+        {{ control.label }}
+        <ReexecutionIcon
+          v-if="isModelSettingAndHasNodeView"
+          class="reexecution-icon"
+        />
+        <FlowVariableIcon
+          :flow-settings="flowSettings"
+          class="flow-variable-icon"
+        />
+      </Checkbox>
+      <DescriptionPopover
+        v-if="control.description"
+        :html="control.description"
+        :hover="hover"
+        class="description-popover"
+        @close="hover = false"
       />
-      <FlowVariableIcon
-        :flow-settings="flowSettings"
-        class="flow-variable-icon"
-      />
-    </Checkbox>
-    <DescriptionPopover
-      v-if="control.description"
-      :html="control.description"
-      :hover="hover"
-      class="description-popover"
-      @close="hover = false"
-    />
-    <ErrorMessage :error="control.errors" />
-  </div>
+      <ErrorMessage :error="control.errors" />
+    </div>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
-
 .checkbox-input {
   margin-bottom: 10px;
   position: relative;
