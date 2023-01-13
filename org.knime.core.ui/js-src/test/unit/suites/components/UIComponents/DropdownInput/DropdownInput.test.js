@@ -132,12 +132,14 @@ describe('DropdownInput.vue', () => {
 
     it('disables dropdown when controlled by a flow variable', () => {
         expect(wrapper.vm.disabled).toBeTruthy();
+        expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
     });
 
-    it('does not disable dropdown when not controlled by a flow variable', () => {
-        defaultPropsData.control.rootSchema
-            .flowVariablesMap[defaultPropsData.control.path] = {};
+    it('does not disable dropdown when not controlled by a flow variable', async () => {
+        wrapper.setProps({ control: { ...defaultPropsData.control, rootSchema: { hasNodeView: true } } });
+        await wrapper.vm.$nextTick();
         expect(wrapper.vm.disabled).toBeFalsy();
+        expect(wrapper.findComponent(Dropdown).vm.disabled).toBeFalsy();
     });
 
     it('does not render content of DropdownInput when visible is false', async () => {
