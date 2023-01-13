@@ -209,12 +209,13 @@ export default {
         },
         leftItems() {
             return this.possibleValues.filter(value => this.visibleValueIds.includes(value.id) &&
-            !this.selectedValues.includes(value.id));
+                !this.selectedValues.includes(value.id));
         },
         rightItems() {
-            const x = this.selectedValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
+            const selectedValues = this.selectedValues
+                .map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
                 .filter(value => this.visibleValueIds.includes(value.id));
-            return x;
+            return selectedValues;
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -324,7 +325,7 @@ export default {
             // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
             return Object.assign({}, ...this.possibleModes.map(obj => ({ [obj.id]: obj })));
         },
-        inputDescription() {
+        inputLabel() {
             if (this.mode === 'manual') {
                 return this.searchLabel;
             } else if (this.mode === 'type') {
@@ -519,7 +520,7 @@ export default {
         mode === 'wildcard' ||
         (mode === 'type' && possibleTypes.length > 0)"
       v-slot="{ labelForId }"
-      :text="inputDescription"
+      :text="inputLabel"
       class="search-wrapper"
       compact
     >
