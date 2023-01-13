@@ -515,7 +515,7 @@
               "type": "Control",
               "scope": "#/properties/model/properties/selectedColumns",
               "options": {
-                "format": "columnSelection",
+                "format": "columnFilter",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }
@@ -524,7 +524,9 @@
               "type": "Control",
               "scope": "#/properties/view/properties/displayedColumns",
               "options": {
-                "format": "columnFilter"
+                "format": "columnFilter",
+                "showSearch": false,
+                "showMode": false
               }
             }
           ]

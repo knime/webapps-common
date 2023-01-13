@@ -40,12 +40,6 @@ const TwinlistInput = defineComponent({
     setup(props) {
         return useJsonFormsControl(props);
     },
-    data() {
-        return {
-            possibleValues: null,
-            withTypes: true
-        };
-    },
     computed: {
         isModelSettingAndHasNodeView() {
             return isModelSettingAndHasNodeView(this.control);
@@ -55,13 +49,23 @@ const TwinlistInput = defineComponent({
         },
         disabled() {
             return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
+        },
+        withTypes() {
+            return this.control.schema.properties.selected.anyOf[0].hasOwnProperty('columnType');
+        },
+        possibleValues() {
+            return this.control.schema.properties.selected.anyOf.map(
+                this.withTypes ? optionsMapperWithType : optionsMapper
+            );
+        },
+        showMode() {
+            return !this.control.uischema.options?.hasOwnProperty('showMode') ||
+                this.control.uischema.options?.showMode;
+        },
+        showSearch() {
+            return !this.control.uischema.options?.hasOwnProperty('showSearch') ||
+                this.control.uischema.options?.showSearch;
         }
-    },
-    created() {
-        this.withTypes = this.control.schema.properties.selected.anyOf[0].hasOwnProperty('columnType');
-        this.possibleValues = this.control.schema.properties.selected.anyOf.map(
-            this.withTypes ? optionsMapperWithType : optionsMapper
-        );
     },
     methods: {
         onChange(obj) {
@@ -106,8 +110,8 @@ export default TwinlistInput;
   >
     <Twinlist
       v-if="possibleValues"
-      show-mode
-      show-search
+      :show-mode="showMode"
+      :show-search="showSearch"
       :disabled="disabled"
       :value="control.data.selected"
       :with-types="withTypes"
