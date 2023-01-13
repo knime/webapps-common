@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.persistence.field;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -61,13 +60,10 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.util.filter.NameFilterConfiguration;
-import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.Persistor;
@@ -107,7 +103,6 @@ class FieldBasedNodeSettingsPersistorTest {
         obj.m_booleanSetting = true;
         obj.m_stringSetting = "baz";
         obj.m_enumSetting = TestEnum.BAZ;
-        obj.m_includedColumnsSetting = new String[]{"foo", "bar"};
         obj.m_intSetting = 42;
         obj.m_doubleSetting = 13.37;
 
@@ -119,20 +114,6 @@ class FieldBasedNodeSettingsPersistorTest {
         var obj = new SettingsWithCustomFieldPersistor();
         obj.m_foo = "fuchs";
         testSaveLoad(obj);
-    }
-
-    /**
-     * Simulates package-private fields that are defined in a client package that is different from the package of
-     * {@link FieldBasedNodeSettingsPersistor} (which will be virtually all implementations that are production
-     * relevant).
-     *
-     * @throws InvalidSettingsException not thrown here
-     */
-    @Test
-    void testAccessingInaccessibleFields() throws InvalidSettingsException {
-        var settings = new InaccessibleSettings();
-        settings.m_intSetting = 42;
-        testSaveLoad(settings);
     }
 
     private static <S extends TestNodeSettings> void testSaveLoad(final S obj) throws InvalidSettingsException {
@@ -342,9 +323,6 @@ class FieldBasedNodeSettingsPersistorTest {
         @Persist(configKey = "my_enum_setting", settingsModel = SettingsModelString.class)
         TestEnum m_enumSetting;
 
-        @Persist(configKey = "my_included_columns", settingsModel = SettingsModelColumnFilter2.class)
-        String[] m_includedColumnsSetting;
-
         @Persist(configKey = "my_int_setting", settingsModel = SettingsModelInteger.class)
         int m_intSetting;
 
@@ -359,9 +337,6 @@ class FieldBasedNodeSettingsPersistorTest {
             new SettingsModelBoolean("booleanSetting", m_booleanSetting).saveSettingsTo(settings);
             new SettingsModelString("my_string_setting", m_stringSetting).saveSettingsTo(settings);
             new SettingsModelString("my_enum_setting", m_enumSetting.name()).saveSettingsTo(settings);
-            var nameFilterConfig = new NameFilterConfiguration("my_included_columns");
-            nameFilterConfig.loadDefaults(m_includedColumnsSetting, null, EnforceOption.EnforceInclusion);
-            nameFilterConfig.saveConfiguration(settings);
             new SettingsModelInteger("my_int_setting", m_intSetting).saveSettingsTo(settings);
             new SettingsModelDouble("my_double_setting", m_doubleSetting).saveSettingsTo(settings);
             new SettingsModelLong("my_long_setting", m_longSetting).saveSettingsTo(settings);
@@ -369,17 +344,15 @@ class FieldBasedNodeSettingsPersistorTest {
 
         @Override
         protected int computeHashCode() {
-            return Objects.hash(m_booleanSetting, m_stringSetting, m_enumSetting, m_includedColumnsSetting,
-                m_intSetting, m_doubleSetting, m_longSetting);
+            return Objects.hash(m_booleanSetting, m_stringSetting, m_enumSetting, m_intSetting, m_doubleSetting,
+                m_longSetting);
         }
 
         @Override
         protected boolean equalSettings(final FlatSettingsModelSettingsObject settings) {
             return m_booleanSetting == settings.m_booleanSetting
                 && Objects.equals(m_stringSetting, settings.m_stringSetting)
-                && Objects.equals(m_enumSetting, settings.m_enumSetting)
-                && Arrays.equals(m_includedColumnsSetting, settings.m_includedColumnsSetting)
-                && m_intSetting == settings.m_intSetting//
+                && Objects.equals(m_enumSetting, settings.m_enumSetting) && m_intSetting == settings.m_intSetting//
                 && m_doubleSetting == settings.m_doubleSetting//
                 && m_longSetting == settings.m_longSetting;
         }
@@ -420,27 +393,6 @@ class FieldBasedNodeSettingsPersistorTest {
             settings.addString("foo", value);
         }
 
-    }
-
-    private static final class InaccessibleSettings extends AbstractTestNodeSettings<InaccessibleSettings> {
-
-        // works here but not for actual production code because Jackson does not allow to access private fields
-        private int m_intSetting;
-
-        @Override
-        public void saveExpected(final NodeSettingsWO settings) {
-            settings.addInt("intSetting", m_intSetting);
-        }
-
-        @Override
-        protected int computeHashCode() {
-            return m_intSetting;
-        }
-
-        @Override
-        protected boolean equalSettings(final InaccessibleSettings settings) {
-            return m_intSetting == settings.m_intSetting;
-        }
     }
 
     private static final class NoEmptyConstructorFieldPersistor implements NodeSettingsPersistor<String> {

@@ -59,8 +59,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.util.filter.NameFilterConfiguration;
-import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
+import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 import com.google.common.collect.HashBasedTable;
@@ -121,10 +120,10 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
                 SettingsModelFieldPersistor::saveDouble),
             BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldPersistor::loadBoolean,
                 SettingsModelFieldPersistor::saveBoolean),
-            COLUMN_FILTER2(String[].class, SettingsModelColumnFilter2.class,
-                SettingsModelFieldPersistor::loadColumnFilter2, SettingsModelFieldPersistor::saveColumnFilter2),
             COLUMN_NAME(String.class, SettingsModelColumnName.class, SettingsModelFieldPersistor::loadColumnName,
-                SettingsModelFieldPersistor::saveColumnName);
+                SettingsModelFieldPersistor::saveColumnName),
+            COLUMN_FILTER2(ColumnFilter.class, SettingsModelColumnFilter2.class, LegacyColumnFilterPersistor::load,
+                LegacyColumnFilterPersistor::save);
 
         private static final String ROW_KEYS_PLACEHOLDER = "<row-keys>";
 
@@ -209,19 +208,6 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         private static void saveBoolean(final boolean value, final NodeSettingsWO settings, final String configKey) {
             new SettingsModelBoolean(configKey, value).saveSettingsTo(settings);
-        }
-
-        private static String[] loadColumnFilter2(final NodeSettingsRO nodeSettings, final String configKey)
-            throws InvalidSettingsException {
-            var inclColsSettings = nodeSettings.getNodeSettings(configKey);
-            return inclColsSettings.getStringArray("included_names");
-        }
-
-        private static void saveColumnFilter2(final String[] includedColumns, final NodeSettingsWO nodeSettings,
-            final String configKey) {
-            var model = new NameFilterConfiguration(configKey);
-            model.loadDefaults(includedColumns, null, EnforceOption.EnforceInclusion);
-            model.saveConfiguration(nodeSettings);
         }
 
         private static String loadColumnName(final NodeSettingsRO nodeSettings, final String configKey)

@@ -58,7 +58,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
@@ -112,11 +111,6 @@ public class SettingsModelFieldNodeSettingsPersistorFactoryTest {
         testSaveLoad(boolean.class, SettingsModelBoolean.class, false);
     }
 
-    @Test
-    void testSettingsModelColumnFilter2() throws Exception {
-        testSaveLoad(String[].class, SettingsModelColumnFilter2.class, new String[]{"foo", "bar", "bla"},
-            Assertions::assertArrayEquals);
-    }
 
     private static <T> void testSaveLoad(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final T value) throws InvalidSettingsException {
