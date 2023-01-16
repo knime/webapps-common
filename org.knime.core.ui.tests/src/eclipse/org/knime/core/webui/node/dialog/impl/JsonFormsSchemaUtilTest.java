@@ -75,7 +75,7 @@ class JsonFormsSchemaUtilTest {
     private static class PropertyNameOverrideTestSetting {
         private static String SNAPSHOT = "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0}}";
 
-        int m_test;
+        public int m_test;
     }
 
     @Test
@@ -88,7 +88,7 @@ class JsonFormsSchemaUtilTest {
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"title\":\"some title\",\"default\":0}}";
 
         @Schema(title = "some title")
-        int test;
+        public int test;
     }
 
     @Test
@@ -101,7 +101,7 @@ class JsonFormsSchemaUtilTest {
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"some description\"}}";
 
         @Schema(description = "some description")
-        int test;
+        public int test;
     }
 
     @Test
@@ -121,7 +121,7 @@ class JsonFormsSchemaUtilTest {
                 SOME_OTHER_CHOICE
         }
 
-        TestEnum testEnum;
+        public TestEnum testEnum;
     }
 
     @Test
@@ -138,12 +138,11 @@ class JsonFormsSchemaUtilTest {
 
     private static class TestChoicesSetting {
         private static String SNAPSHOT = "{\"test\":{\"oneOf\":[" + //
-            "{\"columnType\":\"StringValue\"," + //
-            "\"const\":\"some choice\",\"title\":\"some choice\"}" + //
+            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
         @Schema(choices = TestChoices.class)
-        String test;
+        public String test;
     }
 
     @Test
@@ -154,12 +153,11 @@ class JsonFormsSchemaUtilTest {
 
     private static class TestMultipleChoicesSetting {
         private static String SNAPSHOT = "{\"test\":{\"anyOf\":[" + //
-            "{\"columnType\":\"StringValue\"," + //
-            "\"const\":\"some choice\",\"title\":\"some choice\"}" + //
+            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
         @Schema(choices = TestChoices.class, multiple = true)
-        String[] test;
+        public String[] test;
     }
 
     @Test
@@ -177,16 +175,16 @@ class JsonFormsSchemaUtilTest {
             + "}";
 
         @Schema(min = 0)
-        int testMin;
+        public int testMin;
 
         @Schema(max = 100)
-        int testMax;
+        public int testMax;
 
         @Schema(min = 0, max = 1000)
-        int testBoth;
+        public int testBoth;
 
         @Schema(min = -0.5, max = 1.5)
-        double testDouble;
+        public double testDouble;
     }
 
     @Test
@@ -202,7 +200,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Schema(title = "foo")
-        int[] testIntArray;
+        public int[] testIntArray;
     }
 
     @Test
@@ -224,21 +222,21 @@ class JsonFormsSchemaUtilTest {
             + "{\"testInt\":{\"default\":0,\"type\":\"integer\",\"format\":\"int32\"}}}}"//
             + "}";
 
-        double testDouble;
+        public double testDouble;
 
-        float testFloat;
+        public float testFloat;
 
-        int testInt;
+        public int testInt;
 
-        long testLong;
+        public long testLong;
 
-        boolean testBoolean;
+        public boolean testBoolean;
 
-        String testNoDefault;
+        public String testNoDefault;
 
-        String testString = "foo";
+        public String testString = "foo";
 
-        IntWithDefault[] testArray = {new IntWithDefault()};
+        public IntWithDefault[] testArray = {new IntWithDefault()};
     }
 
     private static class IntWithDefault {
@@ -253,21 +251,21 @@ class JsonFormsSchemaUtilTest {
     private static class IgnoreSetting {
         private static String SNAPSHOT = "{\"testInt\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0}}";
 
-        int testInt;
+        public int testInt;
 
-        Boolean testBoxedBoolean;
+        public Boolean testBoxedBoolean;
 
-        Integer testBoxedInteger;
+        public Integer testBoxedInteger;
 
-        Long testBoxedlong;
+        public Long testBoxedlong;
 
-        short testShort;
+        public short testShort;
 
-        Short testBoxedShort;
+        public Short testBoxedShort;
 
-        Double testBoxedDouble;
+        public Double testBoxedDouble;
 
-        Float testBoxedFloat;
+        public Float testBoxedFloat;
     }
 
     @Test

@@ -80,7 +80,7 @@ class DefaultNodeSettingsServiceTest {
 
     @SuppressWarnings("unused")
     private static class TestSettings implements DefaultNodeSettings {
-        String m_value;
+        public String m_value;
 
         TestSettings() {
         }
