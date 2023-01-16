@@ -67,9 +67,18 @@ export default {
         allowOverflowMainAxis: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Teleport the popover to the document body.
+         * This can be used in order to be able to display the popover outside a containing element with hidden or scroll overflow.
+         * Whenever the menu is expanded, a callback which closes it again is emitted as the event 'toggle'.
+         */
+        teleportToBody: {
+            type: Boolean,
+            default: false
         }
     },
-    emits: ['item-click'],
+    emits: ['item-click', 'toggle'],
     data() {
         return {
             expanded: false
@@ -137,6 +146,11 @@ export default {
         },
         toggleMenu() {
             this.expanded = !this.expanded;
+            if (this.teleportToBody && this.expanded) {
+                this.$emit('toggle', () => {
+                    this.expanded = false;
+                });
+            }
             this.popperInstance.update();
 
             setTimeout(() => {
@@ -235,7 +249,10 @@ export default {
     >
       <slot />
     </FunctionButton>
-    <Teleport to="body">
+    <Teleport
+      to="body"
+      :disabled="!teleportToBody"
+    >
       <div
         ref="menu-wrapper"
         :class="['menu-wrapper', { expanded }, { disabled } ]"

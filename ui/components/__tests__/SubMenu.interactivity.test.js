@@ -5,6 +5,68 @@ import SubMenu from '../SubMenu.vue';
 import MenuItems from '../MenuItems.vue';
 
 describe('SubMenu.vue', () => {
+    describe('teleporting to body', () => {
+        it('teleports the popover to the body if wanted', async () => {
+            const items = [
+                { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
+                { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
+            ];
+            const id = 'testfoobar543';
+
+            const wrapper = mount(SubMenu, {
+                props: {
+                    items,
+                    id
+                },
+                slots: {
+                    default: 'button me'
+                },
+                global: {
+                    stubs: {
+                        NuxtLink: RouterLinkStub
+                    }
+                }
+            });
+            // assumes MenuItems use <li>
+            expect(wrapper.find('li').exists()).toBeTruthy();
+            await wrapper.setProps({ teleportToBody: true });
+            expect(wrapper.find('li').exists()).toBeFalsy();
+            expect(wrapper.findComponent(MenuItems).find('li').exists()).toBeTruthy();
+        });
+    
+        it('emits toggle event with calback to collapse the menu on click', async () => {
+            const items = [
+                { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
+                { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
+            ];
+            const id = 'testfoobar543';
+    
+            const wrapper = mount(SubMenu, {
+                props: {
+                    items,
+                    id,
+                    teleportToBody: true
+                },
+                slots: {
+                    default: 'button me'
+                },
+                global: {
+                    stubs: {
+                        NuxtLink: RouterLinkStub
+                    }
+                }
+            });
+            // assumes MenuItems use <li>
+            await wrapper.vm.$refs['submenu-toggle'].$emit('click',
+                { stopPropagation: () => {}, preventDefault: () => {} });
+            let callback = wrapper.emitted('toggle')[0][0];
+            expect(typeof callback).toBe('function'); // event object
+            expect(wrapper.vm.expanded).toBeTruthy();
+            callback();
+            expect(wrapper.vm.expanded).toBeFalsy();
+        });
+    });
+
     describe.skip('clicking submenu items', () => {
         it('emits item-click', async () => {
             const items = [
