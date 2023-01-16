@@ -68,6 +68,11 @@ public @interface Schema {
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 
     /**
+     * @return true if the choices have a type by which they can be filtered in the dialog
+     */
+    boolean withTypes() default true;
+
+    /**
      * @return the title / label of the field
      */
     String title() default "";
@@ -81,7 +86,6 @@ public @interface Schema {
      * @return true for a multiple choice selection/enum, false for a single choice selection/enum
      */
     boolean multiple() default false;
-
     /**
      * @return an optional minimum value for a numeric field
      */

@@ -50,10 +50,13 @@ package org.knime.core.webui.node.view.table;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.impl.ChoicesProvider;
+import org.knime.core.webui.node.dialog.impl.ColumnSelection;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.impl.Schema;
 import org.knime.core.webui.node.dialog.persistence.Persistor;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
@@ -62,20 +65,42 @@ import org.knime.core.webui.node.dialog.persistence.Persistor;
 @Persistor(JsonBasedNodeSettingsPersistor.class)
 public class TableViewViewSettings implements DefaultNodeSettings {
 
-    static final class ColumnChoices implements ChoicesProvider {
+    static final class ColumnChoicesProvider implements ChoicesProvider {
         @Override
         public String[] choices(final SettingsCreationContext context) {
-            final var spec = context.getDataTableSpecs()[0];
+            return choices(context.getDataTableSpecs()[0]);
+        }
+
+        static String[] choices(final DataTableSpec spec) {
             return spec == null ? new String[0] : spec.getColumnNames();
         }
+    }
+
+    public static class TableColumnChoices extends ColumnSelection {
+
+        public TableColumnChoices(final String[] initialSelected) {
+            super(initialSelected);
+            m_selected = initialSelected;
+        }
+
+        public TableColumnChoices(final SettingsCreationContext context) {
+            super(context);
+        }
+
+        public TableColumnChoices() {
+            super();
+        }
+
+        @SuppressWarnings("hiding")
+        @Schema(choices = ColumnChoicesProvider.class, multiple = true)
+        public String[] m_selected;
     }
 
     /**
      * The selected columns to be displayed.
      */
-    @Schema(title = "Displayed columns", description = "Select the columns that should be displayed in the table",
-        choices = ColumnChoices.class, multiple = true)
-    public String[] m_displayedColumns;
+    @Schema(title = "Displayed columns", description = "Select the columns that should be displayed in the table")
+    public TableColumnChoices m_displayedColumns;
 
     /**
      * If the rows keys should be displayed
@@ -175,21 +200,27 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     protected TableViewViewSettings() {
     }
 
-    TableViewViewSettings(final SettingsCreationContext context) {
+    /**
+     * @param context
+     */
+    protected TableViewViewSettings(final SettingsCreationContext context) {
         this(context.getDataTableSpecs()[0]);
     }
 
     /**
-     * @param spec table spec to determine the selected column from
+     * @param spec
      */
     public TableViewViewSettings(final DataTableSpec spec) {
-        m_displayedColumns = spec == null ? new String[0] : spec.getColumnNames();
+        m_displayedColumns = new TableColumnChoices(ColumnChoicesProvider.choices(spec));
     }
 
     /**
+     * @param spec
      * @return the displayedColumns
      */
-    public String[] getDisplayedColumns() {
-        return m_displayedColumns;
+    @JsonIgnore //
+    public String[] getDisplayedColumns(final DataTableSpec spec) {
+        final var choices = ColumnChoicesProvider.choices(spec);
+        return ColumnSelection.get(m_displayedColumns, choices, spec);
     }
 }

@@ -1,5 +1,7 @@
 export const optionsMapper = ({ const: id, title: text }) => ({ id, text });
 
+export const optionsMapperWithType = ({ const: id, title: text, columnType: type }) => ({ id, text, type });
+
 export const isModelSettingAndHasNodeView = (control) => control?.rootSchema?.hasNodeView &&
     control?.uischema?.scope?.startsWith('#/properties/model');
 

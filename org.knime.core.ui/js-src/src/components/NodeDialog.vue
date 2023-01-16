@@ -31,7 +31,6 @@ export default {
     async mounted() {
         this.jsonDataService = new JsonDataService(this.getKnimeService());
         this.dialogService = new DialogService(this.getKnimeService());
-
         const settings = await this.jsonDataService.initialData();
 
         settings.schema.flowVariablesMap = await this.dialogService.getFlowVariableSettings();

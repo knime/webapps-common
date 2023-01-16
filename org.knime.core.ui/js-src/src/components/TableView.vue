@@ -468,7 +468,7 @@ export default {
         requestTable(startIndex, numRows, displayedColumns, updateDisplayedColumns, updateTotalSelected,
             clearImageDataCache) {
             const selectedRendererIds = updateDisplayedColumns
-                ? this.getCurrentSelectedRenderers(this.settings.displayedColumns)
+                ? this.getCurrentSelectedRenderers(this.settings.displayedColumns.selected)
                 : this.selectedRendererIds;
             // if columnSortColumnName is present a sorting is active
             if (this.columnSortColumnName || this.searchTerm || this.colFilterActive) {
@@ -509,7 +509,7 @@ export default {
         },
 
         getColumnsForRequest(updateDisplayedColumns) {
-            return updateDisplayedColumns ? this.settings.displayedColumns : this.displayedColumns;
+            return updateDisplayedColumns ? this.settings.displayedColumns.selected : this.displayedColumns;
         },
 
         requestNewData(method, options) {
@@ -582,7 +582,7 @@ export default {
             const newSettings = event.data.data.view;
             const enablePaginationChanged = newSettings.enablePagination !== this.settings.enablePagination;
             const displayedColumnsChanged =
-                !arrayEquals(newSettings.displayedColumns, this.settings.displayedColumns);
+                !arrayEquals(newSettings.displayedColumns.selected, this.settings.displayedColumns.selected);
             const showRowKeysChanged = newSettings.showRowKeys !== this.settings.showRowKeys;
             const showRowIndicesChanged = newSettings.showRowIndices !== this.settings.showRowIndices;
             const pageSizeChanged = newSettings.pageSize !== this.settings.pageSize;

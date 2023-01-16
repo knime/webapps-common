@@ -111,7 +111,7 @@ final class JsonFormsSettingsImpl implements JsonFormsSettings {
         if (clazz == null) {
             return null;
         }
-        if (settings != null && !settings.isLeaf()) {
+        if (settings != null /* && !settings.isLeaf() --> Statistics breaks with this*/ ) {
             final var node = JsonFormsDataUtil.getMapper().createObjectNode();
             JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(settings, node);
             return JsonFormsDataUtil.toDefaultNodeSettings(node, clazz);

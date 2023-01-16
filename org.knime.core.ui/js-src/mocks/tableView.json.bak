@@ -5,22 +5,19 @@
       "view": {
         "pageSize": 100,
         "displayedColumns": {
-			"mode": "Type",
+			"mode": "Manual",
 			"pattern": "",
-			"selectedtypes": [
-			
-			]
 			"displayedColumns": [
-			  "Universe_0_0",
-			  "Universe_0_1",
-			  "Universe_0_2",
-			  "Universe_0_3",
-			  "Universe_1_0",
-			  "Universe_1_1",
-			  "Universe_1_2",
-			  "Universe_1_3",
-			  "Cluster Membership"
-			]
+          "Universe_0_0",
+          "Universe_0_1",
+          "Universe_0_2",
+          "Universe_0_3",
+          "Universe_1_0",
+          "Universe_1_1",
+          "Universe_1_2",
+          "Universe_1_3",
+          "Cluster Membership"
+        ]
 		},
         "showRowKeys": true,
         "showTitle": true,
@@ -45,7 +42,7 @@
             "displayedColumns": {
               "anyOf": [
                 {
-                  "const": "{name: Universe_0_0, type: bla}",
+                  "const": "Universe_0_0",
                   "title": "Universe_0_0",
 				  "columnType": "bla"
                 },

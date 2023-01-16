@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from '@vue/composition-api';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
+import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType } from '@/utils/nodeDialogUtils';
 import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
@@ -41,7 +41,8 @@ const TwinlistInput = defineComponent({
     },
     data() {
         return {
-            possibleValues: null
+            possibleValues: null,
+            withTypes: true
         };
     },
     computed: {
@@ -56,14 +57,36 @@ const TwinlistInput = defineComponent({
         }
     },
     created() {
-        this.possibleValues = this.control.schema.anyOf.map(optionsMapper);
+        this.withTypes = this.control.schema.properties.selected.anyOf[0].hasOwnProperty('columnType');
+        this.possibleValues = this.control.schema.properties.selected.anyOf.map(
+            this.withTypes ? optionsMapperWithType : optionsMapper
+        );
     },
     methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
+        onChange(obj) {
+            const newData = { ...this.control.data, ...obj };
+            this.handleChange(this.control.path, newData);
+        },
+        onSelectedChange(selected, isManual) {
+            this.onChange({ selected, ...isManual ? { manuallySelected: selected } : {} });
             if (this.isModelSettingAndHasNodeView) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
+        },
+        onPatternChange(pattern) {
+            this.onChange({ pattern });
+        },
+        onModeChange(mode) {
+            this.onChange({ mode: mode.toUpperCase() });
+        },
+        onSelectedTypesChange(selectedTypes) {
+            this.onChange({ selectedTypes });
+        },
+        onInverseSearchChange(isInverted) {
+            this.onChange({ isInverted });
+        },
+        onCaseSensitiveChange(isCaseSensitive) {
+            this.onChange({ isCaseSensitive });
         }
     }
 });
@@ -71,26 +94,42 @@ export default TwinlistInput;
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <LabeledInput
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
-      :flow-settings="flowSettings"
-      :description="control.description"
-    >
-      <Twinlist
-        v-if="possibleValues"
-        :disabled="disabled"
-        :value="control.data"
-        :possible-values="possibleValues"
-        :size="twinlistSize"
-        :left-label="twinlistLeftLabel"
-        :right-label="twinlistRightLabel"
-        @input="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+<DialogComponentWrapper :control="control">
+  <LabeledInput
+    v-if="control.visible"
+    :text="control.label"
+    :show-reexecution-icon="isModelSettingAndHasNodeView"
+    :scope="control.uischema.scope"
+    :flow-settings="flowSettings"
+    :description="control.description"
+  >
+    <Twinlist
+      v-if="possibleValues"
+      show-mode
+      show-search
+      :disabled="disabled"
+      :value="control.data.selected"
+      :with-types="withTypes"
+      :initial-selected-types="control.data.selectedTypes"
+      :initial-pattern="control.data.pattern"
+      :initial-mode="control.data.mode.toLowerCase()"
+      :initial-case-sensitive-search="control.data.isCaseSensitive"
+      :initial-inverse-search="control.data.isInverted"
+      :initial-manually-selected="control.data.manuallySelected"
+      :mode-label="'Selection mode'"
+      :possible-values="possibleValues"
+      :size="twinlistSize"
+      :left-label="twinlistLeftLabel"
+      :right-label="twinlistRightLabel"
+      @input="onSelectedChange"
+      @patternInput="onPatternChange"
+      @modeInput="onModeChange"
+      @typesInput="onSelectedTypesChange"
+      @inverseSearchInput="onInverseSearchChange"
+      @caseSensitiveSearchInput="onCaseSensitiveChange"
+    />
+  </LabeledInput>
+</DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>

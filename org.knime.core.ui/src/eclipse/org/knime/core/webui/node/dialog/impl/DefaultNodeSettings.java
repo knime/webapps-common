@@ -100,7 +100,7 @@ public interface DefaultNodeSettings {
 
         private final FlowObjectStack m_stack;
 
-        private SettingsCreationContext(final PortObjectSpec[] specs, final FlowObjectStack stack) {
+        public SettingsCreationContext(final PortObjectSpec[] specs, final FlowObjectStack stack) {
             m_specs = specs;
             m_stack = stack;
         }

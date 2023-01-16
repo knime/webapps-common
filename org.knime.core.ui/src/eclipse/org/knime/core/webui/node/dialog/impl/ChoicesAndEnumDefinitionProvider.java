@@ -56,6 +56,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITL
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
@@ -83,7 +84,6 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
         final SchemaGenerationContext context) {
-
         ArrayNode arrayNode = null;
         final var type = field.getType();
         final var erasedType = type.getErasedType();
@@ -110,7 +110,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         Supplier<String[]> savedChoicesSupplier =
             m_settings == null ? null : (() -> getSavedChoices(field, m_settings));
         arrayNode =
-            determineChoiceValues(context.getGeneratorConfig(), schema.choices(), m_context, savedChoicesSupplier);
+            determineChoiceValues(context.getGeneratorConfig(), schema.choices(), schema.withTypes(), m_context, savedChoicesSupplier);
         return arrayNode;
     }
 
@@ -131,26 +131,32 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
-        final Class<? extends ChoicesProvider> choicesProviderClass, final SettingsCreationContext context,
+        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes, final SettingsCreationContext context,
         final Supplier<String[]> savedChoicesSupplier) {
         if (context != null) {
             final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
             if (choicesProvider != null) {
                 var choices = choicesProvider.choices(context);
                 if (choices.length != 0) {
-                    return createArrayNodeWithChoices(config, choices);
+                    return createArrayNodeWithChoices(config, choices, withTypes, context);
                 }
             }
         }
         return createArrayNodeWithCurrentOrEmptyChoice(config, savedChoicesSupplier);
     }
 
-    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices) {
+    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices, final boolean withTypes, final SettingsCreationContext context) {
         final var arrayNode = config.createArrayNode();
+        final var spec = context.getDataTableSpecs()[0];
         for (var choice : choices) {
-            addChoice(arrayNode, choice, choice, config);
+            final var type = withTypes ? getType(spec, choice) : null;
+            addChoice(arrayNode, choice, choice, type, config);
         }
         return arrayNode;
+    }
+
+    private static String getType(final DataTableSpec spec, final String choice) {
+        return ColumnSelection.typeToString(spec.getColumnSpec(choice).getType());
     }
 
     private static ArrayNode createArrayNodeWithCurrentOrEmptyChoice(final SchemaGeneratorConfig config,
@@ -158,18 +164,22 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var arrayNode = config.createArrayNode();
         var savedChoices = savedChoicesSupplier == null ? null : savedChoicesSupplier.get();
         if (savedChoices == null) {
-            addChoice(arrayNode, "", "", config);
+            addChoice(arrayNode, "", "", "", config);
         } else {
             for (var choice : savedChoices) {
-                addChoice(arrayNode, choice, choice, config);
+                addChoice(arrayNode, choice, choice, "", config);
             }
         }
         return arrayNode;
     }
 
-    private static void addChoice(final ArrayNode arrayNode, final String id, final String text,
+    private static void addChoice(final ArrayNode arrayNode, final String id, final String text, final String type,
         final SchemaGeneratorConfig config) {
-        arrayNode.add(config.createObjectNode().put(TAG_CONST, id).put(TAG_TITLE, text));
+        final var entry = config.createObjectNode().put(TAG_CONST, id).put(TAG_TITLE, text);
+        if (type != null) {
+            entry.put("columnType", type);
+        }
+        arrayNode.add(entry);
     }
 
     private ArrayNode determineEnumValues(final SchemaGenerationContext context, final Class<?> erasedType) {
