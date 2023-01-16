@@ -55,10 +55,9 @@ import static org.mockito.Mockito.when;
 import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.knime.core.node.NodeAndBundleInformationPersistor;
 import org.knime.core.node.exec.dataexchange.in.BDTInNodeFactory;
+import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.node.missing.MissingNodeFactory;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory;
@@ -70,6 +69,16 @@ import org.mockito.Mockito;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class NodeTemplateIdTest {
+
+    static {
+        try {
+            NodeFactoryExtensionManager.getInstance();
+        } catch (IllegalStateException e) { // NOSONAR
+            // HACK to make tests work in the build system where the org.knime.workbench.repository plugin
+            // is not present (causes an exception on the first call
+            // 'Invalid extension point: org.knime.workbench.repository.nodes')
+        }
+    }
 
     /**
      * Tests {@link NodeTemplateId#callWithNodeTemplateIdVariants(String, String, java.util.function.Function)}.
@@ -92,7 +101,6 @@ public class NodeTemplateIdTest {
      * Tests {@link NodeTemplateId#of(org.knime.core.node.NodeFactory)}
      */
     @Test
-    @DisabledOnOs({OS.MAC, OS.WINDOWS}) // see UIEXT-647
     public void testOf() {
         var dynamicNodeFactory = new DefaultVirtualPortObjectInNodeFactory();
         dynamicNodeFactory.init();
