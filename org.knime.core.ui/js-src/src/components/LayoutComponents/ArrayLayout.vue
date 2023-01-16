@@ -30,6 +30,11 @@ const ArrayLayout = defineComponent({
     setup(props) {
         return useJsonFormsArrayControl(props);
     },
+    computed: {
+        showSortControls() {
+            return this.control.uischema.options.details.showSortButtons;
+        }
+    },
     methods: {
         createDefaultValue(schema) {
             const defaultObject = {};
@@ -74,14 +79,14 @@ export default ArrayLayout;
           />
           <div class="item-controls">
             <FunctionButton
-              v-if="control.uischema.options.showSortButtons"
+              v-if="showSortControls"
               :disabled="objIndex === 0"
               @click="moveUp(control.path, objIndex)()"
             >
               <ArrowUpIcon />
             </FunctionButton>
             <FunctionButton
-              v-if="control.uischema.options.showSortButtons"
+              v-if="showSortControls"
               :disabled="objIndex === control.data.length - 1"
               @click="moveDown(control.path, objIndex)()"
             >
