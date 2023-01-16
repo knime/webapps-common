@@ -103,42 +103,42 @@ export default TwinlistInput;
 </script>
 
 <template>
-<DialogComponentWrapper :control="control">
-  <LabeledInput
-    v-if="control.visible"
-    :text="control.label"
-    :show-reexecution-icon="isModelSettingAndHasNodeView"
-    :scope="control.uischema.scope"
-    :flow-settings="flowSettings"
-    :description="control.description"
-  >
-    <Twinlist
-      v-if="possibleValues"
-      :show-mode="showMode"
-      :show-search="showSearch"
-      :disabled="disabled"
-      :value="control.data.selected"
-      :with-types="withTypes"
-      :initial-selected-types="control.data.typeFilter.selectedTypes"
-      :initial-pattern="control.data.patternFilter.pattern"
-      :initial-mode="control.data.mode.toLowerCase()"
-      :initial-case-sensitive-search="control.data.patternFilter.isCaseSensitive"
-      :initial-inverse-search="control.data.isInverted"
-      :initial-manually-selected="control.data.manualFilter.manuallySelected"
-      :mode-label="'Selection mode'"
-      :possible-values="possibleValues"
-      :size="twinlistSize"
-      :left-label="twinlistLeftLabel"
-      :right-label="twinlistRightLabel"
-      @input="onSelectedChange"
-      @patternInput="onPatternChange"
-      @modeInput="onModeChange"
-      @typesInput="onSelectedTypesChange"
-      @inverseSearchInput="onInverseSearchChange"
-      @caseSensitiveSearchInput="onCaseSensitiveChange"
-    />
-  </LabeledInput>
-</DialogComponentWrapper>
+  <DialogComponentWrapper :control="control">
+    <LabeledInput
+      v-if="control.visible"
+      :text="control.label"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
+      :scope="control.uischema.scope"
+      :flow-settings="flowSettings"
+      :description="control.description"
+    >
+      <Twinlist
+        v-if="possibleValues"
+        :show-mode="showMode"
+        :show-search="showSearch"
+        :disabled="disabled"
+        :value="control.data.selected"
+        :with-types="withTypes"
+        :initial-selected-types="control.data.typeFilter.selectedTypes"
+        :initial-pattern="control.data.patternFilter.pattern"
+        :initial-mode="control.data.mode.toLowerCase()"
+        :initial-case-sensitive-search="control.data.patternFilter.isCaseSensitive"
+        :initial-inverse-search="control.data.isInverted"
+        :initial-manually-selected="control.data.manualFilter.manuallySelected"
+        :mode-label="'Selection mode'"
+        :possible-values="possibleValues"
+        :size="twinlistSize"
+        :left-label="twinlistLeftLabel"
+        :right-label="twinlistRightLabel"
+        @input="onSelectedChange"
+        @patternInput="onPatternChange"
+        @modeInput="onModeChange"
+        @typesInput="onSelectedTypesChange"
+        @inverseSearchInput="onInverseSearchChange"
+        @caseSensitiveSearchInput="onCaseSensitiveChange"
+      />
+    </LabeledInput>
+  </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>

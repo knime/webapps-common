@@ -187,6 +187,36 @@ export const dialogInitialData = {
                         },
                         title: 'Frequency column selection'
                     },
+                    simpleTwinlist: {
+                        anyOf: [
+                            {
+                                const: 'Universe_0_0',
+                                title: 'Universe_0_0',
+                                columnType: 'DoubleValue'
+                            },
+                            {
+                                const: 'Universe_0_1',
+                                title: 'Universe_0_1',
+                                columnType: 'DoubleValue'
+                            },
+                            {
+                                const: 'Universe_1_0',
+                                title: 'Universe_1_0',
+                                columnType: 'DoubleValue'
+                            },
+                            {
+                                const: 'Universe_1_1',
+                                title: 'Universe_1_1',
+                                columnType: 'DoubleValue'
+                            },
+                            {
+                                const: 'Cluster Membership',
+                                title: 'Cluster Membership',
+                                columnType: 'StringValue'
+                            }
+                        ],
+                        title: 'Frequency column selection'
+                    },
                     referenceLines: {
                         type: 'array',
                         items: {
@@ -382,6 +412,7 @@ export const expectedRenderers = [
     { scope: '#/properties/view/properties/yAxisColumn', component: 'ColumnSelect' },
     { scope: '#/properties/view/properties/xAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/yAxisLabel', component: 'TextInput' },
-    { scope: '#/properties/model/properties/frequencyColumns', component: '' },
+    { scope: '#/properties/model/properties/frequencyColumns', component: 'TwinListInput' },
+    { scope: '#/properties/model/properties/simpleTwinlist', component: 'SimpleTwinListInput' },
     { scope: '#/properties/view/properties/referenceLines', component: 'ArrayLayout' }
 ];
