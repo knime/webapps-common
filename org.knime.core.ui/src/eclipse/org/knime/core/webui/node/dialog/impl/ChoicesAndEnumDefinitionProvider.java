@@ -95,11 +95,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
             if (type.canCreateSubtype(ColumnFilter.class)) {
                 m_lastSchemaWithColumns = schema;
             } else {
-                arrayNode = determineChoicesValues(field, context, schema);
+                arrayNode = determineChoicesValues(field, context, schema.choices(), false);
             }
         }
         if (schema != null && schema.takeChoicesFromParent()) {
-            arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns);
+            arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns.choices(),
+                m_lastSchemaWithColumns.withTypes());
         }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
             arrayNode = determineEnumValues(context, erasedType);
@@ -115,10 +116,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private ArrayNode determineChoicesValues(final FieldScope field, final SchemaGenerationContext context,
-        final Schema schema) {
+        final Class<? extends ChoicesProvider> choices, final boolean withTypes) {
         ArrayNode arrayNode;
-        final var choices = schema.choices(); // TODO
-        final var withTypes = schema.withTypes(); // TODO
         Supplier<String[]> savedChoicesSupplier =
             m_settings == null ? null : (() -> getSavedChoices(field, m_settings));
         arrayNode =
