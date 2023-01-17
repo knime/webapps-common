@@ -8,6 +8,8 @@ import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
 import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
 import PlusIcon from '~/webapps-common/ui/assets/img/icons/plus.svg?inline';
 import DialogComponentWrapper from '../UIComponents/DialogComponentWrapper.vue';
+import ArrowUpIcon from '~/webapps-common/ui/assets/img/icons/arrow-up.svg?inline';
+import ArrowDownIcon from '~/webapps-common/ui/assets/img/icons/arrow-down.svg?inline';
 
 const ArrayLayout = defineComponent({
     name: 'ArrayLayout',
@@ -18,13 +20,20 @@ const ArrayLayout = defineComponent({
         TrashIcon,
         PlusIcon,
         FunctionButton,
-        DialogComponentWrapper
+        DialogComponentWrapper,
+        ArrowUpIcon,
+        ArrowDownIcon
     },
     props: {
         ...rendererProps()
     },
     setup(props) {
         return useJsonFormsArrayControl(props);
+    },
+    computed: {
+        showSortControls() {
+            return this.control.uischema.options.details.showSortButtons;
+        }
     },
     methods: {
         createDefaultValue(schema) {
@@ -55,7 +64,7 @@ export default ArrayLayout;
 </script>
 
 <template>
-  <DialogComponentWrapper>
+  <DialogComponentWrapper :control="control">
     <div
       class="array"
     >
@@ -63,19 +72,33 @@ export default ArrayLayout;
         v-for="(obj, objIndex) in control.data"
         :key="`${control.path}-${objIndex}`"
       >
-        <div class="label">
+        <div class="item-header">
           <Label
             :text="returnLabel(objIndex)"
             :compact="true"
           />
-          <FunctionButton
-            with-border
-            class="trashButton"
-            compact
-            @click="deleteItem(objIndex)"
-          >
-            <TrashIcon class="trash" />
-          </FunctionButton>
+          <div class="item-controls">
+            <FunctionButton
+              v-if="showSortControls"
+              :disabled="objIndex === 0"
+              @click="moveUp(control.path, objIndex)()"
+            >
+              <ArrowUpIcon />
+            </FunctionButton>
+            <FunctionButton
+              v-if="showSortControls"
+              :disabled="objIndex === control.data.length - 1"
+              @click="moveDown(control.path, objIndex)()"
+            >
+              <ArrowDownIcon />
+            </FunctionButton>
+            <FunctionButton
+              class="trashButton"
+              @click="deleteItem(objIndex)"
+            >
+              <TrashIcon class="trash" />
+            </FunctionButton>
+          </div>
         </div>
         <div
           v-for="(element, elemIndex) in control.uischema.options.detail"
@@ -107,12 +130,16 @@ export default ArrayLayout;
 .array {
   margin-bottom: 30px;
 
-  & .label {
+  & .item-header {
     margin-bottom: 10px;
     margin-top: 10px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+
+    & .item-controls {
+      display: flex;
+    }
   }
 }
 

@@ -67,7 +67,7 @@ export default DropdownInput;
       <Dropdown
         v-if="options"
         :aria-label="control.label"
-        :disabled="!control.enabled"
+        :disabled="disabled"
         :value="control.data"
         :possible-values="options"
         @input="onChange"
