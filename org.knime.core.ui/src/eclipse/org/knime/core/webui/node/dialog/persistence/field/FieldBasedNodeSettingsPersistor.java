@@ -52,9 +52,11 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -90,7 +92,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
 
     private static Map<String, NodeSettingsPersistor<?>>
         createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
-        return Stream.of(settingsClass.getDeclaredFields())//
+        return getAllFields(settingsClass).stream()//
             .filter(FieldBasedNodeSettingsPersistor::isPersistable).collect(toMap(Field::getName,
                 FieldBasedNodeSettingsPersistor::createPersistorForField, (a, b) -> a, LinkedHashMap::new));
     }
@@ -183,7 +185,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
         for (var entry : m_persistors.entrySet()) {
             var fieldName = entry.getKey();
             try {
-                var field = m_settingsClass.getDeclaredField(entry.getKey());
+                var field = getFromAllFields(m_settingsClass, entry.getKey());
                 field.setAccessible(true);//NOSONAR
                 var persistor = entry.getValue();
                 consumer.accept(persistor, field);
@@ -206,6 +208,28 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
             }
         }
 
+    }
+
+    private static List<Field> getAllFields(final Class<?> clazz) {
+        List<Field> fields = new ArrayList<Field>();
+        for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        return fields;
+    }
+
+    private static Field getFromAllFields(final Class<?> clazz, final String key)
+        throws NoSuchFieldException, SecurityException {
+        for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
+            try {
+                return c.getDeclaredField(key);
+            } catch (NoSuchFieldException ex) {
+                continue;
+            } catch (SecurityException ex) {
+                throw ex;
+            }
+        }
+        throw new NoSuchFieldException(key);
     }
 
     private static final class NestedFieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
