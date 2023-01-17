@@ -127,8 +127,9 @@ public class NodeViewEntTest {
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
 
         // test entity  when node is _not_ executed
-        var ent = NodeViewEnt.create(nnc, null);
+        var ent = NodeViewEnt.create(nnc, null, true);
         assertThat(ent.getInitialData()).isNull();
+        assertThat(ent.isImageGeneration()).isTrue();
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("configured");
         assertThat(ent.getNodeInfo().isCanExecute()).isTrue();
 
@@ -148,6 +149,7 @@ public class NodeViewEntTest {
         assertThat(ent.getWorkflowId()).isEqualTo("root");
         assertThat(ent.getNodeId()).isEqualTo("root:2");
         assertThat(ent.getInitialData()).startsWith("dummy initial data");
+        assertThat(ent.isImageGeneration()).isFalse();
         assertThat(ent.getInitialSelection()).isNull();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
@@ -189,6 +191,7 @@ public class NodeViewEntTest {
 
     /**
      * Extra tests for the {@link NodeViewEnt}'s {@link NodeInfoEnt#isCanExecute()} property.
+     *
      * @throws IOException
      */
     @Test
@@ -228,7 +231,6 @@ public class NodeViewEntTest {
         assertThat(ent.getNodeInfo().getNodeWarnMessage()).isEqualTo("problem");
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
-
 
     }
 
@@ -319,7 +321,6 @@ public class NodeViewEntTest {
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
-
 
     private class TestNodeView implements NodeView {
 

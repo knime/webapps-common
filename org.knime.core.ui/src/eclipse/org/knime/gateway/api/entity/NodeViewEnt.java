@@ -55,7 +55,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.PageUtil.PageType;
@@ -71,6 +70,32 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private List<String> m_initialSelection;
 
+    private boolean m_imageGeneration;
+
+    /**
+     * @param nnc the Native node container to create the node view entity for
+     * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
+     *            not be called, if the node is not executed)
+     * @param imageGeneration whether the view is to be used for image generation
+     * @return a new instance
+     */
+    public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
+        final boolean imageGeneration) {
+        final var state = nnc.getNodeContainerState();
+        if (state.isExecuted()
+            || (imageGeneration && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
+            try {
+                NodeViewManager.getInstance().updateNodeViewSettings(nnc);
+                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null, imageGeneration);
+            } catch (InvalidSettingsException ex) {
+                NodeLogger.getLogger(NodeViewEnt.class).error("Failed to update node view settings", ex);
+                return new NodeViewEnt(nnc, null, null, ex.getMessage(), imageGeneration);
+            }
+        } else {
+            return new NodeViewEnt(nnc, null, null, null, imageGeneration);
+        }
+    }
+
     /**
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
@@ -78,17 +103,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection) {
-        if (nnc.getNodeContainerState().isExecuted()) {
-            try {
-                NodeViewManager.getInstance().updateNodeViewSettings(nnc);
-                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null);
-            } catch (InvalidSettingsException ex) {
-                NodeLogger.getLogger(NodeViewEnt.class).error("Failed to update node view settings", ex);
-                return new NodeViewEnt(nnc, null, null, ex.getMessage());
-            }
-        } else {
-            return new NodeViewEnt(nnc, null, null, null);
-        }
+        return create(nnc, initialSelection, false);
     }
 
     /**
@@ -103,11 +118,12 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     private NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final NodeViewManager nodeViewManager, final String customErrorMessage) {
+        final NodeViewManager nodeViewManager, final String customErrorMessage, final boolean imageGeneration) {
         super(NodeWrapper.of(nnc), nodeViewManager, nodeViewManager, PageType.VIEW);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
+        m_imageGeneration = imageGeneration;
     }
 
     /**
@@ -122,6 +138,17 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public List<String> getInitialSelection() {
         return m_initialSelection;
+    }
+
+    /**
+     * This flag denotes whether the view contained by the view entity is used for the purpose of image generation via
+     * an image output port. If true, it indicates that the node view may already be generated while the node is in
+     * executing state. It also indicates that support for any kind of interactivity is not needed.
+     *
+     * @return whether the view is used for image generation
+     */
+    public boolean isImageGeneration() {
+        return m_imageGeneration;
     }
 
 }
