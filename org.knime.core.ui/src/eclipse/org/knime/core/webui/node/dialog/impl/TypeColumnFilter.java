@@ -103,7 +103,6 @@ public class TypeColumnFilter {
      * @return the string representation of the data type
      */
     public static String typeToString(final DataType type) {
-
-        return type.getPreferredValueClass().getSimpleName();
+        return type.getPreferredValueClass().getName();
     }
 }
