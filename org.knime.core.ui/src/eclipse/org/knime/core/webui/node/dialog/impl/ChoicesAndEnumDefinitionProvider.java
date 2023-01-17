@@ -98,7 +98,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
                 arrayNode = determineChoicesValues(field, context, schema.choices(), false);
             }
         }
-        if (schema != null && schema.takeChoicesFromParent()) {
+        if (schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null) {
             arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns.choices(),
                 m_lastSchemaWithColumns.withTypes());
         }

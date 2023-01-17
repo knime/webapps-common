@@ -42,88 +42,53 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   15 Dec 2022 Paul Bärnreuther: created
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
- * modes of {@link ColumnFilterMode}. For using this class in order to render a twinlist, one has to create a
- * subclass with a member "selected" with the 'columns' Schema annotation.
+ * Similar to {@link JsonBasedNodeSettingsPersistor} this field persistor uses JSON to persist.
  *
  * @author Paul Bärnreuther
  */
-public class ColumnFilter implements DefaultNodeSettings {
+public class JsonBasedNodeSettingsFieldPersistor<S extends DefaultNodeSettings>
+    extends NodeSettingsPersistorWithConfigKey<S> {
 
-
-    /**
-     * The setting representing the selected columns
-     */
-    @Schema(takeChoicesFromParent = true, multiple = true)
-    public String[] m_selected;
+    private final Class<S> m_settingsClass;
 
     /**
-     * The way the selection is determined by
-     */
-    public ColumnFilterMode m_mode; //NOSONAR
-
-    /**
-     * Settings regarding selection by pattern matching (regex or wildcard)
-     */
-    public PatternColumnFilter m_patternFilter;
-
-    /**
-     * Settings regarding manual selection
-     */
-    public ManualColumnFilter m_manualFilter;
-
-    /**
-     * Settings regarding selection per type
-     */
-    public TypeColumnFilter m_typeFilter;
-
-    /**
-     * Initialises the column selection with an initial array of columns which are manually selected
+     * Constructor.
      *
-     * @param initialSelected the initial manually selected columns
+     * @param settingsClass the settings class to persist
      */
-    public ColumnFilter(final String[] initialSelected) {
-        m_mode = ColumnFilterMode.MANUAL;
-        m_manualFilter = new ManualColumnFilter(initialSelected);
-        m_patternFilter = new PatternColumnFilter();
-        m_typeFilter = new TypeColumnFilter();
+    public JsonBasedNodeSettingsFieldPersistor(final Class<S> settingsClass) {
+        m_settingsClass = settingsClass;
     }
 
-    @SuppressWarnings("javadoc")
-    public ColumnFilter() {
-        this(new String[0]);
-    }
-
-    @SuppressWarnings("javadoc")
-    public ColumnFilter(final SettingsCreationContext context) {
-        this();
-    }
-
-    /**
-     * @param choices the list of all possible column names
-     * @param spec of the input data table (for type selection)
-     * @return the array of currently selected columns with respect to the mode
-     */
-    @JsonIgnore
-    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
-        switch (m_mode) {
-            case MANUAL:
-                return m_manualFilter.getSelected();
-            case TYPE:
-                return m_typeFilter.getSelected(choices, spec);
-            default:
-                return m_patternFilter.getSelected(m_mode, choices);
+    @Override
+    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
+            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
+            // by the JSON
+            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
         }
+        final var fieldSettings = nodeSettings.getNodeSettings(getConfigKey());
+        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
+        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(fieldSettings, node);
+        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+    }
+
+    @Override
+    public void save(final S obj, final NodeSettingsWO settings) {
+        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(obj);
+        var schemaNode = JsonFormsSchemaUtil.buildSchema(ColumnFilter.class);
+        final var fieldSettings = settings.addNodeSettings(getConfigKey());
+        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, fieldSettings);
     }
 }

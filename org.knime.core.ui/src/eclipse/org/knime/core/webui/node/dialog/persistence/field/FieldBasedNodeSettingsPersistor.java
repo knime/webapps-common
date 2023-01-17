@@ -63,6 +63,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
@@ -115,19 +116,25 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static NodeSettingsPersistor<?> createPersistorFromPersistenceAnnotation(final Persist persistence,
         final Field field) {
         var customPersistorClass = persistence.customPersistor();
         var type = field.getType();
-        if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
-            return NodeSettingsPersistor.createInstance(customPersistorClass, type);
-        }
-        var settingsModelClass = persistence.settingsModel();
         var configKey = persistence.configKey();
         if (configKey.strip().equals("")) {
             configKey = extractConfigKeyFromFieldName(field.getName());
         }
+        if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
+            final var customPersistor = NodeSettingsPersistor.createInstance(customPersistorClass, type);
+            if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
+                final var customPersistorWithConfigKey = (NodeSettingsPersistorWithConfigKey)customPersistor;
+                customPersistorWithConfigKey.setConfigKey(configKey);
+                return customPersistorWithConfigKey;
+            }
+            return customPersistor;
+        }
+        var settingsModelClass = persistence.settingsModel();
         if (!settingsModelClass.equals(SettingsModel.class)) {
             return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
         } else {

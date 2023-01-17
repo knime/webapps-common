@@ -52,9 +52,9 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.impl.ChoicesProvider;
 import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.impl.Schema;
-import org.knime.core.webui.node.dialog.persistence.Persistor;
+import org.knime.core.webui.node.dialog.impl.StringArrayToColumnFilterPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -62,7 +62,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Persistor(JsonBasedNodeSettingsPersistor.class)
 public class TableViewViewSettings implements DefaultNodeSettings {
 
     static final class ColumnChoicesProvider implements ChoicesProvider {
@@ -82,7 +81,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
 
     @Schema(choices = ColumnChoicesProvider.class, title = "Displayed columns",
         description = "Select the columns that should be displayed in the table")
-    //@Persist(customPersistor=MyCustomPersistor.class)
+    @Persist(customPersistor = StringArrayToColumnFilterPersistor.class)
     public ColumnFilter m_displayedColumns;
 
     /**

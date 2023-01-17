@@ -42,88 +42,30 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   15 Dec 2022 Paul Bärnreuther: created
  */
-package org.knime.core.webui.node.dialog.impl;
-
-import org.knime.core.data.DataTableSpec;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package org.knime.core.webui.node.dialog.persistence;
 
 /**
- * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
- * modes of {@link ColumnFilterMode}. For using this class in order to render a twinlist, one has to create a
- * subclass with a member "selected" with the 'columns' Schema annotation.
+ * TODO
  *
  * @author Paul Bärnreuther
+ * @param <T> type of object loaded by the persistor
  */
-public class ColumnFilter implements DefaultNodeSettings {
+public abstract class NodeSettingsPersistorWithConfigKey<T> implements NodeSettingsPersistor<T> {
 
-
-    /**
-     * The setting representing the selected columns
-     */
-    @Schema(takeChoicesFromParent = true, multiple = true)
-    public String[] m_selected;
+    private String m_configKey;
 
     /**
-     * The way the selection is determined by
+     * @return the configKey
      */
-    public ColumnFilterMode m_mode; //NOSONAR
-
-    /**
-     * Settings regarding selection by pattern matching (regex or wildcard)
-     */
-    public PatternColumnFilter m_patternFilter;
-
-    /**
-     * Settings regarding manual selection
-     */
-    public ManualColumnFilter m_manualFilter;
-
-    /**
-     * Settings regarding selection per type
-     */
-    public TypeColumnFilter m_typeFilter;
-
-    /**
-     * Initialises the column selection with an initial array of columns which are manually selected
-     *
-     * @param initialSelected the initial manually selected columns
-     */
-    public ColumnFilter(final String[] initialSelected) {
-        m_mode = ColumnFilterMode.MANUAL;
-        m_manualFilter = new ManualColumnFilter(initialSelected);
-        m_patternFilter = new PatternColumnFilter();
-        m_typeFilter = new TypeColumnFilter();
-    }
-
-    @SuppressWarnings("javadoc")
-    public ColumnFilter() {
-        this(new String[0]);
-    }
-
-    @SuppressWarnings("javadoc")
-    public ColumnFilter(final SettingsCreationContext context) {
-        this();
+    protected String getConfigKey() {
+        return m_configKey;
     }
 
     /**
-     * @param choices the list of all possible column names
-     * @param spec of the input data table (for type selection)
-     * @return the array of currently selected columns with respect to the mode
+     * @param configKey the configKey to set
      */
-    @JsonIgnore
-    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
-        switch (m_mode) {
-            case MANUAL:
-                return m_manualFilter.getSelected();
-            case TYPE:
-                return m_typeFilter.getSelected(choices, spec);
-            default:
-                return m_patternFilter.getSelected(m_mode, choices);
-        }
+    public void setConfigKey(final String configKey) {
+        m_configKey = configKey;
     }
 }
