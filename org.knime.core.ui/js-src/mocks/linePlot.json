@@ -6,22 +6,22 @@
         "xAxisColumn": "Universe_0_0",
         "yAxisColumn": {
           "mode": "MANUAL",
-          "manuallySelected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ]
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
         },
         "maxRows": 2500,
         "title": "Line Plot",
@@ -130,28 +130,23 @@
               "oneOf": [
                 {
                   "const": "Universe_0_0",
-                  "title": "Universe_0_0",
-                  "columnType": "DoubleValue"
+                  "title": "Universe_0_0"
                 },
                 {
                   "const": "Universe_0_1",
-                  "title": "Universe_0_1",
-                  "columnType": "DoubleValue"
+                  "title": "Universe_0_1"
                 },
                 {
                   "const": "Universe_1_0",
-                  "title": "Universe_1_0",
-                  "columnType": "DoubleValue"
+                  "title": "Universe_1_0"
                 },
                 {
                   "const": "Universe_1_1",
-                  "title": "Universe_1_1",
-                  "columnType": "DoubleValue"
+                  "title": "Universe_1_1"
                 },
                 {
                   "const": "Cluster Membership",
-                  "title": "Cluster Membership",
-                  "columnType": "StringValue"
+                  "title": "Cluster Membership"
                 }
               ],
               "title": "Horizontal dimension",
@@ -167,19 +162,18 @@
             "yAxisColumn": {
               "type": "object",
               "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
                   }
                 },
                 "mode": {
@@ -203,9 +197,27 @@
                   ],
                   "default": "MANUAL"
                 },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
                 },
                 "selected": {
                   "anyOf": [
@@ -231,34 +243,43 @@
                     }
                   ]
                 },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
                   }
                 }
               },
               "title": "Vertical dimension",
               "description": "Defines the columns that contain the values for vertical dimension.",
               "default": {
+                "m_selected": null,
                 "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ]
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
               }
             },
             "yAxisLabel": {
@@ -284,9 +305,7 @@
             }
           }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "elements": [

@@ -1,130 +1,104 @@
 {
   "result": {
-    "name": "Statistics View Dialog",
+    "name": "Statistics Dialog",
     "data": {
+      "model": {
+        "selectedColumns": {
+          "mode": "MANUAL",
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1",
+              "Cluster Membership"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
+        }
+      },
       "view": {
         "displayedColumns": {
           "mode": "MANUAL",
-          "manuallySelected": [
-            "Name",
-            "Type",
-            "# Unique values",
-            "Minimum",
-            "Maximum",
-            "10 most common values",
-            "1% Quantile",
-            "5% Quantile",
-            "10% Quantile",
-            "25% Quantile",
-            "50% Quantile (Median)",
-            "75% Quantile",
-            "90% Quantile",
-            "95% Quantile",
-            "99% Quantile",
-            "Mean",
-            "Sum",
-            "Mean Absolute Deviation",
-            "Standard Deviation",
-            "Variance",
-            "Skewness",
-            "Kurtosis"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Name",
-            "Type",
-            "# Unique values",
-            "Minimum",
-            "Maximum",
-            "10 most common values",
-            "1% Quantile",
-            "5% Quantile",
-            "10% Quantile",
-            "25% Quantile",
-            "50% Quantile (Median)",
-            "75% Quantile",
-            "90% Quantile",
-            "95% Quantile",
-            "99% Quantile",
-            "Mean",
-            "Sum",
-            "Mean Absolute Deviation",
-            "Standard Deviation",
-            "Variance",
-            "Skewness",
-            "Kurtosis"
-          ]
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Name",
+              "Type",
+              "# Unique values",
+              "Minimum",
+              "Maximum",
+              "10 most common values",
+              "1% Quantile",
+              "5% Quantile",
+              "10% Quantile",
+              "25% Quantile",
+              "50% Quantile (Median)",
+              "75% Quantile",
+              "90% Quantile",
+              "95% Quantile",
+              "99% Quantile",
+              "Mean",
+              "Sum",
+              "Mean Absolute Deviation",
+              "Standard Deviation",
+              "Variance",
+              "Skewness",
+              "Kurtosis"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
         },
-        "showRowKeys": false,
-        "showColumnDataType": false,
+        "showRowKeys": true,
+        "showColumnDataType": true,
         "showRowIndices": false,
-        "title": "Statistics",
+        "title": "Table View",
         "showTitle": true,
-        "enablePagination": false,
+        "enablePagination": true,
         "pageSize": 10,
         "compactMode": false,
         "enableGlobalSearch": true,
         "enableColumnSearch": true,
         "enableSortingByHeader": true,
         "enableRendererSelection": true,
-        "publishSelection": false,
-        "subscribeToSelection": false
-      },
-      "model": {
-        "selectedColumns": {
-          "mode": "MANUAL",
-          "manuallySelected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1",
-            "Cluster Membership"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1",
-            "Cluster Membership"
-          ]
-        }
+        "publishSelection": true,
+        "subscribeToSelection": true
       }
     },
     "schema": {
       "type": "object",
       "properties": {
-        "view": {
+        "model": {
           "type": "object",
           "properties": {
-            "compactMode": {
-              "type": "boolean",
-              "title": "Compact rows",
-              "description": "Whether to display the rows in a more compact form or not",
-              "default": false
-            },
-            "displayedColumns": {
+            "selectedColumns": {
               "type": "object",
               "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
                   }
                 },
                 "mode": {
@@ -148,9 +122,167 @@
                   ],
                   "default": "MANUAL"
                 },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership",
+                      "columnType": "StringValue"
+                    }
+                  ]
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
+                  }
+                }
+              },
+              "title": "Selected Columns",
+              "description": "Selects the columns to calculate statistics from.",
+              "default": {
+                "m_selected": null,
+                "m_mode": "MANUAL",
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1",
+                    "Cluster Membership"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
+              }
+            }
+          }
+        },
+        "view": {
+          "type": "object",
+          "properties": {
+            "compactMode": {
+              "type": "boolean",
+              "title": "Compact rows",
+              "description": "Whether to display the rows in a more compact form or not",
+              "default": false
+            },
+            "displayedColumns": {
+              "type": "object",
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
                 },
                 "selected": {
                   "anyOf": [
@@ -244,70 +376,61 @@
                     }
                   ]
                 },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
                   }
                 }
               },
               "title": "Displayed Statistics",
               "description": "Select the statistics that should be displayed in the table: <br></br><b>Note:</b> Missing values and (in case of numeric columns) NaN values are ignored.<ul><li><b>Name:</b> When selected, a column with the dimension name is displayed.</li><li><b>Type:</b> When selected, a column with the assigned data type of this column is displayed.</li><li><b>Number unique values:</b> When selected, a column shows the number of unique values this column has.</li><li><b>Minimum:</b> When selected, a column \"Minimum\" listing the minimum for each selected column is displayed. Note that for nominal columns the minimum is taken with respect to the lexicographic order.</li><li><b>Maximum:</b> When selected, a column \"Maximum\" listing the maximum for each selected column is displayed. Note that for nominal columns the maximum is taken with respect to the lexicographic order.</li><li><b>Common values:</b> When selected, a column \"10 most common values\" is displayed. For each column the 10 most common values are displayed together with the absolute and proportional frequency of occurrence (e.g., 'A (120, 24%), B (50, 10%), ...').</li></ul><b>Note:</b> For the following properties, the string length is used in case of nominal columns.<ul><li><b>Quantiles:</b> One can choose between several p-quantiles with values p = 1%, 5%, 10%, 25%, 50%, 75%, 90%, 95% and 99%. When selected, a column with the respective dimension quantile is displayed.</li><li><b>Mean:</b> When selected, a column with the dimension mean is displayed.</li><li><b>Sum:</b> When selected, a column with the dimension sum is displayed.</li><li><b>Mean absoulte deviation:</b> When selected, a column with the dimension mean absolute deviation is displayed.</li><li><b>Standard deviation:</b> When selected, a column with the dimension standard deviation is displayed.</li><li><b>Variance:</b> When selected, a column with the dimension variance is displayed.</li><li><b>Skewness:</b> When selected, a column with the dimension skewness is displayed.</li><li><b>Kurtosis:</b> When selected, a column with the dimension kurtosis is displayed.</li></ul>",
               "default": {
+                "m_selected": null,
                 "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Name",
-                  "Type",
-                  "# Unique values",
-                  "Minimum",
-                  "Maximum",
-                  "10 most common values",
-                  "1% Quantile",
-                  "5% Quantile",
-                  "10% Quantile",
-                  "25% Quantile",
-                  "50% Quantile (Median)",
-                  "75% Quantile",
-                  "90% Quantile",
-                  "95% Quantile",
-                  "99% Quantile",
-                  "Mean",
-                  "Sum",
-                  "Mean Absolute Deviation",
-                  "Standard Deviation",
-                  "Variance",
-                  "Skewness",
-                  "Kurtosis"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Name",
-                  "Type",
-                  "# Unique values",
-                  "Minimum",
-                  "Maximum",
-                  "10 most common values",
-                  "1% Quantile",
-                  "5% Quantile",
-                  "10% Quantile",
-                  "25% Quantile",
-                  "50% Quantile (Median)",
-                  "75% Quantile",
-                  "90% Quantile",
-                  "95% Quantile",
-                  "99% Quantile",
-                  "Mean",
-                  "Sum",
-                  "Mean Absolute Deviation",
-                  "Standard Deviation",
-                  "Variance",
-                  "Skewness",
-                  "Kurtosis"
-                ]
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Name",
+                    "Type",
+                    "# Unique values",
+                    "Minimum",
+                    "Maximum",
+                    "10 most common values",
+                    "1% Quantile",
+                    "5% Quantile",
+                    "10% Quantile",
+                    "25% Quantile",
+                    "50% Quantile (Median)",
+                    "75% Quantile",
+                    "90% Quantile",
+                    "95% Quantile",
+                    "99% Quantile",
+                    "Mean",
+                    "Sum",
+                    "Mean Absolute Deviation",
+                    "Standard Deviation",
+                    "Variance",
+                    "Skewness",
+                    "Kurtosis"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
               }
             },
             "enableColumnSearch": {
@@ -391,119 +514,8 @@
               "default": "Table View"
             }
           }
-        },
-        "model": {
-          "type": "object",
-          "properties": {
-            "selectedColumns": {
-              "type": "object",
-              "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "mode": {
-                  "oneOf": [
-                    {
-                      "const": "MANUAL",
-                      "title": "Manual"
-                    },
-                    {
-                      "const": "REGEX",
-                      "title": "Regex"
-                    },
-                    {
-                      "const": "WILDCARD",
-                      "title": "Wildcard"
-                    },
-                    {
-                      "const": "TYPE",
-                      "title": "Type"
-                    }
-                  ],
-                  "default": "MANUAL"
-                },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
-                },
-                "selected": {
-                  "anyOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Cluster Membership",
-                      "title": "Cluster Membership",
-                      "columnType": "StringValue"
-                    }
-                  ]
-                },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "title": "Selected Columns",
-              "description": "Selects the columns to calculate statistics from.",
-              "default": {
-                "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1",
-                  "Cluster Membership"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1",
-                  "Cluster Membership"
-                ]
-              }
-            }
-          }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "elements": [
@@ -515,7 +527,7 @@
               "type": "Control",
               "scope": "#/properties/model/properties/selectedColumns",
               "options": {
-                "format": "columnFilter",
+                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }

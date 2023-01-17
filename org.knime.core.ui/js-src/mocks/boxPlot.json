@@ -2,6 +2,28 @@
   "result": {
     "name": "Box Plot Dialog",
     "data": {
+      "model": {
+        "frequencyColumns": {
+          "mode": "MANUAL",
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
+        },
+        "categoryColumn": "<none>"
+      },
       "view": {
         "title": "Box Plot",
         "xAxisLabel": "Dimension",
@@ -11,33 +33,150 @@
         "allowImageDownload": true,
         "showTooltip": true,
         "enableAnimation": true
-      },
-      "model": {
-        "frequencyColumns": {
-          "mode": "MANUAL",
-          "manuallySelected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ]
-        },
-        "categoryColumn": "<none>"
       }
     },
     "schema": {
       "type": "object",
       "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "categoryColumn": {
+              "oneOf": [
+                {
+                  "const": "Cluster Membership",
+                  "title": "Cluster Membership"
+                }
+              ],
+              "title": "Condition column",
+              "description": "Select a column with respect to which a conditional box plot should be created. The values of the selected column are treated as categories. For each of these categories there is one box (indicated by color) within each of the dimensions. Note: Missing values are treated as a separate category.",
+              "default": "<none>"
+            },
+            "frequencyColumns": {
+              "type": "object",
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
+                  }
+                }
+              },
+              "title": "Dimension columns",
+              "description": "Select the columns with numerical values for which you wish to plot boxes. Note: Missing and NaN (not a number) values in a dimension column will be ignored with a corresponding warning message. If all values from which a box is computed are missing or NaN, the box will be excluded from the view and a warning message will be raised.",
+              "default": {
+                "m_selected": null,
+                "m_mode": "MANUAL",
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
+              }
+            }
+          }
+        },
         "view": {
           "type": "object",
           "properties": {
@@ -99,124 +238,8 @@
               "default": "Value"
             }
           }
-        },
-        "model": {
-          "type": "object",
-          "properties": {
-            "categoryColumn": {
-              "oneOf": [
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership",
-                  "columnType": "StringValue"
-                }
-              ],
-              "title": "Condition column",
-              "description": "Select a column with respect to which a conditional box plot should be created. The values of the selected column are treated as categories. For each of these categories there is one box (indicated by color) within each of the dimensions. Note: Missing values are treated as a separate category.",
-              "default": "<none>"
-            },
-            "frequencyColumns": {
-              "type": "object",
-              "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "mode": {
-                  "oneOf": [
-                    {
-                      "const": "MANUAL",
-                      "title": "Manual"
-                    },
-                    {
-                      "const": "REGEX",
-                      "title": "Regex"
-                    },
-                    {
-                      "const": "WILDCARD",
-                      "title": "Wildcard"
-                    },
-                    {
-                      "const": "TYPE",
-                      "title": "Type"
-                    }
-                  ],
-                  "default": "MANUAL"
-                },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
-                },
-                "selected": {
-                  "anyOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1",
-                      "columnType": "DoubleValue"
-                    }
-                  ]
-                },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "title": "Dimension columns",
-              "description": "Select the columns with numerical values for which you wish to plot boxes. Note: Missing and NaN (not a number) values in a dimension column will be ignored with a corresponding warning message. If all values from which a box is computed are missing or NaN, the box will be excluded from the view and a warning message will be raised.",
-              "default": {
-                "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ]
-              }
-            }
-          }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "elements": [

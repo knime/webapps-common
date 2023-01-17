@@ -7,22 +7,22 @@
         "aggregationMethod": "NONE",
         "frequencyColumns": {
           "mode": "MANUAL",
-          "manuallySelected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1"
-          ]
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
         }
       },
       "view": {
@@ -71,8 +71,7 @@
               "oneOf": [
                 {
                   "const": "Cluster Membership",
-                  "title": "Cluster Membership",
-                  "columnType": "StringValue"
+                  "title": "Cluster Membership"
                 }
               ],
               "title": "Category dimension",
@@ -82,19 +81,18 @@
             "frequencyColumns": {
               "type": "object",
               "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
                   }
                 },
                 "mode": {
@@ -118,9 +116,27 @@
                   ],
                   "default": "MANUAL"
                 },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
                 },
                 "selected": {
                   "anyOf": [
@@ -146,34 +162,43 @@
                     }
                   ]
                 },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
                   }
                 }
               },
               "title": "Frequency dimensions",
               "description": "Select the columns with frequencies for which you wish to plot bars. Note: Missing values in the frequency column will be ignored with a corresponding warning message. If, after aggregation, some bars or entire categories contain only missing values, they will be excluded from the view and a warning message will be raised.",
               "default": {
+                "m_selected": null,
                 "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1"
-                ]
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
               }
             }
           }
@@ -271,9 +296,7 @@
             }
           }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "elements": [

@@ -5,24 +5,23 @@
       "view": {
         "displayedColumns": {
           "mode": "MANUAL",
-          "manuallySelected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1",
-            "Cluster Membership"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "Universe_0_0",
-            "Universe_0_1",
-            "Universe_1_0",
-            "Universe_1_1",
-            "Cluster Membership"
-          ]
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1",
+              "Cluster Membership"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
         },
         "showRowKeys": true,
         "showColumnDataType": true,
@@ -55,19 +54,18 @@
             "displayedColumns": {
               "type": "object",
               "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
                   }
                 },
                 "mode": {
@@ -91,9 +89,27 @@
                   ],
                   "default": "MANUAL"
                 },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
                 },
                 "selected": {
                   "anyOf": [
@@ -124,36 +140,44 @@
                     }
                   ]
                 },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
                   }
                 }
               },
               "title": "Displayed columns",
               "description": "Select the columns that should be displayed in the table",
               "default": {
+                "m_selected": null,
                 "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1",
-                  "Cluster Membership"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "Universe_0_0",
-                  "Universe_0_1",
-                  "Universe_1_0",
-                  "Universe_1_1",
-                  "Cluster Membership"
-                ]
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1",
+                    "Cluster Membership"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
               }
             },
             "enableColumnSearch": {
@@ -238,9 +262,7 @@
             }
           }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "type": "VerticalLayout",

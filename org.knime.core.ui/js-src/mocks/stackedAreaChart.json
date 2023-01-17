@@ -2,6 +2,29 @@
   "result": {
     "name": "Stacked Area Chart Dialog",
     "data": {
+      "model": {
+        "horizontalColumn": "Cluster Membership",
+        "aggregationMethod": "NONE",
+        "frequencyColumns": {
+          "mode": "MANUAL",
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "manualFilter": {
+            "manuallySelected": [
+              "Universe_0_0",
+              "Universe_0_1",
+              "Universe_1_0",
+              "Universe_1_1"
+            ]
+          },
+          "typeFilter": {
+            "selectedTypes": []
+          }
+        }
+      },
       "view": {
         "maxRows": 2500,
         "title": "Stacked Area Chart",
@@ -14,36 +37,173 @@
         "enableDataZoom": true,
         "showTooltip": true,
         "enableAnimation": true
-      },
-      "model": {
-        "horizontalColumn": "StringCol",
-        "aggregationMethod": "NONE",
-        "frequencyColumns": {
-          "mode": "MANUAL",
-          "manuallySelected": [
-            "IntCol",
-            "LongCol",
-            "DoubleCol",
-            "BooleanCol",
-            "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
-          ],
-          "pattern": "",
-          "isCaseSensitive": false,
-          "isInverted": false,
-          "selectedTypes": [],
-          "selected": [
-            "IntCol",
-            "LongCol",
-            "DoubleCol",
-            "BooleanCol",
-            "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
-          ]
-        }
       }
     },
     "schema": {
       "type": "object",
       "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "aggregationMethod": {
+              "oneOf": [
+                {
+                  "const": "NONE",
+                  "title": "None"
+                },
+                {
+                  "const": "COUNT",
+                  "title": "Occurrence count"
+                },
+                {
+                  "const": "SUM",
+                  "title": "Sum"
+                },
+                {
+                  "const": "AVG",
+                  "title": "Average"
+                }
+              ],
+              "title": "Aggregation",
+              "description": "Select the aggregation method used on the selected frequency columns. In case of “None” execution fails if the horizontal dimension contains duplicate values. In case of “Occurrence Count” the occurrence of the number of rows that share the same value in the horizontal dimension is determined.",
+              "default": "NONE"
+            },
+            "frequencyColumns": {
+              "type": "object",
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_manuallySelected": []
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "m_pattern": "",
+                    "m_isCaseSensitive": false,
+                    "m_isInverted": false
+                  }
+                },
+                "selected": {
+                  "anyOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "DoubleValue"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "DoubleValue"
+                    }
+                  ]
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "m_selectedTypes": []
+                  }
+                }
+              },
+              "title": "Frequency dimensions",
+              "description": "Select the columns with frequencies which you wish to plot in the stacked area chart. Note: Missing values in the frequency column will be ignored with a corresponding warning message. Also, columns which include both positive and negative values can not be used as frequency columns and therefore will be excluded as well.",
+              "default": {
+                "m_selected": null,
+                "m_mode": "MANUAL",
+                "m_patternFilter": {
+                  "m_pattern": "",
+                  "m_isCaseSensitive": false,
+                  "m_isInverted": false
+                },
+                "m_manualFilter": {
+                  "m_manuallySelected": [
+                    "Universe_0_0",
+                    "Universe_0_1",
+                    "Universe_1_0",
+                    "Universe_1_1"
+                  ]
+                },
+                "m_typeFilter": {
+                  "m_selectedTypes": []
+                }
+              }
+            },
+            "horizontalColumn": {
+              "oneOf": [
+                {
+                  "const": "Cluster Membership",
+                  "title": "Cluster Membership"
+                }
+              ],
+              "title": "Horizontal dimension",
+              "description": "Select the column that contains the values of the horizontal dimension. Note: Missing values are treated as separate values.",
+              "default": "Cluster Membership"
+            }
+          }
+        },
         "view": {
           "type": "object",
           "properties": {
@@ -130,204 +290,8 @@
               "description": "The label used for the frequency axis. If left blank, no label will be shown."
             }
           }
-        },
-        "model": {
-          "type": "object",
-          "properties": {
-            "aggregationMethod": {
-              "oneOf": [
-                {
-                  "const": "NONE",
-                  "title": "None"
-                },
-                {
-                  "const": "COUNT",
-                  "title": "Occurrence count"
-                },
-                {
-                  "const": "SUM",
-                  "title": "Sum"
-                },
-                {
-                  "const": "AVG",
-                  "title": "Average"
-                }
-              ],
-              "title": "Aggregation",
-              "description": "Select the aggregation method used on the selected frequency columns. In case of “None” execution fails if the horizontal dimension contains duplicate values. In case of “Occurrence Count” the occurrence of the number of rows that share the same value in the horizontal dimension is determined.",
-              "default": "NONE"
-            },
-            "frequencyColumns": {
-              "type": "object",
-              "properties": {
-                "isCaseSensitive": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "isInverted": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "manuallySelected": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "mode": {
-                  "oneOf": [
-                    {
-                      "const": "MANUAL",
-                      "title": "Manual"
-                    },
-                    {
-                      "const": "REGEX",
-                      "title": "Regex"
-                    },
-                    {
-                      "const": "WILDCARD",
-                      "title": "Wildcard"
-                    },
-                    {
-                      "const": "TYPE",
-                      "title": "Type"
-                    }
-                  ],
-                  "default": "MANUAL"
-                },
-                "pattern": {
-                  "type": "string",
-                  "default": ""
-                },
-                "selected": {
-                  "anyOf": [
-                    {
-                      "const": "IntCol",
-                      "title": "IntCol",
-                      "columnType": "IntValue"
-                    },
-                    {
-                      "const": "LongCol",
-                      "title": "LongCol",
-                      "columnType": "LongValue"
-                    },
-                    {
-                      "const": "DoubleCol",
-                      "title": "DoubleCol",
-                      "columnType": "DoubleValue"
-                    },
-                    {
-                      "const": "BooleanCol",
-                      "title": "BooleanCol",
-                      "columnType": "BooleanValue"
-                    },
-                    {
-                      "const": "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName",
-                      "title": "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName",
-                      "columnType": "DoubleValue"
-                    }
-                  ]
-                },
-                "selectedTypes": {
-                  "default": [],
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              },
-              "title": "Frequency dimensions",
-              "description": "Select the columns with frequencies which you wish to plot in the stacked area chart. Note: Missing values in the frequency column will be ignored with a corresponding warning message. Also, columns which include both positive and negative values can not be used as frequency columns and therefore will be excluded as well.",
-              "default": {
-                "m_mode": "MANUAL",
-                "m_manuallySelected": [
-                  "IntCol",
-                  "LongCol",
-                  "DoubleCol",
-                  "BooleanCol",
-                  "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
-                ],
-                "m_pattern": "",
-                "m_isCaseSensitive": false,
-                "m_isInverted": false,
-                "m_selectedTypes": [],
-                "m_selected": [
-                  "IntCol",
-                  "LongCol",
-                  "DoubleCol",
-                  "BooleanCol",
-                  "LongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnNameLongDoubleColumnName"
-                ]
-              }
-            },
-            "horizontalColumn": {
-              "oneOf": [
-                {
-                  "const": "StringCol",
-                  "title": "StringCol",
-                  "columnType": "StringValue"
-                },
-                {
-                  "const": "TimestampCol",
-                  "title": "TimestampCol",
-                  "columnType": "DateAndTimeValue"
-                },
-                {
-                  "const": "UriCol",
-                  "title": "UriCol",
-                  "columnType": "URIDataValue"
-                },
-                {
-                  "const": "MissingValStringCol",
-                  "title": "MissingValStringCol",
-                  "columnType": "StringValue"
-                },
-                {
-                  "const": "LongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnName",
-                  "title": "LongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnNameLongStringColumnName",
-                  "columnType": "StringValue"
-                },
-                {
-                  "const": "Local Date",
-                  "title": "Local Date",
-                  "columnType": "LocalDateValue"
-                },
-                {
-                  "const": "Local Time",
-                  "title": "Local Time",
-                  "columnType": "LocalTimeValue"
-                },
-                {
-                  "const": "Local Date Time",
-                  "title": "Local Date Time",
-                  "columnType": "LocalDateTimeValue"
-                },
-                {
-                  "const": "Zoned Date Time",
-                  "title": "Zoned Date Time",
-                  "columnType": "ZonedDateTimeValue"
-                },
-                {
-                  "const": "Period",
-                  "title": "Period",
-                  "columnType": "PeriodValue"
-                },
-                {
-                  "const": "Duration",
-                  "title": "Duration",
-                  "columnType": "DurationValue"
-                }
-              ],
-              "title": "Horizontal dimension",
-              "description": "Select the column that contains the values of the horizontal dimension. Note: Missing values are treated as separate values.",
-              "default": "StringCol"
-            }
-          }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true
+      }
     },
     "ui_schema": {
       "elements": [
