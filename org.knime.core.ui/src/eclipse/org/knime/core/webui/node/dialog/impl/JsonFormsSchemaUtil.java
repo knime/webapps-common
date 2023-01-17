@@ -155,11 +155,12 @@ final class JsonFormsSchemaUtil {
             Option.FLATTENED_ENUMS, //
             Option.EXTRA_OPEN_API_FORMAT_VALUES, //
             Option.PUBLIC_NONSTATIC_FIELDS, //
+            Option.NONPUBLIC_NONSTATIC_FIELDS_WITHOUT_GETTERS, //
             Option.NONPUBLIC_NONSTATIC_FIELDS_WITH_GETTERS, //
             Option.INLINE_ALL_SCHEMAS, //
             Option.ALLOF_CLEANUP_AT_THE_END));
 
-        builder.forFields().withIgnoreCheck(f -> PROHIBITED_TYPES.contains(f.getType().getErasedType()));
+        builder.forFields().withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
 
         builder.forFields().withCustomDefinitionProvider(new ChoicesAndEnumDefinitionProvider(context, settings));
 

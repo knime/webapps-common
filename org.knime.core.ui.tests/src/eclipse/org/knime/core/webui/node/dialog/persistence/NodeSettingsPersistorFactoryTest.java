@@ -183,7 +183,7 @@ public class NodeSettingsPersistorFactoryTest {
     @Persistor(JsonBasedNodeSettingsPersistor.class)
     private static final class JsonPersistorSettings extends AbstractTestSettings<JsonPersistorSettings> {
 
-        public String m_foo;
+        String m_foo;
 
         @Override
         protected boolean internalEquals(final JsonPersistorSettings other) {

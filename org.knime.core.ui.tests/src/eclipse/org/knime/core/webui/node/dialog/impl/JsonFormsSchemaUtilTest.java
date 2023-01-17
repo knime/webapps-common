@@ -75,7 +75,7 @@ class JsonFormsSchemaUtilTest {
     private static class PropertyNameOverrideTestSetting {
         private static String SNAPSHOT = "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0}}";
 
-        public int m_test;
+        int m_test;
     }
 
     @Test
@@ -88,7 +88,7 @@ class JsonFormsSchemaUtilTest {
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"title\":\"some title\",\"default\":0}}";
 
         @Schema(title = "some title")
-        public int test;
+        int test;
     }
 
     @Test
@@ -101,7 +101,7 @@ class JsonFormsSchemaUtilTest {
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"some description\"}}";
 
         @Schema(description = "some description")
-        public int test;
+        int test;
     }
 
     @Test
@@ -121,7 +121,7 @@ class JsonFormsSchemaUtilTest {
                 SOME_OTHER_CHOICE
         }
 
-        public TestEnum testEnum;
+        TestEnum testEnum;
     }
 
     @Test
