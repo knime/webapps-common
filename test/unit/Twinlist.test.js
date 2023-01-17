@@ -762,7 +762,7 @@ describe('Twinlist.vue', () => {
         });
 
         it('shows number of visible items and total number on search', () => {
-            propsData.initialManuallySelected = ['test2', 'Missing'];
+            propsData.value = ['test2', 'Missing'];
             propsData.initialSearchTerm = 't';
             const wrapper = mount(Twinlist, { propsData });
             const infos = wrapper.findAll('.info');
@@ -771,7 +771,7 @@ describe('Twinlist.vue', () => {
         });
 
         it('show indication that no items match the search', () => {
-            propsData.initialManuallySelected = ['test2', 'Missing'];
+            propsData.value = ['test2', 'Missing'];
             propsData.initialSearchTerm = 'Missing';
             const wrapper = mount(Twinlist, { propsData });
             const infos = wrapper.findAll('.info');
@@ -779,11 +779,31 @@ describe('Twinlist.vue', () => {
             expect(infos.at(1).text()).toBe('1 of 2 entries');
         });
 
-        it('does not show info on non manual selection', () => {
+        it('does not show info if search is not shown', () => {
             propsData.initialSearchTerm = 't';
-            propsData.initialMode = 'regex';
+            propsData.showSearch = false;
             const wrapper = mount(Twinlist, { propsData });
             expect(wrapper.find('.info').exists()).toBeFalsy();
+        });
+    });
+
+    describe('empty box', () => {
+        let propsData;
+        beforeEach(() => {
+            propsData = {
+                possibleValues: defaultPossibleValues,
+                initialManuallySelected: [],
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                showSearch: true
+            };
+        });
+
+        it('displays empty state box if it does not contain any element', () => {
+            const wrapper = mount(Twinlist, { propsData });
+            let right = wrapper.find({ ref: 'right' });
+            expect(right.find('.empty-state').exists()).toBeTruthy();
         });
     });
 });

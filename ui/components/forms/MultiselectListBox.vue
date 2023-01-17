@@ -91,7 +91,7 @@ export default {
             const pxSize = `${this.size * this.optionLineHeight + 2}px`;
             return this.size > 0 ? { height: pxSize } : {};
         },
-        isEmpty() {
+        showEmptyState() {
             return this.withIsEmptyState && this.possibleValues.length === 0;
         }
     },
@@ -403,7 +403,7 @@ export default {
       ref="ul"
       role="listbox"
       tabindex="0"
-      :class="{ disabled, 'empty-box': isEmpty }"
+      :class="{ disabled, 'empty-box': showEmptyState }"
       :aria-label="ariaLabel"
       :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
       @keydown.ctrl.a.prevent.exact="onCtrlA"
@@ -441,7 +441,7 @@ export default {
         {{ item.text }}
       </li>
       <div
-        v-if="isEmpty"
+        v-if="showEmptyState"
         class="empty-state"
       >
         <span>
@@ -559,6 +559,7 @@ export default {
 
     & span {
       color: var(--theme-dropdown-foreground-color);
+      font-style: italic;
       font-size: 10px;
     }
   }

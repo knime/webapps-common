@@ -180,7 +180,7 @@ export default {
             return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
         },
         numAllItems() {
-          return this.invalidValueIds.length + this.possibleValues.length;
+            return this.invalidValueIds.length + this.possibleValues.length;
         },
         numAllRightItems() {
             return this.chosenValues.length;
@@ -195,7 +195,7 @@ export default {
             return this.leftItems.length;
         },
         hasActiveSearch() {
-            return this.mode === 'manual' && this.searchTerm !== '';
+            return this.showSearch && this.searchTerm !== '';
         },
         leftInfo() {
             return this.getInfoText(this.numShownLeftItems, this.numAllLeftItems);
@@ -323,12 +323,12 @@ export default {
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-          filters.search.test(item[this.mode === 'type' ? 'type' : 'text'], this.normalizedSearchTerm,
-                this.caseSensitiveSearch, this.inverseSearch);
+            return filters.search.test(item.text, this.normalizedSearchTerm,
+                this.caseSensitiveSearch);
         },
         getInfoText(numShownItems, numAllItems) {
-            if (numAllItems === 0 || !this.hasActiveSearch) {
-                return '';
+            if (!this.hasActiveSearch) {
+                return null;
             }
             if (numShownItems === 0) {
                 return `No entries (${numAllItems} hidden)`;
@@ -365,7 +365,7 @@ export default {
       <div class="title">
         <div class="label"> {{ leftLabel }}</div>
         <div
-          v-if="leftInfo !== ''"
+          v-if="leftInfo"
           class="info"
         >
           {{ leftInfo }}
@@ -375,7 +375,7 @@ export default {
       <div class="title">
         <div class="label"> {{ rightLabel }}</div>
         <div
-          v-if="rightInfo !== ''"
+          v-if="rightInfo"
           class="info"
         >
           {{ rightInfo }}
@@ -385,7 +385,7 @@ export default {
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
-        :with-is-empty-state="leftInfo === ''"
+        with-is-empty-state
         :size="listSize"
         class="listBox"
         :value="selectedLeft"
@@ -443,7 +443,7 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
-        :with-is-empty-state="rightInfo === ''"
+        with-is-empty-state
         :value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"
@@ -489,7 +489,6 @@ export default {
     & .info {
       text-overflow: ellipsis;
       overflow: hidden;
-      min-width: 0;
       font-size: 8px;
       font-weight: 300;
       white-space: nowrap;
