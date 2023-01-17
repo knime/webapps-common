@@ -123,7 +123,7 @@ export default TwinlistInput;
         :initial-pattern="control.data.patternFilter.pattern"
         :initial-mode="control.data.mode.toLowerCase()"
         :initial-case-sensitive-search="control.data.patternFilter.isCaseSensitive"
-        :initial-inverse-search="control.data.isInverted"
+        :initial-inverse-search="control.data.patternFilter.isInverted"
         :initial-manually-selected="control.data.manualFilter.manuallySelected"
         :mode-label="'Selection mode'"
         :possible-values="possibleValues"
