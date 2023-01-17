@@ -91,14 +91,14 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var erasedType = type.getErasedType();
         final var schema = field.getAnnotation(Schema.class);
 
-        if (schema != null && !schema.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope()) {
+        if (hasChoices(schema, field)) {
             if (type.canCreateSubtype(ColumnFilter.class)) {
                 m_lastSchemaWithColumns = schema;
             } else {
                 arrayNode = determineChoicesValues(field, context, schema.choices(), false);
             }
         }
-        if (schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null) {
+        if (usesCachedChoices(schema)) {
             arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns.choices(),
                 m_lastSchemaWithColumns.withTypes());
         }
@@ -113,6 +113,14 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
 
         outerObjectNode.set(determineEnumTagType(field), arrayNode);
         return new CustomPropertyDefinition(outerObjectNode);
+    }
+
+    private static boolean hasChoices(final Schema schema, final FieldScope field) {
+        return schema != null && !schema.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope();
+    }
+
+    private boolean usesCachedChoices(final Schema schema) {
+        return schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null;
     }
 
     private ArrayNode determineChoicesValues(final FieldScope field, final SchemaGenerationContext context,

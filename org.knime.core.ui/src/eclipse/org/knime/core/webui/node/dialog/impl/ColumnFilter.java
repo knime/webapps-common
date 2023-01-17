@@ -76,17 +76,17 @@ public class ColumnFilter implements DefaultNodeSettings {
     /**
      * Settings regarding selection by pattern matching (regex or wildcard)
      */
-    public PatternColumnFilter m_patternFilter;
+    public PatternColumnFilter m_patternFilter; //NOSONAR
 
     /**
      * Settings regarding manual selection
      */
-    public ManualColumnFilter m_manualFilter;
+    public ManualColumnFilter m_manualFilter; //NOSONAR
 
     /**
      * Settings regarding selection per type
      */
-    public TypeColumnFilter m_typeFilter;
+    public TypeColumnFilter m_typeFilter; //NOSONAR
 
     /**
      * Initialises the column selection with an initial array of columns which are manually selected

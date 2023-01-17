@@ -102,25 +102,29 @@ public class PatternColumnFilter {
         final var casedPattern = m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase(Locale.getDefault());
         switch (mode) {
             case REGEX:
-                final var completedPattern = String.format("^%s$", casedPattern);
-                final Pattern pattern;
-                if (m_compiledPattern != null && m_compiledPattern.getSecond() == completedPattern) {
-                    pattern = m_compiledPattern.getFirst();
-                } else {
-                    pattern = Pattern.compile(completedPattern);
-                    m_compiledPattern = new Pair<>(pattern, completedPattern);
-                }
-                predicate = casedPattern.isEmpty() ? choice -> false : pattern.asPredicate();
+                predicate = getBasePredicateRegex(casedPattern);
                 break;
             case WILDCARD:
                 predicate = choice -> wildcardMatch(choice, casedPattern);
                 break;
             default:
-                return null;
+                return new String[0];
         }
 
         final var augmentedPredicate = getAugmentedPredicate(predicate, m_isCaseSensitive, m_isInverted);
         return Arrays.asList(choices).stream().filter(augmentedPredicate).toArray(String[]::new);
+    }
+
+    private Predicate<String> getBasePredicateRegex(final String casedPattern) {
+        final var completedPattern = String.format("^%s$", casedPattern);
+        final Pattern pattern;
+        if (m_compiledPattern != null && m_compiledPattern.getSecond().equals(completedPattern)) {
+            pattern = m_compiledPattern.getFirst();
+        } else {
+            pattern = Pattern.compile(completedPattern);
+            m_compiledPattern = new Pair<>(pattern, completedPattern);
+        }
+        return casedPattern.isEmpty() ? choice -> false : pattern.asPredicate();
     }
 
     private static Predicate<String> getAugmentedPredicate(final Predicate<String> originalPredicate,

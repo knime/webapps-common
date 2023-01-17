@@ -160,7 +160,8 @@ final class JsonFormsSchemaUtil {
             Option.INLINE_ALL_SCHEMAS, //
             Option.ALLOF_CLEANUP_AT_THE_END));
 
-        builder.forFields().withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
+        builder.forFields()
+            .withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
 
         builder.forFields().withCustomDefinitionProvider(new ChoicesAndEnumDefinitionProvider(context, settings));
 

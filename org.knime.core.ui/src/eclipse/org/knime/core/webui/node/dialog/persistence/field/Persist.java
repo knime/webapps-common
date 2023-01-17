@@ -56,6 +56,7 @@ import java.lang.annotation.Target;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
  * Allows to define the persistence of individual fields to NodeSettings if field based persistence is used.
@@ -76,8 +77,9 @@ public @interface Persist {
     String configKey() default "";
 
     /**
-     * Optional argument that allows to specify a custom persistor for a field. The {@link #configKey()} will be
-     * ignored if this argument is specified.
+     * Optional argument that allows to specify a custom persistor for a field. For accessing the {@link #configKey()}
+     * within this persistor use a subclass of {@link NodeSettingsPersistorWithConfigKey}. Otherwise the
+     * {@link #configKey()} is ignored whenever a customPersistor is defined.
      *
      * @return the class of the customPersistor
      */

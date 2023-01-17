@@ -45,8 +45,11 @@
  */
 package org.knime.core.webui.node.dialog.persistence;
 
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
+
 /**
- * TODO
+ * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
+ * or load. See {@link Persist}
  *
  * @author Paul Bärnreuther
  * @param <T> type of object loaded by the persistor
