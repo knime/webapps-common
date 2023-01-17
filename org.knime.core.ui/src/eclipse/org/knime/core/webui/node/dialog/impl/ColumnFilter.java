@@ -54,8 +54,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
- * modes of {@link ColumnFilterMode}. For using this class in order to render a twinlist, one has to create a
- * subclass with a member "selected" with the 'columns' Schema annotation.
+ * modes of {@link ColumnFilterMode}.
  *
  * @author Paul Bärnreuther
  */
