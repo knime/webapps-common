@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.port.PortType;
 
 /**
@@ -63,6 +64,8 @@ public final class PortDescription {
 
     private final PortType m_type;
 
+    private final boolean m_configurable;
+
     /**
      * Constructor.
      *
@@ -71,9 +74,21 @@ public final class PortDescription {
      * @param description the description of the port
      */
     public PortDescription(final String name, final PortType type, final String description) {
+        this(name, type, description, false);
+    }
+
+    /**
+     * @param name the name of the port
+     * @param type the type of the port
+     * @param description the description of the port
+     * @param configurable whether the port is configurable (see {@link ConfigurableNodeFactory})
+     */
+    public PortDescription(final String name, final PortType type, final String description,
+        final boolean configurable) {
         m_name = name;
         m_description = description;
         m_type = type;
+        m_configurable = configurable;
     }
 
     /**
@@ -96,4 +111,13 @@ public final class PortDescription {
     public PortType getType() {
         return m_type;
     }
+
+    /**
+     * @return whether the port is configurable
+     * @see ConfigurableNodeFactory
+     */
+    public boolean isConfigurable() {
+        return m_configurable;
+    }
+
 }

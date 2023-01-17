@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -170,22 +171,8 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
 
         // create ports
         var ports = doc.createElement("ports");
-        for (int i = 0; i < inPortDescriptions.length; i++) {
-            var inPort = doc.createElement("inPort");
-            var portDesc = inPortDescriptions[i];
-            inPort.setAttribute("name", portDesc.getName());
-            inPort.setAttribute("index", Integer.toString(i));
-            inPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
-            ports.appendChild(inPort);
-        }
-        for (int i = 0; i < outPortDescriptions.length; i++) {
-            var outPort = doc.createElement("outPort");
-            var portDesc = outPortDescriptions[i];
-            outPort.setAttribute("name", portDesc.getName());
-            outPort.setAttribute("index", Integer.toString(i));
-            outPort.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
-            ports.appendChild(outPort);
-        }
+        addPorts(docBuilder, doc, ports, inPortDescriptions, pd -> pd.isConfigurable() ? "dynInPort" : "inPort");
+        addPorts(docBuilder, doc, ports, outPortDescriptions, pd -> pd.isConfigurable() ? "dynOutPort" : "outPort");
         node.appendChild(ports);
 
         // create view (if exists)
@@ -213,6 +200,24 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         } catch (XmlException e) {
             // should never happen
             throw new IllegalStateException("Problem creating node description", e);
+        }
+    }
+
+    private static void addPorts(final DocumentBuilder docBuilder, final Document doc, final Element ports,
+        final PortDescription[] portDescs, final Function<PortDescription, String> tagName) {
+        for (int i = 0; i < portDescs.length; i++) {
+            var portDesc = portDescs[i];
+            var port = doc.createElement(tagName.apply(portDesc));
+            port.setAttribute("name", portDesc.getName());
+            if (portDesc.isConfigurable()) {
+                port.setAttribute("insert-before", Integer.toString(i));
+                port.setAttribute("group-identifier", portDesc.getName());
+                port.setAttribute("configurable-via-menu", "false");
+            } else {
+                port.setAttribute("index", Integer.toString(i));
+            }
+            port.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
+            ports.appendChild(port);
         }
     }
 
