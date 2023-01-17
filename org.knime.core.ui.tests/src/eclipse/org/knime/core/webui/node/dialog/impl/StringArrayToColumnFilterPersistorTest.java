@@ -45,50 +45,62 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.Test;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 /**
- * Similar to {@link JsonBasedNodeSettingsPersistor} this field persistor uses JSON to persist.
+ * Tests JsonBasedNodeSettingsFieldPersistor.
  *
  * @author Paul Bärnreuther
  */
-public class JsonBasedNodeSettingsFieldPersistor<S extends DefaultNodeSettings>
-    extends NodeSettingsPersistorWithConfigKey<S> {
+class StringArrayToColumnFilterPersistorTest {
 
-    private final Class<S> m_settingsClass;
+    private static final String ROOT_KEY = "Test";
 
-    /**
-     * Constructor.
-     *
-     * @param settingsClass the settings class to persist
-     */
-    public JsonBasedNodeSettingsFieldPersistor(final Class<S> settingsClass) {
-        m_settingsClass = settingsClass;
+
+    private static final class StringArrayToColumnFilterPersistorSettings implements DefaultNodeSettings {
+
+        @Persist(customPersistor = StringArrayToColumnFilterPersistor.class)
+        ColumnFilter m_foo;
     }
 
-    @Override
-    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
-        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
-            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
-            // by the JSON
-            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
-        }
-        final var fieldSettings = nodeSettings.getNodeSettings(getConfigKey());
-        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
-        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(fieldSettings, node);
-        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+
+    @Test
+    void testLoadLegacy() throws InvalidSettingsException {
+        final var array = new String[] {"bar", "baz"};
+
+        final var savedSettings = new NodeSettings(ROOT_KEY);
+        savedSettings.addStringArray("foo", array);
+        final var persistor = new FieldBasedNodeSettingsPersistor<>(StringArrayToColumnFilterPersistorSettings.class);
+        final var loaded = persistor.load(savedSettings);
+
+        final var expected = new StringArrayToColumnFilterPersistorSettings();
+        expected.m_foo = new ColumnFilter(array);
+        assertResults(expected, loaded);
     }
 
-    @Override
-    public void save(final S obj, final NodeSettingsWO settings) {
-        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(obj);
-        var schemaNode = JsonFormsSchemaUtil.buildSchema(m_settingsClass);
-        final var fieldSettings = settings.addNodeSettings(getConfigKey());
-        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, fieldSettings);
+    @Test
+    void testSaveAndLoad() throws InvalidSettingsException {
+        final var array = new String[] {"bar", "baz"};
+
+        final var expected = new StringArrayToColumnFilterPersistorSettings();
+        expected.m_foo = new ColumnFilter(array);
+
+        final var persistor = new FieldBasedNodeSettingsPersistor<>(StringArrayToColumnFilterPersistorSettings.class);
+
+        final var savedSettings = new NodeSettings(ROOT_KEY);
+        persistor.save(expected, savedSettings);
+        var loaded = persistor.load(savedSettings);
+        assertResults(expected, loaded);
     }
+
+    private static void assertResults(final StringArrayToColumnFilterPersistorSettings expected, final StringArrayToColumnFilterPersistorSettings loaded) {
+        assertArrayEquals(expected.m_foo.m_manualFilter.m_manuallySelected, loaded.m_foo.m_manualFilter.m_manuallySelected, "The loaded settings are not as expected");
+    }
+
 }

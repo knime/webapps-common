@@ -45,50 +45,44 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.Test;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 /**
- * Similar to {@link JsonBasedNodeSettingsPersistor} this field persistor uses JSON to persist.
+ * Tests JsonBasedNodeSettingsFieldPersistor.
  *
  * @author Paul Bärnreuther
  */
-public class JsonBasedNodeSettingsFieldPersistor<S extends DefaultNodeSettings>
-    extends NodeSettingsPersistorWithConfigKey<S> {
+class JsonBasedNodeSettingsFieldPersistorTest {
 
-    private final Class<S> m_settingsClass;
+    private static final String ROOT_KEY = "Test";
 
-    /**
-     * Constructor.
-     *
-     * @param settingsClass the settings class to persist
-     */
-    public JsonBasedNodeSettingsFieldPersistor(final Class<S> settingsClass) {
-        m_settingsClass = settingsClass;
+    private static final class NodeSettingsField implements DefaultNodeSettings {
+        String m_bar;
     }
 
-    @Override
-    public S load(final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
-        if (nodeSettings.isLeaf() && m_settingsClass.getDeclaredFields().length > 0) {
-            // unfortunately Jackson does not allow to fail if some field of the deserialized type is not provided
-            // by the JSON
-            throw new InvalidSettingsException("No settings available. Most likely an implementation error.");
-        }
-        final var fieldSettings = nodeSettings.getNodeSettings(getConfigKey());
-        final var node = JsonFormsDataUtil.getMapper().createObjectNode();
-        JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(fieldSettings, node);
-        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+    private static final class JsonBasedNodeSettingsFieldPersistorSettings implements DefaultNodeSettings {
+        @Persist(customPersistor = JsonBasedNodeSettingsFieldPersistor.class)
+        NodeSettingsField m_foo;
     }
 
-    @Override
-    public void save(final S obj, final NodeSettingsWO settings) {
-        var objectNode = (ObjectNode)JsonFormsDataUtil.toJsonData(obj);
-        var schemaNode = JsonFormsSchemaUtil.buildSchema(m_settingsClass);
-        final var fieldSettings = settings.addNodeSettings(getConfigKey());
-        JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(objectNode, schemaNode, fieldSettings);
+    @Test
+    void testSaveAndLoad() throws InvalidSettingsException {
+        final var expected = new JsonBasedNodeSettingsFieldPersistorSettings();
+        expected.m_foo = new NodeSettingsField();
+        expected.m_foo.m_bar = "baz";
+
+        final var persistor = new FieldBasedNodeSettingsPersistor<>(JsonBasedNodeSettingsFieldPersistorSettings.class);
+
+        final var savedSettings = new NodeSettings(ROOT_KEY);
+        persistor.save(expected, savedSettings);
+        var loaded = persistor.load(savedSettings);
+        assertEquals(expected.m_foo.m_bar, loaded.m_foo.m_bar, "The loaded settings are not as expected");
     }
+
 }
