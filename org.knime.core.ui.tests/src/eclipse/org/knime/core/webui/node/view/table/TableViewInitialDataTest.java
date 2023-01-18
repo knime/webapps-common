@@ -125,7 +125,7 @@ class TableViewInitialDataTest {
 
     @Test
     void testGetSettings() {
-        final var settings = new TableViewViewSettings();
+        final var settings = new TableViewViewSettings(table.getSpec());
         final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
         assertThat(initialData.getSettings()).isEqualTo(initialData.getSettings());
     }
