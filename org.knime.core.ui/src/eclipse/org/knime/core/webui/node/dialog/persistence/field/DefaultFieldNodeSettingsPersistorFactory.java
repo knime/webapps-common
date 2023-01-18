@@ -97,6 +97,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
+    @SuppressWarnings("java:S1166") // we accept that the illegalArgumentException is not thrown
     public static <T> NodeSettingsPersistor<T> createOptionalPersistor(final Class<T> fieldType,
         final String configKey) {
         var impl = IMPL_OPT_MAP.get(fieldType);
@@ -177,6 +178,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
     /**
      * @author Paul Bärnreuther
      */
+    @SuppressWarnings("java:S3878") // we accept empty array as arguments
     private enum OptionalPersistorImpl implements FieldPersistor {
             INT(int.class, (s, k) -> s.getInt(k, 0), (v, s, k) -> s.addInt(k, v)),
             DOUBLE(double.class, (s, k) -> s.getDouble(k, 0d), (v, s, k) -> s.addDouble(k, v)),
@@ -194,7 +196,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
 
         private FieldSaver<?> m_saver;
 
-        private <T> OptionalPersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
+        <T> OptionalPersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
             m_type = type;
             m_loader = loader;
             m_saver = saver;

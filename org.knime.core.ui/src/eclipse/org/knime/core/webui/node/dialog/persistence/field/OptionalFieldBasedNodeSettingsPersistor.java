@@ -73,14 +73,14 @@ public final class OptionalFieldBasedNodeSettingsPersistor<S extends DefaultNode
         m_persistors = createPersistors(settingsClass);
     }
 
-    protected static Map<String, NodeSettingsPersistor<?>>
+    private static Map<String, NodeSettingsPersistor<?>>
         createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
         return getAllPersistableFields(settingsClass)//
             .collect(toMap(Field::getName, OptionalFieldBasedNodeSettingsPersistor::createPersistorForField,
                 (a, b) -> a, LinkedHashMap::new));
     }
 
-    protected static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+    private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
         var persistence = field.getAnnotation(Persist.class);
         if (persistence != null) {
             return createPersistorFromPersistenceAnnotation(persistence, field);

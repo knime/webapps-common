@@ -92,8 +92,7 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
         m_settingsClass = settingsClass;
     }
 
-    @SuppressWarnings("javadoc")
-    protected static Map<String, NodeSettingsPersistor<?>>
+    private static Map<String, NodeSettingsPersistor<?>>
         createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
         return getAllPersistableFields(settingsClass)//
             .collect(toMap(Field::getName, FieldBasedNodeSettingsPersistor::createPersistorForField, (a, b) -> a,
@@ -113,8 +112,7 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
         return !Modifier.isStatic(field.getModifiers());
     }
 
-    @SuppressWarnings("javadoc")
-    protected static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+    private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
         var persistence = field.getAnnotation(Persist.class);
         if (persistence != null) {
             return createPersistorFromPersistenceAnnotation(persistence, field);
