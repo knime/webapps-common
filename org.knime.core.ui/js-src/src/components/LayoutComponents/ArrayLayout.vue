@@ -32,7 +32,7 @@ const ArrayLayout = defineComponent({
     },
     computed: {
         showSortControls() {
-            return this.control.uischema.options.details.showSortButtons;
+            return this.control.uischema.options.showSortButtons;
         }
     },
     methods: {
