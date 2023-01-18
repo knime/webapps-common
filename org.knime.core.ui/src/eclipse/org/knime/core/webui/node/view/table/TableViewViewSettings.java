@@ -54,6 +54,8 @@ import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.impl.Schema;
 import org.knime.core.webui.node.dialog.impl.StringArrayToColumnFilterPersistor;
+import org.knime.core.webui.node.dialog.persistence.Persistor;
+import org.knime.core.webui.node.dialog.persistence.field.OptionalFieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -62,6 +64,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@Persistor(OptionalFieldBasedNodeSettingsPersistor.class)
 public class TableViewViewSettings implements DefaultNodeSettings {
 
     static final class ColumnChoicesProvider implements ChoicesProvider {

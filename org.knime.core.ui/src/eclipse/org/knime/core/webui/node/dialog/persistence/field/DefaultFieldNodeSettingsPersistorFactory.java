@@ -69,6 +69,9 @@ final class DefaultFieldNodeSettingsPersistorFactory {
     private static final Map<Class<?>, PersistorImpl> IMPL_MAP = Stream.of(PersistorImpl.values())//
         .collect(toMap(PersistorImpl::getFieldType, Function.identity()));
 
+    private static final Map<Class<?>, OptionalPersistorImpl> IMPL_OPT_MAP = Stream.of(OptionalPersistorImpl.values())//
+        .collect(toMap(OptionalPersistorImpl::getFieldType, Function.identity()));
+
     /**
      * Creates a persistor for the provided type that uses the configKey to store and retrieve the value.
      *
@@ -80,6 +83,32 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      */
     public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         var impl = IMPL_MAP.get(fieldType);
+        return createOptionalPersistorFromImpl(fieldType, configKey, impl);
+    }
+
+    /**
+     * Creates a persistor for the provided type that uses the configKey to store and retrieve the value. For types in
+     * {@link OptionalPersistorImpl} the returned persistor uses a default value when no field with the given configKey
+     * is present during loading.
+     *
+     * @param <T> the type of field
+     * @param fieldType the type of field the created persistor should persist
+     * @param configKey the key to use for storing and retrieving the value to and from the NodeSettings
+     * @return a new persistor
+     * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
+     */
+    public static <T> NodeSettingsPersistor<T> createOptionalPersistor(final Class<T> fieldType,
+        final String configKey) {
+        var impl = IMPL_OPT_MAP.get(fieldType);
+        try {
+            return createOptionalPersistorFromImpl(fieldType, configKey, impl);
+        } catch (IllegalArgumentException ex) {
+            return createPersistor(fieldType, configKey);
+        }
+    }
+
+    private static <T> NodeSettingsPersistor<T> createOptionalPersistorFromImpl(final Class<T> fieldType,
+        final String configKey, final FieldPersistor impl) {
         if (impl != null) {
             return new FieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
@@ -145,9 +174,53 @@ final class DefaultFieldNodeSettingsPersistorFactory {
 
     }
 
+    /**
+     * @author Paul Bärnreuther
+     */
+    private enum OptionalPersistorImpl implements FieldPersistor {
+            INT(int.class, (s, k) -> s.getInt(k, 0), (v, s, k) -> s.addInt(k, v)),
+            DOUBLE(double.class, (s, k) -> s.getDouble(k, 0d), (v, s, k) -> s.addDouble(k, v)),
+            LONG(long.class, (s, k) -> s.getLong(k, 0l), (v, s, k) -> s.addLong(k, v)),
+            STRING(String.class, (s, k) -> s.getString(k, ""), (v, s, k) -> s.addString(k, v)),
+            BOOLEAN(boolean.class, (s, k) -> s.getBoolean(k, false), (v, s, k) -> s.addBoolean(k, v)),
+            DOUBLE_ARRAY(double[].class, (s, k) -> s.getDoubleArray(k, new double[0]),
+                (v, s, k) -> s.addDoubleArray(k, v)),
+            STRING_ARRAY(String[].class, (s, k) -> s.getStringArray(k, new String[0]),
+                (v, s, k) -> s.addStringArray(k, v));
+
+        private Class<?> m_type;
+
+        private FieldLoader<?> m_loader;
+
+        private FieldSaver<?> m_saver;
+
+        private <T> OptionalPersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
+            m_type = type;
+            m_loader = loader;
+            m_saver = saver;
+        }
+
+        Class<?> getFieldType() {
+            return m_type;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
+            return (T)m_loader.load(settings, configKey);
+        }
+
+        @Override
+        public <T> void save(final T obj, final NodeSettingsWO settings, final String configKey) {
+            @SuppressWarnings("unchecked") // type-safety is ensured via the constructor
+            var saver = (FieldSaver<T>)m_saver;
+            saver.save(obj, settings, configKey);
+        }
+
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final String configKey,
-        final Class<T> fieldType) {
+    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final String configKey, final Class<T> fieldType) {
         return new EnumFieldPersistor<>(configKey, (Class)fieldType);
     }
 
