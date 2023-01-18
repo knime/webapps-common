@@ -211,7 +211,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
     }
 
     private static List<Field> getAllFields(final Class<?> clazz) {
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
         for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
             fields.addAll(Arrays.asList(c.getDeclaredFields()));
         }
@@ -223,8 +223,7 @@ public final class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings
         for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
             try {
                 return c.getDeclaredField(key);
-            } catch (NoSuchFieldException ex) {
-                continue;
+            } catch (NoSuchFieldException ex) { //NOSONAR
             } catch (SecurityException ex) {
                 throw ex;
             }
