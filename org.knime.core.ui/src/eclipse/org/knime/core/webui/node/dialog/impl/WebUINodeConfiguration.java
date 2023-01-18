@@ -49,11 +49,14 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.CheckUtils;
 
 /**
  * Configuration for a {@link WebUINodeFactory WebUI node}.
@@ -83,7 +86,9 @@ public final class WebUINodeConfiguration {
 
     private final PortDescription[] m_outPortDescriptions;
 
-    private WebUINodeConfiguration(final RequirePorts builder) {
+    private final String[] m_keywords;
+
+    private WebUINodeConfiguration(final NodeOptionals builder) {
         m_name = builder.m_name;
         m_icon = builder.m_icon;
         m_shortDescription = builder.m_shortDescription;
@@ -91,6 +96,7 @@ public final class WebUINodeConfiguration {
         m_modelSettingsClass = builder.m_modelSettingsClass;
         m_inPortDescriptions = builder.m_inputPortDescriptions.toArray(PortDescription[]::new);
         m_outPortDescriptions = builder.m_outputPortDescriptions.toArray(PortDescription[]::new);
+        m_keywords = builder.m_keywords.toArray(String[]::new);
     }
 
     String getName() {
@@ -133,6 +139,10 @@ public final class WebUINodeConfiguration {
                 .toArray(PortType[]::new);
     }
 
+    String[] getKeywords() {
+        return m_keywords;
+    }
+
     /**
      * A builder for assembly of {@link WebUINodeConfiguration WebUINodeConfigurations}
      */
@@ -147,7 +157,7 @@ public final class WebUINodeConfiguration {
          */
         @SuppressWarnings("static-method")
         public RequireIcon name(final String name) {
-            return icon -> shortDescription -> fullDescription -> modelSettingsClass -> new RequirePorts(name, icon,
+            return icon -> shortDescription -> fullDescription -> modelSettingsClass -> new NodeOptionals(name, icon,
                 shortDescription, fullDescription, modelSettingsClass);
         }
     }
@@ -197,13 +207,13 @@ public final class WebUINodeConfiguration {
          * @param modelSettingsClass the type of the model settings
          * @return the subsequent build stage
          */
-        RequirePorts modelSettingsClass(final Class<? extends DefaultNodeSettings> modelSettingsClass);
+        NodeOptionals modelSettingsClass(final Class<? extends DefaultNodeSettings> modelSettingsClass);
     }
 
     /**
-     * The (final) build stage in which the ports are defined.
+     * The (final) build stage in which the ports and other "optional" configurations are defined.
      */
-    public static final class RequirePorts {
+    public static final class NodeOptionals {
 
         private final String m_name;
 
@@ -219,7 +229,9 @@ public final class WebUINodeConfiguration {
 
         private final List<PortDescription> m_outputPortDescriptions = new ArrayList<>();
 
-        RequirePorts(final String name, final String icon, final String shortDescription, final String fullDescription,
+        private final List<String> m_keywords = new ArrayList<>();
+
+        NodeOptionals(final String name, final String icon, final String shortDescription, final String fullDescription,
             final Class<? extends DefaultNodeSettings> modelSettingsClass) {
             m_name = name;
             m_icon = icon;
@@ -235,7 +247,7 @@ public final class WebUINodeConfiguration {
          * @param description the description of the node's next input table
          * @return this build stage
          */
-        public RequirePorts addInputTable(final String name, final String description) {
+        public NodeOptionals addInputTable(final String name, final String description) {
             return addInputPort(name, BufferedDataTable.TYPE, description);
         }
 
@@ -247,7 +259,7 @@ public final class WebUINodeConfiguration {
          * @param description the description of the node's next input port
          * @return this build stage
          */
-        public RequirePorts addInputPort(final String name, final PortType type, final String description) {
+        public NodeOptionals addInputPort(final String name, final PortType type, final String description) {
             m_inputPortDescriptions.add(new PortDescription(name, type, description));
             return this;
         }
@@ -259,7 +271,7 @@ public final class WebUINodeConfiguration {
          * @param description the description of the node's next output table
          * @return this build stage
          */
-        public RequirePorts addOutputTable(final String name, final String description) {
+        public NodeOptionals addOutputTable(final String name, final String description) {
             return addOutputPort(name, BufferedDataTable.TYPE, description);
         }
 
@@ -271,8 +283,21 @@ public final class WebUINodeConfiguration {
          * @param description the description of the node's next output port
          * @return this build stage
          */
-        public RequirePorts addOutputPort(final String name, final PortType type, final String description) {
+        public NodeOptionals addOutputPort(final String name, final PortType type, final String description) {
             m_outputPortDescriptions.add(new PortDescription(name, type, description));
+            return this;
+        }
+
+        /**
+         * Adds a list of keywords that are used/index for searching nodes. The list itself is not visible to the user.
+         *
+         * @param keywords List of keywords.
+         * @return this build stage
+         */
+        public NodeOptionals keywords(final String... keywords) {
+            CheckUtils.checkArgumentNotNull(keywords);
+            CheckUtils.checkArgument(ArrayUtils.contains(keywords, null), "keywords list must not contain null");
+            m_keywords.addAll(Arrays.asList(keywords));
             return this;
         }
 

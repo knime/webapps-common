@@ -98,7 +98,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         return createNodeDescription(m_configuration.getName(), m_configuration.getIcon(),
             m_configuration.getInPortDescriptions(), m_configuration.getOutPortDescriptions(),
             m_configuration.getShortDescription(), m_configuration.getFullDescription(),
-            m_configuration.getModelSettingsClass(), null, null, null);
+            m_configuration.getModelSettingsClass(), null, null, null, null);
     }
 
     /**
@@ -112,6 +112,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
      * @param viewSettingsClass the type of the view settings, or null, if the node has no view settings
      * @param viewDescription the view description, or null, if the node has no view
      * @param type the type of the node, or null, if it should be determined automatically
+     * @param keywords the keywords for serach, or null.
      * @return a description for this node
      */
     public static NodeDescription createNodeDescription(final String name, final String icon, // NOSONAR
@@ -119,7 +120,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         final String shortDescription, final String fullDescription,
         final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass, final String viewDescription,
-        final NodeType type) {
+        final NodeType type, final String[] keywords) {
         var fac = NodeDescription.getDocumentBuilderFactory();
         DocumentBuilder docBuilder;
         try {
@@ -196,6 +197,14 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             view.appendChild(parseDocumentFragment(viewDescription, docBuilder, doc));
             views.appendChild(view);
             node.appendChild(views);
+        }
+
+        if (keywords != null) {
+            final var keywordsElement = doc.createElement("keywords");
+            for (String keyword : keywords) {
+                final var itemElement = keywordsElement.appendChild(doc.createElement("item"));
+                itemElement.setTextContent(keyword);
+            }
         }
 
         doc.appendChild(node);
