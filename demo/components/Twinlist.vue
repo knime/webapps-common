@@ -226,6 +226,24 @@ export default {
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             mode-label="Selection mode"
+            initial-mode="regex"
+            initial-pattern="^[ab].*[357]$|\$"
+            :initial-selected-types="selectedTypes"
+            :possible-values="demoValuesWithSpecialChars"
+          />
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            :size="7"
+            show-mode
+            disabled
+            initial-case-sensitive-search
+            left-label="Select from the 7 visible items (size)"
+            right-label="The selected stuff"
+            mode-label="Selection mode"
+            initial-mode="regex"
             initial-pattern="^[ab].*[357]$|\$"
             :initial-selected-types="selectedTypes"
             :possible-values="demoValuesWithSpecialChars"

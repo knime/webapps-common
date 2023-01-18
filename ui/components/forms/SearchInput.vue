@@ -103,13 +103,14 @@ export default {
     :autofocus="autofocus"
     :disabled="disabled"
     class="search-input"
+    :class="{disabled}"
     autocomplete="off"
     role="searchbox"
     @focus="$emit('focus', $event)"
     @input="$emit('input', $event)"
   >
     <template #icon>
-      <LensIcon />
+      <LensIcon v-if="!disabled" />
     </template>
     <template #iconRight>
       <FunctionButton
@@ -144,6 +145,10 @@ export default {
   &:has(input:placeholder-shown) .clear-search {
     visibility: hidden;
   }
+}
+
+.disabled {
+  opacity: 0.5;
 }
 
 </style>

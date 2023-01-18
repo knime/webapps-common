@@ -496,7 +496,10 @@ export default {
 </script>
 
 <template>
-  <div class="twinlist">
+  <div
+    class="twinlist"
+    :class="{disabled}"
+  >
     <Label
       v-if="showMode"
       v-slot="{ labelForId }"
@@ -594,7 +597,7 @@ export default {
         </div>
         <div
           ref="moveLeft"
-          :class="{ disabled: moveLeftButtonDisabled || disselectionDisabledabled }"
+          :class="{ disabled: moveLeftButtonDisabled || selectionDisabled }"
           role="button"
           tabindex="0"
           @click="onMoveLeftButtonClick"
