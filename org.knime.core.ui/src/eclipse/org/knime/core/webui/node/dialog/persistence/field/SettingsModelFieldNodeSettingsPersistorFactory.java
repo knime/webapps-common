@@ -54,6 +54,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
+import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
@@ -72,8 +73,7 @@ import com.google.common.collect.Table;
  */
 final class SettingsModelFieldNodeSettingsPersistorFactory {
 
-    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> IMPL_TABLE =
-        createImplTable();
+    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> IMPL_TABLE = createImplTable();
 
     private static Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> createImplTable() {
         Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> table = HashBasedTable.create();
@@ -106,8 +106,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final Class<T> fieldType,
-        final String configKey) {
+    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final Class<T> fieldType, final String configKey) {
         return new EnumSettingsModelStringPersistor<>((Class)fieldType, configKey);
     }
 
@@ -123,7 +122,11 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldPersistor::loadBoolean,
                 SettingsModelFieldPersistor::saveBoolean),
             COLUMN_FILTER2(String[].class, SettingsModelColumnFilter2.class,
-                SettingsModelFieldPersistor::loadColumnFilter2, SettingsModelFieldPersistor::saveColumnFilter2);
+                SettingsModelFieldPersistor::loadColumnFilter2, SettingsModelFieldPersistor::saveColumnFilter2),
+            COLUMN_NAME(String.class, SettingsModelColumnName.class, SettingsModelFieldPersistor::loadColumnName,
+                SettingsModelFieldPersistor::saveColumnName);
+
+        private static final String ROW_KEYS_PLACEHOLDER = "<row-keys>";
 
         private final Class<?> m_fieldType;
 
@@ -221,6 +224,23 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             model.saveConfiguration(nodeSettings);
         }
 
+        private static String loadColumnName(final NodeSettingsRO nodeSettings, final String configKey)
+            throws InvalidSettingsException {
+            final var sm = load(new SettingsModelColumnName(configKey, ""), nodeSettings);
+            return sm.useRowID() ? ROW_KEYS_PLACEHOLDER : sm.getColumnName();
+        }
+
+        private static void saveColumnName(final String column, final NodeSettingsWO nodeSettings,
+            final String configKey) {
+            var sm = new SettingsModelColumnName(configKey, "");
+            if (ROW_KEYS_PLACEHOLDER.equals(column)) {
+                sm.setSelection("", true);
+            } else {
+                sm.setSelection(column, false);
+            }
+            sm.saveSettingsTo(nodeSettings);
+        }
+
         private static <S extends SettingsModel> S load(final S model, final NodeSettingsRO settings)
             throws InvalidSettingsException {
             model.loadSettingsFrom(settings);
@@ -229,8 +249,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
     }
 
-    private static final class EnumSettingsModelStringPersistor<E extends Enum<E>>
-        implements NodeSettingsPersistor<E> {
+    private static final class EnumSettingsModelStringPersistor<E extends Enum<E>> implements NodeSettingsPersistor<E> {
 
         private final Class<E> m_enumType;
 
