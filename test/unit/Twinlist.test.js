@@ -92,6 +92,24 @@ describe('Twinlist.vue', () => {
         wrapper.setProps({ isValid: true });
         expect(left.vm.isValid).toBe(true);
     });
+    
+    it('emits selection on mounted', () => {
+        let initialSelection = ['A', 'B', 'C'];
+        let propsData = {
+            possibleValues: [{
+                id: 'test1',
+                text: 'test1'
+            }],
+            initialManuallySelected: initialSelection,
+            leftLabel: 'Choose',
+            rightLabel: 'The value',
+            isValid: false
+        };
+        const wrapper = mount(Twinlist, {
+            propsData
+        });
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(initialSelection);
+    });
 
     it('has invalid state if invalid values are selected', () => {
         let propsData = {
@@ -209,7 +227,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             left.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0]).toStrictEqual([['test2', 'test3'], true]);
+            expect(wrapper.emitted().input[1]).toStrictEqual([['test2', 'test3'], true]);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -225,7 +243,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             left.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -242,7 +260,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             right.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1]
             ]);
@@ -259,7 +277,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             right.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1]
             ]);
@@ -283,7 +301,7 @@ describe('Twinlist.vue', () => {
         left.vm.setSelected(['test2', 'test3']);
         left.vm.$emit('keyArrowRight');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+        expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
         expect(right.vm.$props.possibleValues).toStrictEqual([
             propsData.possibleValues[1], propsData.possibleValues[2]
         ]);
@@ -306,7 +324,7 @@ describe('Twinlist.vue', () => {
         right.vm.setSelected(['test2', 'test3']);
         right.vm.$emit('keyArrowLeft');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+        expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
         expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
     });
 
@@ -328,7 +346,7 @@ describe('Twinlist.vue', () => {
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -351,7 +369,7 @@ describe('Twinlist.vue', () => {
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
@@ -370,7 +388,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
@@ -410,7 +428,7 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
@@ -431,7 +449,7 @@ describe('Twinlist.vue', () => {
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -505,7 +523,7 @@ describe('Twinlist.vue', () => {
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
@@ -524,7 +542,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
@@ -543,7 +561,7 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             wrapper.find({ ref: 'moveAllLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
     });
@@ -702,7 +720,7 @@ describe('Twinlist.vue', () => {
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
 
-            expect(wrapper.emitted().input).not.toBeDefined();
+            expect(wrapper.emitted().input[1]).not.toBeDefined();
         });
 
         it('moves only all filtered values to right on all button click', async () => {
@@ -723,7 +741,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
 
             expect(left.props('possibleValues').length).toBe(0);
 
@@ -908,7 +926,7 @@ describe('Twinlist.vue', () => {
                 wrapper.find(SearchInput).vm.$emit('input', '.*1');
                 await wrapper.vm.$nextTick();
                 expect(wrapper.emitted().patternInput[0][0]).toBe('.*1');
-                expect(wrapper.emitted().input[0]).toStrictEqual([['test1'], false]);
+                expect(wrapper.emitted().input[1]).toStrictEqual([['test1'], false]);
                 
                 let left = wrapper.find({ ref: 'left' });
                 let right = wrapper.find({ ref: 'right' });
@@ -929,7 +947,7 @@ describe('Twinlist.vue', () => {
                 wrapper.find(SearchInput).vm.$emit('input', 't*');
                 await wrapper.vm.$nextTick();
                 expect(wrapper.emitted().patternInput[0][0]).toBe('t*');
-                expect(wrapper.emitted().input[0]).toStrictEqual([['test1', 'test2', 'test3'], false]);
+                expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test2', 'test3'], false]);
                 
                 let left = wrapper.find({ ref: 'left' });
                 let right = wrapper.find({ ref: 'right' });
@@ -951,7 +969,7 @@ describe('Twinlist.vue', () => {
                 let right = wrapper.find({ ref: 'right' });
                 left.vm.$emit('doubleClickOnItem', 'test2', 1);
                 await wrapper.vm.$nextTick();
-                expect(wrapper.emitted().input).not.toBeDefined();
+                expect(wrapper.emitted().input[1]).not.toBeDefined();
                 expect(right.vm.$props.possibleValues.length).toBe(0);
             });
         });
@@ -1001,7 +1019,7 @@ describe('Twinlist.vue', () => {
             wrapper.find(Checkboxes).vm.$emit('input', ['String']);
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['String']);
-            expect(wrapper.emitted().input[0]).toStrictEqual([['test1', 'test3'], false]);
+            expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test3'], false]);
 
             
             let left = wrapper.find({ ref: 'left' });
@@ -1024,7 +1042,7 @@ describe('Twinlist.vue', () => {
             let right = wrapper.find({ ref: 'right' });
             left.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input).not.toBeDefined();
+            expect(wrapper.emitted().input[1]).not.toBeDefined();
             expect(right.vm.$props.possibleValues.length).toBe(0);
         });
     });

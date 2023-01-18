@@ -71,7 +71,15 @@ export default {
     data() {
         return {
             codeExample,
-            selectedTypes: ['Type1', 'Type3']
+            selected1: [],
+            selected2: [],
+            selected3: [],
+            manuallySelected3: [],
+            isCaseSensitiveSearch3: true,
+            isInverted3: false,
+            mode3: 'regex',
+            pattern3: '^[ab].*[357]$|\$',
+            selectedTypes3: ['Type1', 'Type3']
         };
     },
     computed: {
@@ -81,6 +89,10 @@ export default {
         demoValues() {
             return [{
                 id: 'foo',
+                text: 'foo',
+                type: 'Type1'
+            }, {
+                id: 'Foo',
                 text: 'Foo',
                 type: 'Type1'
             }, {
@@ -166,9 +178,11 @@ export default {
         <div class="grid-item-6">
           <Twinlist
             :size="7"
+            :initial-manually-selected="selected1"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             :possible-values="demoValues"
+            @input="(event) => selected1 = event"
           />
         </div>
       </div>
@@ -177,11 +191,15 @@ export default {
         <div class="grid-item-6">
           <Twinlist
             :size="7"
+            :initial-manually-selected="selected1"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             :possible-values="demoValues"
             disabled
           />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected1 }}
         </div>
       </div>
       <br>
@@ -199,13 +217,18 @@ export default {
           <Twinlist
             :size="7"
             show-search
+            :initial-manually-selected="selected2"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             search-label="Search items"
             search-placeholder="Placeholder"
             initial-search-term="bar"
             :possible-values="demoValues"
+            @input="(event) => selected2 = event"
           />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected2 }}
         </div>
       </div>
       <div class="grid-container">
@@ -222,32 +245,50 @@ export default {
           <Twinlist
             :size="7"
             show-mode
-            initial-case-sensitive-search
+            :initial-case-sensitive-search="isCaseSensitiveSearch3"
+            :initial-selected-types="selectedTypes3"
+            :initial-pattern="pattern3"
+            :initial-mode="mode3"
+            :initial-inverse-search="isInverted3"
+            :initial-manually-selected="manuallySelected3"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             mode-label="Selection mode"
-            initial-mode="regex"
-            initial-pattern="^[ab].*[357]$|\$"
-            :initial-selected-types="selectedTypes"
             :possible-values="demoValuesWithSpecialChars"
+            @input="(event, isManual) => {
+              selected3 = event
+              if(isManual) {
+                manuallySelected3 = event
+              }
+            }"
+            @patternInput="(event) => pattern3 = event"
+            @modeInput="(event) => mode3 = event"
+            @typesInput="(event) => selectedTypes3 = event"
+            @inverseSearchInput="(event) => isInverted3 = event"
+            @caseSensitiveSearchInput="(event) => isCaseSensitiveSearch3 = event"
           />
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
+            disabled
             :size="7"
             show-mode
-            disabled
-            initial-case-sensitive-search
+            :initial-case-sensitive-search="isCaseSensitiveSearch3"
+            :initial-selected-types="selectedTypes3"
+            :initial-pattern="pattern3"
+            :initial-mode="mode3"
+            :initial-inverse-search="isInverted3"
+            :initial-manually-selected="manuallySelected3"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
             mode-label="Selection mode"
-            initial-mode="regex"
-            initial-pattern="^[ab].*[357]$|\$"
-            :initial-selected-types="selectedTypes"
             :possible-values="demoValuesWithSpecialChars"
           />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected3 }}
         </div>
       </div>
     </section>

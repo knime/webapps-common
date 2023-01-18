@@ -357,11 +357,17 @@ export default {
         },
         value(newVal, oldVal) {
             if (newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
-                this.$emit('input', newVal, this.mode === 'manual');
+                this.emitSelectedValues();
             }
         }
     },
+    mounted() {
+        this.emitSelectedValues();
+    },
     methods: {
+        emitSelectedValues() {
+            this.$emit('input', this.value, this.mode === 'manual');
+        },
         generateInvalidItem(id) {
             return { id, text: `(MISSING) ${id}`, invalid: true };
         },
