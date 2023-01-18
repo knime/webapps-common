@@ -182,7 +182,7 @@ describe('ArrayLayout.vue', () => {
         { button: 'move down button', position: 'the last', itemNum: 2, moveUpDisabled: false, moveDownDisabled: true }
     ])('disables $button for $position item when showSortButtons is true',
         async ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
-            defaultPropsData.control.uischema.options.details.showSortButtons = true;
+            defaultPropsData.control.uischema.options.showSortButtons = true;
             wrapper = await mountJsonFormsComponent(ArrayLayout, defaultPropsData);
             const itemControls = wrapper.findAll('.item-controls');
             const itemControlsButtons = itemControls.at(itemNum).findAllComponents(FunctionButton);
