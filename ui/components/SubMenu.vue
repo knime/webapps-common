@@ -70,7 +70,10 @@ export default {
         },
         /**
          * Teleport the popover to the document body.
-         * This can be used in order to be able to display the popover outside a containing element with hidden or scroll overflow.
+         * This can be used in order to be able to display the popover outside a containing block with hidden or
+         * scroll overflow
+         * (see also https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block, e.g. when a parent container
+         * has a translate css styling).
          * Whenever the menu is expanded, a callback which closes it again is emitted as the event 'toggle'.
          */
         teleportToBody: {

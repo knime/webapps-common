@@ -123,7 +123,8 @@ export default {
             SubMenu,
             subMenuItems,
             codeExampleStandalone,
-            code
+            code,
+            teleport: true
         };
     },
     computed: {
@@ -207,6 +208,26 @@ export default {
               <MenuIcon class="open-icon" />
             </SubMenu>
           </div>
+
+          <div class="scroll-container">
+            <div
+              class="card"
+              :style="{transform: 'translateY(0px)'}"
+            >
+              <input
+                v-model="teleport"
+                type="checkbox"
+              >
+              <span class="menu-name">with{{ teleport ? '' : 'out' }} teleport</span>
+              <SubMenu
+                :teleport-to-body="teleport"
+                :items="subMenuItemsWithSeparator"
+                button-title="Open my submenu"
+              >
+                <MenuIcon class="open-icon" />
+              </SubMenu>
+            </div>
+          </div>
         </div>
         <CodeExample summary="Show usage example">{{ codeExampleStandalone }}</CodeExample>
         <CodeExample summary="Show SubMenu.vue source code">{{ code }}</CodeExample>
@@ -259,5 +280,11 @@ h4 {
     height: 100%;
     border-radius: 0;
   }
+}
+
+.scroll-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 50px;
 }
 </style>
