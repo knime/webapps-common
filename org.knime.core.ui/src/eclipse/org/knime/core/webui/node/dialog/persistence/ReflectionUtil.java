@@ -44,61 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Jan 19, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
 package org.knime.core.webui.node.dialog.persistence;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
- * Implementing classes save objects to and load objects from NodeSettings.</br>
- * Custom implementations must be immutable and provide either an empty or a constructor that accepts the {@link Class}
- * of the persisted object as input.
+ * Contains utility functions for dealing with reflection.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <T> type of object loaded by the persistor
  */
-public interface NodeSettingsPersistor<T> {
+public final class ReflectionUtil {
 
-    /**
-     * Loads the object from the provided settings.
-     *
-     * @param settings to load from
-     * @return the loaded object
-     * @throws InvalidSettingsException if the settings are invalid
-     */
-    T load(NodeSettingsRO settings) throws InvalidSettingsException;
+    private ReflectionUtil() {
 
-    /**
-     * Saves the provided object into the settings.
-     *
-     * @param obj to save
-     * @param settings to save into
-     */
-    void save(T obj, NodeSettingsWO settings);
-
-    /**
-     * Creates a new instance from the provided NodeSettingsPersistor class by calling its empty constructor.
-     *
-     * @param <S> the type of object to persist
-     * @param <P> the type of persistor to instantiate
-     * @param persistorClass the class of NodeSettingsPersistor
-     * @param persistedObjectClass
-     * @return a new instance of the provided class
-     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
-     *             raises an exception
-     */
-    static <S, P extends NodeSettingsPersistor<S>> P createInstance(final Class<P> persistorClass,
-        final Class<S> persistedObjectClass) {
-
-        return ReflectionUtil.createInstance(persistorClass, persistedObjectClass)
-                .orElseGet(() -> ReflectionUtil.createInstance(persistorClass)
-                    .orElseThrow(() -> new IllegalArgumentException(String.format(
-                    "The provided persistor class '%s' provides neither a constructor accepting the persisted object "
-                        + "class nor an empty constructor.")
-                )));
     }
 
+    /**
+     * Creates an instance of the provided class by calling the constructor that has the provided parameters.
+     *
+     * @param <T> type to instantiate
+     * @param clazz class to instantiate
+     * @param parameters the parameters of the constructor to call
+     * @return an Optional of the clazz if there is a constructor with the provided parameters or
+     *         {@link Optional#empty()} if no such constructor exists
+     */
+    public static <T> Optional<T> createInstance(final Class<T> clazz, final Object... parameters) {
+        return getConstructor(clazz, Stream.of(parameters).map(Object::getClass).toArray(Class<?>[]::new))//
+            .map(c -> createInstance(c, parameters));
+    }
+
+    static <T> T createInstance(final Constructor<T> constructor, final Object... initArgs) {
+        constructor.setAccessible(true); // NOSONAR
+        try {
+            return constructor.newInstance(initArgs);
+        } catch (IllegalAccessException ex) {
+            // not reachable because we use black-magic to ensure accessibility
+            throw new IllegalStateException(
+                String.format("Can't access the constructor of '%s'.", constructor.getDeclaringClass()), ex);
+        } catch (InstantiationException ex) {
+            throw new IllegalStateException(
+                String.format("Can't instantiate object of abstract class '%s'.", constructor.getDeclaringClass()), ex);
+        } catch (InvocationTargetException ex) {
+            throw new IllegalStateException(
+                String.format("The empty constructor of '%s' raised an exception.", constructor.getDeclaringClass()),
+                ex);
+        }
+    }
+
+    static <T> Optional<Constructor<T>> getConstructor(final Class<T> clazz, final Class<?>... parameterTypes) {
+        try {
+            return Optional.of(clazz.getDeclaredConstructor(parameterTypes));
+        } catch (NoSuchMethodException ex) {
+            return Optional.empty();
+        }
+    }
 }
