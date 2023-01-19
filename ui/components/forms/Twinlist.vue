@@ -2,12 +2,11 @@
 import Label from './Label.vue';
 import SearchInput from '../forms/SearchInput.vue';
 import MultiselectListBox from '../forms/MultiselectListBox.vue';
-import Checkboxes from '../forms/Checkboxes.vue';
-import ValueSwitch from '../forms/ValueSwitch.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
 import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg';
+import { filters } from '../../../util/filters';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
@@ -20,43 +19,20 @@ export default {
         ArrowPrevIcon,
         MultiselectListBox,
         Label,
-        SearchInput,
-        Checkboxes,
-        ValueSwitch
+        SearchInput
     },
     props: {
 
         /**
          * initial values
          */
-        initialMode: {
-            type: String,
-            required: false,
-            default: 'manual'
-        },
-        initialManuallySelected: {
+        value: {
             type: Array,
             default: () => []
-        },
-        initialPattern: {
-            type: String,
-            default: ''
         },
         initialCaseSensitiveSearch: {
             default: false,
             type: Boolean
-        },
-        initialInverseSearch: {
-            default: false,
-            type: Boolean
-        },
-        withTypes: {
-            type: Boolean,
-            default: true
-        },
-        initialSelectedTypes: {
-            type: Array,
-            default: () => []
         },
         initialSearchTerm: {
             type: String,
@@ -67,11 +43,6 @@ export default {
         /**
          * Hiding and disabling
          */
-
-        showMode: {
-            default: false,
-            type: Boolean
-        },
         showSearch: {
             default: false,
             type: Boolean
@@ -104,21 +75,6 @@ export default {
             type: String,
             required: false,
             default: 'Search'
-        },
-        modeLabel: {
-            type: String,
-            required: false,
-            default: 'Selection mode'
-        },
-        patternLabel: {
-            type: String,
-            required: false,
-            default: 'Pattern'
-        },
-        selectedTypesLabel: {
-            type: String,
-            required: false,
-            default: 'Selected types'
         },
 
         /**
@@ -162,16 +118,12 @@ export default {
     },
     data() {
         return {
-            chosenValues: this.initialManuallySelected,
-            chosenPattern: this.initialPattern,
-            chosenTypes: this.initialSelectedTypes,
+            chosenValues: this.value,
             invalidPossibleValueIds: new Set(),
             rightSelected: [],
             selectedLeft: [],
             searchTerm: this.initialSearchTerm,
-            mode: this.initialMode,
-            caseSensitiveSearch: this.initialCaseSensitiveSearch,
-            inverseSearch: this.initialInverseSearch
+            caseSensitiveSearch: this.initialCaseSensitiveSearch
         };
     },
     computed: {
@@ -182,40 +134,26 @@ export default {
         possibleValueIds() {
             return this.possibleValues.map(x => x.id);
         },
-        possibleTypes() {
-            return [...new Set(this.possibleValues.map(x => x.type))]
-                .filter(type => type !== '')
-                .map(type => ({ text: type, id: type }));
-        },
         invalidValueIds() {
             return this.chosenValues.filter(x => !this.possibleValueMap[x]);
         },
-        matchingValueIds() {
-            return this.possibleValues
+        visibleValueIds() {
+            const matchingInvalidValueIds = this.invalidValueIds.filter(
+                item => this.itemMatchesSearch(this.generateInvalidItem(item))
+            );
+            const matchingValidIds = this.possibleValues
                 .filter(possibleValue => this.itemMatchesSearch(possibleValue))
                 .map(possibleValue => possibleValue.id);
-        },
-        visibleValueIds() {
-            if (this.mode === 'manual') {
-                const matchingInvalidValueIds = this.invalidValueIds.filter(
-                    item => this.itemMatchesSearch(this.generateInvalidItem(item))
-                );
-                return [...this.matchingValueIds, ...matchingInvalidValueIds];
-            }
-            return this.possibleValueIds;
-        },
-        selectedValues() {
-            return this.mode === 'manual' ? this.chosenValues : this.matchingValueIds;
+            return [...matchingValidIds, ...matchingInvalidValueIds];
         },
         leftItems() {
             return this.possibleValues.filter(value => this.visibleValueIds.includes(value.id) &&
-                !this.selectedValues.includes(value.id));
+                !this.chosenValues.includes(value.id));
         },
         rightItems() {
-            const selectedValues = this.selectedValues
+            return this.chosenValues
                 .map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
                 .filter(value => this.visibleValueIds.includes(value.id));
-            return selectedValues;
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -235,115 +173,12 @@ export default {
         moveLeftButtonDisabled() {
             return this.rightSelected.length === 0;
         },
-        selectionDisabled() {
-            return this.disabled || this.mode !== 'manual';
-        },
         normalizedSearchTerm() {
-            const mode = this.possibleModeMap[this.mode];
-            let searchTerm;
-            if (this.mode === 'manual') {
-                searchTerm = this.searchTerm;
-            } else if (this.mode === 'type') {
-                searchTerm = this.chosenTypes;
-            } else {
-                searchTerm = this.chosenPattern;
-            }
-            return mode.normalize(searchTerm, this.caseSensitiveSearch);
-        },
-        possibleModes() {
-            return [{
-                id: 'manual',
-                text: 'Manual',
-                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
-                    return caseSensitiveSearch ? searchTerm : searchTerm.toLowerCase();
-                },
-                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
-                    const testText = caseSensitiveSearch ? text : text.toLowerCase();
-                    const matches = testText.includes(normalizedSearchTerm);
-                    return inverseSearch ? !matches : matches;
-                }
-            }, {
-                id: 'wildcard',
-                text: 'Wildcard',
-                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
-                    // Do a regex search, explicitly matching start and end of the search term.
-                    // All regex special character except from "*" (wildcard) are escaped.
-                    if (searchTerm.length > 0) {
-                        const escapedSearchTerm = searchTerm.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-                        const wildcardSearchTerm = escapedSearchTerm.replace(/\*/g, '.*');
-                        searchTerm = `^${wildcardSearchTerm}$`;
-                    } else {
-                        return { test: () => false };
-                    }
-                    try {
-                        const flags = caseSensitiveSearch ? '' : 'i';
-                        return new RegExp(searchTerm, flags);
-                    } catch (error) {
-                        // In case of an invalid regular expression, an impossible
-                        // regex is returned, not matching anything.
-                        return new RegExp('$^');
-                    }
-                },
-                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
-                    const matches = normalizedSearchTerm.test(text);
-                    return inverseSearch ? !matches : matches;
-                }
-            }, {
-                id: 'regex',
-                text: 'Regex',
-                normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
-                    try {
-                        const flags = caseSensitiveSearch ? '' : 'i';
-                        return new RegExp(`^${searchTerm}$`, flags);
-                    } catch (error) {
-                        // In case of an invalid regular expression, an impossible
-                        // regex is returned, not matching anything.
-                        return new RegExp('$^');
-                    }
-                },
-                test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
-                    const matches = normalizedSearchTerm.test(text);
-                    return inverseSearch ? !matches : matches;
-                }
-            }, ...this.withTypes
-                ? [{
-                    id: 'type',
-                    text: 'Type',
-                    normalize(selectedTypes) {
-                        return { test: (type) => selectedTypes.includes(type) };
-                    },
-                    test(type, normalizedSearchTerm) {
-                        return normalizedSearchTerm.test(type);
-                    }
-                }]
-                : []];
-        },
-        possibleModeIds() {
-            return this.possibleModes.map(mode => mode.id);
-        },
-        possibleModeMap() {
-            // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
-            return Object.assign({}, ...this.possibleModes.map(obj => ({ [obj.id]: obj })));
-        },
-        inputLabel() {
-            if (this.mode === 'manual') {
-                return this.searchLabel;
-            } else if (this.mode === 'type') {
-                return this.selectedTypesLabel;
-            } else {
-                return this.patternLabel;
-            }
-        },
-        value() {
-            if (this.mode === 'manual') {
-                return this.chosenValues;
-            } else {
-                return this.rightItems.map(item => item.id);
-            }
+            return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
         }
     },
     watch: {
-        manuallySelected(newValue) {
+        value(newValue) {
             this.chosenValues = newValue;
         },
         possibleValues(newPossibleValues) {
@@ -355,19 +190,13 @@ export default {
             // Reset chosenValues as subset of original to prevent re-execution from resetting value
             this.chosenValues = this.chosenValues.filter(item => allValues.includes(item));
         },
-        value(newVal, oldVal) {
+        chosenValues(newVal, oldVal) {
             if (newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
-                this.emitSelectedValues();
+                this.$emit('input', this.chosenValues);
             }
         }
     },
-    mounted() {
-        this.emitSelectedValues();
-    },
     methods: {
-        emitSelectedValues() {
-            this.$emit('input', this.value, this.mode === 'manual');
-        },
         generateInvalidItem(id) {
             return { id, text: `(MISSING) ${id}`, invalid: true };
         },
@@ -457,105 +286,43 @@ export default {
             this.moveLeft();
         },
         onSearchInput(value) {
-            if (this.mode === 'manual') {
-                this.searchTerm = value;
-            } else {
-                this.chosenPattern = value;
-                this.$emit('patternInput', value);
-            }
-        },
-        onTypeInput(value) {
-            this.chosenTypes = value;
-            this.$emit('typesInput', value);
-        },
-        onModeChange(value) {
-            if (this.possibleModeIds.indexOf(value) !== -1) {
-                this.mode = value;
-                if (this.mode !== 'manual') {
-                    this.searchTerm = '';
-                }
-                this.$emit('modeInput', value);
-            }
-        },
-        onToggleCaseSensitiveSearch(value) {
-            this.caseSensitiveSearch = value;
-            this.$emit('caseSensitiveSearchInput', value);
-        },
-        onToggleInvserseSearch(value) {
-            this.inverseSearch = value;
-            this.$emit('inverseSearchInput', value);
+            this.searchTerm = value;
         },
         hasSelection() {
-            return this.selectedValues.length > 0;
+            return this.chosenValues.length > 0;
         },
         validate() {
             let isValid = !this.rightItems.some(x => x.invalid);
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-            const mode = this.possibleModeMap[this.mode];
-            return mode.test(item[this.mode === 'type' ? 'type' : 'text'], this.normalizedSearchTerm,
-                this.caseSensitiveSearch, this.inverseSearch);
+            return filters.search.test(item.text, this.normalizedSearchTerm,
+                this.caseSensitiveSearch, false);
         }
     }
 };
 </script>
 
 <template>
-  <div
-    class="twinlist"
-    :class="{disabled}"
-  >
+  <div class="twinlist">
     <Label
-      v-if="showMode"
+      v-if="showSearch"
       v-slot="{ labelForId }"
-      :text="modeLabel"
-      class="search-wrapper"
-      compact
-    >
-      <ValueSwitch
-        :id="labelForId"
-        ref="mode"
-        :size="listSize"
-        :value="mode"
-        :disabled="disabled"
-        :possible-values="possibleModes"
-        @input="onModeChange"
-      />
-    </Label>
-    <Label
-      v-if="(mode === 'manual' && showSearch) ||
-        mode === 'regex' ||
-        mode === 'wildcard' ||
-        (mode === 'type' && possibleTypes.length > 0)"
-      v-slot="{ labelForId }"
-      :text="inputLabel"
+      :text="searchLabel"
       class="search-wrapper"
       compact
     >
       <SearchInput
-        v-if="mode !== 'type'"
         :id="labelForId"
         ref="search"
-        :size="listSize"
         :placeholder="searchPlaceholder"
-        :value="mode === 'manual' ? searchTerm : chosenPattern"
+        :value="searchTerm"
         :label="searchLabel"
         :initial-case-sensitive-search="initialCaseSensitiveSearch"
-        :initial-inverse-search="initialInverseSearch"
         show-case-sensitive-search-button
-        show-inverse-search-button
         :disabled="disabled"
         @input="onSearchInput"
-        @toggle-case-sensitive-search="onToggleCaseSensitiveSearch"
-        @toggle-inverse-search="onToggleInvserseSearch"
-      />
-      <Checkboxes
-        v-else
-        :value="chosenTypes"
-        :possible-values="possibleTypes"
-        :disabled="disabled"
-        @input="onTypeInput"
+        @toggle-case-sensitive-search="(event) => caseSensitiveSearch = event"
       />
     </Label>
     <div class="header">
@@ -572,18 +339,16 @@ export default {
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="leftLabel"
-        :disabled="selectionDisabled"
+        :disabled="disabled"
         @doubleClickOnItem="onLeftListBoxDoubleClick"
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
         @keyArrowRight="onKeyRightArrow"
         @input="onLeftInput"
       />
-      <div
-        class="buttons"
-      >
+      <div class="buttons">
         <div
           ref="moveRight"
-          :class="{ disabled: moveRightButtonDisabled || selectionDisabled }"
+          :class="{ disabled: moveRightButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveRightButtonClick"
@@ -593,7 +358,7 @@ export default {
         </div>
         <div
           ref="moveAllRight"
-          :class="{ disabled: moveAllRightButtonDisabled || selectionDisabled }"
+          :class="{ disabled: moveAllRightButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllRightButtonClick"
@@ -603,7 +368,7 @@ export default {
         </div>
         <div
           ref="moveLeft"
-          :class="{ disabled: moveLeftButtonDisabled || selectionDisabled }"
+          :class="{ disabled: moveLeftButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveLeftButtonClick"
@@ -613,7 +378,7 @@ export default {
         </div>
         <div
           ref="moveAllLeft"
-          :class="{ disabled: moveAllLeftButtonDisabled || selectionDisabled }"
+          :class="{ disabled: moveAllLeftButtonDisabled || disabled }"
           role="button"
           tabindex="0"
           @click="onMoveAllLeftButtonClick"
@@ -629,7 +394,7 @@ export default {
         :possible-values="rightItems"
         :size="listSize"
         :aria-label="rightLabel"
-        :disabled="selectionDisabled"
+        :disabled="disabled"
         @doubleClickOnItem="onRightListBoxDoubleClick"
         @doubleClickShift="onRightListBoxShiftDoubleClick"
         @keyArrowLeft="onKeyLeftArrow"

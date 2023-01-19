@@ -26,6 +26,20 @@ const codeExample = `<ValueSwitch
     text: 'Qux'
   }]"
 />
+<ValueSwitch
+  v-model="selected"
+  disabled
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'barbaz',
+    text: 'Barbaz'
+  }, {
+    id: 'qux',
+    text: 'Qux'
+  }]"
+/>
 `;
 
 export default {
@@ -76,6 +90,22 @@ export default {
         <div class="grid-item-4">
           <ValueSwitch
             v-model="selectedLarge"
+            :possible-values="[{
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'foobar',
+              text: 'Foobar'
+            }, {
+              id: 'qux',
+              text: 'Qux'
+            }]"
+          />
+        </div>
+        <div class="grid-item-4">
+          <ValueSwitch
+            v-model="selectedLarge"
+            disabled
             :possible-values="[{
               id: 'baz',
               text: 'Baz'

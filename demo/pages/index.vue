@@ -34,6 +34,7 @@ import Messages from '../components/Messages.vue';
 import Modal from '../components/Modal.vue';
 import Multiselect from '../components/Multiselect.vue';
 import MultiselectListBox from '../components/MultiselectListBox.vue';
+import MulitModeTwinList from '../components/MulitModeTwinList.vue';
 import NodeFeatureList from '../components/NodeFeatureList.vue';
 import NodePreview from '../components/NodePreview.vue';
 import NumberInput from '../components/NumberInput.vue';
@@ -120,7 +121,8 @@ const demoComponents = {
         Multiselect,
         MultiselectListBox,
         ToggleSwitch,
-        Twinlist
+        Twinlist,
+        MulitModeTwinList
     },
     misc: {
         NodePreview,

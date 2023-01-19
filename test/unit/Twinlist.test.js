@@ -4,8 +4,6 @@ import { mount } from '@vue/test-utils';
 import SearchInput from '~/ui/components/forms/SearchInput.vue';
 import Twinlist from '~/ui/components/forms/Twinlist.vue';
 import MultiselectListBox from '~/ui/components/forms/MultiselectListBox.vue';
-import ValueSwitch from '~/ui/components/forms/ValueSwitch.vue';
-import Checkboxes from '~/ui/components/forms/Checkboxes.vue';
 
 describe('Twinlist.vue', () => {
     let defaultPossibleValues;
@@ -26,7 +24,7 @@ describe('Twinlist.vue', () => {
     it('renders', () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
-            initialManuallySelected: ['test3'],
+            value: ['test3'],
             leftLabel: 'Choose',
             rightLabel: 'The value',
             size: 3
@@ -46,7 +44,7 @@ describe('Twinlist.vue', () => {
     it('actual list sizes must be 5 or bigger', () => {
         let propsData = {
             possibleValues: [defaultPossibleValues[0]], // one element
-            initialManuallySelected: [],
+            value: [],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
@@ -79,7 +77,7 @@ describe('Twinlist.vue', () => {
                 id: 'test1',
                 text: 'test1'
             }],
-            initialManuallySelected: [],
+            value: [],
             leftLabel: 'Choose',
             rightLabel: 'The value',
             isValid: false
@@ -92,24 +90,6 @@ describe('Twinlist.vue', () => {
         wrapper.setProps({ isValid: true });
         expect(left.vm.isValid).toBe(true);
     });
-    
-    it('emits selection on mounted', () => {
-        let initialSelection = ['A', 'B', 'C'];
-        let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'test1'
-            }],
-            initialManuallySelected: initialSelection,
-            leftLabel: 'Choose',
-            rightLabel: 'The value',
-            isValid: false
-        };
-        const wrapper = mount(Twinlist, {
-            propsData
-        });
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(initialSelection);
-    });
 
     it('has invalid state if invalid values are selected', () => {
         let propsData = {
@@ -120,7 +100,7 @@ describe('Twinlist.vue', () => {
                 id: 'test2',
                 text: 'Some Text'
             }],
-            initialManuallySelected: ['invalidId', 'test1'],
+            value: ['invalidId', 'test1'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
@@ -137,33 +117,6 @@ describe('Twinlist.vue', () => {
         expect(wrapper.vm.validate().isValid).toBe(true);
     });
 
-    it('clears its internal state when there is a change in the possible values', () => {
-        let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'Text'
-            }, {
-                id: 'test2',
-                text: 'Some Text'
-            }],
-            initialManuallySelected: ['invalidId', 'test1'],
-            leftLabel: 'Choose',
-            rightLabel: 'The value'
-        };
-        const wrapper = mount(Twinlist, {
-            propsData
-        });
-        expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
-
-        wrapper.setProps({
-            possibleValues: [{
-                id: 'newValue',
-                text: 'newValue'
-            }]
-        });
-        expect(wrapper.vm.chosenValues).toStrictEqual([]);
-    });
-
     it('keeps valid state but removes invalid chosen values when there is a change in the possible values', () => {
         let propsData = {
             possibleValues: [{
@@ -173,7 +126,7 @@ describe('Twinlist.vue', () => {
                 id: 'test2',
                 text: 'Some Text'
             }],
-            initialManuallySelected: ['invalidId', 'test1'],
+            value: ['invalidId', 'test1'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
@@ -211,7 +164,7 @@ describe('Twinlist.vue', () => {
         beforeEach(() => {
             propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test3'],
+                value: ['test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -227,7 +180,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             left.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1]).toStrictEqual([['test2', 'test3'], true]);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -243,14 +196,14 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             left.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
         });
 
         it('removes from value on double click in right box', async () => {
-            propsData.initialManuallySelected = ['test2', 'test3'];
+            propsData.value = ['test2', 'test3'];
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -260,14 +213,14 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             right.vm.$emit('doubleClickOnItem', 'test2', 1);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1]
             ]);
         });
 
         it('removes from values on shift double click in right box', async () => {
-            propsData.initialManuallySelected = ['test1', 'test2', 'test3'];
+            propsData.value = ['test1', 'test2', 'test3'];
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -277,7 +230,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             right.vm.$emit('doubleClickShift', ['test1', 'test2']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
             expect(left.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[0], propsData.possibleValues[1]
             ]);
@@ -287,7 +240,7 @@ describe('Twinlist.vue', () => {
     it('moves selected values to right on right arrow key', async () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
-            initialManuallySelected: [],
+            value: [],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
@@ -301,7 +254,7 @@ describe('Twinlist.vue', () => {
         left.vm.setSelected(['test2', 'test3']);
         left.vm.$emit('keyArrowRight');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
         expect(right.vm.$props.possibleValues).toStrictEqual([
             propsData.possibleValues[1], propsData.possibleValues[2]
         ]);
@@ -310,7 +263,7 @@ describe('Twinlist.vue', () => {
     it('moves selected values to left on left arrow key', async () => {
         let propsData = {
             possibleValues: defaultPossibleValues,
-            initialManuallySelected: ['test2', 'test3'],
+            value: ['test2', 'test3'],
             leftLabel: 'Choose',
             rightLabel: 'The value'
         };
@@ -324,7 +277,7 @@ describe('Twinlist.vue', () => {
         right.vm.setSelected(['test2', 'test3']);
         right.vm.$emit('keyArrowLeft');
         await wrapper.vm.$nextTick();
-        expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
+        expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
         expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
     });
 
@@ -332,7 +285,7 @@ describe('Twinlist.vue', () => {
         it('moves selected values to right on move button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
+                value: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -346,7 +299,7 @@ describe('Twinlist.vue', () => {
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -355,7 +308,7 @@ describe('Twinlist.vue', () => {
         it('moves selected values to left on move button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2', 'test3'],
+                value: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -369,14 +322,14 @@ describe('Twinlist.vue', () => {
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
         it('moves all values to right on all button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
+                value: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -388,14 +341,14 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
         it('makes the invalid columns disappear upon moving them to the left', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['invalidId'],
+                value: ['invalidId'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -416,7 +369,7 @@ describe('Twinlist.vue', () => {
         it('moves all values to left on all button click', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2', 'test3'],
+                value: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -428,14 +381,14 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
         it('moves selected values to right on move button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
+                value: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -449,7 +402,7 @@ describe('Twinlist.vue', () => {
             left.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test2', 'test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual([
                 propsData.possibleValues[1], propsData.possibleValues[2]
             ]);
@@ -458,7 +411,7 @@ describe('Twinlist.vue', () => {
         it('non applicable buttons are disabled', () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
+                value: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -509,7 +462,7 @@ describe('Twinlist.vue', () => {
         it('moves selected values to left on move button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2', 'test3'],
+                value: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -523,14 +476,14 @@ describe('Twinlist.vue', () => {
             right.vm.setSelected(['test2', 'test3']);
             wrapper.find({ ref: 'moveLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
         it('moves all values to right on all button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
+                value: [],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -542,14 +495,14 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test1', 'test2', 'test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3']);
             expect(right.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
 
         it('moves all values to left on all button enter', async () => {
             let propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2', 'test3'],
+                value: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
@@ -561,7 +514,7 @@ describe('Twinlist.vue', () => {
             let left = boxes.at(0);
             wrapper.find({ ref: 'moveAllLeft' }).trigger('keydown.enter');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual([]);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual([]);
             expect(left.vm.$props.possibleValues).toStrictEqual(propsData.possibleValues);
         });
     });
@@ -570,7 +523,7 @@ describe('Twinlist.vue', () => {
         const mountOptions = {
             propsData: {
                 possibleValues: [...defaultPossibleValues, { id: 'test4', text: 'Text 4' }],
-                initialManuallySelected: ['test2', 'test3'],
+                value: ['test2', 'test3'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             }
@@ -598,53 +551,42 @@ describe('Twinlist.vue', () => {
     });
 
     describe('search', () => {
-        it('doesn\'t render the search bar by default', () => {
-            let propsData = {
+        let propsData;
+        beforeEach(() => {
+            propsData = {
                 possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test3'],
+                value: ['test2'],
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3
             };
+        });
+        it('doesn\'t render the search bar by default', () => {
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.find(ValueSwitch).exists()).toBe(false);
             expect(wrapper.find(SearchInput).exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper label.search').exists()).toBe(false);
             expect(wrapper.find('div.search-wrapper input[type=text].with-icon').exists()).toBe(false);
         });
 
         it('can render the search bar if wanted', () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test3'],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
+            propsData = { ...propsData,
                 showSearch: true,
                 searchLabel: 'Filter entries',
-                searchPlaceholder: 'Enter search term'
-            };
+                searchPlaceholder: 'Enter search term' };
             const wrapper = mount(Twinlist, {
                 propsData
             });
-            expect(wrapper.find(ValueSwitch).exists()).toBe(false);
             expect(wrapper.find(SearchInput).exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').exists()).toBe(true);
             expect(wrapper.find('div.search-wrapper label').text()).toBe('Filter entries');
         });
 
         it('can include initial search term', () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2'],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
+            propsData = { ...propsData,
                 showSearch: true,
-                initialSearchTerm: '3'
-            };
+                initialSearchTerm: '3' };
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -667,14 +609,8 @@ describe('Twinlist.vue', () => {
         });
 
         it('can handle basic search requests', () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2'],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
-                showSearch: true
-            };
+            propsData = { ...propsData,
+                showSearch: true };
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -720,18 +656,14 @@ describe('Twinlist.vue', () => {
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
 
-            expect(wrapper.emitted().input[1]).not.toBeDefined();
+            expect(wrapper.emitted().input).not.toBeDefined();
         });
 
         it('moves only all filtered values to right on all button click', async () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: [],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
+            propsData = { ...propsData,
                 showSearch: true,
-                initialSearchTerm: '3'
-            };
+                initialSearchTerm: '3',
+                value: [] };
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -741,7 +673,7 @@ describe('Twinlist.vue', () => {
             let right = boxes.at(1);
             wrapper.find({ ref: 'moveAllRight' }).trigger('click');
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3']);
+            expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
 
             expect(left.props('possibleValues').length).toBe(0);
 
@@ -751,69 +683,6 @@ describe('Twinlist.vue', () => {
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
         });
-    });
-
-    describe('mode selection', () => {
-        const propsData = {
-            possibleValues: defaultPossibleValues,
-            initialManuallySelected: ['test3'],
-            leftLabel: 'Choose',
-            rightLabel: 'The value',
-            size: 3
-        };
-
-        it('does not render the selection mode by default', () => {
-            const wrapper = mount(Twinlist, {
-                propsData
-            });
-            expect(wrapper.find(ValueSwitch).exists()).toBeFalsy();
-        });
-
-        it('renders the selection mode if wanted', () => {
-            const wrapper = mount(Twinlist, { propsData: {
-                ...propsData,
-                showMode: true,
-                modeLabel: 'Filter options'
-            } });
-            expect(wrapper.find(ValueSwitch).exists()).toBeTruthy();
-            const labels = wrapper.findAll('div.search-wrapper label');
-            expect(labels.at(0).text()).toBe('Filter options');
-            expect(labels.at(1).text()).toBe('Manual');
-            expect(labels.at(2).text()).toBe('Wildcard');
-            expect(labels.at(3).text()).toBe('Regex');
-            expect(labels.at(4).text()).toBe('Type');
-        });
-
-        it('hides type selection mode if wanted', () => {
-            const wrapper = mount(Twinlist, { propsData: {
-                ...propsData,
-                showMode: true,
-                withTypes: false
-            } });
-            expect(wrapper.find(ValueSwitch).exists()).toBeTruthy();
-            expect(wrapper.findAll('div.search-wrapper label').wrappers.map(l => l.text())).not.toContain('Type');
-        });
-
-        it('emits updated mode', async () => {
-            const wrapper = mount(Twinlist, { propsData: {
-                ...propsData,
-                showMode: true,
-                withTypes: false
-            } });
-            wrapper.find(ValueSwitch).vm.$emit('input', 'regex');
-            await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().modeInput[0][0]).toBe('regex');
-        });
-    });
-
-    describe('search and pattern', () => {
-        const propsData = {
-            possibleValues: defaultPossibleValues,
-            initialManuallySelected: ['test3'],
-            leftLabel: 'Choose',
-            rightLabel: 'The value',
-            size: 3
-        };
 
         it('does not render search by default', () => {
             const wrapper = mount(Twinlist, {
@@ -826,7 +695,6 @@ describe('Twinlist.vue', () => {
             const wrapper = mount(Twinlist, { propsData: {
                 ...propsData,
                 showSearch: true,
-                initialMode: 'manual',
                 searchLabel: 'Search term label'
             } });
             expect(wrapper.find(SearchInput).exists()).toBeTruthy();
@@ -835,17 +703,9 @@ describe('Twinlist.vue', () => {
         });
 
         it('can do case-sensitive searches', () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2'],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
+            propsData = { ...propsData,
                 showSearch: true,
-                showSearchMode: true,
-                initialSearchTerm: 'text',
-                initialSearchMode: 'manual'
-            };
+                initialSearchTerm: 'text' };
             const wrapper = mount(Twinlist, {
                 propsData
             });
@@ -865,185 +725,6 @@ describe('Twinlist.vue', () => {
 
             expect(left.props('possibleValues').length).toBe(0);
             expect(right.props('possibleValues').length).toBe(0);
-        });
-
-        it('can do inverse searches', () => {
-            let propsData = {
-                possibleValues: defaultPossibleValues,
-                initialManuallySelected: ['test2'],
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
-                showSearch: true,
-                initialSearchTerm: '3'
-            };
-            const wrapper = mount(Twinlist, {
-                propsData
-            });
-            let boxes = wrapper.findAll(MultiselectListBox);
-            let left = boxes.at(0);
-            let right = boxes.at(1);
-
-            expect(left.props('possibleValues').length).toBe(1);
-            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
-
-            expect(right.props('possibleValues').length).toBe(0);
-
-            // Set inverse search
-            wrapper.vm.inverseSearch = true;
-
-            expect(left.props('possibleValues').length).toBe(1);
-            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 1');
-            expect(right.props('possibleValues').length).toBe(1);
-            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
-        });
-
-        describe('Regex and Wildcard', () => {
-            it('changes label if pattern mode (regex or widcard) is selected', () => {
-                const wrapper = mount(Twinlist, { propsData: {
-                    possibleValues: defaultPossibleValues,
-                    leftLabel: 'Choose',
-                    rightLabel: 'The value',
-                    size: 3,
-                    initialMode: 'regex',
-                    searchLabel: 'Search term label',
-                    patternLabel: 'Pattern label'
-                } });
-                expect(wrapper.find(SearchInput).exists()).toBeTruthy();
-                const labels = wrapper.findAll('div.search-wrapper label');
-                expect(labels.at(0).text()).toBe('Pattern label');
-            });
-
-            it('selects via regex matching', async () => {
-                const propsData = {
-                    possibleValues: defaultPossibleValues,
-                    initialMode: 'regex',
-                    leftLabel: 'Choose',
-                    rightLabel: 'The value'
-                };
-                const wrapper = mount(Twinlist, { propsData });
-                
-                wrapper.find(SearchInput).vm.$emit('input', '.*1');
-                await wrapper.vm.$nextTick();
-                expect(wrapper.emitted().patternInput[0][0]).toBe('.*1');
-                expect(wrapper.emitted().input[1]).toStrictEqual([['test1'], false]);
-                
-                let left = wrapper.find({ ref: 'left' });
-                let right = wrapper.find({ ref: 'right' });
-                
-                expect(left.vm.$props.possibleValues.length).toBe(2);
-                expect(right.vm.$props.possibleValues.length).toBe(1);
-            });
-
-            it('selects via wildcard matching', async () => {
-                const propsData = {
-                    possibleValues: defaultPossibleValues,
-                    initialMode: 'wildcard',
-                    leftLabel: 'Choose',
-                    rightLabel: 'The value'
-                };
-                const wrapper = mount(Twinlist, { propsData });
-                
-                wrapper.find(SearchInput).vm.$emit('input', 't*');
-                await wrapper.vm.$nextTick();
-                expect(wrapper.emitted().patternInput[0][0]).toBe('t*');
-                expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test2', 'test3'], false]);
-                
-                let left = wrapper.find({ ref: 'left' });
-                let right = wrapper.find({ ref: 'right' });
-                
-                expect(left.vm.$props.possibleValues.length).toBe(0);
-                expect(right.vm.$props.possibleValues.length).toBe(3);
-            });
-
-            it('prohibits manual selection', async () => {
-                const propsData = {
-                    possibleValues: defaultPossibleValues,
-                    initialMode: 'regex',
-                    leftLabel: 'Choose',
-                    rightLabel: 'The value'
-                };
-                const wrapper = mount(Twinlist, { propsData });
-                
-                let left = wrapper.find({ ref: 'left' });
-                let right = wrapper.find({ ref: 'right' });
-                left.vm.$emit('doubleClickOnItem', 'test2', 1);
-                await wrapper.vm.$nextTick();
-                expect(wrapper.emitted().input[1]).not.toBeDefined();
-                expect(right.vm.$props.possibleValues.length).toBe(0);
-            });
-        });
-    });
-
-    describe('Type selection', () => {
-        it('renders type selection and changes label if type selection is selected', () => {
-            const wrapper = mount(Twinlist, { propsData: {
-                possibleValues: defaultPossibleValues,
-                leftLabel: 'Choose',
-                rightLabel: 'The value',
-                size: 3,
-                initialMode: 'type',
-                selectedTypesLabel: 'Types label'
-            } });
-            expect(wrapper.find(Checkboxes).exists()).toBeTruthy();
-            expect(wrapper.find(SearchInput).exists()).toBeFalsy();
-            const labels = wrapper.findAll('div.search-wrapper label');
-            expect(labels.at(0).text()).toBe('Types label');
-        });
-
-        it('selects via type matching', async () => {
-            const propsData = {
-                possibleValues: [
-                    {
-                        id: 'test1',
-                        text: 'test1',
-                        type: 'String'
-                    },
-                    {
-                        id: 'test2',
-                        text: 'test2',
-                        type: 'Double'
-                    },
-                    {
-                        id: 'test3',
-                        text: 'test3',
-                        type: 'String'
-                    }
-                ],
-                initialMode: 'type',
-                leftLabel: 'Choose',
-                rightLabel: 'The value'
-            };
-            const wrapper = mount(Twinlist, { propsData });
-            
-            wrapper.find(Checkboxes).vm.$emit('input', ['String']);
-            await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['String']);
-            expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test3'], false]);
-
-            
-            let left = wrapper.find({ ref: 'left' });
-            let right = wrapper.find({ ref: 'right' });
-            
-            expect(left.vm.$props.possibleValues.length).toBe(1);
-            expect(right.vm.$props.possibleValues.length).toBe(2);
-        });
-
-        it('prohibits manual selection', async () => {
-            const propsData = {
-                possibleValues: defaultPossibleValues,
-                initialMode: 'type',
-                leftLabel: 'Choose',
-                rightLabel: 'The value'
-            };
-            const wrapper = mount(Twinlist, { propsData });
-            
-            let left = wrapper.find({ ref: 'left' });
-            let right = wrapper.find({ ref: 'right' });
-            left.vm.$emit('doubleClickOnItem', 'test2', 1);
-            await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[1]).not.toBeDefined();
-            expect(right.vm.$props.possibleValues.length).toBe(0);
         });
     });
 });
