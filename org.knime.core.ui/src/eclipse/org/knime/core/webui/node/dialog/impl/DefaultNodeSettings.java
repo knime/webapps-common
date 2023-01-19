@@ -88,7 +88,7 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public interface DefaultNodeSettings {
+public interface DefaultNodeSettings extends PersistableSettings {
 
     /**
      * A context that holds any available information that might be relevant for creating a new instance of
