@@ -18,7 +18,7 @@
         "view": {
           "type": "object",
           "properties": {
-            "displayedColumns": {
+            "simpleTwinList": {
               "anyOf": [
                 {
                   "const": "Universe_0_0",
@@ -60,7 +60,7 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/displayedColumns"
+              "scope": "#/properties/view/properties/simpleTwinList"
             }
           ]
         }

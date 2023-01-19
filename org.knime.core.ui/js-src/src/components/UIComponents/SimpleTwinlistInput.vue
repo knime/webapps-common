@@ -10,7 +10,7 @@ const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = 'Excluded Values';
 const defaultTwinlistRightLabel = 'Included Values';
 
-const TwinlistInput = defineComponent({
+const SimpleTwinlistInput = defineComponent({
     name: 'SimpleTwinListInput',
     components: {
         Twinlist,
@@ -67,7 +67,7 @@ const TwinlistInput = defineComponent({
         }
     }
 });
-export default TwinlistInput;
+export default SimpleTwinlistInput;
 </script>
 
 <template>
@@ -82,7 +82,7 @@ export default TwinlistInput;
       <Twinlist
         v-if="possibleValues"
         :disabled="disabled"
-        :initial-manually-selected="control.data"
+        :value="control.data"
         :possible-values="possibleValues"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"

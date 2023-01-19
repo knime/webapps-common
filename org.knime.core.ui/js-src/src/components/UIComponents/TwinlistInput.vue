@@ -3,9 +3,9 @@ import { defineComponent } from '@vue/composition-api';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
     from '@/utils/nodeDialogUtils';
-import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import MultiModeTwinlist from '~/webapps-common/ui/components/forms/MultiModeTwinlist.vue';
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = 'Excluded Values';
@@ -14,7 +14,7 @@ const defaultTwinlistRightLabel = 'Included Values';
 const TwinlistInput = defineComponent({
     name: 'TwinListInput',
     components: {
-        Twinlist,
+        MultiModeTwinlist,
         LabeledInput,
         DialogComponentWrapper
     },
@@ -36,6 +36,11 @@ const TwinlistInput = defineComponent({
             default: defaultTwinlistRightLabel
         }
     },
+    data() {
+         return {
+            possibleValues: null
+        }
+    },
     setup(props) {
         return useJsonFormsControl(props);
     },
@@ -52,19 +57,19 @@ const TwinlistInput = defineComponent({
         withTypes() {
             return this.control.schema.properties.selected.anyOf[0].hasOwnProperty('columnType');
         },
-        possibleValues() {
-            return this.control.schema.properties.selected.anyOf.map(
-                this.withTypes ? optionsMapperWithType : optionsMapper
-            );
-        },
         showMode() {
             return !this.control.uischema.options?.hasOwnProperty('showMode') ||
                 this.control.uischema.options?.showMode;
         },
-        showSearch() {
-            return !this.control.uischema.options?.hasOwnProperty('showSearch') ||
-                this.control.uischema.options?.showSearch;
+        showPattern() {
+            return !this.control.uischema.options?.hasOwnProperty('showPattern') ||
+                this.control.uischema.options?.showPattern;
         }
+    },
+    created() {
+        this.possibleValues = this.control.schema.properties.selected.anyOf.map(
+            this.withTypes ? optionsMapperWithType : optionsMapper
+        );
     },
     methods: {
         onChange(obj, attr = '') {
@@ -91,7 +96,7 @@ const TwinlistInput = defineComponent({
         onSelectedTypesChange(selectedTypes) {
             this.onChange({ selectedTypes }, 'typeFilter');
         },
-        onInverseSearchChange(isInverted) {
+        onInversePatternChange(isInverted) {
             this.onChange({ isInverted }, 'patternFilter');
         },
         onCaseSensitiveChange(isCaseSensitive) {
@@ -112,18 +117,18 @@ export default TwinlistInput;
       :flow-settings="flowSettings"
       :description="control.description"
     >
-      <Twinlist
+      <MultiModeTwinlist
         v-if="possibleValues"
         :show-mode="showMode"
-        :show-search="showSearch"
+        :show-pattern="showPattern"
         :disabled="disabled"
         :value="control.data.selected"
         :with-types="withTypes"
         :initial-selected-types="control.data.typeFilter.selectedTypes"
         :initial-pattern="control.data.patternFilter.pattern"
         :initial-mode="control.data.mode.toLowerCase()"
-        :initial-case-sensitive-search="control.data.patternFilter.isCaseSensitive"
-        :initial-inverse-search="control.data.patternFilter.isInverted"
+        :initial-case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
+        :initial-inverse-pattern="control.data.patternFilter.isInverted"
         :initial-manually-selected="control.data.manualFilter.manuallySelected"
         :mode-label="'Selection mode'"
         :possible-values="possibleValues"
@@ -134,8 +139,8 @@ export default TwinlistInput;
         @patternInput="onPatternChange"
         @modeInput="onModeChange"
         @typesInput="onSelectedTypesChange"
-        @inverseSearchInput="onInverseSearchChange"
-        @caseSensitiveSearchInput="onCaseSensitiveChange"
+        @inversePatternInput="onInversePatternChange"
+        @caseSensitivePatternInput="onCaseSensitiveChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>
