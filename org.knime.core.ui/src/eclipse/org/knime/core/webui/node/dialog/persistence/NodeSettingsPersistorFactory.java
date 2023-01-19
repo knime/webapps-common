@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.impl.JsonBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.impl.PersistableSettings;
 import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
@@ -96,7 +96,8 @@ public final class NodeSettingsPersistorFactory {
      * @throws IllegalArgumentException if the provided class references an unsupported persistor (e.g. a custom
      *             persistor that extends NodeSettingsPersistor directly)
      */
-    static <S extends DefaultNodeSettings> NodeSettingsPersistor<S> createPersistor(final Class<S> settingsClass) {
+    public static <S extends PersistableSettings> NodeSettingsPersistor<S>
+        createPersistor(final Class<S> settingsClass) {
         var persistence = settingsClass.getAnnotation(Persistor.class);
         if (persistence == null) {
             // no annotation means we use field based persistence

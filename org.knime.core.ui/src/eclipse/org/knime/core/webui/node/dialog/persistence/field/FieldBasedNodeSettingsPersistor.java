@@ -63,19 +63,20 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.impl.PersistableSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.persistence.ReflectionUtil;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
  * controlled with the {@link Persist} annotation.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- * @param <S> The concrete {@link DefaultNodeSettings} class
+ * @param <S> The concrete {@link PersistableSettings} class
  */
-public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> implements NodeSettingsPersistor<S> {
+public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
 
     @SuppressWarnings("javadoc")
     protected Map<String, NodeSettingsPersistor<?>> m_persistors;
@@ -93,7 +94,7 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
     }
 
     private static Map<String, NodeSettingsPersistor<?>>
-        createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
+        createPersistors(final Class<? extends PersistableSettings> settingsClass) {
         return getAllPersistableFields(settingsClass)//
             .collect(toMap(Field::getName, FieldBasedNodeSettingsPersistor::createPersistorForField, (a, b) -> a,
                 LinkedHashMap::new));
@@ -157,8 +158,8 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
     }
 
     private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type, final String configKey) {
-        if (DefaultNodeSettings.class.isAssignableFrom(type)) {
-            return new NestedFieldBasedNodeSettingsPersistor<>(configKey, type.asSubclass(DefaultNodeSettings.class));
+        if (PersistableSettings.class.isAssignableFrom(type)) {
+            return new NestedFieldBasedNodeSettingsPersistor<>(configKey, type.asSubclass(PersistableSettings.class));
         }
         return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, configKey);
     }
@@ -182,7 +183,9 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
 
     @Override
     public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        final var loaded = DefaultNodeSettings.createSettings(m_settingsClass);
+        final var loaded =
+            ReflectionUtil.createInstance(m_settingsClass).orElseThrow(() -> new IllegalArgumentException(String
+                .format("The provided PersistableSettings '%s' don't provide an empty constructor.", m_settingsClass)));
         useBlackMagicToAccessFields((persistor, field) -> field.set(loaded, persistor.load(settings)));//NOSONAR
         return loaded;
     }
@@ -235,7 +238,7 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
         throw new NoSuchFieldException(key);
     }
 
-    static final class NestedFieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
+    static final class NestedFieldBasedNodeSettingsPersistor<S extends PersistableSettings>
         implements NodeSettingsPersistor<S> {
 
         private final String m_configKey;
@@ -244,7 +247,7 @@ public class FieldBasedNodeSettingsPersistor<S extends DefaultNodeSettings> impl
 
         NestedFieldBasedNodeSettingsPersistor(final String configKey, final Class<S> settingsClass) {
             m_configKey = configKey;
-            m_persistor = NodeSettingsPersistorFactory.getPersistor(settingsClass);
+            m_persistor = NodeSettingsPersistorFactory.createPersistor(settingsClass);
         }
 
         @Override
