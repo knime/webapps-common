@@ -110,7 +110,8 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
     }
 
     private static boolean isPersistable(final Field field) {
-        return !Modifier.isStatic(field.getModifiers());
+        int modifiers = field.getModifiers();//NOSONAR
+        return !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers);
     }
 
     private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
