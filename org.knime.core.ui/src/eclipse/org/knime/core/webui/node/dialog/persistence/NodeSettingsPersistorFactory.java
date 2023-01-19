@@ -103,16 +103,9 @@ public final class NodeSettingsPersistorFactory {
             return new FieldBasedNodeSettingsPersistor<>(settingsClass);
         } else {
             var persistorClass = persistence.value();
-            if (FieldBasedNodeSettingsPersistor.class.equals(persistorClass)) {
-                return new FieldBasedNodeSettingsPersistor<>(settingsClass);
-            } else if (JsonBasedNodeSettingsPersistor.class.equals(persistorClass)) {
-                return new JsonBasedNodeSettingsPersistor<>(settingsClass);
-            } else {
-                @SuppressWarnings("unchecked")
-                NodeSettingsPersistor<S> customPersistor =
-                    NodeSettingsPersistor.createInstance(persistorClass, settingsClass);
-                return customPersistor;
-            }
+            @SuppressWarnings("unchecked")
+            NodeSettingsPersistor<S> persistor = NodeSettingsPersistor.createInstance(persistorClass, settingsClass);
+            return persistor;
         }
     }
 }
