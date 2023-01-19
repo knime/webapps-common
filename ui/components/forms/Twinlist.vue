@@ -174,6 +174,9 @@ export default {
             return this.rightSelected.length === 0;
         },
         normalizedSearchTerm() {
+            if (!this.showSearch) {
+                return '';
+            }
             return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
         }
     },

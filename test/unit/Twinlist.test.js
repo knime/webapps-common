@@ -608,6 +608,21 @@ describe('Twinlist.vue', () => {
             expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
         });
 
+        it('does not search if showSearch is false', () => {
+            propsData = { ...propsData,
+                showSearch: false,
+                initialSearchTerm: '3' };
+            const wrapper = mount(Twinlist, {
+                propsData
+            });
+            let boxes = wrapper.findAll(MultiselectListBox);
+            let left = boxes.at(0);
+            let right = boxes.at(1);
+
+            expect(left.props('possibleValues').length).toBe(2);
+            expect(right.props('possibleValues').length).toBe(1);
+        });
+
         it('can handle basic search requests', () => {
             propsData = { ...propsData,
                 showSearch: true };
