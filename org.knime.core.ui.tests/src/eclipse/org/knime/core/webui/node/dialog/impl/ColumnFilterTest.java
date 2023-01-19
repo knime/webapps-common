@@ -50,8 +50,6 @@ package org.knime.core.webui.node.dialog.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
@@ -88,7 +86,7 @@ class ColumnFilterTest {
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
 
-        selection.m_typeFilter.m_selectedTypes = List.of(TypeColumnFilter.typeToString(COL_SPEC.getType()));
+        selection.m_typeFilter.m_selectedTypes = new String[] {TypeColumnFilter.typeToString(COL_SPEC.getType())};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
     }
 

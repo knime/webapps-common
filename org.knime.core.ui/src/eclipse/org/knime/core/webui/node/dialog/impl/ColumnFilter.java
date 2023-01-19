@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -58,7 +59,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class ColumnFilter implements DefaultNodeSettings {
+public class ColumnFilter implements DialogComponentSettings {
 
 
     /**

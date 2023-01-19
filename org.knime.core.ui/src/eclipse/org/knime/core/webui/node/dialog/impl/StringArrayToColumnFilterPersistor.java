@@ -47,6 +47,9 @@ package org.knime.core.webui.node.dialog.impl;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
  * The data structure of a TwinList changed from an array of strings to a more complex representation by a
@@ -55,11 +58,13 @@ import org.knime.core.node.NodeSettingsRO;
  *
  * @author Paul Bärnreuther
  */
-public final class StringArrayToColumnFilterPersistor extends JsonBasedNodeSettingsFieldPersistor<ColumnFilter> {
+public final class StringArrayToColumnFilterPersistor extends NodeSettingsPersistorWithConfigKey<ColumnFilter> {
+
+    private final FieldBasedNodeSettingsPersistor<ColumnFilter> m_persistor;
 
     @SuppressWarnings("javadoc")
     public StringArrayToColumnFilterPersistor(final Class<ColumnFilter> settingsClass) {
-        super(settingsClass);
+        m_persistor = new FieldBasedNodeSettingsPersistor<>(settingsClass);
     }
 
     @Override
@@ -68,7 +73,12 @@ public final class StringArrayToColumnFilterPersistor extends JsonBasedNodeSetti
         if (fieldSettingsArray != null) {
             return new ColumnFilter(fieldSettingsArray);
         } else {
-            return super.load(settings);
+            return m_persistor.load(settings.getNodeSettings(getConfigKey()));
         }
+    }
+
+    @Override
+    public void save(final ColumnFilter obj, final NodeSettingsWO settings) {
+        m_persistor.save(obj, settings.addNodeSettings(getConfigKey()));
     }
 }

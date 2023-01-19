@@ -50,7 +50,7 @@ package org.knime.core.webui.node.dialog.impl;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.knime.core.data.DataColumnSpec;
@@ -63,18 +63,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class TypeColumnFilter {
+public class TypeColumnFilter implements DialogComponentSettings {
 
     /**
      * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
      */
-    public List<String> m_selectedTypes; //NOSONAR
+    public String[] m_selectedTypes; //NOSONAR
 
     /**
      * Filter with no selected Types
      */
     public TypeColumnFilter() {
-        m_selectedTypes = List.of();
+        m_selectedTypes = new String[0];
     }
 
     /**
@@ -85,7 +85,9 @@ public class TypeColumnFilter {
     @JsonIgnore
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
         final var types = getTypes(choices, spec);
-        return IntStream.range(0, types.length).filter(i -> m_selectedTypes.contains(types[i]))
+        var selectedTypes = Set.of(m_selectedTypes);
+        return IntStream.range(0, types.length).filter(i ->
+        selectedTypes.contains(types[i]))
             .mapToObj(i -> choices[i]).toArray(String[]::new);
     }
 

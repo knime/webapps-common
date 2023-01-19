@@ -63,7 +63,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class PatternColumnFilter {
+public class PatternColumnFilter implements DialogComponentSettings {
 
     /**
      * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"

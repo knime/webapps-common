@@ -54,7 +54,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class ManualColumnFilter {
+public class ManualColumnFilter implements DialogComponentSettings {
 
     /**
      * the manually selected columns in case of m_mode = "MANUAL"

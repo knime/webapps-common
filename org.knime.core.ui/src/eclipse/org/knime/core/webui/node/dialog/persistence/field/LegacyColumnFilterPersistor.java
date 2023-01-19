@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.persistence.field;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -169,7 +169,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         return typeFilter;
     }
 
-    private static List<String> loadSelectedTypes(final NodeSettingsRO typeFilterSettings)
+    private static String[] loadSelectedTypes(final NodeSettingsRO typeFilterSettings)
         throws InvalidSettingsException {
         var typeListSettings = typeFilterSettings.getNodeSettings(TYPELIST);
         var keys = typeListSettings.keySet();
@@ -179,7 +179,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
                 selectedTypes.add(key);
             }
         }
-        return selectedTypes;
+        return selectedTypes.toArray(String[]::new);
     }
 
     static void save(final ColumnFilter columnFilter, final NodeSettingsWO settings, final String configKey) {
@@ -228,7 +228,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     private static void saveTypeFilter(final TypeColumnFilter typeFilter, final NodeSettingsWO typeFilterSettings) {
         var typeListSettings = typeFilterSettings.addNodeSettings(TYPELIST);
         if (typeFilter.m_selectedTypes != null) {
-            typeFilter.m_selectedTypes.forEach(t -> typeListSettings.addBoolean(t, true));
+            Stream.of(typeFilter.m_selectedTypes).forEach(t -> typeListSettings.addBoolean(t, true));
         }
     }
 
