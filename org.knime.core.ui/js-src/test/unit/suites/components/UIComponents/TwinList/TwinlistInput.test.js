@@ -2,6 +2,7 @@ import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsCom
     from '~/test/unit/suites/utils/jsonFormsTestUtils';
 import TwinlistInput from '@/components/UIComponents/TwinlistInput.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
+import MultiModeTwinlist from '~/webapps-common/ui/components/forms/MultiModeTwinlist.vue';
 import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
 
 describe('TwinlistInput.vue', () => {
@@ -131,7 +132,7 @@ describe('TwinlistInput.vue', () => {
     it('renders', () => {
         expect(wrapper.getComponent(TwinlistInput).exists()).toBe(true);
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
-        expect(wrapper.findComponent(Twinlist).exists()).toBe(true);
+        expect(wrapper.findComponent(MultiModeTwinlist).exists()).toBe(true);
     });
     
     it('initializes jsonforms', () => {
@@ -178,7 +179,7 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('correctly transforms the data into possible values', () => {
-        expect(wrapper.findComponent(Twinlist).props().possibleValues).toEqual(
+        expect(wrapper.findComponent(MultiModeTwinlist).props().possibleValues).toEqual(
             [{
                 id: 'test_1',
                 text: 'test_1',
@@ -198,16 +199,16 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Twinlist).vm.initialPattern).toBe(
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialPattern).toBe(
             defaultPropsData.control.data.patternFilter.pattern
         );
-        expect(wrapper.findComponent(Twinlist).vm.initialSelectedTypes).toBe(
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialSelectedTypes).toBe(
             defaultPropsData.control.data.typeFilter.selectedTypes
         );
-        expect(wrapper.findComponent(Twinlist).vm.initialManuallySelected).toBe(
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected).toBe(
             defaultPropsData.control.data.manualFilter.manuallySelected
         );
-        expect(wrapper.findComponent(Twinlist).vm.initialMode).toBe('manual');
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialMode).toBe('manual');
     });
     
 
