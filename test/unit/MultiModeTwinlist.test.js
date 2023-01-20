@@ -166,6 +166,30 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
     
+    it('does not update manually chosen values if mode is not manual', async () => {
+        const initialManuallySelected = ['test1'];
+        const wrapper = mount(MultiModeTwinlist, {
+            propsData: {
+                possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                showMode: true,
+                initialManuallySelected
+            }
+        });
+        expectBoxesValues(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
+
+        // change to regex, where no columns are selected (empty pattere)
+        wrapper.find(ValueSwitch).vm.$emit('input', 'regex');
+        await wrapper.vm.$nextTick();
+        expectBoxesValues(wrapper, ['Text 1', 'Text 2', 'Text 3'], []);
+
+        // change back to manual
+        wrapper.find(ValueSwitch).vm.$emit('input', 'manual');
+        await wrapper.vm.$nextTick();
+        expectBoxesValues(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
+    });
+    
     describe('mode selection', () => {
         const propsData = {
             possibleValues: defaultPossibleValues,

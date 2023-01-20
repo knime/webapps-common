@@ -172,7 +172,9 @@ export default {
     },
     methods: {
         onManualInput(value) {
-            this.chosenValues = value;
+            if (this.mode === 'manual') {
+                this.chosenValues = value;
+            }
         },
         onPatternInput(value) {
             this.chosenPattern = value;
@@ -242,9 +244,8 @@ export default {
       <SearchInput
         :id="labelForId"
         ref="search"
-        :placeholder="searchPlaceholder"
-        :value="mode === 'manual' ? searchTerm : chosenPattern"
-        :label="searchLabel"
+        :value="chosenPattern"
+        :label="patternLabel"
         :initial-case-sensitive-search="initialCaseSensitivePattern"
         :initial-inverse-search="initialInversePattern"
         show-case-sensitive-search-button
