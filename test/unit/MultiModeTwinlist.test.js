@@ -74,7 +74,9 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         const wrapper = mount(MultiModeTwinlist, {
             propsData
         });
-        expect(wrapper.emitted().input[0][0]).toStrictEqual(initialSelection);
+        expect(wrapper.emitted().input[0][0]).toStrictEqual(
+            { selected: initialSelection, isManual: true, deselected: ['test1'] }
+        );
     });
 
     it('has invalid state if invalid values are selected', () => {
@@ -296,7 +298,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             wrapper.find(SearchInput).vm.$emit('input', '.*1');
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().patternInput[0][0]).toBe('.*1');
-            expect(wrapper.emitted().input[1]).toStrictEqual([['test1'], false]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual({ selected: ['test1'], isManual: false });
            
             expectTwinlistIncludes(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
         });
@@ -313,7 +315,9 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             wrapper.find(SearchInput).vm.$emit('input', 't*');
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().patternInput[0][0]).toBe('t*');
-            expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test2', 'test3'], false]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(
+                { selected: ['test1', 'test2', 'test3'], isManual: false }
+            );
             expectTwinlistIncludes(wrapper, [], ['Text 1', 'Text 2', 'Text 3']);
         });
 
@@ -418,7 +422,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             wrapper.find(Checkboxes).vm.$emit('input', ['String']);
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['String']);
-            expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test3'], false]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual({ selected: ['test1', 'test3'], isManual: false });
             expectTwinlistIncludes(wrapper, ['Text 2'], ['Text 1', 'Text 3']);
         });
 
@@ -433,6 +437,42 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData });
             
             expect(wrapper.find(Twinlist).vm.disabled).toBe(true);
+        });
+    });
+
+    describe('unknown columns', () => {
+        let propsData;
+
+        beforeEach(() => {
+            propsData = {
+                possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
+            };
+        });
+
+        it('renders included unkown columns by default', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeTruthy();
+            expect(wrapper.find(Twinlist).vm.initialIncludeUnknownValues).toBeTruthy();
+        });
+
+        it('does not render unknown columns if wanted', () => {
+            propsData.showUnknownValues = false;
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeFalsy();
+        });
+
+        it('does not render unknown columns on non-manual mode', () => {
+            propsData.initialMode = 'regex';
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeFalsy();
+        });
+        
+        it('emits includeUnknownValuesInput event', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            wrapper.find(Twinlist).vm.$emit('includeUnknownValuesInput', false);
+            expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
         });
     });
 });

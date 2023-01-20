@@ -5,6 +5,7 @@ import Checkboxes from './Checkboxes.vue';
 import ValueSwitch from './ValueSwitch.vue';
 import Twinlist from './Twinlist.vue';
 import { filters } from '../../../util/filters';
+import { thisExpression } from '@babel/types';
 
 const allModes = { manual: 'Manual', wildcard: 'Wildcard', regex: 'Regex', type: 'Type' };
 
@@ -29,6 +30,10 @@ export default {
         initialManuallySelected: {
             type: Array,
             default: () => []
+        },
+        initialIncludeUnknownValues: {
+            type: Boolean,
+            default: true
         },
         initialPattern: {
             type: String,
@@ -56,6 +61,10 @@ export default {
          */
         showMode: {
             default: false,
+            type: Boolean
+        },
+        showUnknownValues: {
+            default: true,
             type: Boolean
         },
         // enable search in case of manual selection
@@ -119,7 +128,8 @@ export default {
             selectedLeft: [],
             mode: this.initialMode,
             caseSensitivePattern: this.initialCaseSensitivePattern,
-            inversePattern: this.initialInversePattern
+            inversePattern: this.initialInversePattern,
+            includeUnknownValues: this.initialIncludeUnknownValues
         };
     },
     computed: {
@@ -143,6 +153,9 @@ export default {
         selectedValues() {
             return this.mode === 'manual' ? this.chosenValues : this.matchingValueIds;
         },
+        deselectedValues() {
+            return this.possibleValueIds.filter(id => !this.selectedValues.includes(id));
+        },
         selectionDisabled() {
             return this.disabled || this.mode !== 'manual';
         },
@@ -163,6 +176,9 @@ export default {
         },
         possibleModeIds() {
             return this.possibleModes.map(mode => mode.id);
+        },
+        unknownValuesVisible() {
+            return this.showUnknownValues && this.mode === 'manual';
         }
     },
     watch: {
@@ -170,9 +186,17 @@ export default {
             immediate: true,
             handler(newVal, oldVal) {
                 if (!oldVal || newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
-                    this.$emit('input', this.selectedValues, this.mode === 'manual');
+                    const isManual = this.mode === 'manual';
+                    const event = { selected: this.selectedValues, isManual };
+                    if (isManual) {
+                        event.deselected = this.deselectedValues;
+                    }
+                    this.$emit('input', event);
                 }
             }
+        },
+        includeUnknownValues(newVal) {
+            this.$emit('includeUnknownValuesInput', newVal);
         }
     },
     methods: {
@@ -202,6 +226,11 @@ export default {
         onToggleInvsersePattern(value) {
             this.inversePattern = value;
             this.$emit('inversePatternInput', value);
+        },
+        onUnkownColumnsInput(value) {
+            if (this.mode === 'manual') {
+                this.includeUnknownValues = value;
+            }
         },
         validate() {
             return this.$refs.twinlist.validate();
@@ -280,8 +309,11 @@ export default {
       :show-search="mode === 'manual' && showSearch"
       :value="selectedValues"
       :possible-values="possibleValues"
+      :show-unknown-values="unknownValuesVisible"
+      :initial-include-unknown-values="includeUnknownValues"
       v-bind="$attrs"
       @input="onManualInput"
+      @includeUnknownValuesInput="onUnkownColumnsInput"
     />
   </div>
 </template>

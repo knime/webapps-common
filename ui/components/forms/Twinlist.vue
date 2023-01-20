@@ -1,7 +1,7 @@
 <script>
 import Label from './Label.vue';
 import SearchInput from '../forms/SearchInput.vue';
-import MultiselectListBox from '../forms/MultiselectListBox.vue';
+import MultiselectListBox, { BOTTOM_VALUE_ID } from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
@@ -39,6 +39,10 @@ export default {
             required: false,
             default: ''
         },
+        initialIncludeUnknownValues: {
+            type: Boolean,
+            default: true
+        },
 
         /**
          * Hiding and disabling
@@ -46,6 +50,14 @@ export default {
         showSearch: {
             default: false,
             type: Boolean
+        },
+        showUnknownValues: {
+            type: Boolean,
+            default: false
+        },
+        xyz: {
+            type: Boolean,
+            default: false
         },
         disabled: {
             default: false,
@@ -78,6 +90,11 @@ export default {
             type: String,
             required: false,
             default: 'Search'
+        },
+        unknownValues: {
+            type: String,
+            required: false,
+            default: `Unknown values`
         },
         emptyStateLabel: {
             type: String,
@@ -130,7 +147,8 @@ export default {
             rightSelected: [],
             selectedLeft: [],
             searchTerm: this.initialSearchTerm,
-            caseSensitiveSearch: this.initialCaseSensitiveSearch
+            caseSensitiveSearch: this.initialCaseSensitiveSearch,
+            includeUnknownValues: this.initialIncludeUnknownValues
         };
     },
     computed: {
@@ -228,6 +246,9 @@ export default {
             if (newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
                 this.$emit('input', this.chosenValues);
             }
+        },
+        includeUnknownValues(newVal) {
+            this.$emit('includeUnknownValuesInput', newVal);
         }
     },
     methods: {
@@ -244,16 +265,25 @@ export default {
         moveRight(items) {
             // add all left items to our values
             items = items || this.selectedLeft;
-            this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
+            this.chosenValues = [
+                ...items.filter(item => item !== BOTTOM_VALUE_ID),
+                ...this.chosenValues
+            ].sort(this.compareByOriginalSorting);
+            if (items.includes(BOTTOM_VALUE_ID)) {
+                this.includeUnknownValues = true;
+            }
             this.clearSelections();
         },
         moveLeft(items) {
-            // remove all right values from or selectedValues
+            // remove all right values from or chosenValues
             items = items || this.rightSelected;
             // add the invalid items to the possible items
             let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
+            if (items.includes(BOTTOM_VALUE_ID)) {
+                this.includeUnknownValues = false;
+            }
             this.clearSelections();
         },
         onMoveRightButtonClick() {
@@ -262,6 +292,7 @@ export default {
         onMoveAllRightButtonClick() {
             // only move valid items
             this.moveRight(this.leftItems.filter(x => !x.invalid).map(x => x.id));
+            this.includeUnknownValues = true;
         },
         onMoveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
@@ -278,6 +309,7 @@ export default {
         },
         onMoveAllLeftButtonClick() {
             this.moveLeft(this.rightItems.map(x => x.id));
+            this.includeUnknownValues = false;
         },
         onMoveLeftButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
@@ -331,7 +363,13 @@ export default {
         },
         itemMatchesSearch(item) {
             return filters.search.test(item.text, this.normalizedSearchTerm,
-                this.caseSensitiveSearch);
+                this.caseSensitiveSearch, false);
+        },
+        focusLeft() {
+            this.$refs.left.focus();
+        },
+        focusRight() {
+            this.$refs.right.focus();
         },
         getInfoText(numShownItems, numAllItems) {
             return this.hasActiveSearch ? `${numShownItems} of ${numAllItems} entries` : null;
@@ -411,7 +449,17 @@ export default {
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
         @keyArrowRight="onKeyRightArrow"
         @input="onLeftInput"
-      />
+      >
+        <div
+          v-if="showUnknownValues && !includeUnknownValues"
+          :class="{ selected }"
+          class="unknown-values"
+          @click="(event) => [handleClick(event), focusLeft()]"
+          @dblclick.exact="handleDblClick"
+        >
+          &times; {{ unknownValues }} &times;
+        </div>
+      </MultiselectListBox>
       <div class="buttons">
         <div
           ref="moveRight"
@@ -456,6 +504,7 @@ export default {
       </div>
       <MultiselectListBox
         ref="right"
+        v-slot="{ selected, handleClick, handleDblClick }"
         class="listBox"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
@@ -468,7 +517,18 @@ export default {
         @doubleClickShift="onRightListBoxShiftDoubleClick"
         @keyArrowLeft="onKeyLeftArrow"
         @input="onRightInput"
-      />
+      >
+        <div
+          v-if="showUnknownValues && includeUnknownValues"
+          :class="{ selected }"
+          class="unknown-values"
+          
+          @click="(event) => [handleClick(event), focusRight()]"
+          @dblclick.exact="handleDblClick"
+        >
+          &times; {{ unknownValues }} &times;
+        </div>
+      </MultiselectListBox>
     </div>
   </div>
 </template>
@@ -529,13 +589,35 @@ export default {
   & .title,
   & .listBox {
     flex: 3 1 auto;
-    max-width: calc(50% - (var(--button-bar-width) / 2));
+    width: calc(50% - (var(--button-bar-width) / 2));
   }
 
   & .listBox {
     display: flex;
     align-items: stretch;
     flex-direction: row;
+    
+    & .unknown-values{
+      background-color: green;
+      border-radius: 3px;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      font-style: italic;
+      text-align: center;
+      margin: 2px;
+      padding: 0px 3px;
+      background-color: var(--theme-select-control-background-color-hover);
+      line-height: 16px;
+      position: relative;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &.selected {
+        background-color: var(--theme-select-control-foreground-color-hover);
+      }
+    }
   }
 
   & .buttons {

@@ -3,6 +3,7 @@ import debounce from '../../../util/debounce';
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
+export const BOTTOM_VALUE_ID = Symbol('bottom');
 
 export default {
     props: {
@@ -95,6 +96,9 @@ export default {
             const pxSize = `${this.size * this.optionLineHeight + 2}px`;
             return this.size > 0 ? { height: pxSize } : {};
         },
+        bottomSelected() {
+            return this.isCurrentValue(BOTTOM_VALUE_ID);
+        },
         showEmptyState() {
             return this.withIsEmptyState && this.possibleValues.length === 0;
         }
@@ -122,14 +126,23 @@ export default {
     },
     methods: {
         isCurrentValue(candidate) {
-            return this.value.includes(candidate);
+            return this.selectedValues.includes(candidate);
+        },
+        hasBottomValue() {
+            return this.$scopedSlots.default && this.$scopedSlots.default();
         },
         handleCtrlClick(value, index) {
-            this.currentKeyNavIndex = index;
+            if (value !== BOTTOM_VALUE_ID) {
+                this.currentKeyNavIndex = index;
+            }
             this.toggleSelection(value);
         },
         handleShiftClick(value, clickedIndex) {
-            this.setSelected(this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex));
+            if (value === BOTTOM_VALUE_ID) {
+                this.toggleSelection(value);
+            } else {
+                this.setSelected(this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex));
+            }
         },
         /**
          * Returns all value ids (String) for two indices no matter which one is the start/end index
@@ -200,7 +213,9 @@ export default {
             if (!this.multiselectByClick) {
                 this.selectedValues = [];
             }
-            this.currentKeyNavIndex = index;
+            if (value !== BOTTOM_VALUE_ID) {
+                this.currentKeyNavIndex = index;
+            }
             this.toggleSelection(value);
         },
         handleDblClick(id, index) {
@@ -208,6 +223,12 @@ export default {
                 return;
             }
             this.$emit('doubleClickOnItem', id, index);
+        },
+        handleBottomClick($event) {
+            this.handleClick($event, BOTTOM_VALUE_ID);
+        },
+        handleBottomDblClick() {
+            this.handleDblClick(BOTTOM_VALUE_ID);
         },
         handleShiftDblClick() {
             if (this.disabled) {
@@ -359,7 +380,11 @@ export default {
                 return;
             }
             // select all
-            this.setSelected(this.possibleValues.map(x => x.id));
+            const allValues = this.possibleValues.map(x => x.id);
+            if (this.hasBottomValue()) {
+                allValues.push(BOTTOM_VALUE_ID);
+            }
+            this.setSelected(allValues);
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -402,57 +427,73 @@ export default {
     :class="['multiselect-list-box', { 'invalid' : !isValid, disabled }]"
     :style="cssStyleSize"
   >
-    <ul
-      :id="id"
-      ref="ul"
-      role="listbox"
-      tabindex="0"
-      :class="{ disabled, 'empty-box': showEmptyState }"
-      :aria-label="ariaLabel"
-      :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
-      @keydown.ctrl.a.prevent.exact="onCtrlA"
-      @keydown.up.prevent.exact="onArrowUp"
-      @keydown.down.prevent.exact="onArrowDown"
-      @keydown.shift.up.prevent.exact="onArrowUpShift"
-      @keydown.shift.down.prevent.exact="onArrowDownShift"
-      @keydown.left.prevent.exact="onArrowLeft"
-      @keydown.right.prevent.exact="onArrowRight"
-      @keydown.home.prevent.exact="onHomeKey"
-      @keydown.end.prevent.exact="onEndKey"
-      @mousedown="onStartDrag"
-      @mousemove="onDrag"
-    >
-      <li
-        v-for="(item, index) of possibleValues"
-        :id="generateOptionId(item)"
-        :key="`listbox-${item.id}`"
-        role="option"
-        :title="item.text"
-        :data-option-index="index"
-        :style="{ 'line-height': `${optionLineHeight}px` }"
-        :class="{
-          'selected': isCurrentValue(item.id),
-          'invalid': item.invalid,
-          'noselect' :true,
-          'empty': !Boolean(item.text.trim()),
-          disabled
-        }"
-        :aria-selected="isCurrentValue(item.id)"
-        @click="handleClick($event, item.id, index)"
-        @dblclick.shift="handleShiftDblClick()"
-        @dblclick.exact="handleDblClick(item.id, index)"
+    <div :class="['box', { 'empty-box': showEmptyState }]">
+      <ul
+        :id="id"
+        ref="ul"
+        role="listbox"
+        tabindex="0"
+        :class="{ disabled }"
+        :aria-label="ariaLabel"
+        :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
+        @keydown.ctrl.a.prevent.exact="onCtrlA"
+        @keydown.up.prevent.exact="onArrowUp"
+        @keydown.down.prevent.exact="onArrowDown"
+        @keydown.shift.up.prevent.exact="onArrowUpShift"
+        @keydown.shift.down.prevent.exact="onArrowDownShift"
+        @keydown.left.prevent.exact="onArrowLeft"
+        @keydown.right.prevent.exact="onArrowRight"
+        @keydown.home.prevent.exact="onHomeKey"
+        @keydown.end.prevent.exact="onEndKey"
+        @mousedown="onStartDrag"
+        @mousemove="onDrag"
       >
-        {{ item.text }}
-      </li>
+        <li
+          v-for="(item, index) of possibleValues"
+          :id="generateOptionId(item)"
+          :key="`listbox-${item.id}`"
+          role="option"
+          :title="item.text"
+          :data-option-index="index"
+          :style="{ 'line-height': `${optionLineHeight}px` }"
+          :class="{
+            'selected': isCurrentValue(item.id),
+            'invalid': item.invalid,
+            'noselect' :true,
+            'empty': !Boolean(item.text.trim()),
+            disabled
+          }"
+          :aria-selected="isCurrentValue(item.id)"
+          @click="handleClick($event, item.id, index)"
+          @dblclick.shift="handleShiftDblClick()"
+          @dblclick.exact="handleDblClick(item.id, index)"
+        >
+          {{ item.text }}
+        </li>
+      </ul>
       <div
-        v-if="showEmptyState"
-        class="empty-state"
+        v-if="hasBottomValue()"
+        role="bottom-element"
+        class="noselect"
+        @keydown.left.prevent.exact="onArrowLeft"
+        @keydown.right.prevent.exact="onArrowRight"
+      >
+        <slot
+          :selected="bottomSelected"
+          :handleClick="handleBottomClick"
+          :handleDblClick="handleBottomDblClick"
+          :handleArrowUp="onArrowUp"
+        />
+      </div>
+      <div
+          v-if="showEmptyState"
+          class="empty-state"
       >
         <span>
           {{ emptyStateLabel }}
         </span>
       </div>
-    </ul>
+    </div>
   </div>
 </template>
 
@@ -477,13 +518,15 @@ export default {
     }
   }
 
-  & [role="listbox"] {
+  & .box {
     height: 100%;
+    width: 100%;
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
     font-size: 14px;
     min-height: 22px;
-    padding: 0;
-    margin: 0;
     background: var(--theme-multiselect-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
@@ -498,12 +541,20 @@ export default {
     &:focus:not(.disabled) {
       border-color: var(--knime-masala);
     }
+
+    & [role="bottom-element"] {
+        border-top: 1px solid var(--knime-stone-gray);
+        flex-grow: 0;
+    }
   }
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
   & ul[role="listbox"] {
     overflow-y: auto;
     position: relative;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
   }
 
   & [role="option"] {
