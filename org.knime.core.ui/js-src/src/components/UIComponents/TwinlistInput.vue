@@ -36,13 +36,13 @@ const TwinlistInput = defineComponent({
             default: defaultTwinlistRightLabel
         }
     },
-    data() {
-         return {
-            possibleValues: null
-        }
-    },
     setup(props) {
         return useJsonFormsControl(props);
+    },
+    data() {
+        return {
+            possibleValues: null
+        };
     },
     computed: {
         isModelSettingAndHasNodeView() {

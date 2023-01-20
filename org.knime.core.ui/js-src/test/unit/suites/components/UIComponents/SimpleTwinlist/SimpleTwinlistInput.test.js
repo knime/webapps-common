@@ -148,9 +148,9 @@ describe('SimpleTwinlistInput.vue', () => {
         });
         expect(localWrapper.props().control.data).toStrictEqual(['missing']);
         await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
-        expect(onChangeSpy).toBeCalledWith([], true);
+        expect(onChangeSpy).toBeCalledWith([]);
         await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
-        expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3'], true);
+        expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3']);
     });
 
     it('does not render content of SimpleTwinlistInput when visible is false', async () => {

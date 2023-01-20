@@ -54,6 +54,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
@@ -271,6 +272,57 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testIgnore() throws JsonProcessingException {
         testSettings(IgnoreSetting.class);
+    }
+
+    private static class ColumnChoices implements ChoicesProvider {
+
+        static String[] included = new String[]{"included", "included2"};
+
+        @Override
+        public String[] choices(final SettingsCreationContext context) {
+            return included;
+        }
+    }
+
+    private static class ColumnFilterSetting {
+
+        private static DataTableSpec spec =
+            new DataTableSpec(new DataColumnSpecCreator(ColumnChoices.included[0], DoubleCell.TYPE).createSpec(),
+                new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
+
+        private static String SNAPSHOT_IDENTICAL =
+            "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_manuallySelected\":[]}},"
+                + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
+                + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
+                + "\"typeFilter\":{\"type\":\"object\",\"properties\":{\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_selectedTypes\":[]}},";
+
+        private static String SNAPSHOT = "{" + //
+            "\"testColumnFilter\":{"// +
+            + "\"title\":\"columns\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + SNAPSHOT_IDENTICAL
+            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\"}]}"//
+            + "}}," //
+            + "\"testColumnFilterNoTypes\":{" //
+            + "\"title\":\"otherSelection\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + SNAPSHOT_IDENTICAL
+            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}"//
+            + "}}}";
+
+        @Schema(title = "columns", choices = ColumnChoices.class)
+        public ColumnFilter testColumnFilter;
+
+        @Schema(title = "otherSelection", choices = ColumnChoices.class, withTypes = false)
+        public ColumnFilter testColumnFilterNoTypes;
+    }
+
+    @Test
+    void testColumnFilter() throws JsonProcessingException {
+        testSettings(ColumnFilterSetting.class, ColumnFilterSetting.spec);
     }
 
     private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)
