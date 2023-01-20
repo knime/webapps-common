@@ -218,7 +218,7 @@ export default {
                 v-model="teleport"
                 type="checkbox"
               >
-              <span class="menu-name">with{{ teleport ? '' : 'out' }} teleport</span>
+              <span class="menu-name">With teleport</span>
               <SubMenu
                 :teleport-to-body="teleport"
                 :items="subMenuItemsWithSeparator"

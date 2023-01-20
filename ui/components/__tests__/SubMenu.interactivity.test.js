@@ -28,10 +28,11 @@ describe('SubMenu.vue', () => {
                 }
             });
             // assumes MenuItems use <li>
-            expect(wrapper.find('li').exists()).toBeTruthy();
-            await wrapper.setProps({ teleportToBody: true });
+            // teleport is enabled by default, so the li cannot be found as it is telported
             expect(wrapper.find('li').exists()).toBeFalsy();
             expect(wrapper.findComponent(MenuItems).find('li').exists()).toBeTruthy();
+            await wrapper.setProps({ teleportToBody: false });
+            expect(wrapper.find('li').exists()).toBeTruthy();
         });
     
         it('emits toggle event with calback to collapse the menu on click', async () => {
@@ -67,7 +68,7 @@ describe('SubMenu.vue', () => {
         });
     });
 
-    describe.skip('clicking submenu items', () => {
+    describe('clicking submenu items', () => {
         it('emits item-click', async () => {
             const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
@@ -90,13 +91,13 @@ describe('SubMenu.vue', () => {
                 }
             });
             // assumes MenuItems use <li>
-            await wrapper.findAll('li')[0].trigger('click');
+            await wrapper.findComponent(MenuItems).findAll('li')[0].trigger('click');
             let event = wrapper.emitted('item-click')[0];
             expect(typeof event[0]).toBe('object'); // event object
             expect(event[1]).toEqual(items[0]);
             expect(event[2]).toEqual(id);
 
-            await wrapper.findAll('li')[1].trigger('click');
+            await wrapper.findComponent(MenuItems).findAll('li')[1].trigger('click');
             event = wrapper.emitted('item-click')[1];
             expect(typeof event[0]).toBe('object'); // event object
             expect(event[1]).toEqual(items[1]);
