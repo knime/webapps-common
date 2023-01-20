@@ -11,19 +11,19 @@ import Checkboxes from '~/ui/components/forms/Checkboxes.vue';
 describe('MultiModeMultiModeTwinlist.vue', () => {
     let defaultPossibleValues;
     
-    const expectBoxValues = (exp, val) => {
-        expect(val.length).toBe(exp.length);
-        exp.forEach((e, i) => {
-            expect(val[i].text).toStrictEqual(e);
+    const expectBoxValues = (expectedValues, actualValues) => {
+        expect(actualValues.length).toBe(expectedValues.length);
+        expectedValues.forEach((e, i) => {
+            expect(actualValues[i].text).toStrictEqual(e);
         });
     };
 
-    const expectBoxesValues = (wrapper, expLeft, expRight) => {
+    const expectTwinlistIncludes = (wrapper, expectedLeft, expectedRight) => {
         let boxes = wrapper.find(Twinlist).findAll(MultiselectListBox);
-        let leftVals = boxes.at(0).props('possibleValues');
-        let rightVals = boxes.at(1).props('possibleValues');
-        expectBoxValues(expLeft, leftVals);
-        expectBoxValues(expRight, rightVals);
+        let actualLeft = boxes.at(0).props('possibleValues');
+        let actualRight = boxes.at(1).props('possibleValues');
+        expectBoxValues(expectedLeft, actualLeft);
+        expectBoxValues(expectedRight, actualRight);
     };
 
     beforeEach(() => {
@@ -177,17 +177,17 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
                 initialManuallySelected
             }
         });
-        expectBoxesValues(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
+        expectTwinlistIncludes(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
 
-        // change to regex, where no columns are selected (empty pattere)
+        // change to regex, where no columns are selected (empty pattern)
         wrapper.find(ValueSwitch).vm.$emit('input', 'regex');
         await wrapper.vm.$nextTick();
-        expectBoxesValues(wrapper, ['Text 1', 'Text 2', 'Text 3'], []);
+        expectTwinlistIncludes(wrapper, ['Text 1', 'Text 2', 'Text 3'], []);
 
         // change back to manual
         wrapper.find(ValueSwitch).vm.$emit('input', 'manual');
         await wrapper.vm.$nextTick();
-        expectBoxesValues(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
+        expectTwinlistIncludes(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
     });
     
     describe('mode selection', () => {
@@ -273,7 +273,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             expect(wrapper.emitted().patternInput[0][0]).toBe('.*1');
             expect(wrapper.emitted().input[1]).toStrictEqual([['test1'], false]);
            
-            expectBoxesValues(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
+            expectTwinlistIncludes(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
         });
 
         it('selects via wildcard matching', async () => {
@@ -289,7 +289,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().patternInput[0][0]).toBe('t*');
             expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test2', 'test3'], false]);
-            expectBoxesValues(wrapper, [], ['Text 1', 'Text 2', 'Text 3']);
+            expectTwinlistIncludes(wrapper, [], ['Text 1', 'Text 2', 'Text 3']);
         });
 
         it('can do case-sensitive searches', () => {
@@ -306,12 +306,12 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
                 propsData
             });
            
-            expectBoxesValues(wrapper, ['Text 1', 'Text 3'], ['Text 2']);
+            expectTwinlistIncludes(wrapper, ['Text 1', 'Text 3'], ['Text 2']);
 
             // Make case-sensitive
             wrapper.vm.caseSensitivePattern = true;
            
-            expectBoxesValues(wrapper, ['Text 1', 'Text 2', 'Text 3'], []);
+            expectTwinlistIncludes(wrapper, ['Text 1', 'Text 2', 'Text 3'], []);
         });
 
         it('can do inverse searches', () => {
@@ -327,12 +327,12 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             const wrapper = mount(MultiModeTwinlist, {
                 propsData
             });
-            expectBoxesValues(wrapper, ['Text 1', 'Text 2'], ['Text 3']);
+            expectTwinlistIncludes(wrapper, ['Text 1', 'Text 2'], ['Text 3']);
 
             // Set inverse search
             wrapper.vm.inversePattern = true;
 
-            expectBoxesValues(wrapper, ['Text 3'], ['Text 1', 'Text 2']);
+            expectTwinlistIncludes(wrapper, ['Text 3'], ['Text 1', 'Text 2']);
         });
         
 
@@ -394,7 +394,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['String']);
             expect(wrapper.emitted().input[1]).toStrictEqual([['test1', 'test3'], false]);
-            expectBoxesValues(wrapper, ['Text 2'], ['Text 1', 'Text 3']);
+            expectTwinlistIncludes(wrapper, ['Text 2'], ['Text 1', 'Text 3']);
         });
 
         it('prohibits manual selection', () => {
