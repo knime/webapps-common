@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.impl;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -66,6 +67,7 @@ public class ColumnFilter implements DialogComponentSettings {
      * The setting representing the selected columns
      */
     @Schema(takeChoicesFromParent = true, multiple = true)
+    @Persist(hidden = true)
     public String[] m_selected;
 
     /**
