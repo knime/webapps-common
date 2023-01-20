@@ -16,21 +16,12 @@ properties([
 try {
     node('maven && java11 && large') {
         knimetools.defaultTychoBuild(updateSiteProject: 'org.knime.update.core.ui')
-        
+
         junit '**/coverage/junit.xml'
         knimetools.processAuditResults()
-        
+
         stage('Sonarqube analysis') {
-            withCredentials([usernamePassword(credentialsId: 'ARTIFACTORY_CREDENTIALS', passwordVariable: 'ARTIFACTORY_PASSWORD', usernameVariable: 'ARTIFACTORY_LOGIN')]) {
-                withSonarQubeEnv('Sonarcloud') {
-                    withMaven(options: [artifactsPublisher(disabled: true)]) {
-                        def sonarArgs = knimetools.getSonarArgsForMaven(env.SONAR_CONFIG_NAME)
-                        sh """
-                            mvn -Dknime.p2.repo=${P2_REPO} package $sonarArgs -DskipTests=true
-                        """
-                    }
-                }
-            }
+           workflowTests.runSonar(withoutNode:true)
         }
     }
 } catch (ex) {
