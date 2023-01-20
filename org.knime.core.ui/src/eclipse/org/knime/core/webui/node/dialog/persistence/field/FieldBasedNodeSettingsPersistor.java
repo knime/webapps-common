@@ -119,7 +119,7 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         if (persistence != null) {
             return createPersistorFromPersistenceAnnotation(persistence, field);
         } else {
-            return createDefaultPersistor(field.getType(), extractConfigKeyFromFieldName(field.getName()));
+            return createDefaultPersistor(field.getType(), getConfigKey(field));
         }
     }
 
@@ -137,10 +137,7 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         final Field field) {
         var customPersistorClass = persistence.customPersistor();
         var type = field.getType();
-        var configKey = persistence.configKey();
-        if (configKey.strip().equals("")) {
-            configKey = extractConfigKeyFromFieldName(field.getName());
-        }
+        var configKey = getConfigKey(field);
         if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
             final var customPersistor = NodeSettingsPersistor.createInstance(customPersistorClass, type);
             if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
@@ -155,6 +152,22 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
             return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
         } else {
             return createDefaultPersistor(type, configKey);
+        }
+    }
+
+    private static String getConfigKey(final Field field) {
+        var persist = field.getAnnotation(Persist.class);
+        if (persist == null) {
+            return extractConfigKeyFromFieldName(field.getName());
+        } else {
+            var configKey = persist.configKey();
+            if ("".equals(configKey)) {
+                configKey = extractConfigKeyFromFieldName(field.getName());
+            }
+            if (persist.hidden()) {
+                configKey += SettingsModel.CFGKEY_INTERNAL;
+            }
+            return configKey;
         }
     }
 

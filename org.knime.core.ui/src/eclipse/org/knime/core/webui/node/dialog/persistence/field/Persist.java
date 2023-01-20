@@ -96,4 +96,10 @@ public @interface Persist {
      */
     Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
 
+    /**
+     * Optional argument that allows to hide a setting in the flow variable tab.
+     * @return true if the setting should be hidden in the flow variable tab.
+     */
+    boolean hidden() default false;
+
 }
