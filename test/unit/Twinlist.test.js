@@ -769,16 +769,7 @@ describe('Twinlist.vue', () => {
             expect(infos.at(0).text()).toBe('2 of 2 entries');
             expect(infos.at(1).text()).toBe('1 of 2 entries');
         });
-
-        it('show indication that no items match the search', () => {
-            propsData.value = ['test2', 'Missing'];
-            propsData.initialSearchTerm = 'Missing';
-            const wrapper = mount(Twinlist, { propsData });
-            const infos = wrapper.findAll('.info');
-            expect(infos.at(0).text()).toBe('No entries (2 hidden)');
-            expect(infos.at(1).text()).toBe('1 of 2 entries');
-        });
-
+        
         it('does not show info if search is not shown', () => {
             propsData.initialSearchTerm = 't';
             propsData.showSearch = false;

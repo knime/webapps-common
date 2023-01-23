@@ -327,13 +327,7 @@ export default {
                 this.caseSensitiveSearch);
         },
         getInfoText(numShownItems, numAllItems) {
-            if (!this.hasActiveSearch) {
-                return null;
-            }
-            if (numShownItems === 0) {
-                return `No entries (${numAllItems} hidden)`;
-            }
-            return `${numShownItems} of ${numAllItems} entries`;
+            return this.hasActiveSearch ? `${numShownItems} of ${numAllItems} entries` : null;
         }
     }
 };
@@ -363,9 +357,15 @@ export default {
     </Label>
     <div class="header">
       <div class="title">
-        <div class="label"> {{ leftLabel }}</div>
+        <div
+          class="label"
+          :title="leftLabel"
+        >
+          {{ leftLabel }}
+        </div>
         <div
           v-if="leftInfo"
+          :title="leftInfo"
           class="info"
         >
           {{ leftInfo }}
@@ -373,9 +373,15 @@ export default {
       </div>
       <div class="space" />
       <div class="title">
-        <div class="label"> {{ rightLabel }}</div>
+        <div
+          class="label"
+          :title="rightLabel"
+        >
+          {{ rightLabel }}
+        </div>
         <div
           v-if="rightInfo"
+          :title="rightInfo"
           class="info"
         >
           {{ rightInfo }}
