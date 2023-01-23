@@ -6,7 +6,7 @@ import code from 'webapps-common/ui/components/forms/Label.vue?raw';
 
 const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>
 <Label
-  v-slot="{ labelForId }"
+  #default="{ labelForId }"
   text="Label for a field"
 >
     <!-- The id attribute will be replaced with a generated unique ID --\>
@@ -17,9 +17,20 @@ const codeExample = `<!-- The labelForId syntax is used to associate the label w
     />
 </Label>
 <Label
-  v-slot="{ labelForId }"
+  #default="{ labelForId }"
   text="Compact label for a field"
   compact
+>
+  <InputField
+    :id="labelForId"
+    type="text"
+    placeholder="I'm a placeholder"
+  />
+</Label>
+<Label
+  :active="false"
+  #default="{ labelForId }"
+  text="Hidden label for a field"
 >
   <InputField
     :id="labelForId"
@@ -79,6 +90,30 @@ export default {
             #default="{ labelForId }"
             text="Compact label for a field"
             compact
+          >
+            <InputField
+              :id="labelForId"
+              type="text"
+              placeholder="I'm a placeholder"
+            />
+          </Label>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            The components the label is for can also be rendered without the
+            label itself. This allows disabling label use more conveniently in
+            more compact layouts.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Label
+            #default="{ labelForId }"
+            :active="false"
+            text="Hidden label for a field"
           >
             <InputField
               :id="labelForId"

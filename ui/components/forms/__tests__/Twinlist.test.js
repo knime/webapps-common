@@ -576,6 +576,7 @@ describe('Twinlist.vue', () => {
         it('can render the search bar if wanted', () => {
             props = { ...props,
                 showSearch: true,
+                withSearchLabel: true,
                 searchLabel: 'Filter entries',
                 searchPlaceholder: 'Enter search term' };
             const wrapper = mount(Twinlist, {
@@ -705,10 +706,21 @@ describe('Twinlist.vue', () => {
             expect(wrapper.findComponent(SearchInput).exists()).toBeFalsy();
         });
 
-        it('renders search if wanted', () => {
+        it('renders search without label by default', () => {
+            const wrapper = mount(Twinlist, { props: {
+                ...props,
+                showSearch: true
+            } });
+            expect(wrapper.findComponent(SearchInput).exists()).toBeTruthy();
+            const labels = wrapper.findAll('div.search-wrapper label');
+            expect(labels.length).toBe(0);
+        });
+
+        it('renders label if wanted', () => {
             const wrapper = mount(Twinlist, { props: {
                 ...props,
                 showSearch: true,
+                withSearchLabel: true,
                 searchLabel: 'Search term label'
             } });
             expect(wrapper.findComponent(SearchInput).exists()).toBeTruthy();

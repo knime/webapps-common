@@ -26,6 +26,29 @@ const codeExample = `<MultiModeTwinlist
     type: { id: 'type2', text: 'Type 2' }
   }]"
 />
+<MultiModeTwinlist
+  :size="7"
+  show-mode
+  :with-mode-label="false"
+  :with-search-label="false"
+  :with-pattern-label="false"
+  :with-types-label="false"
+  left-label="Select from the visible items"
+  right-label="The selected stuff"
+  :possible-values="[{
+    id: 'foo',
+    text: 'foo',
+    type: { id: 'type1', text: 'Type 1' }
+  }, {
+    id: 'Foo',
+    text: 'Foo',
+    type: { id: 'type1', text: 'Type 1' }
+  }, {
+    id: 'bar',
+    text: 'Bar',
+    type: { id: 'type2', text: 'Type 2' }
+  }]"
+/>
 `;
 
 export default {
@@ -141,7 +164,13 @@ export default {
             @case-sensitive-pattern-input="(event) => isCaseSensitivePattern = event"
           />
         </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected.selected }}
+          <br v-if="selected.isManual">
+          {{ selected.isManual ? 'deselected ids: ': '' }}{{ selected.deselected }}
+        </div>
       </div>
+      <br>
       <div class="grid-container">
         <div class="grid-item-6">
           <MultiModeTwinlist
@@ -162,10 +191,28 @@ export default {
             :possible-values="demoValues"
           />
         </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            Optionally, labels can be shown and customized:
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
         <div class="grid-item-6">
-          selected ids: {{ selected.selected }}
-          <br v-if="selected.isManual">
-          {{ selected.isManual ? 'deselected ids: ': '' }}{{ selected.deselected }}
+          <MultiModeTwinlist
+            :key="key"
+            :size="7"
+            show-mode
+            :with-mode-label="true"
+            :with-search-label="true"
+            :with-pattern-label="true"
+            :with-types-label="true"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            :possible-values="demoValues"
+          />
         </div>
       </div>
     </section>

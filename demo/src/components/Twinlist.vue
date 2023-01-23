@@ -37,6 +37,25 @@ const codeExample = `<Twinlist
     id: 'baz',
     text: 'Baz'
   }]"
+<Twinlist
+  v-model="selectedSearchLabel"
+  show-search
+  left-label="Select from the visible items"
+  right-label="The selected stuff"
+  search-label="Search items"
+  search-placeholder="Placeholder"
+  :with-search-label="true"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+/>
 />`;
 
 export default {
@@ -49,7 +68,8 @@ export default {
             codeExample,
             selected: [],
             selectedMissing: ['foo', 'I am missing', 'bar'],
-            selectedUnknown: []
+            selectedUnknown: [],
+            selectedSearchLabel: []
         };
     },
     computed: {
@@ -151,8 +171,8 @@ export default {
         <div class="grid-item-6">
           <p>
             The Twinlist with a search field enabled and an initial
-            search term defined. Case-sensitive search as well as inverse search
-            can be enabled through the respective search field buttons.
+            search term defined. Case-sensitive search can be enabled through
+            a button on the right.
           </p>
         </div>
       </div>
@@ -215,13 +235,37 @@ export default {
             unknown-values-text="My unknowns"
             left-label="Select from the visible items"
             right-label="The selected stuff"
-            search-label="Search items"
             search-placeholder="Placeholder"
             :possible-values="demoValues"
           />
         </div>
         <div class="grid-item-6">
           selected ids: {{ selectedUnknown }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>
+            The Twinlist can show a customizable search label.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            v-model="selectedSearchLabel"
+            :size="7"
+            show-search
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            search-label="Search items"
+            search-placeholder="Placeholder"
+            :with-search-label="true"
+            :possible-values="demoValues"
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selectedSearchLabel }}
         </div>
       </div>
     </section>

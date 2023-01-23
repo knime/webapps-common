@@ -1,5 +1,6 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
+import FilterIcon from 'webapps-common/ui/assets/img/icons/filter.svg';
 import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
 import code from 'webapps-common/ui/components/forms/SearchInput.vue?raw';
 
@@ -22,11 +23,27 @@ const codeExample = `<SearchInput
   v-model="inputValue"
   @focus="onFocus"
 />
+<SearchInput
+  v-model="inputValue4"
+  @focus="onFocus"
+>
+  <template #icon>
+    <FilterIcon />
+  </template>
+</SearchInput>
+<SearchInput
+  v-model="inputValue5"
+  :show-case-sensitive-search-button="true"
+  :show-inverse-search-button="true"
+  :initial-inverse-search="true"
+  @focus="onFocus"
+/>
 `;
 
 export default {
     components: {
         SearchInput,
+        FilterIcon,
         CodeExample
     },
     data() {
@@ -34,7 +51,9 @@ export default {
             codeExample,
             inputValue: '',
             inputValue2: '',
-            inputValue3: 'Demo'
+            inputValue3: 'Demo',
+            inputValue4: '',
+            inputValue5: 'Demo'
         };
     },
     computed: {
@@ -59,6 +78,8 @@ export default {
           <p>
             Single line string search input with search icon and clear button.
             It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
+            Optionally, buttons for case-sensitive search and inverse searchc an
+            be shown.
           </p>
         </div>
       </div>
@@ -79,6 +100,26 @@ export default {
             v-model="inputValue3"
             placeholder="Placeholder"
             @clear="alert('Search cleared')"
+          />
+          It's possible to use a different icon:
+          <SearchInput
+            v-model="inputValue4"
+            placeholder="A different icon"
+            @focus="onFocus"
+          >
+            <template #icon>
+              <FilterIcon />
+            </template>
+          </SearchInput>
+          Buttons for the search options case-sensitivity and inverse-search can
+          be displayed.
+          <SearchInput
+            v-model="inputValue5"
+            :show-case-sensitive-search-button="true"
+            :show-inverse-search-button="true"
+            :initial-inverse-search="true"
+            placeholder="Search"
+            @focus="onFocus"
           />
         </div>
         <div class="grid-item-6">

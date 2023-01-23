@@ -8,6 +8,8 @@ import MultiselectListBox from '../MultiselectListBox.vue';
 import Twinlist from '../Twinlist.vue';
 import ValueSwitch from '../ValueSwitch.vue';
 import Checkboxes from '../Checkboxes.vue';
+import Label from '../Label.vue';
+import FilterIcon from '../../..//assets/img/icons/filter.svg';
 
 describe('MultiModeMultiModeTwinlist.vue', () => {
     let defaultPossibleValues;
@@ -185,6 +187,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         it('shows search by default if mode is manual', async () => {
             const wrapper = mount(MultiModeTwinlist, { propsData });
             expect(wrapper.findComponent(Twinlist).findComponent(SearchInput).exists()).toBeTruthy();
+            expect(wrapper.findComponent(Twinlist).findComponent(SearchInput).findAll('label').length).toBe(0);
             await wrapper.setData({ mode: 'regex' });
             expect(wrapper.findComponent(Twinlist).findComponent(SearchInput).exists()).toBeFalsy();
         });
@@ -215,16 +218,35 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         it('renders the selection mode if wanted', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData: {
                 ...propsData,
-                showMode: true,
-                modeLabel: 'Filter options'
+                showMode: true
             } });
             expect(wrapper.findComponent(ValueSwitch).exists()).toBeTruthy();
             const labels = wrapper.findAll('div.label label');
-            expect(labels.at(0).text()).toBe('Filter options');
-            expect(labels.at(1).text()).toBe('Manual');
-            expect(labels.at(2).text()).toBe('Wildcard');
-            expect(labels.at(3).text()).toBe('Regex');
-            expect(labels.at(4).text()).toBe('Type');
+            expect(labels.at(0).text()).toBe('Manual');
+            expect(labels.at(1).text()).toBe('Wildcard');
+            expect(labels.at(2).text()).toBe('Regex');
+            expect(labels.at(3).text()).toBe('Type');
+        });
+
+        it('doesn\'t render mode labels by default', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData: {
+                ...propsData,
+                showMode: true,
+                modeLabel: 'Filter options'
+            } });
+            const labels = wrapper.findAllComponents(Label).filter(l => l.find('label').exists());
+            expect(Array.from(labels).map(l => l.find('label').text())).not.toContain('Filter options');
+        });
+
+        it('renders the mode label if wanted', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData: {
+                ...propsData,
+                showMode: true,
+                withModeLabel: true,
+                modeLabel: 'Filter options'
+            } });
+            const labels = wrapper.findAllComponents(Label).filter(l => l.find('label').exists());
+            expect(Array.from(labels).map(l => l.find('label').text())).toContain('Filter options');
         });
 
         it('hides type selection mode if wanted', () => {
@@ -257,6 +279,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
                 rightLabel: 'The value',
                 size: 3,
                 initialMode: 'regex',
+                withPatternLabel: true,
                 patternLabel: 'Pattern label'
             } });
             expect(wrapper.findComponent(SearchInput).exists()).toBeTruthy();
@@ -339,7 +362,6 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
 
             expectTwinlistIncludes(wrapper, ['Text 3'], ['Text 1', 'Text 2']);
         });
-        
 
         it('prohibits manual selection', () => {
             const propsData = {
@@ -351,6 +373,40 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData });
             
             expect(wrapper.findComponent(Twinlist).vm.disabled).toBe(true);
+        });
+
+        it('uses filter icon in pattern modes', async () => {
+            const propsData = {
+                possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3
+            };
+            const wrapper = mount(MultiModeTwinlist, { propsData: {
+                ...propsData,
+                showMode: true
+            } });
+            await wrapper.setData({ mode: 'wildcard' });
+            expect(wrapper.findComponent(FilterIcon).exists()).toBeTruthy();
+            await wrapper.setData({ mode: 'regex' });
+            expect(wrapper.findComponent(FilterIcon).exists()).toBeTruthy();
+        });
+
+        it('uses placeholder for pattern modes', async () => {
+            const propsData = {
+                possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3
+            };
+            const wrapper = mount(MultiModeTwinlist, { propsData: {
+                ...propsData,
+                showMode: true
+            } });
+            await wrapper.setData({ mode: 'wildcard' });
+            expect(wrapper.find('input[type=text]').attributes('placeholder')).toBe('Pattern');
+            await wrapper.setData({ mode: 'regex' });
+            expect(wrapper.find('input[type=text]').attributes('placeholder')).toBe('Pattern');
         });
     });
 
@@ -391,7 +447,8 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
                 rightLabel: 'The value',
                 size: 3,
                 initialMode: 'type',
-                selectedTypesLabel: 'Types label'
+                withTypesLabel: true,
+                typesLabel: 'Types label'
             } });
             expect(wrapper.findComponent(Checkboxes).exists()).toBeTruthy();
             expect(wrapper.findComponent(SearchInput).exists()).toBeFalsy();

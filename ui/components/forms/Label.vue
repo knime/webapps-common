@@ -6,7 +6,7 @@ let labelForId = 0;
  * like so:
  *
  * @example
- *   <Label v-slot="{ labelForId }">
+ *   <Label #default="{ labelForId }">
  *     <input :id="labelForId">
  *   </Label>
  *
@@ -38,6 +38,13 @@ export default {
         compact: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Whether to show the label or only its content.
+         */
+        active: {
+            type: Boolean,
+            default: true
         }
     },
     computed: {
@@ -67,6 +74,7 @@ export default {
 <template>
   <div class="label-wrapper">
     <label
+      v-if="active"
       :id="labelId"
       :for="labelFor"
       :class="['label-text', {compact: isCompact}]"

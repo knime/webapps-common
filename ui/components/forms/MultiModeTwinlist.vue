@@ -4,6 +4,7 @@ import SearchInput from './SearchInput.vue';
 import Checkboxes from './Checkboxes.vue';
 import ValueSwitch from './ValueSwitch.vue';
 import Twinlist from './Twinlist.vue';
+import FilterIcon from '../../assets/img/icons/filter.svg';
 import { filters } from '../../../util/filters';
 
 const allModes = { manual: 'Manual', wildcard: 'Wildcard', regex: 'Regex', type: 'Type' };
@@ -11,6 +12,7 @@ const allModes = { manual: 'Manual', wildcard: 'Wildcard', regex: 'Regex', type:
 export default {
     components: {
         Label,
+        FilterIcon,
         SearchInput,
         Checkboxes,
         ValueSwitch,
@@ -79,17 +81,29 @@ export default {
         /**
          * Labels
          */
+        withModeLabel: {
+            default: false,
+            type: Boolean
+        },
         modeLabel: {
             type: String,
             required: false,
             default: 'Selection mode'
+        },
+        withPatternLabel: {
+            default: false,
+            type: Boolean
         },
         patternLabel: {
             type: String,
             required: false,
             default: 'Pattern'
         },
-        selectedTypesLabel: {
+        withTypesLabel: {
+            default: false,
+            type: Boolean
+        },
+        typesLabel: {
             type: String,
             required: false,
             default: 'Selected types'
@@ -283,6 +297,7 @@ export default {
     <Label
       v-if="showMode"
       #default="{ labelForId }"
+      :active="withModeLabel"
       :text="modeLabel"
       class="label"
       compact
@@ -297,8 +312,9 @@ export default {
       />
     </Label>
     <Label
-      v-if=" mode === 'regex' || mode === 'wildcard'"
+      v-if="mode === 'regex' || mode === 'wildcard'"
       #default="{ labelForId }"
+      :active="withPatternLabel"
       :text="patternLabel"
       class="label"
       compact
@@ -310,17 +326,23 @@ export default {
         :label="patternLabel"
         :initial-case-sensitive-search="initialCaseSensitivePattern"
         :initial-inverse-search="initialInversePattern"
+        placeholder="Pattern"
         show-case-sensitive-search-button
         show-inverse-search-button
         :disabled="disabled"
         @update:model-value="onPatternInput"
         @toggle-case-sensitive-search="onToggleCaseSensitivePattern"
         @toggle-inverse-search="onToggleInvsersePattern"
-      />
+      >
+        <template #icon>
+          <FilterIcon />
+        </template>
+      </SearchInput>
     </Label>
     <Label
       v-if="mode === 'type' && possibleTypes.length > 0"
-      :text="selectedTypesLabel"
+      :active="withTypesLabel"
+      :text="typesLabel"
       class="label"
       compact
     >

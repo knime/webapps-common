@@ -70,6 +70,15 @@ export default {
             inverseSearch: this.initialInverseSearch
         };
     },
+    computed: {
+        showClearButton() {
+            return !this.disabled && this.modelValue !== '';
+        },
+        showSpacer() {
+            return this.showClearButton &&
+                    (this.showCaseSensitiveSearchButton || this.showInverseSearchButton);
+        }
+    },
     methods: {
         clearSearch() {
             this.$emit('clear');
@@ -90,7 +99,6 @@ export default {
             this.$refs.searchInput.focus();
         }
     }
-
 };
 </script>
 
@@ -111,16 +119,27 @@ export default {
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template #icon>
-      <LensIcon v-if="!disabled" />
+      <div
+        v-if="!disabled"
+        class="icon-slot-wrapper"
+      >
+        <slot name="icon">
+          <LensIcon />
+        </slot>
+      </div>
     </template>
     <template #iconRight>
       <FunctionButton
-        v-show="!disabled && modelValue"
+        v-if="showClearButton"
         class="clear-search"
         @click="clearSearch"
       >
         <CloseIcon />
       </FunctionButton>
+      <span
+        v-if="showSpacer"
+        class="spacer"
+      />
       <FunctionButton
         v-if="!disabled && showCaseSensitiveSearchButton"
         class="toggle-case-sensitive-search"
@@ -142,9 +161,20 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+.search-input {
+  & .spacer {
+    border: 0.4pt solid var(--knime-silver-sand);
+    height: 20px;
+    margin: auto 0.3em auto 0.2em;
+  }
+}
 
 .disabled {
   opacity: 0.5;
 }
 
+.icon-slot-wrapper {
+  /* This is done to make the wrapper have the same height as its content. */
+  display: contents;
+}
 </style>

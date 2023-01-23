@@ -72,6 +72,10 @@ export default {
             required: true,
             default: 'Selected values'
         },
+        withSearchLabel: {
+            default: false,
+            type: Boolean
+        },
         searchLabel: {
             type: String,
             required: false,
@@ -376,6 +380,7 @@ export default {
     <Label
       v-if="showSearch"
       #default="{ labelForId }"
+      :active="withSearchLabel"
       :text="searchLabel"
       class="search-wrapper"
       compact

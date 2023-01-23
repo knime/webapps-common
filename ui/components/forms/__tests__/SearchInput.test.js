@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils';
 
 import CloseIcon from '../../../assets/img/icons/close.svg';
 import LensIcon from '../../../assets/img/icons/lens.svg';
+import InverseSearchIcon from '../../../assets/img/icons/arrows-order-left-right.svg';
+import UpperLowerCaseIcon from '../../../assets/img/icons/upper-lower-case.svg';
 import FunctionButton from '../../FunctionButton.vue';
 
 import SearchInput from '../SearchInput.vue';
@@ -22,10 +24,14 @@ describe('SearchInput', () => {
     it('renders', () => {
         doMount();
 
-        expect(wrapper.findComponent(LensIcon).exists()).toBe(true);
-        expect(wrapper.findComponent(FunctionButton).findComponent(CloseIcon).exists()).toBe(true);
-        expect(wrapper.findComponent(SearchInput).exists()).toBe(true);
-        expect(wrapper.findComponent(InputField).exists()).toBe(true);
+        expect(wrapper.findComponent(LensIcon).exists()).toBeTruthy();
+        expect(wrapper.findComponent(SearchInput).exists()).toBeTruthy();
+        expect(wrapper.findComponent(InputField).exists()).toBeTruthy();
+        expect(wrapper.findComponent(CloseIcon).exists()).toBeFalsy();
+        expect(wrapper.find('.spacer').exists()).toBeFalsy();
+        // Since there is no text entered into the search input yet, there
+        // should be no clear-all button.
+        expect(wrapper.findComponent(FunctionButton).exists()).toBeFalsy();
     });
 
     it('sets placeholder', () => {
@@ -47,6 +53,40 @@ describe('SearchInput', () => {
         expect(focusMock).toHaveBeenCalled();
     });
 
+    describe('clear-all button and spacer', () => {
+        it('doesn\'t show spacer if there are no extra buttons besides clear-all', () => {
+            props = {
+                modelValue: 'Some node'
+            };
+            doMount();
+            expect(wrapper.findComponent(CloseIcon).exists()).toBeTruthy();
+            expect(wrapper.find('.spacer').exists()).toBeFalsy();
+        });
+
+        it('shows spacer if there is one extra button besides clear-all', () => {
+            props = {
+                modelValue: 'Some node',
+                showCaseSensitiveSearchButton: true
+            };
+            doMount();
+
+            expect(wrapper.findComponent(CloseIcon).exists()).toBeTruthy();
+            expect(wrapper.find('.spacer').exists()).toBeTruthy();
+        });
+
+        it('shows spacer if there are two extra buttons besides clear-all', () => {
+            props = {
+                modelValue: 'Some node',
+                showCaseSensitiveSearchButton: true,
+                showInverseSearchButton: true
+            };
+            doMount();
+
+            expect(wrapper.findComponent(CloseIcon).exists()).toBeTruthy();
+            expect(wrapper.find('.spacer').exists()).toBeTruthy();
+        });
+    });
+
     describe('searching event', () => {
         it('searches on input in search box', async () => {
             doMount();
@@ -58,12 +98,57 @@ describe('SearchInput', () => {
         });
 
         it('clears on clear button click', async () => {
+            props = {
+                modelValue: 'Test'
+            };
             doMount();
 
             const closeButton = wrapper.findComponent(FunctionButton);
             await closeButton.vm.$emit('click');
             expect(wrapper.emitted('update:modelValue')).toStrictEqual([['']]);
             expect(wrapper.emitted('clear')).toBeTruthy();
+        });
+    });
+
+    describe('search options', () => {
+        it('can show a case-sensitive button and inverse button', () => {
+            props = {
+                showCaseSensitiveSearchButton: true,
+                showInverseSearchButton: true
+            };
+
+            doMount();
+
+            expect(wrapper.findComponent(UpperLowerCaseIcon).exists()).toBeTruthy();
+            expect(wrapper.findComponent(InverseSearchIcon).exists()).toBeTruthy();
+        });
+
+        it('sets case-sensitive on case-sensitive button click', async () => {
+            props = {
+                showCaseSensitiveSearchButton: true
+            };
+
+            doMount();
+
+            const caseSensitiveButton = wrapper.findAllComponents(FunctionButton).at(0);
+            expect(caseSensitiveButton.findComponent(UpperLowerCaseIcon).exists()).toBeTruthy();
+
+            await caseSensitiveButton.vm.$emit('click');
+            expect(wrapper.emitted('toggle-case-sensitive-search')).toStrictEqual([[true]]);
+        });
+
+        it('sets inverse search on inverse search button click', async () => {
+            props = {
+                showInverseSearchButton: true
+            };
+
+            doMount();
+
+            const inverseSearchButton = wrapper.findAllComponents(FunctionButton).at(0);
+            expect(inverseSearchButton.findComponent(InverseSearchIcon).exists()).toBeTruthy();
+
+            await inverseSearchButton.vm.$emit('click');
+            expect(wrapper.emitted('toggle-inverse-search')).toStrictEqual([[true]]);
         });
     });
 });
