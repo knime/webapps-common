@@ -187,6 +187,18 @@ class FieldBasedNodeSettingsPersistorTest {
         testSaveLoad(new SettingsWithStaticFinalField());
     }
 
+    @Test
+    void testArraySettings() throws InvalidSettingsException {
+        var arraySettings = new ArraySettings();
+        arraySettings.m_bar = new ElementSettings[3];
+        for (int i = 0; i < 3; i++) {
+            var element = new ElementSettings();
+            element.m_foo = "baz" + i;
+            arraySettings.m_bar[i] = element;
+        }
+        testSaveLoad(arraySettings);
+    }
+
     private interface TestNodeSettings extends DefaultNodeSettings {
 
         void saveExpected(final NodeSettingsWO settings);
@@ -636,6 +648,52 @@ class FieldBasedNodeSettingsPersistorTest {
         protected boolean equalSettings(final OuterSettingsWithCustomPersistorInnerSettings settings) {
             return Objects.equals(m_bar, settings.m_bar) && Objects.equals(m_inner, settings.m_inner);
         }
+    }
+
+    private static final class ElementSettings extends AbstractTestNodeSettings<ElementSettings> {
+
+        String m_foo;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            settings.addString("foo", m_foo);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hash(m_foo);
+        }
+
+        @Override
+        protected boolean equalSettings(final ElementSettings settings) {
+            return Objects.equals(m_foo, settings.m_foo);
+        }
+
+    }
+
+    private static final class ArraySettings extends AbstractTestNodeSettings<ArraySettings> {
+
+        ElementSettings[] m_bar;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            var arraySettings = settings.addNodeSettings("bar");
+            for (int i = 0; i < m_bar.length; i++) {
+                m_bar[i].saveExpected(arraySettings.addNodeSettings(Integer.toString(i)));
+            }
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return Objects.hash(m_bar);
+        }
+
+        @Override
+        protected boolean equalSettings(final ArraySettings settings) {
+            return Objects.deepEquals(m_bar, settings.m_bar);
+        }
+
+
     }
 
 }
