@@ -61,4 +61,9 @@ describe('RadioInput.vue', () => {
     it('sets correct type prop', () => {
         expect(wrapper.findComponent(RadioInputBase).props().type).toBe('radio');
     });
+
+    it('tests that component is set correctly to render vertical', () => {
+        defaultPropsData.control.uischema.options.radioLayout = 'vertical';
+        expect(wrapper.findComponent(RadioInputBase).vm.alignment).toBe('vertical');
+    });
 });

@@ -41,7 +41,7 @@ const RadioInputBase = defineComponent({
         disabled() {
             return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
         },
-        aligment() {
+        alignment() {
             return this.control.uischema.options?.radioLayout;
         },
         uiComponent() {
@@ -83,7 +83,7 @@ export default RadioInputBase;
         :is="uiComponent"
         v-if="options"
         :possible-values="options"
-        :alignment="aligment"
+        :alignment="alignment"
         :disabled="disabled"
         :value="control.data"
         @input="onChange"
