@@ -158,6 +158,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
                 var choices = choicesProvider.choices(context);
                 if (choices.length != 0) {
                     return createArrayNodeWithChoices(config, choices, withTypes, context);
+                } else {
+                    return createArrayNodeWithCurrentOrEmptyChoice(config, null);
                 }
             }
         }
