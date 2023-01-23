@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from '@vue/composition-api';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
+import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
     from '@/utils/nodeDialogUtils';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
@@ -78,35 +78,38 @@ const TwinlistInput = defineComponent({
         this.possibleValues = possibleValues;
     },
     methods: {
-        onChange(obj, attr = '') {
-            let newData = { ...this.control.data };
-            if (attr === '') {
-                newData = { ...newData, ...obj };
-            } else {
-                newData[attr] = { ...newData[attr], ...obj };
-            }
+        onChange(obj) {
+            let newData = mergeDeep(this.control.data, obj);
             this.handleChange(this.control.path, newData);
         },
-        onSelectedChange(selected, isManual) {
-            this.onChange({ selected, ...isManual ? { manualFilter: { manuallySelected: selected } } : {} });
+        onSelectedChange({ selected, isManual, deselected }) {
+            this.onChange({
+                selected,
+                ...isManual
+                    ? { manualFilter: { manuallySelected: selected, manuallyDeselected: deselected } }
+                    : {}
+            });
             if (this.isModelSettingAndHasNodeView) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
         },
+        onIncludeUnknownColumnsChange(includeUnknownColumns) {
+            this.onChange({ manualFilter: { includeUnknownColumns } });
+        },
         onPatternChange(pattern) {
-            this.onChange({ pattern }, 'patternFilter');
+            this.onChange({ patternFilter: { pattern } });
         },
         onModeChange(mode) {
             this.onChange({ mode: mode.toUpperCase() });
         },
         onSelectedTypesChange(selectedTypes) {
-            this.onChange({ selectedTypes }, 'typeFilter');
+            this.onChange({ typeFilter: { selectedTypes } });
         },
         onInversePatternChange(isInverted) {
-            this.onChange({ isInverted }, 'patternFilter');
+            this.onChange({ patternFilter: { isInverted } });
         },
         onCaseSensitiveChange(isCaseSensitive) {
-            this.onChange({ isCaseSensitive }, 'patternFilter');
+            this.onChange({ patternFilter: { isCaseSensitive } });
         }
     }
 });
@@ -143,6 +146,7 @@ export default TwinlistInput;
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"
         @input="onSelectedChange"
+        @includeUnknownValuesInput="onIncludeUnknownColumnsChange"
         @patternInput="onPatternChange"
         @modeInput="onModeChange"
         @typesInput="onSelectedTypesChange"

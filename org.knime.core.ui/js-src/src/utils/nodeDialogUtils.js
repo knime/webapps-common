@@ -2,6 +2,28 @@ export const optionsMapper = ({ const: id, title: text }) => ({ id, text });
 
 export const optionsMapperWithType = ({ const: id, title: text, columnType: type }) => ({ id, text, type });
 
+const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
+
+// Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
+// in the dialog settings in a more simple way for complex data structures.
+export const mergeDeep = (obj1, obj2) => {
+    let output = Object.assign({}, obj1);
+    if (isObject(obj2)) {
+        Object.keys(obj2).forEach(key => {
+            if (isObject(obj2[key])) {
+                if (isObject(obj1) && !(key in obj1)) {
+                    Object.assign(output, { [key]: obj2[key] });
+                } else {
+                    output[key] = mergeDeep(obj1[key], obj2[key]);
+                }
+            } else {
+                Object.assign(output, { [key]: obj2[key] });
+            }
+        });
+    }
+    return output;
+};
+
 export const isModelSettingAndHasNodeView = (control) => control?.rootSchema?.hasNodeView &&
     control?.uischema?.scope?.startsWith('#/properties/model');
 

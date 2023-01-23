@@ -1,5 +1,5 @@
 import { optionsMapper, createFlowVariablesMap,
-    isModelSettingAndHasNodeView, hasAdvancedOptions } from '@/utils/nodeDialogUtils';
+    isModelSettingAndHasNodeView, hasAdvancedOptions, optionsMapperWithType, mergeDeep } from '@/utils/nodeDialogUtils';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -12,6 +12,28 @@ describe('Utils', () => {
             { id: 'rowName', text: 'Row Name' },
             { id: 'columName', text: 'Colum Name' }
         ]);
+    });
+
+    it('optionsMapperWithType maps schema column representation to webapps-common possible values', () => {
+        expect(
+            [
+                { const: 'columName', title: 'Colum Name2', columnType: 'String' },
+                { const: 'columName2', title: 'Colum Name', columnType: 'Double' }
+            ].map(optionsMapperWithType)
+        ).toEqual([
+            { id: 'columName', text: 'Colum Name2', type: 'String' },
+            { id: 'columName2', text: 'Colum Name', type: 'Double' }
+        ]);
+    });
+
+    it('mergeDeep', () => {
+        // resolves without conflicts if possible
+        expect(mergeDeep({ a: 1 }, { b: 1 })).toStrictEqual({ a: 1, b: 1 });
+        expect(mergeDeep({ a: { b: 1 } }, { a: { c: 1 } })).toStrictEqual({ a: { b: 1, c: 1 } });
+        // prefers the second object over the first one on conflicts
+        expect(mergeDeep({ a: 1 }, { a: 2 })).toStrictEqual({ a: 2 });
+        expect(mergeDeep({ a: { b: 1 } }, { a: 1 })).toStrictEqual({ a: 1 });
+        expect(mergeDeep({ a: 1 }, { a: { c: 1 } })).toStrictEqual({ a: { c: 1 } });
     });
 
     test('isModelSettingsAndhasNodeView', () => {
