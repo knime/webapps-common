@@ -1,0 +1,72 @@
+{
+  "result": {
+    "name": "Radio Buttons",
+    "data": {
+      "vertical": "Foo",
+      "horizontal": "Bar"
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "vertical": {
+          "oneOf": [
+            {
+              "const": "Foo",
+              "title": "Foo"
+            },
+            {
+              "const": "Bar",
+              "title": "Bar"
+            },
+            {
+              "const": "FooBar",
+              "title": "FooBar"
+            }
+          ],
+          "title": "Vertical Radio Buttons",
+          "description": "Example of vertical Radio buttons",
+          "default": "Foo"
+        },
+        "horizontal": {
+          "oneOf": [
+            {
+              "const": "Foo",
+              "title": "Foo"
+            },
+            {
+              "const": "Bar",
+              "title": "Bar"
+            },
+            {
+              "const": "FooBar",
+              "title": "FooBar"
+            }
+          ],
+          "title": "Horizontal Radio Buttons",
+          "description": "Example of horizontal Radio buttons",
+          "default": "Bar"
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/vertical",
+          "options": {
+            "format": "radio",
+            "radioLayout": "vertical"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/horizontal",
+          "options": {
+            "format": "radio",
+            "radioLayout": "horizontal"
+          }
+        }
+      ]
+    }
+  }
+}
