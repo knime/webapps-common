@@ -9,6 +9,7 @@ import Vuex from 'vuex';
 import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
 
 const localVue = createLocalVue();
+const DEFAULT_COLUMN_SIZE = 100;
 localVue.use(Vuex);
 
 jest.mock('raf-throttle', () => function (func) {
@@ -1545,7 +1546,7 @@ describe('TableView.vue', () => {
             const specialColumnsSizeTotal = (enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
                 (publish || subscribe ? SPECIAL_COLUMNS_SIZE : 0);
             const dataColumnsSizeTotal = clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
-            const defaultColumnSize = Math.max(MIN_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
+            const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
 
             const defaultColumnSizes = Array(nColumns).fill(defaultColumnSize);
             const lastColumnMinSize = dataColumnsSizeTotal -

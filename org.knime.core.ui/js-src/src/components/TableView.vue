@@ -5,7 +5,7 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
 import throttle from 'raf-throttle';
-import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
+import { SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN, MIN_COLUMN_SIZE } from '@knime/knime-ui-table/util/constants';
 
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
@@ -13,6 +13,7 @@ const ROW_KEY_SYMBOL = Symbol('RowID');
 const ROW_KEYS_SORT_COL_NAME = '-1';
 const MIN_SCOPE_SIZE = 200;
 const MIN_BUFFER_SIZE = 50;
+const DEFAULT_COLUMN_SIZE = 100;
 
 export default {
     components: {
@@ -154,13 +155,13 @@ export default {
             const specialColumnsSizeTotal = (this.settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
                 (this.settings.publishSelection || this.settings.subscribeToSelection ? SPECIAL_COLUMNS_SIZE : 0);
             const dataColumnsSizeTotal = this.clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
-            const defaultColumnSize = Math.max(MIN_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
+            const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
 
             const currentColumnSizes = this.displayedColumns.reduce((columnSizes, columnName) => {
                 columnSizes.push(this.columnSizeOverrides[columnName] || defaultColumnSize);
                 return columnSizes;
-            }, [this.columnSizeOverrides[INDEX_SYMBOL] || defaultColumnSize,
-                this.columnSizeOverrides[ROW_KEY_SYMBOL] || defaultColumnSize]);
+            }, [this.columnSizeOverrides[INDEX_SYMBOL] || MIN_COLUMN_SIZE,
+                this.columnSizeOverrides[ROW_KEY_SYMBOL] || MIN_COLUMN_SIZE]);
             const lastColumnMinSize = this.lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes);
             currentColumnSizes[currentColumnSizes.length - 1] = Math.max(lastColumnMinSize,
                 currentColumnSizes[currentColumnSizes.length - 1]);
@@ -273,14 +274,12 @@ export default {
         window.removeEventListener('resize', this.onResize);
     },
     methods: {
-
         lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes) {
             return dataColumnsSizeTotal -
                 (this.settings.showRowIndices ? currentColumnSizes[0] : 0) -
-                (this.settings.showRowKeys ? currentColumnSizes[1] : 0) -
+                (this.settings.showRowKeys && currentColumnSizes.length > 2 ? currentColumnSizes[1] : 0) -
                 currentColumnSizes.slice(2, currentColumnSizes.length - 1).reduce((sum, size) => sum + size, 0);
         },
-
         async initializeLazyLoading(params) {
             const { updateDisplayedColumns = false, updateTotalSelected = true } = params || {};
             this.currentScopeStartIndex = 0;
@@ -291,7 +290,6 @@ export default {
                 updateTotalSelected
             });
         },
-
         getLazyLoadParamsForCurrentScope() {
             const numRows = this.currentScopeEndIndex - this.currentScopeStartIndex;
             return {
@@ -300,7 +298,6 @@ export default {
                 numRows
             };
         },
-
         onScroll({ direction, startIndex, endIndex }) {
             if (!this.useLazyLoading) {
                 return;
@@ -357,11 +354,9 @@ export default {
                 });
             }
         },
-
         computeScopeSize(startIndex, endIndex) {
             return Math.max(endIndex - startIndex + 2 * this.bufferSize, MIN_SCOPE_SIZE);
         },
-
         // eslint-disable-next-line complexity
         async updateData(params) {
             const { lazyLoad, updateTotalSelected = false, updateDisplayedColumns = false,
@@ -428,7 +423,7 @@ export default {
             if (updateColumnContentTypes) {
                 this.table.columnContentTypes = getFromTopOrBottom('columnContentTypes');
             }
-            
+
             if (lazyLoad) {
                 const { newScopeStart, direction, bufferStart = 0, bufferEnd = bufferStart } = lazyLoad;
                 if (this.lastRequestScopeStartIndex !== newScopeStart) {
@@ -500,7 +495,6 @@ export default {
                     updateDisplayedColumns, selectedRendererIds, clearImageDataCache);
             }
         },
-
         // eslint-disable-next-line max-params
         requestFilteredAndSortedTable(startIndex, numRows, displayedColumns, updateDisplayedColumns,
             updateTotalSelected, selectedRendererIds, clearImageDataCache) {
@@ -521,22 +515,18 @@ export default {
                     clearImageDataCache
                 ]);
         },
-
         // eslint-disable-next-line max-params
         requestUnfilteredAndUnsortedTable(startIndex, numRows, displayedColumns, updateDisplayedColumns,
             selectedRendererIds, clearImageDataCache) {
             return this.requestNewData('getTable', [displayedColumns, startIndex, numRows, selectedRendererIds,
                 updateDisplayedColumns, clearImageDataCache]);
         },
-
         getColumnsForRequest(updateDisplayedColumns) {
             return updateDisplayedColumns ? this.settings.displayedColumns.selected : this.displayedColumns;
         },
-
         requestNewData(method, options) {
             return this.jsonDataService.data({ method, options });
         },
-
         getCombinedTopRows({ topTable, bufferStart, bufferEnd, direction, topPreviousDataLength }) {
             const previousStartIndex = this.currentScopeStartIndex;
             const topBufferStart = Math.min(bufferStart - previousStartIndex, topPreviousDataLength);
@@ -591,14 +581,12 @@ export default {
                 this.updateData({ updateDisplayedColumns, updateTotalSelected });
             }
         },
-
         onPageChange(pageDirection) {
             const { pageSize } = this.settings;
             this.currentPage += pageDirection;
             this.currentIndex += pageDirection * pageSize;
             this.refreshTable();
         },
-
         onViewSettingsChange(event) {
             const newSettings = event.data.data.view;
             const enablePaginationChanged = newSettings.enablePagination !== this.settings.enablePagination;
