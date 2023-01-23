@@ -240,6 +240,20 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_skipRemainingColumns;
 
     /**
+     * If the column widths should be calculated from the first rows
+     */
+    @Schema(title = "Size columns to content",
+        description = "When checked, the columns are sized according to the largest element in the column in the first 50 rows.")
+    public boolean m_autoSizeColumnsToContent = false;
+
+    /**
+     * If the column width calculation should include the headers
+     */
+    @Schema(title = "Include headers in size calculation",
+        description = "When checked, the headers are considered for the size calculation.")
+    public boolean m_includeHeaders = false;
+
+    /**
      * Create a new {@link TableViewViewSettings} with default values
      */
     protected TableViewViewSettings() {
