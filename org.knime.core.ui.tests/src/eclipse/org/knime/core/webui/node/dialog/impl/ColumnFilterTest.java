@@ -71,27 +71,48 @@ class ColumnFilterTest {
         new SettingsCreationContext(new PortObjectSpec[]{TABLE_SPEC}, null);
 
     @Test
-    void testGetByManual() {
-        final var selection = new ColumnFilter(CONTEXT);
-        assertThat(selection.getSelected(null, TABLE_SPEC)).isEqualTo(new String[]{});
-
-        selection.m_manualFilter.m_manuallySelected = new String[]{COL_SPEC.getName()};
-        assertThat(selection.getSelected(null, TABLE_SPEC)).isEqualTo(selection.m_manualFilter.m_manuallySelected);
+    void testGetSelectedByManualWithIncludeUnknownColumns() {
+        final var selection = new ColumnFilter(new String[] {"Old selected"});
+        selection.m_manualFilter.m_manuallyDeselected = new String[] {"Old deselected"};
+        selection.m_manualFilter.m_includeUnknownColumns = true;
+        final var choices = new String[]{COL_SPEC.getName()};
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected", choices[0]});
+        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(new String[0]);
     }
 
     @Test
-    void testGetByType() {
+    void testGetSelectedByManualOnlyIncludeNewColumnsIfUnknown() {
+        final var selection = new ColumnFilter(new String[] {"Old selected"});
+        final var choices = new String[]{COL_SPEC.getName()};
+        selection.m_manualFilter.m_manuallyDeselected = new String[] {choices[0]};
+        selection.m_manualFilter.m_includeUnknownColumns = true;
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
+        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(choices);
+    }
+
+    @Test
+    void testGetSelectedByManualWithExcludedUnknownColumns() {
+        final var selection = new ColumnFilter(new String[] {"Old selected"});
+        selection.m_manualFilter.m_manuallyDeselected = new String[] {"Old deselected"};
+        selection.m_manualFilter.m_includeUnknownColumns = false;
+        final var choices = new String[]{COL_SPEC.getName()};
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
+        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(choices);
+    }
+
+    @Test
+    void testGetSelectedByType() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.TYPE;
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
 
-        selection.m_typeFilter.m_selectedTypes = new String[] {TypeColumnFilter.typeToString(COL_SPEC.getType())};
+        selection.m_typeFilter.m_selectedTypes = new String[]{TypeColumnFilter.typeToString(COL_SPEC.getType())};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(choices);
     }
 
     @Test
-    void testGetByRegex() {
+    void testGetSelectedByRegex() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.REGEX;
         final var choices = new String[]{COL_SPEC.getName()};
@@ -102,7 +123,7 @@ class ColumnFilterTest {
     }
 
     @Test
-    void testGetByInvertedRegex() {
+    void testGetSelectedByInvertedRegex() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.REGEX;
         selection.m_patternFilter.m_isInverted = true;
@@ -114,7 +135,7 @@ class ColumnFilterTest {
     }
 
     @Test
-    void testGetByWildcard() {
+    void testGetSelectedByWildcard() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.WILDCARD;
         final var choices = new String[]{COL_SPEC.getName()};
@@ -125,7 +146,7 @@ class ColumnFilterTest {
     }
 
     @Test
-    void testGetByInvertedWildcard() {
+    void testGetSelectedByInvertedWildcard() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.WILDCARD;
         selection.m_patternFilter.m_isInverted = true;
@@ -137,7 +158,7 @@ class ColumnFilterTest {
     }
 
     @Test
-    void testGetByCaseSensitiveWildcard() {
+    void testGetSelectedByCaseSensitiveWildcard() {
         final var selection = new ColumnFilter(CONTEXT);
         selection.m_mode = ColumnFilterMode.WILDCARD;
         selection.m_patternFilter.m_pattern = COL_SPEC.getName().toUpperCase();

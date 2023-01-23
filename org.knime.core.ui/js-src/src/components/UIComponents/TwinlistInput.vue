@@ -76,6 +76,7 @@ const TwinlistInput = defineComponent({
             possibleValues = [];
         }
         this.possibleValues = possibleValues;
+        this.updateManualFilter(this.possibleValues.map(col => col.id));
     },
     methods: {
         onChange(obj) {
@@ -95,6 +96,34 @@ const TwinlistInput = defineComponent({
         },
         onIncludeUnknownColumnsChange(includeUnknownColumns) {
             this.onChange({ manualFilter: { includeUnknownColumns } });
+        },
+        /**
+         *  add unknown columns either to the manually selected or manually deselected
+         * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
+         * @returns {void}.
+         */
+        updateManualFilter(possibleValueIds) {
+            const { manuallySelected, manuallyDeselected, includeUnknownColumns } = this.control.data.manualFilter;
+            const unknownColumns = possibleValueIds.filter(
+                col => !manuallySelected.includes(col) && !manuallyDeselected.includes(col)
+            );
+            const remainingManuallyDeselected = manuallyDeselected.filter(col => possibleValueIds.includes(col));
+            const newData = {};
+            if (includeUnknownColumns) {
+                newData.manualFilter = {
+                    manuallySelected: [...manuallySelected, ...unknownColumns],
+                    manuallyDeselected: remainingManuallyDeselected
+                };
+            } else {
+                newData.manualFilter = {
+                    manuallyDeselected: [
+                        ...remainingManuallyDeselected,
+                        ...unknownColumns
+                    ],
+                    manuallySelected
+                };
+            }
+            this.onChange(newData);
         },
         onPatternChange(pattern) {
             this.onChange({ patternFilter: { pattern } });
@@ -140,7 +169,9 @@ export default TwinlistInput;
         :initial-case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
         :initial-inverse-pattern="control.data.patternFilter.isInverted"
         :initial-manually-selected="control.data.manualFilter.manuallySelected"
-        :mode-label="'Selection mode'"
+        :initial-include-unknown-values="control.data.manualFilter.includeUnknownColumns"
+        mode-label="Selection mode"
+        unknown-values="Any unknown columns"
         :possible-values="possibleValues"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"

@@ -48,6 +48,13 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.knime.core.data.DataTableSpec;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -62,10 +69,24 @@ public class ManualColumnFilter implements DialogComponentSettings {
     public String[] m_manuallySelected; //NOSONAR
 
     /**
+     * the (last) deselected columns. It is necessary to store these in order to know which colums of a new input
+     * {@link DataTableSpec} are unknown.
+     */
+    public String[] m_manuallyDeselected; //NOSONAR
+
+    /**
+     * A column is unknown if it is was not present in the last executed input table. If this setting is true, these
+     * columns will be selected/included when the selected columns are updated after a reconfiguration of the input
+     * table.
+     */
+    public boolean m_includeUnknownColumns; //NOSONAR
+
+    /**
      * @param initialSelected the initially manually selected columns
      */
     public ManualColumnFilter(final String[] initialSelected) {
         m_manuallySelected = initialSelected;
+        m_manuallyDeselected = new String[0];
     }
 
     @SuppressWarnings("javadoc")
@@ -73,11 +94,38 @@ public class ManualColumnFilter implements DialogComponentSettings {
     }
 
     /**
-     * @return the current manually selected columns
+     * @return the current manually selected columns.
      */
     @JsonIgnore
     public String[] getSelected() {
         return m_manuallySelected;
+    }
+
+    /**
+     * @param choices for selected values from which previously unknown ones are either selected or deselected.
+     */
+    public void update(final String[] choices) {
+        final var choicesList = Arrays.asList(choices);
+        final var manuallySelectedList = Arrays.asList(m_manuallySelected);
+        final var manuallyDeselectedList = Arrays.asList(m_manuallyDeselected);
+        final var unknownValues = choicesList.stream()
+            .filter(col -> !manuallyDeselectedList.contains(col) && !manuallySelectedList.contains(col))
+            .collect(Collectors.toList());
+        final var remainingDeselectedColumns = intersect(manuallyDeselectedList, choicesList);
+        if (m_includeUnknownColumns) {
+            m_manuallySelected = union(manuallySelectedList, unknownValues).toArray(String[]::new);
+            m_manuallyDeselected = remainingDeselectedColumns.toArray(String[]::new);
+        } else {
+            m_manuallyDeselected = union(remainingDeselectedColumns, unknownValues).toArray(String[]::new);
+        }
+    }
+
+    private static List<String> union(final List<String> list1, final List<String> list2) {
+        return Stream.concat(list1.stream(), list2.stream()).collect(Collectors.toList());
+    }
+
+    private static List<String> intersect(final List<String> list1, final List<String> list2) {
+        return list1.stream().filter(list2::contains).collect(Collectors.toList());
     }
 
 }
