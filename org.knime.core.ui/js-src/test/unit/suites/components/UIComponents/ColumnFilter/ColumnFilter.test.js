@@ -7,20 +7,70 @@ describe('ColumnFilter.vue', () => {
     const defaultPropsData = {
         path: '',
         control: {
+            data: {
+                patternFilter: {
+                    pattern: '',
+                    isInverted: false,
+                    isCaseSensitive: false
+                },
+                manualFilter: {
+                    manuallySelected: ['test_1'],
+                    manuallyDeselected: ['test_2'],
+                    includeUnknownColumns: false
+                },
+                mode: 'manual',
+                selected: ['test_1'],
+                typeFilter: {
+                    selectedTypes: []
+                }
+            },
             schema: {
                 type: 'object',
                 properties: {
-                    isCaseSensitive: {
-                        type: 'boolean'
+                    patternFilter: {
+                        type: 'object',
+                        properties: {
+                            isCaseSensitive: {
+                                type: 'boolean'
+                            },
+                            isInverted: {
+                                type: 'boolean'
+                            },
+                            pattern: {
+                                type: 'string'
+                            }
+                        }
                     },
-                    isInverted: {
-                        type: 'boolean'
+                    manualFilter: {
+                        type: 'object',
+                        properties: {
+                            manuallySelected: {
+                                items: {
+                                    type: 'string'
+                                },
+                                type: 'array'
+                            },
+                            manuallyDeselected: {
+                                items: {
+                                    type: 'string'
+                                },
+                                type: 'array'
+                            },
+                            includeUnknownColumns: {
+                                type: 'boolean'
+                            }
+                        }
                     },
-                    manuallySelected: {
-                        items: {
-                            type: 'string'
-                        },
-                        type: 'array'
+                    typeFilter: {
+                        type: 'object',
+                        properties: {
+                            selectedTypes: {
+                                items: {
+                                    type: 'string'
+                                },
+                                type: 'array'
+                            }
+                        }
                     },
                     mode: {
                         oneOf: [
@@ -59,9 +109,6 @@ describe('ColumnFilter.vue', () => {
                                 title: 'test_3',
                                 columnType: 'String'
                             }]
-                    },
-                    pattern: {
-                        type: 'string'
                     }
                 }
             },
@@ -76,6 +123,10 @@ describe('ColumnFilter.vue', () => {
     };
 
     let wrapper;
+
+    beforeAll(() => {
+        TwinlistInput.methods.handleChange = jest.fn();
+    });
 
     beforeEach(async () => {
         wrapper = await mountJsonFormsComponent(ColumnFilter, defaultPropsData);
