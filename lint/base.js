@@ -20,6 +20,7 @@ module.exports = {
         'package*.json',
         'audit-resolve.json',
         'coverage/',
+        'test-results/',
         'dist/',
         'target/',
         'webapps-common/',

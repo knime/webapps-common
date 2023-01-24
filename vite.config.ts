@@ -18,7 +18,7 @@ export default defineConfig({
         coverage: {
             all: true,
             exclude: [
-                'demo/', 'lint/', 'buildtools/', 'install-subDependencies.js', 'coverage/**', 'dist/**',
+                'demo/', 'lint/', 'buildtools/', 'install-subDependencies.js', 'test-results/**', 'dist/**',
                 '**/*.d.ts', '**/__tests__/**', '**/*.config.{js,cjs,mjs,ts}',
                 '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
             ]
