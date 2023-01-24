@@ -458,7 +458,7 @@ export default {
           @click="(event) => [handleClick(event), focusLeft()]"
           @dblclick.exact="handleDblClick"
         >
-          &times; {{ unknownValues }} &times;
+          {{ unknownValues }}
         </div>
       </MultiselectListBox>
       <div class="buttons">
@@ -528,7 +528,7 @@ export default {
           @click="(event) => [handleClick(event), focusRight()]"
           @dblclick.exact="handleDblClick"
         >
-          &times; {{ unknownValues }} &times;
+          {{ unknownValues }}
         </div>
       </MultiselectListBox>
     </div>
@@ -606,7 +606,6 @@ export default {
       text-align: center;
       margin: 2px;
       padding: 0 3px;
-      background-color: var(--theme-select-control-background-color-hover);
       line-height: 16px;
       position: relative;
       text-overflow: ellipsis;
@@ -614,8 +613,14 @@ export default {
       white-space: nowrap;
       cursor: pointer;
 
+      &:hover {
+        background-color: var(--theme-select-control-background-color-hover);
+        color: var(--theme-select-control-foreground-color-hover);
+      }
+
       &.selected {
-        background-color: var(--theme-select-control-foreground-color-hover);
+        background-color: var(--theme-select-control-background-color-focus);
+        color: var(--theme-select-control-foreground-color-focus);
       }
     }
   }
