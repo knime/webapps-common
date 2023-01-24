@@ -68,12 +68,12 @@ const TwinlistInput = defineComponent({
     },
     created() {
         let possibleValues = this.control.schema.properties.selected.anyOf.map(
-                this.withTypes ? optionsMapperWithType : optionsMapper
+            this.withTypes ? optionsMapperWithType : optionsMapper
         );
         if (possibleValues.length === 1 && possibleValues[0].id === '') {
             possibleValues = [];
         }
-        this.possibleValues = possibleValues
+        this.possibleValues = possibleValues;
     },
     methods: {
         onChange(obj, attr = '') {
