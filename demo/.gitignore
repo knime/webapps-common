@@ -22,6 +22,10 @@ coverage
 # nyc test coverage
 .nyc_output
 
+# other test outputs
+test/*/reports
+test-results/
+
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -44,8 +48,9 @@ typings/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
+# Optional eslint/stylelint cache
 .eslintcache
+.stylelintcache
 
 # Optional REPL history
 .node_repl_history

@@ -48,8 +48,9 @@ typings/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
+# Optional eslint/stylelint cache
 .eslintcache
+.stylelintcache
 
 # Optional REPL history
 .node_repl_history

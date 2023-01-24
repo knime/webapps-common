@@ -9,7 +9,7 @@
     "preinstall": "node ./install-subDependencies",
     "postinstall": "run-p generate-css opensourcecredits",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
-    "lint": "run-p 'lint:* -- --fix'",
+    "lint": "run-p 'lint:* -- --fix --cache'",
     "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json",
     "lint:css": "stylelint '**/*.{css,vue}'",
     "ci:lint": "run-p lint:*",
