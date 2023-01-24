@@ -186,14 +186,20 @@ export default {
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         },
+        showUnknownValuesLeft() {
+            return this.showUnknownValues && !this.includeUnknownValues;
+        },
+        showUnknownValuesRight() {
+            return this.showUnknownValues && this.includeUnknownValues;
+        },
         moveAllRightButtonDisabled() {
-            return this.leftItems.length === 0;
+            return this.leftItems.length === 0 && !this.showUnknownValuesLeft;
         },
         moveRightButtonDisabled() {
             return this.selectedLeft.length === 0;
         },
         moveAllLeftButtonDisabled() {
-            return this.rightItems.length === 0;
+            return this.rightItems.length === 0 && !this.showUnknownValuesRight;
         },
         moveLeftButtonDisabled() {
             return this.rightSelected.length === 0;
@@ -451,12 +457,14 @@ export default {
         @input="onLeftInput"
       >
         <div
-          v-if="showUnknownValues && !includeUnknownValues"
+          v-if="showUnknownValuesLeft"
           :class="{ selected }"
           class="unknown-values"
           :title="unknownValues"
           @click="(event) => [handleClick(event), focusLeft()]"
           @dblclick.exact="handleDblClick"
+          @mousedown="handleStartDrag"
+          @mousemove="handleDrag"
         >
           {{ unknownValues }}
         </div>
@@ -505,7 +513,7 @@ export default {
       </div>
       <MultiselectListBox
         ref="right"
-        v-slot="{ selected, handleClick, handleDblClick }"
+        v-slot="{ selected, handleClick, handleDblClick, handleDrag, handleStartDrag }"
         class="listBox"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
@@ -520,13 +528,15 @@ export default {
         @input="onRightInput"
       >
         <div
-          v-if="showUnknownValues && includeUnknownValues"
+          v-if="showUnknownValuesRight"
           :class="{ selected }"
           class="unknown-values"
           :title="unknownValues"
           
           @click="(event) => [handleClick(event), focusRight()]"
           @dblclick.exact="handleDblClick"
+          @mousedown="handleStartDrag"
+          @mousemove="handleDrag"
         >
           {{ unknownValues }}
         </div>

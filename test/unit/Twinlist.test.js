@@ -830,6 +830,13 @@ describe('Twinlist.vue', () => {
                 expectUnknownValuesAreIncluded(wrapper);
                 expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(true);
             });
+
+            it('moveAllRight buttons is not disabled', () => {
+                propsData.value = propsData.possibleValues.map(val => val.id);
+                const wrapper = mount(Twinlist, { propsData });
+                const moveAllRight = wrapper.find({ ref: 'moveAllRight' });
+                expect(moveAllRight.classes()).not.toContain('disabled');
+            });
         });
 
 
@@ -879,6 +886,13 @@ describe('Twinlist.vue', () => {
                 rightBox.find('[role="listbox"]').trigger('keydown.left');
                 expectUnknownValuesAreExluded(wrapper);
                 expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
+            });
+
+            it('moveAllLeft buttons is not disabled', () => {
+                propsData.value = [];
+                const wrapper = mount(Twinlist, { propsData });
+                const moveAllLeft = wrapper.find({ ref: 'moveAllLeft' });
+                expect(moveAllLeft.classes()).not.toContain('disabled');
             });
         });
     });

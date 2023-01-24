@@ -63,7 +63,7 @@ export default {
             type: Boolean
         },
         showUnknownValues: {
-            default: true,
+            default: false,
             type: Boolean
         },
         // enable search in case of manual selection

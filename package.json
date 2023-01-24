@@ -14,8 +14,8 @@
     "lint": "npm run lint:js && npm run lint:css && npm run lint:json",
     "lint:js": "eslint --ext .js,.vue .",
     "lint:json": "eslint --ext .json .",
-    "lint:css": "stylelint '**/*.{css,vue}'",
-    "lint:ci": "eslint --ext .js,.vue,.json -f json -o target/eslint.json || true; stylelint '**/*.{css,vue}' -f json -o target/stylelint.json || true",
+    "lint:css": "stylelint \"**/*.{css,vue}\"",
+    "lint:ci": "eslint --ext .js,.vue,.json -f json -o target/eslint.json || true; stylelint \"**/*.{css,vue}\" -f json -o target/stylelint.json || true",
     "test:unit": "TZ='Europe/Berlin' jest",
     "coverage": "TZ='Europe/Berlin' jest --coverage",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"

@@ -553,19 +553,19 @@ describe('MultiselectListBox.vue', () => {
             return { getScope: () => receivedScope, scopedSlots };
         };
 
-        test('does not render slot if none is supplied', () => {
+        it('does not render slot if none is supplied', () => {
             const wrapper = mount(MultiselectListBox, { propsData });
             expect(wrapper.find('[role="bottom-element"]').exists()).toBeFalsy();
         });
 
-        test('renders default slot if a scoped slot is supplied', () => {
+        it('renders default slot if a scoped slot is supplied', () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
             expect(wrapper.find('[role="bottom-element"]').exists()).toBeTruthy();
             expect(getScope().selected).toBeFalsy();
         });
 
-        test('selects bottom element on click', () => {
+        it('selects bottom element on click', () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
             getScope().handleClick({ preventDefault: () => {} });
@@ -573,7 +573,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().input[0][0]).toStrictEqual([BOTTOM_VALUE_ID]);
         });
 
-        test('emits dblclick event on double click', () => {
+        it('emits dblclick event on double click', () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
             getScope().handleDblClick({ preventDefault: () => {} });
@@ -581,7 +581,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.emitted().doubleClickOnItem[0][0]).toBe(BOTTOM_VALUE_ID);
         });
 
-        test('adds selection but does not change the current selected index on shift click', async () => {
+        it('adds selection from the current selected index to the bottom on shift click', async () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
 
@@ -589,14 +589,15 @@ describe('MultiselectListBox.vue', () => {
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test3']);
             getScope().handleClick({ preventDefault: () => {}, shiftKey: true });
-            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3', BOTTOM_VALUE_ID]);
+            expect(wrapper.emitted().input[1][0]).toStrictEqual(['test3', 'test4', BOTTOM_VALUE_ID]);
+            getScope().handleClick({ preventDefault: () => {} });
             wrapper.findAll('[role=option]').at(3).trigger('click', { shiftKey: true });
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().input[2][0]).toStrictEqual(['test3', 'test4']);
-            expect(getScope().selected).toBeFalsy();
+            expect(wrapper.emitted().input[3][0]).toStrictEqual(['test4', BOTTOM_VALUE_ID]);
+            expect(getScope().selected).toBeTruthy();
         });
 
-        test('adds selectionon ctrl click', async () => {
+        it('adds selectionon ctrl click', async () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
 
@@ -611,13 +612,81 @@ describe('MultiselectListBox.vue', () => {
             expect(getScope().selected).toBeFalsy();
         });
 
-        test('bottom value gets selected on ctrl a', async () => {
+        it('bottom value gets selected on ctrl a', async () => {
             const { scopedSlots, getScope } = getScopedSlots();
             const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
             wrapper.find('[role=listbox]').trigger('keydown.a', { ctrlKey: true });
             await wrapper.vm.$nextTick();
             expect(wrapper.emitted().input[0][0]).toStrictEqual(['test1', 'test2', 'test3', 'test4', BOTTOM_VALUE_ID]);
             expect(getScope().selected).toBeTruthy();
+        });
+
+        describe('keyboard interaction', () => {
+            it('bottom is reachable with keydown.down', async () => {
+                const { scopedSlots } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                wrapper.findAll('[role=option]').at(3).trigger('click');
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[0][0]).toStrictEqual(['test4']);
+                wrapper.find('[role=listbox]').trigger('keydown.down');
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[1][0]).toStrictEqual([BOTTOM_VALUE_ID]);
+            });
+
+            it('keydown.up from the bottom leads to the last element in the list', async () => {
+                const { scopedSlots, getScope } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                getScope().handleClick({ preventDefault: () => {} });
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[0][0]).toStrictEqual([BOTTOM_VALUE_ID]);
+                wrapper.find('[role=listbox]').trigger('keydown.up');
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[1][0]).toStrictEqual(['test4']);
+            });
+
+            it('bottom is reachable with shift + keydown.down', async () => {
+                const { scopedSlots } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                wrapper.findAll('[role=option]').at(3).trigger('click');
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[0][0]).toStrictEqual(['test4']);
+                wrapper.find('[role=listbox]').trigger('keydown.down', { shiftKey: true });
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[1][0]).toStrictEqual(['test4', BOTTOM_VALUE_ID]);
+            });
+
+            it('shift + keydown.up from the bottom leads to combined selection with list elements', async () => {
+                const { scopedSlots, getScope } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                getScope().handleClick({ preventDefault: () => {} });
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[0][0]).toStrictEqual([BOTTOM_VALUE_ID]);
+                wrapper.find('[role=listbox]').trigger('keydown.up', { shiftKey: true });
+                await wrapper.vm.$nextTick();
+                expect(wrapper.emitted().input[1][0]).toStrictEqual(['test4', BOTTOM_VALUE_ID]);
+            });
+        });
+
+        describe('drag', () => {
+            it('starts drag on handleStartDrag', async () => {
+                const { scopedSlots, getScope } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                getScope().handleStartDrag({ shiftKey: false, ctrlKey: false });
+                wrapper.findAll('[role=option]').at(1).trigger('mousemove');
+                await wrapper.vm.$nextTick();
+    
+                expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3', 'test4', BOTTOM_VALUE_ID]);
+            });
+
+            it('continues drag on handleDrag', async () => {
+                const { scopedSlots, getScope } = getScopedSlots();
+                const wrapper = mount(MultiselectListBox, { propsData, scopedSlots });
+                wrapper.findAll('[role=option]').at(1).trigger('mousedown');
+                getScope().handleDrag();
+                await wrapper.vm.$nextTick();
+
+                expect(wrapper.emitted().input[0][0]).toStrictEqual(['test2', 'test3', 'test4', BOTTOM_VALUE_ID]);
+            });
         });
     });
 });

@@ -451,9 +451,14 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             };
         });
 
-        it('renders included unkown columns by default', () => {
+        it('does not render unknown columns by default', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData });
-            expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeTruthy();
+            expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeFalsy();
+        });
+
+        it('if rendered, includes unkown columns by default', () => {
+            propsData.showUnknownValues = true;
+            const wrapper = mount(MultiModeTwinlist, { propsData });
             expect(wrapper.find(Twinlist).vm.initialIncludeUnknownValues).toBeTruthy();
         });
 
