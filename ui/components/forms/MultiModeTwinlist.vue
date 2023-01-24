@@ -5,7 +5,6 @@ import Checkboxes from './Checkboxes.vue';
 import ValueSwitch from './ValueSwitch.vue';
 import Twinlist from './Twinlist.vue';
 import { filters } from '../../../util/filters';
-import { thisExpression } from '@babel/types';
 
 const allModes = { manual: 'Manual', wildcard: 'Wildcard', regex: 'Regex', type: 'Type' };
 

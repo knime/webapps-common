@@ -454,6 +454,7 @@ export default {
           v-if="showUnknownValues && !includeUnknownValues"
           :class="{ selected }"
           class="unknown-values"
+          :title="unknownValues"
           @click="(event) => [handleClick(event), focusLeft()]"
           @dblclick.exact="handleDblClick"
         >
@@ -522,6 +523,7 @@ export default {
           v-if="showUnknownValues && includeUnknownValues"
           :class="{ selected }"
           class="unknown-values"
+          :title="unknownValues"
           
           @click="(event) => [handleClick(event), focusRight()]"
           @dblclick.exact="handleDblClick"
@@ -596,16 +598,14 @@ export default {
     display: flex;
     align-items: stretch;
     flex-direction: row;
-    
+
     & .unknown-values{
-      background-color: green;
       border-radius: 3px;
       font-size: 10px;
-      text-overflow: ellipsis;
       font-style: italic;
       text-align: center;
       margin: 2px;
-      padding: 0px 3px;
+      padding: 0 3px;
       background-color: var(--theme-select-control-background-color-hover);
       line-height: 16px;
       position: relative;

@@ -48,7 +48,8 @@ export default {
         return {
             codeExample,
             selected: [],
-            selectedMissing: ['foo', 'I am missing', 'bar']
+            selectedMissing: ['foo', 'I am missing', 'bar'],
+            selectedUnknown: []
         };
     },
     computed: {
@@ -120,7 +121,7 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            label-left="Select from the 7 visible items (size)"
+            label-left="Select from the visible items"
             label-right="The selected stuff"
             :possible-values="demoValues"
           />
@@ -135,7 +136,7 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            left-label="Select from the 7 visible items (size)"
+            left-label="Select from the visible items"
             right-label="The selected stuff"
             :possible-values="demoValues"
             disabled
@@ -161,7 +162,7 @@ export default {
             v-model="selected"
             :size="7"
             show-search
-            left-label="Select from the 7 visible items (size)"
+            left-label="Select from the visible items"
             right-label="The selected stuff"
             search-label="Search items"
             search-placeholder="Placeholder"
@@ -186,7 +187,7 @@ export default {
             v-model="selectedMissing"
             :size="7"
             show-search
-            left-label="Select from the 7 visible items (size)"
+            left-label="Select from the visible items"
             right-label="The selected stuff"
             search-label="Search items"
             search-placeholder="Placeholder"
@@ -195,6 +196,31 @@ export default {
         </div>
         <div class="grid-item-6">
           selected ids: {{ selectedMissing }}
+        </div>
+      </div>
+      div class="grid-container">
+      <div class="grid-item-6">
+        <p>
+          The Twinlist with unknown items.
+        </p>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            v-model="selectedUnknown"
+            :size="7"
+            show-search
+            show-unknown-values
+            unknown-values="My unknowns"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            search-label="Search items"
+            search-placeholder="Placeholder"
+            :possible-values="demoValues"
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selectedUnknown }}
         </div>
       </div>
     </section>

@@ -543,8 +543,8 @@ export default {
     }
 
     & [role="bottom-element"] {
-        border-top: 1px solid var(--knime-stone-gray);
-        flex-grow: 0;
+      border-top: 1px solid var(--knime-stone-gray);
+      flex-grow: 0;
     }
   }
 
