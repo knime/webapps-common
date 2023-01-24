@@ -6,6 +6,7 @@ definitions:
         name: Lint, tests and build
         caches:
           - node
+        size: 2x # more memory to speed up unit tests
         script:
           - npm ci
           - npm run ci:lint
