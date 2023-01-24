@@ -171,7 +171,6 @@ export default TwinlistInput;
         :initial-manually-selected="control.data.manualFilter.manuallySelected"
         :initial-include-unknown-values="control.data.manualFilter.includeUnknownColumns"
         mode-label="Selection mode"
-        unknown-values="Any unknown columns"
         :possible-values="possibleValues"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"
