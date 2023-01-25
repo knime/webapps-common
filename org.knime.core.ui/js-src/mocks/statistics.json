@@ -527,16 +527,13 @@
               "type": "Control",
               "scope": "#/properties/model/properties/selectedColumns",
               "options": {
-                "format": "columnSelection",
-                "showRowKeys": false,
-                "showNoneColumn": false
+                "format": "columnFilter"
               }
             },
             {
               "type": "Control",
               "scope": "#/properties/view/properties/displayedColumns",
               "options": {
-                "format": "columnFilter",
                 "showSearch": false,
                 "showMode": false
               }

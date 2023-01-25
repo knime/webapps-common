@@ -61,9 +61,9 @@ const TwinlistInput = defineComponent({
             return !this.control.uischema.options?.hasOwnProperty('showMode') ||
                 this.control.uischema.options?.showMode;
         },
-        showPattern() {
-            return !this.control.uischema.options?.hasOwnProperty('showPattern') ||
-                this.control.uischema.options?.showPattern;
+        showSearch() {
+            return !this.control.uischema.options?.hasOwnProperty('showSearch') ||
+                this.control.uischema.options?.showSearch;
         }
     },
     created() {
@@ -123,8 +123,9 @@ export default TwinlistInput;
     >
       <MultiModeTwinlist
         v-if="possibleValues"
+        v-bind="$attrs"
         :show-mode="showMode"
-        :show-pattern="showPattern"
+        :show-search="showSearch"
         :disabled="disabled"
         :value="control.data.selected"
         :with-types="withTypes"
