@@ -51,7 +51,10 @@ export default {
             default: false,
             type: Boolean
         },
-
+        showEmptyState: {
+            default: true,
+            type: Boolean
+        },
         /**
          * Labels
          */
@@ -76,7 +79,11 @@ export default {
             required: false,
             default: 'Search'
         },
-
+        emptyStateLabel: {
+            type: String,
+            required: false,
+            default: 'No entries in this list'
+        },
         /**
          * Controls the size of the list.
          * Number of visible items (for others user need to scroll)
@@ -391,7 +398,8 @@ export default {
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
-        with-is-empty-state
+        :with-is-empty-state="showEmptyState"
+        :empty-state-label="emptyStateLabel"
         :size="listSize"
         class="listBox"
         :value="selectedLeft"
@@ -449,7 +457,8 @@ export default {
       <MultiselectListBox
         ref="right"
         class="listBox"
-        with-is-empty-state
+        :with-is-empty-state="showEmptyState"
+        :empty-state-label="emptyStateLabel"
         :value="rightSelected"
         :possible-values="rightItems"
         :size="listSize"

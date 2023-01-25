@@ -794,7 +794,17 @@ describe('Twinlist.vue', () => {
         it('displays empty state box if it does not contain any element', () => {
             const wrapper = mount(Twinlist, { propsData });
             let right = wrapper.find({ ref: 'right' });
-            expect(right.find('.empty-state').exists()).toBeTruthy();
+            expect(right.find('.empty-state').text()).toBe('No entries in this list');
+            const emptyStateLabel = 'Custom label';
+            wrapper.setProps({ emptyStateLabel });
+            expect(right.find('.empty-state').text()).toBe(emptyStateLabel);
+        });
+
+        it('does not display empty state box if wanted', () => {
+            propsData.showEmptyState = false;
+            const wrapper = mount(Twinlist, { propsData });
+            let right = wrapper.find({ ref: 'right' });
+            expect(right.find('.empty-state').exists()).toBeFalsy();
         });
     });
 });

@@ -189,6 +189,32 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         await wrapper.vm.$nextTick();
         expectTwinlistIncludes(wrapper, ['Text 2', 'Text 3'], ['Text 1']);
     });
+
+    describe('search', () => {
+        let propsData;
+        
+        beforeEach(() => {
+            propsData = {
+                possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3
+            };
+        });
+
+        it('shows search by default if mode is manual', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.find(Twinlist).find(SearchInput).exists()).toBeTruthy();
+            wrapper.setData({ mode: 'regex' });
+            expect(wrapper.find(Twinlist).find(SearchInput).exists()).toBeFalsy();
+        });
+
+        it('does not show search if wanted', () => {
+            propsData.showSearch = false;
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.find(Twinlist).find(SearchInput).exists()).toBeFalsy();
+        });
+    });
     
     describe('mode selection', () => {
         const propsData = {
@@ -251,7 +277,6 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
                 rightLabel: 'The value',
                 size: 3,
                 initialMode: 'regex',
-                searchLabel: 'Search term label',
                 patternLabel: 'Pattern label'
             } });
             expect(wrapper.find(SearchInput).exists()).toBeTruthy();

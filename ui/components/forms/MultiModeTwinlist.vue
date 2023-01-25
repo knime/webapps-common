@@ -58,6 +58,11 @@ export default {
             default: false,
             type: Boolean
         },
+        // enable search in case of manual selection
+        showSearch: {
+            default: true,
+            type: Boolean
+        },
         disabled: {
             default: false,
             type: Boolean
@@ -272,7 +277,7 @@ export default {
     <Twinlist
       ref="twinlist"
       :disabled="selectionDisabled"
-      :show-search="mode === 'manual'"
+      :show-search="mode === 'manual' && showSearch"
       :value="selectedValues"
       :possible-values="possibleValues"
       v-bind="$attrs"

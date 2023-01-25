@@ -24,6 +24,10 @@ export default {
             default: false,
             type: Boolean
         },
+        emptyStateLabel: {
+            default: 'No entries in this list',
+            type: String
+        },
         /**
          * If enabled the single click will allow the user to select multiple items, otherwise this only works with
          * CTRL + Click (similar to <select> html widgets)
@@ -445,7 +449,7 @@ export default {
         class="empty-state"
       >
         <span>
-          &lt;no entries&gt;
+          {{ emptyStateLabel }}
         </span>
       </div>
     </ul>

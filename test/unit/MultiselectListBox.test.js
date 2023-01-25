@@ -515,7 +515,10 @@ describe('MultiselectListBox.vue', () => {
         it('displays an empty state if wanted', () => {
             propsData.withIsEmptyState = true;
             const wrapper = mount(MultiselectListBox, { propsData });
-            expect(wrapper.find('.empty-state').text()).toBe('<no entries>');
+            expect(wrapper.find('.empty-state').text()).toBe('No entries in this list');
+            const emptyStateLabel = 'Custom label';
+            wrapper.setProps({ emptyStateLabel });
+            expect(wrapper.find('.empty-state').text()).toBe(emptyStateLabel);
         });
 
         it('does not displays an empty state if the box is not empty', () => {
