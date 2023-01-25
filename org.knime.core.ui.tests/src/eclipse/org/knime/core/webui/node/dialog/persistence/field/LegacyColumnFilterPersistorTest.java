@@ -82,6 +82,10 @@ final class LegacyColumnFilterPersistorTest {
     @Test
     void testManualSelection() throws InvalidSettingsException {
         var columnFilter = new ColumnFilter(new String[]{"foo", "bar"});
+        var manualFilter = columnFilter.m_manualFilter;
+        manualFilter.m_manuallySelected = new String[] {"foo"};
+        manualFilter.m_manuallyDeselected = new String[] {"bar"};
+        manualFilter.m_includeUnknownColumns = true;
         testPersistence(columnFilter);
     }
 
@@ -148,10 +152,12 @@ final class LegacyColumnFilterPersistorTest {
         throws InvalidSettingsException {
         assertArrayEquals(manualFilter.m_manuallySelected, settings.getStringArray("included_names"),
             "Unexpected included names");
-        assertArrayEquals(new String[0], settings.getStringArray("excluded_names"),
+        assertArrayEquals(manualFilter.m_manuallyDeselected, settings.getStringArray("excluded_names"),
             "The excluded names were not empty");
-        assertEquals(EnforceOption.EnforceInclusion.name(), settings.getString("enforce_option"),
-            "The enforce option was not EnforceInclusion");
+        assertEquals(
+            manualFilter.m_includeUnknownColumns ? EnforceOption.EnforceExclusion.name()
+                : EnforceOption.EnforceInclusion.name(),
+            settings.getString("enforce_option"), "The enforce option was not EnforceInclusion");
     }
 
     private static void checkPatternSettings(final ColumnFilter columnFilter, final NodeSettingsRO settings)

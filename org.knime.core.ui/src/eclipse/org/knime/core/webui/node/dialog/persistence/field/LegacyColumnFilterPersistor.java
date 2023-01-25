@@ -55,6 +55,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.PatternFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.NodeContext;
@@ -79,17 +80,27 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     /**
      * See NameFilterConfiguration.KEY_FILTER_TYPE
      */
-    private static final String OLD_FILTER_TYPE = "filter-type";
+    private static final String KEY_FILTER_TYPE = "filter-type";
 
     /**
      * See NameFilterConfiguration.TYPE.
      */
-    private static final String OLD_FILTER_TYPE_MANUAL = "STANDARD";
+    private static final String KEY_FILTER_TYPE_MANUAL = "STANDARD";
+
+    /**
+     * See NameFilterConfiguration.KEY_ENFORCE_OPTION
+     */
+    private static final String KEY_ENFORCE_OPTION = "enforce_option";
+
+    /**
+     * See NameFilterConfiguration.KEY_EXCLUDED_NAMES
+     */
+    private static final String OLD_EXCLUDED_NAMES = "excluded_names";
 
     /**
      * See NameFilterConfiguration.KEY_INCLUDED_NAMES
      */
-    private static final String OLD_INCLUDED_NAMES = "included_names";
+    private static final String KEY_INCLUDED_NAMES = "included_names";
 
     /**
      * See PatternFilterConfiguration.CFG_TYPE
@@ -121,7 +132,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         var columnFilterSettings = nodeSettings.getNodeSettings(configKey);
         var columnFilter = new ColumnFilter();
         columnFilter.m_mode = loadMode(columnFilterSettings);
-        columnFilter.m_selected = columnFilterSettings.getStringArray(OLD_INCLUDED_NAMES);
+        columnFilter.m_selected = columnFilterSettings.getStringArray(KEY_INCLUDED_NAMES);
         columnFilter.m_manualFilter = loadManualFilter(columnFilterSettings);
         columnFilter.m_patternFilter =
             loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
@@ -131,8 +142,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
 
     private static ColumnFilterMode loadMode(final NodeSettingsRO columnFilterSettings)
         throws InvalidSettingsException {
-        var filterType = columnFilterSettings.getString(OLD_FILTER_TYPE);
-        if (OLD_FILTER_TYPE_MANUAL.equals(filterType)) {
+        var filterType = columnFilterSettings.getString(KEY_FILTER_TYPE);
+        if (KEY_FILTER_TYPE_MANUAL.equals(filterType)) {
             return ColumnFilterMode.MANUAL;
         } else if (PatternFilterConfiguration.TYPE.equals(filterType)) {
             var patternMatchingSettings = columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE);
@@ -153,8 +164,17 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
 
     private static ManualColumnFilter loadManualFilter(final NodeSettingsRO columnFilterSettings)
         throws InvalidSettingsException {
-        var manualFilter = new ManualColumnFilter(columnFilterSettings.getStringArray(OLD_INCLUDED_NAMES));
+        var manualFilter = new ManualColumnFilter(columnFilterSettings.getStringArray(KEY_INCLUDED_NAMES));
+        manualFilter.m_manuallyDeselected = columnFilterSettings.getStringArray(OLD_EXCLUDED_NAMES);
+        manualFilter.m_includeUnknownColumns = loadIncludeUnknownColumns(columnFilterSettings);
         return manualFilter;
+    }
+
+    private static boolean loadIncludeUnknownColumns(final NodeSettingsRO columnFilterSettings)
+        throws InvalidSettingsException {
+        var enforceOptionName = columnFilterSettings.getString(KEY_ENFORCE_OPTION);
+        var enforceOption = EnforceOption.valueOf(enforceOptionName);
+        return enforceOption == EnforceOption.EnforceExclusion;
     }
 
     private static PatternColumnFilter loadPatternMatching(final NodeSettingsRO patternMatchingSettings)
@@ -191,7 +211,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
             columnFilter = new ColumnFilter();
         }
         var columnFilterSettings = settings.addNodeSettings(configKey);
-        columnFilterSettings.addString(OLD_FILTER_TYPE, toFilterType(columnFilter.m_mode));
+        columnFilterSettings.addString(KEY_FILTER_TYPE, toFilterType(columnFilter.m_mode));
         saveManualFilter(columnFilter.m_manualFilter, columnFilterSettings);
         savePatternMatching(columnFilter.m_patternFilter, columnFilter.m_mode,
             columnFilterSettings.addNodeSettings(PatternFilterConfiguration.TYPE));
@@ -214,7 +234,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     private static String toFilterType(final ColumnFilterMode mode) {
         switch (mode) {
             case MANUAL:
-                return OLD_FILTER_TYPE_MANUAL;
+                return KEY_FILTER_TYPE_MANUAL;
             case REGEX:
             case WILDCARD:
                 return PatternFilterConfiguration.TYPE;
@@ -227,11 +247,17 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
 
     private static void saveManualFilter(final ManualColumnFilter manualFilter,
         final NodeSettingsWO columnFilterSettings) {
-        columnFilterSettings.addStringArray(OLD_INCLUDED_NAMES, manualFilter.m_manuallySelected);
-        // FIXME not backwards compatible because ColumnSelection only supports enforce inclusion and doesn't store
-        // the excluded names
-        columnFilterSettings.addStringArray("excluded_names");
-        columnFilterSettings.addString("enforce_option", "EnforceInclusion");
+        columnFilterSettings.addStringArray(KEY_INCLUDED_NAMES, manualFilter.m_manuallySelected);
+        columnFilterSettings.addStringArray(OLD_EXCLUDED_NAMES, manualFilter.m_manuallyDeselected);
+        columnFilterSettings.addString(KEY_ENFORCE_OPTION, getEnforceOption(manualFilter).name());
+    }
+
+    private static EnforceOption getEnforceOption(final ManualColumnFilter manualFilter) {
+        if (manualFilter.m_includeUnknownColumns) {
+            return EnforceOption.EnforceExclusion;
+        } else {
+            return EnforceOption.EnforceInclusion;
+        }
     }
 
     private static void savePatternMatching(final PatternColumnFilter patternFilter, final ColumnFilterMode mode,
