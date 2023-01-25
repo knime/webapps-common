@@ -70,6 +70,8 @@ const TwinlistInput = defineComponent({
         let possibleValues = this.control.schema.properties.selected.anyOf.map(
             this.withTypes ? optionsMapperWithType : optionsMapper
         );
+        // Since an anyOf cannot be empty, we currently add one option in the backend with empty id and title.
+        // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
         if (possibleValues.length === 1 && possibleValues[0].id === '') {
             possibleValues = [];
         }
