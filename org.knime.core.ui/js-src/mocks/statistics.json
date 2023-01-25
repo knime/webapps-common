@@ -17,7 +17,9 @@
               "Universe_1_0",
               "Universe_1_1",
               "Cluster Membership"
-            ]
+            ],
+            "manuallyDeselected": [],
+            "includeUnknownColumns": false
           },
           "typeFilter": {
             "selectedTypes": []
@@ -56,26 +58,28 @@
               "Variance",
               "Skewness",
               "Kurtosis"
-            ]
+            ],
+            "manuallyDeselected": [],
+            "includeUnknownColumns": false
           },
           "typeFilter": {
             "selectedTypes": []
           }
         },
-        "showRowKeys": true,
-        "showColumnDataType": true,
+        "showRowKeys": false,
+        "showColumnDataType": false,
         "showRowIndices": false,
-        "title": "Table View",
+        "title": "Statistics",
         "showTitle": true,
-        "enablePagination": true,
+        "enablePagination": false,
         "pageSize": 10,
         "compactMode": false,
         "enableGlobalSearch": true,
         "enableColumnSearch": true,
         "enableSortingByHeader": true,
         "enableRendererSelection": true,
-        "publishSelection": true,
-        "subscribeToSelection": true
+        "publishSelection": false,
+        "subscribeToSelection": false
       }
     },
     "schema": {
@@ -90,6 +94,16 @@
                 "manualFilter": {
                   "type": "object",
                   "properties": {
+                    "includeUnknownColumns": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "manuallyDeselected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
                     "manuallySelected": {
                       "type": "array",
                       "items": {
@@ -98,7 +112,9 @@
                     }
                   },
                   "default": {
-                    "m_manuallySelected": []
+                    "m_manuallySelected": [],
+                    "m_manuallyDeselected": [],
+                    "m_includeUnknownColumns": false
                   }
                 },
                 "mode": {
@@ -149,27 +165,27 @@
                     {
                       "const": "Universe_0_0",
                       "title": "Universe_0_0",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_0_1",
                       "title": "Universe_0_1",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_1_0",
                       "title": "Universe_1_0",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_1_1",
                       "title": "Universe_1_1",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Cluster Membership",
                       "title": "Cluster Membership",
-                      "columnType": "StringValue"
+                      "columnType": "org.knime.core.data.StringValue"
                     }
                   ]
                 },
@@ -206,7 +222,9 @@
                     "Universe_1_0",
                     "Universe_1_1",
                     "Cluster Membership"
-                  ]
+                  ],
+                  "m_manuallyDeselected": [],
+                  "m_includeUnknownColumns": false
                 },
                 "m_typeFilter": {
                   "m_selectedTypes": []
@@ -230,6 +248,16 @@
                 "manualFilter": {
                   "type": "object",
                   "properties": {
+                    "includeUnknownColumns": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "manuallyDeselected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
                     "manuallySelected": {
                       "type": "array",
                       "items": {
@@ -238,7 +266,9 @@
                     }
                   },
                   "default": {
-                    "m_manuallySelected": []
+                    "m_manuallySelected": [],
+                    "m_manuallyDeselected": [],
+                    "m_includeUnknownColumns": false
                   }
                 },
                 "mode": {
@@ -426,7 +456,9 @@
                     "Variance",
                     "Skewness",
                     "Kurtosis"
-                  ]
+                  ],
+                  "m_manuallyDeselected": [],
+                  "m_includeUnknownColumns": false
                 },
                 "m_typeFilter": {
                   "m_selectedTypes": []
@@ -515,7 +547,10 @@
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
     },
     "ui_schema": {
       "elements": [

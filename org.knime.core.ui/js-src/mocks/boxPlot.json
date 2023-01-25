@@ -16,7 +16,9 @@
               "Universe_0_1",
               "Universe_1_0",
               "Universe_1_1"
-            ]
+            ],
+            "manuallyDeselected": [],
+            "includeUnknownColumns": false
           },
           "typeFilter": {
             "selectedTypes": []
@@ -58,6 +60,16 @@
                 "manualFilter": {
                   "type": "object",
                   "properties": {
+                    "includeUnknownColumns": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "manuallyDeselected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
                     "manuallySelected": {
                       "type": "array",
                       "items": {
@@ -66,7 +78,9 @@
                     }
                   },
                   "default": {
-                    "m_manuallySelected": []
+                    "m_manuallySelected": [],
+                    "m_manuallyDeselected": [],
+                    "m_includeUnknownColumns": false
                   }
                 },
                 "mode": {
@@ -117,22 +131,22 @@
                     {
                       "const": "Universe_0_0",
                       "title": "Universe_0_0",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_0_1",
                       "title": "Universe_0_1",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_1_0",
                       "title": "Universe_1_0",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     },
                     {
                       "const": "Universe_1_1",
                       "title": "Universe_1_1",
-                      "columnType": "DoubleValue"
+                      "columnType": "org.knime.core.data.DoubleValue"
                     }
                   ]
                 },
@@ -168,7 +182,9 @@
                     "Universe_0_1",
                     "Universe_1_0",
                     "Universe_1_1"
-                  ]
+                  ],
+                  "m_manuallyDeselected": [],
+                  "m_includeUnknownColumns": false
                 },
                 "m_typeFilter": {
                   "m_selectedTypes": []
@@ -239,7 +255,10 @@
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
     },
     "ui_schema": {
       "elements": [

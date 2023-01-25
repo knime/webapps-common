@@ -116,11 +116,7 @@ const TwinlistInput = defineComponent({
                 };
             } else {
                 newData.manualFilter = {
-                    manuallyDeselected: [
-                        ...remainingManuallyDeselected,
-                        ...unknownColumns
-                    ],
-                    manuallySelected
+                    manuallyDeselected: [...remainingManuallyDeselected, ...unknownColumns]
                 };
             }
             this.onChange(newData);

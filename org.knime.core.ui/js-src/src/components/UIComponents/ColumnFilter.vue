@@ -36,7 +36,7 @@ export default ColumnFilter;
 <template>
   <TwinlistInput
     v-bind="$attrs"
-    unknown-values="Any unknown columns"
+    unknown-values-text="Any unknown columns"
     show-unknown-values
     empty-state-label="No columns in this list"
     :twinlist-size="twinlistSize"
