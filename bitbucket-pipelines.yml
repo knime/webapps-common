@@ -1,17 +1,28 @@
 image: node:18.12.1
 
+options:
+  max-time: 10
+
+clone:
+  depth: full # SonarCloud scanner needs the full history to assign issues properly
+
 definitions:
+  caches:
+    sonar: ~/.sonar/cache
   steps:
     - step: &lint-test-build
         name: Lint, tests and build
         caches:
           - node
+          - sonar
         size: 2x # more memory to speed up unit tests
         script:
           - npm ci
           - npm run ci:lint
           - npm run coverage
           - npm run audit
+          - pipe: sonarsource/sonarcloud-scan:1.4.0
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
 
 pipelines:
   pull-requests:
