@@ -189,7 +189,7 @@ describe('TwinlistInput.vue', () => {
             const selected = ['A', 'B', 'C'];
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('input', { selected, isManual: false });
             expect(handleChangeSpy)
-                .toHaveBeenNthCalledWith(3, defaultPropsData.control.path, expect.objectContaining({ selected }));
+                .toHaveBeenNthCalledWith(3, propsData.control.path, expect.objectContaining({ selected }));
         });
 
         it('handles selected values change', () => {
@@ -198,7 +198,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('input', { selected, isManual: true, deselected });
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({
                     selected,
                     manualFilter: expect.objectContaining({
@@ -214,7 +214,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('includeUnknownValuesInput', includeUnknownColumns);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({ manualFilter: expect.objectContaining({ includeUnknownColumns }) })
             );
         });
@@ -224,7 +224,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('patternInput', pattern);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ pattern }) })
             );
         });
@@ -234,7 +234,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('inversePatternInput', isInverted);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ isInverted }) })
             );
         });
@@ -244,7 +244,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('caseSensitivePatternInput', isCaseSensitive);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ isCaseSensitive }) })
             );
         });
@@ -254,7 +254,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('typesInput', selectedTypes);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                defaultPropsData.control.path,
+                propsData.control.path,
                 expect.objectContaining({ typeFilter: expect.objectContaining({ selectedTypes }) })
             );
         });
@@ -291,7 +291,7 @@ describe('TwinlistInput.vue', () => {
 
     describe('unknown columns', () => {
         it('excludes unknown columns', () => {
-            const propsData = mergeDeep(defaultPropsData, {
+            const localPropsData = mergeDeep(propsData, {
                 control: {
                     data: {
                         manualFilter: {
@@ -314,8 +314,8 @@ describe('TwinlistInput.vue', () => {
                 }
             });
 
-            mountJsonFormsComponent(TwinlistInput, propsData);
-            expect(handleChangeSpy).toHaveBeenCalledWith(propsData.control.path, expect.objectContaining({
+            mountJsonFormsComponent(TwinlistInput, localPropsData);
+            expect(handleChangeSpy).toHaveBeenCalledWith(localPropsData.control.path, expect.objectContaining({
                 manualFilter: expect.objectContaining({
                     manuallySelected: ['A', 'B'],
                     manuallyDeselected: ['D', 'E']
@@ -324,7 +324,7 @@ describe('TwinlistInput.vue', () => {
         });
 
         it('includes unknown columns', () => {
-            const propsData = mergeDeep(defaultPropsData, {
+            const localPropsData = mergeDeep(propsData, {
                 control: {
                     data: {
                         manualFilter: {
@@ -346,8 +346,8 @@ describe('TwinlistInput.vue', () => {
                     }
                 }
             });
-            mountJsonFormsComponent(TwinlistInput, propsData);
-            expect(handleChangeSpy).toHaveBeenCalledWith(propsData.control.path, expect.objectContaining({
+            mountJsonFormsComponent(TwinlistInput, localPropsData);
+            expect(handleChangeSpy).toHaveBeenCalledWith(localPropsData.control.path, expect.objectContaining({
                 manualFilter: expect.objectContaining({
                     manuallySelected: ['A', 'B', 'E'],
                     manuallyDeselected: ['D']
@@ -373,15 +373,15 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('disables twinlist when controlled by a flow variable', () => {
-        const localDefaultPropsData = JSON.parse(JSON.stringify(propsData));
-        localDefaultPropsData.control.rootSchema
+        const localpropsData = JSON.parse(JSON.stringify(propsData));
+        localpropsData.control.rootSchema
             .flowVariablesMap[propsData.control.path] = {
                 controllingFlowVariableAvailable: true,
                 controllingFlowVariableName: 'knime.test',
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(TwinlistInput, localDefaultPropsData);
+        const localWrapper = mountJsonFormsComponent(TwinlistInput, localpropsData);
         expect(localWrapper.vm.disabled).toBeTruthy();
     });
 
