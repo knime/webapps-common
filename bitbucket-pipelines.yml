@@ -15,6 +15,7 @@ definitions:
         caches:
           - node
           - sonar
+          - docker # used by sonar pipes
         size: 2x # more memory to speed up unit tests
         script:
           - npm ci
