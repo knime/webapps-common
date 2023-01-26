@@ -296,7 +296,7 @@ public final class WebUINodeConfiguration {
          */
         public NodeOptionals keywords(final String... keywords) {
             CheckUtils.checkArgumentNotNull(keywords);
-            CheckUtils.checkArgument(ArrayUtils.contains(keywords, null), "keywords list must not contain null");
+            CheckUtils.checkArgument(!ArrayUtils.contains(keywords, null), "keywords list must not contain null");
             m_keywords.addAll(Arrays.asList(keywords));
             return this;
         }
