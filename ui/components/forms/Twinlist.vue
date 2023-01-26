@@ -1,7 +1,7 @@
 <script>
 import Label from './Label.vue';
 import SearchInput from '../forms/SearchInput.vue';
-import MultiselectListBox, { BOTTOM_VALUE_ID } from '../forms/MultiselectListBox.vue';
+import MultiselectListBox from '../forms/MultiselectListBox.vue';
 import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
@@ -144,7 +144,8 @@ export default {
             selectedLeft: [],
             searchTerm: this.initialSearchTerm,
             caseSensitiveSearch: this.initialCaseSensitiveSearch,
-            includeUnknownValues: this.initialIncludeUnknownValues
+            includeUnknownValues: this.initialIncludeUnknownValues,
+            unknownValuesId: Symbol('Unknown values')
         };
     },
     computed: {
@@ -268,10 +269,10 @@ export default {
             // add all left items to our values
             items = items || this.selectedLeft;
             this.chosenValues = [
-                ...items.filter(item => item !== BOTTOM_VALUE_ID),
+                ...items.filter(item => item !== this.unknownValuesId),
                 ...this.chosenValues
             ].sort(this.compareByOriginalSorting);
-            if (items.includes(BOTTOM_VALUE_ID)) {
+            if (items.includes(this.unknownValuesId)) {
                 this.includeUnknownValues = true;
             }
             this.clearSelections();
@@ -283,7 +284,7 @@ export default {
             let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
-            if (items.includes(BOTTOM_VALUE_ID)) {
+            if (items.includes(this.unknownValuesId)) {
                 this.includeUnknownValues = false;
             }
             this.clearSelections();
@@ -442,6 +443,8 @@ export default {
         :empty-state-label="emptyStateLabel"
         :size="listSize"
         class="listBox"
+        :with-bottom-value="showUnknownValuesLeft"
+        :bottom-value="{id: unknownValuesId, text: unknownValuesText}"
         :value="selectedLeft"
         :is-valid="isValid"
         :possible-values="leftItems"
@@ -451,20 +454,7 @@ export default {
         @doubleClickShift="onLeftListBoxShiftDoubleClick"
         @keyArrowRight="onKeyRightArrow"
         @input="onLeftInput"
-      >
-        <div
-          v-if="showUnknownValuesLeft"
-          :class="{ selected }"
-          class="unknown-values"
-          :title="unknownValuesText"
-          @click="(event) => [handleClick(event), focusLeft()]"
-          @dblclick.exact="handleDblClick"
-          @mousedown="handleStartDrag"
-          @mousemove="handleDrag"
-        >
-          {{ unknownValuesText }}
-        </div>
-      </MultiselectListBox>
+      />
       <div class="buttons">
         <div
           ref="moveRight"
@@ -509,8 +499,9 @@ export default {
       </div>
       <MultiselectListBox
         ref="right"
-        v-slot="{ selected, handleClick, handleDblClick, handleDrag, handleStartDrag }"
         class="listBox"
+        :with-bottom-value="showUnknownValuesRight"
+        :bottom-value="{id: unknownValuesId, text: unknownValuesText}"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :value="rightSelected"
@@ -522,21 +513,7 @@ export default {
         @doubleClickShift="onRightListBoxShiftDoubleClick"
         @keyArrowLeft="onKeyLeftArrow"
         @input="onRightInput"
-      >
-        <div
-          v-if="showUnknownValuesRight"
-          :class="{ selected }"
-          class="unknown-values"
-          :title="unknownValuesText"
-          
-          @click="(event) => [handleClick(event), focusRight()]"
-          @dblclick.exact="handleDblClick"
-          @mousedown="handleStartDrag"
-          @mousemove="handleDrag"
-        >
-          {{ unknownValuesText }}
-        </div>
-      </MultiselectListBox>
+      />
     </div>
   </div>
 </template>
@@ -604,31 +581,6 @@ export default {
     display: flex;
     align-items: stretch;
     flex-direction: row;
-
-    & .unknown-values{
-      border-radius: 3px;
-      font-size: 10px;
-      font-style: italic;
-      text-align: center;
-      margin: 2px;
-      padding: 0 3px;
-      line-height: 16px;
-      position: relative;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      cursor: pointer;
-
-      &:hover {
-        background-color: var(--theme-select-control-background-color-hover);
-        color: var(--theme-select-control-foreground-color-hover);
-      }
-
-      &.selected {
-        background-color: var(--theme-select-control-background-color-focus);
-        color: var(--theme-select-control-foreground-color-focus);
-      }
-    }
   }
 
   & .buttons {

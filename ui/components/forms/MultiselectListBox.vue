@@ -1,11 +1,12 @@
 <script>
 import debounce from '../../../util/debounce';
+import StyledListBoxEntry from '../StyledListItem.vue';
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
-export const BOTTOM_VALUE_ID = Symbol('bottom');
 
 export default {
+    components: { StyledListBoxEntry },
     props: {
         id: {
             type: String,
@@ -36,6 +37,20 @@ export default {
         multiselectByClick: {
             type: Boolean,
             default: false
+        },
+        /**
+         * Bottom values
+         */
+        withBottomValue: {
+            type: Boolean,
+            default: false
+        },
+        bottomValue: {
+            type: Object,
+            default: () => ({ id: 'bottom', text: 'Other' }),
+            validator(value) {
+                return value.hasOwnProperty('id') && value.hasOwnProperty('text');
+            }
         },
         /**
          * Controls the size of the list. Number of visible items (for others user need to scroll)
@@ -97,10 +112,7 @@ export default {
             return this.size > 0 ? { height: pxSize } : {};
         },
         possibleValuesWithBottom() {
-            return [...this.possibleValues, ...this.hasBottomValue() ? [{ id: BOTTOM_VALUE_ID, text: '' }] : []];
-        },
-        bottomSelected() {
-            return this.isCurrentValue(BOTTOM_VALUE_ID);
+            return [...this.possibleValues, ...this.withBottomValue ? [this.bottomValue] : []];
         },
         bottomIndex() {
             return this.possibleValues.length;
@@ -179,21 +191,21 @@ export default {
                     return;
                 }
                 const index = Number(dataIndex);
-                this.dragToIndex(index);
+                let sectionValues = this.getPossibleValuesInSection(this.draggingStartIndex, index);
+                // inverse mode means we remove all selected values from the current selection
+                if (this.draggingInverseMode) {
+                    sectionValues = this.selectedValues.filter(x => !sectionValues.includes(x));
+                }
+                this.setSelected(sectionValues);
             }
         },
-        onBottomDrag() {
-            if (this.draggingStartIndex !== -1) {
-                this.dragToIndex(this.bottomIndex);
-            }
+        onBottomStartDrag(e) {
+            this.focus();
+            this.onStartDrag(e);
         },
-        dragToIndex(index) {
-            let sectionValues = this.getPossibleValuesInSection(this.draggingStartIndex, index);
-            // inverse mode means we remove all selected values from the current selection
-            if (this.draggingInverseMode) {
-                sectionValues = this.selectedValues.filter(x => !sectionValues.includes(x));
-            }
-            this.setSelected(sectionValues);
+        onBottomDrag(e) {
+            this.focus();
+            this.onDrag(e);
         },
         onStopDrag(e) {
             this.draggingStartIndex = -1;
@@ -231,10 +243,11 @@ export default {
             this.$emit('doubleClickOnItem', id, index);
         },
         handleBottomClick($event) {
-            this.handleClick($event, BOTTOM_VALUE_ID, this.bottomIndex);
+            this.handleClick($event, this.bottomValue.id, this.bottomIndex);
+            this.focus();
         },
         handleBottomDblClick() {
-            this.handleDblClick(BOTTOM_VALUE_ID, this.bottomIndex);
+            this.handleDblClick(this.bottomValue.id, this.bottomIndex);
         },
         handleShiftDblClick() {
             if (this.disabled) {
@@ -308,7 +321,7 @@ export default {
             if (index < 0) {
                 return true;
             }
-            if (this.hasBottomValue()) {
+            if (this.withBottomValue) {
                 return index > this.bottomIndex;
             } else {
                 return index >= this.bottomIndex;
@@ -399,11 +412,7 @@ export default {
                 return;
             }
             // select all
-            const allValues = this.possibleValues.map(x => x.id);
-            if (this.hasBottomValue()) {
-                allValues.push(BOTTOM_VALUE_ID);
-            }
-            this.setSelected(allValues);
+            this.setSelected(this.possibleValuesWithBottom.map(x => x.id));
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -422,7 +431,8 @@ export default {
             if (!item) {
                 return '';
             }
-            const cleanId = item.id.replace(/[^\w]/gi, '');
+            const id = typeof item.id === 'symbol' ? item.id.description : item.id;
+            const cleanId = id.replace(/[^\w]/gi, '');
             return `option-${this.id}-${cleanId}`;
         },
         focus() {
@@ -467,40 +477,37 @@ export default {
         @mousedown="onStartDrag"
         @mousemove="onDrag"
       >
-        <li
+        <StyledListBoxEntry
           v-for="(item, index) of possibleValues"
           :id="generateOptionId(item)"
           :key="`listbox-${item.id}`"
-          role="option"
-          :title="item.text"
+          :text="item.text"
           :data-option-index="index"
-          :style="{ 'line-height': `${optionLineHeight}px` }"
-          :class="{
-            'selected': isCurrentValue(item.id),
-            'invalid': item.invalid,
-            'noselect' :true,
-            'empty': !Boolean(item.text.trim()),
-            disabled
-          }"
-          :aria-selected="isCurrentValue(item.id)"
+          :line-height="optionLineHeight"
+          :selected="isCurrentValue(item.id)"
+          :invalid="item.invalid"
+          :disabled="disabled"
           @click="handleClick($event, item.id, index)"
-          @dblclick.shift="handleShiftDblClick()"
-          @dblclick.exact="handleDblClick(item.id, index)"
-        >
-          {{ item.text }}
-        </li>
+          @dblclick-shift="handleShiftDblClick()"
+          @dblclick-exact="handleDblClick(item.id, index)"
+        />
       </ul>
       <div
-        v-if="hasBottomValue()"
-        role="bottom-element"
-        class="noselect"
+        v-if="withBottomValue"
+        role="bottom-box"
       >
-        <slot
-          :selected="bottomSelected"
-          :handleClick="handleBottomClick"
-          :handleDblClick="handleBottomDblClick"
-          :handleDrag="onBottomDrag"
-          :handleStartDrag="(event) => onStartDrag(event, true)"
+        <StyledListBoxEntry
+          :id="generateOptionId(bottomValue)"
+          special
+          :text="bottomValue.text"
+          :data-option-index="bottomIndex"
+          :selected="isCurrentValue(bottomValue.id)"
+          :disabled="disabled"
+          @click="handleBottomClick"
+          @dblclick-shift="handleShiftDblClick()"
+          @dblclick-exact="handleBottomDblClick"
+          @mousedown="onBottomStartDrag"
+          @mousemove="onBottomDrag"
         />
       </div>
       <div
@@ -552,13 +559,11 @@ export default {
       border-color: var(--knime-masala);
     }
 
+&.empty-box {
+   background: var(--theme-empty-multiselect-listbox-background-color);
+ }
 
-
-    &.empty-box {
-      background: var(--theme-empty-multiselect-listbox-background-color);
-    }
-
-    & [role="bottom-element"] {
+    & [role="bottom-box"] {
       border-top: 1px solid var(--knime-silver-sand);
       flex-grow: 0;
       flex-shrink: 0;
@@ -576,75 +581,22 @@ export default {
       outline: none;
     }
   }
-
-  & [role="option"] {
-    display: block;
-    padding: 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    cursor: pointer;
-    background: var(--theme-dropdown-background-color);
-    color: var(--theme-dropdown-foreground-color);
-
-    &.empty {
-      white-space: pre-wrap;
-    }
-
-    &.disabled {
-      cursor: unset;
-    }
-
-    &:not(.disabled) {
-      &:hover {
-        background: var(--theme-dropdown-background-color-hover);
-        color: var(--theme-dropdown-foreground-color-hover);
-      }
-
-      &:focus {
-        background: var(--theme-dropdown-background-color-focus);
-        color: var(--theme-dropdown-foreground-color-focus);
-      }
-
-      &.selected {
-        background: var(--theme-dropdown-background-color-selected);
-        color: var(--theme-dropdown-foreground-color-selected);
-      }
-    }
-
-    /* invalid values */
-    &.invalid {
-      color: var(--theme-color-error);
-
-      &.selected {
-        background: var(--theme-color-error);
-        color: var(--theme-dropdown-foreground-color-selected);
-      }
-    }
-  }
-
-  & .empty-state {
+& .empty-state {
     height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    & span {
-      color: var(--theme-dropdown-foreground-color);
-      font-style: italic;
-      font-size: 10px;
-    }
+& span {
+    color: var(--theme-dropdown-foreground-color);
+    font-style: italic;
+    font-size: 10px;
   }
+}
 
   &.disabled {
     opacity: 0.5;
-  }
-
-  & .noselect {
-    user-select: none;
   }
 }
 </style>
