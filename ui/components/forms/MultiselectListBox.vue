@@ -456,13 +456,13 @@ export default {
     :class="['multiselect-list-box', { 'invalid' : !isValid, disabled }]"
     :style="cssStyleSize"
   >
-    <div :class="['box', { 'empty-box': showEmptyState }]">
+    <div class="box">
       <ul
         :id="id"
         ref="ul"
         role="listbox"
         tabindex="0"
-        :class="{ disabled }"
+        :class="{ disabled, 'empty-box': showEmptyState }"
         :aria-label="ariaLabel"
         :aria-activedescendant="generateOptionId(getCurrentKeyNavItem())"
         @keydown.ctrl.a.prevent.exact="onCtrlA"
@@ -493,6 +493,14 @@ export default {
         />
       </ul>
       <div
+        v-if="showEmptyState"
+        class="empty-state"
+      >
+        <span>
+          {{ emptyStateLabel }}
+        </span>
+      </div>
+      <div
         v-if="withBottomValue"
         role="bottom-box"
       >
@@ -509,14 +517,6 @@ export default {
           @mousedown="onBottomStartDrag"
           @mousemove="onBottomDrag"
         />
-      </div>
-      <div
-          v-if="showEmptyState"
-          class="empty-state"
-      >
-        <span>
-          {{ emptyStateLabel }}
-        </span>
       </div>
     </div>
   </div>
@@ -552,19 +552,15 @@ export default {
     justify-content: stretch;
     font-size: 14px;
     min-height: 22px;
-    background: var(--theme-multiselect-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
 
     &:has(:focus:not(.disabled)) {
       border-color: var(--knime-masala);
     }
 
-&.empty-box {
-   background: var(--theme-empty-multiselect-listbox-background-color);
- }
-
     & [role="bottom-box"] {
       border-top: 1px solid var(--knime-silver-sand);
+      background: var(--theme-multiselect-listbox-background-color);
       flex-grow: 0;
       flex-shrink: 0;
     }
@@ -572,28 +568,35 @@ export default {
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
   & ul[role="listbox"] {
+    background: var(--theme-multiselect-listbox-background-color);
     overflow-y: auto;
     position: relative;
     padding: 0;
     margin: 0;
     flex-grow: 1;
+
+    &.empty-box {
+      background: var(--theme-empty-multiselect-listbox-background-color);
+    }
+
     &:focus {
       outline: none;
     }
   }
-& .empty-state {
+
+  & .empty-state {
     height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 
-& span {
-    color: var(--theme-dropdown-foreground-color);
-    font-style: italic;
-    font-size: 10px;
+    & span {
+      color: var(--theme-dropdown-foreground-color);
+      font-style: italic;
+      font-size: 10px;
+    }
   }
-}
 
   &.disabled {
     opacity: 0.5;

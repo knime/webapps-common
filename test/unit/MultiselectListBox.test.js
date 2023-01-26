@@ -528,6 +528,13 @@ describe('MultiselectListBox.vue', () => {
             const wrapper = mount(MultiselectListBox, { propsData });
             expect(wrapper.find('.empty-state').exists()).toBeFalsy();
         });
+
+        it('does not take the bottom valeu into account', () => {
+            propsData.withIsEmptyState = true;
+            propsData.withBottomValue = true;
+            const wrapper = mount(MultiselectListBox, { propsData });
+            expect(wrapper.find('.empty-state').exists()).toBeTruthy();
+        });
     });
 
     describe('bottom value', () => {

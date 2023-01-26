@@ -368,12 +368,6 @@ export default {
             return filters.search.test(item.text, this.normalizedSearchTerm,
                 this.caseSensitiveSearch, false);
         },
-        focusLeft() {
-            this.$refs.left.focus();
-        },
-        focusRight() {
-            this.$refs.right.focus();
-        },
         getInfoText(numShownItems, numAllItems) {
             return this.hasActiveSearch ? `${numShownItems} of ${numAllItems} entries` : null;
         }
