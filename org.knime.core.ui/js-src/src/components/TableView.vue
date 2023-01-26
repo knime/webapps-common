@@ -55,7 +55,9 @@ export default {
             numRowsAbove: 0,
             numRowsBelow: 0,
             maxNumRows: 200000,
-            bottomRows: []
+            bottomRows: [],
+            rowIdColumnName: 'RowID',
+            indexColumnName: '#'
         };
     },
     computed: {
@@ -69,10 +71,14 @@ export default {
             const { showRowKeys, showRowIndices, compactMode } = this.settings;
             let columnConfigs = [];
             if (showRowIndices) {
-                columnConfigs.push(this.createColumnConfig({ index: 0, columnName: 'Index', isSortable: false }));
+                columnConfigs.push(this.createColumnConfig(
+                    { index: 0, columnName: this.indexColumnName, isSortable: false }
+                ));
             }
             if (showRowKeys) {
-                columnConfigs.push(this.createColumnConfig({ index: 1, columnName: 'RowID', isSortable: true }));
+                columnConfigs.push(this.createColumnConfig(
+                    { index: 1, columnName: this.rowIdColumnName, isSortable: true }
+                ));
             }
             this.displayedColumns.forEach((columnName, index) => {
                 // + 2: offset for the index and rowKey, because the first column
@@ -161,7 +167,8 @@ export default {
             return currentColumnSizes;
         },
         rowData() {
-            return this.table.rows.map((row, index) => [index + this.numRowsAbove, ...row]);
+            // we want the indices to start at 1
+            return this.table.rows.map((row, index) => [index + this.numRowsAbove + 1, ...row]);
         },
         bottomRowData() {
             if (typeof this.bottomRows === 'undefined') {
@@ -678,7 +685,7 @@ export default {
         onColumnResize(columnIndex, newColumnSize) {
             const colName = this.dataConfig.columnConfigs[columnIndex].header;
             if (columnIndex < this.numberOfDisplayedIdColumns) {
-                if (colName === 'Index') {
+                if (colName === this.indexColumnName) {
                     Vue.set(this.columnSizeOverrides, INDEX_SYMBOL, newColumnSize);
                 } else {
                     Vue.set(this.columnSizeOverrides, ROW_KEY_SYMBOL, newColumnSize);
