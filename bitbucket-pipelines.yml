@@ -23,6 +23,8 @@ definitions:
           - npm run coverage
           - npm run audit
           - pipe: sonarsource/sonarcloud-scan:1.4.0
+            variables:
+              SONAR_SCANNER_OPTS: -Xmx1024m
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
 
 pipelines:
