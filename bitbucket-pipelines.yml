@@ -1,7 +1,7 @@
 image: node:18.12.1
 
 options:
-  max-time: 10
+  max-time: 30
 
 clone:
   depth: full # SonarCloud scanner needs the full history to assign issues properly
