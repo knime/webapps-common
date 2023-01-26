@@ -1,13 +1,13 @@
 <script>
 export default {
     props: {
-        selected: {
-            type: Boolean,
-            default: false
-        },
         text: {
             type: String,
             default: ' '
+        },
+        selected: {
+            type: Boolean,
+            default: false
         },
         disabled: {
             type: Boolean,

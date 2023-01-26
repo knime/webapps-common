@@ -28,7 +28,9 @@ export default {
         return {
             codeExample,
             selected: [],
-            disabledSelected: []
+            disabledSelected: [],
+            selected2: [],
+            disabledSelected2: []
         };
     },
     computed: {
@@ -129,6 +131,101 @@ export default {
         </div>
         <div class="grid-item-6">
           selected ids: {{ disabledSelected }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            The MulitselectListBox can display a bottom element (visually different but funcionally equivalent to an
+            element lying below all other elements). The total size of the box does not depend on the bottom element
+            (i.e. less elements are shown instead).
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiselectListBox
+            v-model="selected2"
+            :size="4"
+            aria-label="Select stuff here!"
+            with-bottom-value
+            :bottom-value="{
+              id: Symbol('bottom value'),
+              text: 'Custom text'
+            }"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'baz2',
+              text: 'Baz 2'
+            }, {
+              id: 'baz3',
+              text: 'Baz 3'
+            }, {
+              id: 'baz4',
+              text: 'Baz 4'
+            }, {
+              id: 'baz5',
+              text: 'Baz 5'
+            }, {
+              id: 'baz6',
+              text: 'Baz 6'
+            }]"
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ selected2 }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiselectListBox
+            v-model="disabledSelected2"
+            :size="4"
+            aria-label="Disabled..."
+            with-bottom-value
+            :bottom-value="{
+              id: Symbol('bottom value'),
+              text: 'Custom text'
+            }"
+            :possible-values="[{
+              id: 'foo',
+              text: 'Foo'
+            }, {
+              id: 'bar',
+              text: 'Bar'
+            }, {
+              id: 'baz',
+              text: 'Baz'
+            }, {
+              id: 'baz2',
+              text: 'Baz 2'
+            }, {
+              id: 'baz3',
+              text: 'Baz 3'
+            }, {
+              id: 'baz4',
+              text: 'Baz 4'
+            }, {
+              id: 'baz5',
+              text: 'Baz 5'
+            }, {
+              id: 'baz6',
+              text: 'Baz 6'
+            }]"
+            disabled
+          />
+        </div>
+        <div class="grid-item-6">
+          selected ids: {{ disabledSelected2 }}
         </div>
       </div>
     </section>
