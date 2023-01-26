@@ -34,6 +34,11 @@ describe('Utils', () => {
         expect(mergeDeep({ a: 1 }, { a: 2 })).toStrictEqual({ a: 2 });
         expect(mergeDeep({ a: { b: 1 } }, { a: 1 })).toStrictEqual({ a: 1 });
         expect(mergeDeep({ a: 1 }, { a: { c: 1 } })).toStrictEqual({ a: { c: 1 } });
+        // arrays
+        expect(mergeDeep({ a: [1] }, { a: [2] })).toStrictEqual({ a: [2] });
+        // not an object
+        expect(mergeDeep({ a: 1 }, 1)).toStrictEqual({ a: 1 });
+        expect(mergeDeep(1, { a: 1 })).toStrictEqual({ a: 1 });
     });
 
     test('isModelSettingsAndhasNodeView', () => {
