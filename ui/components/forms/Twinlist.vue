@@ -55,10 +55,6 @@ export default {
             type: Boolean,
             default: false
         },
-        xyz: {
-            type: Boolean,
-            default: false
-        },
         disabled: {
             default: false,
             type: Boolean
@@ -91,7 +87,7 @@ export default {
             required: false,
             default: 'Search'
         },
-        unknownValues: {
+        unknownValuesText: {
             type: String,
             required: false,
             default: `Unknown values`
@@ -460,13 +456,13 @@ export default {
           v-if="showUnknownValuesLeft"
           :class="{ selected }"
           class="unknown-values"
-          :title="unknownValues"
+          :title="unknownValuesText"
           @click="(event) => [handleClick(event), focusLeft()]"
           @dblclick.exact="handleDblClick"
           @mousedown="handleStartDrag"
           @mousemove="handleDrag"
         >
-          {{ unknownValues }}
+          {{ unknownValuesText }}
         </div>
       </MultiselectListBox>
       <div class="buttons">
@@ -531,14 +527,14 @@ export default {
           v-if="showUnknownValuesRight"
           :class="{ selected }"
           class="unknown-values"
-          :title="unknownValues"
+          :title="unknownValuesText"
           
           @click="(event) => [handleClick(event), focusRight()]"
           @dblclick.exact="handleDblClick"
           @mousedown="handleStartDrag"
           @mousemove="handleDrag"
         >
-          {{ unknownValues }}
+          {{ unknownValuesText }}
         </div>
       </MultiselectListBox>
     </div>

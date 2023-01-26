@@ -227,9 +227,7 @@ export default {
             this.$emit('inversePatternInput', value);
         },
         onUnkownColumnsInput(value) {
-            if (this.mode === 'manual') {
-                this.includeUnknownValues = value;
-            }
+            this.includeUnknownValues = value;
         },
         validate() {
             return this.$refs.twinlist.validate();

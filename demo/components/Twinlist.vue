@@ -211,7 +211,7 @@ export default {
             :size="7"
             show-search
             show-unknown-values
-            unknown-values="My unknowns"
+            unknown-values-text="My unknowns"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             search-label="Search items"
