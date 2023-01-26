@@ -7,6 +7,9 @@ clone:
   depth: full # SonarCloud scanner needs the full history to assign issues properly
 
 definitions:
+  services:
+    docker: 
+      memory: 6000
   caches:
     sonar: ~/.sonar/cache
   steps:
@@ -24,7 +27,7 @@ definitions:
           - npm run audit
           - pipe: sonarsource/sonarcloud-scan:1.4.0
             variables:
-              SONAR_SCANNER_OPTS: -Xmx1024m
+              SONAR_SCANNER_OPTS: -Xmx5000m
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
 
 pipelines:
