@@ -80,6 +80,11 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory
  * <li>boolean, int, long, double, float, String, char, or byte
  * <li>POJOs, arrays or Collections holding other supported types
  * </ul>
+ * <li>Fields should be initialized with proper default values.
+ * <ul>
+ * <li>If no default value is provided, then the Java default is used
+ * <li>Make sure that the persistors of non-primitive fields support null values if no proper default is provided
+ * </ul>
  * </ol>
  *
  * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
