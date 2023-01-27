@@ -129,7 +129,7 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
         try {
             return DefaultNodeSettings.loadSettings(nodeSettings.get(settingsType), m_settingsClasses.get(settingsType));
         } catch (InvalidSettingsException ex) {
-            throw new IllegalStateException("The settings are invalid.", ex);
+            throw new IllegalStateException("The settings are invalid: " + ex.getMessage(), ex);
         }
     }
 
