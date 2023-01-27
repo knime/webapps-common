@@ -52,10 +52,12 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.filter.PatternFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.ColumnFilterMode;
 import org.knime.core.webui.node.dialog.impl.ManualColumnFilter;
@@ -71,6 +73,8 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithCon
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
 public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWithConfigKey<ColumnFilter> {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(LegacyColumnFilterPersistor.class);
 
     /**
      * See NameFilterConfiguration.KEY_FILTER_TYPE
@@ -169,8 +173,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         return typeFilter;
     }
 
-    private static String[] loadSelectedTypes(final NodeSettingsRO typeFilterSettings)
-        throws InvalidSettingsException {
+    private static String[] loadSelectedTypes(final NodeSettingsRO typeFilterSettings) throws InvalidSettingsException {
         var typeListSettings = typeFilterSettings.getNodeSettings(TYPELIST);
         var keys = typeListSettings.keySet();
         var selectedTypes = new ArrayList<String>(keys.size());
@@ -182,13 +185,30 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         return selectedTypes.toArray(String[]::new);
     }
 
-    static void save(final ColumnFilter columnFilter, final NodeSettingsWO settings, final String configKey) {
+    static void save(ColumnFilter columnFilter, final NodeSettingsWO settings, final String configKey) {
+        if (columnFilter == null) {
+            LOGGER.coding(createFilterNullError(configKey));
+            columnFilter = new ColumnFilter();
+        }
         var columnFilterSettings = settings.addNodeSettings(configKey);
         columnFilterSettings.addString(OLD_FILTER_TYPE, toFilterType(columnFilter.m_mode));
         saveManualFilter(columnFilter.m_manualFilter, columnFilterSettings);
         savePatternMatching(columnFilter.m_patternFilter, columnFilter.m_mode,
             columnFilterSettings.addNodeSettings(PatternFilterConfiguration.TYPE));
         saveTypeFilter(columnFilter.m_typeFilter, columnFilterSettings.addNodeSettings(OLD_FILTER_TYPE_DATATYPE));
+    }
+
+    private static String createFilterNullError(final String configKey) {
+        var nodeContext = NodeContext.getContext();
+        String prefix;
+        if (nodeContext != null) {
+            prefix = String.format("The ColumnFilter with key '%s' of the node '%s' is null.", configKey,
+                nodeContext.getNodeContainer().getNameWithID());
+        } else {
+            prefix = String.format("The ColumnFilter with key '%s' is null. ", configKey);
+        }
+        return prefix
+            + " It is replaced by a new ColumnFilter instance to prevent errors but please fix this issue anyway.";
     }
 
     private static String toFilterType(final ColumnFilterMode mode) {
