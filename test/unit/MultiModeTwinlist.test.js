@@ -456,7 +456,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeFalsy();
         });
 
-        it('if rendered, includes unkown columns by default', () => {
+        it('renders and includes unkown columns by default', () => {
             propsData.showUnknownValues = true;
             const wrapper = mount(MultiModeTwinlist, { propsData });
             expect(wrapper.find(Twinlist).vm.initialIncludeUnknownValues).toBeTruthy();

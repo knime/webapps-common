@@ -529,7 +529,7 @@ describe('MultiselectListBox.vue', () => {
             expect(wrapper.find('.empty-state').exists()).toBeFalsy();
         });
 
-        it('does not take the bottom valeu into account', () => {
+        it('does not take the bottom value into account', () => {
             propsData.withIsEmptyState = true;
             propsData.withBottomValue = true;
             const wrapper = mount(MultiselectListBox, { propsData });
