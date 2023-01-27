@@ -21,7 +21,7 @@ try {
         knimetools.processAuditResults()
 
         stage('Sonarqube analysis') {
-           workflowTests.runSonar(withoutNode:true)
+           workflowTests.runSonar(withOutNode:true)
         }
     }
 } catch (ex) {
