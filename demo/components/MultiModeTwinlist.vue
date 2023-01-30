@@ -14,16 +14,16 @@ const codeExample = `<MultiModeTwinlist
   :initial-selected-types="['Type1', 'Type3']"
   :possible-values="[{
     id: 'foo',
+    text: 'foo',
+    type: { id: 'type1', text: 'Type 1' }
+  }, {
+    id: 'Foo',
     text: 'Foo',
-    type: 'Type1'
+    type: { id: 'type1', text: 'Type 1' }
   }, {
     id: 'bar',
     text: 'Bar',
-    type: 'Type2'
-  }, {
-    id: 'baz',
-    text: 'Baz',
-    type: 'Type1'
+    type: { id: 'type2', text: 'Type 2' }
   }]"
 />
 `;
@@ -64,47 +64,47 @@ export default {
             return [{
                 id: 'foo',
                 text: 'foo',
-                type: 'Type1'
+                type: { id: 'type1', text: 'Type 1' }
             }, {
                 id: 'Foo',
                 text: 'Foo',
-                type: 'Type1'
+                type: { id: 'type1', text: 'Type 1' }
             }, {
                 id: 'bar',
                 text: 'Bar',
-                type: 'Type2'
+                type: { id: 'type2', text: 'Type 2' }
             }, {
                 id: 'baz',
                 text: 'Baz',
-                type: 'Type1'
+                type: { id: 'type1', text: 'Type 1' }
             }, {
                 id: 'baz2',
                 text: 'Baz 2',
-                type: 'Type2'
+                type: { id: 'type1', text: 'Type 1' }
             }, {
                 id: 'baz3',
                 text: 'Baz 3',
-                type: 'Type3'
+                type: { id: 'type2', text: 'Type 2' }
             }, {
                 id: 'baz4',
                 text: 'Baz 4',
-                type: 'Type3'
+                type: { id: 'type5', text: 'Type 5' }
             }, {
                 id: 'baz5',
                 text: 'Baz 5',
-                type: 'Type3'
+                type: { id: 'type4', text: 'Type 4' }
             }, {
                 id: 'baz6',
                 text: 'Baz 6',
-                type: 'Type4'
+                type: { id: 'type3', text: 'Type 3' }
             }, {
                 id: 'spec1',
                 text: 'Special *.^',
-                type: 'Type1'
+                type: { id: 'type1', text: 'Type 1' }
             }, {
                 id: 'spec2',
                 text: 'Special $?]',
-                type: 'Type2'
+                type: { id: 'type2', text: 'Type 2' }
             }];
         }
     },

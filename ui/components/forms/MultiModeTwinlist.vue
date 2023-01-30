@@ -105,6 +105,15 @@ export default {
          *   id: 'XLS',
          *   text: 'Excel',
          * }]
+         * For type selection, additionally, an element has to have a property `type` wich itself has properties
+         * `id` and `text`, e.g.
+         * [{
+         *   id: 'pdf',
+         *   text: 'PDF',
+         *   type: {
+         *     id: 'StringValue',
+         *     text: 'String'
+         *  }]
          */
         possibleValues: {
             type: Array,
@@ -140,9 +149,12 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         possibleTypes() {
-            return [...new Set(this.possibleValues.map(x => x.type))]
-                .filter(type => type !== '')
-                .map(type => ({ text: type, id: type }));
+            const types = this.possibleValues.map(x => x.type)
+                .filter(type => type && type.id !== '')
+                .filter( // remove duplicates
+                    (val, index, self) => index === self.findIndex((t) => t.id === val.id && t.text === val.text)
+                );
+            return types;
         },
         matchingValueIds() {
             return this.possibleValues
@@ -237,7 +249,7 @@ export default {
         },
         itemMatches(item) {
             const mode = filters[this.mode];
-            return mode.test(item[this.mode === 'type' ? 'type' : 'text'], this.normalizedSearchTerm,
+            return mode.test(this.mode === 'type' ? item.type?.id : item.text, this.normalizedSearchTerm,
                 this.caseSensitivePattern, this.inversePattern);
         }
     }

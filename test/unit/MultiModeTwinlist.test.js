@@ -379,9 +379,38 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
     });
 
     describe('Type selection', () => {
-        it('renders type selection and changes label if type selection is selected', () => {
+        const possibleValuesWithTypes = [
+            {
+                id: 'test1',
+                text: 'Text 1',
+                type: { id: 'StringValue', text: 'String' }
+            },
+            {
+                id: 'test2',
+                text: 'Text 2',
+                type: { id: 'DoubleValue', text: 'Double' }
+            },
+            {
+                id: 'test3',
+                text: 'Text 3',
+                type: { id: 'StringValue', text: 'String' }
+            }
+        ];
+
+        it('does not render type selection without possible types', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData: {
                 possibleValues: defaultPossibleValues,
+                leftLabel: 'Choose',
+                rightLabel: 'The value',
+                size: 3,
+                initialMode: 'type'
+            } });
+            expect(wrapper.find(Checkboxes).exists()).toBeFalsy();
+        });
+
+        it('renders type selection and changes label if type selection is selected', () => {
+            const wrapper = mount(MultiModeTwinlist, { propsData: {
+                possibleValues: possibleValuesWithTypes,
                 leftLabel: 'Choose',
                 rightLabel: 'The value',
                 size: 3,
@@ -396,39 +425,26 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
 
         it('selects via type matching', async () => {
             const propsData = {
-                possibleValues: [
-                    {
-                        id: 'test1',
-                        text: 'Text 1',
-                        type: 'String'
-                    },
-                    {
-                        id: 'test2',
-                        text: 'Text 2',
-                        type: 'Double'
-                    },
-                    {
-                        id: 'test3',
-                        text: 'Text 3',
-                        type: 'String'
-                    }
-                ],
+                possibleValues: possibleValuesWithTypes,
                 initialMode: 'type',
                 leftLabel: 'Choose',
                 rightLabel: 'The value'
             };
             const wrapper = mount(MultiModeTwinlist, { propsData });
-            
-            wrapper.find(Checkboxes).vm.$emit('input', ['String']);
+            expect(wrapper.vm.possibleTypes).toStrictEqual([
+                { id: 'StringValue', text: 'String' },
+                { id: 'DoubleValue', text: 'Double' }
+            ]);
+            wrapper.find(Checkboxes).vm.$emit('input', ['StringValue']);
             await wrapper.vm.$nextTick();
-            expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['String']);
+            expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['StringValue']);
             expect(wrapper.emitted().input[1][0]).toStrictEqual({ selected: ['test1', 'test3'], isManual: false });
             expectTwinlistIncludes(wrapper, ['Text 2'], ['Text 1', 'Text 3']);
         });
 
         it('prohibits manual selection', () => {
             const propsData = {
-                possibleValues: defaultPossibleValues,
+                possibleValues: possibleValuesWithTypes,
                 values: [],
                 initialMode: 'type',
                 leftLabel: 'Choose',
