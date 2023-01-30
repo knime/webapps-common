@@ -211,7 +211,7 @@ describe('TableView.vue', () => {
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = await getTableProps(wrapper);
 
             expect(wrapper.getComponent(TableUI).exists()).toBe(true);
-            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index, ...row])]);
+            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row])]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
             expect(totalSelected).toStrictEqual(0);
             expect(tableConfig).toMatchObject({
