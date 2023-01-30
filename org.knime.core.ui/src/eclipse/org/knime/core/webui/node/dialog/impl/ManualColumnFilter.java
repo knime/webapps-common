@@ -102,7 +102,6 @@ public class ManualColumnFilter implements DialogComponentSettings {
         final var result = new HashSet<>(Arrays.asList(m_manuallySelected));
         if (m_includeUnknownColumns) {
             final var unknownValues = new HashSet<>(Arrays.asList(choices));
-            unknownValues.removeAll(Arrays.asList(m_manuallySelected));
             unknownValues.removeAll(Arrays.asList(m_manuallyDeselected));
             result.addAll(unknownValues);
         }
