@@ -30,7 +30,8 @@ export default {
             selected: [],
             disabledSelected: [],
             selected2: [],
-            disabledSelected2: []
+            disabledSelected2: [],
+            bottomValueSymbol: Symbol('bottom value')
         };
     },
     computed: {
@@ -150,7 +151,7 @@ export default {
             aria-label="Select stuff here!"
             with-bottom-value
             :bottom-value="{
-              id: Symbol('bottom value'),
+              id: bottomValueSymbol,
               text: 'Custom text'
             }"
             :possible-values="[{
@@ -193,7 +194,7 @@ export default {
             aria-label="Disabled..."
             with-bottom-value
             :bottom-value="{
-              id: Symbol('bottom value'),
+              id: bottomValueSymbol,
               text: 'Custom text'
             }"
             :possible-values="[{

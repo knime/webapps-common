@@ -54,6 +54,7 @@ import Tooltip from '../components/Tooltip.vue';
 import Twinlist from '../components/Twinlist.vue';
 import TabBar, { tabBarMixin } from '../../ui/components/TabBar.vue';
 import SearchInput from '../../ui/components/forms/SearchInput.vue';
+import StyledListItem from '../components/StyledListItem.vue';
 
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
@@ -120,6 +121,7 @@ const demoComponents = {
         Dropdown,
         Multiselect,
         MultiselectListBox,
+        StyledListItem,
         ToggleSwitch,
         Twinlist,
         MulitModeTwinList

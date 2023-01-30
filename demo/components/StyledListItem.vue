@@ -79,8 +79,14 @@ export default {
             />
           </ul>
         </div>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show SubMenu.vue source code">{{ code }}</CodeExample>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+          <CodeExample summary="Show SubMenu.vue source code">{{ code }}</CodeExample>
+        </div>
       </div>
     </section>
   </section>
