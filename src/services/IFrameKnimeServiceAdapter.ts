@@ -15,7 +15,7 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
 
     private boundOnMessageFromIFrame: any;
 
-    // TODO UIEXT-687 will introduce a general mechanism to forward method calls from parent to child iframe
+    // TODO UIEXT-687 will introduce a generalized mechanism to forward method calls from parent to child iframe
     private imageGeneratedCallback: (image: string) => void;
 
     constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
