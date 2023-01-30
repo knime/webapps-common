@@ -153,27 +153,32 @@ export const dialogInitialData = {
                                     {
                                         const: 'Universe_0_0',
                                         title: 'Universe_0_0',
-                                        columnType: 'DoubleValue'
+                                        columnType: 'DoubleValue',
+                                        columnTypeDisplayed: 'Double'
                                     },
                                     {
                                         const: 'Universe_0_1',
                                         title: 'Universe_0_1',
-                                        columnType: 'DoubleValue'
+                                        columnType: 'DoubleValue',
+                                        columnTypeDisplayed: 'Double'
                                     },
                                     {
                                         const: 'Universe_1_0',
                                         title: 'Universe_1_0',
-                                        columnType: 'DoubleValue'
+                                        columnType: 'DoubleValue',
+                                        columnTypeDisplayed: 'Double'
                                     },
                                     {
                                         const: 'Universe_1_1',
                                         title: 'Universe_1_1',
-                                        columnType: 'DoubleValue'
+                                        columnType: 'DoubleValue',
+                                        columnTypeDisplayed: 'Double'
                                     },
                                     {
                                         const: 'Cluster Membership',
                                         title: 'Cluster Membership',
-                                        columnType: 'StringValue'
+                                        columnType: 'StringValue',
+                                        columnTypeDisplayed: 'String'
                                     }
                                 ]
                             },
@@ -212,7 +217,8 @@ export const dialogInitialData = {
                             {
                                 const: 'Cluster Membership',
                                 title: 'Cluster Membership',
-                                columnType: 'StringValue'
+                                columnType: 'StringValue',
+                                columnTypeDisplayed: 'String'
                             }
                         ],
                         title: 'Frequency column selection'

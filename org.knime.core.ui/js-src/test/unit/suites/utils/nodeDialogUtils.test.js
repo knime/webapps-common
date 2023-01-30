@@ -14,15 +14,15 @@ describe('Utils', () => {
         ]);
     });
 
-    it('optionsMapperWithType maps schema column representation to webapps-common possible values', () => {
+    it('optionsMapperWithType resolves additional type information', () => {
         expect(
             [
-                { const: 'columName', title: 'Colum Name2', columnType: 'String' },
-                { const: 'columName2', title: 'Colum Name', columnType: 'Double' }
+                { const: 'rowName', title: 'Row Name', columnType: 'typeA', columnTypeDisplayed: 'Type A' },
+                { const: 'columName', title: 'Colum Name', columnType: 'typeB', columnTypeDisplayed: 'Type B'  }
             ].map(optionsMapperWithType)
         ).toEqual([
-            { id: 'columName', text: 'Colum Name2', type: 'String' },
-            { id: 'columName2', text: 'Colum Name', type: 'Double' }
+            { id: 'rowName', text: 'Row Name', type: { id: 'typeA', text: 'Type A' } },
+            { id: 'columName', text: 'Colum Name', type: { id: 'typeB', text: 'Type B' } }
         ]);
     });
 

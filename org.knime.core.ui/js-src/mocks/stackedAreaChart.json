@@ -147,22 +147,26 @@
                     {
                       "const": "Universe_0_0",
                       "title": "Universe_0_0",
-                      "columnType": "org.knime.core.data.DoubleValue"
+                      "columnType": "DoubleValue",
+                      "columnTypeDisplayed": "Double"
                     },
                     {
                       "const": "Universe_0_1",
                       "title": "Universe_0_1",
-                      "columnType": "org.knime.core.data.DoubleValue"
+                      "columnType": "DoubleValue",
+                      "columnTypeDisplayed": "Double"
                     },
                     {
                       "const": "Universe_1_0",
                       "title": "Universe_1_0",
-                      "columnType": "org.knime.core.data.DoubleValue"
+                      "columnType": "DoubleValue",
+                      "columnTypeDisplayed": "Double"
                     },
                     {
                       "const": "Universe_1_1",
                       "title": "Universe_1_1",
-                      "columnType": "org.knime.core.data.DoubleValue"
+                      "columnType": "DoubleValue",
+                      "columnTypeDisplayed": "Double"
                     }
                   ]
                 },

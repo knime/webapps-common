@@ -106,17 +106,20 @@ describe('TwinlistInput.vue', () => {
                                 [{
                                     const: 'test_1',
                                     title: 'test_1',
-                                    columnType: 'String'
+                                    columnType: 'StringValue',
+                                    columnTypeDisplayed: 'String'
                                 },
                                 {
                                     const: 'test_2',
                                     title: 'test_2',
-                                    columnType: 'Double'
+                                    columnType: 'DoubleValue',
+                                    columnTypeDisplayed: 'Double'
                                 },
                                 {
                                     const: 'test_3',
                                     title: 'test_3',
-                                    columnType: 'String'
+                                    columnType: 'StringValue',
+                                    columnTypeDisplayed: 'String'
                                 }]
                         }
                     }
@@ -265,17 +268,26 @@ describe('TwinlistInput.vue', () => {
             [{
                 id: 'test_1',
                 text: 'test_1',
-                type: 'String'
+                type: {
+                    id: 'StringValue',
+                    text: 'String'
+                }
             },
             {
                 id: 'test_2',
                 text: 'test_2',
-                type: 'Double'
+                type: {
+                    id: 'DoubleValue',
+                    text: 'Double'
+                }
             },
             {
                 id: 'test_3',
                 text: 'test_3',
-                type: 'String'
+                type: {
+                    id: 'StringValue',
+                    text: 'String'
+                }
             }]
         );
     });

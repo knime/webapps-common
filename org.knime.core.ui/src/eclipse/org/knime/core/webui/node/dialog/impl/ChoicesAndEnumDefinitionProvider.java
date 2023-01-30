@@ -56,7 +56,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITL
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
@@ -171,14 +171,17 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var arrayNode = config.createArrayNode();
         final var spec = context.getDataTableSpecs()[0];
         for (var choice : choices) {
-            final var type = withTypes ? getType(spec, choice) : null;
-            addChoice(arrayNode, choice, choice, type, config);
+            final DataType type;
+            if (withTypes) {
+                type = spec.getColumnSpec(choice).getType();
+                final var typeIdentifier = TypeColumnFilter.typeToString(type);
+                final var displayedType = type.getName();
+                addChoice(arrayNode, choice, choice, typeIdentifier, displayedType, config);
+            } else {
+                addChoice(arrayNode, choice, choice, null, null, config);
+            }
         }
         return arrayNode;
-    }
-
-    private static String getType(final DataTableSpec spec, final String choice) {
-        return TypeColumnFilter.typeToString(spec.getColumnSpec(choice).getType());
     }
 
     private static ArrayNode createArrayNodeWithCurrentOrEmptyChoice(final SchemaGeneratorConfig config,
@@ -186,20 +189,21 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var arrayNode = config.createArrayNode();
         var savedChoices = savedChoicesSupplier == null ? null : savedChoicesSupplier.get();
         if (savedChoices == null) {
-            addChoice(arrayNode, "", "", "", config);
+            addChoice(arrayNode, "", "", "", "", config);
         } else {
             for (var choice : savedChoices) {
-                addChoice(arrayNode, choice, choice, "", config);
+                addChoice(arrayNode, choice, choice, "", "", config);
             }
         }
         return arrayNode;
     }
 
     private static void addChoice(final ArrayNode arrayNode, final String id, final String text, final String type,
-        final SchemaGeneratorConfig config) {
+        final String displayedType, final SchemaGeneratorConfig config) {
         final var entry = config.createObjectNode().put(TAG_CONST, id).put(TAG_TITLE, text);
         if (type != null) {
             entry.put("columnType", type);
+            entry.put("columnTypeDisplayed", displayedType);
         }
         arrayNode.add(entry);
     }
