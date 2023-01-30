@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.impl;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.knime.core.data.DataTableSpec;
 
@@ -99,7 +100,7 @@ public class ManualColumnFilter implements DialogComponentSettings {
      * @return the manually selected columns plus the new previously unknown ones if these are included.
      */
     public String[] getUpdatedManuallySelected(final String[] choices) {
-        final var result = new HashSet<>(Arrays.asList(m_manuallySelected));
+        final var result = new LinkedHashSet<>(Arrays.asList(m_manuallySelected));
         if (m_includeUnknownColumns) {
             final var unknownValues = new HashSet<>(Arrays.asList(choices));
             unknownValues.removeAll(Arrays.asList(m_manuallyDeselected));

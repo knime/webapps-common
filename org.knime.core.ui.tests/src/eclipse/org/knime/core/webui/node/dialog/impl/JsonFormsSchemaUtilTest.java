@@ -329,7 +329,7 @@ class JsonFormsSchemaUtilTest {
                 new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
 
         private static String SNAPSHOT_IDENTICAL =
-            "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_manuallySelected\":[]}},"
+            "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"m_manuallySelected\":[], \"m_manuallyDeselected\":[], \"m_includeUnknownColumns\":false}},"
                 + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
                 + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
                 + "\"typeFilter\":{\"type\":\"object\",\"properties\":{\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_selectedTypes\":[]}},";
