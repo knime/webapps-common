@@ -77,7 +77,6 @@ class ColumnFilterTest {
         selection.m_manualFilter.m_includeUnknownColumns = true;
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected", choices[0]});
-        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(new String[0]);
     }
 
     @Test
@@ -87,7 +86,6 @@ class ColumnFilterTest {
         selection.m_manualFilter.m_manuallyDeselected = new String[] {choices[0]};
         selection.m_manualFilter.m_includeUnknownColumns = true;
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
-        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(choices);
     }
 
     @Test
@@ -97,7 +95,6 @@ class ColumnFilterTest {
         selection.m_manualFilter.m_includeUnknownColumns = false;
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
-        assertThat(selection.m_manualFilter.m_manuallyDeselected).isEqualTo(choices);
     }
 
     @Test

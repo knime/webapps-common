@@ -119,22 +119,13 @@ public class ColumnFilter implements DialogComponentSettings {
      */
     @JsonIgnore
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
-        update(choices);
         switch (m_mode) {
             case MANUAL:
-                return m_manualFilter.getSelected();
+                return m_manualFilter.getUpdatedManuallySelected(choices);
             case TYPE:
                 return m_typeFilter.getSelected(choices, spec);
             default:
                 return m_patternFilter.getSelected(m_mode, choices);
         }
-    }
-
-    /**
-     * Any updates that need to be performed when the choices change (e.g., during the configuration of a view node)
-     * @param choices the list of all possible column names
-     */
-    private void update(final String[] choices) {
-        m_manualFilter.update(choices);
     }
 }

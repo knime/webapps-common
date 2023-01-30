@@ -83,7 +83,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      */
     public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         var impl = IMPL_MAP.get(fieldType);
-        return createOptionalPersistorFromImpl(fieldType, configKey, impl);
+        return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
     /**
@@ -102,13 +102,13 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         final String configKey) {
         var impl = IMPL_OPT_MAP.get(fieldType);
         try {
-            return createOptionalPersistorFromImpl(fieldType, configKey, impl);
+            return createPersistorFromImpl(fieldType, configKey, impl);
         } catch (IllegalArgumentException ex) {
             return createPersistor(fieldType, configKey);
         }
     }
 
-    private static <T> NodeSettingsPersistor<T> createOptionalPersistorFromImpl(final Class<T> fieldType,
+    private static <T> NodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
         final String configKey, final FieldPersistor impl) {
         if (impl != null) {
             return new FieldNodeSettingsPersistor<>(configKey, impl);
