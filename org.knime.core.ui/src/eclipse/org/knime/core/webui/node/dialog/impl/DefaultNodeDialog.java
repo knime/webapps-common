@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.impl;
 import java.util.Map;
 import java.util.Optional;
 
+import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -99,6 +100,25 @@ public final class DefaultNodeDialog extends NodeDialog {
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2) {
         super(settingsType1, settingsType2);
+        m_settingsDataService =
+            new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param settingsType1 a settings type this dialog is able to provide
+     * @param settingsClass1 dialog definition for the first settings type
+     * @param settingsType2 another settings type this dialog is able to provide
+     * @param settingsClass2 dialog definition for the second settings type
+     * @param configurationModifier a {@link NodeCreationConfigurationModifier} callback that will be invoked when
+     *            applying new data in the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     */
+    public DefaultNodeDialog(final SettingsType settingsType1,
+        final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
+        final Class<? extends DefaultNodeSettings> settingsClass2,
+        final NodeCreationConfigurationModifier configurationModifier) {
+        super(configurationModifier, settingsType1, settingsType2);
         m_settingsDataService =
             new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
     }

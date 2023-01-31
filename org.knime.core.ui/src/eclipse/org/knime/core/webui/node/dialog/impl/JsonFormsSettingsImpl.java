@@ -129,7 +129,7 @@ final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     @Override
     public final RawValue getUiSchema() {
-        final var clazz = m_modelSettingsClass != null ? m_modelSettingsClass : m_viewSettingsClass;
+        final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass ;
         try (final var inputStream = clazz.getResourceAsStream("uischema.json")) {
             if (inputStream == null) {
                 NodeLogger.getLogger(getClass()).warn("No uischema.json resource found.");

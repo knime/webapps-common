@@ -65,6 +65,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.base.AbstractConfigEntry;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.CredentialsProvider;
@@ -82,6 +83,7 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.json.JsonInitialDataService;
 import org.knime.core.webui.data.text.TextApplyDataService;
 import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.view.NodeViewManager;
 
 /**
@@ -97,6 +99,26 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
 
     private final Set<SettingsType> m_settingsTypes;
 
+    private final NodeCreationConfigurationModifier m_configurationModifier;
+
+    /**
+     * Creates a new node dialog instance.
+     *
+     * NOTE: when called a {@link NodeContext} needs to be available
+     *
+     * @param configurationModifier a {@link NodeCreationConfigurationModifier} callback that will be invoked when
+     *            applying new data in the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     * @param settingsTypes the list of {@link SettingsType}s the {@link TextNodeSettingsService} is able to deal with;
+     *            must not be empty
+     */
+    protected NodeDialog(final NodeCreationConfigurationModifier configurationModifier,
+        final SettingsType... settingsTypes) {
+        CheckUtils.checkState(settingsTypes.length > 0, "At least one settings type must be provided");
+        m_settingsTypes = Set.of(settingsTypes);
+        m_nc = NodeContext.getContext().getNodeContainer();
+        m_configurationModifier = configurationModifier;
+    }
+
     /**
      * Creates a new node dialog instance.
      *
@@ -106,9 +128,7 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
      *            must not be empty
      */
     protected NodeDialog(final SettingsType... settingsTypes) {
-        CheckUtils.checkState(settingsTypes.length > 0, "At least one settings type must be provided");
-        m_settingsTypes = Set.of(settingsTypes);
-        m_nc = NodeContext.getContext().getNodeContainer();
+        this(null, settingsTypes);
     }
 
     @Override
@@ -125,7 +145,16 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
     @Override
     public final Optional<ApplyDataService> createApplyDataService() {
         return Optional.of(new TextApplyDataServiceImpl(m_nc, m_settingsTypes, getNodeSettingsService(),
-            getVariableSettingsService()));
+            getVariableSettingsService(), m_configurationModifier));
+    }
+
+    /**
+     * A method that should be called when closing the dialog.
+     */
+    public void onClose() {
+        if (m_configurationModifier != null) {
+            m_configurationModifier.applyConfiguration();
+        }
     }
 
     private static class TextInitialDataServiceImpl implements TextInitialDataService {
@@ -241,6 +270,51 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
         }
     }
 
+    /**
+     * Abstract class that provides a {@link ModifiableNodeCreationConfiguration} that can be modified based on the
+     * difference between previous and updated {@link NodeSettingsRO}. Also provides the functionality to apply these
+     * modifications to a node.
+     */
+    public static abstract class NodeCreationConfigurationModifier {
+
+        private ModifiableNodeCreationConfiguration m_configuration;
+
+        private Runnable m_replaceNodeRunnable;
+
+        private final void modifyConfiguration(final NodeContainer nc, final NodeSettingsRO modelSettings,
+            final NodeSettingsRO previousModelSettings) throws InvalidSettingsException {
+            // if configuration has already been created (and potentially modified), do not create a new configuration
+            if (m_configuration == null && nc instanceof NativeNodeContainer) {
+                ((NativeNodeContainer)nc).getNode().getCopyOfCreationConfig().ifPresent(conf -> m_configuration = conf);
+            }
+            if (m_configuration != null && modifyConfiguration(m_configuration, modelSettings, previousModelSettings)) {
+                m_replaceNodeRunnable = () -> nc.getParent().replaceNode(nc.getID(), m_configuration);
+            }
+        }
+
+        /**
+         * Accepts a {@link ModifiableNodeCreationConfiguration} and optionally modifies this configuration based on the
+         * difference between previous and updated {@link NodeSettingsRO}.
+         *
+         * @param configuration a {@link ModifiableNodeCreationConfiguration} that can be modified based on difference
+         *            between the current and previous model settings
+         * @param modelSettings the current / updated model {@link DefaultNodeSettings settings}
+         * @param previousModelSettings he previous model {@link DefaultNodeSettings settings}
+         * @return true, if modifications to the configuration have been made; otherwise false
+         * @throws InvalidSettingsException if there is a problem when reading out the settings
+         */
+        protected abstract boolean modifyConfiguration(ModifiableNodeCreationConfiguration configuration,
+            NodeSettingsRO modelSettings, NodeSettingsRO previousModelSettings) throws InvalidSettingsException;
+
+        private final void applyConfiguration() {
+            if (m_replaceNodeRunnable != null) {
+                m_replaceNodeRunnable.run();
+                m_configuration = null;
+                m_replaceNodeRunnable = null;
+            }
+        }
+    }
+
     private static final class TextApplyDataServiceImpl implements TextApplyDataService {
 
         private final NodeContainer m_nc;
@@ -251,13 +325,17 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
 
         private final Optional<TextVariableSettingsService> m_variableSettingsService;
 
+        private final NodeCreationConfigurationModifier m_configurationModifier;
+
         private TextApplyDataServiceImpl(final NodeContainer nc, final Set<SettingsType> settingsTypes,
             final TextNodeSettingsService textNodeSettingsService,
-            final Optional<TextVariableSettingsService> variableSettingsService) {
+            final Optional<TextVariableSettingsService> variableSettingsService,
+            final NodeCreationConfigurationModifier configurationModifier) {
             m_nc = nc;
             m_settingsTypes = settingsTypes;
             m_textNodeSettingsService = textNodeSettingsService;
             m_variableSettingsService = variableSettingsService;
+            m_configurationModifier = configurationModifier;
         }
 
         @Override
@@ -330,6 +408,10 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
                         viewSettings.getSecond(), nodeSettings);
                 }
 
+                if (modelSettings != null && m_configurationModifier != null) {
+                    // apply configuration modifier (e.g., to change port configuration) if it exists
+                    m_configurationModifier.modifyConfiguration(m_nc, modelSettings.getFirst(), modelSettings.getSecond());
+                }
             } catch (InvalidSettingsException ex) {
                 throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
             }

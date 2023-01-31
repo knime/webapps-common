@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.impl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -168,6 +170,10 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         if (viewSettingsClass != null) {
             createOptions(viewSettingsClass.getDeclaredFields(), tab, docBuilder, doc);
         }
+        if (modelSettingsClass != null) {
+            // We want common fields of common subclasses to appear at the end of the description
+            createOptions(getParentFields(modelSettingsClass), tab, docBuilder, doc);
+        }
         fullDesc.appendChild(tab);
 
         // create ports
@@ -203,6 +209,14 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             // should never happen
             throw new IllegalStateException("Problem creating node description", e);
         }
+    }
+
+    private static Field[] getParentFields(final Class<?> clazz) {
+        final var superclasses = new ArrayList<Class<?>>();
+        for (Class<?> c = clazz.getSuperclass(); c != null; c = c.getSuperclass()) {
+            superclasses.add(c);
+        }
+        return superclasses.stream().map(Class::getDeclaredFields).flatMap(Arrays::stream).toArray(Field[]::new);
     }
 
     private static void addPorts(final DocumentBuilder docBuilder, final Document doc, final Element ports,
