@@ -456,10 +456,10 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             expect(wrapper.find(Twinlist).vm.showUnknownValues).toBeFalsy();
         });
 
-        it('renders and includes unkown columns by default', () => {
+        it('renders and excludes unkown columns by default', () => {
             propsData.showUnknownValues = true;
             const wrapper = mount(MultiModeTwinlist, { propsData });
-            expect(wrapper.find(Twinlist).vm.initialIncludeUnknownValues).toBeTruthy();
+            expect(wrapper.find(Twinlist).vm.initialIncludeUnknownValues).toBeFalsy();
         });
 
         it('does not render unknown columns if wanted', () => {
@@ -476,8 +476,8 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         
         it('emits includeUnknownValuesInput event', () => {
             const wrapper = mount(MultiModeTwinlist, { propsData });
-            wrapper.find(Twinlist).vm.$emit('includeUnknownValuesInput', false);
-            expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
+            wrapper.find(Twinlist).vm.$emit('includeUnknownValuesInput', true);
+            expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(true);
         });
     });
 });

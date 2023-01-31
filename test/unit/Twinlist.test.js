@@ -750,7 +750,7 @@ describe('Twinlist.vue', () => {
             expect(wrapper.findAll(MultiselectListBox).at(0).find('[role="bottom-box"]').exists()).toBeFalsy();
             expect(wrapper.findAll(MultiselectListBox).at(1).find('[role="bottom-box"]').exists()).toBeTruthy();
         };
-        const expectUnknownValuesAreExluded = (wrapper) => {
+        const expectUnknownValuesAreExcluded = (wrapper) => {
             expect(wrapper.findAll(MultiselectListBox).at(0).find('[role="bottom-box"]').exists()).toBeTruthy();
             expect(wrapper.findAll(MultiselectListBox).at(1).find('[role="bottom-box"]').exists()).toBeFalsy();
         };
@@ -770,17 +770,17 @@ describe('Twinlist.vue', () => {
             expect(wrapper.find('[role="bottom-box"]').exists()).toBeFalsy();
         });
 
-        it('renders unknown values if wanted included per default', () => {
+        it('renders unknown values if wanted excluded per default', () => {
             propsData.showUnknownValues = true;
             const wrapper = mount(Twinlist, { propsData });
-            expectUnknownValuesAreIncluded(wrapper);
+            expectUnknownValuesAreExcluded(wrapper);
         });
 
-        it('excludes unknown values if wanted', () => {
+        it('includes unknown values if wanted', () => {
             propsData.showUnknownValues = true;
-            propsData.initialIncludeUnknownValues = false;
+            propsData.initialIncludeUnknownValues = true;
             const wrapper = mount(Twinlist, { propsData });
-            expectUnknownValuesAreExluded(wrapper);
+            expectUnknownValuesAreIncluded(wrapper);
         });
 
         describe('excluded', () => {
@@ -836,7 +836,7 @@ describe('Twinlist.vue', () => {
                 const rightBox = wrapper.findAll(MultiselectListBox).at(1);
                 rightBox.find('[role="bottom-box"]').find('[role="option"]').trigger('click');
                 wrapper.find({ ref: 'moveAllLeft' }).trigger('click');
-                expectUnknownValuesAreExluded(wrapper);
+                expectUnknownValuesAreExcluded(wrapper);
                 expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
             });
     
@@ -845,7 +845,7 @@ describe('Twinlist.vue', () => {
                 const rightBox = wrapper.findAll(MultiselectListBox).at(1);
                 rightBox.find('[role="bottom-box"]').find('[role="option"]').trigger('click');
                 wrapper.find({ ref: 'moveLeft' }).trigger('click');
-                expectUnknownValuesAreExluded(wrapper);
+                expectUnknownValuesAreExcluded(wrapper);
                 expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
             });
     
@@ -854,7 +854,7 @@ describe('Twinlist.vue', () => {
                 const rightBox = wrapper.findAll(MultiselectListBox).at(1);
                 rightBox.find('[role="bottom-box"]').find('[role="option"]').trigger('click');
                 rightBox.find('[role="listbox"]').trigger('keydown.left');
-                expectUnknownValuesAreExluded(wrapper);
+                expectUnknownValuesAreExcluded(wrapper);
                 expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
             });
 

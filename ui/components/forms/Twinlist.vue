@@ -41,7 +41,7 @@ export default {
         },
         initialIncludeUnknownValues: {
             type: Boolean,
-            default: true
+            default: false
         },
 
         /**
@@ -568,7 +568,7 @@ export default {
   & .title,
   & .listBox {
     flex: 3 1 auto;
-    min-width: calc(50% - (var(--button-bar-width) / 2));
+    max-width: calc(50% - (var(--button-bar-width) / 2));
   }
 
   & .listBox {

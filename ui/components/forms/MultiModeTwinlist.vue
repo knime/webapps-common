@@ -32,7 +32,7 @@ export default {
         },
         initialIncludeUnknownValues: {
             type: Boolean,
-            default: true
+            default: false
         },
         initialPattern: {
             type: String,
