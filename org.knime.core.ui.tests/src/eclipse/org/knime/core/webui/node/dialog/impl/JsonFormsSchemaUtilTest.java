@@ -340,7 +340,7 @@ class JsonFormsSchemaUtilTest {
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Double\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//

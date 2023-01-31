@@ -18,7 +18,7 @@ describe('Utils', () => {
         expect(
             [
                 { const: 'rowName', title: 'Row Name', columnType: 'typeA', columnTypeDisplayed: 'Type A' },
-                { const: 'columName', title: 'Colum Name', columnType: 'typeB', columnTypeDisplayed: 'Type B'  }
+                { const: 'columName', title: 'Colum Name', columnType: 'typeB', columnTypeDisplayed: 'Type B' }
             ].map(optionsMapperWithType)
         ).toEqual([
             { id: 'rowName', text: 'Row Name', type: { id: 'typeA', text: 'Type A' } },
