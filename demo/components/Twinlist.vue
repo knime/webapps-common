@@ -121,8 +121,8 @@ export default {
           <Twinlist
             v-model="selected"
             :size="7"
-            label-left="Select from the visible items"
-            label-right="The selected stuff"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
             :possible-values="demoValues"
           />
         </div>
