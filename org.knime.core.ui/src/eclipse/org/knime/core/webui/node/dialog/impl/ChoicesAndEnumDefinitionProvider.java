@@ -54,7 +54,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_ONEO
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITLE;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.data.DataType;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
@@ -137,27 +137,64 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
             if (choicesProvider != null) {
                 var choices = choicesProvider.choices(context);
                 if (choices.length != 0) {
-                    return createArrayNodeWithChoices(config, choices, withTypes, context);
+                    if (choicesProvider instanceof ColumnChoicesProvider) {
+                        DataColumnSpec[] colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
+                        return createArrayNodeWithColumnChoices(config, colChoices);
+                    } else {
+                        return createArrayNodeWithChoices(config, choices);
+                    }
                 }
             }
         }
         return createArrayNodeWithEmptyChoice(config, withTypes);
     }
 
-    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices,
-        final boolean withTypes, final SettingsCreationContext context) {
+//    private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
+//        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes,
+//        final SettingsCreationContext context) {
+//        if (context != null) {
+//            final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
+//            if (choicesProvider != null) {
+//                var choices = choicesProvider.choices(context);
+//
+//                if (choices.length != 0) {
+//                    if (choicesProvider instanceof ColumnChoicesProvider) {
+//                        var colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
+//                        return createArrayNodeWithColumnChoices(config, colChoices, context);
+//                    } else {
+//                        return createArrayNodeWithChoices(config, choices, );
+//                    }
+//                } else {
+//                    return createArrayNodeWithCurrentOrEmptyChoice(config, null);
+//                }
+//                if (choicesProvider instanceof ColumnChoicesProvider) {
+//                    // handle typed columns
+//                    var colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
+//                    return createArrayNodeWithColumnChoices(config, colChoices, context);
+//                } else {
+//                    // handle choices as an array of strings
+//                    return createArrayNodeWithChoices(config, choices, withTypes, context);
+//                }
+//            }
+//        }
+//        return createArrayNodeWithEmptyChoice(config, withTypes);
+//    }
+
+    private static ArrayNode createArrayNodeWithColumnChoices(final SchemaGeneratorConfig config,
+        final DataColumnSpec[] colChoices) {
         final var arrayNode = config.createArrayNode();
-        final var spec = context.getDataTableSpecs()[0];
+        for (DataColumnSpec colChoice : colChoices) {
+            final String colType = colChoice.getType().toString();
+            final String colName = colChoice.getName();
+            addChoice(arrayNode, colName, colName, colType, colType, config);
+        }
+        return arrayNode;
+    }
+
+    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices) {
+        final var arrayNode = config.createArrayNode();
         for (var choice : choices) {
-            final DataType type;
-            if (withTypes) {
-                type = spec.getColumnSpec(choice).getType();
-                final var typeIdentifier = TypeColumnFilter.typeToString(type);
-                final var displayedType = type.getName();
-                addChoice(arrayNode, choice, choice, typeIdentifier, displayedType, config);
-            } else {
-                addChoice(arrayNode, choice, choice, null, null, config);
-            }
+            addChoice(arrayNode, choice, choice, null, null, config);
         }
         return arrayNode;
     }

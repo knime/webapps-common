@@ -171,6 +171,10 @@ public interface DefaultNodeSettings extends PersistableSettings {
                 .map(stack -> stack.getAvailableFlowVariables(types)).orElse(Collections.emptyMap()));
         }
 
+        public String[] getAvailableFlowVariableNames() {
+            return m_stack != null ? m_stack.getAllAvailableFlowVariables().keySet().toArray(new String[0]) : new String[0];
+        }
+
     }
 
     /**
