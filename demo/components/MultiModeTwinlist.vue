@@ -3,7 +3,7 @@ import CodeExample from './demo/CodeExample.vue';
 import MultiModeTwinlist from '../../ui/components/forms/MultiModeTwinlist.vue';
 import code from '!!raw-loader!../../ui/components/forms/MultiModeTwinlist';
 
-const codeExample = `<MultiModeTwinList
+const codeExample = `<MultiModeTwinlist
   :size="7"
   show-mode
   initial-case-sensitive-pattern
@@ -179,7 +179,9 @@ export default {
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected }}
+          selected ids: {{ selected.selected }}
+          <br v-if="selected.isManual">
+          {{ selected.isManual ? 'deselected ids: ': '' }}{{ selected.deselected }}
         </div>
       </div>
     </section>

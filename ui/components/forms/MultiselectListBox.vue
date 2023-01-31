@@ -146,9 +146,6 @@ export default {
         isCurrentValue(candidate) {
             return this.selectedValues.includes(candidate);
         },
-        hasBottomValue() {
-            return this.$scopedSlots.default && this.$scopedSlots.default();
-        },
         handleCtrlClick(value, index) {
             this.currentKeyNavIndex = index;
             this.toggleSelection(value);

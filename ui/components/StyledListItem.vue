@@ -43,7 +43,7 @@ export default {
     :class="{
       selected,
       invalid,
-      'noselect' :true,
+      'noselect': true,
       'empty': !Boolean(text.trim()),
       disabled,
       special

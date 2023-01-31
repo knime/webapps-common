@@ -198,11 +198,12 @@ export default {
           selected ids: {{ selectedMissing }}
         </div>
       </div>
-      div class="grid-container">
-      <div class="grid-item-6">
-        <p>
-          The Twinlist with unknown items.
-        </p>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>
+            The Twinlist with unknown items.
+          </p>
+        </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">

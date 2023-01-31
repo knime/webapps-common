@@ -568,7 +568,7 @@ export default {
   & .title,
   & .listBox {
     flex: 3 1 auto;
-    width: calc(50% - (var(--button-bar-width) / 2));
+    min-width: calc(50% - (var(--button-bar-width) / 2));
   }
 
   & .listBox {
