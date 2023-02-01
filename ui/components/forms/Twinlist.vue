@@ -554,10 +554,6 @@ export default {
     display: flex;
     align-items: stretch;
     flex-direction: row;
-
-    &.disabled {
-      opacity: 0.5;
-    }
   }
 
   & .space,
