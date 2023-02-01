@@ -101,9 +101,9 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_showColumnDataType = true;
 
     /**
-     * If the row indices should be displayed
+     * If the row numbers should be displayed
      */
-    @Schema(title = "Show row indices", description = "Whether to display the row indices or not")
+    @Schema(title = "Show row numbers", description = "Whether to display the row numbers or not")
     public boolean m_showRowIndices;
 
     /**
