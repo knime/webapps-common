@@ -94,12 +94,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
             if (type.canCreateSubtype(ColumnFilter.class)) {
                 m_lastSchemaWithColumns = schema;
             } else {
-                arrayNode = determineChoicesValues(field, context, schema.choices(), false);
+                arrayNode = determineChoicesValues(context, schema.choices(), false);
             }
         }
         if (usesCachedChoices(schema)) {
-            arrayNode = determineChoicesValues(field, context, m_lastSchemaWithColumns.choices(),
-                m_lastSchemaWithColumns.withTypes());
+            arrayNode =
+                determineChoicesValues(context, m_lastSchemaWithColumns.choices(), m_lastSchemaWithColumns.withTypes());
         }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
             arrayNode = determineEnumValues(context, erasedType);
@@ -122,7 +122,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null;
     }
 
-    private ArrayNode determineChoicesValues(final FieldScope field, final SchemaGenerationContext context,
+    private ArrayNode determineChoicesValues(final SchemaGenerationContext context,
         final Class<? extends ChoicesProvider> choices, final boolean withTypes) {
         ArrayNode arrayNode;
         arrayNode = determineChoiceValues(context.getGeneratorConfig(), choices, withTypes, m_context);
@@ -162,7 +162,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return arrayNode;
     }
 
-    private static ArrayNode createArrayNodeWithEmptyChoice(final SchemaGeneratorConfig config, final boolean withTypes) {
+    private static ArrayNode createArrayNodeWithEmptyChoice(final SchemaGeneratorConfig config,
+        final boolean withTypes) {
         final var arrayNode = config.createArrayNode();
         if (withTypes) {
             addChoice(arrayNode, "", "", "", "", config);
