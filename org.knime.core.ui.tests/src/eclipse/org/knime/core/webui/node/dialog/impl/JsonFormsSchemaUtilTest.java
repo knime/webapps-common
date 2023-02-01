@@ -197,11 +197,11 @@ class JsonFormsSchemaUtilTest {
     private static final class MinMaxProviderSetting {
 
         private static final String SNAPSHOT = "{"//
-                + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42},"//
-                + "\"testMax\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"maximum\":42},"//
-                + "\"testBoth\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42,\"maximum\":42},"//
-                + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0,\"minimum\":42,\"maximum\":42}"//
-                + "}";
+            + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42},"//
+            + "\"testMax\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"maximum\":42},"//
+            + "\"testBoth\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42,\"maximum\":42},"//
+            + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0,\"minimum\":42,\"maximum\":42}"//
+            + "}";
 
         @Schema(minProvider = TestProvider.class)
         int testMin;
@@ -321,6 +321,12 @@ class JsonFormsSchemaUtilTest {
         }
     }
 
+    private static String COLUMN_FILTER_SNAPSHOT_IDENTICAL =
+        "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"m_manuallySelected\":[], \"m_manuallyDeselected\":[], \"m_includeUnknownColumns\":false}},"
+            + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
+            + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
+            + "\"typeFilter\":{\"type\":\"object\",\"properties\":{\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_selectedTypes\":[]}},";;
+
     private static class ColumnFilterSetting {
 
         private static DataTableSpec spec =
@@ -328,25 +334,19 @@ class JsonFormsSchemaUtilTest {
                 new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
                 new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
 
-        private static String SNAPSHOT_IDENTICAL =
-            "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"m_manuallySelected\":[], \"m_manuallyDeselected\":[], \"m_includeUnknownColumns\":false}},"
-                + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
-                + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
-                + "\"typeFilter\":{\"type\":\"object\",\"properties\":{\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"default\":{\"m_selectedTypes\":[]}},";
-
         private static String SNAPSHOT = "{" + //
             "\"testColumnFilter\":{"// +
             + "\"title\":\"columns\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
-            + SNAPSHOT_IDENTICAL
+            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
             + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
-            + SNAPSHOT_IDENTICAL
+            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
             + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}"//
             + "}}}";
 
@@ -360,6 +360,37 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testColumnFilter() throws JsonProcessingException {
         testSettings(ColumnFilterSetting.class, ColumnFilterSetting.spec);
+    }
+
+    private static class ColumnFilterSettingWithoutContext {
+
+        private static String SNAPSHOT = "{" + //
+            "\"testColumnFilter\":{"// +
+            + "\"title\":\"columns\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
+            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\"}]}"//
+            + "}}," //
+            + "\"testColumnFilterNoTypes\":{" //
+            + "\"title\":\"otherSelection\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
+            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\"}]}"//
+            + "}}" //
+            + "}";
+
+        @Schema(title = "columns", choices = ColumnChoices.class)
+        public ColumnFilter testColumnFilter;
+
+        @Schema(title = "otherSelection", choices = ColumnChoices.class, withTypes = false)
+        public ColumnFilter testColumnFilterNoTypes;
+    }
+
+    @Test
+    void testColumnFilterWithoutContext() throws JsonProcessingException {
+        testSettingsWithoutContext(ColumnFilterSettingWithoutContext.class);
     }
 
     private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)
@@ -376,6 +407,21 @@ class JsonFormsSchemaUtilTest {
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
         return JsonFormsSchemaUtil.buildSchema(clazz, DefaultNodeSettings.createSettingsCreationContext(specs))
             .get("properties");
+    }
+
+    private static void testSettingsWithoutContext(final Class<?> settingsClass)
+        throws JsonMappingException, JsonProcessingException {
+        try {
+            assertThatJson(MAPPER.readTree(getPropertiesWithoutContext(settingsClass).toString()))
+                .isEqualTo(MAPPER.readTree((String)settingsClass.getDeclaredField("SNAPSHOT").get(null)));
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
+                + " (most likely a problem of the test implementation itself)");
+        }
+    }
+
+    private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {
+        return JsonFormsSchemaUtil.buildSchema(clazz).get("properties");
     }
 
 }

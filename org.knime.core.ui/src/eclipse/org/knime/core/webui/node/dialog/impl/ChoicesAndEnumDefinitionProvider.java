@@ -53,8 +53,6 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_CONS
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_ONEOF;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITLE;
 
-import java.util.function.Supplier;
-
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.DataType;
 import org.knime.core.node.NodeLogger;
@@ -74,6 +72,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
 
     private final SettingsCreationContext m_context;
 
+    @SuppressWarnings("unused")
     private final DefaultNodeSettings m_settings;
 
     ChoicesAndEnumDefinitionProvider(final SettingsCreationContext context, final DefaultNodeSettings settings) {
@@ -126,44 +125,23 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     private ArrayNode determineChoicesValues(final FieldScope field, final SchemaGenerationContext context,
         final Class<? extends ChoicesProvider> choices, final boolean withTypes) {
         ArrayNode arrayNode;
-        Supplier<String[]> savedChoicesSupplier =
-            m_settings == null ? null : (() -> getSavedChoices(field, m_settings));
-        arrayNode =
-            determineChoiceValues(context.getGeneratorConfig(), choices, withTypes, m_context, savedChoicesSupplier);
+        arrayNode = determineChoiceValues(context.getGeneratorConfig(), choices, withTypes, m_context);
         return arrayNode;
-    }
-
-    private static String[] getSavedChoices(final FieldScope field, final DefaultNodeSettings settings) {
-        var rawField = field.getRawMember();
-        rawField.setAccessible(true); // NOSONAR
-        try {
-            var val = rawField.get(settings);
-            if (val instanceof String[] && ((String[])val).length > 0) {
-                return (String[])val;
-            } else if (val instanceof String) {
-                return new String[]{(String)val};
-            }
-        } catch (IllegalArgumentException | IllegalAccessException e) { // NOSONAR
-            //
-        }
-        return new String[]{""};
     }
 
     private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
         final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes,
-        final SettingsCreationContext context, final Supplier<String[]> savedChoicesSupplier) {
+        final SettingsCreationContext context) {
         if (context != null) {
             final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
             if (choicesProvider != null) {
                 var choices = choicesProvider.choices(context);
                 if (choices.length != 0) {
                     return createArrayNodeWithChoices(config, choices, withTypes, context);
-                } else {
-                    return createArrayNodeWithCurrentOrEmptyChoice(config, null);
                 }
             }
         }
-        return createArrayNodeWithCurrentOrEmptyChoice(config, savedChoicesSupplier);
+        return createArrayNodeWithEmptyChoice(config, withTypes);
     }
 
     private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices,
@@ -184,16 +162,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return arrayNode;
     }
 
-    private static ArrayNode createArrayNodeWithCurrentOrEmptyChoice(final SchemaGeneratorConfig config,
-        final Supplier<String[]> savedChoicesSupplier) {
+    private static ArrayNode createArrayNodeWithEmptyChoice(final SchemaGeneratorConfig config, final boolean withTypes) {
         final var arrayNode = config.createArrayNode();
-        var savedChoices = savedChoicesSupplier == null ? null : savedChoicesSupplier.get();
-        if (savedChoices == null) {
+        if (withTypes) {
             addChoice(arrayNode, "", "", "", "", config);
         } else {
-            for (var choice : savedChoices) {
-                addChoice(arrayNode, choice, choice, "", "", config);
-            }
+            addChoice(arrayNode, "", "", null, null, config);
         }
         return arrayNode;
     }
