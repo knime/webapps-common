@@ -1,15 +1,16 @@
 import { mountJsonFormsComponent, initializesJsonFormsArrayControl } from '~/test/unit/suites/utils/jsonFormsTestUtils';
 import ArrayLayout from '@/components/LayoutComponents/ArrayLayout';
+import ArrayLayoutItemControls from '@/components/LayoutComponents/ArrayLayoutItemControls';
 import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
 import ArrowUpIcon from '~/webapps-common/ui/assets/img/icons/arrow-up.svg?inline';
 import ArrowDownIcon from '~/webapps-common/ui/assets/img/icons/arrow-down.svg?inline';
 import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
 
 describe('ArrayLayout.vue', () => {
-    let wrapper, defaultPropsData;
+    let wrapper, propsData;
 
     beforeEach(async () => {
-        defaultPropsData = {
+        propsData = {
             control: {
                 visible: true,
                 cells: [],
@@ -83,7 +84,8 @@ describe('ArrayLayout.vue', () => {
                     type: 'Control',
                     scope: '#/properties/view/properties/referenceLines',
                     options: {
-                        details: {
+                        arrayElementTitle: 'ElementTitle',
+                        detail: {
                             value: {
                                 type: 'Control',
                                 scope: '#/properties/value'
@@ -112,7 +114,7 @@ describe('ArrayLayout.vue', () => {
                 }
             }
         };
-        wrapper = await mountJsonFormsComponent(ArrayLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
     });
 
     afterEach(() => {
@@ -135,13 +137,13 @@ describe('ArrayLayout.vue', () => {
             size: 1,
             value: '0'
         };
-        expect(wrapper.getComponent(ArrayLayout).vm.createDefaultValue(defaultPropsData.control.schema))
+        expect(wrapper.getComponent(ArrayLayout).vm.createDefaultValue(propsData.control.schema))
             .toStrictEqual(expectedDefaultValue);
     });
 
     it('adds default item', async () => {
         const addItemSpy = ArrayLayout.methods.addItem = jest.fn().mockReturnValue(() => false);
-        wrapper = await mountJsonFormsComponent(ArrayLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
         wrapper.vm.addDefaultItem();
         expect(addItemSpy).toHaveBeenCalled();
     });
@@ -149,13 +151,17 @@ describe('ArrayLayout.vue', () => {
 
     it('deletes item', async () => {
         const deleteItemSpy = ArrayLayout.methods.deleteItem = jest.fn().mockReturnValue(() => false);
-        wrapper = await mountJsonFormsComponent(ArrayLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
         wrapper.vm.deleteItem();
         expect(deleteItemSpy).toHaveBeenCalled();
     });
 
-    it('does not render sort buttons when showSortButtons is not present or false', () => {
-        const itemControls = wrapper.findAll('.item-controls');
+    it('does not render sort buttons when showSortButtons is not present or false', async () => {
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
+        const numberDataItems = propsData.control.data.length;
+        const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
+
+        expect(itemControls.wrappers).toHaveLength(numberDataItems);
         const itemControlsWithArrowUp = itemControls.filter(
             wrapper => wrapper.findComponent(ArrowUpIcon).exists()
         );
@@ -165,11 +171,25 @@ describe('ArrayLayout.vue', () => {
         const itemControlsWithTrash = itemControls.filter(
             wrapper => wrapper.findComponent(TrashIcon).exists()
         );
-        const numberDataItems = defaultPropsData.control.data.length;
 
         expect(itemControlsWithArrowUp).toHaveLength(0);
         expect(itemControlsWithArrowDown).toHaveLength(0);
         expect(itemControlsWithTrash).toHaveLength(numberDataItems);
+    });
+
+    it('renders headers', async () => {
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
+        expect(wrapper.find('.item-header').exists()).toBeTruthy();
+        expect(wrapper.find('.item-header').text()).toBe('ElementTitle 1');
+    });
+
+    it('does not render headers but renders controls if arrayElementTitle is missing', async () => {
+        delete propsData.control.uischema.options.arrayElementTitle;
+        wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
+        expect(wrapper.find('.item-header').exists()).toBeFalsy();
+        const numberDataItems = propsData.control.data.length;
+        const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
+        expect(itemControls.wrappers).toHaveLength(numberDataItems);
     });
 
     test.each([
@@ -182,8 +202,8 @@ describe('ArrayLayout.vue', () => {
         { button: 'move down button', position: 'the last', itemNum: 2, moveUpDisabled: false, moveDownDisabled: true }
     ])('disables $button for $position item when showSortButtons is true',
         async ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
-            defaultPropsData.control.uischema.options.showSortButtons = true;
-            wrapper = await mountJsonFormsComponent(ArrayLayout, defaultPropsData);
+            propsData.control.uischema.options.showSortButtons = true;
+            wrapper = await mountJsonFormsComponent(ArrayLayout, propsData);
             const itemControls = wrapper.findAll('.item-controls');
             const itemControlsButtons = itemControls.at(itemNum).findAllComponents(FunctionButton);
             expect(itemControlsButtons.at(0).vm.disabled).toBe(moveUpDisabled);

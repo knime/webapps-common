@@ -4,12 +4,9 @@ import { useJsonFormsArrayControl, rendererProps, DispatchRenderer } from '@json
 import { composePaths } from '@jsonforms/core';
 import Label from '~/webapps-common/ui/components/forms/Label.vue';
 import Button from '~/webapps-common/ui/components/Button.vue';
-import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
-import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
 import PlusIcon from '~/webapps-common/ui/assets/img/icons/plus.svg?inline';
 import DialogComponentWrapper from '../UIComponents/DialogComponentWrapper.vue';
-import ArrowUpIcon from '~/webapps-common/ui/assets/img/icons/arrow-up.svg?inline';
-import ArrowDownIcon from '~/webapps-common/ui/assets/img/icons/arrow-down.svg?inline';
+import ArrayLayoutItemControls from './ArrayLayoutItemControls.vue';
 
 const ArrayLayout = defineComponent({
     name: 'ArrayLayout',
@@ -17,12 +14,9 @@ const ArrayLayout = defineComponent({
         DispatchRenderer,
         Label,
         Button,
-        TrashIcon,
         PlusIcon,
-        FunctionButton,
         DialogComponentWrapper,
-        ArrowUpIcon,
-        ArrowDownIcon
+        ArrayLayoutItemControls
     },
     props: {
         ...rendererProps()
@@ -30,9 +24,23 @@ const ArrayLayout = defineComponent({
     setup(props) {
         return useJsonFormsArrayControl(props);
     },
+    data() {
+        return {
+            arrayElementTitleKey: 'arrayElementTitle'
+        };
+    },
     computed: {
         showSortControls() {
             return this.control.uischema.options.showSortButtons;
+        },
+        elements() {
+            if (this.control.uischema.options.detail) {
+                return Object.entries(this.control.uischema.options.detail);
+            }
+            return [];
+        },
+        showElementTitles() {
+            return this.control.uischema.options.hasOwnProperty(this.arrayElementTitleKey);
         }
     },
     methods: {
@@ -56,7 +64,7 @@ const ArrayLayout = defineComponent({
         },
         returnLabel(index) {
             let convertedIndex = parseInt(index, 10);
-            return `${this.control.uischema.options.arrayElementTitle} ${convertedIndex + 1}`;
+            return `${this.control.uischema.options[this.arrayElementTitleKey]} ${convertedIndex + 1}`;
         }
     }
 });
@@ -72,37 +80,27 @@ export default ArrayLayout;
         v-for="(obj, objIndex) in control.data"
         :key="`${control.path}-${objIndex}`"
       >
-        <div class="item-header">
+        <div
+          v-if="showElementTitles"
+          class="item-header"
+        >
           <Label
             :text="returnLabel(objIndex)"
             :compact="true"
           />
-          <div class="item-controls">
-            <FunctionButton
-              v-if="showSortControls"
-              :disabled="objIndex === 0"
-              @click="moveUp(control.path, objIndex)()"
-            >
-              <ArrowUpIcon />
-            </FunctionButton>
-            <FunctionButton
-              v-if="showSortControls"
-              :disabled="objIndex === control.data.length - 1"
-              @click="moveDown(control.path, objIndex)()"
-            >
-              <ArrowDownIcon />
-            </FunctionButton>
-            <FunctionButton
-              class="trashButton"
-              @click="deleteItem(objIndex)"
-            >
-              <TrashIcon class="trash" />
-            </FunctionButton>
-          </div>
+          <ArrayLayoutItemControls
+            :is-first="objIndex === 0"
+            :is-last="objIndex === control.data.length - 1"
+            :show-sort-controls="showSortControls"
+            @moveUp="moveUp(control.path, objIndex)()"
+            @moveDown="moveDown(control.path, objIndex)()"
+            @delete="deleteItem(objIndex)"
+          />
         </div>
         <div
-          v-for="(element, elemIndex) in control.uischema.options.detail"
-          :key="`${control.path}-${objIndex}-${elemIndex}`"
+          v-for="([elemKey, element], elemIndex) in elements"
+          :key="`${control.path}-${objIndex}-${elemKey}`"
+          class="element"
         >
           <DispatchRenderer
             :schema="control.schema"
@@ -111,6 +109,15 @@ export default ArrayLayout;
             :enabled="control.enabled"
             :renderers="control.renderers"
             :cells="control.cells"
+          />
+          <ArrayLayoutItemControls
+            v-if="elemIndex === 0 && !showElementTitles"
+            :is-first="objIndex === 0"
+            :is-last="objIndex === control.data.length - 1"
+            :show-sort-controls="showSortControls"
+            @moveUp="moveUp(control.path, objIndex)()"
+            @moveDown="moveDown(control.path, objIndex)()"
+            @delete="deleteItem(objIndex)"
           />
         </div>
       </div>
@@ -136,10 +143,16 @@ export default ArrayLayout;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+  }
 
-    & .item-controls {
-      display: flex;
-    }
+  & .item-controls {
+    display: flex;
+  }
+
+  & .element {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 }
 
