@@ -75,7 +75,7 @@ public final class OptionalFieldBasedNodeSettingsPersistor<S extends DefaultNode
 
     private static Map<String, NodeSettingsPersistor<?>>
         createPersistors(final Class<? extends DefaultNodeSettings> settingsClass) {
-        return getAllPersistableFields(settingsClass)//
+        return FieldNodeSettingsPersistorFactory.getAllPersistableFields(settingsClass)//
             .collect(toMap(Field::getName, OptionalFieldBasedNodeSettingsPersistor::createPersistorForField,
                 (a, b) -> a, LinkedHashMap::new));
     }
@@ -83,15 +83,17 @@ public final class OptionalFieldBasedNodeSettingsPersistor<S extends DefaultNode
     private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
         var persistence = field.getAnnotation(Persist.class);
         if (persistence != null) {
-            return createPersistorFromPersistenceAnnotation(persistence, field);
+            return FieldNodeSettingsPersistorFactory.createPersistorFromPersistAnnotation(persistence, field);
         } else {
-            return createDefaultPersistor(field.getType(), extractConfigKeyFromFieldName(field.getName()));
+            return createDefaultPersistor(field.getType(),
+                FieldNodeSettingsPersistorFactory.extractConfigKeyFromFieldName(field.getName()));
         }
     }
 
     private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type, final String configKey) {
         if (DefaultNodeSettings.class.isAssignableFrom(type)) {
-            return new NestedFieldBasedNodeSettingsPersistor<>(configKey, type.asSubclass(DefaultNodeSettings.class));
+            return new FieldNodeSettingsPersistorFactory.NestedFieldBasedNodeSettingsPersistor<>(configKey,
+                type.asSubclass(DefaultNodeSettings.class));
         }
         return DefaultFieldNodeSettingsPersistorFactory.createOptionalPersistor(type, configKey);
     }

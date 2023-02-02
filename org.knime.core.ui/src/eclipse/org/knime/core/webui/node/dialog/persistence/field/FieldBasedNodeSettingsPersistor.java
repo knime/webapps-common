@@ -48,26 +48,14 @@
  */
 package org.knime.core.webui.node.dialog.persistence.field;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.PersistableSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.persistence.ReflectionUtil;
 
 /**
@@ -90,109 +78,8 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
      * @param settingsClass the class of settings to persist
      */
     public FieldBasedNodeSettingsPersistor(final Class<S> settingsClass) {
-        m_persistors = createPersistors(settingsClass);
+        m_persistors = new FieldNodeSettingsPersistorFactory<>(settingsClass).createPersistors();
         m_settingsClass = settingsClass;
-    }
-
-    private static Map<String, NodeSettingsPersistor<?>>
-        createPersistors(final Class<? extends PersistableSettings> settingsClass) {
-        return getAllPersistableFields(settingsClass)//
-            .collect(toMap(Field::getName, FieldBasedNodeSettingsPersistor::createPersistorForField, (a, b) -> a,
-                LinkedHashMap::new));
-    }
-
-    @SuppressWarnings("javadoc")
-    protected static Stream<Field> getAllPersistableFields(final Class<?> clazz) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
-            fields.addAll(Arrays.asList(c.getDeclaredFields()));
-        }
-        return fields.stream().filter(FieldBasedNodeSettingsPersistor::isPersistable);
-    }
-
-    private static boolean isPersistable(final Field field) {
-        int modifiers = field.getModifiers();//NOSONAR
-        return !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers);
-    }
-
-    private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
-        var persistence = field.getAnnotation(Persist.class);
-        if (persistence != null) {
-            return createPersistorFromPersistenceAnnotation(persistence, field);
-        } else {
-            return createDefaultPersistor(field.getType(), getConfigKey(field));
-        }
-    }
-
-    @SuppressWarnings("javadoc")
-    protected static String extractConfigKeyFromFieldName(final String fieldName) {
-        if (fieldName.startsWith("m_")) {
-            return fieldName.substring(2);
-        } else {
-            return fieldName;
-        }
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes", "javadoc"})
-    protected static NodeSettingsPersistor<?> createPersistorFromPersistenceAnnotation(final Persist persistence,
-        final Field field) {
-        var customPersistorClass = persistence.customPersistor();
-        var type = field.getType();
-        var configKey = getConfigKey(field);
-        if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
-            final var customPersistor = NodeSettingsPersistor.createInstance(customPersistorClass, type);
-            if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
-                final var customPersistorWithConfigKey = (NodeSettingsPersistorWithConfigKey)customPersistor;
-                customPersistorWithConfigKey.setConfigKey(configKey);
-                return customPersistorWithConfigKey;
-            }
-            return customPersistor;
-        }
-        var settingsModelClass = persistence.settingsModel();
-        if (!settingsModelClass.equals(SettingsModel.class)) {
-            return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
-        } else {
-            return createDefaultPersistor(type, configKey);
-        }
-    }
-
-    private static String getConfigKey(final Field field) {
-        var persist = field.getAnnotation(Persist.class);
-        if (persist == null) {
-            return extractConfigKeyFromFieldName(field.getName());
-        } else {
-            var configKey = persist.configKey();
-            if ("".equals(configKey)) {
-                configKey = extractConfigKeyFromFieldName(field.getName());
-            }
-            if (persist.hidden()) {
-                configKey += SettingsModel.CFGKEY_INTERNAL;
-            }
-            return configKey;
-        }
-    }
-
-    private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type,
-        final String configKey) {
-        if (type.isArray() && PersistableSettings.class.isAssignableFrom(type.getComponentType())) {
-            return createDefaultArrayPersistor(type.getComponentType(), configKey);
-        } else if (PersistableSettings.class.isAssignableFrom(type)) {
-            return new NestedFieldBasedNodeSettingsPersistor<>(configKey, type.asSubclass(PersistableSettings.class));
-        } else {
-            return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, configKey);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <S extends PersistableSettings> NodeSettingsPersistor<S[]>
-        createDefaultArrayPersistor(final Class<?> elementType, final String configKey) {
-        return new ArrayFieldPersistor<>((Class<S>)elementType, configKey);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> void uncheckedSave(final NodeSettingsPersistor<T> persistor, final Object value,
-        final NodeSettingsWO nodeSettings) {
-        persistor.save((T)value, nodeSettings);
     }
 
     @Override
@@ -206,6 +93,18 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> void uncheckedSave(final NodeSettingsPersistor<T> persistor, final Object value,
+        final NodeSettingsWO nodeSettings) {
+        persistor.save((T)value, nodeSettings);
+    }
+
+    @FunctionalInterface
+    private interface PersistorConsumer {
+        void accept(final NodeSettingsPersistor<?> persistor, final Field field)
+            throws InvalidSettingsException, IllegalAccessException;
+    }
+
     @Override
     public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
         final var loaded =
@@ -215,11 +114,7 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         return loaded;
     }
 
-    @FunctionalInterface
-    private interface PersistorConsumer {
-        void accept(final NodeSettingsPersistor<?> persistor, final Field field)
-            throws InvalidSettingsException, IllegalAccessException;
-    }
+
 
     private void useBlackMagicToAccessFields(final PersistorConsumer consumer) throws InvalidSettingsException {
         for (var entry : m_persistors.entrySet()) {
@@ -261,74 +156,6 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
             }
         }
         throw new NoSuchFieldException(key);
-    }
-
-    private static final class ArrayFieldPersistor<S extends PersistableSettings>
-        implements NodeSettingsPersistor<S[]> {
-
-        private final String m_configKey;
-
-        private final Class<S> m_elementType;
-
-        private final ArrayList<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
-
-        ArrayFieldPersistor(final Class<S> elementType, final String configKey) {
-            m_configKey = configKey;
-            m_elementType = elementType;
-        }
-
-        @Override
-        public S[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            var arraySettings = settings.getNodeSettings(m_configKey);
-            int size = arraySettings.keySet().size();
-            ensureEnoughPersistors(size);
-            @SuppressWarnings("unchecked")
-            var values = (S[])Array.newInstance(m_elementType, size);
-            for (int i = 0; i < size; i++) {
-                values[i] = m_persistors.get(i).load(arraySettings);
-            }
-            return values;
-        }
-
-        private void ensureEnoughPersistors(final int numPersistors) {
-            for (int i = m_persistors.size(); i < numPersistors; i++) {
-                m_persistors.add(new NestedFieldBasedNodeSettingsPersistor<>(Integer.toString(i), m_elementType));
-            }
-        }
-
-        @Override
-        public void save(final S[] array, final NodeSettingsWO settings) {
-            ensureEnoughPersistors(array.length);
-            var arraySettings = settings.addNodeSettings(m_configKey);
-            for (int i = 0; i < array.length; i++) {
-                m_persistors.get(i).save(array[i], arraySettings);
-            }
-        }
-
-    }
-
-    static final class NestedFieldBasedNodeSettingsPersistor<S extends PersistableSettings>
-        implements NodeSettingsPersistor<S> {
-
-        private final String m_configKey;
-
-        private final NodeSettingsPersistor<S> m_persistor;
-
-        NestedFieldBasedNodeSettingsPersistor(final String configKey, final Class<S> settingsClass) {
-            m_configKey = configKey;
-            m_persistor = NodeSettingsPersistorFactory.createPersistor(settingsClass);
-        }
-
-        @Override
-        public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return m_persistor.load(settings.getNodeSettings(m_configKey));
-        }
-
-        @Override
-        public void save(final S obj, final NodeSettingsWO settings) {
-            m_persistor.save(obj, settings.addNodeSettings(m_configKey));
-        }
-
     }
 
 }
