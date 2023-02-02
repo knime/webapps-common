@@ -399,6 +399,7 @@ export default {
                 : null;
             const topTable = fetchTopTable ? await topTablePromise : null;
             const bottomTable = fetchBottomTable ? await bottomTablePromise : null;
+            
             const getFromTopOrBottom = (key) => topTable ? topTable[key] : bottomTable[key];
             if (updateDisplayedColumns) {
                 this.columnFilters = this.getDefaultFilterConfigs(getFromTopOrBottom('displayedColumns'));
@@ -434,18 +435,18 @@ export default {
                     { bottomTable, bufferStart, bufferEnd, direction, topPreviousDataLength }
                 );
                 this.currentScopeStartIndex = newScopeStart;
-                this.currentScopeEndIndex = newScopeStart + (bufferEnd - bufferStart) + numRows;
+                this.currentScopeEndIndex = Math.min(
+                    newScopeStart + (bufferEnd - bufferStart) + numRows,
+                    this.table.rowCount
+                );
             } else {
                 this.table = topTable;
                 this.bottomRows = bottomTable ? bottomTable.rows : [];
             }
             this.currentRowCount = this.table.rowCount;
             this.transformSelection();
-                
             this.numRowsAbove = lazyLoad ? this.currentScopeStartIndex : 0;
-            this.numRowsBelow = lazyLoad
-                ? this.numRowsTop + (this.bottomRowsMode && this.numRowsBottom + 1) - this.currentScopeEndIndex
-                : 0;
+            this.numRowsBelow = lazyLoad ? this.numRowsTotal - this.currentScopeEndIndex : 0;
         },
         getTopAndBottomIndicesOnPagination(loadFromIndex, numRows) {
             const currentPageEnd = loadFromIndex + numRows;

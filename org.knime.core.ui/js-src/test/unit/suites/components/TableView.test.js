@@ -324,6 +324,17 @@ describe('TableView.vue', () => {
                 initialDataMock.settings.enablePagination = false;
                 ({ wrapper, updateDataSpy, dataSpy } = await asyncMountTableView(context));
             });
+        
+            it('sets correct currentScopeEndIndex when requesting more rows than possible', async () => {
+                wrapper.vm.currentRowCount = 1000;
+                wrapper.vm.updateData({ lazyLoad: {
+                    loadFromIndex: 0,
+                    newScopeStart: 0,
+                    numRows: 1000
+                } });
+                await wrapper.vm.$nextTick();
+                expect(wrapper.vm.currentScopeEndIndex).toBe(rowCount);
+            });
 
             describe('initialization', () => {
                 it('requests initial data for lazy loading for small rowCount', async () => {
@@ -343,7 +354,7 @@ describe('TableView.vue', () => {
                     await wrapper.vm.$nextTick();
                     await wrapper.vm.$nextTick();
                     expect(wrapper.vm.currentScopeStartIndex).toBe(0);
-                    expect(wrapper.vm.currentScopeEndIndex).toBe(wrapper.vm.scopeSize);
+                    expect(wrapper.vm.currentScopeEndIndex).toBe(dataRequestResult.rowCount);
                     expect(updateDataSpy).toHaveBeenCalledWith(expect.objectContaining(
                         { lazyLoad: { loadFromIndex: 0, newScopeStart: 0, numRows: wrapper.vm.scopeSize } }
                     ));
