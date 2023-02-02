@@ -122,6 +122,10 @@ public class NodeTemplateIdTest {
         assertThat(NodeTemplateId.ofDynamicNodeFactory(
             "org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory", "Virtual Start"))
                 .isEqualTo("org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory#Virtual Start");
+
+        assertThat(NodeTemplateId.ofDynamicNodeFactory(
+            "org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory", "Virtual Start", true))
+                .isEqualTo("org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory#Virtual+Start");
     }
 
 }

@@ -140,7 +140,25 @@ public final class NodeTemplateId {
      * @return The node template ID string
      */
     public static String ofDynamicNodeFactory(final String nodeFactoryClassName, final String nodeName) {
-        return nodeFactoryClassName + NODE_NAME_SEP + nodeName;
+        return ofDynamicNodeFactory(nodeFactoryClassName, nodeName, false);
+    }
+
+    /**
+     * Creates a node template ID for nodes with a {@link DynamicNodeFactory}
+     *
+     * @param nodeFactoryClassName
+     * @param nodeName
+     * @param encodeNodeNameWithURLEscapeCodes whether to escape the node names with URL escape codes (only relevant in
+     *            case of dynamic node factories)
+     * @return The node template ID string
+     */
+    public static String ofDynamicNodeFactory(final String nodeFactoryClassName, final String nodeName, // NOSONAR
+        final boolean encodeNodeNameWithURLEscapeCodes) {
+        var n = nodeName;
+        if (encodeNodeNameWithURLEscapeCodes) {
+            n = URLEncoder.encode(nodeName, StandardCharsets.UTF_8);
+        }
+        return nodeFactoryClassName + NODE_NAME_SEP + n;
     }
 
 }
