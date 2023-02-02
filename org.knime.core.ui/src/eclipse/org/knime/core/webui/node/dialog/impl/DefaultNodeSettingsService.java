@@ -53,6 +53,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -72,6 +73,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 final class DefaultNodeSettingsService implements JsonNodeSettingsService<String> {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeSettingsService.class);
 
     static final String FIELD_NAME_DATA = "data";
 
@@ -113,10 +116,10 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     @Override
     public String fromNodeSettingsToObject(final Map<SettingsType, NodeSettingsRO> settings,
         final PortObjectSpec[] specs) {
+        var creationContext = DefaultNodeSettings.createSettingsCreationContext(specs);
         var loadedSettings = settings.entrySet().stream()//
-            .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey())));
-        final var jsonFormsSettings =
-            new JsonFormsSettingsImpl(loadedSettings, DefaultNodeSettings.createSettingsCreationContext(specs));
+            .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
+        final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, creationContext);
         final var root = JsonFormsDataUtil.getMapper().createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
@@ -125,11 +128,15 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     }
 
     private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeSettingsRO> nodeSettings,
-        final SettingsType settingsType) {
+        final SettingsType settingsType, final PortObjectSpec[] specs) {
+        var settingsClass = m_settingsClasses.get(settingsType);
         try {
-            return DefaultNodeSettings.loadSettings(nodeSettings.get(settingsType), m_settingsClasses.get(settingsType));
+            return DefaultNodeSettings.loadSettings(nodeSettings.get(settingsType),
+                settingsClass);
         } catch (InvalidSettingsException ex) {
-            throw new IllegalStateException("The settings are invalid: " + ex.getMessage(), ex);
+            LOGGER.error(String.format("Failed to load settings ('%s'). New settings are created for the dialog.",
+                ex.getMessage()), ex);
+            return DefaultNodeSettings.createSettings(settingsClass, specs);
         }
     }
 

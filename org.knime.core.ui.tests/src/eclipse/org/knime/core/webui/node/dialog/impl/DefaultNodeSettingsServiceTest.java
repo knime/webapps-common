@@ -54,7 +54,6 @@ import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.F
 
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -97,13 +96,10 @@ class DefaultNodeSettingsServiceTest {
     @Test
     void testGetInitialDataFromEmptySettings() throws JsonProcessingException {
         final var nodeSettings = new NodeSettings("node_settings");
-
-        // try to obtain initial data using empty node settings
-        Assertions
-            .assertThatThrownBy(() -> obtainAndCheckInitialData(null, nodeSettings,
-                new PortObjectSpec[]{
-                    new DataTableSpec(new DataColumnSpecCreator("foo", StringCell.TYPE).createSpec())}))
-            .isInstanceOf(IllegalStateException.class);
+        var expectedViewData = (ObjectNode)JsonFormsDataUtil.toJsonData(new TestSettings("bar"));
+        // the framework should create new settings using the TestSettings(SettingsCreationContext) constructor
+        obtainAndCheckInitialData(expectedViewData, nodeSettings,
+            new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("bar", StringCell.TYPE).createSpec())});
     }
 
     @Test
