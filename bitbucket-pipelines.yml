@@ -11,6 +11,8 @@ definitions:
           - npm run lint
           - npm run coverage -- --ci
           - npm run audit
+          - cd demo
+          - npm run generate
 
 pipelines:
   pull-requests:
