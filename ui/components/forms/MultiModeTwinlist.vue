@@ -249,7 +249,10 @@ export default {
         },
         itemMatches(item) {
             const mode = filters[this.mode];
-            return mode.test(this.mode === 'type' ? item.type?.id : item.text, this.normalizedSearchTerm,
+            // Needed as optional chaining is currently not supported, should be removed after the switch to vue3
+            // eslint-disable-next-line no-undefined
+            const optionalItemType = item.type ? item.type.id : undefined;
+            return mode.test(this.mode === 'type' ? optionalItemType : item.text, this.normalizedSearchTerm,
                 this.caseSensitivePattern, this.inversePattern);
         }
     }
