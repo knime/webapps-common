@@ -113,6 +113,23 @@ public class ColumnFilter implements DialogComponentSettings {
     }
 
     /**
+     * Creates a ColumnFilter that includes all columns the choicesProvider selects including unknown new columns.
+     *
+     * @param choicesProviderClass the class of {@link ChoicesProvider}
+     * @param context of the settings creation
+     * @return a new ColumnFilter
+     */
+    public static ColumnFilter createDefault(final Class<? extends ChoicesProvider> choicesProviderClass,
+        final SettingsCreationContext context) {
+        ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
+        var choices = choicesProvider.choices(context);
+        var columnFilter = new ColumnFilter(choices);
+        columnFilter.m_manualFilter.m_includeUnknownColumns = true;
+        return columnFilter;
+    }
+
+
+    /**
      * @param choices the list of all possible column names
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
