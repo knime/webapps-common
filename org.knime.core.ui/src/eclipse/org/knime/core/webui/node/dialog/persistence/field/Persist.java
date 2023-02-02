@@ -107,9 +107,24 @@ public @interface Persist {
      * Optional argument that allows to make a setting optional. An optional settings is a settings that may be in the
      * NodeSettings when loading but doesn't have to be. If it isn't present, then the default value from the declaring
      * DefaultNodeSettings class is used. The typical use-case for this are settings that are added in a later release.
+     * This argument is overruled by {@link #defaultProvider()} if provided.
+     * Does not apply to {@link #customPersistor() custom persistors}.
      *
      * @return true if the setting is optional
      */
     boolean optional() default false;
+
+    /**
+     * Optional argument that allows to provide a {@link DefaultProvider} that provides the default value for a setting
+     * that may not be part of the node settings e.g. because it was added in a later release. <br>
+     * If the default for newly created settings is the same as for loaded settings, use {@link #optional()} instead.
+     * If provided, a defaultProvider overrules {@link #optional()}.
+     * Does not apply to {@link #customPersistor() custom persistors}.
+     *
+     * @return the class of {@link DefaultProvider}
+     * @see #optional()
+     */
+    @SuppressWarnings("rawtypes")
+    Class<? extends DefaultProvider> defaultProvider() default DefaultProvider.class;
 
 }

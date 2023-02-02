@@ -84,15 +84,14 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     FieldNodeSettingsPersistorFactory(final Class<S> settingsClass) {
         m_settingsClass = settingsClass;
         m_defaultSettings = ReflectionUtil.createInstance(settingsClass)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(
-                    "The PersistableSettings class '%s' doesn't provide an empty constructor for persistence.",
-                    settingsClass)));
+            .orElseThrow(() -> new IllegalArgumentException(String.format(
+                "The PersistableSettings class '%s' doesn't provide an empty constructor for persistence.",
+                settingsClass)));
     }
 
-    Map<String, NodeSettingsPersistor<?>> createPersistors() {
+    Map<String, NodeSettingsPersistor<?>> createPersistors() {//NOSONAR
         return getAllPersistableFields(m_settingsClass)//
-            .collect(toMap(Field::getName, this::createPersistorForField, (a, b) -> a,
-                LinkedHashMap::new));
+            .collect(toMap(Field::getName, this::createPersistorForField, (a, b) -> a, LinkedHashMap::new));
     }
 
     static Stream<Field> getAllPersistableFields(final Class<?> clazz) {
@@ -126,7 +125,8 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence, final Field field) {
+    private NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence,
+        final Field field) {
         var customPersistorClass = persistence.customPersistor();
         var type = field.getType();
         var configKey = getConfigKey(field);
@@ -140,18 +140,39 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             return customPersistor;
         }
         var persistor = createNonCustomPersistor(persistence, type, configKey);
-        if (persistence.optional()) {
-            persistor = createOptionalPersistor(field, configKey, persistor);
+        if (isOptional(persistence)) {
+            persistor = createOptionalPersistor(field, configKey, persistor, persistence);
         }
         return persistor;
     }
 
+    private static boolean isOptional(final Persist persist) {
+        return persist.optional() || !DefaultProvider.class.equals(persist.defaultProvider());
+    }
+
     private <F> NodeSettingsPersistor<F> createOptionalPersistor(final Field field, final String configKey,
-        final NodeSettingsPersistor<F> delegate) {
+        final NodeSettingsPersistor<F> delegate, final Persist persist) {
+        F defaultValue = getDefault(field, persist);//NOSONAR
+        return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <F> F getDefault(final Field field, final Persist persist) {
+        var defaultProviderClass = persist.defaultProvider();
+        if (DefaultProvider.class.equals(persist.defaultProvider())) {
+            return getDefaultFromDefaultSettings(field);
+        } else {
+            var defaultProvider = ReflectionUtil.createInstance(persist.defaultProvider())//
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                    "The provided DefaultProvider '%s' does not provide an empty constructor.", defaultProviderClass)));
+            return (F)defaultProvider.getDefault();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <F> F getDefaultFromDefaultSettings(final Field field) {
         try {
-            @SuppressWarnings("unchecked")
-            F defaultValue = (F)field.get(m_defaultSettings);
-            return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
+            return (F)field.get(m_defaultSettings);
         } catch (IllegalAccessException ex) {
             // not reachable
             throw new IllegalArgumentException(
@@ -246,7 +267,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             ensureEnoughPersistors(size);
             @SuppressWarnings("unchecked")
             var values = (S[])Array.newInstance(m_elementType, size);
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) {//NOSONAR
                 values[i] = m_persistors.get(i).load(arraySettings);
             }
             return values;
@@ -262,7 +283,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         public void save(final S[] array, final NodeSettingsWO settings) {
             ensureEnoughPersistors(array.length);
             var arraySettings = settings.addNodeSettings(m_configKey);
-            for (int i = 0; i < array.length; i++) {
+            for (int i = 0; i < array.length; i++) {//NOSONAR
                 m_persistors.get(i).save(array[i], arraySettings);
             }
         }

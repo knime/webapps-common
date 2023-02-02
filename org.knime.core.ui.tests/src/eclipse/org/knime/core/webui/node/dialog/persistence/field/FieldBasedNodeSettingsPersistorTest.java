@@ -730,4 +730,44 @@ class FieldBasedNodeSettingsPersistorTest {
 
     }
 
+    @Test
+    void testSettingsWithDefaultProvider() throws InvalidSettingsException {
+        var nodeSettings = new NodeSettings(ROOT_KEY);
+        var persistor = new FieldBasedNodeSettingsPersistor<>(DefaultProviderSettings.class);
+        var loaded = persistor.load(nodeSettings);
+        assertEquals(1337, loaded.m_foo);
+    }
+
+    private static final class DefaultProviderSettings extends AbstractTestNodeSettings<DefaultProviderSettings> {
+
+        @Persist(defaultProvider = FooDefaultProvider.class, optional = true)
+        int m_foo = 42;
+
+
+        private static final class FooDefaultProvider implements DefaultProvider<Integer> {
+
+            @Override
+            public Integer getDefault() {
+                return 1337;
+            }
+
+        }
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            settings.addInt("foo", m_foo);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return m_foo;
+        }
+
+        @Override
+        protected boolean equalSettings(final DefaultProviderSettings settings) {
+            return m_foo == settings.m_foo;
+        }
+
+    }
+
 }
