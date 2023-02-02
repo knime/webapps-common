@@ -18,6 +18,8 @@ jest.mock('raf-throttle', () => function (func) {
     };
 });
 
+const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
+
 describe('TableView.vue', () => {
     const emptyColumnFilterValues = [[''], [], [], [''], ['']];
     const emptyRenderers = new Array(4).fill(null); // eslint-disable-line no-magic-numbers
@@ -101,6 +103,9 @@ describe('TableView.vue', () => {
                     case 'getCurrentRowKeys':
                         return Promise.resolve(getCurrentRowKeysResult);
                     default:
+                        if (obj.options[1] === GET_EMPTY_BOTTOM_DATA_FLAG) {
+                            return { ...dataRequestResult, rows: [] };
+                        }
                         return Promise.resolve(dataRequestResult);
                 }
             }),
@@ -348,7 +353,7 @@ describe('TableView.vue', () => {
                 });
 
                 
-                it('requests pageSize rows as initial data for lazy loading', async () => {
+                it('requests scopeSize rows as initial data for lazy loading', async () => {
                     wrapper.vm.currentRowCount = 300;
                     wrapper.vm.refreshTable();
                     await wrapper.vm.$nextTick();
@@ -602,8 +607,11 @@ describe('TableView.vue', () => {
                             }));
                         });
                         
-    
-                        it('requests only top table if no bottom rows are required on last page', () => {
+                        /**
+                         * TODO: Remove this together with GET_EMPTY_BOTTOM_DATA_FLAG in
+                         * https://knime-com.atlassian.net/browse/UIEXT-527
+                         */
+                        it('requests bottom table again if it was empty', async () => {
                             const pageSize = 6000;
                             wrapper.vm.settings.pageSize = pageSize;
                             wrapper.vm.currentPage = 2;
@@ -611,13 +619,28 @@ describe('TableView.vue', () => {
                             wrapper.vm.currentIndex = currentIndex;
                             jest.clearAllMocks();
                             wrapper.vm.updateData({});
-                            expect(dataSpy).toHaveBeenCalledTimes(1);
-                            expect(dataSpy).toHaveBeenCalledWith(expect.objectContaining({
+                            expect(dataSpy).toHaveBeenCalledTimes(2);
+                            expect(dataSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
                                 options: expect.arrayStartingWith(
-                                    [expect.anything(), pageSize, wrapper.vm.currentRowCount - currentIndex]
+                                    [expect.anything(), pageSize, wrapper.vm.numRowsTop]
+                                )
+                            }));
+                            expect(dataSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
+                                options: expect.arrayStartingWith(
+                                    [expect.anything(), GET_EMPTY_BOTTOM_DATA_FLAG]
+                                )
+                            }));
+                            jest.clearAllMocks();
+                            await wrapper.vm.$nextTick();
+                            await wrapper.vm.$nextTick();
+                            expect(dataSpy).toHaveBeenCalledTimes(1);
+                            expect(dataSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
+                                options: expect.arrayStartingWith(
+                                    [expect.anything(), pageSize + wrapper.vm.numRowsTop]
                                 )
                             }));
                         });
+
     
                         it('requests both top and bottom table if required', () => {
                             const pageSize = 6000;

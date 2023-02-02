@@ -213,7 +213,7 @@ export default {
         },
         currentPageEnd() {
             return this.settings.enablePagination
-                ? Math.min(this.currentRowCount, this.settings.pageSize * this.currentPage)
+                ? this.settings.pageSize * this.currentPage
                 : this.currentRowCount;
         },
         currentNumRowsOnPage() {
@@ -377,7 +377,6 @@ export default {
                 numRows = this.currentNumRowsOnPage;
             }
             const loadToIndex = loadFromIndex + numRows;
-
             const { topLoadFromIndex, topNumRows, bottomLoadFromIndex, bottomNumRows } = this.settings.enablePagination
                 ? this.getTopAndBottomIndicesOnPagination(loadFromIndex, numRows)
                 : {
@@ -398,7 +397,21 @@ export default {
                     updateDisplayedColumns, updateTotalSelected, this.settings.enablePagination)
                 : null;
             const topTable = fetchTopTable ? await topTablePromise : null;
-            const bottomTable = fetchBottomTable ? await bottomTablePromise : null;
+            let bottomTable = fetchBottomTable ? await bottomTablePromise : null;
+
+            /** If the amount of received data is smaller than anticipated it can happen that the bottom table is
+                 * empty which would lead to displaying less data without a "⁞" row.
+                 * This should however only happen when lazyloading is inactive and the pageSize is greater than the
+                 * maximal allowed number of rows. It can happen due to a change of the page size or being on the last
+                 *  page.
+                 * TODO: Remove this workaround again when using lazyloading when paginating
+                 *  (https://knime-com.atlassian.net/browse/UIEXT-527)
+                 */
+            if (bottomTable !== null && bottomTable.rows.length === 0) {
+                const newBottomStart = Math.max(topLoadFromIndex + topNumRows, topTable.rowCount - this.numRowsBottom);
+                bottomTable = await this.requestTable(newBottomStart, this.numRowsBottom, displayedColumns,
+                    updateDisplayedColumns, updateTotalSelected, this.settings.enablePagination);
+            }
             
             const getFromTopOrBottom = (key) => topTable ? topTable[key] : bottomTable[key];
             if (updateDisplayedColumns) {
