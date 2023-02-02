@@ -230,6 +230,32 @@ class JsonFormsSchemaUtilTest {
         testSettings(MinMaxProviderSetting.class);
     }
 
+    private static class ValidatedStringSetting {
+        private static String SNAPSHOT = "{"//
+            + "\"testMinLength\":{\"type\":\"string\",\"minLength\":0},"//
+            + "\"testMaxLength\":{\"type\":\"string\",\"maxLength\":100},"//
+            + "\"testPattern\":{\"type\":\"string\",\"pattern\":\"a.*\"},"//
+            + "\"testAll\":{\"type\":\"string\",\"minLength\":0,\"maxLength\":100,\"pattern\":\"a.*\"}"//
+            + "}";
+
+        @Schema(minLength = 0)
+        public String testMinLength;
+
+        @Schema(maxLength = 100)
+        public String testMaxLength;
+
+        @Schema(pattern = "a.*")
+        public String testPattern;
+
+        @Schema(minLength = 0, maxLength = 100, pattern = "a.*")
+        public String testAll;
+    }
+
+    @Test
+    void testStringValidationSetting() throws JsonProcessingException {
+        testSettings(ValidatedStringSetting.class);
+    }
+
     private static class ContainerSetting {
         private static String SNAPSHOT = "{\"testIntArray\":{"//
             + "\"type\":\"array\","//

@@ -125,6 +125,21 @@ public @interface Schema {
     Class<? extends DoubleProvider> maxProvider() default DoubleProvider.class;
 
     /**
+     * @return an optional minimum length for a nominal field
+     */
+    int minLength() default -1;
+
+    /**
+     * @return an optional maximum length for a nominal field
+     */
+    int maxLength() default -1;
+
+    /**
+     * @return an optional regular expression pattern for a nominal field
+     */
+    String pattern() default "";
+
+    /**
      * Provides a double value given the context of the node.
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany

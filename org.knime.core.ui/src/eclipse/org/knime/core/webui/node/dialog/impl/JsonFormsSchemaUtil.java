@@ -179,16 +179,36 @@ final class JsonFormsSchemaUtil {
 
         builder.forFields().withNumberInclusiveMinimumResolver(
             field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-            .filter(schema -> !field.isFakeContainerItemScope())//
-            .map(schema -> resolveDouble(context, schema.minProvider(), schema.min()))//
-            .orElse(null));
-
+                .filter(schema -> !field.isFakeContainerItemScope())//
+                .map(schema -> resolveDouble(context, schema.minProvider(), schema.min()))//
+                .orElse(null));
 
         builder.forFields().withNumberInclusiveMaximumResolver(
             field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-            .filter(schema -> !field.isFakeContainerItemScope())//
-            .map(schema -> resolveDouble(context, schema.maxProvider(), schema.max()))//
-            .orElse(null));
+                .filter(schema -> !field.isFakeContainerItemScope())//
+                .map(schema -> resolveDouble(context, schema.maxProvider(), schema.max()))//
+                .orElse(null));
+
+        builder.forFields().withStringMinLengthResolver(
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
+                .filter(schema -> !field.isFakeContainerItemScope())//
+                .map(schema -> schema.minLength())//
+                .filter(length -> length >= 0)//
+                .orElse(null));
+
+        builder.forFields().withStringMaxLengthResolver(
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
+                .filter(schema -> !field.isFakeContainerItemScope())//
+                .map(schema -> schema.maxLength())//
+                .filter(length -> length >= 0)//
+                .orElse(null));
+
+        builder.forFields().withStringPatternResolver(
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
+                .filter(schema -> !field.isFakeContainerItemScope())//
+                .map(schema -> schema.pattern())//
+                .filter(pattern -> !pattern.isEmpty())//
+                .orElse(null));
 
         builder.forFields().withPropertyNameOverrideResolver(
             field -> field.getName().startsWith("m_") ? field.getName().substring(2) : field.getName());
@@ -207,5 +227,4 @@ final class JsonFormsSchemaUtil {
         }
         return null;
     }
-
 }
