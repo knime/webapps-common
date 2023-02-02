@@ -98,8 +98,18 @@ public @interface Persist {
 
     /**
      * Optional argument that allows to hide a setting in the flow variable tab.
+     *
      * @return true if the setting should be hidden in the flow variable tab.
      */
     boolean hidden() default false;
+
+    /**
+     * Optional argument that allows to make a setting optional. An optional settings is a settings that may be in the
+     * NodeSettings when loading but doesn't have to be. If it isn't present, then the default value from the declaring
+     * DefaultNodeSettings class is used. The typical use-case for this are settings that are added in a later release.
+     *
+     * @return true if the setting is optional
+     */
+    boolean optional() default false;
 
 }

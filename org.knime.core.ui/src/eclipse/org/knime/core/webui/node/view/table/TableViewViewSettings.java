@@ -54,8 +54,6 @@ import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.impl.Schema;
 import org.knime.core.webui.node.dialog.impl.StringArrayToColumnFilterPersistor;
-import org.knime.core.webui.node.dialog.persistence.Persistor;
-import org.knime.core.webui.node.dialog.persistence.field.OptionalFieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,7 +62,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
-@Persistor(OptionalFieldBasedNodeSettingsPersistor.class)
 public class TableViewViewSettings implements DefaultNodeSettings {
 
     static final class ColumnChoicesProvider implements ChoicesProvider {
@@ -91,6 +88,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * If the rows keys should be displayed
      */
     @Schema(title = "Show RowIDs", description = "Whether to display the RowIDs or not")
+    @Persist(optional = true)
     public boolean m_showRowKeys = true;
 
     /**
@@ -98,12 +96,14 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Schema(title = "Show column data type in header",
         description = "Whether to display the data type of the " + "columns in the header or not")
+    @Persist(optional = true)
     public boolean m_showColumnDataType = true;
 
     /**
      * If the row numbers should be displayed
      */
     @Schema(title = "Show row numbers", description = "Whether to display the row numbers or not")
+    @Persist(optional = true)
     public boolean m_showRowIndices;
 
     /**
@@ -117,6 +117,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * whether to display the title or not
      */
     @Schema(title = "Show title", description = "Whether to display the title or not.")
+    @Persist(optional = true)
     public boolean m_showTitle = true;
 
     /**
@@ -124,18 +125,21 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Schema(title = "Pagination",
         description = "Enables or disables the ability to only show a certain number of rows.")
+    @Persist(optional = true)
     public boolean m_enablePagination = true;
 
     /**
      * The page size, i.e., number of rows to be displayed.
      */
     @Schema(title = "Page size", description = "Select the amount of rows shown per page", min = 1)
+    @Persist(optional = true)
     public int m_pageSize = 10;
 
     /**
      * See annotation.
      */
     @Schema(title = "Compact rows", description = "Whether to display the rows in a more compact form or not")
+    @Persist(optional = true)
     public boolean m_compactMode;
 
     /**
@@ -157,10 +161,12 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Schema(title = "Enable sorting by header",
         description = "Enables or disables the ability to sort the table by clicking on the column headers")
+    @Persist(optional = true)
     public boolean m_enableSortingByHeader = true;
 
     @Schema(title = "Enable selection of column renderer",
         description = "Whether to enable the selection of a column renderer in the header or not")
+    @Persist(optional = true)
     boolean m_enableRendererSelection = true;
 
     /**
@@ -169,6 +175,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Schema(title = "Publish Selection",
         description = "When checked, the view notifies other interactive views when the user changes the selection in"
             + " the current view.")
+    @Persist(optional = true)
     public boolean m_publishSelection = true;
 
     /**
@@ -177,6 +184,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Schema(title = "Subscribe to Selection",
         description = "When checked, the view reacts on notifications from other interactive views that the selection"
             + " has been changed.")
+    @Persist(optional = true)
     public boolean m_subscribeToSelection = true;
 
     /**

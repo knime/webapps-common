@@ -42,81 +42,36 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Feb 2, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
 package org.knime.core.webui.node.dialog.persistence.field;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
- * Tests for the {@link OptionalFieldBasedNodeSettingsPersistor}.
  *
- * @author Paul Bärnreuther
+ * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-class OptionalFieldBasedNodeSettingsPersistorTest {
-
-    private static final String ROOT_KEY = "Test";
-
-    private static final class TestSettings implements DefaultNodeSettings {
-
-
-        @SuppressWarnings("unused")
-        int m_intSetting;
-
-        @SuppressWarnings("unused")
-        double m_doubleSetting;
-
-        @SuppressWarnings("unused")
-        long m_longSetting;
-
-        @SuppressWarnings("unused")
-        String m_stringSetting;
-
-        @SuppressWarnings("unused")
-        boolean m_booleanSetting;
-
-        @SuppressWarnings("unused")
-        String[] m_stringArraySetting;
-
-        @SuppressWarnings("unused")
-        double[] m_doubleArraySetting;
-
-        void setDefaults() {
-           m_intSetting = 0;
-           m_stringSetting = "";
-           m_longSetting = 0l;
-           m_doubleSetting = 0d;
-           m_booleanSetting = false;
-           m_stringArraySetting = new String[0];
-           m_doubleArraySetting = new double[0];
-        }
-    }
+@SuppressWarnings("static-method")
+final class FieldNodeSettingsPersistorFactoryTest {
 
     @Test
-    void testLoadWithDefaultValues() throws InvalidSettingsException {
-        var persistor = new OptionalFieldBasedNodeSettingsPersistor<TestSettings>(TestSettings.class);
+    void testFailsOnContractViolation() {
+        assertThrows(IllegalArgumentException.class, () ->
+            new FieldNodeSettingsPersistorFactory<>(ContractViolatingSettings.class));
+    }
 
-        var originallySaved = new NodeSettings(ROOT_KEY);
-        var loaded = persistor.load(originallySaved);
+    private static final class ContractViolatingSettings implements DefaultNodeSettings {
 
-        var expected = new TestSettings();
-        expected.setDefaults();
+        @SuppressWarnings("unused") // added to remove the default constructor
+        ContractViolatingSettings(final String foo) {
 
-        assertEquals(expected.m_intSetting, loaded.m_intSetting, "The loaded settings are not as expected");
-        assertEquals(expected.m_doubleSetting, loaded.m_doubleSetting, "The loaded settings are not as expected");
-        assertEquals(expected.m_longSetting, loaded.m_longSetting, "The loaded settings are not as expected");
-        assertEquals(expected.m_stringSetting, loaded.m_stringSetting, "The loaded settings are not as expected");
-        assertEquals(expected.m_booleanSetting, loaded.m_booleanSetting, "The loaded settings are not as expected");
-        assertArrayEquals(expected.m_stringArraySetting, loaded.m_stringArraySetting, "The loaded settings are not as expected");
-        assertArrayEquals(expected.m_doubleArraySetting, loaded.m_doubleArraySetting, "The loaded settings are not as expected");
-
-
-
+        }
     }
 
 }

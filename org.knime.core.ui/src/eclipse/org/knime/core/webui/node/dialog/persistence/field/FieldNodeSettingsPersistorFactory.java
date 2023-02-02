@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.impl.PersistableSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.persistence.ReflectionUtil;
 
 /**
  * Creates persistors for fields of a {@link PersistableSettings} class.
@@ -78,13 +79,19 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
     private final Class<S> m_settingsClass;
 
+    private final S m_defaultSettings;
+
     FieldNodeSettingsPersistorFactory(final Class<S> settingsClass) {
         m_settingsClass = settingsClass;
+        m_defaultSettings = ReflectionUtil.createInstance(settingsClass)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                    "The PersistableSettings class '%s' doesn't provide an empty constructor for persistence.",
+                    settingsClass)));
     }
 
     Map<String, NodeSettingsPersistor<?>> createPersistors() {
         return getAllPersistableFields(m_settingsClass)//
-            .collect(toMap(Field::getName, FieldNodeSettingsPersistorFactory::createPersistorForField, (a, b) -> a,
+            .collect(toMap(Field::getName, this::createPersistorForField, (a, b) -> a,
                 LinkedHashMap::new));
     }
 
@@ -101,7 +108,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         return !Modifier.isStatic(modifiers) && !Modifier.isPrivate(modifiers);
     }
 
-    private static NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+    private NodeSettingsPersistor<?> createPersistorForField(final Field field) {
         var persistence = field.getAnnotation(Persist.class);
         if (persistence != null) {
             return createPersistorFromPersistAnnotation(persistence, field);
@@ -119,7 +126,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    static NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence, final Field field) {
+    NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence, final Field field) {
         var customPersistorClass = persistence.customPersistor();
         var type = field.getType();
         var configKey = getConfigKey(field);
@@ -132,6 +139,29 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             }
             return customPersistor;
         }
+        var persistor = createNonCustomPersistor(persistence, type, configKey);
+        if (persistence.optional()) {
+            persistor = createOptionalPersistor(field, configKey, persistor);
+        }
+        return persistor;
+    }
+
+    private <F> NodeSettingsPersistor<F> createOptionalPersistor(final Field field, final String configKey,
+        final NodeSettingsPersistor<F> delegate) {
+        try {
+            @SuppressWarnings("unchecked")
+            F defaultValue = (F)field.get(m_defaultSettings);
+            return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
+        } catch (IllegalAccessException ex) {
+            // not reachable
+            throw new IllegalArgumentException(
+                String.format("Can't access field '%s' of PersistableSettings class '%s'.", field, m_defaultSettings),
+                ex);
+        }
+    }
+
+    private static NodeSettingsPersistor<?> createNonCustomPersistor(final Persist persistence, final Class<?> type,
+        final String configKey) {
         var settingsModelClass = persistence.settingsModel();
         if (!settingsModelClass.equals(SettingsModel.class)) {
             return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
@@ -237,6 +267,35 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             }
         }
 
+    }
+
+    static final class OptionalFieldPersistor<S> implements NodeSettingsPersistor<S> {
+
+        private final S m_default;
+
+        private final String m_configKey;
+
+        private final NodeSettingsPersistor<S> m_delegate;
+
+        OptionalFieldPersistor(final S defaultValue, final String configKey, final NodeSettingsPersistor<S> delegate) {
+            m_default = defaultValue;
+            m_configKey = configKey;
+            m_delegate = delegate;
+        }
+
+        @Override
+        public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            if (settings.containsKey(m_configKey)) {
+                return m_delegate.load(settings);
+            } else {
+                return m_default;
+            }
+        }
+
+        @Override
+        public void save(final S obj, final NodeSettingsWO settings) {
+            m_delegate.save(obj, settings);
+        }
     }
 
 }

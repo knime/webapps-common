@@ -696,4 +696,38 @@ class FieldBasedNodeSettingsPersistorTest {
 
     }
 
+    @Test
+    void testOptionalSettings() throws InvalidSettingsException {
+        var optionalSettings = new OptionalSettings();
+        optionalSettings.m_foo = 13;
+        testSaveLoad(optionalSettings);
+
+        var persistor = new FieldBasedNodeSettingsPersistor<>(OptionalSettings.class);
+        var nodeSettings = new NodeSettings(ROOT_KEY);
+        var loadedSettings = persistor.load(nodeSettings);
+        assertEquals(new OptionalSettings(), loadedSettings);
+    }
+
+    private static final class OptionalSettings extends AbstractTestNodeSettings<OptionalSettings> {
+
+        @Persist(optional = true)
+        int m_foo = 42;
+
+        @Override
+        public void saveExpected(final NodeSettingsWO settings) {
+            settings.addInt("foo", m_foo);
+        }
+
+        @Override
+        protected int computeHashCode() {
+            return m_foo;
+        }
+
+        @Override
+        protected boolean equalSettings(final OptionalSettings settings) {
+            return m_foo == settings.m_foo;
+        }
+
+    }
+
 }
