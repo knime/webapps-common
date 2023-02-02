@@ -234,7 +234,7 @@ describe('TableView.vue', () => {
                     sortDirection: null
                 }
             });
-            const expectedColumnSize = MIN_COLUMN_SIZE;
+            const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const headerSubMenuItems = [{ sectionHeadline: true, separator: true, text: 'Data renderer' },
                 { id: 't1r1', section: 'dataRendering', selected: false, text: 'type1renderer1' },
                 { id: 't1r2', section: 'dataRendering', selected: false, text: 'type1renderer2' },
@@ -262,14 +262,14 @@ describe('TableView.vue', () => {
         it('passes the correct dataConfig when showing rowkeys', async () => {
             initialDataMock.settings.showRowKeys = true;
             
-            const expectedColumnSize = MIN_COLUMN_SIZE;
+            const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             let wrapper = await mount(TableView, context);
             const { dataConfig } = await getTableProps(wrapper);
 
             expect(wrapper.getComponent(TableUI).exists()).toBe(true);
             expect(dataConfig).toMatchObject({
                 columnConfigs: [
-                    { key: 1, header: 'RowID', size: expectedColumnSize },
+                    { key: 1, header: 'RowID', size: MIN_COLUMN_SIZE },
                     { key: 2, header: 'col1', size: expectedColumnSize },
                     { key: 3, header: 'col2', size: expectedColumnSize },
                     { key: 4, header: 'col3', size: expectedColumnSize },
@@ -281,7 +281,7 @@ describe('TableView.vue', () => {
         it('passes the correct dataConfig when showing content types', async () => {
             initialDataMock.settings.showColumnDataType = true;
             
-            const expectedColumnSize = MIN_COLUMN_SIZE;
+            const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             let wrapper = await mount(TableView, context);
             const { dataConfig } = await getTableProps(wrapper);
 
@@ -1548,7 +1548,8 @@ describe('TableView.vue', () => {
             const dataColumnsSizeTotal = clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
             const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
 
-            const defaultColumnSizes = Array(nColumns).fill(defaultColumnSize);
+            const defaultColumnSizes = [MIN_COLUMN_SIZE, MIN_COLUMN_SIZE]
+                .concat(Array(nColumns - 2).fill(defaultColumnSize));
             const lastColumnMinSize = dataColumnsSizeTotal -
                 defaultColumnSizes.slice(0, nColumns - 1).reduce((sum, size) => sum + size, 0);
             defaultColumnSizes[nColumns - 1] = Math.max(lastColumnMinSize, defaultColumnSizes[nColumns - 1]);
@@ -1600,12 +1601,10 @@ describe('TableView.vue', () => {
             wrapper.vm.onColumnResize(0, 1);
             wrapper.vm.onColumnResize(1, 2);
             wrapper.vm.onColumnResize(2, 1);
-            defaultColumnSizes[defaultColumnSizes.length - 1] +=
-                defaultColumnSizes[0] + defaultColumnSizes[1] + defaultColumnSizes[2] - 1 - 2 - 1;
             defaultColumnSizes[0] = 1;
             defaultColumnSizes[1] = 2;
             defaultColumnSizes[2] = 1;
-            expect(wrapper.vm.columnSizes).toStrictEqual(defaultColumnSizes);
+            expect(wrapper.vm.columnSizes).toStrictEqual([1, 2, 1, 100, 100, 206]);
         });
 
         it('adds / removes intersection observer / resize listener and updates client width accordingly', async () => {
