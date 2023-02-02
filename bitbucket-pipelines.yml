@@ -12,6 +12,7 @@ definitions:
           - npm run coverage -- --ci
           - npm run audit
           - cd demo
+          - npm ci
           - npm run generate
 
 pipelines:
