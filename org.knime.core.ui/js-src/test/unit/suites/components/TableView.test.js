@@ -188,7 +188,7 @@ describe('TableView.vue', () => {
             await wrapper.vm.$nextTick();
 
             const dataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'data');
-            await wrapper.vm.requestNewData('getTable', [['col1', 'col2'], 0, rowCount]); // eslint-disable-line no-magic-numbers
+            await wrapper.vm.performRequest('getTable', [['col1', 'col2'], 0, rowCount]); // eslint-disable-line no-magic-numbers
             expect(dataSpy).toBeCalledWith({ method: 'getTable', options: [['col1', 'col2'], 0, rowCount] }); // eslint-disable-line no-magic-numbers
         });
 
@@ -321,6 +321,16 @@ describe('TableView.vue', () => {
             expect(tableConfig).toMatchObject({
                 showSelection: false
             });
+        });
+
+        it('ignores obsolete requests', async () => {
+            let wrapper = await mount(TableView, context);
+            wrapper.vm.updateInternals = jest.fn();
+            const firstReqeust = wrapper.vm.updateData({});
+            const secondRequest = wrapper.vm.updateData({});
+            await firstReqeust;
+            await secondRequest;
+            expect(wrapper.vm.updateInternals).toHaveBeenCalledTimes(1);
         });
 
         describe('lazyloading and scrolling', () => {
@@ -968,7 +978,7 @@ describe('TableView.vue', () => {
                 options: [settings.displayedColumns.selected, 0, 2, [null, null], true, true]
             });
             await wrapper.vm.$nextTick();
-
+            await wrapper.vm.$nextTick();
             const newColumnConfig = [
                 {
                     key: 2,

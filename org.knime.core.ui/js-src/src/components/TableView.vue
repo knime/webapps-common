@@ -60,7 +60,9 @@ export default {
             rowIdColumnName: 'RowID',
             indexColumnName: '#',
             columnDataTypeIds: null,
-            columnContentTypes: null
+            columnContentTypes: null,
+            // a counter which is used to ignore all requests which were not the last sent one
+            lastUpdateHash: 0
         };
     },
     computed: {
@@ -361,15 +363,22 @@ export default {
         computeScopeSize(startIndex, endIndex) {
             return Math.max(endIndex - startIndex + 2 * this.bufferSize, MIN_SCOPE_SIZE);
         },
-        // eslint-disable-next-line complexity
-        async updateData(params) {
-            const { lazyLoad, updateTotalSelected = false, updateDisplayedColumns = false,
-                updateColumnContentTypes = false } = params;
+
+        async updateData(options) {
+            this.lastUpdateHash += 1;
+            const updateHash = this.lastUpdateHash;
+            const data = await this.requestData(options);
+            if (this.lastUpdateHash !== updateHash) {
+                return;
+            }
+            this.updateInternals(data, options);
+        },
+        async requestData(options) {
+            const { lazyLoad, updateTotalSelected = false, updateDisplayedColumns = false } = options;
             const displayedColumns = this.getColumnsForRequest(updateDisplayedColumns);
 
             let loadFromIndex, numRows;
             if (lazyLoad) {
-                this.lastRequestScopeStartIndex = lazyLoad.newScopeStart;
                 ({ loadFromIndex, numRows } = lazyLoad);
             } else {
                 loadFromIndex = this.currentIndex;
@@ -411,7 +420,11 @@ export default {
                 bottomTable = await this.requestTable(newBottomStart, this.numRowsBottom, displayedColumns,
                     updateDisplayedColumns, updateTotalSelected, this.settings.enablePagination);
             }
-            
+            return { topTable, bottomTable };
+        },
+        updateInternals(tables, options) {
+            const { topTable, bottomTable } = tables;
+            const { updateDisplayedColumns, updateTotalSelected, updateColumnContentTypes, lazyLoad } = options;
             const getFromTopOrBottom = (key) => topTable ? topTable[key] : bottomTable[key];
             if (updateDisplayedColumns) {
                 this.columnFilters = this.getDefaultFilterConfigs(getFromTopOrBottom('displayedColumns'));
@@ -430,10 +443,7 @@ export default {
             }
 
             if (lazyLoad) {
-                const { newScopeStart, direction, bufferStart = 0, bufferEnd = bufferStart } = lazyLoad;
-                if (this.lastRequestScopeStartIndex !== newScopeStart) {
-                    return;
-                }
+                const { newScopeStart, direction, bufferStart = 0, bufferEnd = bufferStart, numRows } = lazyLoad;
                 const topPreviousDataLength = this.table?.rows?.length || 0;
                 const rows = this.getCombinedTopRows(
                     { topTable, bufferStart, bufferEnd, direction, topPreviousDataLength }
@@ -504,7 +514,7 @@ export default {
         requestFilteredAndSortedTable(startIndex, numRows, displayedColumns, updateDisplayedColumns,
             updateTotalSelected, selectedRendererIds, clearImageDataCache) {
             const columnSortIsAscending = this.columnSortDirection === 1;
-            return this.requestNewData('getFilteredAndSortedTable',
+            return this.performRequest('getFilteredAndSortedTable',
                 [
                     displayedColumns,
                     Math.min(this.totalRowCount - 1, Math.max(0, startIndex)),
@@ -523,13 +533,13 @@ export default {
         // eslint-disable-next-line max-params
         requestUnfilteredAndUnsortedTable(startIndex, numRows, displayedColumns, updateDisplayedColumns,
             selectedRendererIds, clearImageDataCache) {
-            return this.requestNewData('getTable', [displayedColumns, startIndex, numRows, selectedRendererIds,
+            return this.performRequest('getTable', [displayedColumns, startIndex, numRows, selectedRendererIds,
                 updateDisplayedColumns, clearImageDataCache]);
         },
         getColumnsForRequest(updateDisplayedColumns) {
             return updateDisplayedColumns ? this.settings.displayedColumns.selected : this.displayedColumns;
         },
-        requestNewData(method, options) {
+        performRequest(method, options) {
             return this.jsonDataService.data({ method, options });
         },
         getCombinedTopRows({ topTable, bufferStart, bufferEnd, direction, topPreviousDataLength }) {
@@ -646,7 +656,7 @@ export default {
         },
         requestTotalSelected() {
             if (this.searchTerm || this.colFilterActive) {
-                return this.requestNewData('getTotalSelected');
+                return this.performRequest('getTotalSelected');
             } else {
                 return this.currentSelectedRowKeys.size;
             }
@@ -659,7 +669,7 @@ export default {
         async onSelectAll(selected) {
             const filterActive = this.currentRowCount !== this.totalRowCount;
             if (selected) {
-                const currentRowKeys = await this.requestNewData('getCurrentRowKeys', []);
+                const currentRowKeys = await this.performRequest('getCurrentRowKeys', []);
                 if (filterActive) {
                     this.updateCurrentSelectedRowKeys('add', currentRowKeys);
                 } else {
@@ -667,7 +677,7 @@ export default {
                 }
                 this.selectionService.publishOnSelectionChange('add', currentRowKeys);
             } else if (filterActive) {
-                const currentRowKeys = await this.requestNewData('getCurrentRowKeys', []);
+                const currentRowKeys = await this.performRequest('getCurrentRowKeys', []);
                 this.updateCurrentSelectedRowKeys('delete', currentRowKeys);
                 this.selectionService.publishOnSelectionChange('remove', currentRowKeys);
             } else {
