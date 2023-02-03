@@ -64,8 +64,19 @@ public final class WebUIUtil {
      */
     public static final String BLOCK_ALL_EXTERNAL_REQUESTS_SYS_PROP = "chromium.block_all_external_requests";
 
+    private static final String DEV_MODE_SYSTEM_PROPERTY = "org.knime.ui.dev.mode";
+
     private WebUIUtil() {
         // utility class
+    }
+
+    /**
+     * Return whether the dev mode is set or not.
+     *
+     * @return isDevMode
+     */
+    public static boolean isInDevMode() {
+        return Boolean.getBoolean(DEV_MODE_SYSTEM_PROPERTY);
     }
 
     /**
