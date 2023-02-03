@@ -112,6 +112,7 @@ export default ArrayLayout;
           />
           <ArrayLayoutItemControls
             v-if="elemIndex === 0 && !showElementTitles"
+            class="compensate-label"
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
@@ -153,6 +154,11 @@ export default ArrayLayout;
     display: flex;
     align-items: center;
     gap: 5px;
+
+    /* Needed to align buttons centererd with controls that have a label */
+    & .compensate-label {
+      margin-top: 10px;
+    }
   }
 }
 
