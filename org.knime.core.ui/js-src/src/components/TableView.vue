@@ -58,7 +58,9 @@ export default {
             maxNumRows: 200000,
             bottomRows: [],
             rowIdColumnName: 'RowID',
-            indexColumnName: '#'
+            indexColumnName: '#',
+            columnDataTypeIds: null,
+            columnContentTypes: null
         };
     },
     computed: {
@@ -66,7 +68,7 @@ export default {
             return this.getKnimeService();
         },
         specContainsImages() {
-            return this.table.columnContentTypes.some(contentType => isImage(contentType));
+            return this.columnContentTypes?.some(contentType => isImage(contentType));
         },
         dataConfig() {
             const { showRowKeys, showRowIndices, compactMode } = this.settings;
@@ -88,12 +90,12 @@ export default {
                 const columnInformation = {
                     index: index + 2,
                     columnName,
-                    contentType: this.table.columnContentTypes?.[index],
+                    contentType: this.columnContentTypes?.[index],
                     ...showColumnDataType && {
-                        columnTypeName: this.dataTypes[this.table.columnDataTypeIds?.[index]]?.name
+                        columnTypeName: this.dataTypes[this.columnDataTypeIds?.[index]]?.name
                     },
                     ...enableRendererSelection && {
-                        columnTypeRenderers: this.dataTypes[this.table.columnDataTypeIds?.[index]]?.renderers
+                        columnTypeRenderers: this.dataTypes[this.columnDataTypeIds?.[index]]?.renderers
                     },
                     isSortable: true
                 };
@@ -253,6 +255,8 @@ export default {
         if (initialData) {
             const { table, dataTypes, columnDomainValues, settings } = initialData;
             this.displayedColumns = table.displayedColumns;
+            this.columnDataTypeIds = table.columnDataTypeIds;
+            this.columnContentTypes = table.columnContentTypes;
             this.dataTypes = dataTypes;
             this.columnDomainValues = columnDomainValues;
             this.totalRowCount = table.rowCount;
@@ -412,6 +416,7 @@ export default {
             if (updateDisplayedColumns) {
                 this.columnFilters = this.getDefaultFilterConfigs(getFromTopOrBottom('displayedColumns'));
                 this.displayedColumns = getFromTopOrBottom('displayedColumns');
+                this.columnDataTypeIds = getFromTopOrBottom('columnDataTypeIds');
             }
             if (updateTotalSelected) {
                 if (this.columnSortColumnName || this.searchTerm || this.colFilterActive) {
@@ -421,7 +426,7 @@ export default {
                 }
             }
             if (updateColumnContentTypes) {
-                this.table.columnContentTypes = getFromTopOrBottom('columnContentTypes');
+                this.columnContentTypes = getFromTopOrBottom('columnContentTypes');
             }
 
             if (lazyLoad) {

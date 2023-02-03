@@ -949,6 +949,41 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.displayedColumns).toStrictEqual(initialDataMock.table.displayedColumns);
         });
 
+        it('updates columnDataTypeIds on displayes columns update', async () => {
+            initialDataMock.settings.showColumnDataType = true;
+            
+            const expectedColumnSize = MIN_COLUMN_SIZE;
+            let wrapper = await mount(TableView, context);
+            await wrapper.vm.$nextTick();
+            const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
+            const newColumns = ['col2', 'col3'];
+            settings.displayedColumns.selected = newColumns;
+            dataRequestResult.columnDataTypeIds = ['datatype1', 'datatype2'];
+            dataRequestResult.displayedColumns = newColumns;
+            wrapper.vm.onViewSettingsChange({
+                data: { data: { view: settings } }
+            });
+            expect(dataSpy).toHaveBeenCalledWith({
+                method: 'getTable',
+                options: [settings.displayedColumns.selected, 0, 2, [null, null], true, true]
+            });
+            await wrapper.vm.$nextTick();
+
+            const newColumnConfig = [
+                {
+                    key: 2,
+                    header: 'col2',
+                    subHeader: 'col1And2TypeName',
+                    size: expectedColumnSize,
+                    hasSlotContent: false
+                },
+                { key: 3, header: 'col3', subHeader: 'col3TypeName', size: expectedColumnSize, hasSlotContent: false }
+            ];
+            expect(wrapper.vm.dataConfig).toMatchObject({
+                columnConfigs: newColumnConfig
+            });
+        });
+
         describe('sort parameter update', () => {
             it('updates the sort parameters when a sorting is active and columns are changed',
                 () => {
