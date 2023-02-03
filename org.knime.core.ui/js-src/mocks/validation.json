@@ -1,0 +1,128 @@
+{
+  "result": {
+    "name": "New Node Dialog",
+    "data": {
+      "model": {
+        "single": "",
+        "combined": "",
+        "withPattern": "",
+        "withMinLength": "",
+        "withMaxLenght": "too long",
+        "withMin": 1.0,
+        "withMax": 1.0,
+        "withMinInteger": 1,
+        "withMaxInteger": 1
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "single": {
+              "type": "string",
+              "minLength": 1
+            },
+            "combined": {
+              "type": "string",
+              "minLength": 1,
+              "maxLenght": 3,
+              "pattern": "a.*"
+            },
+            "withPattern": {
+              "type": "string",
+              "pattern": "a.*"
+            },
+            "withMinLength": {
+              "type": "string",
+              "minLength": 2
+            },
+            "withMaxLenght": {
+              "type": "string",
+              "maxLength": 4
+            },
+            "withMin": {
+              "type": "number",
+              "minimum": 1.5,
+              "format": "double"
+            },
+            "withMax": {
+              "type": "number",
+              "maximum": 0.5,
+              "format": "double"
+            },
+            "withMinInteger": {
+              "type": "integer",
+              "minimum": 2,
+              "format": "int32"
+            },
+            "withMaxInteger": {
+              "type": "integer",
+              "maximum": 0,
+              "format": "int32"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "General",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/single"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/combined"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "String Validation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withPattern"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMinLength"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMaxLenght"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Number Validation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMin"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMax"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMinInteger"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/withMaxInteger"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
