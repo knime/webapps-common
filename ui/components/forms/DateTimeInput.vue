@@ -402,7 +402,7 @@ export default {
 </template>
 
 <style lang="postcss">
-@import "v-calendar/dist/style.css";
+@import url("v-calendar/dist/style.css");
 </style>
 
 <style lang="postcss" scoped>
