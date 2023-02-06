@@ -60,7 +60,7 @@
     "@popperjs/core": "2.5.4",
     "babel-eslint": "10.x",
     "consola": "*",
-    "core-js": "3.9.1",
+    "core-js": "3.9.x",
     "eslint": "7.x",
     "focus-trap": "6.x",
     "focus-trap-vue": "0.x",
