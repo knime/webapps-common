@@ -185,6 +185,8 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     @SuppressWarnings("unchecked")
     private <F> F getDefaultFromDefaultSettings(final Field field) {
         try {
+            // use black magic to make the field accessible
+            field.setAccessible(true);//NOSONAR
             return (F)field.get(m_defaultSettings);
         } catch (IllegalAccessException ex) {
             // not reachable
