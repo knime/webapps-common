@@ -56,6 +56,7 @@ import java.util.function.Function;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.xmlbeans.XmlException;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDescription41Proxy;
@@ -186,12 +187,13 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             node.appendChild(views);
         }
 
-        if (keywords != null) {
+        if (ArrayUtils.isNotEmpty(keywords)) {
             final var keywordsElement = doc.createElement("keywords");
             for (String keyword : keywords) {
-                final var itemElement = keywordsElement.appendChild(doc.createElement("item"));
-                itemElement.setTextContent(keyword);
+                final var keywordElement = keywordsElement.appendChild(doc.createElement("keyword"));
+                keywordElement.setTextContent(keyword);
             }
+            node.appendChild(keywordsElement);
         }
 
         doc.appendChild(node);
