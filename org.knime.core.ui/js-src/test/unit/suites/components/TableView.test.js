@@ -952,7 +952,7 @@ describe('TableView.vue', () => {
         it('updates columnDataTypeIds on displayes columns update', async () => {
             initialDataMock.settings.showColumnDataType = true;
             
-            const expectedColumnSize = MIN_COLUMN_SIZE;
+            const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             let wrapper = await mount(TableView, context);
             await wrapper.vm.$nextTick();
             const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
