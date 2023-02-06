@@ -5,7 +5,7 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
 import throttle from 'raf-throttle';
-import { SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN, MIN_COLUMN_SIZE } from '@knime/knime-ui-table/util/constants';
+import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
 
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');

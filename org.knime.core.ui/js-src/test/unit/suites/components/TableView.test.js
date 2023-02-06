@@ -1604,7 +1604,8 @@ describe('TableView.vue', () => {
             defaultColumnSizes[0] = 1;
             defaultColumnSizes[1] = 2;
             defaultColumnSizes[2] = 1;
-            expect(wrapper.vm.columnSizes).toStrictEqual([1, 2, 1, 100, 100, 206]);
+            defaultColumnSizes[defaultColumnSizes.length - 1] = 206;
+            expect(wrapper.vm.columnSizes).toStrictEqual(defaultColumnSizes);
         });
 
         it('adds / removes intersection observer / resize listener and updates client width accordingly', async () => {
