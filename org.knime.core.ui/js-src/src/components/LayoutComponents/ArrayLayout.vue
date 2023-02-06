@@ -103,6 +103,7 @@ export default ArrayLayout;
           class="element"
         >
           <DispatchRenderer
+            class="form-component"
             :schema="control.schema"
             :uischema="element"
             :path="createIndexedPath(objIndex)"
@@ -158,6 +159,10 @@ export default ArrayLayout;
     /* Needed to align buttons centererd with controls that have a label */
     & .compensate-label {
       margin-top: 10px;
+    }
+
+    & .form-component {
+      flex-grow: 1;
     }
   }
 }
