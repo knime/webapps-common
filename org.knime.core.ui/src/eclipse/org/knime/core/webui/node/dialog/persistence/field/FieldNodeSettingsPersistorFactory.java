@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
@@ -76,6 +77,11 @@ import org.knime.core.webui.node.dialog.persistence.ReflectionUtil;
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
 final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
+
+    /**
+     *
+     */
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(FieldNodeSettingsPersistorFactory.class);
 
     private final Class<S> m_settingsClass;
 
@@ -140,14 +146,21 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             return customPersistor;
         }
         var persistor = createNonCustomPersistor(persistence, type, configKey);
-        if (isOptional(persistence)) {
+        if (isOptional(persistence, field.getName())) {
             persistor = createOptionalPersistor(field, configKey, persistor, persistence);
         }
         return persistor;
     }
 
-    private static boolean isOptional(final Persist persist) {
-        return persist.optional() || !DefaultProvider.class.equals(persist.defaultProvider());
+    private boolean isOptional(final Persist persist, final String fieldName) {
+        boolean isOptional = persist.optional();
+        boolean hasDefaultProvider = !DefaultProvider.class.equals(persist.defaultProvider());
+        if (isOptional && hasDefaultProvider) {
+            LOGGER.codingWithFormat(
+                "The optional parameter of the Persist annotation of field '%s' of PersistableSettings class '%s' "
+                + "is ignored in favor of the defaultProvider parameter.", fieldName, m_settingsClass);
+        }
+        return isOptional || hasDefaultProvider;
     }
 
     private <F> NodeSettingsPersistor<F> createOptionalPersistor(final Field field, final String configKey,
