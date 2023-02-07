@@ -100,33 +100,6 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
         );
     });
 
-    it('clears its internal state when there is a change in the possible values', () => {
-        let propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'Text'
-            }, {
-                id: 'test2',
-                text: 'Some Text'
-            }],
-            initialManuallySelected: ['invalidId', 'test1'],
-            leftLabel: 'Choose',
-            rightLabel: 'The value'
-        };
-        const wrapper = mount(MultiModeTwinlist, {
-            propsData
-        });
-        expect(wrapper.vm.chosenValues).toStrictEqual(['invalidId', 'test1']);
-
-        wrapper.setProps({
-            possibleValues: [{
-                id: 'newValue',
-                text: 'newValue'
-            }]
-        });
-        expect(wrapper.vm.chosenValues).toStrictEqual([]);
-    });
-
     it('keeps valid state but removes invalid chosen values when there is a change in the possible values', () => {
         let propsData = {
             possibleValues: [{
@@ -440,6 +413,26 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(['StringValue']);
             expect(wrapper.emitted().input[1][0]).toStrictEqual({ selected: ['test1', 'test3'], isManual: false });
             expectTwinlistIncludes(wrapper, ['Text 2'], ['Text 1', 'Text 3']);
+        });
+
+        it('takes additionalPossibleTypes into account', () => {
+            const additionalPossibleTypes = [
+                { id: 'StringValue', text: 'String' },
+                { id: 'IntValue', text: 'Int' }
+            ];
+            const propsData = {
+                possibleValues: possibleValuesWithTypes,
+                additionalPossibleTypes,
+                initialMode: 'type',
+                leftLabel: 'Choose',
+                rightLabel: 'The value'
+            };
+            const wrapper = mount(MultiModeTwinlist, { propsData });
+            expect(wrapper.vm.possibleTypes).toStrictEqual([
+                { id: 'StringValue', text: 'String' },
+                { id: 'IntValue', text: 'Int' },
+                { id: 'DoubleValue', text: 'Double' }
+            ]);
         });
 
         it('prohibits manual selection', () => {

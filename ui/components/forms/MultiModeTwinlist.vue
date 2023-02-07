@@ -124,6 +124,19 @@ export default {
                 }
                 return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
             }
+        },
+        /**
+         * List of possible types which should be selectable but are not necessarily present in the possible values.
+         */
+        additionalPossibleTypes: {
+            type: Array,
+            default: () => [],
+            validator(values) {
+                if (!Array.isArray(values)) {
+                    return false;
+                }
+                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
+            }
         }
     },
     data() {
@@ -149,12 +162,11 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         possibleTypes() {
-            const types = this.possibleValues.map(x => x.type)
-                .filter(type => type && type.id !== '')
+            const allTypes = [...this.additionalPossibleTypes, ...this.possibleValues.map(x => x.type)];
+            return allTypes.filter(type => type && type.id !== '')
                 .filter( // remove duplicates
                     (val, index, self) => index === self.findIndex((t) => t.id === val.id && t.text === val.text)
                 );
-            return types;
         },
         matchingValueIds() {
             return this.possibleValues
@@ -222,7 +234,7 @@ export default {
         },
         onTypeInput(value) {
             this.chosenTypes = value;
-            this.$emit('typesInput', value);
+            this.$emit('typesInput', value, this.possibleTypes);
         },
         onModeChange(value) {
             if (this.possibleModeIds.indexOf(value) !== -1) {

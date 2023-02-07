@@ -125,8 +125,9 @@ export default {
         <div class="grid-item-12">
           <h2>MultiModeTwinList</h2>
           <p>
-            A MultiModeTwinlist with mode selection set to initial regex selection. The demo list also
-            include items with special characters that need to be escaped for regular expression filters:
+            A MultiModeTwinlist with mode selection set to initial regex selection. The demo list
+            include items with special characters that need to be escaped for regular expression filters.
+            On type selection mode, the types of the possible values as well as an additional option are selectable.
           </p>
         </div>
       </div>
@@ -141,6 +142,7 @@ export default {
             :initial-mode="mode"
             :initial-inverse-pattern="isInverted"
             :initial-manually-selected="manuallySelected"
+            :additional-possible-types="[{id: 'additionalId', text: 'additionalOption'}]"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             mode-label="Selection mode"
@@ -172,6 +174,7 @@ export default {
             :initial-mode="mode"
             :initial-inverse-pattern="isInverted"
             :initial-manually-selected="manuallySelected"
+            :additional-possible-types="[{id: 'additionalId', text: 'additionalOption'}]"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             mode-label="Selection mode"
