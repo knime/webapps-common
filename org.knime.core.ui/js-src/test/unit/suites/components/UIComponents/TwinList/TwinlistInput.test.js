@@ -29,7 +29,8 @@ describe('TwinlistInput.vue', () => {
                         pattern: ''
                     },
                     typeFilter: {
-                        selectedTypes: ['String']
+                        selectedTypes: ['StringValue', 'IntValue'],
+                        typeDisplays: [{ id: 'StringValue', text: 'String' }]
                     },
                     mode: 'MANUAL'
                 },
@@ -76,6 +77,20 @@ describe('TwinlistInput.vue', () => {
                                 selectedTypes: {
                                     items: {
                                         type: 'string'
+                                    },
+                                    type: 'array'
+                                },
+                                typeDisplays: {
+                                    items: {
+                                        type: 'object',
+                                        properties: {
+                                            id: {
+                                                type: 'string'
+                                            },
+                                            text: {
+                                                type: 'string'
+                                            }
+                                        }
                                     },
                                     type: 'array'
                                 }
@@ -254,11 +269,16 @@ describe('TwinlistInput.vue', () => {
 
         it('handles type selection change', () => {
             const selectedTypes = ['A', 'B', 'C'];
-            wrapper.findComponent(MultiModeTwinlist).vm.$emit('typesInput', selectedTypes);
+            const typeDisplays = [
+                { id: 'A', text: 'Text A' },
+                { id: 'B', text: 'Text B' },
+                { id: 'C', text: 'Text C' }
+            ];
+            wrapper.findComponent(MultiModeTwinlist).vm.$emit('typesInput', selectedTypes, typeDisplays);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
                 propsData.control.path,
-                expect.objectContaining({ typeFilter: expect.objectContaining({ selectedTypes }) })
+                expect.objectContaining({ typeFilter: expect.objectContaining({ selectedTypes, typeDisplays }) })
             );
         });
     });
@@ -290,6 +310,19 @@ describe('TwinlistInput.vue', () => {
                 }
             }]
         );
+    });
+
+    it('correctly determines previously selected types', () => {
+        expect(wrapper.findComponent(MultiModeTwinlist).props().additionalPossibleTypes).toEqual([
+            {
+                id: 'StringValue',
+                text: 'String'
+            },
+            {
+                id: 'IntValue',
+                text: 'IntValue'
+            }
+        ]);
     });
 
     it('transforms empty anyof into empty possible values', async () => {

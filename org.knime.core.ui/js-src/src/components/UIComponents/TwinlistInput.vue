@@ -41,7 +41,8 @@ const TwinlistInput = defineComponent({
     },
     data() {
         return {
-            possibleValues: null
+            possibleValues: null,
+            previouslySelectedTypes: null
         };
     },
     computed: {
@@ -77,6 +78,8 @@ const TwinlistInput = defineComponent({
         }
         this.possibleValues = possibleValues;
         this.updateManualFilter(this.possibleValues.map(col => col.id));
+
+        this.previouslySelectedTypes = this.getPreviouslySelectedTypes();
     },
     methods: {
         onChange(obj) {
@@ -121,14 +124,30 @@ const TwinlistInput = defineComponent({
             }
             this.onChange(newData);
         },
+        getPreviouslySelectedTypes() {
+            const selectedTypesIds = this.control.data.typeFilter.selectedTypes;
+            const selectedTypesToDisplayedText = this.typeDisplaysToMap(
+                this.control.data.typeFilter.typeDisplays
+            );
+            return selectedTypesIds.map(id => ({
+                id,
+                text: selectedTypesToDisplayedText[id] || id
+            }));
+        },
+        typeDisplaysToMap(keyValuePairs) {
+            if (typeof keyValuePairs === 'undefined') {
+                return {};
+            }
+            return keyValuePairs.reduce((obj, { id, text }) => ({ ...obj, [id]: text }), {});
+        },
         onPatternChange(pattern) {
             this.onChange({ patternFilter: { pattern } });
         },
         onModeChange(mode) {
             this.onChange({ mode: mode.toUpperCase() });
         },
-        onSelectedTypesChange(selectedTypes) {
-            this.onChange({ typeFilter: { selectedTypes } });
+        onSelectedTypesChange(selectedTypes, typeDisplays) {
+            this.onChange({ typeFilter: { selectedTypes, typeDisplays } });
         },
         onInversePatternChange(isInverted) {
             this.onChange({ patternFilter: { isInverted } });
@@ -160,6 +179,7 @@ export default TwinlistInput;
         :value="control.data.selected"
         :with-types="withTypes"
         :initial-selected-types="control.data.typeFilter.selectedTypes"
+        :additional-possible-types="previouslySelectedTypes"
         :initial-pattern="control.data.patternFilter.pattern"
         :initial-mode="control.data.mode.toLowerCase()"
         :initial-case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
