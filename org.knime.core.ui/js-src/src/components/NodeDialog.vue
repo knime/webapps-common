@@ -105,7 +105,7 @@ export default {
         class="advanced-options"
         @click="changeAdvancedSettings"
       >
-        {{ settings.schema.showAdvancedSettings ? '<- Hide' : '-> Show' }} advanced settings
+        {{ settings.schema.showAdvancedSettings ? 'Hide' : 'Show' }} advanced settings
       </a>
     </div>
     <div class="controls">
@@ -162,10 +162,15 @@ export default {
     display: flex;
     justify-content: space-between;
     text-decoration: underline;
-    margin-left: -10px;
-    margin-top: auto;
+    margin-bottom: 20px;
     font-size: 14px;
     cursor: pointer;
+    color: var(--knime-dove-gray);
+
+    &:hover {
+      color: var(--knime-masala);
+      text-decoration: underline dotted;
+    }
   }
 }
 </style>
