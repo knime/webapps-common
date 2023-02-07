@@ -31,7 +31,8 @@
     "focus-trap-vue": "4.0.2",
     "modern-normalize": "1.1.0",
     "v-calendar": "3.0.0-alpha.8",
-    "vue3-click-away": "1.2.4"
+    "vue3-click-away": "1.2.4",
+    "@vueuse/core": "9.13.0"
   },
   "devDependencies": {
     "@knime/eslint-config": "7.1.3",

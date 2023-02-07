@@ -1,9 +1,17 @@
 <script>
-import { createPopper } from '@popperjs/core/dist/esm';
+import { ref, toRefs, computed, unref, watch } from 'vue';
+
 import FunctionButton from './FunctionButton.vue';
 import MenuItems from './MenuItems.vue';
+import useDropdownNavigation from '../util/useDropdownNavigation';
+import usePopper from '../util/usePopper';
+import useClickOutside from '../util/useClickOutside';
 
-const BLUR_TIMEOUT = 1;
+const placementMap = {
+    right: 'bottom-end',
+    top: 'top-end',
+    left: 'bottom-start'
+};
 
 /**
  * SubMenu offers shows a Button with a submenu based on MenuItems.
@@ -72,7 +80,7 @@ export default {
          * Allows the popover to be displayed outside a containing block with hidden or scroll overflow
          * (see also https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block, e.g. when a parent container
          * has a translate css styling).
-         * Whenever the menu is expanded, a callback which closes it again is emitted as the event 'toggle'.
+         * Whenever themenu is expanded, a callback which closes it again is emitted as the event 'toggle'.
          */
         teleportToBody: {
             type: Boolean,
@@ -80,147 +88,86 @@ export default {
         }
     },
     emits: ['item-click', 'toggle'],
-    data() {
-        return {
-            expanded: false
-        };
-    },
-    computed: {
-        popperPlacement() {
-            const placementMap = {
-                right: 'bottom-end',
-                top: 'top-end',
-                left: 'bottom-start'
-            };
-            return placementMap[this.orientation];
-        }
-    },
-    watch: {
-        orientation() {
-            this.setPopperOrientation();
-        }
-    },
-    mounted() {
-        this.activatePopper();
-    },
-    beforeUnmount() {
-        this.destroyPopper();
-    },
-    methods: {
-        activatePopper() {
-            const referenceEl = this.$refs.submenu;
-            const targetEl = this.$refs['menu-wrapper'];
+    setup(props) {
+        const { allowOverflowMainAxis, orientation } = toRefs(props);
+        const submenu = ref(null);
+        const menuItems = ref(null);
+        const menuWrapper = ref(null);
 
-            this.popperInstance = createPopper(referenceEl, targetEl, {
-                placement: this.popperPlacement,
-                modifiers: [{
-                    name: 'preventOverflow',
-                    options: { mainAxis: !this.allowOverflowMainAxis }
-                }]
-            });
-        },
-        setPopperOrientation() {
-            if (!this.popperInstance) {
+        const getNextElement = (current, diff) => menuItems.value.getNextElementWithIndex(current, diff);
+
+        const expanded = ref(false);
+        const closeMenu = () => {
+            expanded.value = false;
+        };
+
+        const { currentMarkedIndex, resetNavigation } = useDropdownNavigation(
+            {
+                baseElement: submenu,
+                getNextElement,
+                close: closeMenu
+            }
+        );
+
+        useClickOutside({ targets: [submenu, menuItems], callback: closeMenu }, expanded);
+
+        const { popperInstance, updatePopper } = usePopper(
+            {
+                popperTarget: menuWrapper,
+                referenceEl: submenu
+            },
+            computed(() => ({
+                placement: placementMap[unref(orientation)],
+                strategy: 'fixed',
+                modifiers: [
+                    {
+                        name: 'preventOverflow',
+                        options: {
+                            mainAxis: unref(allowOverflowMainAxis)
+                        }
+                    }
+                ]
+            }))
+        );
+
+        watch(orientation, (value) => {
+            const popper = unref(popperInstance);
+            if (!popper) {
                 return;
             }
-
-            this.popperInstance.setOptions({
-                placement: this.popperPlacement
+            popper.setOptions({
+                placement: placementMap[value]
             });
-        },
-        destroyPopper() {
-            if (this.popperInstance) {
-                this.popperInstance.destroy();
-            }
-        },
-        /**
-         * Close the menu if item was clicked (or activated by keyboard)
-         *
-         * @param {Object} event - browser event.
-         * @param {Object} item - submenu item which was clicked.
-         * @returns {undefined}
-         * @emits {item-click}
-         */
-        onItemClick(event, item) {
-            this.$emit('item-click', event, item, this.id);
-            this.closeMenu();
-        },
+        });
+        
+
+        return {
+            menuItems,
+            submenu,
+            menuWrapper,
+            expanded,
+            resetNavigation,
+            currentMarkedIndex,
+            updatePopper
+        };
+    },
+    methods: {
         toggleMenu() {
+            if (this.disabled) {
+                return;
+            }
             this.expanded = !this.expanded;
             if (this.teleportToBody && this.expanded) {
                 this.$emit('toggle', () => {
                     this.expanded = false;
                 });
             }
-            this.popperInstance.update();
-
-            setTimeout(() => {
-                if (this.$refs['submenu-toggle']) {
-                    this.$refs['submenu-toggle'].focus();
-                }
-            }, BLUR_TIMEOUT);
+            this.resetNavigation();
+            this.updatePopper();
         },
-        /**
-         * Handle arrow key "up" events.
-         *
-         * @param {Event} e
-         * @returns {undefined}
-         */
-        onUp(e) {
-            if (this.orientation !== 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
-                return;
-            }
-            this.$refs.menuItems.onArrowUpKey(e);
-        },
-        /**
-         * Handle arrow key "down" events.
-         *
-         * @param {Event} e
-         * @returns {undefined}
-         */
-        onDown(e) {
-            if (this.orientation === 'top' && document.activeElement === this.$refs['submenu-toggle'].$el) {
-                return;
-            }
-            this.$refs.menuItems.onArrowDownKey(e);
-        },
-        /**
-         * Handle focus leaving events.
-         * NOTE: focusout bubbles, so we can use this event to close menu.
-         * @return {undefined}
-         */
-        onFocusOut() {
-            setTimeout(() => {
-                const menuItems = this.$refs.menuItems;
-                if (menuItems && menuItems.$el && !menuItems.$el.contains(document.activeElement)) {
-                    this.closeMenu(false);
-                }
-            }, BLUR_TIMEOUT);
-        },
-        /**
-         * Handle closing the menu.
-         *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
-         * @return {undefined}
-         */
-        closeMenu(refocusToggle = true) {
-            setTimeout(() => {
-                this.expanded = false;
-                if (refocusToggle && this.$refs['submenu-toggle']) {
-                    this.$refs['submenu-toggle'].focus();
-                }
-            }, BLUR_TIMEOUT);
-        },
-        /**
-         * Manually prevents default event bubbling and propagation for methods which fire blur/focusout events that
-         * interfere with the refocusing behavior. This allows the timeout to be set extremely low.
-         * @param {Event} event
-         * @return {undefined}
-         */
-        onPreventEvent(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            event.stopImmediatePropagation();
+        onItemClick(event, item) {
+            this.$emit('item-click', event, item, this.id);
+            this.toggleMenu();
         }
     }
 };
@@ -230,11 +177,6 @@ export default {
   <div
     ref="submenu"
     :class="['submenu', { disabled }]"
-    @keydown.esc.stop.prevent="closeMenu"
-    @keydown.up.stop.prevent="onUp"
-    @keydown.down.stop.prevent="onDown"
-    @focusout.stop="onFocusOut"
-    @mousedown="onPreventEvent"
   >
     <FunctionButton
       ref="submenu-toggle"
@@ -245,8 +187,7 @@ export default {
       :aria-expanded="String(expanded)"
       :disabled="disabled"
       :active="expanded"
-      @click.stop.prevent="toggleMenu"
-      @keydown.enter="onPreventEvent"
+      @click="toggleMenu"
     >
       <slot />
     </FunctionButton>
@@ -255,12 +196,15 @@ export default {
       :disabled="!teleportToBody"
     >
       <div
-        ref="menu-wrapper"
-        :class="['menu-wrapper', { expanded }, { disabled } ]"
+        v-show="expanded"
+        ref="menuWrapper"
+        :class="['menu-wrapper', { disabled } ]"
       >
         <MenuItems
           :id="id"
           ref="menuItems"
+          :marked-item-index="currentMarkedIndex"
+          no-focus
           :class="['menu-items', `orient-${orientation}`]"
           :items="items"
           :max-menu-width="maxMenuWidth"
@@ -278,13 +222,8 @@ export default {
 }
 
 .menu-wrapper {
-  position: absolute;
-  display: none;
-  z-index: var(--z-index-common-menu-items-expanded, 57);
+  z-index: 1000;
 
-  &.expanded {
-    display: block;
-  }
 
   &.disabled {
     opacity: 0.5;

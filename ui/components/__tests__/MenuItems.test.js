@@ -143,6 +143,40 @@ describe('MenuItems.vue', () => {
         expect(clickableItems[2].classes()).not.toContain('selected');
     });
 
+    it('has a function returning the next markable element and its index', () => {
+        const items = [{
+            text: 'Apples',
+            disabled: false,
+            selected: true
+        }, {
+            text: 'Oranges',
+            disabled: true
+        }, {
+            text: 'Ananas',
+            hotkeyText: 'F9'
+        }];
+        const wrapper = shallowMount(MenuItems, {
+            props: {
+                ariaLabel: 'label',
+                items
+            }
+        });
+        const firstResult = {
+            element: wrapper.find('li > *').element,
+            index: 0
+        };
+        const secondResult = {
+            element: wrapper.findAll('li')[2].find('*').element,
+            index: 2
+        };
+        expect(wrapper.vm.getNextElementWithIndex(-1, 1)).toStrictEqual(firstResult);
+        expect(wrapper.vm.getNextElementWithIndex(0, 1)).toStrictEqual(secondResult);
+        expect(wrapper.vm.getNextElementWithIndex(2, 1)).toStrictEqual(firstResult);
+        expect(wrapper.vm.getNextElementWithIndex(-1, -1)).toStrictEqual(secondResult);
+        expect(wrapper.vm.getNextElementWithIndex(2, -1)).toStrictEqual(firstResult);
+        expect(wrapper.vm.getNextElementWithIndex(0, -1)).toStrictEqual(secondResult);
+    });
+
     it('can display hotkeys', () => {
         const id = 'testfoobar543';
         const items = [

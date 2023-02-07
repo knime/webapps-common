@@ -210,10 +210,7 @@ export default {
           </div>
 
           <div class="scroll-container">
-            <div
-              class="card"
-              :style="{transform: 'translateY(0px)'}"
-            >
+            <div class="card translated">
               <input
                 v-model="teleport"
                 type="checkbox"
@@ -286,5 +283,9 @@ h4 {
   overflow-y: auto;
   overflow-x: hidden;
   height: 50px;
+}
+
+.translated {
+  transform: translateX(0);
 }
 </style>

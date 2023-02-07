@@ -52,6 +52,11 @@ export default {
             required: true,
             type: Array
         },
+        markedItemIndex: {
+            required: false,
+            type: Number,
+            default: -1
+        },
         /**
          * Aria Label
          */
@@ -72,6 +77,10 @@ export default {
         maxMenuWidth: {
             type: Number,
             default: null
+        },
+        noFocus: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
@@ -85,7 +94,12 @@ export default {
          * @returns {Array<Element>} - HTML Elements to use for focus and events.
          */
         getEnabledListItems() {
-            return this.$refs.listItem.map(el => el.$el || el).filter(x => !x.classList.contains('disabled'));
+            return this.getEnabledListItemsWithIndices().map(item => item.element);
+        },
+        getEnabledListItemsWithIndices() {
+            return this.$refs.listItem
+                .map((el, index) => ({ element: el.$el || el, index }))
+                .filter(x => !x.element.classList.contains('disabled'));
         },
         /**
          * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
@@ -95,21 +109,27 @@ export default {
          * @returns {Element} - the next option Element in the list of items.
          */
         getNextElement(changeInd) {
-            // filter out disabled items
-            let listItems = this.getEnabledListItems();
-            
+            const listItems = this.getEnabledListItems();
+            const currentInd = listItems.indexOf(document.activeElement);
+            return this.getNext({ changeInd, currentInd }, listItems);
+        },
+        getNextElementWithIndex(currentItemInd, changeInd) {
+            const listItems = this.getEnabledListItemsWithIndices();
+            const currentInd = listItems.map(item => item.index).indexOf(currentItemInd);
+            return this.getNext({ changeInd, currentInd }, listItems);
+        },
+        getNext({ currentInd, changeInd }, items) {
             // lookup next item (if none is currently active, start at top or bottom)
-            let nextItem = listItems[listItems.indexOf(document.activeElement) + changeInd];
-            
+            let nextItem = items[currentInd + changeInd];
             let cancelWrapAround = false;
-            if (!nextItem) {
+            if (typeof nextItem === 'undefined') {
                 if (changeInd < 0) {
                     // if before first element, wrap around the list
                     this.$emit('top-reached', { preventDefault: () => {
                         cancelWrapAround = true;
                     } });
                     if (!cancelWrapAround) {
-                        nextItem = listItems[listItems.length - 1];
+                        nextItem = items[items.length - 1];
                     }
                 } else {
                     // if after last element, wrap around the list
@@ -117,7 +137,7 @@ export default {
                         cancelWrapAround = true;
                     } });
                     if (!cancelWrapAround) {
-                        nextItem = listItems[0];
+                        nextItem = items[0];
                     }
                 }
             }
@@ -223,9 +243,9 @@ export default {
       <Component
         :is="linkTagByType(item)"
         ref="listItem"
-        :tabindex="item.disabled ? null: '0'"
+        :tabindex="item.disabled || noFocus ? null: '0'"
         :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
-          disabled: item.disabled, selected: item.selected }]"
+          disabled: item.disabled, selected: item.selected, marked: index === markedItemIndex }]"
         :to="item.to || null"
         :href="item.href || null"
       >
@@ -333,6 +353,7 @@ ul {
         }
       }
 
+      &.marked,
       &:hover {
         outline: none;
         background-color: var(--theme-dropdown-background-color-hover);

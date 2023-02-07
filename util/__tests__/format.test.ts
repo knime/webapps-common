@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { formatDateString, formatDateTimeString, formatTimeString } from '../format';
 
 describe('formatDateString', () => {
-    let validFixtures = [{
+    const validFixtures = [{
         input: 0,
         expectedDate: 'Jan 1, 1970',
         expectedTime: '1:00\u202fAM',
@@ -20,7 +20,7 @@ describe('formatDateString', () => {
         expectedDateTime: 'Dec 17, 1995 3:24\u202fAM'
     }];
 
-    let invalidFixtures = [{
+    const invalidFixtures = [{
         input: ''
     }, {
         input: 'thisIsNotAValidDate'
