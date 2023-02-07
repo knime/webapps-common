@@ -8,8 +8,8 @@ import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import MultiModeTwinlist from '~/webapps-common/ui/components/forms/MultiModeTwinlist.vue';
 
 const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = 'Excluded Values';
-const defaultTwinlistRightLabel = 'Included Values';
+const defaultTwinlistLeftLabel = 'Excluded values';
+const defaultTwinlistRightLabel = 'Included values';
 
 const TwinlistInput = defineComponent({
     name: 'TwinListInput',
