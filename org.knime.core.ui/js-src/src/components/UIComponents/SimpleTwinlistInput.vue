@@ -7,8 +7,8 @@ import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
 const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = 'Excluded values';
-const defaultTwinlistRightLabel = 'Included values';
+const defaultTwinlistLeftLabel = 'Excludes';
+const defaultTwinlistRightLabel = 'Includes';
 
 const SimpleTwinlistInput = defineComponent({
     name: 'SimpleTwinListInput',
