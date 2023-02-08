@@ -44,49 +44,73 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 8, 2023 (Benjamin Wilhelm, KNIME GmbH, Berlin, Germany): created
+ *   Feb 9, 2023 (benjamin): created
  */
 package org.knime.core.webui.node.dialog.persistence.field;
 
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+import org.junit.jupiter.api.Test;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
- * A {@link NodeSettingsPersistor} that persists a single field of a settings object. Implementing classes must provide
- * all config keys which are used via the {@link #getConfigKeys()} method.
+ * Contains unit tests for the {@link FieldNodeSettingsPersistor}.
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
- * @param <T> type of object loaded by the persistor
  */
-public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> {
+class FieldNodeSettingsPersistorTest {
 
-    /**
-     * @return an array of all config keys that are used to save the setting to the node settings
-     */
-    String[] getConfigKeys();
+    @Test
+    void testCreateInstance() {
+        var persistor =
+            FieldNodeSettingsPersistor.createInstance(CustomPersistor.class, Integer.class, "config_key_parameter");
+        assertInstanceOf(CustomPersistor.class, persistor, "should return an instance of the specified class");
+        assertArrayEquals(new String[]{"config_key_by_method"}, persistor.getConfigKeys(),
+            "should use configKeys by the overwritten method");
+    }
 
-    /**
-     * Create an instance of a {@link FieldNodeSettingsPersistor} by calling
-     * {@link NodeSettingsPersistor#createInstance(Class, Class)} and sets the config key if the result implements
-     * {@link NodeSettingsPersistorWithConfigKey}.
-     *
-     * @param <S> the type of object to persist
-     * @param <P> the type of persistor to instantiate
-     * @param persistorClass the class of NodeSettingsPersistor
-     * @param persistedObjectClass
-     * @param configKey the key that should be used by the persistor if it implements
-     *            {@link NodeSettingsPersistorWithConfigKey}
-     * @return a new instance of the provided class
-     * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
-     *             raises an exception
-     */
-    @SuppressWarnings("rawtypes")
-    static <S, P extends FieldNodeSettingsPersistor<S>> P createInstance(final Class<P> persistorClass,
-        final Class<S> persistedObjectClass, final String configKey) {
-        final var customPersistor = NodeSettingsPersistor.createInstance(persistorClass, persistedObjectClass);
-        if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
-            ((NodeSettingsPersistorWithConfigKey)customPersistor).setConfigKey(configKey);
+    @Test
+    void testCreateInstanceWithConfigKey() {
+        var persistor = FieldNodeSettingsPersistor.createInstance(CustomPersistorWithConfigKey.class, Integer.class,
+            "config_key_parameter");
+        assertInstanceOf(CustomPersistorWithConfigKey.class, persistor,
+            "should return an instance of the specified class");
+        assertArrayEquals(new String[]{"config_key_parameter"}, persistor.getConfigKeys(),
+            "should set configKeys automatically");
+    }
+
+    private static class CustomPersistor implements FieldNodeSettingsPersistor<Integer> {
+
+        @Override
+        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            throw new UnsupportedOperationException("not used by tests");
         }
-        return customPersistor;
+
+        @Override
+        public void save(final Integer obj, final NodeSettingsWO settings) {
+            throw new UnsupportedOperationException("not used by tests");
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{"config_key_by_method"};
+        }
+    }
+
+    private static class CustomPersistorWithConfigKey extends NodeSettingsPersistorWithConfigKey<Integer> {
+
+        @Override
+        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            throw new UnsupportedOperationException("not used by tests");
+        }
+
+        @Override
+        public void save(final Integer obj, final NodeSettingsWO settings) {
+            throw new UnsupportedOperationException("not used by tests");
+        }
     }
 }

@@ -287,5 +287,4 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     public void save(final ColumnFilter obj, final NodeSettingsWO settings) {
         save(obj, settings, getConfigKey());
     }
-
 }

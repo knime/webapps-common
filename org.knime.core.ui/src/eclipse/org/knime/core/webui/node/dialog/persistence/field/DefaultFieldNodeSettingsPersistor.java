@@ -42,39 +42,44 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.persistence;
+package org.knime.core.webui.node.dialog.persistence.field;
 
-import org.knime.core.webui.node.dialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.persistence.field.Persist;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 
 /**
- * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
- * or load. See {@link Persist}
+ * {@link NodeSettingsPersistor} for fields that composes the config key with the implementation of the persistor.
  *
- * @author Paul Bärnreuther
- * @param <T> type of object loaded by the persistor
+ * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public abstract class NodeSettingsPersistorWithConfigKey<T> implements FieldNodeSettingsPersistor<T> {
+final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPersistor<T> {
+    private final String m_configKey;
 
-    private String m_configKey;
+    private final FieldPersistor m_impl;
 
-    /**
-     * @return the configKey
-     */
-    protected String getConfigKey() {
-        return m_configKey;
-    }
-
-    /**
-     * @param configKey the configKey to set
-     */
-    public void setConfigKey(final String configKey) {
+    DefaultFieldNodeSettingsPersistor(final String configKey, final FieldPersistor impl) {
+        m_impl = impl;
         m_configKey = configKey;
     }
 
     @Override
+    public void save(final T obj, final NodeSettingsWO settings) {
+        m_impl.save(obj, settings, m_configKey);
+    }
+
+    @Override
+    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        return m_impl.load(settings, m_configKey);
+    }
+
+    @Override
     public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+        return new String[] { m_configKey };
     }
 }

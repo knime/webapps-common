@@ -393,7 +393,7 @@ class FieldBasedNodeSettingsPersistorTest {
         }
     }
 
-    private static final class CustomFieldPersistor implements NodeSettingsPersistor<String> {
+    private static final class CustomFieldPersistor implements FieldNodeSettingsPersistor<String> {
 
         @Override
         public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
@@ -405,9 +405,13 @@ class FieldBasedNodeSettingsPersistorTest {
             settings.addString("foo", value);
         }
 
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{"foo"};
+        }
     }
 
-    private static final class NoEmptyConstructorFieldPersistor implements NodeSettingsPersistor<String> {
+    private static final class NoEmptyConstructorFieldPersistor implements FieldNodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
         NoEmptyConstructorFieldPersistor(final String arg) {
             // the argument is just there to test that the framework reacts appropriately
@@ -422,6 +426,11 @@ class FieldBasedNodeSettingsPersistorTest {
         public void save(final String obj, final NodeSettingsWO settings) {
             throw new NotImplementedException("This method should not be called.");
         }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[0];
+        }
     }
 
     private static final class NoEmptyConstuctorFieldPersistorSetings implements DefaultNodeSettings {
@@ -429,7 +438,7 @@ class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private static final class FailingConstructorFieldPersistor implements NodeSettingsPersistor<String> {
+    private static final class FailingConstructorFieldPersistor implements FieldNodeSettingsPersistor<String> {
         @SuppressWarnings("unused")
         public FailingConstructorFieldPersistor() {
             throw new IllegalArgumentException("Failing constructor.");
@@ -444,6 +453,11 @@ class FieldBasedNodeSettingsPersistorTest {
         public void save(final String obj, final NodeSettingsWO settings) {
             throw new NotImplementedException("This method should not be called.");
         }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[0];
+        }
     }
 
     private static final class FailingConstructorFieldPersistorSettings implements DefaultNodeSettings {
@@ -451,7 +465,7 @@ class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private abstract static class AbstractCustomFieldPersistor implements NodeSettingsPersistor<String> {//NOSONAR
+    private abstract static class AbstractCustomFieldPersistor implements FieldNodeSettingsPersistor<String> {//NOSONAR
 
     }
 
@@ -460,7 +474,7 @@ class FieldBasedNodeSettingsPersistorTest {
         String m_foo;
     }
 
-    private static final class PrivateConstructorPersistor implements NodeSettingsPersistor<String> {
+    private static final class PrivateConstructorPersistor implements FieldNodeSettingsPersistor<String> {
         private PrivateConstructorPersistor() {
             // make private to provoke an access exception
         }
@@ -473,6 +487,11 @@ class FieldBasedNodeSettingsPersistorTest {
         @Override
         public void save(final String obj, final NodeSettingsWO settings) {
             settings.addString("foo", obj);
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{"foo"};
         }
     }
 

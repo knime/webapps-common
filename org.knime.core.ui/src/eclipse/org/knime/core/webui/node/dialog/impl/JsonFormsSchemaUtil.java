@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -58,11 +59,14 @@ import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
+import org.knime.core.webui.node.dialog.persistence.field.ConfigKeyUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.victools.jsonschema.generator.FieldScope;
 import com.github.victools.jsonschema.generator.Option;
 import com.github.victools.jsonschema.generator.OptionPreset;
+import com.github.victools.jsonschema.generator.SchemaGenerationContext;
 import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaKeyword;
@@ -213,6 +217,8 @@ final class JsonFormsSchemaUtil {
         builder.forFields().withPropertyNameOverrideResolver(
             field -> field.getName().startsWith("m_") ? field.getName().substring(2) : field.getName());
 
+        builder.forFields().withInstanceAttributeOverride(JsonFormsSchemaUtil::addConfigKeys);
+
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
@@ -226,5 +232,16 @@ final class JsonFormsSchemaUtil {
             return BigDecimal.valueOf(value);
         }
         return null;
+    }
+
+    /** Add a "configKeys" array to the field if a custom persistor is used */
+    private static void addConfigKeys(final ObjectNode node, final FieldScope field,
+        final SchemaGenerationContext context) {
+        var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field.getRawMember());
+        if (configKeys.length > 0) {
+            var configKeysNode = context.getGeneratorConfig().createArrayNode();
+            Arrays.stream(configKeys).forEach(configKeysNode::add);
+            node.set("configKeys", configKeysNode);
+        }
     }
 }

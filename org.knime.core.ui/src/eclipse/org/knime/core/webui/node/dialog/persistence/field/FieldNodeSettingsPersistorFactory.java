@@ -68,7 +68,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.impl.PersistableSettings;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.persistence.ReflectionUtil;
 
 /**
@@ -118,32 +117,17 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         if (persistence != null) {
             return createPersistorFromPersistAnnotation(persistence, field);
         } else {
-            return createDefaultPersistor(field.getType(), getConfigKey(field));
+            return createDefaultPersistor(field.getType(), ConfigKeyUtil.getConfigKey(field));
         }
     }
 
-    static String extractConfigKeyFromFieldName(final String fieldName) {
-        if (fieldName.startsWith("m_")) {
-            return fieldName.substring(2);
-        } else {
-            return fieldName;
-        }
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence,
         final Field field) {
         var customPersistorClass = persistence.customPersistor();
         var type = field.getType();
-        var configKey = getConfigKey(field);
-        if (!customPersistorClass.equals(NodeSettingsPersistor.class)) {
-            final var customPersistor = NodeSettingsPersistor.createInstance(customPersistorClass, type);
-            if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
-                final var customPersistorWithConfigKey = (NodeSettingsPersistorWithConfigKey)customPersistor;
-                customPersistorWithConfigKey.setConfigKey(configKey);
-                return customPersistorWithConfigKey;
-            }
-            return customPersistor;
+        var configKey = ConfigKeyUtil.getConfigKey(field);
+        if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
+            return FieldNodeSettingsPersistor.createInstance(customPersistorClass, type, configKey);
         }
         var persistor = createNonCustomPersistor(persistence, type, configKey);
         if (isOptional(persistence, field.getName())) {
@@ -158,7 +142,8 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         if (isOptional && hasDefaultProvider) {
             LOGGER.codingWithFormat(
                 "The optional parameter of the Persist annotation of field '%s' of PersistableSettings class '%s' "
-                + "is ignored in favor of the defaultProvider parameter.", fieldName, m_settingsClass);
+                    + "is ignored in favor of the defaultProvider parameter.",
+                fieldName, m_settingsClass);
         }
         return isOptional || hasDefaultProvider;
     }
@@ -203,22 +188,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
         } else {
             return createDefaultPersistor(type, configKey);
-        }
-    }
-
-    private static String getConfigKey(final Field field) {
-        var persist = field.getAnnotation(Persist.class);
-        if (persist == null) {
-            return extractConfigKeyFromFieldName(field.getName());
-        } else {
-            var configKey = persist.configKey();
-            if ("".equals(configKey)) {
-                configKey = extractConfigKeyFromFieldName(field.getName());
-            }
-            if (persist.hidden()) {
-                configKey += SettingsModel.CFGKEY_INTERNAL;
-            }
-            return configKey;
         }
     }
 
@@ -333,5 +302,4 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             m_delegate.save(obj, settings);
         }
     }
-
 }

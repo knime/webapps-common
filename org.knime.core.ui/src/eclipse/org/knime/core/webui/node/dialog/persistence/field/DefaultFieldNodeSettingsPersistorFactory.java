@@ -86,7 +86,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
     private static <T> NodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
         final String configKey, final FieldPersistor impl) {
         if (impl != null) {
-            return new FieldNodeSettingsPersistor<>(configKey, impl);
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
             return createEnumPersistor(configKey, fieldType);
         } else {

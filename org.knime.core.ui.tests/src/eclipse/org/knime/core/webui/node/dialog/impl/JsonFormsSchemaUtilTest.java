@@ -59,9 +59,14 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
+import org.knime.core.webui.node.dialog.persistence.field.FieldNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -436,6 +441,64 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testColumnFilterWithoutContext() throws JsonProcessingException {
         testSettingsWithoutContext(ColumnFilterSettingWithoutContext.class);
+    }
+
+    private static class SettingWithConfigKeyInPersistAnnotation {
+
+        private static String SNAPSHOT = "{\"test\":{" //
+            + "\"type\":\"integer\"," //
+            + "\"format\":\"int32\"," //
+            + "\"title\":\"my_title\"," //
+            + "\"default\":0," //
+            + "\"configKeys\":[\"my_config_key\"]" //
+            + "}}";
+
+        @Persist(configKey = "my_config_key")
+        @Schema(title = "my_title")
+        public int test;
+    }
+
+    @Test
+    void testConfigKeyFromPersistAnnotation() throws JsonProcessingException {
+        testSettingsWithoutContext(SettingWithConfigKeyInPersistAnnotation.class);
+    }
+
+    private static class CustomPersistor implements FieldNodeSettingsPersistor<Integer> {
+
+        @Override
+        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            throw new UnsupportedOperationException("should not be called by this test");
+        }
+
+        @Override
+        public void save(final Integer obj, final NodeSettingsWO settings) {
+            throw new UnsupportedOperationException("should not be called by this test");
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"};
+        }
+    }
+
+    private static class SettingWithCustomPersistor {
+
+        private static String SNAPSHOT = "{\"test\":{" //
+            + "\"type\":\"integer\"," //
+            + "\"format\":\"int32\"," //
+            + "\"title\":\"my_title\"," //
+            + "\"default\":0," //
+            + "\"configKeys\":[\"config_key_from_persistor_1\",\"config_key_from_persistor_2\"]" //
+            + "}}";
+
+        @Persist(customPersistor = CustomPersistor.class)
+        @Schema(title = "my_title")
+        public int test;
+    }
+
+    @Test
+    void testConfigKeyFromCustomPersistor() throws JsonProcessingException {
+        testSettingsWithoutContext(SettingWithCustomPersistor.class);
     }
 
     private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)

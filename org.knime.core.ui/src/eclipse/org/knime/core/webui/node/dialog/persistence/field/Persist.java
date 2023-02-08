@@ -55,7 +55,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
@@ -84,7 +83,7 @@ public @interface Persist {
      * @return the class of the customPersistor
      */
     @SuppressWarnings("rawtypes") // annotations and generics don't mix well
-    Class<? extends NodeSettingsPersistor> customPersistor() default NodeSettingsPersistor.class;
+    Class<? extends FieldNodeSettingsPersistor> customPersistor() default FieldNodeSettingsPersistor.class;
 
     /**
      * Optional argument for nodes that previously used SettingsModels for persistence. Provide the class of the
@@ -126,5 +125,4 @@ public @interface Persist {
      */
     @SuppressWarnings("rawtypes")
     Class<? extends DefaultProvider> defaultProvider() default DefaultProvider.class;
-
 }

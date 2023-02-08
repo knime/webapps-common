@@ -97,7 +97,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new FieldNodeSettingsPersistor<>(configKey, impl);
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         }
         throw new IllegalArgumentException(
             String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
