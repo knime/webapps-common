@@ -130,6 +130,33 @@ describe('DropdownInput.vue', () => {
         expect(wrapper.findComponent('label').text()).toBe(defaultPropsData.control.label);
     });
 
+    it('transforms empty oneOf into empty possible values', async () => {
+        defaultPropsData.control.schema.oneOf = [{ const: '', title: '' }];
+        const localWrapper = await mountJsonFormsComponentWithStore(
+            DropdownInput,
+            defaultPropsData
+        );
+        expect(localWrapper.findComponent(Dropdown).props().possibleValues).toEqual([]);
+    });
+
+    it('Checks that placeholder text is correctly set if no possible values are present', async () => {
+        defaultPropsData.control.schema.oneOf = [{ const: '', title: '' }];
+        const localWrapper = await mountJsonFormsComponentWithStore(
+            DropdownInput,
+            defaultPropsData
+        );
+        expect(localWrapper.vm.placeholderText).toEqual('No values present');
+    });
+
+    it('Checks that placeholder text is correctly set if there are possible values present', async () => {
+        defaultPropsData.control.data = '';
+        const localWrapper = await mountJsonFormsComponentWithStore(
+            DropdownInput,
+            defaultPropsData
+        );
+        expect(localWrapper.vm.placeholderText).toEqual('No value selected');
+    });
+
     it('disables dropdown when controlled by a flow variable', () => {
         expect(wrapper.vm.disabled).toBeTruthy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
@@ -140,6 +167,13 @@ describe('DropdownInput.vue', () => {
         wrapper = await mountJsonFormsComponent(DropdownInput, defaultPropsData);
         expect(wrapper.vm.disabled).toBeFalsy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeFalsy();
+    });
+
+    it('disables dropdown when there are no possible values', async () => {
+        defaultPropsData.control.schema.oneOf = [{ const: '', title: '' }];
+        wrapper = await mountJsonFormsComponent(DropdownInput, defaultPropsData);
+        expect(wrapper.vm.disabled).toBeTruthy();
+        expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
     });
 
     it('does not render content of DropdownInput when visible is false', async () => {

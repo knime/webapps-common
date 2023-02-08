@@ -1,0 +1,98 @@
+{
+  "result": {
+    "name": "Dropdowns",
+    "data": {
+      "EmptyState": "",
+      "NoPossibleValues": "",
+      "EmptyButSpecialValuesShown": "test"
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "EmptyState": {
+          "oneOf": [
+            {
+              "const": "NONE",
+              "title": "None"
+            },
+            {
+              "const": "COUNT",
+              "title": "Occurrence count"
+            },
+            {
+              "const": "SUM",
+              "title": "Sum"
+            },
+            {
+              "const": "AVG",
+              "title": "Average"
+            }
+          ],
+          "title": "Empty state",
+          "description": "Tests a dropdown with no initial selection",
+          "default": ""
+        },
+        "NoPossibleValues": {
+          "oneOf": [
+            {
+              "const": "",
+              "title": ""
+            }
+          ],
+          "title": "No possible values",
+          "description": "Tests a dropdown with no possible values",
+          "default": ""
+        },
+        "EmptyButSpecialValuesShown": {
+          "oneOf": [
+            {
+              "const": "",
+              "title": ""
+            }
+          ],
+          "title": "No possible values but special values",
+          "description": "Tests a dropdown with no possible values but therefore special values",
+          "default": ""
+        }
+
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Dropdowns",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/EmptyState",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": false,
+                "showNoneColumn": false
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/NoPossibleValues",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": false,
+                "showNoneColumn": false
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/EmptyButSpecialValuesShown",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": true,
+                "showNoneColumn": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

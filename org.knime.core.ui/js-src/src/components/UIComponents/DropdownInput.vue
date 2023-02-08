@@ -37,11 +37,21 @@ const DropdownInput = defineComponent({
             return getFlowVariablesMap(this.control);
         },
         disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
+            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable ||
+                this.options.length === 0;
+        },
+        placeholderText() {
+            return this.options.length > 0 ? 'No value selected' : 'No values present';
         }
     },
     mounted() {
-        this.options = this.optionsGenerator(this.control);
+        let options = this.optionsGenerator(this.control);
+        // Since an oneOf cannot be empty, we currently add one option in the backend with empty id and title.
+        // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
+        if (options.length === 1 && options[0].id === '') {
+            options = [];
+        }
+        this.options = options;
     },
     methods: {
         onChange(event) {
@@ -73,6 +83,7 @@ export default DropdownInput;
         :disabled="disabled"
         :value="control.data"
         :possible-values="options"
+        :placeholder="placeholderText"
         @input="onChange"
       />
     </LabeledInput>
