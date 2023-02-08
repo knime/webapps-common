@@ -390,14 +390,14 @@ class JsonFormsSchemaUtilTest {
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}}";
 
         @Schema(title = "columns", choices = ColumnChoices.class)
@@ -420,14 +420,14 @@ class JsonFormsSchemaUtilTest {
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\"}]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\"}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\"}]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\"}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}" //
             + "}";
 
