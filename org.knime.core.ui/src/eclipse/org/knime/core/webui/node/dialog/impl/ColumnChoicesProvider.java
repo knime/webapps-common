@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   31 Jan 2023 (ivan): created
+ *   31 Jan 2023 (ivan.prigarin): created
  */
 package org.knime.core.webui.node.dialog.impl;
 
@@ -55,7 +55,7 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreatio
 
 /**
  *
- * @author ivan
+ * @author Ivan Prigarin, KNIME GmbH, Konstanz, Germany
  */
 public interface ColumnChoicesProvider extends ChoicesProvider {
 

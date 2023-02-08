@@ -52,6 +52,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DoubleCell;
@@ -337,7 +338,28 @@ class JsonFormsSchemaUtilTest {
         testSettings(IgnoreSetting.class);
     }
 
-    private static class ColumnChoices implements ChoicesProvider {
+    private static class ColumnChoices implements ColumnChoicesProvider {
+
+        static String[] included = new String[]{"included", "included2"};
+
+        @Override
+        public String[] choices(final SettingsCreationContext context) {
+            return included;
+        }
+
+        @Override
+        public DataColumnSpec[] getColumnChoices(final SettingsCreationContext context) {
+            DataTableSpec spec = context.getDataTableSpecs()[0];
+            DataColumnSpec[] colSpecs = new DataColumnSpec[] {
+                spec.getColumnSpec("included"),
+                spec.getColumnSpec("included2")
+            };
+
+            return colSpecs;
+        }
+    }
+
+    private static class NonColumnChoices implements ChoicesProvider {
 
         static String[] included = new String[]{"included", "included2"};
 
@@ -379,7 +401,7 @@ class JsonFormsSchemaUtilTest {
         @Schema(title = "columns", choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = ColumnChoices.class, withTypes = false)
+        @Schema(title = "otherSelection", choices = NonColumnChoices.class, withTypes = false)
         public ColumnFilter testColumnFilterNoTypes;
     }
 

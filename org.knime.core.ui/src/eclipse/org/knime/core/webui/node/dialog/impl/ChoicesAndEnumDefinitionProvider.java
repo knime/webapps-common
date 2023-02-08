@@ -135,7 +135,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         if (context != null) {
             final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
             if (choicesProvider != null) {
-                var choices = choicesProvider.choices(context);
+                String[] choices = choicesProvider.choices(context);
                 if (choices.length != 0) {
                     if (choicesProvider instanceof ColumnChoicesProvider) {
                         DataColumnSpec[] colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
@@ -149,44 +149,14 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return createArrayNodeWithEmptyChoice(config, withTypes);
     }
 
-//    private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
-//        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes,
-//        final SettingsCreationContext context) {
-//        if (context != null) {
-//            final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
-//            if (choicesProvider != null) {
-//                var choices = choicesProvider.choices(context);
-//
-//                if (choices.length != 0) {
-//                    if (choicesProvider instanceof ColumnChoicesProvider) {
-//                        var colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
-//                        return createArrayNodeWithColumnChoices(config, colChoices, context);
-//                    } else {
-//                        return createArrayNodeWithChoices(config, choices, );
-//                    }
-//                } else {
-//                    return createArrayNodeWithCurrentOrEmptyChoice(config, null);
-//                }
-//                if (choicesProvider instanceof ColumnChoicesProvider) {
-//                    // handle typed columns
-//                    var colChoices = ((ColumnChoicesProvider)choicesProvider).getColumnChoices(context);
-//                    return createArrayNodeWithColumnChoices(config, colChoices, context);
-//                } else {
-//                    // handle choices as an array of strings
-//                    return createArrayNodeWithChoices(config, choices, withTypes, context);
-//                }
-//            }
-//        }
-//        return createArrayNodeWithEmptyChoice(config, withTypes);
-//    }
-
     private static ArrayNode createArrayNodeWithColumnChoices(final SchemaGeneratorConfig config,
         final DataColumnSpec[] colChoices) {
-        final var arrayNode = config.createArrayNode();
+        ArrayNode arrayNode = config.createArrayNode();
         for (DataColumnSpec colChoice : colChoices) {
-            final String colType = colChoice.getType().toString();
+            final String typeIdentifier = TypeColumnFilter.typeToString(colChoice.getType());
+            final String displayedType = colChoice.getType().getName();
             final String colName = colChoice.getName();
-            addChoice(arrayNode, colName, colName, colType, colType, config);
+            addChoice(arrayNode, colName, colName, typeIdentifier, displayedType, config);
         }
         return arrayNode;
     }
