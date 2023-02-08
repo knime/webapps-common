@@ -35,9 +35,31 @@ export const isModelSettingAndHasNodeView = (control) => control?.rootSchema?.ha
 //    uischema: {},
 //    ...
 // }
-export const getFlowVariablesMap = ({ rootSchema, path }) => rootSchema?.flowVariablesMap
-    ? rootSchema.flowVariablesMap[path]
-    : null;
+export const getFlowVariablesMap = ({ rootSchema, path, schema }) => {
+    if (rootSchema?.flowVariablesMap) {
+        if (schema.configKeys) {
+            // Controlled by configs with other keys
+            const parentPath = path.split('.').slice(0, -1).join('.');
+            return schema.configKeys
+                .map(key => rootSchema.flowVariablesMap[[parentPath, key].join('.')])
+                .filter(v => v)
+                .reduce((a, b) => ({
+                    controllingFlowVariableAvailable:
+                        a?.controllingFlowVariableAvailable || b?.controllingFlowVariableAvailable,
+                    controllingFlowVariableName: a?.controllingFlowVariableName
+                        ? a?.controllingFlowVariableName
+                        : b?.controllingFlowVariableName,
+                    exposedFlowVariableName: a?.exposedFlowVariableName
+                        ? a?.exposedFlowVariableName
+                        : b?.exposedFlowVariableName
+                }), null);
+        } else {
+            // Controlled by configs with the key for this path
+            return rootSchema.flowVariablesMap.hasOwnProperty(path) ? rootSchema.flowVariablesMap[path] : null;
+        }
+    }
+    return null;
+};
 
 // eslint-disable-next-line max-params
 // recursive function to check if the object contains a key value pair with a given parent
