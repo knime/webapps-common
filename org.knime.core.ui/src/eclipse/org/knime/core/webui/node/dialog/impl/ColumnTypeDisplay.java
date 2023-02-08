@@ -52,7 +52,14 @@ package org.knime.core.webui.node.dialog.impl;
  *
  * @author Paul Bärnreuther
  */
-public class ColumnTypeDisplay {
-    public String id;
-    public String text;
+public class ColumnTypeDisplay implements PersistableSettings {
+    /**
+     * The measure derived from the type with respect to which columns are identified.
+     */
+    public String m_id; //NOSONAR
+
+    /**
+     * The displayed text
+     */
+    public String m_text; //NOSONAR
 }

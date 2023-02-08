@@ -56,6 +56,7 @@ import java.util.stream.IntStream;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -74,7 +75,8 @@ public class TypeColumnFilter implements DialogComponentSettings {
      * Additional information necessary to display the types in the dialog. This has to be persisted in order to display
      *  previously selected types stored in {@link #m_selectedTypes} which are not present in the table anymore.
      */
-    public ColumnTypeDisplay[] m_typeDisplays; //NOSONAR
+    @Persist(optional = true)
+    public ColumnTypeDisplay[] m_typeDisplays = new ColumnTypeDisplay[0]; //NOSONAR
 
     /**
      * Filter with no selected Types

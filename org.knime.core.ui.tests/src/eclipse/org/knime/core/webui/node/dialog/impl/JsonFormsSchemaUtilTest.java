@@ -368,8 +368,8 @@ class JsonFormsSchemaUtilTest {
             + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
             + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
             + "\"typeFilter\":{\"type\":\"object\",\"properties\":{"
-            + "\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}}" 
-            + "\"typeDisplays\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\",\"default\":\"\"},\"text\":{\"type\":\"string\",\"default\":\"\"}}}}}"
+            + "\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}},"
+            + "\"typeDisplays\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\",\"default\":\"\"},\"text\":{\"type\":\"string\",\"default\":\"\"}}}}"
             + "},\"default\":{\"m_selectedTypes\":[],\"m_typeDisplays\":[]}},";
 
     private static class ColumnFilterSetting {
