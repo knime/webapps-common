@@ -64,13 +64,17 @@ export default {
                 }
             }
         },
-        async applySettings() {
+        applySettings() {
             this.originalSettingsData = JSON.stringify(this.settings.data);
-            await this.jsonDataService.applyData();
+            return this.jsonDataService.applyData();
         },
         async applySettingsCloseDialog() {
-            await this.applySettings();
-            this.closeDialog();
+            const response = await this.applySettings();
+            if (response.result) {
+                alert(response.result);
+            } else {
+                this.closeDialog();
+            }
         },
         closeDialog() {
             window.closeCEFWindow();

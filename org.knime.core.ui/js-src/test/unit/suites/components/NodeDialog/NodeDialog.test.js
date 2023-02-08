@@ -147,7 +147,7 @@ describe('NodeDialog.vue', () => {
         it('calls apply data and closes window', async () => {
             const wrapper = await shallowMount(NodeDialog, getOptions());
             const closeDialogSpy = jest.spyOn(wrapper.vm, 'closeDialog');
-            const applyDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'applyData');
+            const applyDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({});
             // Needed twice to make sure that the async mounted method is resolved first
             await Vue.nextTick();
             await Vue.nextTick();
@@ -156,6 +156,22 @@ describe('NodeDialog.vue', () => {
 
             expect(applyDataSpy).toHaveBeenCalled();
             expect(closeDialogSpy).toHaveBeenCalled();
+        });
+
+        it('calls apply data and does not close window if settings are invalid', async () => {
+            const wrapper = await shallowMount(NodeDialog, getOptions());
+            const closeDialogSpy = jest.spyOn(wrapper.vm, 'closeDialog');
+            const applyDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({
+                result: 'test'
+            });
+            // Needed twice to make sure that the async mounted method is resolved first
+            await Vue.nextTick();
+            await Vue.nextTick();
+
+            await wrapper.vm.applySettingsCloseDialog();
+
+            expect(applyDataSpy).toHaveBeenCalled();
+            expect(closeDialogSpy).not.toHaveBeenCalled();
         });
 
         it('logs error that apply data been thrown', async () => {
