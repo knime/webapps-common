@@ -1,5 +1,8 @@
-import { optionsMapper, createFlowVariablesMap,
-    isModelSettingAndHasNodeView, hasAdvancedOptions, optionsMapperWithType, mergeDeep } from '@/utils/nodeDialogUtils';
+import { optionsMapper,
+    isModelSettingAndHasNodeView,
+    hasAdvancedOptions,
+    optionsMapperWithType,
+    mergeDeep } from '@/utils/nodeDialogUtils';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -60,40 +63,6 @@ describe('Utils', () => {
         control.rootSchema.hasNodeView = true;
         control.uischema.scope = '#/properties/view/blub';
         expect(isModelSettingAndHasNodeView(control)).toBeFalsy();
-    });
-
-    it('createFlowVariablesMap maps flowVariables correctly', () => {
-        const viewVariables = {
-            test: {
-                controllingFlowVariableAvailable: true,
-                controllingFlowVariableName: 'knime.test',
-                exposedFlowVariablename: 'test',
-                leaf: true
-            }
-        };
-        const modelVariables = {
-            test: {
-                controllingFlowVariableAvailable: true,
-                controllingFlowVariableName: 'knime.test',
-                exposedFlowVariablename: 'test',
-                leaf: true
-            }
-        };
-        const expectedResult = {
-            'view.test': {
-                controllingFlowVariableAvailable: true,
-                controllingFlowVariableName: 'knime.test',
-                exposedFlowVariablename: 'test',
-                leaf: true
-            },
-            'model.test': {
-                controllingFlowVariableAvailable: true,
-                controllingFlowVariableName: 'knime.test',
-                exposedFlowVariablename: 'test',
-                leaf: true
-            }
-        };
-        expect(createFlowVariablesMap({ viewVariables, modelVariables })).toEqual(expectedResult);
     });
 
     it('checks that ui_schema with advanced settings returns true', () => {
