@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
@@ -164,6 +165,26 @@ class ColumnFilterTest {
 
         selection.m_patternFilter.m_isCaseSensitive = true;
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{});
+    }
+
+    /**
+     * Tests that an initially empty selection works.
+     */
+    @Test
+    void testInitialSelectedEmpty() {
+        final var empty = new String[0];
+        final var selection = new ColumnFilter(empty);
+        final String[] choices = { COL_SPEC.getName() };
+        assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(empty);
+    }
+
+    /**
+     * Tests that an initially null selection does not work.
+     */
+    @Test
+    void testInitialSelectedNullThrows() {
+        final String[] manuallySelected = null; // avoid ambiguous constructor call
+        assertThrows(NullPointerException.class, () -> new ColumnFilter(manuallySelected));
     }
 
 }

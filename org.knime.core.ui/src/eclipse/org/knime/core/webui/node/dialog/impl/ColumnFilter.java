@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import java.util.Objects;
+
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
@@ -93,21 +95,26 @@ public class ColumnFilter implements DialogComponentSettings {
     /**
      * Initialises the column selection with an initial array of columns which are manually selected
      *
-     * @param initialSelected the initial manually selected columns
+     * @param initialSelected the initial manually selected non-null columns
      */
     public ColumnFilter(final String[] initialSelected) {
         m_mode = ColumnFilterMode.MANUAL;
-        m_manualFilter = new ManualColumnFilter(initialSelected);
+        m_manualFilter = new ManualColumnFilter(Objects.requireNonNull(initialSelected));
         m_patternFilter = new PatternColumnFilter();
         m_typeFilter = new TypeColumnFilter();
     }
 
-    @SuppressWarnings("javadoc")
+    /**
+     * Initialises the column selection with no initially selected columns.
+     */
     public ColumnFilter() {
         this(new String[0]);
     }
 
-    @SuppressWarnings("javadoc")
+    /**
+     * Initialises the column selection based on the given context.
+     * @param context settings creation context
+     */
     public ColumnFilter(final SettingsCreationContext context) {
         this();
     }
@@ -130,7 +137,7 @@ public class ColumnFilter implements DialogComponentSettings {
 
 
     /**
-     * @param choices the list of all possible column names
+     * @param choices the non-null list of all possible column names
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
      */
@@ -138,7 +145,7 @@ public class ColumnFilter implements DialogComponentSettings {
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
         switch (m_mode) {
             case MANUAL:
-                return m_manualFilter.getUpdatedManuallySelected(choices);
+                return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(choices));
             case TYPE:
                 return m_typeFilter.getSelected(choices, spec);
             default:
