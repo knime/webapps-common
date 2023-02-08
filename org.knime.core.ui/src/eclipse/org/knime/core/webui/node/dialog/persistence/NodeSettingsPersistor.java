@@ -94,11 +94,10 @@ public interface NodeSettingsPersistor<T> {
         final Class<S> persistedObjectClass) {
 
         return ReflectionUtil.createInstance(persistorClass, persistedObjectClass)
-                .orElseGet(() -> ReflectionUtil.createInstance(persistorClass)
-                    .orElseThrow(() -> new IllegalArgumentException(String.format(
+            .orElseGet(() -> ReflectionUtil.createInstance(persistorClass)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
                     "The provided persistor class '%s' provides neither a constructor accepting the persisted object "
-                        + "class nor an empty constructor.")
-                )));
+                        + "class nor an empty constructor.",
+                    persistorClass.getCanonicalName()))));
     }
-
 }
