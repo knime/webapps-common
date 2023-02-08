@@ -56,7 +56,10 @@ export default DropdownInput;
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
+  <DialogComponentWrapper
+    :control="control"
+    style="min-width: 0;"
+  >
     <LabeledInput
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"

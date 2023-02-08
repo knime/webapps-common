@@ -45,7 +45,10 @@ export default TextInput;
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
+  <DialogComponentWrapper
+    :control="control"
+    style="min-width: 0;"
+  >
     <LabeledInput
       :text="control.label"
       :description="control.description"

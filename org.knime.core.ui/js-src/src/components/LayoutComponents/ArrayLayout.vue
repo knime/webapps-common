@@ -163,6 +163,7 @@ export default ArrayLayout;
 
     & .form-component {
       flex-grow: 1;
+      min-width: 0;
     }
   }
 }

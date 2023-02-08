@@ -22,26 +22,24 @@ export default HorizontalLayout;
 <template>
   <LayoutComponentWrapper :layout="layout">
     <div class="horizontal">
-      <div
-        v-for="(element, index) in layout.uischema.elements"
+      <DispatchRenderer
+        v-for="(element, index) in elements"
         :key="`${layout.path}-${index}`"
-      >
-        <DispatchRenderer
-          :schema="layout.schema"
-          :uischema="element"
-          :path="layout.path"
-          :enabled="layout.enabled"
-          :renderers="layout.renderers"
-          :cells="layout.cells"
-        />
-      </div>
+        :schema="layout.schema"
+        :uischema="element"
+        :path="layout.path"
+        :enabled="layout.enabled"
+        :renderers="layout.renderers"
+        :cells="layout.cells"
+      />
     </div>
   </LayoutComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
 .horizontal {
-  display: flex;
+  width: 100%;
+  display: inline-flex;
   justify-content: space-between;
 }
 

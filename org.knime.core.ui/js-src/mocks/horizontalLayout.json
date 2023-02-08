@@ -1,0 +1,348 @@
+{
+  "result": {
+    "name": "Horizontal Layout",
+    "data": {
+      "view": {
+        "valueSwitch1": "OPTION1",
+        "valueSwitch2": "OPTION2",
+        "doubleInput": 0,
+        "stringInput": "lorem",
+        "checkboxInput": false
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "valueSwitch1": {
+              "oneOf": [
+                {
+                  "const": "OPTION1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "OPTION2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "OPTION3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Radio input",
+              "default": "DASHED",
+              "description": "value switch1 description: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            "valueSwitch2": {
+              "oneOf": [
+                {
+                  "const": "OPTION1",
+                  "title": "Option 1"
+                },
+                {
+                  "const": "OPTION2",
+                  "title": "Option 2"
+                },
+                {
+                  "const": "OPTION3",
+                  "title": "Option 3"
+                }
+              ],
+              "title": "Value input",
+              "default": "DASHED",
+              "description": "value switch2 description: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            "doubleInput": {
+              "type": "number",
+              "title": "Double",
+              "default": 0,
+              "description": "double input description: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            "stringInput": {
+              "type": "string",
+              "title": "String",
+              "default": "",
+              "description": "string input description: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            "checkboxInput": {
+              "type": "boolean",
+              "title": "Checkbox",
+              "default": true,
+              "description": "checkbox input description: Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            },
+            "frequencyColumns": {
+              "anyOf": [
+                {
+                  "const": "Universe_0_0",
+                  "title": "Universe_0_0"
+                },
+                {
+                  "const": "Universe_0_1",
+                  "title": "Universe_0_1"
+                },
+                {
+                  "const": "Universe_1_0",
+                  "title": "Universe_1_0"
+                },
+                {
+                  "const": "Universe_1_1",
+                  "title": "Universe_1_1"
+                }
+              ],
+              "title": "Frequency dimensions",
+              "description": "Frequency columns description",
+              "default": [
+                "Universe_0_0",
+                "Universe_0_1",
+                "Universe_1_0",
+                "Universe_1_1"
+              ]
+            },
+            "dropdownInput": {
+              "oneOf": [
+                {
+                  "const": "Short",
+                  "title": "Short"
+                },
+                {
+                  "const": "Dropdown option 1",
+                  "title": "Dropdown option 1"
+                },
+                {
+                  "const": "Dropdown option 2",
+                  "title": "Dropdown option 2"
+                },
+                {
+                  "const": "Dropdown option 3",
+                  "title": "Dropdown option 3"
+                },
+                {
+                  "const": "Long dropdown input option",
+                  "title": "Long dropdown input option"
+                }
+              ],
+              "title": "Dropdown input",
+              "description": "Dropdown input description",
+              "default": "Dropdown input 2"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Section headline",
+          "elements": [
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  2,
+                  1
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  2,
+                  1,
+                  1
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/doubleInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/doubleInput"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "minWidths": [
+                  125,
+                  125,
+                  125
+                ],
+                "ratios": [
+                  "3 1 250px",
+                  "1 3 250px",
+                  "1 2 250px"
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/doubleInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/doubleInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/doubleInput"
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  "initial",
+                  "initial"
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/valueSwitch1",
+                  "options": {
+                    "format": "valueSwitch",
+                    "radioLayout": "horizontal"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/valueSwitch2",
+                  "options": {
+                    "format": "valueSwitch",
+                    "radioLayout": "horizontal"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  "1 0 0%",
+                  "1 0 0%"
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/checkboxInput",
+                  "options": {
+                    "format": "valueSwitch",
+                    "radioLayout": "horizontal"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/valueSwitch2",
+                  "options": {
+                    "format": "valueSwitch",
+                    "radioLayout": "horizontal"
+                  },
+                  "rule": {
+                    "effect": "HIDE",
+                    "condition": {
+                      "scope": "#/properties/view/properties/checkboxInput",
+                      "schema": {
+                        "oneOf": [
+                          {
+                            "const": false
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  "initial",
+                  "initial"
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/stringInput"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/frequencyColumns",
+                  "options": {
+                    "format": "columnFilter"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {},
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/valueSwitch2",
+                  "options": {
+                    "format": "valueSwitch",
+                    "radioLayout": "horizontal"
+                  }
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/dropdownInput",
+                  "options": {
+                    "format": "columnSelection",
+                    "showRowKeys": false,
+                    "showNoneColumn": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
