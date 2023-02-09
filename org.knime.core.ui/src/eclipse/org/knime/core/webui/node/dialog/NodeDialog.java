@@ -148,15 +148,6 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
             getVariableSettingsService(), m_configurationModifier));
     }
 
-    /**
-     * A method that should be called when closing the dialog.
-     */
-    public void onClose() {
-        if (m_configurationModifier != null) {
-            m_configurationModifier.applyConfiguration();
-        }
-    }
-
     private static class TextInitialDataServiceImpl implements TextInitialDataService {
 
         private final NodeContainer m_nc;
@@ -275,14 +266,14 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
      * difference between previous and updated {@link NodeSettingsRO}. Also provides the functionality to apply these
      * modifications to a node.
      */
-    public static abstract class NodeCreationConfigurationModifier {
+    public abstract static class NodeCreationConfigurationModifier {
 
         private ModifiableNodeCreationConfiguration m_configuration;
 
         private Runnable m_replaceNodeRunnable;
 
         private final void modifyConfiguration(final NodeContainer nc, final NodeSettingsRO modelSettings,
-            final NodeSettingsRO previousModelSettings) throws InvalidSettingsException {
+            final NodeSettingsRO previousModelSettings) {
             // if configuration has already been created (and potentially modified), do not create a new configuration
             if (m_configuration == null && nc instanceof NativeNodeContainer) {
                 ((NativeNodeContainer)nc).getNode().getCopyOfCreationConfig().ifPresent(conf -> m_configuration = conf);
@@ -301,10 +292,9 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
          * @param modelSettings the current / updated model {@link DefaultNodeSettings settings}
          * @param previousModelSettings he previous model {@link DefaultNodeSettings settings}
          * @return true, if modifications to the configuration have been made; otherwise false
-         * @throws InvalidSettingsException if there is a problem when reading out the settings
          */
         protected abstract boolean modifyConfiguration(ModifiableNodeCreationConfiguration configuration,
-            NodeSettingsRO modelSettings, NodeSettingsRO previousModelSettings) throws InvalidSettingsException;
+            NodeSettingsRO modelSettings, NodeSettingsRO previousModelSettings);
 
         private final void applyConfiguration() {
             if (m_replaceNodeRunnable != null) {
@@ -410,7 +400,8 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
 
                 if (modelSettings != null && m_configurationModifier != null) {
                     // apply configuration modifier (e.g., to change port configuration) if it exists
-                    m_configurationModifier.modifyConfiguration(m_nc, modelSettings.getFirst(), modelSettings.getSecond());
+                    m_configurationModifier.modifyConfiguration(m_nc, modelSettings.getFirst(),
+                        modelSettings.getSecond());
                 }
             } catch (InvalidSettingsException ex) {
                 throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
@@ -602,6 +593,13 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
 
         private boolean hasViewSettings() {
             return m_settingsTypes.contains(SettingsType.VIEW);
+        }
+
+        @Override
+        public void cleanUp() {
+            if (m_configurationModifier != null) {
+                m_configurationModifier.applyConfiguration();
+            }
         }
     }
 

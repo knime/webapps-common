@@ -81,4 +81,13 @@ public interface ApplyDataService {
      */
     void applyData(InputStream in) throws IOException;
 
+    /**
+     * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
+     * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
+     * later.
+     */
+    default void cleanUp() {
+        //
+    }
+
 }

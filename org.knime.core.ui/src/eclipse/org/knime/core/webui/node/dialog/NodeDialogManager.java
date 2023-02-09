@@ -196,13 +196,4 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
             .orElseGet(() -> PageUtil.getPageId(nw, p.isCompletelyStatic(), PageType.DIALOG));
     }
 
-    /**
-     * A method that should be called when closing the dialog.
-     *
-     * @param nc the node to create the node dialog from
-     */
-    public void onClose(final NodeContainer nc) {
-        getNodeDialog(nc).onClose();
-    }
-
 }

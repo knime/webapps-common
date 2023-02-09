@@ -164,6 +164,9 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         if (m_dataServices.containsKey(nodeWrapper)) {
             m_dataServices.get(nodeWrapper).cleanUp();
         }
+        if (m_applyDataServices.containsKey(nodeWrapper)) {
+            m_applyDataServices.get(nodeWrapper).cleanUp();
+        }
     }
 
     /**
