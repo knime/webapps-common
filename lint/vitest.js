@@ -15,7 +15,7 @@ module.exports = {
                         max: 3
                     }
                 ],
-                'vitest/no-conditional-tests': 'error',
+                'vitest/no-conditional-tests': 'warn',
                 'vitest/no-focused-tests': 'error',
                 'vitest/no-identical-title': 'error',
                 'vitest/no-skipped-tests': 'warn',

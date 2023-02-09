@@ -1,6 +1,6 @@
 {
     "name": "@knime/eslint-config",
-    "version": "7.1.0",
+    "version": "7.1.1",
     "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
     "scripts": {
         "lint": "eslint --ext .js .",
