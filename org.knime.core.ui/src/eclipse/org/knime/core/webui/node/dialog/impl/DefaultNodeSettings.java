@@ -124,7 +124,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
          * @throws IndexOutOfBoundsException if the portIndex does not match the ports of the node
          */
         public Optional<PortObjectSpec> getPortObjectSpec(final int portIndex) {
-            return Optional.of(m_specs[portIndex]);
+            return Optional.ofNullable(m_specs[portIndex]);
         }
 
         /**
