@@ -55,7 +55,6 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITL
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataType;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
@@ -183,15 +182,16 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices,
         final boolean withTypes, final SettingsCreationContext context) {
         final var arrayNode = config.createArrayNode();
-        final var spec = context.getDataTableSpecs()[0];
-        for (var choice : choices) {
-            final DataType type;
-            if (withTypes) {
-                type = spec.getColumnSpec(choice).getType();
+        if (withTypes) {
+            final var spec = context.getDataTableSpecs()[0];
+            for (var choice : choices) {
+                var type = spec.getColumnSpec(choice).getType();
                 final var typeIdentifier = TypeColumnFilter.typeToString(type);
                 final var displayedType = type.getName();
                 addChoice(arrayNode, choice, choice, typeIdentifier, displayedType, config);
-            } else {
+            }
+        } else {
+            for (var choice : choices) {
                 addChoice(arrayNode, choice, choice, null, null, config);
             }
         }
