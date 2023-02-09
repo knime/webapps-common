@@ -2,7 +2,7 @@
 
 This repository contains an [ESLint] ruleset for typical KNIME frontend projects. Rules cover simple
 JavaScript/TypeScript setups as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test
-scenarios with [Jest] are also present.
+scenarios with [Jest] and [Vitest] are also present.
 
 Also it contains some configs for [Stylelint].
 
@@ -87,3 +87,4 @@ Same applies for [Stylelint].
 [Vue3]: https://vuejs.org/
 [Nuxt]: https://nuxtjs.org/
 [Jest]: https://jestjs.io/en
+[Vitest]: https://vitest.dev/
