@@ -92,4 +92,20 @@ describe('Breadcrumb.vue', () => {
         breadcrumbs.at(1).trigger('click');
         expect(wrapper.emitted('click-item')[1]).toBeUndefined();
     });
+
+    it('adds a title attribute', () => {
+        const wrapper = mount(Breadcrumb, {
+            propsData: {
+                items: [
+                    { text: 'foo', title: 'this is the title' },
+                    { text: 'bar' }
+                ]
+            }
+        });
+
+        const breadcrumbs = wrapper.findAll('li > span');
+
+        expect(breadcrumbs.at(0).attributes('title')).toBe('this is the title');
+        expect(breadcrumbs.at(1).attributes('title')).toBeUndefined();
+    });
 });
