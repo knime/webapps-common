@@ -37,7 +37,7 @@ describe('NodeFeatureList.vue', () => {
             }
         });
         await wrapper.vm.$nextTick(); // to make sure TabBar.created() was called
-        expect(wrapper.findComponent(TabBar).props('modelValue')).toEqual('ports');
+        expect(wrapper.findComponent(TabBar).props('modelValue')).toBe('ports');
         expect(wrapper.findComponent(PortsList).props('inPorts')).toEqual([{ dummy: 'inPort' }]);
         expect(wrapper.findComponent(PortsList).props('outPorts')).toEqual([{ dummy: 'outPort' }]);
         expect(wrapper.findComponent(PortsList).props('dynInPorts')).toEqual([{ dummy: 'dynInPort' }]);
@@ -50,8 +50,8 @@ describe('NodeFeatureList.vue', () => {
 
     it('displays default placeholder if all tabs are empty', () => {
         const wrapper = shallowMount(NodeFeatureList);
-        expect(wrapper.findComponent(TabBar).props('modelValue')).toEqual(null);
-        expect(wrapper.find('.placeholder').text()).toEqual('This node does not provide any ports, options or views.');
+        expect(wrapper.findComponent(TabBar).props('modelValue')).toBeNull();
+        expect(wrapper.find('.placeholder').text()).toBe('This node does not provide any ports, options or views.');
     });
 
     it('displays custom placeholder text if all tabs are empty', () => {
@@ -60,8 +60,8 @@ describe('NodeFeatureList.vue', () => {
                 emptyText: 'This is a placeholder text!'
             }
         });
-        expect(wrapper.findComponent(TabBar).props('modelValue')).toEqual(null);
-        expect(wrapper.find('.placeholder').text()).toEqual('This is a placeholder text!');
+        expect(wrapper.findComponent(TabBar).props('modelValue')).toBeNull();
+        expect(wrapper.find('.placeholder').text()).toBe('This is a placeholder text!');
     });
 
     it('selects second tab if first is empty', async () => {
@@ -79,7 +79,7 @@ describe('NodeFeatureList.vue', () => {
         });
         await wrapper.vm.$nextTick(); // to make sure TabBar.created() was called
 
-        expect(wrapper.findComponent(TabBar).props('modelValue')).toEqual('node-dialog-options');
+        expect(wrapper.findComponent(TabBar).props('modelValue')).toBe('node-dialog-options');
     });
 
     it('disables ports tab if there are no ports', () => {

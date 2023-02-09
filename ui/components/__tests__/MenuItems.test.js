@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { describe, it, test, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 
 import MenuItems from '../MenuItems.vue';
@@ -221,49 +221,49 @@ describe('MenuItems.vue', () => {
         });
 
         describe('focus and keyboard navigation', () => {
-            test('focus first', () => {
-                expect(document.activeElement.textContent).not.toEqual('First');
+            it('focus first', () => {
+                expect(document.activeElement.textContent).not.toBe('First');
                 wrapper.vm.focusFirst();
 
-                expect(document.activeElement.textContent).toEqual('First');
+                expect(document.activeElement.textContent).toBe('First');
             });
 
-            test('focus last', () => {
-                expect(document.activeElement.textContent).not.toEqual('Third');
+            it('focus last', () => {
+                expect(document.activeElement.textContent).not.toBe('Third');
                 wrapper.vm.focusLast();
 
-                expect(document.activeElement.textContent).toEqual('Third');
+                expect(document.activeElement.textContent).toBe('Third');
             });
 
-            test('arrow up', () => {
+            it('arrow up', () => {
                 wrapper.vm.focusFirst();
                 wrapper.trigger('keydown.down');
 
-                expect(document.activeElement.textContent).toEqual('Third');
+                expect(document.activeElement.textContent).toBe('Third');
             });
 
-            test('arrow down', () => {
+            it('arrow down', () => {
                 wrapper.vm.focusLast();
                 wrapper.trigger('keydown.up');
 
-                expect(document.activeElement.textContent).toEqual('First');
+                expect(document.activeElement.textContent).toBe('First');
             });
 
-            test('arrow up wrap-around', () => {
+            it('arrow up wrap-around', () => {
                 wrapper.vm.focusFirst();
                 wrapper.trigger('keydown.up');
 
-                expect(document.activeElement.textContent).toEqual('Third');
+                expect(document.activeElement.textContent).toBe('Third');
             });
 
-            test('arrow down wrap-around', () => {
+            it('arrow down wrap-around', () => {
                 wrapper.vm.focusLast();
                 wrapper.trigger('keydown.down');
 
-                expect(document.activeElement.textContent).toEqual('First');
+                expect(document.activeElement.textContent).toBe('First');
             });
 
-            test.skip('arrow up with prevented wrap-around', () => {
+            it.skip('arrow up with prevented wrap-around', () => {
                 wrapper.vm.focusFirst();
 
                 wrapper.vm.$on('top-reached', (e) => {
@@ -271,10 +271,10 @@ describe('MenuItems.vue', () => {
                 });
                 wrapper.trigger('keydown.up');
 
-                expect(document.activeElement.textContent).toEqual('First');
+                expect(document.activeElement.textContent).toBe('First');
             });
 
-            test.skip('arrow down with prevented wrap-around', () => {
+            it.skip('arrow down with prevented wrap-around', () => {
                 wrapper.vm.focusLast();
                 
                 wrapper.vm.$on('bottom-reached', (e) => {
@@ -287,7 +287,7 @@ describe('MenuItems.vue', () => {
         });
 
         describe('events', () => {
-            test('@item-active on list items', () => {
+            it('@item-active on list items', () => {
                 let listElements = wrapper.findAll('li');
 
                 // enabled element
@@ -305,7 +305,7 @@ describe('MenuItems.vue', () => {
                 expect(wrapper.emitted('item-active')[2]).toStrictEqual([null, 'menu']);
             });
 
-            test('@item-active on the menu', () => {
+            it('@item-active on the menu', () => {
                 let menu = wrapper.find('ul');
 
                 // enabled element

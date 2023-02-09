@@ -25,8 +25,8 @@ describe('FunctionButton.vue', () => {
                 default: ['<svg/>', '<span>text</span>']
             }
         });
-        expect(wrapper.findComponent(BaseButton).props('to')).toEqual('test-to');
-        expect(wrapper.findComponent(BaseButton).props('href')).toEqual('test-to');
+        expect(wrapper.findComponent(BaseButton).props('to')).toBe('test-to');
+        expect(wrapper.findComponent(BaseButton).props('href')).toBe('test-to');
     });
 
     it('renders active class', () => {

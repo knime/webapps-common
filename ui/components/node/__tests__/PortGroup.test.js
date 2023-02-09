@@ -40,7 +40,7 @@ describe('PortsListItem.vue', () => {
         });
 
         it('renders title', () => {
-            expect(wrapper.find('h6').text()).toEqual('Output Ports');
+            expect(wrapper.find('h6').text()).toBe('Output Ports');
         });
 
         it('renders PortIcons', () => {
@@ -62,26 +62,26 @@ describe('PortsListItem.vue', () => {
         it('renders Port Names', () => {
             const PortNames = wrapper.findAll('.port-name');
 
-            expect(PortNames.length).toEqual(2);
-            expect(PortNames[0].text()).toEqual('Name1');
-            expect(PortNames[1].text()).toEqual('Porty');
+            expect(PortNames.length).toBe(2);
+            expect(PortNames[0].text()).toBe('Name1');
+            expect(PortNames[1].text()).toBe('Porty');
         });
 
         it('renders thick Type Names', () => {
             const PortTypes = wrapper.findAll('.port-type.fat');
 
-            expect(PortTypes.length).toEqual(3);
-            expect(PortTypes[0].text()).toEqual('Type: Table');
-            expect(PortTypes[1].text()).toEqual('Type: Flow Variable');
-            expect(PortTypes[2].text()).toEqual('Type:');
+            expect(PortTypes.length).toBe(3);
+            expect(PortTypes[0].text()).toBe('Type: Table');
+            expect(PortTypes[1].text()).toBe('Type: Flow Variable');
+            expect(PortTypes[2].text()).toBe('Type:');
         });
 
         it('renders Port Descriptions', () => {
             const PortDescriptions = wrapper.findAllComponents(Description);
 
-            expect(PortDescriptions.length).toEqual(2);
-            expect(PortDescriptions[0].props('text')).toEqual('Hello world!');
-            expect(PortDescriptions[1].props('text')).toEqual('Whatever');
+            expect(PortDescriptions.length).toBe(2);
+            expect(PortDescriptions[0].props('text')).toBe('Hello world!');
+            expect(PortDescriptions[1].props('text')).toBe('Whatever');
         });
     });
 
@@ -94,16 +94,16 @@ describe('PortsListItem.vue', () => {
 
         it("doesn't render Port Names", () => {
             const PortNames = wrapper.findAll('.port-name');
-            expect(PortNames.length).toEqual(0);
+            expect(PortNames.length).toBe(0);
         });
 
         it('renders Type Names', () => {
             const PortTypes = wrapper.findAll('.port-type');
 
-            expect(PortTypes.length).toEqual(3);
-            expect(PortTypes[0].text()).toEqual('Type: Table');
-            expect(PortTypes[1].text()).toEqual('Type: Flow Variable');
-            expect(PortTypes[2].text()).toEqual('Type:');
+            expect(PortTypes.length).toBe(3);
+            expect(PortTypes[0].text()).toBe('Type: Table');
+            expect(PortTypes[1].text()).toBe('Type: Flow Variable');
+            expect(PortTypes[2].text()).toBe('Type:');
         });
 
         it('renders thin typeNames', () => {
@@ -112,9 +112,9 @@ describe('PortsListItem.vue', () => {
 
         it("renders group description, doesn't render port descriptions", () => {
             const PortDescriptions = wrapper.findAllComponents(Description);
-            expect(PortDescriptions.length).toEqual(1);
+            expect(PortDescriptions.length).toBe(1);
 
-            expect(PortDescriptions[0].props('text')).toEqual('group');
+            expect(PortDescriptions[0].props('text')).toBe('group');
         });
     });
 });

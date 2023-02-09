@@ -34,8 +34,8 @@ describe('PlusButton.vue', () => {
                 onDark: true
             }
         });
-        expect(wrapper.findComponent(Button).props('primary')).toEqual(true);
-        expect(wrapper.findComponent(Button).props('onDark')).toEqual(true);
+        expect(wrapper.findComponent(Button).props('primary')).toBe(true);
+        expect(wrapper.findComponent(Button).props('onDark')).toBe(true);
     });
 
     it('renders disabled state', () => {
@@ -44,7 +44,7 @@ describe('PlusButton.vue', () => {
                 disabled: true
             }
         });
-        expect(wrapper.findComponent(Button).attributes('disabled')).toEqual('true');
+        expect(wrapper.findComponent(Button).attributes('disabled')).toBe('true');
     });
 
     it('renders tooltip', () => {
@@ -53,13 +53,13 @@ describe('PlusButton.vue', () => {
                 title: 'plus button'
             }
         });
-        expect(wrapper.props('title')).toEqual('plus button');
+        expect(wrapper.props('title')).toBe('plus button');
         expect(wrapper.findComponent(Tooltip).exists()).toBeTruthy();
     });
 
     it('does not render tooltip', () => {
         const wrapper = shallowMount(PlusButton);
-        expect(wrapper.props('title')).toEqual(null);
+        expect(wrapper.props('title')).toBeNull();
         expect(wrapper.findComponent(Tooltip).exists()).toBeFalsy();
     });
 });

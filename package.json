@@ -33,7 +33,7 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@knime/eslint-config": "file:lint",
+    "@knime/eslint-config": "7.1.1",
     "@types/jsdom": "20.0.1",
     "@vitejs/plugin-vue": "4.0.0",
     "@vitest/coverage-c8": "0.28.3",

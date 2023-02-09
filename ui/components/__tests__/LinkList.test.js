@@ -21,7 +21,7 @@ describe('LinkList.vue', () => {
             const el = wrapper.find(`a[href="${link.url}"]`);
             expect(el.exists()).toBeTruthy();
             expect(el.text()).toEqual(link.text);
-            expect(el.attributes('rel')).toEqual('ugc noopener');
+            expect(el.attributes('rel')).toBe('ugc noopener');
         });
     });
 
@@ -46,7 +46,7 @@ describe('LinkList.vue', () => {
                 expect(el.exists()).toBeFalsy();
             }
         });
-        expect(wrapper.findAll('a').length).toEqual(1);
+        expect(wrapper.findAll('a').length).toBe(1);
     });
 
     it('renders nothing if no links provided', () => {

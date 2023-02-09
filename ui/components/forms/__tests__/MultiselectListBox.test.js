@@ -338,9 +338,9 @@ describe('MultiselectListBox.vue', () => {
                     ariaLabel: 'A Label'
                 }
             });
-            expect(wrapper.vm.hasSelection()).toStrictEqual(false);
+            expect(wrapper.vm.hasSelection()).toBe(false);
             await wrapper.setProps({ modelValue: ['test2', 'test3', 'test4'] });
-            expect(wrapper.vm.hasSelection()).toStrictEqual(true);
+            expect(wrapper.vm.hasSelection()).toBe(true);
         });
 
 
@@ -377,7 +377,7 @@ describe('MultiselectListBox.vue', () => {
                 }
             });
             await wrapper.findAll('[role=option]')[2].trigger('dblclick');
-            expect(wrapper.emitted().doubleClickOnItem[0][0]).toStrictEqual('test3');
+            expect(wrapper.emitted().doubleClickOnItem[0][0]).toBe('test3');
         });
 
         it('emits doubleClickShift event', async () => {

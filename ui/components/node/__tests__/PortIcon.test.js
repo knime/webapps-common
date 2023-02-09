@@ -24,7 +24,7 @@ describe('PortIcon', () => {
         ['table', 'polygon', portColors.table],
         ['flowVariable', 'circle', portColors.flowVariable],
         ['other', 'rect', '']
-    ])('Renders filled port: DataType %s', (type, tag, color) => {
+    ])('renders filled port: DataType %s', (type, tag, color) => {
         wrapper = shallowMount(PortIcon, {
             props: {
                 type,

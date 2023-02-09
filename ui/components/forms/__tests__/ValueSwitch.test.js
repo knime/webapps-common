@@ -19,7 +19,7 @@ describe('ValueSwitch.vue', () => {
             text: 'Text 3'
         }];
     });
-
+    
     it('renders and passes props to BaseRadioButtons', () => {
         let modelValue = 'test3';
         const wrapper = mount(ValueSwitch, {
