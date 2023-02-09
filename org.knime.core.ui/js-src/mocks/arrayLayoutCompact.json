@@ -6,18 +6,15 @@
         "dummyArrayLayout": [
           {
             "doubleInput": 1,
-            "stringInput": "label 1",
-            "radioInput": "OPTION1"
+            "stringInput": "label 1"
           },
           {
             "doubleInput": 2,
-            "stringInput": "label 2",
-            "radioInput": "OPTION2"
+            "stringInput": "label 2"
           },
           {
             "doubleInput": 3,
-            "stringInput": "label 3",
-            "radioInput": "OPTION3"
+            "stringInput": "label 3"
           }
         ]
       }

@@ -23,7 +23,7 @@ export default HorizontalLayout;
   <LayoutComponentWrapper :layout="layout">
     <div class="horizontal">
       <DispatchRenderer
-        v-for="(element, index) in elements"
+        v-for="(element, index) in layout.uischema.elements"
         :key="`${layout.path}-${index}`"
         :schema="layout.schema"
         :uischema="element"
