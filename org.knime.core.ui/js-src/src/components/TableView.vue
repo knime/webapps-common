@@ -27,7 +27,6 @@ export default {
             currentPage: 1,
             currentScopeStartIndex: null,
             currentScopeEndIndex: null,
-            lastRequestScopeStartIndex: null,
             columnSortIndex: null,
             columnSortDirection: null,
             columnSortColumnName: null,
