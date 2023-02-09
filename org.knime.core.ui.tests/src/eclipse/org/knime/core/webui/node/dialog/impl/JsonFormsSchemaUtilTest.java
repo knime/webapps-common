@@ -50,6 +50,8 @@ package org.knime.core.webui.node.dialog.impl;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
+import java.util.stream.Stream;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
@@ -343,19 +345,11 @@ class JsonFormsSchemaUtilTest {
         static String[] included = new String[]{"included", "included2"};
 
         @Override
-        public String[] choices(final SettingsCreationContext context) {
-            return included;
-        }
-
-        @Override
-        public DataColumnSpec[] getColumnChoices(final SettingsCreationContext context) {
+        public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
             DataTableSpec spec = context.getDataTableSpecs()[0];
-            DataColumnSpec[] colSpecs = new DataColumnSpec[] {
-                spec.getColumnSpec("included"),
-                spec.getColumnSpec("included2")
-            };
-
-            return colSpecs;
+            return Stream.of(included)//
+                    .map(spec::getColumnSpec)//
+                    .toArray(DataColumnSpec[]::new);
         }
     }
 
@@ -432,7 +426,7 @@ class JsonFormsSchemaUtilTest {
         @Schema(title = "columns", choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = ColumnChoices.class, withTypes = false)
+        @Schema(title = "otherSelection", choices = NonColumnChoices.class, withTypes = false)
         public ColumnFilter testColumnFilterNoTypes;
     }
 

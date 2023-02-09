@@ -54,18 +54,26 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
 /**
+ * A class that provides an array of possible column choices based on the current {@link SettingsCreationContext}.
  *
  * @author Ivan Prigarin, KNIME GmbH, Konstanz, Germany
  */
 public interface ColumnChoicesProvider extends ChoicesProvider {
 
-    DataColumnSpec[] getColumnChoices(SettingsCreationContext context);
+    /**
+     * Computes the array of possible column choices based on the {@link SettingsCreationContext}.
+     *
+     * @param context the context that holds any available information that might be relevant for determining available
+     *            choices
+     * @return array of possible values, never {@code null}
+     */
+    DataColumnSpec[] columnChoices(SettingsCreationContext context);
 
     @Override
     default String[] choices(final SettingsCreationContext context) {
-        return Stream.of(getColumnChoices(context))//
-                .map(DataColumnSpec::getName)//
-                .toArray(String[]::new);
+        return Stream.of(columnChoices(context))//
+            .map(DataColumnSpec::getName)//
+            .toArray(String[]::new);
 
     }
 }
