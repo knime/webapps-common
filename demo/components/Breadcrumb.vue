@@ -4,14 +4,15 @@ import FolderIcon from '../../ui/assets/img/icons/folder.svg';
 import Breadcrumb from '../../ui/components/Breadcrumb.vue';
 import breadcrumbCode from '!!raw-loader!../../ui/components/Breadcrumb';
 
-const codeExample = `<Breadcrumb 
+const codeExample = `<Breadcrumb
   :items="[
     { text: 'segment without link' },
     { text: 'segment with link', href: '/' },
     { text: 'segment with icon', icon: FolderIcon, clickable: true },
     { text: 'segment with icon', icon: FolderIcon }
-  ]" 
-  greyStyle 
+    { title: 'only an icon with no text but a title', icon: FolderIcon }
+  ]"
+  greyStyle
 />
 `;
 
@@ -28,7 +29,8 @@ export default {
                 { text: 'John Doe', href: '/john.doe' },
                 { text: 'Public Space', href: '/john.doe/space', icon: FolderIcon },
                 { text: 'Examples', icon: FolderIcon, clickable: true },
-                { text: 'Sentiment Prediction via REST' }
+                { text: 'Sentiment Prediction via REST' },
+                { title: 'only an icon with no text but a title', icon: FolderIcon }
             ],
             codeExample
         };

@@ -64,6 +64,7 @@ export default {
           v-else
           :class="{ clickable: breadcrumbItem.clickable }"
           :role="breadcrumbItem.clickable ? 'button' : null"
+          :title="breadcrumbItem.title"
           @click="breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)"
         >
           <Component
