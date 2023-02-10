@@ -13,7 +13,7 @@ describe('IdleReadyButton.vue', () => {
                 idle: false
             }
         });
-        expect(wrapper.find('div').exists()).toEqual(false);
+        expect(wrapper.find('div').exists()).toBe(false);
     });
 
     it('handles idle state correctly', async () => {

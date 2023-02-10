@@ -22,9 +22,9 @@ describe('BaseButton.vue', () => {
             }
         });
         
-        expect(wrapper.get('a').attributes('href')).toEqual('testhref');
+        expect(wrapper.get('a').attributes('href')).toBe('testhref');
     });
-
+    
     it('emits events', () => {
         /* Depending on the `to` and `href` attributes and if it runs in a Nuxt application, the component renders
         * either a native <button>, a native <a> or a <router-link>/<nuxt-link> component.

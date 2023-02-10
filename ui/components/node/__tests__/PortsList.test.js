@@ -19,7 +19,7 @@ describe('PortsList.vue', () => {
             }
         });
         expect(wrapper.element.tagName).toBe('DIV');
-        expect(wrapper.findAllComponents(PortGroup).length).toEqual(1);
+        expect(wrapper.findAllComponents(PortGroup).length).toBe(1);
         expect(wrapper.findComponent(PortGroup).props('ports')).toEqual([{ foo: 'bar' }]);
     });
 
@@ -31,7 +31,7 @@ describe('PortsList.vue', () => {
                 }]
             }
         });
-        expect(wrapper.findAllComponents(PortGroup).length).toEqual(1);
+        expect(wrapper.findAllComponents(PortGroup).length).toBe(1);
         expect(wrapper.findComponent(PortGroup).props('ports')).toEqual([{ baz: 'qux' }]);
     });
 
@@ -47,7 +47,7 @@ describe('PortsList.vue', () => {
             }
         });
         let allPortsListItems = wrapper.findAllComponents(PortGroup);
-        expect(allPortsListItems.length).toEqual(2);
+        expect(allPortsListItems.length).toBe(2);
         expect(allPortsListItems[0].props('ports')).toEqual([{ foo: 'bar' }]);
         expect(allPortsListItems[1].props('ports')).toEqual([{ baz: 'qux' }]);
     });
@@ -73,7 +73,7 @@ describe('PortsList.vue', () => {
         });
         let allPortsListItems = wrapper.findAllComponents(PortGroup);
         // eslint-disable-next-line no-magic-numbers
-        expect(allPortsListItems.length).toEqual(4);
+        expect(allPortsListItems.length).toBe(4);
         expect(allPortsListItems[2].props('ports')).toEqual([{ foo: 'bar' }]);
         // eslint-disable-next-line no-magic-numbers
         expect(allPortsListItems[3].props('ports')).toEqual([{ baz: 'qux' }]);

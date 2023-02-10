@@ -11,7 +11,6 @@ export default defineConfig({
         include: ['**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         environment: 'jsdom',
         reporters: ['default', 'junit'],
-        deps: { inline: ['consola'] },
         setupFiles: [
             fileURLToPath(new URL('vitest.setup.ts', import.meta.url))
         ],

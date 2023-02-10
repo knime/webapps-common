@@ -635,7 +635,7 @@ describe('Twinlist.vue', () => {
             let right = boxes[1];
 
             expect(left.props('possibleValues').length).toBe(1);
-            expect(left.props('possibleValues')[0].text).toStrictEqual('Text 3');
+            expect(left.props('possibleValues')[0].text).toBe('Text 3');
 
             expect(right.props('possibleValues').length).toBe(0);
 
@@ -645,7 +645,7 @@ describe('Twinlist.vue', () => {
 
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
-            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+            expect(right.props('possibleValues')[0].text).toBe('Text 2');
         });
 
         it('can handle basic search requests', async () => {
@@ -666,7 +666,7 @@ describe('Twinlist.vue', () => {
 
             expect(left.props('possibleValues').length).toBe(2);
             expect(right.props('possibleValues').length).toBe(1);
-            expect(right.props('possibleValues')[0].text).toStrictEqual('Text 2');
+            expect(right.props('possibleValues')[0].text).toBe('Text 2');
 
             let search = wrapper.find('input');
 

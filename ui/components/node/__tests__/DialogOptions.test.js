@@ -51,8 +51,8 @@ describe('DialogOptions.vue', () => {
             }
         });
         expect(wrapper.findAllComponents(Collapser).length).toBeFalsy();
-        expect(wrapper.find('.option-field-name').text()).toEqual('foo');
-        expect(wrapper.find('.option-description').attributes('text')).toEqual('bar');
+        expect(wrapper.find('.option-field-name').text()).toBe('foo');
+        expect(wrapper.find('.option-description').attributes('text')).toBe('bar');
     });
 
     it('renders collapsers if sectionName is set', () => {
@@ -76,13 +76,13 @@ describe('DialogOptions.vue', () => {
                 }]
             }
         });
-        expect(wrapper.findAllComponents(Collapser).length).toEqual(2);
-        expect(wrapper.findAll('.option-field-name')[0].text()).toEqual('foo');
-        expect(wrapper.findAll('.option-field-name')[1].text()).toEqual('baz');
-        expect(wrapper.findAll('.option-field-name')[2].text()).toEqual('bla');
-        expect(wrapper.findAll('.option-description')[0].attributes('text')).toEqual('bar');
-        expect(wrapper.findAll('.option-description')[1].attributes('text')).toEqual('qux');
-        expect(wrapper.findAll('.option-description')[2].attributes('text')).toEqual('quux');
+        expect(wrapper.findAllComponents(Collapser).length).toBe(2);
+        expect(wrapper.findAll('.option-field-name')[0].text()).toBe('foo');
+        expect(wrapper.findAll('.option-field-name')[1].text()).toBe('baz');
+        expect(wrapper.findAll('.option-field-name')[2].text()).toBe('bla');
+        expect(wrapper.findAll('.option-description')[0].attributes('text')).toBe('bar');
+        expect(wrapper.findAll('.option-description')[1].attributes('text')).toBe('qux');
+        expect(wrapper.findAll('.option-description')[2].attributes('text')).toBe('quux');
     });
 
     it('renders section description if only section description is set', () => {
@@ -93,7 +93,7 @@ describe('DialogOptions.vue', () => {
                 }]
             }
         });
-        expect(wrapper.find('.section-description').attributes('text')).toEqual('bar');
+        expect(wrapper.find('.section-description').attributes('text')).toBe('bar');
     });
 
     it('renders section description if section description and fields are set', () => {
@@ -108,7 +108,7 @@ describe('DialogOptions.vue', () => {
                 }]
             }
         });
-        expect(wrapper.find('.section-description').attributes('text')).toEqual('bar');
+        expect(wrapper.find('.section-description').attributes('text')).toBe('bar');
     });
 
     it('does not render Collapser if section description and fields are missing', () => {

@@ -216,16 +216,16 @@ describe('DonutChart.vue', () => {
         expect(wrapper.find('circle.disabled-circle').exists()).toBe(true);
         expect(wrapper
             .find('circle.disabled-circle')
-            .attributes('r')).toEqual(`${radius - 0.5}`);
+            .attributes('r')).toBe(`${radius - 0.5}`);
         expect(wrapper
             .find('circle.disabled-circle')
-            .attributes('stroke-width')).toEqual('1');
+            .attributes('stroke-width')).toBe('1');
         expect(wrapper
             .find('circle.disabled-inner-circle')
-            .attributes('r')).toEqual(`${innerRadius + 0.5}`);
+            .attributes('r')).toBe(`${innerRadius + 0.5}`);
         expect(wrapper
             .find('circle.disabled-inner-circle')
-            .attributes('stroke-width')).toEqual('1');
+            .attributes('stroke-width')).toBe('1');
     });
 
     it('handles values larger than maximum', () => {

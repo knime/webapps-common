@@ -19,7 +19,7 @@ describe('MessageLink.vue', () => {
         expect(wrapper.find('a').exists()).toBe(true);
         expect(wrapper.find('a').text()).toBe('I\'m a link');
         expect(wrapper.find('a').attributes('href')).toBe('localhost:3000');
-        expect(wrapper.find('a').attributes('target')).not.toBeDefined();
+        expect(wrapper.find('a').attributes('target')).toBeUndefined();
     });
 
     it('renders with to', () => {
@@ -40,8 +40,8 @@ describe('MessageLink.vue', () => {
         expect(wrapper.findComponent(RouterLinkStub).exists()).toBe(true);
         expect(wrapper.findComponent(RouterLinkStub).text()).toBe('I\'m a link');
         expect(wrapper.findComponent(RouterLinkStub).props('to')).toBe('localhost:3000');
-        expect(wrapper.findComponent(RouterLinkStub).props('href')).not.toBeDefined();
-        expect(wrapper.findComponent(RouterLinkStub).attributes('target')).not.toBeDefined();
+        expect(wrapper.findComponent(RouterLinkStub).props('href')).toBeUndefined();
+        expect(wrapper.findComponent(RouterLinkStub).attributes('target')).toBeUndefined();
     });
 
     it('sets target', () => {

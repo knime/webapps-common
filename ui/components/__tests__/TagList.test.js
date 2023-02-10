@@ -18,7 +18,7 @@ const checkTagTexts = (wrappers, expectedTags, numInitialTags) => {
             i++;
         }
         // last wrapper is expander tag
-        expect(wrappers[i].text()).toEqual(`+${expectedTags.length - numInitialTags}`);
+        expect(wrappers[i].text()).toBe(`+${expectedTags.length - numInitialTags}`);
     } else {
         expect(wrappers.length).toEqual(expectedTags.length);
         let i = 0;
@@ -29,7 +29,7 @@ const checkTagTexts = (wrappers, expectedTags, numInitialTags) => {
     }
 };
 
-describe('TagList.vue', () => {
+describe('tagList.vue', () => {
     it('renders three tags', () => {
         const wrapper = shallowMount(TagList, {
             props: { tags: threeTags }
@@ -86,6 +86,6 @@ describe('TagList.vue', () => {
         // last tag is expander button
         await tag.trigger('click');
         expect(tag.vm.clickable).toBe(true);
-        expect(wrapper.emitted('click')[0][0]).toStrictEqual('tag1');
+        expect(wrapper.emitted('click')[0][0]).toBe('tag1');
     });
 });

@@ -58,7 +58,7 @@ describe('Modal', () => {
         });
     });
 
-    describe('BaseModal', () => {
+    describe('baseModal', () => {
         let BaseModal = {
             template: '<div />',
             props: {

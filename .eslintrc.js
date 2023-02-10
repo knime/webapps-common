@@ -3,7 +3,7 @@ require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
     root: true,
-    extends: ['@knime/eslint-config/base'],
+    extends: ['@knime/eslint-config/base', '@knime/eslint-config/vitest'],
     env: {
         node: true,
         browser: true

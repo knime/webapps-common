@@ -103,9 +103,9 @@ describe('NumberInput.vue', () => {
 
     it('transforms to (standard) scientific notation', async () => {
         await wrapper.setProps({ modelValue: '3e5' });
-        expect(wrapper.vm.getValue()).toStrictEqual(300000);
+        expect(wrapper.vm.getValue()).toBe(300000);
         await wrapper.setProps({ modelValue: '4.423532523e5' });
-        expect(wrapper.vm.getValue()).toStrictEqual(442353.2523);
+        expect(wrapper.vm.getValue()).toBe(442353.2523);
     });
 
     it('accepts decimal point as separator', () => {
@@ -120,7 +120,7 @@ describe('NumberInput.vue', () => {
        
         wrapper.vm.onInput(mockEvent);
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
-        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(1.5);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toBe(1.5);
     });
 
     it('converts invalid decimal point to number', () => {
@@ -149,6 +149,6 @@ describe('NumberInput.vue', () => {
 
         wrapper.vm.onInput(mockEvent);
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
-        expect(wrapper.emitted('update:modelValue')[0][0]).toStrictEqual(1);
+        expect(wrapper.emitted('update:modelValue')[0][0]).toBe(1);
     });
 });

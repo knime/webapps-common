@@ -50,7 +50,7 @@ describe('Collapser.vue', () => {
         await wrapper.find('.button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
         expect(enterSpy).toHaveBeenCalled();
-        expect(wrapper.vm.isExpanded).toEqual(true);
+        expect(wrapper.vm.isExpanded).toBe(true);
 
         // only check if height style property is set as height will be always 0 with vue test utils
         expect(wrapper.find('.panel').attributes('style')).toContain('height');
@@ -60,6 +60,6 @@ describe('Collapser.vue', () => {
         await wrapper.vm.$nextTick();
         expect(leaveSpy).toHaveBeenCalled();
         expect(wrapper.vm.isExpanded).toBeFalsy();
-        expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
+        expect(wrapper.find('.panel').attributes('style')).toBe('height: 0px;');
     });
 });

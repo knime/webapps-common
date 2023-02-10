@@ -191,7 +191,7 @@ describe('ListBox.vue', () => {
 
             let ul = wrapper.find('ul');
             ul.trigger('keydown.down');
-            expect(wrapper.emitted('update:modelValue')[0][0]).toEqual('test3');
+            expect(wrapper.emitted('update:modelValue')[0][0]).toBe('test3');
         });
 
         it('sets the values on keyup navigation', () => {
@@ -204,7 +204,7 @@ describe('ListBox.vue', () => {
 
             let ul = wrapper.find('ul');
             ul.trigger('keydown.up');
-            expect(wrapper.emitted('update:modelValue')[0][0]).toEqual('test1');
+            expect(wrapper.emitted('update:modelValue')[0][0]).toBe('test1');
         });
 
         it('sets no values on keyup navigation at the start', () => {

@@ -20,9 +20,9 @@ describe('Button.vue', () => {
             }
         });
         expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();
-        expect(wrapper.findComponent(BaseButton).props('preventDefault')).toEqual(true);
-        expect(wrapper.findComponent(BaseButton).props('to')).toEqual('test-to');
-        expect(wrapper.findComponent(BaseButton).props('href')).toEqual('test-href');
+        expect(wrapper.findComponent(BaseButton).props('preventDefault')).toBe(true);
+        expect(wrapper.findComponent(BaseButton).props('to')).toBe('test-to');
+        expect(wrapper.findComponent(BaseButton).props('href')).toBe('test-href');
     });
 
     it('renders classes according to props', () => {
@@ -43,7 +43,7 @@ describe('Button.vue', () => {
                 disabled: true
             }
         });
-        expect(wrapper.attributes('disabled')).toEqual('true');
+        expect(wrapper.attributes('disabled')).toBe('true');
     });
 
     it('accepts any optional attribute', () => {
@@ -53,6 +53,6 @@ describe('Button.vue', () => {
                 id: 'testId'
             }
         });
-        expect(wrapper.attributes('id')).toEqual('testId');
+        expect(wrapper.attributes('id')).toBe('testId');
     });
 });

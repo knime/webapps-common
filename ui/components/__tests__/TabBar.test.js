@@ -43,7 +43,7 @@ describe('TabBar.vue', () => {
         expect(wrapper.findComponent(NodeIcon).exists()).toBeTruthy();
         expect(wrapper.find('.tab-bar').exists()).toBeTruthy();
         expect(wrapper.find('.overflow').exists()).toBeTruthy();
-        expect(wrapper.find('input:checked').attributes('value')).toEqual('all');
+        expect(wrapper.find('input:checked').attributes('value')).toBe('all');
     });
 
     it('can be disabled', () => {
@@ -69,7 +69,7 @@ describe('TabBar.vue', () => {
         await wrapper.setProps({
             modelValue: 'workflows'
         });
-        expect(wrapper.find('input:checked').attributes('value')).toEqual('workflows');
+        expect(wrapper.find('input:checked').attributes('value')).toBe('workflows');
     });
 
     it('reacts to selections', async () => {
@@ -80,7 +80,7 @@ describe('TabBar.vue', () => {
             }
         });
 
-        expect(wrapper.find('input:checked').attributes('value')).toEqual('nodes');
+        expect(wrapper.find('input:checked').attributes('value')).toBe('nodes');
         await wrapper.find('input[type="radio"][value="workflows"]').setChecked();
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
         expect(wrapper.emitted('update:modelValue')[0]).toEqual(['workflows']);
