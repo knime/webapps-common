@@ -303,6 +303,16 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
                 m_replaceNodeRunnable = null;
             }
         }
+
+        // for testing purposes only
+        ModifiableNodeCreationConfiguration getConfiguration() {
+            return m_configuration;
+        }
+
+        // for testing purposes only
+        Runnable getReplaceNodeRunnable() {
+            return m_replaceNodeRunnable;
+        }
     }
 
     private static final class TextApplyDataServiceImpl implements TextApplyDataService {

@@ -59,6 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -69,6 +70,7 @@ import org.knime.core.node.config.ConfigEditJTree;
 import org.knime.core.node.config.ConfigEditTreeModel.ConfigEditTreeNode;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -77,6 +79,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.LegacyFlowVariableNodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialog.NodeCreationConfigurationModifier;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
@@ -181,6 +184,68 @@ public class NodeDialogTest {
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
+
+    /**
+     * Tests that if the node factory is a {@link ConfigurableNodeFactory} and the node dialog has been provided with a
+     * {@link NodeCreationConfigurationModifier}, this modifier is invoked correctly and applied when the data services
+     * are cleaned up.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNodeCreationConfigurationModifier() throws Exception {
+        final var configurationModifier = new NodeCreationConfigurationModifier() {
+            @Override
+            protected boolean modifyConfiguration(final ModifiableNodeCreationConfiguration configuration,
+                final NodeSettingsRO modelSettings, final NodeSettingsRO previousModelSettings) {
+                return (modelSettings.getBoolean("key", false) != previousModelSettings.getBoolean("key", false));
+            }
+        };
+        assertThat(configurationModifier.getConfiguration()).isNull();
+        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
+            new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
+                createTextSettingsDataService(), null, null, configurationModifier)));
+        var nncWrapper = NodeWrapper.of(nnc);
+
+        var modelSettings = new NodeSettings("model");
+        var viewSettings = new NodeSettings("view");
+
+        // apply settings and execute node
+        var nodeDialogManager = NodeDialogManager.getInstance();
+        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        wfm.executeAllAndWaitUntilDone();
+        assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
+        final var configuration = configurationModifier.getConfiguration();
+        assertThat(configuration).isNotNull();
+        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+
+        // clean up data services
+        nodeDialogManager.cleanUpDataServices(nncWrapper);
+        assertThat(configurationModifier.getConfiguration()).isEqualTo(configuration);
+
+        // update settings, apply update, re-execute node
+        modelSettings.addBoolean("key", true);
+        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        assertThat(nnc.getNodeContainerState().isConfigured()).isTrue();
+        wfm.executeAllAndWaitUntilDone();
+        assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
+        assertThat(configurationModifier.getConfiguration()).isEqualTo(configuration);
+        assertThat(configurationModifier.getReplaceNodeRunnable()).isNotNull();
+
+        // clean up data services
+        final var nodeID = nnc.getID();
+        assertThat(wfm.getNodeContainer(nodeID)).isEqualTo(nnc);
+        nodeDialogManager.cleanUpDataServices(nncWrapper);
+        final var replacedNnc = wfm.getNodeContainer(nodeID);
+        assertThat(replacedNnc).isNotEqualTo(nnc);
+        assertThat(replacedNnc.getNodeContainerState().isConfigured()).isTrue();
+        assertThat(configurationModifier.getConfiguration()).isNull();
+        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+    }
+
 
     /**
      * Tests that settings that are controlled by flow variables are properly returned in the node dialog's initial data
@@ -612,7 +677,13 @@ public class NodeDialogTest {
      */
     public static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
         final TextVariableSettingsService variableSettingsService, final DataService dataService) {
-        return new NodeDialog(SettingsType.MODEL, SettingsType.VIEW) {
+        return createNodeDialog(page, settingsDataService, variableSettingsService, dataService, null);
+    }
+
+    static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
+        final TextVariableSettingsService variableSettingsService, final DataService dataService,
+        final NodeCreationConfigurationModifier configurationModifier) {
+        return new NodeDialog(configurationModifier, SettingsType.MODEL, SettingsType.VIEW) {
 
             @Override
             public Optional<DataService> createDataService() {

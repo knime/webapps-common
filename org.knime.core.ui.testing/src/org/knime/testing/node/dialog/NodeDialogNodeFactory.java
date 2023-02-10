@@ -52,11 +52,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
+import org.knime.core.node.context.NodeCreationConfiguration;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogFactory;
@@ -68,7 +70,7 @@ import org.knime.core.webui.node.view.NodeViewFactory;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class NodeDialogNodeFactory extends NodeFactory<NodeDialogNodeModel>
+public class NodeDialogNodeFactory extends ConfigurableNodeFactory<NodeDialogNodeModel>
     implements NodeDialogFactory, NodeViewFactory<NodeDialogNodeModel> {
 
     private final Supplier<NodeDialog> m_nodeDialogCreator;
@@ -136,7 +138,7 @@ public class NodeDialogNodeFactory extends NodeFactory<NodeDialogNodeModel>
      * {@inheritDoc}
      */
     @Override
-    public NodeDialogNodeModel createNodeModel() {
+    protected NodeDialogNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
         return new NodeDialogNodeModel(m_nrDataInPorts);
     }
 
@@ -169,7 +171,15 @@ public class NodeDialogNodeFactory extends NodeFactory<NodeDialogNodeModel>
      * {@inheritDoc}
      */
     @Override
-    protected NodeDialogPane createNodeDialogPane() {
+    protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
+        return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected NodeDialogPane createNodeDialogPane(final NodeCreationConfiguration creationConfig) {
         return null;
     }
 
