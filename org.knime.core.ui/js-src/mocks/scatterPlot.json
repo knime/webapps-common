@@ -47,15 +47,15 @@
               "oneOf": [
                 {
                   "const": "AUTO",
-                  "title": "Auto axis"
+                  "title": "Automatic"
                 },
                 {
                   "const": "COLUMN_DOMAIN",
-                  "title": "Domain values"
+                  "title": "Domain bounds"
                 }
               ],
-              "title": "Use axis extent from",
-              "description": "Choose if the axis extents should be calculated by the charting framework or should be used from the domain extents. You might need to use a domain calculator or edit domain node before this node.",
+              "title": "Axis limits",
+              "description": "Choose if the axis extents should be calculated by the charting framework or should be used from the domain extents. You might need to use a Domain Calculator or Edit domain node before this node.",
               "default": "AUTO"
             },
             "dataPointSize": {
@@ -301,6 +301,14 @@
             },
             {
               "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "Control",
               "scope": "#/properties/view/properties/xAxisLabel"
             },
             {
@@ -328,14 +336,6 @@
               "scope": "#/properties/view/properties/dataPointSize",
               "options": {
                 "format": "integer"
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/axisExtentMethod",
-              "options": {
-                "format": "radio",
-                "radioLayout": "horizontal"
               }
             }
           ]

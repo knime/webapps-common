@@ -73,6 +73,21 @@
               "default": 1,
               "minimum": 0.01
             },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                }
+              ],
+              "title": "Axis limits",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Domain node before this node.",
+              "default": "AUTO"
+            },
             "allowImageDownload": {
               "type": "boolean",
               "title": "Enable image download",
@@ -188,6 +203,14 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/bandwidthOption",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
               "options": {
                 "format": "radio",
                 "radioLayout": "horizontal"

@@ -210,14 +210,14 @@
               "oneOf": [
                 {
                   "const": "AUTO",
-                  "title": "Auto axis"
+                  "title": "Automatic"
                 },
                 {
                   "const": "COLUMN_DOMAIN",
-                  "title": "Domain values"
+                  "title": "Domain bounds"
                 }
               ],
-              "title": "Value axis range",
+              "title": "Axis limits",
               "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Domain node before this node.",
               "default": "AUTO"
             },
@@ -298,19 +298,19 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/xAxisLabel"
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/yAxisLabel"
-            },
-            {
-              "type": "Control",
               "scope": "#/properties/view/properties/axisExtentMethod",
               "options": {
                 "format": "radio",
                 "radioLayout": "horizontal"
               }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/xAxisLabel"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/yAxisLabel"
             },
             {
               "type": "Control",
