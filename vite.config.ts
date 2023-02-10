@@ -20,7 +20,9 @@ export default defineConfig({
                 'demo/', 'lint/', 'buildtools/', 'install-subDependencies.js', 'test-results/**', 'dist/**',
                 '**/*.d.ts', '**/__tests__/**', '**/*.config.{js,cjs,mjs,ts}',
                 '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
-            ]
+            ],
+            reporter: ['text', 'json'],
+            reportsDirectory: 'test-results'
         },
         outputFile: {
             junit: 'test-results/junit.xml' // needed for Bitbucket Pipeline, see https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/
