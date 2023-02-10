@@ -19,7 +19,7 @@ definitions:
           - node
           - sonar
           - docker # used by sonar pipes
-        size: 2x # more memory to speed up unit tests
+        size: 2x # needed for additional memory requirements
         script:
           - npm ci
           - npm run ci:lint
@@ -27,7 +27,7 @@ definitions:
           - npm run audit
           - pipe: sonarsource/sonarcloud-scan:1.4.0
             variables:
-              SONAR_SCANNER_OPTS: -Xmx5000m
+              SONAR_SCANNER_OPTS: -Xmx4G
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
 
 pipelines:
