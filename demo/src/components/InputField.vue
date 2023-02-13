@@ -56,11 +56,11 @@ const codeExample = `<InputField
   <template v-slot:iconRight><CircleCheckIcon /></template>
 </InputField>
 <InputField
-  value="demo with right aligned button"
+  model-value="demo with right aligned button"
   type="text"
   ref="buttonDemo"
 >
-  <template #iconRight>
+  <template v-slot:iconRight>
     <FunctionButton
       @click="alert('demo')"
     >
@@ -141,29 +141,27 @@ export default {
             disabled
           />
           <InputField
-            v-model="inputValue"
-            type="text"
-          >
-            <template #icon><MailIcon /></template>
-          </InputField>
-          <InputField
             model-value="invalid"
             :is-valid="false"
             type="text"
+          />
+          <InputField
+            model-value="demo with left icon"
+            type="text"
           >
-            <template #icon><MailIcon /></template>
+            <template #icon><MailIcon :style="{ width: '18px'}" /></template>
           </InputField>
           <InputField
-            model-value="demo with right aligned slot"
+            model-value="demo with right icon"
             type="text"
           >
             <template #iconRight>
-              <CircleCheckIcon />
+              <CircleCheckIcon :style="{ width: '18px'}" />
             </template>
           </InputField>
           <InputField
             ref="buttonDemo"
-            value="demo with right aligned buttons"
+            model-value="demo with right aligned buttons"
             type="text"
           >
             <template #iconRight>

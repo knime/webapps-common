@@ -139,14 +139,14 @@ export default {
             }
         }
     },
+    emits: ['input', 'includeUnknownValuesInput', 'patternInput', 'typesInput', 'modeInput',
+        'caseSensitivePatternInput', 'inversePatternInput'],
     data() {
         return {
             chosenValues: this.initialManuallySelected,
             chosenPattern: this.initialPattern,
             chosenTypes: this.initialSelectedTypes,
             invalidPossibleValueIds: new Set(),
-            rightSelected: [],
-            selectedLeft: [],
             mode: this.initialMode,
             caseSensitivePattern: this.initialCaseSensitivePattern,
             inversePattern: this.initialInversePattern,
@@ -278,7 +278,7 @@ export default {
   >
     <Label
       v-if="showMode"
-      v-slot="{ labelForId }"
+      #default="{ labelForId }"
       :text="modeLabel"
       class="label"
       compact
@@ -286,15 +286,15 @@ export default {
       <ValueSwitch
         :id="labelForId"
         ref="mode"
-        :value="mode"
+        :model-value="mode"
         :disabled="disabled"
         :possible-values="possibleModes"
-        @input="onModeChange"
+        @update:model-value="onModeChange"
       />
     </Label>
     <Label
       v-if=" mode === 'regex' || mode === 'wildcard'"
-      v-slot="{ labelForId }"
+      #default="{ labelForId }"
       :text="patternLabel"
       class="label"
       compact
@@ -302,14 +302,14 @@ export default {
       <SearchInput
         :id="labelForId"
         ref="search"
-        :value="chosenPattern"
+        :model-value="chosenPattern"
         :label="patternLabel"
         :initial-case-sensitive-search="initialCaseSensitivePattern"
         :initial-inverse-search="initialInversePattern"
         show-case-sensitive-search-button
         show-inverse-search-button
         :disabled="disabled"
-        @input="onPatternInput"
+        @update:model-value="onPatternInput"
         @toggle-case-sensitive-search="onToggleCaseSensitivePattern"
         @toggle-inverse-search="onToggleInvsersePattern"
       />
@@ -321,23 +321,23 @@ export default {
       compact
     >
       <Checkboxes
-        :value="chosenTypes"
+        :model-value="chosenTypes"
         :possible-values="possibleTypes"
         :disabled="disabled"
-        @input="onTypeInput"
+        @update:model-value="onTypeInput"
       />
     </Label>
     <Twinlist
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
-      :value="selectedValues"
+      :model-value="selectedValues"
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
       :initial-include-unknown-values="includeUnknownValues"
       v-bind="$attrs"
-      @input="onManualInput"
-      @includeUnknownValuesInput="onUnkownColumnsInput"
+      @update:model-value="onManualInput"
+      @include-unknown-values-input="onUnkownColumnsInput"
     />
   </div>
 </template>

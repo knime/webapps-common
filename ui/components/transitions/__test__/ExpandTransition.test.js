@@ -1,10 +1,11 @@
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ExpandTransition from '~/ui/components/transitions/ExpandTransition.vue';
+import ExpandTransition from '../ExpandTransition.vue';
 
 describe('ExpandTransition.vue', () => {
     it('calls transition handlers and expands', async () => {
-        const enterSpy = jest.spyOn(ExpandTransition.methods, 'onEnter');
-        const leaveSpy = jest.spyOn(ExpandTransition.methods, 'onLeave');
+        const enterSpy = vi.spyOn(ExpandTransition.methods, 'onEnter');
+        const leaveSpy = vi.spyOn(ExpandTransition.methods, 'onLeave');
 
         const wrapper = mount(ExpandTransition, {
             propsData: {
@@ -28,6 +29,6 @@ describe('ExpandTransition.vue', () => {
         await wrapper.setProps({ isExpanded: false });
 
         expect(leaveSpy).toHaveBeenCalled();
-        expect(wrapper.find('.panel').attributes('style')).toEqual('height: 0px;');
+        expect(wrapper.find('.panel').attributes('style')).toBe('height: 0px;');
     });
 });

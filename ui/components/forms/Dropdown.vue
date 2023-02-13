@@ -100,9 +100,6 @@ export default {
             } else {
                 return `(MISSING) ${this.modelValue}`;
             }
-        },
-        isMissing() {
-            return this.value && !this.displayTextMap.hasOwnProperty(this.value);
         }
     },
     created() {
@@ -279,7 +276,7 @@ export default {
       role="button"
       tabindex="0"
       aria-haspopup="listbox"
-      :class="{'placeholder': showPlaceholder, 'missing': isMissing}"
+      :class="{'placeholder': showPlaceholder}"
       :aria-label="ariaLabel"
       :aria-labelledby="generateId('button')"
       :aria-expanded="isExpanded"
@@ -334,10 +331,6 @@ export default {
 
   &:not(.disabled).collapsed:hover {
     background: var(--knime-silver-sand-semi);
-  }
-
-  & .missing {
-    color: var(--theme-color-error);
   }
 
   &.invalid::after {

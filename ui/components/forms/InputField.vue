@@ -59,7 +59,7 @@ export default {
         },
         inputClassList() {
             let classes = this.inputClasses;
-            if (this.$slots.icon && this.$slots.icon().length) {
+            if (this.hasLeftIcon) {
                 classes += ' with-icon';
             }
             if (this.hasRightIcon) {
@@ -109,7 +109,7 @@ export default {
   >
     <div
       v-if="hasLeftIcon"
-      class="icon icon-left"
+      class="icon"
     >
       <slot name="icon" />
     </div>
@@ -168,16 +168,18 @@ export default {
       vertical-align: top;
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);
-      stroke-width: calc(32px / var(--icon-size)); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+
+      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke-width: calc(32px / var(--icon-size));
       stroke: var(--knime-masala);
     }
   }
 
-  &:has(.function-button) {
+  &:has(:deep(.function-button)) {
     padding-right: 0;
   }
 
-  & .function-button {
+  & :deep(.function-button) {
     --icon-size: 18;
 
     pointer-events: auto; /* otherwise, we won't be able to :hover the button */
@@ -223,31 +225,16 @@ input {
     background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
 
-     /* "Outside" location corresponds to wrapper border. */
-     left: -1px;
-     top: -1px;
-     bottom: -1px;
-
-  &.with-icon-right {
-    padding: 10px 38px 10px 10px;
-  }
-
-  &.with-icon.with-icon-right {
-    padding: 10px 38px;
+    /* "Outside" location corresponds to wrapper border. */
+    left: -1px;
+    top: -1px;
+    bottom: -1px;
   }
 }
 
 /* This is handled outside of the input element, because hovering inside slots
  * would otherwise not be noticed within the input element. */
-.input-wrapper:hover:not(:focus) input:not(:focus, :disabled) {
+.input-wrapper:hover:not(:focus):has(input:not(:focus, :disabled)) {
   background-color: var(--theme-input-field-background-color-focus);
-}
-
-.icon-left {
-  left: 12px;
-}
-
-.icon-right {
-  right: 12px;
 }
 </style>

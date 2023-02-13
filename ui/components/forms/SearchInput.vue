@@ -1,12 +1,14 @@
 <script>
 import CloseIcon from '../../assets/img/icons/close.svg';
 import LensIcon from '../../assets/img/icons/lens.svg';
+import InverseSearchIcon from '../../assets/img/icons/arrows-order-left-right.svg';
+import UpperLowerCaseIcon from '../../assets/img/icons/upper-lower-case.svg';
 
 import InputField from './InputField.vue';
 import FunctionButton from '../FunctionButton.vue';
 
 /**
- * Search input box for searches in other components, like the TwinList.
+ * Search input box for searches in other components, like the Twinlist.
  * Implements the v-model pattern.
  */
 export default {
@@ -14,7 +16,9 @@ export default {
         InputField,
         FunctionButton,
         CloseIcon,
-        LensIcon
+        LensIcon,
+        InverseSearchIcon,
+        UpperLowerCaseIcon
     },
     props: {
         id: {
@@ -34,6 +38,22 @@ export default {
             // A pseudo-placeholder to allow hiding the clear-button without any input
             default: ' '
         },
+        initialCaseSensitiveSearch: {
+            default: false,
+            type: Boolean
+        },
+        initialInverseSearch: {
+            default: false,
+            type: Boolean
+        },
+        showCaseSensitiveSearchButton: {
+            default: false,
+            type: Boolean
+        },
+        showInverseSearchButton: {
+            default: false,
+            type: Boolean
+        },
         autofocus: {
             default: false,
             type: Boolean
@@ -43,11 +63,27 @@ export default {
             type: Boolean
         }
     },
-    emits: ['clear', 'update:modelValue'],
+    emits: ['clear', 'update:modelValue', 'toggle-case-sensitive-search', 'toggle-inverse-search', 'focus'],
+    data() {
+        return {
+            caseSensitiveSearch: this.initialCaseSensitiveSearch,
+            inverseSearch: this.initialInverseSearch
+        };
+    },
     methods: {
         clearSearch() {
             this.$emit('clear');
             this.$emit('update:modelValue', '');
+            this.focus();
+        },
+        toggleCaseSensitiveSearch() {
+            this.caseSensitiveSearch = !this.caseSensitiveSearch;
+            this.$emit('toggle-case-sensitive-search', this.caseSensitiveSearch);
+            this.focus();
+        },
+        toggleInverseSearch() {
+            this.inverseSearch = !this.inverseSearch;
+            this.$emit('toggle-inverse-search', this.inverseSearch);
             this.focus();
         },
         focus() {
@@ -68,12 +104,14 @@ export default {
     :autofocus="autofocus"
     :disabled="disabled"
     class="search-input"
+    :class="{disabled}"
     autocomplete="off"
     role="searchbox"
+    @focus="$emit('focus', $event)"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template #icon>
-      <LensIcon />
+      <LensIcon v-if="!disabled" />
     </template>
     <template #iconRight>
       <FunctionButton
@@ -83,31 +121,35 @@ export default {
       >
         <CloseIcon />
       </FunctionButton>
+      <FunctionButton
+        v-if="!disabled && showCaseSensitiveSearchButton"
+        class="toggle-case-sensitive-search"
+        :active="caseSensitiveSearch"
+        @click="toggleCaseSensitiveSearch"
+      >
+        <UpperLowerCaseIcon />
+      </FunctionButton>
+      <FunctionButton
+        v-if="!disabled && showInverseSearchButton"
+        class="toggle-inverse-search"
+        :active="inverseSearch"
+        @click="toggleInverseSearch"
+      >
+        <InverseSearchIcon />
+      </FunctionButton>
     </template>
   </InputField>
 </template>
 
 <style lang="postcss" scoped>
 .search-input {
-  & .clear-search {
-    --icon-size: 12;
-
-    margin-top: -2px; /* Move clear-all button up 2px to be centered with FunctionButton in use. */
-    margin-right: -6px;
-    pointer-events: auto; /* otherwise, we won't be able to :hover the button */
-
-    & :deep(svg) {
-      width: calc(var(--icon-size) * 1px);
-      height: calc(var(--icon-size) * 1px);
-
-      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-      stroke-width: calc(32px / var(--icon-size));
-    }
-  }
-
   &:has(input:placeholder-shown) .clear-search {
     visibility: hidden;
   }
+}
+
+.disabled {
+  opacity: 0.5;
 }
 
 </style>

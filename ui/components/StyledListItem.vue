@@ -29,13 +29,13 @@ export default {
             type: Number,
             default: null
         }
-    }
+    },
+    emits: ['mousedown', 'mousemove', 'dblclick-exact', 'dblclick-shift', 'click']
 };
 </script>
 
 <template>
-  <div
-    is="li"
+  <li
     v-bind="$attrs"
     role="option"
     :title="text"
@@ -55,7 +55,7 @@ export default {
     @mousemove="$emit('mousemove', $event)"
   >
     {{ text }}
-  </div>
+  </li>
 </template>
 
 <style lang="postcss" scoped>

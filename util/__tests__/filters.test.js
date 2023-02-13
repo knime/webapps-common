@@ -1,9 +1,10 @@
-import { filters } from '~/util/filters';
+import { describe, it, beforeAll, expect, vi } from 'vitest';
+import { filters } from '../filters';
 
 
 describe('filters', () => {
     beforeAll(() => {
-        document.execCommand = jest.fn();
+        document.execCommand = vi.fn();
     });
 
     it('search matches correctly', () => {

@@ -84,13 +84,12 @@ export default {
       v-if="active"
       :active="active && showContent"
       :initial-focus="() => $refs.dialog"
-      :allow-outside-click="true"
+      allow-outside-click
       class="container"
     >
       <div
         ref="dialog"
         tabindex="-1"
-        @click.stop
       >
         <div
           class="overlay"

@@ -35,6 +35,7 @@ const demoComponents = {
         SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
         PlusButton: defineAsyncComponent(() => import('./components/PlusButton.vue')),
         Carousel: defineAsyncComponent(() => import('./components/Carousel.vue')),
+        ExpandTransition: defineAsyncComponent(() => import('./components/transitions/ExpandTransition.vue')),
         Collapser: defineAsyncComponent(() => import('./components/Collapser.vue')),
         FileLink: defineAsyncComponent(() => import('./components/FileLink.vue')),
         IdleReadyButton: defineAsyncComponent(() => import('./components/IdleReadyButton.vue')),
@@ -69,8 +70,10 @@ const demoComponents = {
         Dropdown: defineAsyncComponent(() => import('./components/Dropdown.vue')),
         Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
         MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
+        StyledListItem: defineAsyncComponent(() => import('./components/StyledListItem.vue')),
         ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
-        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue'))
+        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue')),
+        MultiModeTwinlist: defineAsyncComponent(() => import('./components/MultiModeTwinlist.vue'))
     },
     misc: {
         NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),

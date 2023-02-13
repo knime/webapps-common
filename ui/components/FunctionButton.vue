@@ -100,7 +100,7 @@ export default {
     stroke-width: calc(32px / 18);
   }
 
-  & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+  & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
     fill: var(--theme-button-function-foreground-color);
   }
 
@@ -113,7 +113,7 @@ export default {
       stroke: var(--theme-button-function-foreground-color-hover);
     }
 
-    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+    & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
       fill: var(--theme-button-function-foreground-color-hover);
     }
   }
@@ -127,7 +127,7 @@ export default {
       stroke: var(--theme-button-function-foreground-color-focus);
     }
 
-    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+    & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
       fill: var(--theme-button-function-foreground-color-focus);
     }
   }
@@ -140,7 +140,7 @@ export default {
       stroke: var(--theme-button-function-foreground-color-active);
     }
 
-    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+    & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
       fill: var(--theme-button-function-foreground-color-active);
     }
   }
@@ -153,7 +153,7 @@ export default {
       stroke: var(--theme-button-foreground-color);
     }
 
-    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+    & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
       fill: var(--theme-button-foreground-color);
     }
 
@@ -166,7 +166,7 @@ export default {
         stroke: var(--theme-button-foreground-color-hover);
       }
 
-      & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
         fill: var(--theme-button-foreground-color-hover);
       }
     }
@@ -181,7 +181,7 @@ export default {
         stroke: var(--theme-button-foreground-color-focus);
       }
 
-      & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
         fill: var(--theme-button-foreground-color-focus);
       }
     }

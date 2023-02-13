@@ -19,6 +19,10 @@ export default {
             type: String,
             default: null
         },
+        disabled: {
+            default: false,
+            type: Boolean
+        },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
          * @example
@@ -46,7 +50,9 @@ export default {
     :possible-values="possibleValues"
     :model-value="modelValue"
     :name="name"
+    :disabled="disabled"
     class="value-switch"
+    :class="{disabled}"
     @update:model-value="$emit('update:modelValue', $event)"
   />
 </template>
@@ -73,10 +79,6 @@ export default {
     line-height: 18px;
     cursor: pointer;
     border-radius: 50px;
-
-    &:hover {
-      background-color: var(--theme-value-switch-background-color-hover);
-    }
   }
 
   & :deep(input) {
@@ -89,4 +91,13 @@ export default {
     }
   }
 }
+
+.value-switch:not(.disabled) :deep(span:hover) {
+  background-color: var(--theme-value-switch-background-color-hover);
+}
+
+.value-switch.disabled {
+  opacity: 0.5;
+}
+
 </style>

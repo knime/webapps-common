@@ -6,6 +6,7 @@ import ArrowNextIcon from '../../assets/img/icons/arrow-next.svg';
 import ArrowNextDoubleIcon from '../../assets/img/icons/arrow-next-double.svg';
 import ArrowPrevIcon from '../../assets/img/icons/arrow-prev.svg';
 import ArrowPrevDoubleIcon from '../../assets/img/icons/arrow-prev-double.svg';
+import { filters } from '../../../util/filters';
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
@@ -25,13 +26,71 @@ export default {
             type: Array,
             default: () => []
         },
+        initialCaseSensitiveSearch: {
+            default: false,
+            type: Boolean
+        },
+        initialSearchTerm: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        initialIncludeUnknownValues: {
+            type: Boolean,
+            default: false
+        },
+
+        /**
+         * Hiding and disabling
+         */
+        showSearch: {
+            default: false,
+            type: Boolean
+        },
+        showUnknownValues: {
+            type: Boolean,
+            default: false
+        },
         disabled: {
             default: false,
             type: Boolean
         },
-        showSearch: {
-            default: false,
+        showEmptyState: {
+            default: true,
             type: Boolean
+        },
+        /**
+         * Labels
+         */
+        leftLabel: {
+            type: String,
+            required: true,
+            default: 'Possible values'
+        },
+        rightLabel: {
+            type: String,
+            required: true,
+            default: 'Selected values'
+        },
+        searchLabel: {
+            type: String,
+            required: false,
+            default: 'Search values'
+        },
+        searchPlaceholder: {
+            type: String,
+            required: false,
+            default: 'Search'
+        },
+        unknownValuesText: {
+            type: String,
+            required: false,
+            default: `Unknown values`
+        },
+        emptyStateLabel: {
+            type: String,
+            required: false,
+            default: 'No entries in this list'
         },
         /**
          * Controls the size of the list.
@@ -49,31 +108,6 @@ export default {
         isValid: {
             default: true,
             type: Boolean
-        },
-        leftLabel: {
-            type: String,
-            required: true,
-            default: 'Possible values'
-        },
-        rightLabel: {
-            type: String,
-            required: true,
-            default: 'Selected values'
-        },
-        searchLabel: {
-            type: String,
-            required: false,
-            default: 'Search values'
-        },
-        initialSearchTerm: {
-            type: String,
-            required: false,
-            default: ''
-        },
-        searchPlaceholder: {
-            type: String,
-            required: false,
-            default: 'Search'
         },
         /**
          * List of possible values. Each item must have an `id` and a `text` property
@@ -97,14 +131,17 @@ export default {
             }
         }
     },
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'includeUnknownValuesInput'],
     data() {
         return {
             chosenValues: this.modelValue,
             invalidPossibleValueIds: new Set(),
             rightSelected: [],
             leftSelected: [],
-            searchTerm: this.initialSearchTerm
+            searchTerm: this.initialSearchTerm,
+            caseSensitiveSearch: this.initialCaseSensitiveSearch,
+            includeUnknownValues: this.initialIncludeUnknownValues,
+            unknownValuesId: Symbol('Unknown values')
         };
     },
     computed: {
@@ -118,19 +155,23 @@ export default {
         invalidValueIds() {
             return this.modelValue.filter(x => !this.possibleValueMap[x]);
         },
-        hiddenValueIds() {
-            return this.possibleValues
-                .filter(possibleValue => !this.itemMatchesSearch(possibleValue))
+        visibleValueIds() {
+            const matchingInvalidValueIds = this.invalidValueIds.filter(
+                item => this.itemMatchesSearch(this.generateInvalidItem(item))
+            );
+            const matchingValidIds = this.possibleValues
+                .filter(possibleValue => this.itemMatchesSearch(possibleValue))
                 .map(possibleValue => possibleValue.id);
+            return [...matchingValidIds, ...matchingInvalidValueIds];
         },
         leftItems() {
-            const invalidItems = [...this.invalidPossibleValueIds].map(valueId => this.generateInvalidItem(valueId));
-            return [...this.possibleValues, ...invalidItems]
-                .filter(value => !this.hiddenValueIds.includes(value.id) && !this.chosenValues.includes(value.id));
+            return this.possibleValues.filter(value => this.visibleValueIds.includes(value.id) &&
+                !this.chosenValues.includes(value.id));
         },
         rightItems() {
-            return this.chosenValues.map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
-                .filter(value => !this.hiddenValueIds.includes(value.id));
+            return this.chosenValues
+                .map(value => this.possibleValueMap[value] || this.generateInvalidItem(value))
+                .filter(value => this.visibleValueIds.includes(value.id));
         },
         listSize() {
             // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -138,20 +179,53 @@ export default {
             // limit size to minimum
             return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
         },
+        showUnknownValuesLeft() {
+            return this.showUnknownValues && !this.includeUnknownValues;
+        },
+        showUnknownValuesRight() {
+            return this.showUnknownValues && this.includeUnknownValues;
+        },
         moveAllRightButtonDisabled() {
-            return this.leftItems.length === 0;
+            return this.leftItems.length === 0 && !this.showUnknownValuesLeft;
         },
         moveRightButtonDisabled() {
             return this.leftSelected.length === 0;
         },
         moveAllLeftButtonDisabled() {
-            return this.rightItems.length === 0;
+            return this.rightItems.length === 0 && !this.showUnknownValuesRight;
         },
         moveLeftButtonDisabled() {
             return this.rightSelected.length === 0;
         },
         normalizedSearchTerm() {
-            return this.searchTerm.toLowerCase();
+            if (!this.showSearch) {
+                return '';
+            }
+            return filters.search.normalize(this.searchTerm, this.caseSensitiveSearch);
+        },
+        numAllItems() {
+            return this.invalidValueIds.length + this.possibleValues.length;
+        },
+        numAllRightItems() {
+            return this.chosenValues.length;
+        },
+        numShownRightItems() {
+            return this.rightItems.length;
+        },
+        numAllLeftItems() {
+            return this.possibleValues.length + this.invalidValueIds.length - this.numAllRightItems;
+        },
+        numShownLeftItems() {
+            return this.leftItems.length;
+        },
+        hasActiveSearch() {
+            return this.showSearch && this.searchTerm !== '';
+        },
+        leftInfo() {
+            return this.getInfoText(this.numShownLeftItems, this.numAllLeftItems);
+        },
+        rightInfo() {
+            return this.getInfoText(this.numShownRightItems, this.numAllRightItems);
         }
     },
     watch: {
@@ -166,6 +240,14 @@ export default {
             }, []);
             // Reset chosenValues as subset of original to prevent re-execution from resetting value
             this.chosenValues = this.chosenValues.filter(item => allValues.includes(item));
+        },
+        chosenValues(newVal, oldVal) {
+            if (newVal.length !== oldVal.length || oldVal.some((item, i) => item !== newVal[i])) {
+                this.$emit('update:modelValue', this.chosenValues);
+            }
+        },
+        includeUnknownValues(newVal) {
+            this.$emit('includeUnknownValuesInput', newVal);
         }
     },
     methods: {
@@ -182,19 +264,26 @@ export default {
         moveRight(items) {
             // add all left items to our values
             items = items || this.leftSelected;
-            this.chosenValues = [...items, ...this.chosenValues].sort(this.compareByOriginalSorting);
+            this.chosenValues = [
+                ...items.filter(item => item !== this.unknownValuesId),
+                ...this.chosenValues
+            ].sort(this.compareByOriginalSorting);
+            if (items.includes(this.unknownValuesId)) {
+                this.includeUnknownValues = true;
+            }
             this.clearSelections();
-            this.$emit('update:modelValue', this.chosenValues);
         },
         moveLeft(items) {
-            // remove all right values from or selectedValues
+            // remove all right values from or chosenValues
             items = items || this.rightSelected;
             // add the invalid items to the possible items
             let invalidItems = items.filter(x => this.invalidValueIds.includes(x));
             invalidItems.forEach(x => this.invalidPossibleValueIds.add(x));
             this.chosenValues = this.chosenValues.filter(x => !items.includes(x)).sort(this.compareByOriginalSorting);
+            if (items.includes(this.unknownValuesId)) {
+                this.includeUnknownValues = false;
+            }
             this.clearSelections();
-            this.$emit('update:modelValue', this.chosenValues);
         },
         onMoveRightButtonClick() {
             this.moveRight();
@@ -202,6 +291,7 @@ export default {
         onMoveAllRightButtonClick() {
             // only move valid items
             this.moveRight(this.leftItems.filter(x => !x.invalid).map(x => x.id));
+            this.includeUnknownValues = true;
         },
         onMoveAllRightButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
@@ -218,6 +308,7 @@ export default {
         },
         onMoveAllLeftButtonClick() {
             this.moveLeft(this.rightItems.map(x => x.id));
+            this.includeUnknownValues = false;
         },
         onMoveLeftButtonKey(e) {
             if (e.keyCode === KEY_ENTER) { /* ENTER */
@@ -270,7 +361,11 @@ export default {
             return { isValid, errorMessage: isValid ? null : 'One or more of the selected items is invalid.' };
         },
         itemMatchesSearch(item) {
-            return item.text.toLowerCase().includes(this.normalizedSearchTerm);
+            return filters.search.test(item.text, this.normalizedSearchTerm,
+                this.caseSensitiveSearch, false);
+        },
+        getInfoText(numShownItems, numAllItems) {
+            return this.hasActiveSearch ? `${numShownItems} of ${numAllItems} entries` : null;
         }
     }
 };
@@ -288,26 +383,59 @@ export default {
       <SearchInput
         :id="labelForId"
         ref="search"
-        :size="listSize"
         :placeholder="searchPlaceholder"
         :model-value="searchTerm"
         :label="searchLabel"
+        :initial-case-sensitive-search="initialCaseSensitiveSearch"
+        show-case-sensitive-search-button
         :disabled="disabled"
-        class="search"
         @update:model-value="onSearchInput"
+        @toggle-case-sensitive-search="(event) => caseSensitiveSearch = event"
       />
     </Label>
     <div class="header">
-      <div class="title">{{ leftLabel }}</div>
+      <div class="title">
+        <div
+          class="label"
+          :title="leftLabel"
+        >
+          {{ leftLabel }}
+        </div>
+        <div
+          v-if="leftInfo"
+          :title="leftInfo"
+          class="info"
+        >
+          {{ leftInfo }}
+        </div>
+      </div>
       <div class="space" />
-      <div class="title">{{ rightLabel }}</div>
+      <div class="title">
+        <div
+          class="label"
+          :title="rightLabel"
+        >
+          {{ rightLabel }}
+        </div>
+        <div
+          v-if="rightInfo"
+          :title="rightInfo"
+          class="info"
+        >
+          {{ rightInfo }}
+        </div>
+      </div>
     </div>
     <div :class="['lists', { disabled }] ">
       <MultiselectListBox
         ref="left"
+        :with-is-empty-state="showEmptyState"
+        :empty-state-label="emptyStateLabel"
         :size="listSize"
         class="list-box"
         :model-value="leftSelected"
+        :with-bottom-value="showUnknownValuesLeft"
+        :bottom-value="{id: unknownValuesId, text: unknownValuesText}"
         :is-valid="isValid"
         :possible-values="leftItems"
         :aria-label="leftLabel"
@@ -363,6 +491,10 @@ export default {
         ref="right"
         class="list-box"
         :model-value="rightSelected"
+        :with-bottom-value="showUnknownValuesRight"
+        :bottom-value="{id: unknownValuesId, text: unknownValuesText}"
+        :with-is-empty-state="showEmptyState"
+        :empty-state-label="emptyStateLabel"
         :possible-values="rightItems"
         :size="listSize"
         :aria-label="rightLabel"
@@ -384,12 +516,31 @@ export default {
   --button-bar-width: 30px;
 
   & .title {
-    font-weight: 500;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    font-size: 13px;
     line-height: 18px;
     margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 5px;
+
+    & .label {
+      font-weight: 500;
+      font-family: var(--theme-text-medium-font-family);
+      color: var(--theme-text-medium-color);
+      font-size: 13px;
+      flex: 1 0 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      min-width: 50px;
+    }
+
+    & .info {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 8px;
+      font-weight: 300;
+      white-space: nowrap;
+    }
   }
 
   & .lists,
@@ -397,10 +548,6 @@ export default {
     display: flex;
     align-items: stretch;
     flex-direction: row;
-
-    &.disabled {
-      opacity: 0.5;
-    }
   }
 
   & .space,

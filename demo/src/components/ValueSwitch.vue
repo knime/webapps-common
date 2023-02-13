@@ -88,6 +88,11 @@ export default {
           />
         </div>
         <div class="grid-item-4">
+          selected id: {{ selected }}
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-4">
           <ValueSwitch
             v-model="selectedLarge"
             :possible-values="[{
@@ -119,7 +124,6 @@ export default {
           />
         </div>
         <div class="grid-item-4">
-          selected id: {{ selected }}<br>
           selected id: {{ selectedLarge }}
         </div>
       </div>
