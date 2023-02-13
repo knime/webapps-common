@@ -62,7 +62,7 @@ export default CheckboxInput;
     >
       <Checkbox
         class="checkbox"
-        :disabled="!control.enabled"
+        :disabled="disabled"
         :value="control.data"
         @input="onChange"
       >
