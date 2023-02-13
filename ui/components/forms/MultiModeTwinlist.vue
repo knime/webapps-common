@@ -162,7 +162,12 @@ export default {
             return this.possibleValues.map(x => x.id);
         },
         possibleTypes() {
-            const allTypes = [...this.additionalPossibleTypes, ...this.possibleValues.map(x => x.type)];
+            const possibleTypes = this.possibleValues.map(x => x.type).filter(type => type);
+            const possibleTypesIds = possibleTypes.map(type => type.id);
+            const additionalTypes = this.additionalPossibleTypes.filter(
+                type => type && !possibleTypesIds.includes(type.id)
+            );
+            const allTypes = [...additionalTypes, ...possibleTypes];
             return allTypes.filter(type => type && type.id !== '')
                 .filter( // remove duplicates
                     (val, index, self) => index === self.findIndex((t) => t.id === val.id && t.text === val.text)
