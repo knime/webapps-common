@@ -61,7 +61,11 @@ export default {
             columnDataTypeIds: null,
             columnContentTypes: null,
             // a counter which is used to ignore all requests which were not the last sent one
-            lastUpdateHash: 0
+            lastUpdateHash: 0,
+            wrapperResizeObserver: new ResizeObserver((entries) => {
+                // eslint-disable-next-line no-invalid-this
+                this.onResize();
+            })
         };
     },
     computed: {
@@ -239,6 +243,7 @@ export default {
     },
     async mounted() {
         const clientWidth = this.$el.getBoundingClientRect().width;
+        this.wrapperResizeObserver.observe(this.$el);
         // clientWidth can be 0, e.g., if table is not visible (yet)
         if (clientWidth) {
             this.clientWidth = clientWidth;
