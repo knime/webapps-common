@@ -59,7 +59,7 @@ export default NumberInputBase;
     >
       <NumberInput
         class="number-input"
-        :disabled="!control.enabled"
+        :disabled="disabled"
         :value="control.data"
         :type="type"
         :min="control.schema.minimum"
