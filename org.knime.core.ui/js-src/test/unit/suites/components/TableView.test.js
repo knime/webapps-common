@@ -1660,8 +1660,14 @@ describe('TableView.vue', () => {
                 observe,
                 unobserve
             }));
-            const registerSpy = jest.spyOn(window, 'addEventListener');
-            const removeSpy = jest.spyOn(window, 'removeEventListener');
+            const observeSpy = jest.fn();
+            const disconnectSpy = jest.fn();
+
+            global.ResizeObserver = jest.fn().mockImplementation(() => ({
+                observe: observeSpy,
+                unobserve: jest.fn(),
+                disconnect: disconnectSpy
+            }));
             
             const wrapper = await mount(TableView, context);
             expect(wrapper.vm.clientWidth).toBe(0);
@@ -1684,16 +1690,15 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
             expect(unobserve).toHaveBeenCalledTimes(1);
             expect(unobserve).toHaveBeenCalledWith(wrapper.vm.$el);
-            expect(registerSpy).toHaveBeenCalledTimes(1);
-            expect(registerSpy).toHaveBeenCalledWith('resize', wrapper.vm.onResize);
+            expect(observeSpy).toHaveBeenCalledTimes(1);
+            expect(observeSpy).toHaveBeenCalledWith(wrapper.vm.$el);
 
             wrapper.vm.$el.getBoundingClientRect = function () {
                 return { width: 0 };
             };
             window.dispatchEvent(new Event('resize'));
+            wrapper.vm.$el.style.width = clientWidth;
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
-            expect(removeSpy).toHaveBeenCalledTimes(1);
-            expect(removeSpy).toHaveBeenCalledWith('resize', wrapper.vm.onResize);
             expect(window.IntersectionObserver).toHaveBeenCalledTimes(2);
             expect(observe).toHaveBeenCalledTimes(2);
             expect(observe).toHaveBeenLastCalledWith(wrapper.vm.$el);
@@ -1702,9 +1707,12 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
             expect(unobserve).toHaveBeenCalledTimes(2);
             expect(unobserve).toHaveBeenLastCalledWith(wrapper.vm.$el);
-            expect(registerSpy).toHaveBeenCalledTimes(2);
-            expect(registerSpy).toHaveBeenLastCalledWith('resize', wrapper.vm.onResize);
-
+            // Wait for draw
+            await setTimeout(() => {
+                expect(observeSpy).toHaveBeenCalledTimes(2);
+                expect(observeSpy).toHaveBeenLastCalledWith(wrapper.vm.$el);
+            });
+            
             clientWidth = 200;
             wrapper.vm.$el.getBoundingClientRect = function () {
                 return { width: clientWidth };
@@ -1713,8 +1721,7 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
 
             wrapper.destroy();
-            expect(removeSpy).toHaveBeenCalledTimes(2);
-            expect(removeSpy).toHaveBeenLastCalledWith('resize', wrapper.vm.onResize);
+            expect(disconnectSpy).toHaveBeenCalledTimes(1);
         });
     });
 });

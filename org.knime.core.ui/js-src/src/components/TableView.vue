@@ -247,7 +247,6 @@ export default {
         // clientWidth can be 0, e.g., if table is not visible (yet)
         if (clientWidth) {
             this.clientWidth = clientWidth;
-            window.addEventListener('resize', this.onResize);
         } else {
             this.observeTableIntersection();
         }
@@ -281,7 +280,7 @@ export default {
         }
     },
     beforeDestroy() {
-        window.removeEventListener('resize', this.onResize);
+        this.wrapperResizeObserver.disconnect();
     },
     methods: {
         lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes) {
