@@ -113,12 +113,6 @@ export default {
     >
       <slot name="icon" />
     </div>
-    <div
-      v-if="hasRightIcon"
-      class="icon icon-right"
-    >
-      <slot name="iconRight" />
-    </div>
     <input
       :id="id"
       ref="input"
@@ -132,7 +126,14 @@ export default {
       :autocomplete="autocomplete"
       :disabled="disabled"
       @input="onInput"
+      @focus="$emit('focus', $event)"
     >
+    <div
+      v-if="hasRightIcon"
+      class="icon icon-right"
+    >
+      <slot name="iconRight" />
+    </div>
     <span
       class="invalid-marker"
     />
@@ -140,23 +141,71 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-div {
-  /* icon and marker need pos 0,0 to be the wrapper */
+.input-wrapper {
+  display: flex;
+  align-items: center;
   position: relative;
-  isolation: isolate;
+  border: 1px solid var(--knime-stone-gray);
+  background-color: var(--theme-input-field-background-color);
+  height: 40px;
+  padding: 0 5px;
+
+  &:focus {
+    border-color: var(--knime-masala);
+  }
+
+  & .icon {
+    --icon-size: 18;
+
+    display: flex;
+    padding: 5px;
+    pointer-events: none;
+
+    /* The gap is needed if there are adjacent activated buttons, to keep some space. */
+    gap: 1px;
+
+    & svg {
+      vertical-align: top;
+      width: calc(var(--icon-size) * 1px);
+      height: calc(var(--icon-size) * 1px);
+      stroke-width: calc(32px / var(--icon-size)); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke: var(--knime-masala);
+    }
+  }
+
+  &:has(.function-button) {
+    padding-right: 0;
+  }
+
+  & .function-button {
+    --icon-size: 18;
+
+    pointer-events: auto; /* otherwise, we won't be able to :hover the button */
+
+    & :deep(svg) {
+      width: calc(var(--icon-size) * 1px);
+      height: calc(var(--icon-size) * 1px);
+
+      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke-width: calc(32px / var(--icon-size));
+    }
+  }
 }
 
 input {
+  flex-grow: 1;
   font-size: 13px;
   font-weight: 300;
-  height: 40px;
+  height: 100%;
   line-height: normal;
-  padding: 0 10px;
-  border-radius: 0;
-  width: 100%;
-  border: 1px solid var(--knime-stone-gray);
-  outline: none;
-  background-color: var(--theme-input-field-background-color);
+  padding: 0 5px;
+  border: 0;
+  background-color: transparent;
+  min-width: 1em;
+
+  &:focus {
+    outline: none;
+  }
 
   &::placeholder {
     color: var(--knime-dove-gray);
@@ -166,25 +215,18 @@ input {
     opacity: 0.5;
   }
 
-  &:focus {
-    border-color: var(--knime-masala);
-  }
-
   &.invalid + .invalid-marker {
     position: absolute;
     display: block;
     width: 3px;
-    left: 0;
     margin: 0;
-    top: 0;
-    bottom: 0;
     background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
-  }
 
-  &.with-icon {
-    padding: 10px 10px 10px 38px;
-  }
+     /* "Outside" location corresponds to wrapper border. */
+     left: -1px;
+     top: -1px;
+     bottom: -1px;
 
   &.with-icon-right {
     padding: 10px 38px 10px 10px;
@@ -199,19 +241,6 @@ input {
  * would otherwise not be noticed within the input element. */
 .input-wrapper:hover:not(:focus) input:not(:focus, :disabled) {
   background-color: var(--theme-input-field-background-color-focus);
-}
-
-.icon {
-  position: absolute;
-  top: 10px;
-  pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the icon */
-
-  & :slotted(svg) {
-    width: 18px;
-    height: 18px;
-    stroke-width: calc(32px / 18); /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
-    stroke: var(--knime-masala);
-  }
 }
 
 .icon-left {

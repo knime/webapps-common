@@ -5,9 +5,16 @@ import FolderIcon from 'webapps-common/ui/assets/img/icons/folder.svg';
 import Breadcrumb from 'webapps-common/ui/components/Breadcrumb.vue';
 import breadcrumbCode from 'webapps-common/ui/components/Breadcrumb.vue?raw';
 
-const codeExample = `<Breadcrumb :items="[{ text: 'segment without link' },
+const codeExample = `<Breadcrumb
+  :items="[
+    { text: 'segment without link' },
     { text: 'segment with link', href: '/' },
-    { text: 'segment with icon', icon: FolderIcon }]" greyStyle />
+    { text: 'segment with icon', icon: FolderIcon, clickable: true },
+    { text: 'segment with icon', icon: FolderIcon }
+    { title: 'only an icon with no text but a title', icon: FolderIcon }
+  ]"
+  greyStyle
+/>
 `;
 
 export default {
@@ -23,11 +30,17 @@ export default {
                 { text: 'KNIME Hub', href: '/' },
                 { text: 'John Doe', href: '/john.doe' },
                 { text: 'Public Space', href: '/john.doe/space', icon: FolderIconRef },
-                { text: 'Examples', icon: FolderIconRef },
-                { text: 'Sentiment Prediction via REST' }
+                { text: 'Examples', icon: FolderIconRef, clickable: true },
+                { text: 'Sentiment Prediction via REST' },
+                { title: 'only an icon with no text but a title', icon: FolderIcon }
             ],
             codeExample
         };
+    },
+    methods: {
+        onItemClicked({ text }) {
+            window.alert(`You clicked on item ${JSON.stringify({ text })}`);
+        }
     }
 };
 </script>
@@ -39,7 +52,10 @@ export default {
         <h2>Breadcrumb</h2>
         <p>Breadcrumbs can have different focus/hover styles, these can be toggled via the "greyStyle"-property</p>
         <span>Default style:</span>
-        <Breadcrumb :items="breadcrumbItems" />
+        <Breadcrumb
+          :items="breadcrumbItems"
+          @click-item="onItemClicked"
+        />
         <span>"greyStyle" enabled:</span>
         <Breadcrumb
           :items="breadcrumbItems"

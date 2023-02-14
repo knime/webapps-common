@@ -42,6 +42,7 @@ export default {
             Displays a donut chart.
 
             It can display the current and max value as well as display an additional label.
+            Also supports a secondary value to be displayed.
           </p>
         </div>
       </div>
@@ -84,6 +85,40 @@ export default {
     </section>
     <section>
       <div class="grid-container">
+        <div class="grid-item-12 demo">
+          <DonutChart
+            :value="1"
+            :max-value="6"
+            :radius="22.5"
+            :inner-radius="11"
+          />
+          <DonutChart
+            :value="2"
+            :secondary-value="2.5"
+            :max-value="6"
+            :radius="22.5"
+            :inner-radius="11"
+          />
+          <DonutChart
+            :value="3"
+            :max-value="5"
+            additional-label="some metric"
+            :radius="22.5"
+            :inner-radius="11"
+          />
+          <DonutChart
+            :value="8"
+            :max-value="Infinity"
+            additional-label="some metric"
+            :radius="22.5"
+            :inner-radius="11"
+            accept-values-larger-than-max
+          />
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
           <CodeExample summary="Show DonutChart.vue source code">{{ code }}</CodeExample>
@@ -95,6 +130,11 @@ export default {
 
 
 <style lang="postcss" scoped>
+
+section {
+  margin-bottom: 40px;
+}
+
 .demo {
   display: flex;
   gap: 30px;

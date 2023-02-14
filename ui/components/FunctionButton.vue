@@ -100,6 +100,10 @@ export default {
     stroke-width: calc(32px / 18);
   }
 
+  & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+    fill: var(--theme-button-function-foreground-color);
+  }
+
   &:hover {
     outline: none;
     color: var(--theme-button-function-foreground-color-hover);
@@ -107,6 +111,10 @@ export default {
 
     & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-hover);
+    }
+
+    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      fill: var(--theme-button-function-foreground-color-hover);
     }
   }
 
@@ -118,6 +126,10 @@ export default {
     & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-focus);
     }
+
+    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      fill: var(--theme-button-function-foreground-color-focus);
+    }
   }
 
   &.active {
@@ -126,6 +138,10 @@ export default {
 
     & :deep(svg) {
       stroke: var(--theme-button-function-foreground-color-active);
+    }
+
+    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      fill: var(--theme-button-function-foreground-color-active);
     }
   }
 
@@ -137,6 +153,10 @@ export default {
       stroke: var(--theme-button-foreground-color);
     }
 
+    & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+      fill: var(--theme-button-foreground-color);
+    }
+
     &:hover {
       outline: none;
       color: var(--theme-button-foreground-color-hover);
@@ -144,6 +164,10 @@ export default {
 
       & :deep(svg) {
         stroke: var(--theme-button-foreground-color-hover);
+      }
+
+      & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+        fill: var(--theme-button-foreground-color-hover);
       }
     }
 
@@ -155,6 +179,10 @@ export default {
 
       & :deep(svg) {
         stroke: var(--theme-button-foreground-color-focus);
+      }
+
+      & >>> svg path[fill]:not([fill=""]):not([fill="none"]) {
+        fill: var(--theme-button-foreground-color-focus);
       }
     }
   }

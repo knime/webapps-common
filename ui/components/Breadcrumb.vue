@@ -8,13 +8,18 @@ export default {
     },
     props: {
         /**
-         * items as array with a 'text' and optional properties 'href', 'icon'
+         * items as array with a 'text' and optional properties 'href', 'icon' and 'clickable'
+         *
+         * Having "href" set will make the element behave as a link. Having the "clickable" property
+         * set will make the component emit a "click-item" event when the corresponding item is clicked. "href" takes
+         * precedence over "clickable"
+         *
          * e.g.
          * [
          *   { text: 'KNIME Hub', href: '/', icon: Icon },
          *   { text: 'John Doe', href: '/john.doe' },
          *   { text: 'Public Space', href: '/john.doe/space' },
-         *   { text: 'Examples', href: '/john.doe/space/examples' },
+         *   { text: 'Examples', clickable: true },
          *   { text: 'Sentiment Prediction via REST' }
          * ]
          */
@@ -63,7 +68,13 @@ export default {
           />
           {{ breadcrumbItem.text }}
         </Component>
-        <span v-else>
+        <span
+          v-else
+          :class="{ clickable: breadcrumbItem.clickable }"
+          :role="breadcrumbItem.clickable ? 'button' : null"
+          :title="breadcrumbItem.title"
+          @click="breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)"
+        >
           <Component
             :is="breadcrumbItem.icon"
             v-if="breadcrumbItem.icon"
@@ -150,6 +161,11 @@ export default {
     & svg {
       stroke: var(--theme-text-bold-color);
     }
+  }
+
+  /* Clickable breadcrumb item */
+  & span.clickable {
+    cursor: pointer;
   }
 
   /* Linked breadcrumb item */

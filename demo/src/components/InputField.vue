@@ -3,6 +3,8 @@ import CodeExample from './demo/CodeExample.vue';
 import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 import MailIcon from 'webapps-common/ui/assets/img/icons/mail.svg';
 import CircleCheckIcon from 'webapps-common/ui/assets/img/icons/circle-check.svg';
+import CloseIcon from 'webapps-common/ui/assets/img/icons/close.svg';
+import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import code from 'webapps-common/ui/components/forms/InputField.vue?raw';
 
 const codeExample = `<InputField
@@ -39,6 +41,10 @@ const codeExample = `<InputField
 />
 <InputField
   v-model="inputValue"
+  @focus="onFocus"
+/>
+<InputField
+  v-model="inputValue"
   type="text"
 >
   <template v-slot:icon><MailIcon /></template>
@@ -48,12 +54,32 @@ const codeExample = `<InputField
   type="text"
 >
   <template v-slot:iconRight><CircleCheckIcon /></template>
+</InputField>
+<InputField
+  value="demo with right aligned button"
+  type="text"
+  ref="buttonDemo"
+>
+  <template #iconRight>
+    <FunctionButton
+      @click="alert('demo')"
+    >
+      <CircleCheckIcon />
+    </FunctionButton>
+    <FunctionButton
+      @click="alert('demo 2')"
+    >
+      <CloseIcon />
+    </FunctionButton>
+  </template>
 </InputField>`;
 
 export default {
     components: {
         InputField,
+        FunctionButton,
         CircleCheckIcon,
+        CloseIcon,
         MailIcon,
         CodeExample
     },
@@ -68,6 +94,12 @@ export default {
     computed: {
         code() {
             return code;
+        }
+    },
+    methods: {
+        alert(message) {
+            window.alert(message);
+            this.$refs.buttonDemo.focus();
         }
     }
 };
@@ -127,6 +159,24 @@ export default {
           >
             <template #iconRight>
               <CircleCheckIcon />
+            </template>
+          </InputField>
+          <InputField
+            ref="buttonDemo"
+            value="demo with right aligned buttons"
+            type="text"
+          >
+            <template #iconRight>
+              <FunctionButton
+                @click="alert('demo')"
+              >
+                <CircleCheckIcon />
+              </FunctionButton>
+              <FunctionButton
+                @click="alert('demo 2')"
+              >
+                <CloseIcon />
+              </FunctionButton>
             </template>
           </InputField>
         </div>

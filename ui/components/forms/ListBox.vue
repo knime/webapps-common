@@ -183,7 +183,7 @@ export default {
         generateInvalidItem(id) {
             return {
                 id,
-                text: `${id} (MISSING)`,
+                text: `(MISSING) ${id}`,
                 invalid: true
             };
         },

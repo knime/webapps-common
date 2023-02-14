@@ -66,6 +66,7 @@ describe('Dropdown.vue', () => {
 
         let button = wrapper.find('[role=button]');
         expect(button.text()).toBe('Text 3');
+        expect(wrapper.vm.isMissing).toBeFalsy();
 
         await wrapper.setProps({ modelValue: null });
         expect(button.text()).toBe(placeholder);
@@ -98,6 +99,18 @@ describe('Dropdown.vue', () => {
 
         let button = wrapper.find('[role=button]');
         expect(button.text()).toBe('(MISSING) no');
+    });
+
+    it('detects that there is a missing value', () => {
+        const wrapper = mount(Dropdown, {
+            propsData: {
+                ...propsData,
+                value: 'no'
+            },
+            localVue
+        });
+
+        expect(wrapper.vm.isMissing).toBeTruthy();
     });
 
     it('renders invalid style', () => {
