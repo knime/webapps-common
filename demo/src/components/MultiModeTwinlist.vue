@@ -73,31 +73,12 @@ export default {
                 id: 'bar',
                 text: 'Bar',
                 type: { id: 'type2', text: 'Type 2' }
-            }, {
-                id: 'baz',
-                text: 'Baz',
-                type: { id: 'type1', text: 'Type 1' }
-            }, {
-                id: 'baz2',
-                text: 'Baz 2',
-                type: { id: 'type1', text: 'Type 1' }
-            }, {
-                id: 'baz3',
-                text: 'Baz 3',
-                type: { id: 'type2', text: 'Type 2' }
-            }, {
-                id: 'baz4',
-                text: 'Baz 4',
-                type: { id: 'type5', text: 'Type 5' }
-            }, {
-                id: 'baz5',
-                text: 'Baz 5',
-                type: { id: 'type4', text: 'Type 4' }
-            }, {
-                id: 'baz6',
-                text: 'Baz 6',
-                type: { id: 'type3', text: 'Type 3' }
-            }, {
+            }, ...Array.from({ length: 6 }, (_, i) => ({
+                id: `baz${i}`,
+                text: `Baz${i}`,
+                type: { id: ` type${i}`, text: ` Type ${i}` }
+            })),
+            {
                 id: 'spec1',
                 text: 'Special *.^',
                 type: { id: 'type1', text: 'Type 1' }

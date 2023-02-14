@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-  <li
+  <!-- //NOSONAR --><li
     v-bind="$attrs"
     role="option"
     :title="text"

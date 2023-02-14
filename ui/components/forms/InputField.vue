@@ -49,7 +49,7 @@ export default {
             type: Boolean
         }
     },
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'focus'],
     computed: {
         hasLeftIcon() {
             return this.$slots.icon && this.$slots.icon().length;
