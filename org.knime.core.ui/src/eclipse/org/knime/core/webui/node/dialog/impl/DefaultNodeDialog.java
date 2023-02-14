@@ -111,14 +111,14 @@ public final class DefaultNodeDialog extends NodeDialog {
      * @param settingsClass1 dialog definition for the first settings type
      * @param settingsType2 another settings type this dialog is able to provide
      * @param settingsClass2 dialog definition for the second settings type
-     * @param configurationModifier a {@link NodeCreationConfigurationModifier} callback that will be invoked when
-     *            applying new data in the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     * @param onApplyModifier an {@link org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier} that will be
+     *            invoked when cleaning up the {@link ApplyDataService} created in {@link #createApplyDataService()}
      */
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2,
-        final NodeCreationConfigurationModifier configurationModifier) {
-        super(configurationModifier, settingsType1, settingsType2);
+        final OnApplyNodeModifier onApplyModifier) {
+        super(onApplyModifier, settingsType1, settingsType2);
         m_settingsDataService =
             new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
     }

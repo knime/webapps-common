@@ -59,7 +59,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.ConfigurableNodeFactory;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -70,7 +69,6 @@ import org.knime.core.node.config.ConfigEditJTree;
 import org.knime.core.node.config.ConfigEditTreeModel.ConfigEditTreeNode;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
-import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -79,7 +77,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.LegacyFlowVariableNodeDialog;
-import org.knime.core.webui.node.dialog.NodeDialog.NodeCreationConfigurationModifier;
+import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
@@ -185,67 +183,112 @@ public class NodeDialogTest {
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
+    private static class TestOnApplyNodeModifer implements OnApplyNodeModifier {
+
+        private boolean m_onApplyCalled;
+
+        private NativeNodeContainer m_ExpectedNnc;
+
+        private NodeSettingsRO m_expectedPreviousModelSettings;
+
+        private NodeSettingsRO m_expectedUpdatedModelSettings;
+
+        private NodeSettingsRO m_expectedPreviousViewSettings;
+
+        private NodeSettingsRO m_expectedUpdatedViewSettings;
+
+        private void setExpected(final NativeNodeContainer nnc, final NodeSettingsRO previousModelSettings,
+            final NodeSettingsRO updatedModelSettings, final NodeSettingsRO previousViewSettings,
+            final NodeSettingsRO updatedViewSettings) {
+            m_onApplyCalled = false;
+            m_ExpectedNnc = nnc;
+            m_expectedPreviousModelSettings = previousModelSettings;
+            m_expectedUpdatedModelSettings = updatedModelSettings;
+            m_expectedPreviousViewSettings = previousViewSettings;
+            m_expectedUpdatedViewSettings = updatedViewSettings;
+        }
+
+        @Override
+        public void onApply(final NativeNodeContainer nnc, final NodeSettingsRO initialModelSettings,
+            final NodeSettingsRO updatedModelSettings, final NodeSettingsRO initialViewSettings,
+            final NodeSettingsRO updatedViewSettings) {
+            m_onApplyCalled = true;
+            assertThat(nnc).isEqualTo(m_ExpectedNnc);
+            assertThat(initialModelSettings).isEqualTo(m_expectedPreviousModelSettings);
+            assertThat(updatedModelSettings).isEqualTo(m_expectedUpdatedModelSettings);
+            assertThat(initialViewSettings).isEqualTo(m_expectedPreviousViewSettings);
+            assertThat(updatedViewSettings).isEqualTo(m_expectedUpdatedViewSettings);
+        }
+    }
+
     /**
-     * Tests that if the node factory is a {@link ConfigurableNodeFactory} and the node dialog has been provided with a
-     * {@link NodeCreationConfigurationModifier}, this modifier is invoked correctly and applied when the data services
-     * are cleaned up.
+     * Tests that a given TestOnApplyNodeModifer is correctly called (i.e., called with the correct parameters) when
+     * data services are cleaned up.
      *
      * @throws Exception
      */
     @Test
-    public void testNodeCreationConfigurationModifier() throws Exception {
-        final var configurationModifier = new NodeCreationConfigurationModifier() {
-            @Override
-            protected boolean modifyConfiguration(final ModifiableNodeCreationConfiguration configuration,
-                final NodeSettingsRO modelSettings, final NodeSettingsRO previousModelSettings) {
-                return (modelSettings.getBoolean("key", false) != previousModelSettings.getBoolean("key", false));
-            }
-        };
-        assertThat(configurationModifier.getConfiguration()).isNull();
-        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+    void testOnApplyNodeModifier() throws Exception {
 
+        var onApplyModifier = new TestOnApplyNodeModifer();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null, null, configurationModifier)));
+                createTextSettingsDataService(), null, null, onApplyModifier)));
         var nncWrapper = NodeWrapper.of(nnc);
 
-        var modelSettings = new NodeSettings("model");
-        var viewSettings = new NodeSettings("view");
-
-        // apply settings and execute node
+        var initialModelSettings = new NodeSettings("model");
+        var initialViewSettings = new NodeSettings("view");
         var nodeDialogManager = NodeDialogManager.getInstance();
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
-        wfm.executeAllAndWaitUntilDone();
-        assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
-        final var configuration = configurationModifier.getConfiguration();
-        assertThat(configuration).isNotNull();
-        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+        nodeDialogManager.callTextApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings));
+        onApplyModifier.setExpected(nnc, initialModelSettings, initialModelSettings, initialViewSettings,
+            initialViewSettings);
+        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
 
-        // clean up data services
-        nodeDialogManager.cleanUpDataServices(nncWrapper);
-        assertThat(configurationModifier.getConfiguration()).isEqualTo(configuration);
+        // Test that when settings are updated multiple times, the previous settings passed to the on apply modifier are
+        // equal to the initial settings and the updated settings reflect the final update.
+        var updatedModelSettings = new NodeSettings("model");
+        updatedModelSettings.addString("key", "updatedOnce");
+        var updatedViewSettings = new NodeSettings("view");
+        updatedViewSettings.addString("key", "updatedOnce");
+        nodeDialogManager.callTextApplyDataService(nncWrapper,
+            settingsToString(updatedModelSettings, updatedViewSettings));
+        updatedModelSettings.addString("key", "updatedTwice");
+        updatedViewSettings.addString("key", "updatedTwice");
+        nodeDialogManager.callTextApplyDataService(nncWrapper,
+            settingsToString(updatedModelSettings, updatedViewSettings));
+        onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
+            updatedViewSettings);
+        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
 
-        // update settings, apply update, re-execute node
-        modelSettings.addBoolean("key", true);
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
-        assertThat(nnc.getNodeContainerState().isConfigured()).isTrue();
-        wfm.executeAllAndWaitUntilDone();
-        assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
-        assertThat(configurationModifier.getConfiguration()).isEqualTo(configuration);
-        assertThat(configurationModifier.getReplaceNodeRunnable()).isNotNull();
-
-        // clean up data services
-        final var nodeID = nnc.getID();
-        assertThat(wfm.getNodeContainer(nodeID)).isEqualTo(nnc);
-        nodeDialogManager.cleanUpDataServices(nncWrapper);
-        final var replacedNnc = wfm.getNodeContainer(nodeID);
-        assertThat(replacedNnc).isNotEqualTo(nnc);
-        assertThat(replacedNnc.getNodeContainerState().isConfigured()).isTrue();
-        assertThat(configurationModifier.getConfiguration()).isNull();
-        assertThat(configurationModifier.getReplaceNodeRunnable()).isNull();
+        // Test that when settings are overridden by flow variables, these settings are always passed unchanged to the
+        // on apply modifier, i.e., their value is changed neither to the value of the overriding flow variable nor to
+        // any updated value provided via callTextApplyDataService.
+        var nodeSettings = new NodeSettings("node_settings");
+        wfm.saveNodeSettings(nnc.getID(), nodeSettings);
+        var viewVariables = nodeSettings.addNodeSettings("view_variables");
+        viewVariables.addString("version", "V_2019_09_13");
+        var viewVariable = viewVariables.addNodeSettings("tree").addNodeSettings("key");
+        viewVariable.addString("used_variable", "view_variable");
+        viewVariable.addString("exposed_variable", null);
+        var modelVariables = nodeSettings.addNodeSettings("variables");
+        modelVariables.addString("version", "V_2019_09_13");
+        var modelVariable = modelVariables.addNodeSettings("tree").addNodeSettings("key");
+        modelVariable.addString("used_variable", "model_variable");
+        modelVariable.addString("exposed_variable", null);
+        wfm.loadNodeSettings(nnc.getID(), nodeSettings);
+        nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
+        nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
+        nodeDialogManager.callTextApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings));
+        onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
+            updatedViewSettings);
+        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
     }
-
 
     /**
      * Tests that settings that are controlled by flow variables are properly returned in the node dialog's initial data
@@ -682,8 +725,8 @@ public class NodeDialogTest {
 
     static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
         final TextVariableSettingsService variableSettingsService, final DataService dataService,
-        final NodeCreationConfigurationModifier configurationModifier) {
-        return new NodeDialog(configurationModifier, SettingsType.MODEL, SettingsType.VIEW) {
+        final OnApplyNodeModifier onApplyModifier) {
+        return new NodeDialog(onApplyModifier, SettingsType.MODEL, SettingsType.VIEW) {
 
             @Override
             public Optional<DataService> createDataService() {
