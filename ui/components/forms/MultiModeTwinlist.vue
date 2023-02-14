@@ -328,6 +328,7 @@ export default {
       />
     </Label>
     <Twinlist
+      v-bind="$attrs"
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
@@ -335,7 +336,6 @@ export default {
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
       :initial-include-unknown-values="includeUnknownValues"
-      v-bind="$attrs"
       @update:model-value="onManualInput"
       @include-unknown-values-input="onUnkownColumnsInput"
     />
