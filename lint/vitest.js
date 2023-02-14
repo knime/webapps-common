@@ -2,7 +2,7 @@ module.exports = {
     overrides: [
         {
             plugins: ['eslint-plugin-vitest', 'jest-formatting'],
-            files: ['**/__tests__/*.test.js'],
+            files: ['**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
             rules: {
                 'no-magic-numbers': 'off',
                 'max-nested-callbacks': 'off',
