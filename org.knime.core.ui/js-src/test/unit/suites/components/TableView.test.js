@@ -6,7 +6,8 @@ import { mount, createLocalVue, shallowMount } from '@vue/test-utils';
 import { TableUI } from '@knime/knime-ui-table';
 import { asyncMountTableView, changeViewSetting } from '../utils/tableViewTestUtils';
 import Vuex from 'vuex';
-import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
+import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN }
+    from '@knime/knime-ui-table/util/constants';
 
 const localVue = createLocalVue();
 const DEFAULT_COLUMN_SIZE = 100;
@@ -22,7 +23,7 @@ jest.mock('raf-throttle', () => function (func) {
 const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
 
 describe('TableView.vue', () => {
-    const emptyColumnFilterValues = [[''], [], [], [''], ['']];
+    const emptyColumnFilterValues = [[''], [], [], [''], [''], ['']];
     const emptyRenderers = new Array(4).fill(null); // eslint-disable-line no-magic-numbers
 
     let context,
@@ -33,6 +34,7 @@ describe('TableView.vue', () => {
         getCurrentRowKeysResult;
 
     const rowCount = 4;
+    const columnCount = 4;
 
     beforeEach(() => {
         initialDataMock = {
@@ -44,6 +46,7 @@ describe('TableView.vue', () => {
                 columnContentTypes: ['txt', 'txt', 'txt', 'img_path'],
                 columnDataTypeIds: ['datatype1', 'datatype1', 'datatype2', 'datatype3'],
                 rowCount,
+                columnCount,
                 displayedColumns: ['col1', 'col2', 'col3', 'col4'],
                 totalSelected: 0
             },
@@ -86,12 +89,13 @@ describe('TableView.vue', () => {
                 enableSortingByHeader: true,
                 publishSelection: true,
                 subscribeToSelection: true,
-                compactMode: false
+                compactMode: false,
+                skipRemainingColumns: false
             }
         };
 
         // eslint-disable-next-line no-magic-numbers
-        dataRequestResult = { ...initialDataMock.table, rows: initialDataMock.table.rows.slice(1, 3) };
+        dataRequestResult = { ...initialDataMock.table, rows: initialDataMock.table.rows.slice(1, 3), columnCount: 2 };
         getTotalSelectedResult = 2;
         getCurrentRowKeysResult = ['row1', 'row3'];
         getData = jest.fn();
@@ -217,7 +221,7 @@ describe('TableView.vue', () => {
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = await getTableProps(wrapper);
 
             expect(wrapper.getComponent(TableUI).exists()).toBe(true);
-            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row])]);
+            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row, '…'])]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
             expect(totalSelected).toStrictEqual(0);
             expect(tableConfig).toMatchObject({
@@ -946,7 +950,7 @@ describe('TableView.vue', () => {
             expect(wrapper.find('.table-title').exists()).toBeFalsy();
         });
 
-        it('updates displayed columns on displayed columns change', () => {
+        it('updates displayed columns on displayed columns change', async () => {
             const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
             settings.displayedColumns.selected.push('missingCol');
             wrapper.vm.onViewSettingsChange({
@@ -954,9 +958,54 @@ describe('TableView.vue', () => {
             });
             expect(dataSpy).toHaveBeenCalledWith({
                 method: 'getTable',
-                options: [settings.displayedColumns.selected, 0, 2, [null, null, null, null, null], true, true]
+                options: [settings.displayedColumns.selected, 0, 2, [null, null, null, null, null], true, true, false]
             });
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
             expect(wrapper.vm.displayedColumns).toStrictEqual(initialDataMock.table.displayedColumns);
+            
+            expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
+        });
+
+        it('adds additional column indicating that columns were skipped', async () => {
+            initialDataMock.settings.skipRemainingColumns = true;
+            const expectedColumnSize = DEFAULT_COLUMN_SIZE;
+            let wrapper = await mount(TableView, context);
+            await wrapper.vm.$nextTick();
+            const settings = JSON.parse(JSON.stringify(wrapper.vm.$data.settings));
+            const newColumns = ['col2', 'col3'];
+            settings.displayedColumns.selected = newColumns;
+            dataRequestResult.columnCount = 3;
+            dataRequestResult.displayedColumns = newColumns;
+            wrapper.vm.onViewSettingsChange({
+                data: { data: { view: settings } }
+            });
+            expect(dataSpy).toHaveBeenCalledWith({
+                method: 'getTable',
+                options: [settings.displayedColumns.selected, 0, 2, [null, null], true, true, true]
+            });
+            await wrapper.vm.$nextTick();
+            await wrapper.vm.$nextTick();
+            const newColumnConfig = [
+                { key: 2, header: 'col2', size: expectedColumnSize, hasSlotContent: false },
+                { key: 3, header: 'col3', size: expectedColumnSize, hasSlotContent: false },
+                {
+                    filterConfig: {
+                        is: '',
+                        value: ''
+                    },
+                    hasSlotContent: false,
+                    header: '(skipped remaining columns)',
+                    isSortable: false,
+                    key: 4,
+                    size: wrapper.vm.skippedRemainingColumnsColumnMinWidth,
+                    subHeader: undefined
+                }
+            ];
+            expect(wrapper.vm.dataConfig).toMatchObject({
+                columnConfigs: newColumnConfig
+            });
+            expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
         });
 
         it('updates columnDataTypeIds on displayes columns update', async () => {
@@ -975,7 +1024,7 @@ describe('TableView.vue', () => {
             });
             expect(dataSpy).toHaveBeenCalledWith({
                 method: 'getTable',
-                options: [settings.displayedColumns.selected, 0, 2, [null, null], true, true]
+                options: [settings.displayedColumns.selected, 0, 2, [null, null], true, true, false]
             });
             await wrapper.vm.$nextTick();
             await wrapper.vm.$nextTick();
@@ -1077,7 +1126,7 @@ describe('TableView.vue', () => {
                 wrapper.vm.onPageChange(1);
                 expect(dataSpy).toBeCalledWith({
                     method: 'getTable',
-                    options: [initialDataMock.table.displayedColumns, 2, 2, emptyRenderers, false, true] // eslint-disable-line no-magic-numbers
+                    options: [initialDataMock.table.displayedColumns, 2, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
                 });
                 expect(wrapper.vm.currentPage).toStrictEqual(2);
             });
@@ -1088,7 +1137,7 @@ describe('TableView.vue', () => {
 
             expect(dataSpy).toHaveBeenNthCalledWith(2, {
                 method: 'getTable',
-                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true] // eslint-disable-line no-magic-numbers
+                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
             });
             expect(wrapper.vm.currentPage).toStrictEqual(1);
         });
@@ -1118,7 +1167,7 @@ describe('TableView.vue', () => {
             expect(dataSpy).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
             expect(wrapper.vm.currentPage).toStrictEqual(1);
         });
@@ -1131,7 +1180,7 @@ describe('TableView.vue', () => {
             expect(dataSpyDesc).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', true, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', true, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
             expect(wrapper.vm.currentPage).toStrictEqual(1);
 
@@ -1140,7 +1189,7 @@ describe('TableView.vue', () => {
             expect(dataSpyAsc).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
         });
 
@@ -1151,7 +1200,7 @@ describe('TableView.vue', () => {
             expect(dataSpy).toHaveBeenNthCalledWith(2, {
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    2, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true] // eslint-disable-line no-magic-numbers
+                    2, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
             expect(wrapper.vm.currentPage).toStrictEqual(2);
         });
@@ -1165,7 +1214,7 @@ describe('TableView.vue', () => {
             expect(dataSpy).toHaveBeenCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns, 0, 2, '-1', false, '', emptyColumnFilterValues,
-                    true, emptyRenderers, false, false, true] // eslint-disable-line no-magic-numbers
+                    true, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
         });
     });
@@ -1388,7 +1437,7 @@ describe('TableView.vue', () => {
         it('requests new data on column search', () => {
             const columnSearchTerm = 'entry1col1';
             wrapper.vm.onColumnFilter(0, columnSearchTerm);
-            const columnFilterValues = [[''], [columnSearchTerm], [], [''], ['']];
+            const columnFilterValues = [[''], [columnSearchTerm], [], [''], [''], ['']];
             expect(dataSpy).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
@@ -1402,7 +1451,8 @@ describe('TableView.vue', () => {
                     emptyRenderers,
                     false,
                     true,
-                    true]
+                    true,
+                    false]
             });
         });
 
@@ -1422,7 +1472,8 @@ describe('TableView.vue', () => {
                     emptyRenderers,
                     false,
                     true,
-                    true]
+                    true,
+                    false]
             });
         });
 
@@ -1432,7 +1483,7 @@ describe('TableView.vue', () => {
             wrapper.vm.onClearFilter();
             expect(dataSpy).toHaveBeenNthCalledWith(2, {
                 method: 'getTable',
-                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true] // eslint-disable-line no-magic-numbers
+                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
             });
         });
 
@@ -1457,7 +1508,8 @@ describe('TableView.vue', () => {
                     [null, null, null, null, null],
                     true,
                     true,
-                    true]
+                    true,
+                    false]
             });
             await wrapper.vm.$nextTick();
             await wrapper.vm.$nextTick();
@@ -1484,7 +1536,7 @@ describe('TableView.vue', () => {
                     0,
                     2, // eslint-disable-line no-magic-numbers
                     [null, null, renderer.id, null],
-                    false, true]
+                    false, true, false]
             });
         });
 
@@ -1525,7 +1577,7 @@ describe('TableView.vue', () => {
 
                 expect(dataSpy).toHaveBeenNthCalledWith(2, {
                     method: 'getTable',
-                    options: [['col3', 'col4'], 0, 2, ['t2r1', null], true, true]
+                    options: [['col3', 'col4'], 0, 2, ['t2r1', null], true, true, false]
                 });
             });
     });
@@ -1594,7 +1646,8 @@ describe('TableView.vue', () => {
             const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
 
             const defaultColumnSizes = [MIN_COLUMN_SIZE, MIN_COLUMN_SIZE]
-                .concat(Array(nColumns - 2).fill(defaultColumnSize));
+                .concat(Array(nColumns - 2).fill(defaultColumnSize))
+                .concat([wrapper.vm.skippedRemainingColumnsColumnMinWidth]);
             const lastColumnMinSize = dataColumnsSizeTotal -
                 defaultColumnSizes.slice(0, nColumns - 1).reduce((sum, size) => sum + size, 0);
             defaultColumnSizes[nColumns - 1] = Math.max(lastColumnMinSize, defaultColumnSizes[nColumns - 1]);
@@ -1646,10 +1699,12 @@ describe('TableView.vue', () => {
             wrapper.vm.onColumnResize(0, 1);
             wrapper.vm.onColumnResize(1, 2);
             wrapper.vm.onColumnResize(2, 1);
+            wrapper.vm.onColumnResize(3, 1);
             defaultColumnSizes[0] = 1;
             defaultColumnSizes[1] = 2;
             defaultColumnSizes[2] = 1;
-            defaultColumnSizes[defaultColumnSizes.length - 1] = 206;
+            defaultColumnSizes[3] = 1;
+            defaultColumnSizes[defaultColumnSizes.length - 1] = 205;
             expect(wrapper.vm.columnSizes).toStrictEqual(defaultColumnSizes);
         });
 

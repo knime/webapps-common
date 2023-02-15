@@ -109,7 +109,7 @@ class TableViewInitialDataTest {
         final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
         initialData.getTable();
         verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L),
-            eq(settings.m_pageSize), any(String[].class), eq(true), eq(true));
+            eq(settings.m_pageSize), any(String[].class), eq(true), eq(true), eq(false));
     }
 
     @Test
@@ -120,7 +120,18 @@ class TableViewInitialDataTest {
         final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
         initialData.getTable();
         verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), eq(0),
-            any(String[].class), eq(true), eq(true));
+            any(String[].class), eq(true), eq(true), eq(false));
+    }
+
+    @Test
+    void testGetTableWithSkipRemainingColumns() {
+        final var settings = new TableViewViewSettings(table.getSpec());
+        settings.m_displayedColumns = displayedColumns;
+        settings.m_skipRemainingColumns = true;
+        final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
+        initialData.getTable();
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), any(Integer.class),
+            any(String[].class), eq(true), eq(true), eq(true));
     }
 
     @Test

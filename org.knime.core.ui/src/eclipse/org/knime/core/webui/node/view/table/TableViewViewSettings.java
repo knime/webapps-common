@@ -187,6 +187,13 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Persist(optional = true)
     public boolean m_subscribeToSelection = true;
 
+
+    /**
+     * If there should be a limit on rendered Columns
+     */
+    @Persist(optional = true)
+    public boolean m_skipRemainingColumns;
+
     /**
      * Create a new {@link TableViewViewSettings} with default values
      */

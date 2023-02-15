@@ -5,10 +5,12 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
 import throttle from 'raf-throttle';
-import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
+import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN }
+    from '@knime/knime-ui-table/util/constants';
 
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
+const REMAINING_COLUMNS_SYMBOL = Symbol('Remaining columns');
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = '-1';
 const MIN_SCOPE_SIZE = 200;
@@ -42,6 +44,7 @@ export default {
             currentRowCount: 0,
             settings: {},
             displayedColumns: [],
+            columnCount: 0,
             jsonDataService: null,
             selectionService: null,
             searchTerm: '',
@@ -58,6 +61,8 @@ export default {
             bottomRows: [],
             rowIdColumnName: 'RowID',
             indexColumnName: '#',
+            skippedRemainingColumnsColumnName: '(skipped remaining columns)',
+            skippedRemainingColumnsColumnMinWidth: 200,
             columnDataTypeIds: null,
             columnContentTypes: null,
             // a counter which is used to ignore all requests which were not the last sent one
@@ -106,6 +111,15 @@ export default {
                 };
                 columnConfigs.push(this.createColumnConfig(columnInformation));
             });
+            if (this.indicateRemainingColumsSkipped) {
+                columnConfigs.push(this.createColumnConfig(
+                    {
+                        index: this.displayedColumns.length + 2,
+                        columnName: this.skippedRemainingColumnsColumnName,
+                        isSortable: false
+                    }
+                ));
+            }
             this.updateColumnIndexMap(columnConfigs);
             return {
                 columnConfigs,
@@ -124,7 +138,7 @@ export default {
                     tableSize: this.totalRowCount,
                     pageSize: enablePagination ? pageSize : this.currentRowCount,
                     currentPage: this.currentPage,
-                    columnCount: this.displayedColumns.length
+                    columnCount: this.columnCount
                 },
                 enableVirtualScrolling: true,
                 fitToContainer: true,
@@ -169,6 +183,9 @@ export default {
                 return columnSizes;
             }, [this.columnSizeOverrides[INDEX_SYMBOL] || MIN_COLUMN_SIZE,
                 this.columnSizeOverrides[ROW_KEY_SYMBOL] || MIN_COLUMN_SIZE]);
+            currentColumnSizes.push(
+                this.columnSizeOverrides[REMAINING_COLUMNS_SYMBOL] || this.skippedRemainingColumnsColumnMinWidth
+            );
             const lastColumnMinSize = this.lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes);
             currentColumnSizes[currentColumnSizes.length - 1] = Math.max(lastColumnMinSize,
                 currentColumnSizes[currentColumnSizes.length - 1]);
@@ -176,7 +193,7 @@ export default {
         },
         rowData() {
             // we want the indices to start at 1
-            return this.table.rows.map((row, index) => [index + this.numRowsAbove + 1, ...row]);
+            return this.table.rows.map((row, index) => [index + this.numRowsAbove + 1, ...row, '…']);
         },
         bottomRowData() {
             if (typeof this.bottomRows === 'undefined') {
@@ -239,6 +256,12 @@ export default {
         },
         numRowsTotal() {
             return this.bottomRowsMode ? this.maxNumRows : this.currentNumRowsOnPage;
+        },
+        skipRemainingColumns() {
+            return this.settings.skipRemainingColumns;
+        },
+        indicateRemainingColumsSkipped() {
+            return this.displayedColumns.length < this.columnCount;
         }
     },
     async mounted() {
@@ -260,6 +283,7 @@ export default {
         if (initialData) {
             const { table, dataTypes, columnDomainValues, settings } = initialData;
             this.displayedColumns = table.displayedColumns;
+            this.columnCount = table.columnCount;
             this.columnDataTypeIds = table.columnDataTypeIds;
             this.columnContentTypes = table.columnContentTypes;
             this.dataTypes = dataTypes;
@@ -433,6 +457,7 @@ export default {
                 this.columnFilters = this.getDefaultFilterConfigs(getFromTopOrBottom('displayedColumns'));
                 this.displayedColumns = getFromTopOrBottom('displayedColumns');
                 this.columnDataTypeIds = getFromTopOrBottom('columnDataTypeIds');
+                this.columnCount = getFromTopOrBottom('columnCount');
             }
             if (updateTotalSelected) {
                 if (this.columnSortColumnName || this.searchTerm || this.colFilterActive) {
@@ -530,14 +555,23 @@ export default {
                     selectedRendererIds,
                     updateDisplayedColumns,
                     updateTotalSelected,
-                    clearImageDataCache
+                    clearImageDataCache,
+                    this.skipRemainingColumns
                 ]);
         },
         // eslint-disable-next-line max-params
         requestUnfilteredAndUnsortedTable(startIndex, numRows, displayedColumns, updateDisplayedColumns,
             selectedRendererIds, clearImageDataCache) {
-            return this.performRequest('getTable', [displayedColumns, startIndex, numRows, selectedRendererIds,
-                updateDisplayedColumns, clearImageDataCache]);
+            return this.performRequest('getTable',
+                [
+                    displayedColumns,
+                    startIndex,
+                    numRows,
+                    selectedRendererIds,
+                    updateDisplayedColumns,
+                    clearImageDataCache,
+                    this.skipRemainingColumns
+                ]);
         },
         getColumnsForRequest(updateDisplayedColumns) {
             return updateDisplayedColumns ? this.settings.displayedColumns.selected : this.displayedColumns;
@@ -707,8 +741,10 @@ export default {
             if (columnIndex < this.numberOfDisplayedIdColumns) {
                 if (colName === this.indexColumnName) {
                     Vue.set(this.columnSizeOverrides, INDEX_SYMBOL, newColumnSize);
-                } else {
+                } else if (colName === this.rowIdColumnName) {
                     Vue.set(this.columnSizeOverrides, ROW_KEY_SYMBOL, newColumnSize);
+                } else {
+                    Vue.set(this.columnSizeOverrides, REMAINING_COLUMNS_SYMBOL, newColumnSize);
                 }
             } else {
                 Vue.set(this.columnSizeOverrides, colName, newColumnSize);
@@ -832,6 +868,7 @@ export default {
                 const domainValuesMapped = domainValues ? domainValues.map(val => ({ id: val, text: val })) : null;
                 filterConfigs.push(createDefaultFilterConfig(domainValues, domainValuesMapped));
             });
+            filterConfigs.push({ is: '', value: '' });
             return filterConfigs;
         },
         // only call the method when (displayedColumns XOR showRowKeys XOR showRowKeys) changed and a sorting is active

@@ -64,10 +64,11 @@ public interface TableViewDataService {
      *            missing ones are filtered out and yield a warning. An exception is only thrown if all columns are
      *            missing.
      * @param forceClearImageDataCache forces to clear the image data cache
+     * @param trimColumns restricts the number of columns from which data is loaded
      * @return the table
      */
     Table getTable(String[] columns, long fromIndex, int numRows, String[] rendererIds, boolean updateDisplayedColumns,
-        boolean forceClearImageDataCache);
+        boolean forceClearImageDataCache, boolean trimColumns);
 
     /**
      * @param columns the names of the columns that are to be displayed
@@ -83,16 +84,17 @@ public interface TableViewDataService {
      * @param updateDisplayedColumns if true, the given columns will be partitioned by being columns in the table. The
      *            missing ones are filtered out and yield a warning. An exception is only thrown if all columns are
      *            missing.
-     * @param forceClearImageDataCache forces to clear the image data cache
      * @param updateTotalSelected if true, the current selected rows are loaded and the number of rows in the returned
      *            total table which are selected is returned
+     * @param forceClearImageDataCache forces to clear the image data cache
+     * @param trimColumns restricts the number of columns from which data is loaded
      * @return the table
      */
     @SuppressWarnings("java:S107") // accept the large number of parameters
     Table getFilteredAndSortedTable(String[] columns, long fromIndex, int numRows, String sortColumn,
         boolean sortAscending, String globalSearchTerm, String[][] columnFilterValue, boolean filterRowKeys,
         String[] rendererIds, boolean updateDisplayedColumns, boolean updateTotalSelected,
-        boolean forceClearImageDataCache);
+        boolean forceClearImageDataCache, boolean trimColumns);
 
     /**
      * @return the row keys of the currently cached sorted and filtered table or the input table

@@ -80,6 +80,12 @@ public interface Table {
     long getRowCount();
 
     /**
+     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
+     *         ones if the columns are trimmed.
+     */
+    long getColumnCount();
+
+    /**
      * @return the number of selected rows of the table in use
      */
     Long getTotalSelected();

@@ -113,6 +113,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
 
+    private static int NUM_TRIMMED_COLUMNS = 100;
+
     /**
      * @param tableSupplier supplier for the table from which to obtain data
      * @param tableId a globally unique id; used to uniquely identify images in the renderer-registry which belong to
@@ -163,9 +165,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     @Override
     public Table getTable(final String[] columns, final long fromIndex, final int numRows, final String[] rendererIds,
-        final boolean updateDisplayedColumns, final boolean forceClearImageDataCache) {
+        final boolean updateDisplayedColumns, final boolean forceClearImageDataCache, final boolean trimColumns) {
         return getFilteredAndSortedTable(columns, fromIndex, numRows, null, false, null, null, false, rendererIds,
-            updateDisplayedColumns, false, forceClearImageDataCache);
+            updateDisplayedColumns, false, forceClearImageDataCache, trimColumns);
     }
 
     @Override
@@ -173,14 +175,18 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String sortColumn, final boolean sortAscending, final String globalSearchTerm,
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
         final boolean updateDisplayedColumns, final boolean updateTotalSelected,
-        final boolean forceClearImageDataCache) {
+        final boolean forceClearImageDataCache, final boolean trimColumns) {
         var bufferedDataTable = m_tableSupplier.get();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
 
-        final var displayedColumns =
+        var displayedColumns =
             updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
+        final var numDisplayedColumns = displayedColumns.length;
+        if (trimColumns && numDisplayedColumns > NUM_TRIMMED_COLUMNS) {
+            displayedColumns = Arrays.copyOfRange(displayedColumns, 0, NUM_TRIMMED_COLUMNS);
+        }
 
         // we sort first (even though it is more expensive) because filtering happens more frequently
         // and therefore we do not have to re-sort every time we filter
@@ -246,7 +252,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         var currentSelection = getCurrentSelection();
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
             : countSelectedRows(filteredAndSortedTable, currentSelection);
-        return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, totalSelected);
+        return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, numDisplayedColumns, totalSelected);
     }
 
     @Override
@@ -462,11 +468,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static Table createEmptyTable() {
-        return createTable(new String[0], new String[0], new String[0], new String[0][], 0, 0l);
+        return createTable(new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l);
     }
 
     private static Table createTable(final String[] displayedColumns, final String[] contentTypes,
-        final String[] columnDataTypeIds, final String[][] rows, final long rowCount, final Long totalSelected) {
+        final String[] columnDataTypeIds, final String[][] rows, final long rowCount, final long columnCount, final Long totalSelected) {
         return new Table() {
 
             @Override
@@ -492,6 +498,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public long getRowCount() {
                 return rowCount;
+            }
+
+            @Override
+            public long getColumnCount() {
+                return columnCount;
             }
 
             @Override
