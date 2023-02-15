@@ -126,6 +126,9 @@ export default {
       :disabled="disabled"
       @input="onInput"
       @focus="$emit('focus', $event)"
+      @keyup="$emit('keyup', $event)"
+      @keypress="$emit('keypress', $event)"
+      @keydown="$emit('keydown', $event)"
     >
     <div
       v-if="hasRightIcon"
