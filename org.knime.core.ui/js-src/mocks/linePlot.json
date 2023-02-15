@@ -41,6 +41,10 @@
         "enableDataZoom": true,
         "showTooltip": true,
         "axisExtentMethod": "AUTO",
+        "xAxisCustomMin": 0,
+        "xAxisCustomMax": 0,
+        "yAxisCustomMin": 0,
+        "yAxisCustomMax": 0,
         "enableAnimation": true
       },
       "model": {
@@ -70,6 +74,10 @@
                 {
                   "const": "COLUMN_DOMAIN",
                   "title": "Domain bounds"
+                },
+                {
+                  "const": "CUSTOM",
+                  "title": "Custom axis"
                 }
               ],
               "title": "Value axis limits",
@@ -78,6 +86,30 @@
               "configKeys": [
                 "axisExtentMethod"
               ]
+            },
+            "xAxisCustomMin": {
+              "type": "number",
+              "title": "Horizontal min",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis minimum."
+            },
+            "xAxisCustomMax": {
+              "type": "number",
+              "title": "Horizontal max",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis maximum."
+            },
+            "yAxisCustomMin": {
+              "type": "number",
+              "title": "Vertical min",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis minimum."
+            },
+            "yAxisCustomMax": {
+              "type": "number",
+              "title": "Vertical max",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis maximum."
             },
             "dataPointMarkerSize": {
               "type": "integer",
@@ -514,6 +546,70 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/timeFormat"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
+                  }
+                }
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
+                  }
+                }
+              }
             }
           ]
         },

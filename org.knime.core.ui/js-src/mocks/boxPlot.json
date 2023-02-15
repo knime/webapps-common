@@ -7,6 +7,10 @@
         "xAxisLabel": "Dimension",
         "yAxisLabel": "Value",
         "axisExtentMethod": "AUTO",
+        "xAxisCustomMin": 0,
+        "xAxisCustomMax": 0,
+        "yAxisCustomMin": 0,
+        "yAxisCustomMax": 0,
         "showLegend": true,
         "allowImageDownload": true,
         "showTooltip": true,
@@ -332,6 +336,85 @@
               "configKeys": [
                 "width"
               ]
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                },
+                {
+                  "const": "CUSTOM",
+                  "title": "Custom axis"
+                }
+              ],
+              "title": "Value axis limits",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "default": "AUTO"
+            },
+            "xAxisCustomMin": {
+              "type": "number",
+              "title": "Horizontal min",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis minimum."
+            },
+            "xAxisCustomMax": {
+              "type": "number",
+              "title": "Horizontal max",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis maximum."
+            },
+            "yAxisCustomMin": {
+              "type": "number",
+              "title": "Vertical min",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis minimum."
+            },
+            "yAxisCustomMax": {
+              "type": "number",
+              "title": "Vertical max",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis maximum."
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "showLegend": {
+              "type": "boolean",
+              "title": "Display legend",
+              "description": "When checked, the chart’s legend containing the categories of the condition column is displayed.",
+              "default": true
+            },
+            "showTooltip": {
+              "type": "boolean",
+              "title": "Show tooltip",
+              "description": "When checked, hovering over a box will show information about the data.",
+              "default": true
+            },
+            "title": {
+              "type": "string",
+              "title": "Title",
+              "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
+              "default": "Box Plot"
+            },
+            "xAxisLabel": {
+              "type": "string",
+              "title": "Dimension axis label",
+              "description": "The label used for the horizontal dimension axis. If left blank, no label will be shown.",
+              "default": "Dimension"
+            },
+            "yAxisLabel": {
+              "type": "string",
+              "title": "Value axis label",
+              "description": "The label used for the vertical value axis. If left blank, no label will be shown.",
+              "default": "Value"
             }
           }
         }
@@ -377,6 +460,62 @@
               "options": {
                 "format": "radio",
                 "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
+                  }
+                }
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
+                  }
+                }
               }
             },
             {

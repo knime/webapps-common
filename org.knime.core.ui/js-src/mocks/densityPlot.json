@@ -11,10 +11,14 @@
         "yAxisLabel": "Density",
         "lineSize": 2,
         "fillArea": false,
-        "axisExtentMethod": "AUTO",
         "showLegend": true,
         "allowImageDownload": true,
         "showTooltip": true,
+        "axisExtentMethod": "AUTO",
+        "xAxisCustomMin": 0,
+        "xAxisCustomMax": 0,
+        "yAxisCustomMin": 0,
+        "yAxisCustomMax": 0,
         "enableAnimation": true
       },
       "model": {
@@ -58,11 +62,39 @@
                 {
                   "const": "COLUMN_DOMAIN",
                   "title": "Domain bounds"
+                },
+                {
+                  "const": "CUSTOM",
+                  "title": "Custom axis"
                 }
               ],
               "title": "Dimension axis limits",
               "description": "Choose if the dimension axis range should be calculated automatically or should be derived from the domain range. If “Automatic” is selected the axis ranges from (min - 3 * bw) to (max + 3 * bw) where min and max are the minimum and maximum values of the data and bw is the selected bandwidth. If you select “Domain bounds”, you might need to use a Domain calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
+            },
+            "xAxisCustomMin": {
+              "type": "number",
+              "title": "Horizontal min",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis minimum."
+            },
+            "xAxisCustomMax": {
+              "type": "number",
+              "title": "Horizontal max",
+              "default": 0,
+              "description": "Numerical value that sets the horizontal axis maximum."
+            },
+            "yAxisCustomMin": {
+              "type": "number",
+              "title": "Vertical min",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis minimum."
+            },
+            "yAxisCustomMax": {
+              "type": "number",
+              "title": "Vertical max",
+              "default": 0,
+              "description": "Numerical value that sets the vertical axis maximum."
             },
             "bandwidthOption": {
               "oneOf": [
@@ -352,6 +384,70 @@
                   "scope": "#/properties/model/properties/categoryColumn",
                   "schema": {
                     "const": "<none>"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/xAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
+                  }
+                }
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "options": {
+                "ratios": [
+                  1,
+                  2
+                ]
+              },
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/yAxisCustomMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "CUSTOM"
                   }
                 }
               }
