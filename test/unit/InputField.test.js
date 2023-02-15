@@ -125,7 +125,7 @@ describe('InputField.vue', () => {
      * The bug is fixed with jest 26.5.0 https://github.com/facebook/jest/pull/10578
      * The test can be reactivated when we upgrade
      */
-    xit('invalidates wrong unicode pattern', () => {
+    it.skip('invalidates wrong unicode pattern', () => {
         const wrapper = mount(InputField, {
             propsData: {
                 value: 'te%tSætring!"$<>',
@@ -171,6 +171,18 @@ describe('InputField.vue', () => {
         let input = wrapper.find('input');
         input.setValue(newValue);
         expect(wrapper.emitted().input[0][0]).toEqual(newValue);
+    });
+    
+    it.each([
+        ['keydown'],
+        ['keypress'],
+        ['keyup']
+    ])('emits %s events', (eventName) => {
+        const wrapper = mount(InputField);
+        
+        const input = wrapper.find('input');
+        input.trigger(eventName, { key: 'X' });
+        expect(wrapper.emitted(eventName)[0][0].key).toEqual('X');
     });
 
     it('focuses on focus call', () => {
