@@ -191,7 +191,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If there should be a limit on rendered Columns
      */
-    @Persist(optional = true)
+    @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
 
     /**

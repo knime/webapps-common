@@ -5,8 +5,7 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
 import throttle from 'raf-throttle';
-import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN }
-    from '@knime/knime-ui-table/util/constants';
+import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
 
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
@@ -111,7 +110,7 @@ export default {
                 };
                 columnConfigs.push(this.createColumnConfig(columnInformation));
             });
-            if (this.indicateRemainingColumsSkipped) {
+            if (this.indicateRemainingColumnsSkipped) {
                 columnConfigs.push(this.createColumnConfig(
                     {
                         index: this.displayedColumns.length + 2,
@@ -160,40 +159,53 @@ export default {
             offset += this.settings.showRowIndices ? 1 : 0;
             return offset;
         },
+        numberOfDisplayedRemainingColumns() {
+            return this.indicateRemainingColumnsSkipped ? 1 : 0;
+        },
         numberOfDisplayedColumns() {
-            return this.displayedColumns.length + this.numberOfDisplayedIdColumns;
+            return this.displayedColumns.length + this.numberOfDisplayedIdColumns +
+                this.numberOfDisplayedRemainingColumns;
         },
         numberOfUsedColumns() {
             // The columns sent to the TableUI. The rowIndex and rowKey are included but might not be displayed.
-            return this.displayedColumns.length + 2;
+            return this.displayedColumns.length + 2 + this.numberOfDisplayedRemainingColumns;
         },
         columnSizes() {
             const nColumns = this.numberOfDisplayedColumns;
             if (nColumns < 1) {
                 return [];
             }
+            const availableWidth = this.getAvailableWidth(nColumns);
+            const initialIndexColumnSize = this.settings.showRowIndices ? MIN_COLUMN_SIZE : 0;
+            const initialRowKeyColumnSize = this.settings.showRowKeys ? MIN_COLUMN_SIZE : 0;
+            const initialRemainingSkippedColumnSize = this.indicateRemainingColumnsSkipped
+                ? this.skippedRemainingColumnsColumnMinWidth
+                : 0;
+            
+            const initialTableColumnsSizeTotal = availableWidth - initialIndexColumnSize -
+                initialRowKeyColumnSize - initialRemainingSkippedColumnSize;
+                
+            const indexColumnSize = this.columnSizeOverrides[INDEX_SYMBOL] || initialIndexColumnSize;
+            const rowKeyColumnSize = this.columnSizeOverrides[ROW_KEY_SYMBOL] || initialRowKeyColumnSize;
+            const remainingSkippedColumnSize = this.columnSizeOverrides[REMAINING_COLUMNS_SYMBOL] ||
+                initialRemainingSkippedColumnSize;
 
-            const specialColumnsSizeTotal = (this.settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
-                (this.settings.publishSelection || this.settings.subscribeToSelection ? SPECIAL_COLUMNS_SIZE : 0);
-            const dataColumnsSizeTotal = this.clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
-            const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
+            const currentColumnSizes = [indexColumnSize, rowKeyColumnSize]
+                .concat(this.getDataColumnSizes(initialTableColumnsSizeTotal))
+                .concat(this.indicateRemainingColumnsSkipped ? [remainingSkippedColumnSize] : []);
 
-            const currentColumnSizes = this.displayedColumns.reduce((columnSizes, columnName) => {
-                columnSizes.push(this.columnSizeOverrides[columnName] || defaultColumnSize);
-                return columnSizes;
-            }, [this.columnSizeOverrides[INDEX_SYMBOL] || MIN_COLUMN_SIZE,
-                this.columnSizeOverrides[ROW_KEY_SYMBOL] || MIN_COLUMN_SIZE]);
-            currentColumnSizes.push(
-                this.columnSizeOverrides[REMAINING_COLUMNS_SYMBOL] || this.skippedRemainingColumnsColumnMinWidth
-            );
-            const lastColumnMinSize = this.lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes);
-            currentColumnSizes[currentColumnSizes.length - 1] = Math.max(lastColumnMinSize,
-                currentColumnSizes[currentColumnSizes.length - 1]);
-            return currentColumnSizes;
+            const indexColumnIsOnlyColumn = currentColumnSizes.length === 2 && !this.settings.showRowKeys;
+            const lastColumnIndex = indexColumnIsOnlyColumn ? 0 : currentColumnSizes.length - 1;
+            return this.stretchOneColumnToFillAvailableSpace(currentColumnSizes, lastColumnIndex, availableWidth);
         },
         rowData() {
             // we want the indices to start at 1
-            return this.table.rows.map((row, index) => [index + this.numRowsAbove + 1, ...row, '…']);
+            const rows = this.table.rows;
+            if (this.indicateRemainingColumnsSkipped) {
+                return rows.map((row, index) => [index + this.numRowsAbove + 1, ...row, '…']);
+            } else {
+                return rows.map((row, index) => [index + this.numRowsAbove + 1, ...row]);
+            }
         },
         bottomRowData() {
             if (typeof this.bottomRows === 'undefined') {
@@ -260,7 +272,7 @@ export default {
         skipRemainingColumns() {
             return this.settings.skipRemainingColumns;
         },
-        indicateRemainingColumsSkipped() {
+        indicateRemainingColumnsSkipped() {
             return this.displayedColumns.length < this.columnCount;
         }
     },
@@ -307,11 +319,25 @@ export default {
         this.wrapperResizeObserver.disconnect();
     },
     methods: {
-        lastColumnMinSize(dataColumnsSizeTotal, currentColumnSizes) {
-            return dataColumnsSizeTotal -
-                (this.settings.showRowIndices ? currentColumnSizes[0] : 0) -
-                (this.settings.showRowKeys && currentColumnSizes.length > 2 ? currentColumnSizes[1] : 0) -
-                currentColumnSizes.slice(2, currentColumnSizes.length - 1).reduce((sum, size) => sum + size, 0);
+        // The avaliable space for all resizable columns (i.e. table columns, but also index, rowKey, ...)
+        getAvailableWidth(nColumns) {
+            const specialColumnsSizeTotal = (this.settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
+                (this.settings.publishSelection || this.settings.subscribeToSelection ? SPECIAL_COLUMNS_SIZE : 0);
+            return this.clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
+        },
+        getDataColumnSizes(availableSpace) {
+            const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, availableSpace / this.displayedColumns.length);
+            return this.displayedColumns.reduce((columnSizes, columnName) => {
+                columnSizes.push(this.columnSizeOverrides[columnName] || defaultColumnSize);
+                return columnSizes;
+            }, []);
+        },
+        stretchOneColumnToFillAvailableSpace(columnSizes, index, availableSpace) {
+            const totalSize = columnSizes.reduce((sum, size) => sum + size, 0);
+            if (totalSize < availableSpace) {
+                columnSizes[index] += availableSpace - totalSize;
+            }
+            return columnSizes;
         },
         async initializeLazyLoading(params) {
             const { updateDisplayedColumns = false, updateTotalSelected = true } = params || {};

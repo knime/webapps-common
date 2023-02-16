@@ -204,6 +204,7 @@ describe('TableView.vue', () => {
                 showRowKeys: false
             };
             initialDataMock.table.displayedColumns = [];
+            initialDataMock.table.columnCount = 0;
             let wrapper = await mount(TableView, context);
             await wrapper.vm.$nextTick();
             await wrapper.vm.$nextTick();
@@ -221,7 +222,7 @@ describe('TableView.vue', () => {
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = await getTableProps(wrapper);
 
             expect(wrapper.getComponent(TableUI).exists()).toBe(true);
-            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row, '…'])]);
+            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row])]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
             expect(totalSelected).toStrictEqual(0);
             expect(tableConfig).toMatchObject({
@@ -1006,6 +1007,9 @@ describe('TableView.vue', () => {
                 columnConfigs: newColumnConfig
             });
             expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
+            expect(wrapper.vm.rowData[0]).toStrictEqual(
+                [1, 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png', '…']
+            );
         });
 
         it('updates columnDataTypeIds on displayes columns update', async () => {
@@ -1646,8 +1650,7 @@ describe('TableView.vue', () => {
             const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, dataColumnsSizeTotal / nColumns);
 
             const defaultColumnSizes = [MIN_COLUMN_SIZE, MIN_COLUMN_SIZE]
-                .concat(Array(nColumns - 2).fill(defaultColumnSize))
-                .concat([wrapper.vm.skippedRemainingColumnsColumnMinWidth]);
+                .concat(Array(nColumns - 2).fill(defaultColumnSize));
             const lastColumnMinSize = dataColumnsSizeTotal -
                 defaultColumnSizes.slice(0, nColumns - 1).reduce((sum, size) => sum + size, 0);
             defaultColumnSizes[nColumns - 1] = Math.max(lastColumnMinSize, defaultColumnSizes[nColumns - 1]);
@@ -1699,12 +1702,10 @@ describe('TableView.vue', () => {
             wrapper.vm.onColumnResize(0, 1);
             wrapper.vm.onColumnResize(1, 2);
             wrapper.vm.onColumnResize(2, 1);
-            wrapper.vm.onColumnResize(3, 1);
             defaultColumnSizes[0] = 1;
             defaultColumnSizes[1] = 2;
             defaultColumnSizes[2] = 1;
-            defaultColumnSizes[3] = 1;
-            defaultColumnSizes[defaultColumnSizes.length - 1] = 205;
+            defaultColumnSizes[defaultColumnSizes.length - 1] = 206;
             expect(wrapper.vm.columnSizes).toStrictEqual(defaultColumnSizes);
         });
 
