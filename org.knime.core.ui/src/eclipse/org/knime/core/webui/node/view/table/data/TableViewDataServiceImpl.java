@@ -113,8 +113,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
 
-    private static int NUM_TRIMMED_COLUMNS = 100;
-
     /**
      * @param tableSupplier supplier for the table from which to obtain data
      * @param tableId a globally unique id; used to uniquely identify images in the renderer-registry which belong to
@@ -133,7 +131,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_rendererRegistry = rendererRegistry;
         m_selectionSupplier = null;
         CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            m_sortedTableCache.clear();             // because it's not really used (just to determine whether 'this' is phantom-reachable)
+            m_sortedTableCache.clear(); // because it's not really used (just to determine whether 'this' is phantom-reachable)
             m_filteredAndSortedTableCache.clear();
         });
     }
@@ -158,7 +156,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
         CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            m_sortedTableCache.clear();             // because it's not really used (just to determine whether 'this' is phantom-reachable)
+            m_sortedTableCache.clear(); // because it's not really used (just to determine whether 'this' is phantom-reachable)
             m_filteredAndSortedTableCache.clear();
         });
     }
@@ -174,18 +172,20 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public Table getFilteredAndSortedTable(final String[] columns, final long fromIndex, final int numRows,
         final String sortColumn, final boolean sortAscending, final String globalSearchTerm,
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
-        final boolean updateDisplayedColumns, final boolean updateTotalSelected,
-        final boolean forceClearImageDataCache, final boolean trimColumns) {
+        final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
+        final boolean trimColumns) {
         var bufferedDataTable = m_tableSupplier.get();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
 
-        var displayedColumns =
-            updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
+        var displayedColumns = updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
         final var numDisplayedColumns = displayedColumns.length;
-        if (trimColumns && numDisplayedColumns > NUM_TRIMMED_COLUMNS) {
-            displayedColumns = Arrays.copyOfRange(displayedColumns, 0, NUM_TRIMMED_COLUMNS);
+        if (trimColumns) {
+            final var maxNumColumns = 100;
+            if (numDisplayedColumns > maxNumColumns) {
+                displayedColumns = Arrays.copyOfRange(displayedColumns, 0, maxNumColumns);
+            }
         }
 
         // we sort first (even though it is more expensive) because filtering happens more frequently
@@ -202,7 +202,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var spec = bufferedDataTable.getSpec();
         final var colIndices = spec.columnsToIndices(displayedColumns);
         if (m_rendererRegistry != null) {
-            if (forceClearImageDataCache || m_sortedTableCache.wasUpdated() || m_filteredAndSortedTableCache.wasUpdated()) {
+            if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
+                || m_filteredAndSortedTableCache.wasUpdated()) {
                 // Clears the image data cache if it's forced to be cleared. That's usually done when 'pagination' is enabled because in that
                 // case a new batch of rows is request with every page change and the is no need to keep the older one.
                 // If, however, 'pagination' is disabled (i.e. 'infinite scrolling' is used instead), then it's almost certain
@@ -252,7 +253,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         var currentSelection = getCurrentSelection();
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
             : countSelectedRows(filteredAndSortedTable, currentSelection);
-        return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, numDisplayedColumns, totalSelected);
+        return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, numDisplayedColumns,
+            totalSelected);
     }
 
     @Override
@@ -298,9 +300,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             rc.thenComparingRowKey(rk -> rk.withAlphanumericComparison().withDescendingSortOrder(!sortAscending));
         } else {
             final var colType = dts.getColumnSpec(sortColIndex).getType();
-            rc.thenComparingColumn(sortColIndex, col -> col
-                .withAlphanumericComparison(colType.isCompatible(StringValue.class))
-                .withDescendingSortOrder(!sortAscending));
+            rc.thenComparingColumn(sortColIndex,
+                col -> col.withAlphanumericComparison(colType.isCompatible(StringValue.class))
+                    .withDescendingSortOrder(!sortAscending));
         }
         final Comparator<DataRow> comp = rc.build();
         try {
@@ -426,8 +428,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                     IntStream.range(0, columns.length) //
                         .mapToObj(i -> {
                             var cell = row.getCell(colIndices[i]);
-                            return cell.isMissing() ? null
-                                : renderCell(cell, renderers[i], rendererRegistry, tableId);
+                            return cell.isMissing() ? null : renderCell(cell, renderers[i], rendererRegistry, tableId);
                         }))
                     .toArray(String[]::new);
             });
@@ -472,7 +473,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static Table createTable(final String[] displayedColumns, final String[] contentTypes,
-        final String[] columnDataTypeIds, final String[][] rows, final long rowCount, final long columnCount, final Long totalSelected) {
+        final String[] columnDataTypeIds, final String[][] rows, final long rowCount, final long columnCount,
+        final Long totalSelected) {
         return new Table() {
 
             @Override
