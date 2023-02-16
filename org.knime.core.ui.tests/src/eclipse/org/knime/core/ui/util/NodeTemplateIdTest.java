@@ -95,6 +95,15 @@ public class NodeTemplateIdTest {
             "org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory", "Virtual Start", fctMock);
         verify(fctMock).apply(templateId);
         verify(fctMock).apply(dynamicTemplateId);
+
+        UnaryOperator<String> fctMock2 = Mockito.mock(UnaryOperator.class);
+        when(fctMock2.apply(templateId)).thenReturn(null);
+        when(fctMock2.apply(dynamicTemplateId)).thenReturn("res");
+        NodeTemplateId.callWithNodeTemplateIdVariants(
+            "org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory", "Virtual Start", fctMock2,
+            true);
+        verify(fctMock2).apply(templateId);
+        verify(fctMock2).apply(dynamicTemplateId.replace(" ", "+"));
     }
 
     /**

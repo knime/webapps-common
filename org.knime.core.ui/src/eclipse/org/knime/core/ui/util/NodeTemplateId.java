@@ -84,9 +84,25 @@ public final class NodeTemplateId {
      */
     public static <T> T callWithNodeTemplateIdVariants(final String nodeFactoryClassName, final String nodeName,
         final Function<String, T> callee) {
+        return callWithNodeTemplateIdVariants(nodeFactoryClassName, nodeName, callee, false);
+    }
+
+    /**
+     * Finds node instances for different node template ID variants
+     *
+     * @param <T> The return type of the {@code callee} function
+     * @param nodeFactoryClassName
+     * @param nodeName
+     * @param callee A function to lookup nodes by node template ID
+     * @param encodeNodeNameWithURLEscapeCodes whether to escape the node names with URL escape codes (only relevant in
+     *            case of dynamic node factories)
+     * @return The node instance if found using the {@code callee}
+     */
+    public static <T> T callWithNodeTemplateIdVariants(final String nodeFactoryClassName, final String nodeName,
+        final Function<String, T> callee, final boolean encodeNodeNameWithURLEscapeCodes) {
         T res = callee.apply(nodeFactoryClassName);
         if (res == null) {
-            res = callee.apply(ofDynamicNodeFactory(nodeFactoryClassName, nodeName));
+            res = callee.apply(ofDynamicNodeFactory(nodeFactoryClassName, nodeName, encodeNodeNameWithURLEscapeCodes));
         }
         return res;
     }
