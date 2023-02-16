@@ -82,6 +82,15 @@ class FuzzySearchableTest {
         assertable1.extracting(s -> s.computeSimilarity("NIX")).asInstanceOf(DOUBLE).isCloseTo(0.0, offset(0.01));
         assertable1.extracting(s -> s.computeSimilarity("")).asInstanceOf(DOUBLE).isCloseTo(0.0, offset(0.01));
 
+        // name- and keyword-only similarities
+        assertable1.extracting(s -> s.computeNameSimilarity("FOO")).asInstanceOf(DOUBLE).isCloseTo(1.0, offset(0.01));
+        assertable1.extracting(s -> s.computeNameSimilarity("FO")).asInstanceOf(DOUBLE).isCloseTo(.5, offset(0.01));
+        assertable1.extracting(s -> s.computeNameSimilarity("BAR")).asInstanceOf(DOUBLE).isCloseTo(0, offset(0.01));
+
+        assertable1.extracting(s -> s.computeKeywordSimilarity("BAR")).asInstanceOf(DOUBLE).isCloseTo(1.0, offset(0.01));
+        assertable1.extracting(s -> s.computeKeywordSimilarity("AR")).asInstanceOf(DOUBLE).isCloseTo(.5, offset(0.01));
+        assertable1.extracting(s -> s.computeKeywordSimilarity("FOO")).asInstanceOf(DOUBLE).isCloseTo(0, offset(0.01));
+
         assertDoesNotThrow(() -> searchable1.toString()); // for code coverage
 
         var searchable2 = new FuzzySearchable("foo", null);

@@ -48,6 +48,7 @@
  */
 package org.knime.core.ui.util;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -108,7 +109,27 @@ public final class FuzzySearchable {
         double keywordSimilarity = Stream.of(m_keywords) //
             .mapToDouble(term -> computeTanimotoBiGramSimilarity(term, uppercaseQuery)) //
             .max().orElse(0.0);
+        // reduce confusion about search results by making it more likely that name matches win against keyword matches
         return Math.max(nameSimilarity, keywordSimilarity);
+    }
+
+    /**
+     * Computes the "tanimoto bigram similarity" between given query and searchable name.
+     * @param uppercaseQuery query
+     * @return a similarity value between the given query and the searchable name in [0, 1]
+     */
+    public double computeNameSimilarity(final String uppercaseQuery) {
+        return computeTanimotoBiGramSimilarity(m_name, uppercaseQuery);
+    }
+
+    /**
+     * Computes the "tanimoto bigram similarity" between given query and the searchable keywords.
+     * @param uppercaseQuery query
+     * @return a similarity value between the given query and the searchable keywords in [0, 1]
+     */
+    public double computeKeywordSimilarity(final String uppercaseQuery) {
+        return Arrays.stream(m_keywords).mapToDouble(term -> computeTanimotoBiGramSimilarity(term, uppercaseQuery))//
+                .max().orElse(0.0);
     }
 
     @Override
