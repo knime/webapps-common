@@ -50,12 +50,18 @@ package org.knime.core.webui.node.dialog.impl;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -73,9 +79,9 @@ public class TypeColumnFilter implements DialogComponentSettings {
 
     /**
      * Additional information necessary to display the types in the dialog. This has to be persisted in order to display
-     *  previously selected types stored in {@link #m_selectedTypes} which are not present in the table anymore.
+     * previously selected types stored in {@link #m_selectedTypes} which are not present in the table anymore.
      */
-    @Persist(optional = true)
+    @Persist(customPersistor = ColumnTypeDisplaysPersistor.class)
     public ColumnTypeDisplay[] m_typeDisplays = new ColumnTypeDisplay[0]; //NOSONAR
 
     /**
@@ -94,9 +100,10 @@ public class TypeColumnFilter implements DialogComponentSettings {
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
         final var types = getTypes(choices, spec);
         var selectedTypes = Set.of(m_selectedTypes);
-        return IntStream.range(0, types.length).filter(i ->
-        selectedTypes.contains(types[i]))
-            .mapToObj(i -> choices[i]).toArray(String[]::new);
+        return IntStream.range(0, types.length)//
+            .filter(i -> selectedTypes.contains(types[i]))//
+            .mapToObj(i -> choices[i])//
+            .toArray(String[]::new);
     }
 
     private static String[] getTypes(final String[] choices, final DataTableSpec spec) {
@@ -114,5 +121,29 @@ public class TypeColumnFilter implements DialogComponentSettings {
      */
     public static String typeToString(final DataType type) {
         return type.getPreferredValueClass().getName();
+    }
+
+
+    private static final class ColumnTypeDisplaysPersistor implements FieldNodeSettingsPersistor<ColumnTypeDisplay[]> {
+
+        @Override
+        public ColumnTypeDisplay[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            var selectedTypes = settings.getStringArray("selectedTypes");
+            return Stream.of(selectedTypes)//
+                .map(ColumnTypeDisplay::fromPreferredValueClass)//
+                .flatMap(Optional::stream)//
+                .toArray(ColumnTypeDisplay[]::new);
+        }
+
+        @Override
+        public void save(final ColumnTypeDisplay[] obj, final NodeSettingsWO settings) {
+            // don't save the displays
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[0];
+        }
+
     }
 }

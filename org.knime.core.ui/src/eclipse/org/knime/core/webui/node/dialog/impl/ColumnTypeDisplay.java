@@ -48,11 +48,24 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.knime.core.data.DataType;
+import org.knime.core.data.DataTypeRegistry;
+
 /**
  *
  * @author Paul Bärnreuther
  */
 public class ColumnTypeDisplay implements PersistableSettings {
+
+    private static final Map<String, String> PREFERRED_VALUE_CLASS_TO_DISPLAY =
+            DataTypeRegistry.getInstance().availableDataTypes().stream()//
+            .collect(toMap(t -> t.getPreferredValueClass().getName(), DataType::getName, (l, r) -> l));
+
     /**
      * The measure derived from the type with respect to which columns are identified.
      */
@@ -62,4 +75,22 @@ public class ColumnTypeDisplay implements PersistableSettings {
      * The displayed text
      */
     public String m_text; //NOSONAR
+
+    /**
+     * Creates the ColumnTypeDisplay from the preferred value class.
+     *
+     * @param preferredValueClass the name of the {@link DataType#getPreferredValueClass()}
+     * @return the display for the given preferredValueClass
+     */
+    public static Optional<ColumnTypeDisplay> fromPreferredValueClass(final String preferredValueClass) {
+        var text = PREFERRED_VALUE_CLASS_TO_DISPLAY.get(preferredValueClass);
+        if (text == null) {
+            return Optional.empty();
+        } else {
+            var display = new ColumnTypeDisplay();
+            display.m_id = preferredValueClass;
+            display.m_text = text;
+            return Optional.of(display);
+        }
+    }
 }
