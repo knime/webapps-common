@@ -64,8 +64,8 @@
                   "title": "Domain bounds"
                 }
               ],
-              "title": "Axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Domain node before this node.",
+              "title": "Value axis limits",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
             },
             "dataPointMarkerSize": {
