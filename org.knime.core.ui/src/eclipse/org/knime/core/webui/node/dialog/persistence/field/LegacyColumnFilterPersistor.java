@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.persistence.field;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -61,6 +62,7 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.impl.ColumnFilter;
 import org.knime.core.webui.node.dialog.impl.ColumnFilterMode;
+import org.knime.core.webui.node.dialog.impl.ColumnTypeDisplay;
 import org.knime.core.webui.node.dialog.impl.ManualColumnFilter;
 import org.knime.core.webui.node.dialog.impl.PatternColumnFilter;
 import org.knime.core.webui.node.dialog.impl.TypeColumnFilter;
@@ -190,8 +192,17 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         throws InvalidSettingsException {
         var typeFilter = new TypeColumnFilter();
         typeFilter.m_selectedTypes = loadSelectedTypes(typeFilterSettings);
+        typeFilter.m_typeDisplays = getDisplays(typeFilter.m_selectedTypes);
         return typeFilter;
     }
+
+    private static ColumnTypeDisplay[] getDisplays(final String[] selectedTypes) {
+        return Stream.of(selectedTypes)//
+                .map(ColumnTypeDisplay::fromPreferredValueClass)//
+                .flatMap(Optional::stream)//
+                .toArray(ColumnTypeDisplay[]::new);
+    }
+
 
     private static String[] loadSelectedTypes(final NodeSettingsRO typeFilterSettings) throws InvalidSettingsException {
         var typeListSettings = typeFilterSettings.getNodeSettings(TYPELIST);
