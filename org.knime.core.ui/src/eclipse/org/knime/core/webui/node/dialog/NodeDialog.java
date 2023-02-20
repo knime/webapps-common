@@ -73,6 +73,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.UIExtension;
@@ -163,12 +164,7 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
 
         @Override
         public String getInitialData() {
-            final var rawSpecs = new PortObjectSpec[m_nc.getNrInPorts()];
-            final var wfm = m_nc.getParent();
-            for (var cc : wfm.getIncomingConnectionsFor(m_nc.getID())) {
-                rawSpecs[cc.getDestPort()] =
-                    wfm.getNodeContainer(cc.getSource()).getOutPort(cc.getSourcePort()).getPortObjectSpec();
-            }
+            var rawSpecs = getInputSpecs(m_nc);
             // copy input port object specs, ignoring the 0-variable port:
             final var specs = Arrays.copyOfRange(rawSpecs, 1, rawSpecs.length);
 
@@ -181,6 +177,22 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
             } finally {
                 NodeContext.removeLastContext();
             }
+        }
+
+        private static PortObjectSpec[] getInputSpecs(final NodeContainer nc) {
+            final var rawSpecs = new PortObjectSpec[nc.getNrInPorts()];
+            final var wfm = nc.getParent();
+            for (var cc : wfm.getIncomingConnectionsFor(nc.getID())) {
+                var sourceId = cc.getSource();
+                NodeOutPort outPort;
+                if (sourceId.equals(wfm.getID())) {
+                    outPort = wfm.getWorkflowIncomingPort(cc.getSourcePort());
+                } else {
+                    outPort = wfm.getNodeContainer(sourceId).getOutPort(cc.getSourcePort());
+                }
+                rawSpecs[cc.getDestPort()] = outPort.getPortObjectSpec();
+            }
+            return rawSpecs;
         }
 
         private void getSettings(final SettingsType settingsType, final PortObjectSpec[] specs,
