@@ -7,13 +7,13 @@ import type { LibraryOptions } from 'vite';
 
 const libraries = {
     NodeDialog: {
-        entry: fileURLToPath(new URL('./src/components/NodeDialog.vue', import.meta.url)),
+        entry: fileURLToPath(new URL('./src/nodeDialog/NodeDialog.vue', import.meta.url)),
         name: 'DefaultNodeDialog',
         fileName: 'NodeDialog',
         formats: ['umd']
     } as LibraryOptions,
     TableView: {
-        entry: fileURLToPath(new URL('./src/components/TableView.vue', import.meta.url)),
+        entry: fileURLToPath(new URL('./src/tableView/TableView.vue', import.meta.url)),
         name: 'DefaultNodeDialog',
         fileName: 'TableView',
         formats: ['umd']
@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => ({
         }
     },
     test: {
-        include: ['test/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        include: ['src/**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         environment: 'jsdom',
         reporters: ['default', 'junit'],
         deps: { inline: ['consola'] },
