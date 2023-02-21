@@ -88,6 +88,46 @@ public final class WebUINodeConfiguration {
 
     private final String[] m_keywords;
 
+    private final Version m_sinceVersion;
+
+    /**
+     * Version information
+     * @author Carsten Haubold, KNIME GmbH, Konstanz, Germany
+     */
+    public static class Version {
+        private final int m_major;
+        private final int m_minor;
+
+        /**
+         * Create a Version object
+         * @param major
+         * @param minor
+         */
+        public Version(final int major, final int minor) {
+            m_major = major;
+            m_minor = minor;
+        }
+
+        /**
+         * @return major version
+         */
+        public int getMajor() {
+            return m_major;
+        }
+
+        /**
+         * @return minor version
+         */
+        public int getMinor() {
+            return m_minor;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%i.%i", m_major, m_minor);
+        }
+    }
+
     private WebUINodeConfiguration(final NodeOptionals builder) {
         m_name = builder.m_name;
         m_icon = builder.m_icon;
@@ -97,6 +137,7 @@ public final class WebUINodeConfiguration {
         m_inPortDescriptions = builder.m_inputPortDescriptions.toArray(PortDescription[]::new);
         m_outPortDescriptions = builder.m_outputPortDescriptions.toArray(PortDescription[]::new);
         m_keywords = builder.m_keywords.toArray(String[]::new);
+        m_sinceVersion = builder.m_sinceVersion;
     }
 
     String getName() {
@@ -141,6 +182,10 @@ public final class WebUINodeConfiguration {
 
     String[] getKeywords() {
         return m_keywords;
+    }
+
+    Version getSinceVersion() {
+        return m_sinceVersion;
     }
 
     /**
@@ -231,6 +276,8 @@ public final class WebUINodeConfiguration {
 
         private final List<String> m_keywords = new ArrayList<>();
 
+        private Version m_sinceVersion = null;
+
         NodeOptionals(final String name, final String icon, final String shortDescription, final String fullDescription,
             final Class<? extends DefaultNodeSettings> modelSettingsClass) {
             m_name = name;
@@ -298,6 +345,19 @@ public final class WebUINodeConfiguration {
             CheckUtils.checkArgumentNotNull(keywords);
             CheckUtils.checkArgument(!ArrayUtils.contains(keywords, null), "keywords list must not contain null");
             m_keywords.addAll(Arrays.asList(keywords));
+            return this;
+        }
+
+        /**
+         * Specify since which KNIME AP version this node is available
+         * @param major major version
+         * @param minor minor version
+         * @return this build stage
+         */
+        public NodeOptionals sinceVersion(final int major, final int minor) {
+            CheckUtils.checkArgument(major > 0, "Illegal major version");
+            CheckUtils.checkArgument(minor > 0, "Illegal major version");
+            m_sinceVersion = new Version(major, minor);
             return this;
         }
 
