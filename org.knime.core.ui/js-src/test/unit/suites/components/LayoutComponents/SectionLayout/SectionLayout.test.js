@@ -1,11 +1,12 @@
-import { mountJsonFormsComponent, initializesJsonFormsLayout } from '~/test/unit/suites/utils/jsonFormsTestUtils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent, initializesJsonFormsLayout } from '@@/test-setup/utils/jsonFormsTestUtils';
 import SectionLayout from '@/components/LayoutComponents/SectionLayout.vue';
 
 describe('SectionLayout.vue', () => {
-    let defaultPropsData, wrapper;
+    let defaultProps, wrapper;
 
     beforeEach(async () => {
-        defaultPropsData = {
+        defaultProps = {
             layout: {
                 cells: [],
                 data: {
@@ -39,11 +40,11 @@ describe('SectionLayout.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {
@@ -55,14 +56,14 @@ describe('SectionLayout.vue', () => {
     });
 
     it('checks that it is not rendered if it is an advanced setting', async () => {
-        defaultPropsData.layout.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultPropsData);
+        defaultProps.layout.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps);
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
-        defaultPropsData.layout.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultPropsData, true);
+        defaultProps.layout.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps, true);
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(true);
     });
 });

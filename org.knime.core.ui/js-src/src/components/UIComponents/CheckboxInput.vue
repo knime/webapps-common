@@ -1,9 +1,9 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
-import Checkbox from '~/webapps-common/ui/components/forms/Checkbox.vue';
-import ReexecutionIcon from '~/webapps-common/ui/assets/img/icons/reexecution.svg?inline';
+import Checkbox from 'webapps-common/ui/components/forms/Checkbox.vue';
+import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
 import FlowVariableIcon from './FlowVariableIcon.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import DescriptionPopover from './DescriptionPopover.vue';
@@ -63,8 +63,8 @@ export default CheckboxInput;
       <Checkbox
         class="checkbox"
         :disabled="disabled"
-        :value="control.data"
-        @input="onChange"
+        :model-value="control.data"
+        @update:model-value="onChange"
       >
         {{ control.label }}
         <ReexecutionIcon

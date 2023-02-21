@@ -1,7 +1,8 @@
+import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import LayoutComponentWrapper from '~/src/components/LayoutComponents/LayoutComponentWrapper.vue';
+import LayoutComponentWrapper from '@/components/LayoutComponents/LayoutComponentWrapper.vue';
 
-const defaultPropsData = {
+const defaultProps = {
     layout: {
         uischema: {
             options: {
@@ -21,8 +22,10 @@ const jsonforms = {
 };
 
 const mountComponent = () => mount(LayoutComponentWrapper, {
-    provide: { jsonforms },
-    propsData: defaultPropsData
+    global: {
+        provide: { jsonforms }
+    },
+    props: defaultProps
 });
 
 describe('LayoutComponentWrapper.vue', () => {
@@ -32,14 +35,14 @@ describe('LayoutComponentWrapper.vue', () => {
     });
 
     it('is invisible if it is an advanced setting and advanced settings are not to be shown', () => {
-        defaultPropsData.layout.uischema.options.isAdvanced = true;
+        defaultProps.layout.uischema.options.isAdvanced = true;
         jsonforms.core.schema.showAdvancedSettings = false;
         const wrapper = mountComponent();
         expect(wrapper.getComponent(LayoutComponentWrapper).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
-        defaultPropsData.layout.uischema.options.isAdvanced = true;
+        defaultProps.layout.uischema.options.isAdvanced = true;
         jsonforms.core.schema.showAdvancedSettings = true;
         const wrapper = mountComponent();
         expect(wrapper.getComponent(LayoutComponentWrapper).isVisible()).toBe(true);

@@ -1,11 +1,12 @@
+import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
-    from '~/test/unit/suites/utils/jsonFormsTestUtils';
+    from '@@/test-setup/utils/jsonFormsTestUtils';
 import SimpleTwinlistInput from '@/components/UIComponents/SimpleTwinlistInput.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
-import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
+import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 
 describe('SimpleTwinlistInput.vue', () => {
-    const defaultPropsData = {
+    const defaultProps = {
         control: {
             path: 'test',
             enabled: true,
@@ -38,16 +39,16 @@ describe('SimpleTwinlistInput.vue', () => {
     let wrapper, onChangeSpy;
 
     beforeAll(() => {
-        onChangeSpy = jest.spyOn(SimpleTwinlistInput.methods, 'onChange');
-        SimpleTwinlistInput.methods.handleChange = jest.fn();
+        onChangeSpy = vi.spyOn(SimpleTwinlistInput.methods, 'onChange');
+        SimpleTwinlistInput.methods.handleChange = vi.fn();
     });
     
     beforeEach(() => {
-        wrapper = mountJsonFormsComponent(SimpleTwinlistInput, defaultPropsData);
+        wrapper = mountJsonFormsComponent(SimpleTwinlistInput, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {
@@ -61,28 +62,28 @@ describe('SimpleTwinlistInput.vue', () => {
     });
 
     it('calls onChange when twinlist input is changed', async () => {
-        const dirtySettingsMock = jest.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, defaultPropsData, {
+        const dirtySettingsMock = vi.fn();
+        const localWrapper = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
     it('indicates model settings change when model setting is changed', async () => {
-        const dirtySettingsMock = jest.fn();
+        const dirtySettingsMock = vi.fn();
         const localWrapper = await mountJsonFormsComponentWithStore(
             SimpleTwinlistInput,
             {
-                ...defaultPropsData,
+                ...defaultProps,
                 control: {
-                    ...defaultPropsData.control,
+                    ...defaultProps.control,
                     uischema: {
-                        ...defaultPropsData.control.schema,
+                        ...defaultProps.control.schema,
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }
@@ -94,9 +95,9 @@ describe('SimpleTwinlistInput.vue', () => {
                 }
             }
         );
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
-        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true, expect.undefined);
+        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
 
     it('correctly transforms the data into possible values', () => {
@@ -117,29 +118,29 @@ describe('SimpleTwinlistInput.vue', () => {
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Twinlist).vm.chosenValues).toBe(defaultPropsData.control.data);
+        expect(wrapper.findComponent(Twinlist).vm.chosenValues).toStrictEqual(defaultProps.control.data);
     });
 
     it('sets correct label', () => {
-        expect(wrapper.findComponent('label').text()).toBe(defaultPropsData.control.label);
+        expect(wrapper.find('label').text()).toBe(defaultProps.control.label);
     });
 
     it('disables twinlist when controlled by a flow variable', () => {
-        const localDefaultPropsData = JSON.parse(JSON.stringify(defaultPropsData));
-        localDefaultPropsData.control.rootSchema
-            .flowVariablesMap[defaultPropsData.control.path] = {
+        const localDefaultProps = JSON.parse(JSON.stringify(defaultProps));
+        localDefaultProps.control.rootSchema
+            .flowVariablesMap[defaultProps.control.path] = {
                 controllingFlowVariableAvailable: true,
                 controllingFlowVariableName: 'knime.test',
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(SimpleTwinlistInput, localDefaultPropsData);
+        const localWrapper = mountJsonFormsComponent(SimpleTwinlistInput, localDefaultProps);
         expect(localWrapper.vm.disabled).toBeTruthy();
     });
 
     it('moves missing values correctly', async () => {
-        const dirtySettingsMock = jest.fn();
-        const localProps = { ...defaultPropsData, control: { ...defaultPropsData.control, data: ['missing'] } };
+        const dirtySettingsMock = vi.fn();
+        const localProps = { ...defaultProps, control: { ...defaultProps.control, data: ['missing'] } };
         const localWrapper = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, localProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
@@ -147,14 +148,15 @@ describe('SimpleTwinlistInput.vue', () => {
             }
         });
         expect(localWrapper.props().control.data).toStrictEqual(['missing']);
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllLeft' }).trigger('click');
+        await localWrapper.vm.$nextTick();
         expect(onChangeSpy).toBeCalledWith([]);
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3']);
     });
 
     it('does not render content of SimpleTwinlistInput when visible is false', async () => {
-        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        wrapper.setProps({ control: { ...defaultProps.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });

@@ -1,13 +1,13 @@
-import { mountJsonFormsComponent }
-    from '~/test/unit/suites/utils/jsonFormsTestUtils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent } from '@@/test-setup/utils/jsonFormsTestUtils';
 import RadioInputBase from '@/components/UIComponents/RadioInputBase.vue';
 import ValueSwitchInput from '@/components/UIComponents/ValueSwitchInput.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
-import ValueSwitch from '~/webapps-common/ui/components/forms/ValueSwitch.vue';
-import BaseRadioButtons from '~/webapps-common/ui/components/forms/BaseRadioButtons.vue';
+import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
+import BaseRadioButtons from 'webapps-common/ui/components/forms/BaseRadioButtons.vue';
 
 describe('ValueSwitchInput.vue', () => {
-    const defaultPropsData = {
+    const defaultProps = {
         control: {
             path: 'test',
             enabled: true,
@@ -43,11 +43,11 @@ describe('ValueSwitchInput.vue', () => {
     let wrapper;
 
     beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(ValueSwitchInput, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(ValueSwitchInput, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {

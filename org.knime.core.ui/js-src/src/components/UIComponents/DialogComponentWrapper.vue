@@ -1,5 +1,5 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from 'vue';
 import isSettingsVisibleMixin from '../mixins/isSettingsVisibleMixin';
 
 const DialogComponentWrapper = defineComponent({
@@ -25,5 +25,5 @@ export default DialogComponentWrapper;
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
+@import url("../../utils/animation.css");
 </style>

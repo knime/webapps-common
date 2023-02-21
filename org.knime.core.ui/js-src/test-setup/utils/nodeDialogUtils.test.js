@@ -1,3 +1,4 @@
+import { describe, expect, it, test } from 'vitest';
 import { optionsMapper,
     isModelSettingAndHasNodeView,
     hasAdvancedOptions,
@@ -116,6 +117,7 @@ describe('Utils', () => {
     });
 
     it('checks that it does not throw errors with an empty uischema', () => {
+        // eslint-disable-next-line no-undefined
         expect(hasAdvancedOptions(undefined)).not.toBeTruthy();
     });
 
@@ -130,8 +132,11 @@ describe('Utils', () => {
             exposedFlowVariableName
         });
 
+        // eslint-disable-next-line no-undefined
         const CONTROLLING_FLOW_SETTINGS = createFlowSetting(true, 'my_controlling_variable', undefined);
+        // eslint-disable-next-line no-undefined
         const EXPOSING_FLOW_SETTINGS = createFlowSetting(false, undefined, 'my_exposed_variable');
+        // eslint-disable-next-line no-undefined
         const NOTHING_FLOW_SETTINGS = createFlowSetting(false, undefined, undefined);
         const MERGED_FLOW_SETTINGS = createFlowSetting(true, 'my_controlling_variable', 'my_exposed_variable');
 

@@ -1,7 +1,8 @@
+import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import DialogComponentWrapper from '~/src/components/UIComponents/DialogComponentWrapper.vue';
+import DialogComponentWrapper from '@/components/UIComponents/DialogComponentWrapper.vue';
 
-const defaultPropsData = {
+const defaultProps = {
     control: {
         uischema: {
             options: {
@@ -16,7 +17,7 @@ const defaultPropsData = {
 };
 
 const mountComponent = () => mount(DialogComponentWrapper, {
-    propsData: defaultPropsData
+    props: defaultProps
 });
 
 describe('DialogComponentWrapper.vue', () => {
@@ -26,15 +27,15 @@ describe('DialogComponentWrapper.vue', () => {
     });
 
     it('is invisible if it is an advanced setting and advanced settings are not to be shown', () => {
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        defaultPropsData.control.rootSchema.showAdvancedSettings = false;
+        defaultProps.control.uischema.options.isAdvanced = true;
+        defaultProps.control.rootSchema.showAdvancedSettings = false;
         const wrapper = mountComponent();
         expect(wrapper.getComponent(DialogComponentWrapper).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        defaultPropsData.control.rootSchema.showAdvancedSettings = true;
+        defaultProps.control.uischema.options.isAdvanced = true;
+        defaultProps.control.rootSchema.showAdvancedSettings = true;
         const wrapper = mountComponent();
         expect(wrapper.getComponent(DialogComponentWrapper).isVisible()).toBe(true);
     });

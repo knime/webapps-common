@@ -1,10 +1,11 @@
-import { mountJsonFormsComponent, initializesJsonFormsControl } from '~/test/unit/suites/utils/jsonFormsTestUtils';
+import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ColumnFilter from '@/components/UIComponents/ColumnFilter.vue';
 import TwinlistInput from '@/components/UIComponents/TwinlistInput.vue';
 
 
 describe('ColumnFilter.vue', () => {
-    const defaultPropsData = {
+    const defaultProps = {
         path: '',
         control: {
             data: {
@@ -125,15 +126,15 @@ describe('ColumnFilter.vue', () => {
     let wrapper;
 
     beforeAll(() => {
-        TwinlistInput.methods.handleChange = jest.fn();
+        TwinlistInput.methods.handleChange = vi.fn();
     });
 
     beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(ColumnFilter, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(ColumnFilter, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {

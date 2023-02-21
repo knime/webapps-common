@@ -1,6 +1,6 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue';
 import LayoutComponentWrapper from './LayoutComponentWrapper.vue';
 
 const HorizontalLayout = defineComponent({

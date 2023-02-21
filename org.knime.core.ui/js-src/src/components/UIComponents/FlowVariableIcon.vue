@@ -1,7 +1,7 @@
 <script>
-import OnlyFlowVariable from '~/webapps-common/ui/assets/img/icons/only-flow-variables.svg?inline';
-import ExposeFlowVariable from '~/webapps-common/ui/assets/img/icons/expose-flow-variables.svg?inline';
-import BothFlowVariables from '~/webapps-common/ui/assets/img/icons/both-flow-variables.svg?inline';
+import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';
+import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
+import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';
 
 const FlowVariableIcon = {
     name: 'FlowVariableIcon',

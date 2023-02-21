@@ -1,3 +1,4 @@
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import DescriptionPopover from '@/components/UIComponents/DescriptionPopover.vue';
@@ -6,12 +7,12 @@ describe('DescriptionPopover.vue', () => {
     let toggleSpy, closeSpy;
 
     beforeAll(() => {
-        toggleSpy = jest.spyOn(DescriptionPopover.methods, 'toggle');
-        closeSpy = jest.spyOn(DescriptionPopover.methods, 'close');
+        toggleSpy = vi.spyOn(DescriptionPopover.methods, 'toggle');
+        closeSpy = vi.spyOn(DescriptionPopover.methods, 'close');
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders the default state', () => {
@@ -24,7 +25,7 @@ describe('DescriptionPopover.vue', () => {
     });
 
     it('renders the content box when expanded', async () => {
-        const wrapper = mount(DescriptionPopover, { propsData: { hover: false, html: 'foo' } });
+        const wrapper = mount(DescriptionPopover, { props: { hover: false, html: 'foo' } });
         wrapper.setData({ expanded: true });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
 
@@ -37,7 +38,7 @@ describe('DescriptionPopover.vue', () => {
     });
 
     it('shows description button when hovering', async () => {
-        const wrapper = mount(DescriptionPopover, { propsData: { hover: false } });
+        const wrapper = mount(DescriptionPopover, { props: { hover: false } });
         
         const descriptionIcon = wrapper.find('.button');
         expect(descriptionIcon.exists()).toBeTruthy();
@@ -106,7 +107,7 @@ describe('DescriptionPopover.vue', () => {
     });
 
     it('closeUnlessHover closes only when not hovering', async () => {
-        const wrapper = mount(DescriptionPopover, { propsData: { hover: true } });
+        const wrapper = mount(DescriptionPopover, { props: { hover: true } });
         
         expect(toggleSpy).toHaveBeenCalledTimes(0);
         expect(wrapper.find('.content').exists()).toBeFalsy();
@@ -131,9 +132,9 @@ describe('DescriptionPopover.vue', () => {
     });
 
     it('sets orientation to below if out of bounds', async () => {
-        const getBoundingClientRectSpy = jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+        const getBoundingClientRectSpy = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
         getBoundingClientRectSpy.mockReturnValue({ top: -1 });
-        const updateOrientationSpy = jest.spyOn(DescriptionPopover.methods, 'updateOrientation');
+        const updateOrientationSpy = vi.spyOn(DescriptionPopover.methods, 'updateOrientation');
             
         const wrapper = mount(DescriptionPopover);
         wrapper.setData({ expanded: true });

@@ -1,8 +1,8 @@
 <script>
-import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
-import TrashIcon from '~/webapps-common/ui/assets/img/icons/trash.svg?inline';
-import ArrowUpIcon from '~/webapps-common/ui/assets/img/icons/arrow-up.svg?inline';
-import ArrowDownIcon from '~/webapps-common/ui/assets/img/icons/arrow-down.svg?inline';
+import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
+import TrashIcon from 'webapps-common/ui/assets/img/icons/trash.svg';
+import ArrowUpIcon from 'webapps-common/ui/assets/img/icons/arrow-up.svg';
+import ArrowDownIcon from 'webapps-common/ui/assets/img/icons/arrow-down.svg';
 
 export default {
     name: 'ArrayLayoutItemControls',
@@ -25,7 +25,8 @@ export default {
             type: Boolean,
             default: false
         }
-    }
+    },
+    emits: ['moveUp', 'moveDown', 'delete']
 };
 </script>
 

@@ -1,8 +1,8 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
-import Dropdown from '~/webapps-common/ui/components/forms/Dropdown.vue';
+import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
@@ -81,10 +81,10 @@ export default DropdownInput;
         v-if="options"
         :aria-label="control.label"
         :disabled="disabled"
-        :value="control.data"
+        :model-value="control.data"
         :possible-values="options"
         :placeholder="placeholderText"
-        @input="onChange"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>

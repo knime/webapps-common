@@ -1,8 +1,10 @@
-import { shallowMount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
+
 import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
+import { shallowMount } from '@vue/test-utils';
 
 describe('ErrorMessage.vue', () => {
-    const defaultPropsData = {
+    const defaultProps = {
         errors: [
             'First error',
             'Second error'
@@ -11,7 +13,7 @@ describe('ErrorMessage.vue', () => {
 
     it('renders', () => {
         const wrapper = shallowMount(ErrorMessage, {
-            propsData: defaultPropsData
+            props: defaultProps
         });
         expect(wrapper.getComponent(ErrorMessage).exists()).toBe(true);
     });

@@ -1,9 +1,10 @@
+import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import FlowVariableIcon from '@/components/UIComponents/FlowVariableIcon.vue';
-import OnlyFlowVariable from '~/webapps-common/ui/assets/img/icons/only-flow-variables.svg?inline';
-import ExposeFlowVariable from '~/webapps-common/ui/assets/img/icons/expose-flow-variables.svg?inline';
-import BothFlowVariables from '~/webapps-common/ui/assets/img/icons/both-flow-variables.svg?inline';
+import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';
+import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
+import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';
 
 describe('FlowVariableIcon.vue', () => {
     it('renders', () => {
@@ -13,7 +14,7 @@ describe('FlowVariableIcon.vue', () => {
 
     it('renders onlyFlowVariable icon when controlled by flow variable', () => {
         const wrapper = mount(FlowVariableIcon, {
-            propsData: {
+            props: {
                 flowSettings: {
                     controllingFlowVariableAvailable: true,
                     controllingFlowVariableName: 'knime.test',
@@ -30,7 +31,7 @@ describe('FlowVariableIcon.vue', () => {
 
     it('renders both icons when controlled and exposed by a flow variable', () => {
         const wrapper = mount(FlowVariableIcon, {
-            propsData: {
+            props: {
                 flowSettings: {
                     controllingFlowVariableAvailable: true,
                     controllingFlowVariableName: 'knime.test',
@@ -47,7 +48,7 @@ describe('FlowVariableIcon.vue', () => {
 
     it('renders exposedFlowVariable icon when exposed flow variable exists', () => {
         const wrapper = mount(FlowVariableIcon, {
-            propsData: {
+            props: {
                 flowSettings: {
                     controllingFlowVariableAvailable: true,
                     controllingFlowVariableName: null,

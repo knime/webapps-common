@@ -1,20 +1,21 @@
+import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
-    from '~/test/unit/suites/utils/jsonFormsTestUtils';
+    from '@@/test-setup/utils/jsonFormsTestUtils';
 import NumberInput from '@/components/UIComponents/NumberInput.vue';
 import NumberInputBase from '@/components/UIComponents/NumberInputBase.vue';
 import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
 
 describe('NumberInput.vue', () => {
-    let defaultPropsData, wrapper, onChangeSpy;
+    let defaultProps, wrapper, onChangeSpy;
 
     beforeAll(() => {
-        onChangeSpy = jest.spyOn(NumberInputBase.methods, 'onChange');
-        NumberInputBase.methods.handleChange = jest.fn();
+        onChangeSpy = vi.spyOn(NumberInputBase.methods, 'onChange');
+        NumberInputBase.methods.handleChange = vi.fn();
     });
 
     beforeEach(async () => {
-        defaultPropsData = {
+        defaultProps = {
             control: {
                 path: 'test',
                 enabled: true,
@@ -42,11 +43,11 @@ describe('NumberInput.vue', () => {
             }
         };
         
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
     
     it('renders', () => {
@@ -66,28 +67,28 @@ describe('NumberInput.vue', () => {
     });
 
     it('calls onChange of NumberInputBase when number input is changed', async () => {
-        const dirtySettingsMock = jest.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(NumberInput, defaultPropsData, {
+        const dirtySettingsMock = vi.fn();
+        const localWrapper = await mountJsonFormsComponentWithStore(NumberInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        localWrapper.findComponent(NumberInputBase).getComponent('input').trigger('input');
+        localWrapper.findComponent(NumberInputBase).find('input').trigger('input');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
     it('indicates model settings change when model setting is changed', async () => {
-        const dirtySettingsMock = jest.fn();
+        const dirtySettingsMock = vi.fn();
         const localWrapper = await mountJsonFormsComponentWithStore(
             NumberInput,
             {
-                ...defaultPropsData,
+                ...defaultProps,
                 control: {
-                    ...defaultPropsData.control,
+                    ...defaultProps.control,
                     uischema: {
-                        ...defaultPropsData.control.schema,
+                        ...defaultProps.control.schema,
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }
@@ -99,44 +100,44 @@ describe('NumberInput.vue', () => {
                 }
             }
         );
-        localWrapper.findComponent(NumberInputBase).getComponent('input').trigger('input');
-        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true, expect.undefined);
+        localWrapper.findComponent(NumberInputBase).find('input').trigger('input');
+        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
 
     it('sets correct label', () => {
-        expect(wrapper.findComponent('label').text()).toBe(defaultPropsData.control.label);
+        expect(wrapper.find('label').text()).toBe(defaultProps.control.label);
     });
     
     it('disables numberInputBase when controlled by a flow variable', () => {
-        const localDefaultPropsData = JSON.parse(JSON.stringify(defaultPropsData));
-        localDefaultPropsData.control.rootSchema
-            .flowVariablesMap[defaultPropsData.control.path] = {
+        const localDefaultProps = JSON.parse(JSON.stringify(defaultProps));
+        localDefaultProps.control.rootSchema
+            .flowVariablesMap[defaultProps.control.path] = {
                 controllingFlowVariableAvailable: true,
                 controllingFlowVariableName: 'knime.test',
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(NumberInput, localDefaultPropsData);
+        const localWrapper = mountJsonFormsComponent(NumberInput, localDefaultProps);
         expect(localWrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
     });
 
     it('does not render content of NumberInputBase when visible is false', async () => {
-        wrapper.setProps({ control: { ...defaultPropsData.control, visible: false } });
+        wrapper.setProps({ control: { ...defaultProps.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
     it('checks that it is not rendered if it is an advanced setting', async () => {
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
+        defaultProps.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
-        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultPropsData);
+        defaultProps.control.rootSchema = { showAdvancedSettings: true };
+        defaultProps.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

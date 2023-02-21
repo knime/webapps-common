@@ -1,6 +1,11 @@
 export const optionsMapper = ({ const: id, title: text }) => ({ id, text });
 
-export const optionsMapperWithType = ({ const: id, title: text, columnType: typeId, columnTypeDisplayed: typeText }) => ({ id, text, type: { id: typeId, text: typeText } });
+export const optionsMapperWithType =
+    ({ const: id, title: text, columnType: typeId, columnTypeDisplayed: typeText }) => ({
+        id,
+        text,
+        type: { id: typeId, text: typeText }
+    });
 
 const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
 

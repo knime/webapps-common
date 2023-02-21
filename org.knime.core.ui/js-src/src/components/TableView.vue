@@ -1,12 +1,11 @@
 <!-- eslint-disable max-lines -->
 <script>
-import Vue from 'vue';
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
 import throttle from 'raf-throttle';
-import { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } from '@knime/knime-ui-table/util/constants';
 
+const { MIN_COLUMN_SIZE = 50, SPECIAL_COLUMNS_SIZE = 30, DATA_COLUMNS_MARGIN = 10 } = {};
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
 const REMAINING_COLUMNS_SYMBOL = Symbol('Remaining columns');
@@ -181,10 +180,10 @@ export default {
             const initialRemainingSkippedColumnSize = this.indicateRemainingColumnsSkipped
                 ? this.skippedRemainingColumnsColumnMinWidth
                 : 0;
-            
+
             const initialTableColumnsSizeTotal = availableWidth - initialIndexColumnSize -
                 initialRowKeyColumnSize - initialRemainingSkippedColumnSize;
-                
+
             const indexColumnSize = this.columnSizeOverrides[INDEX_SYMBOL] || initialIndexColumnSize;
             const rowKeyColumnSize = this.columnSizeOverrides[ROW_KEY_SYMBOL] || initialRowKeyColumnSize;
             const remainingSkippedColumnSize = this.columnSizeOverrides[REMAINING_COLUMNS_SYMBOL] ||
@@ -291,7 +290,6 @@ export default {
         const initialData = await this.jsonDataService.initialData();
         this.selectionService = new SelectionService(this.knimeService);
         this.baseUrl = this.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
-
         if (initialData) {
             const { table, dataTypes, columnDomainValues, settings } = initialData;
             this.displayedColumns = table.displayedColumns;
@@ -315,7 +313,7 @@ export default {
             this.columnFilters = this.getDefaultFilterConfigs(this.displayedColumns);
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.wrapperResizeObserver.disconnect();
     },
     methods: {
@@ -447,7 +445,6 @@ export default {
 
             const fetchTopTable = topNumRows !== 0 || bottomNumRows === 0;
             const fetchBottomTable = bottomNumRows !== 0;
-
             const topTablePromise = fetchTopTable
                 ? this.requestTable(topLoadFromIndex, topNumRows, displayedColumns,
                     updateDisplayedColumns, updateTotalSelected, this.settings.enablePagination)
@@ -766,14 +763,14 @@ export default {
             const colName = this.dataConfig.columnConfigs[columnIndex].header;
             if (columnIndex < this.numberOfDisplayedIdColumns) {
                 if (colName === this.indexColumnName) {
-                    Vue.set(this.columnSizeOverrides, INDEX_SYMBOL, newColumnSize);
+                    this.columnSizeOverrides[INDEX_SYMBOL] = newColumnSize;
                 } else if (colName === this.rowIdColumnName) {
-                    Vue.set(this.columnSizeOverrides, ROW_KEY_SYMBOL, newColumnSize);
+                    this.columnSizeOverrides[ROW_KEY_SYMBOL] = newColumnSize;
                 } else {
-                    Vue.set(this.columnSizeOverrides, REMAINING_COLUMNS_SYMBOL, newColumnSize);
+                    this.columnSizeOverrides[REMAINING_COLUMNS_SYMBOL] = newColumnSize;
                 }
             } else {
-                Vue.set(this.columnSizeOverrides, colName, newColumnSize);
+                this.columnSizeOverrides[colName] = newColumnSize;
             }
         },
         observeTableIntersection() {
@@ -809,8 +806,9 @@ export default {
         }),
         onHeaderSubMenuItemSelection(item, colInd) {
             if (item.section === 'dataRendering') {
-                this.$set(this.colNameSelectedRendererId,
-                    this.displayedColumns[colInd - this.numberOfDisplayedIdColumns], item.id);
+                this.colNameSelectedRendererId[
+                    this.displayedColumns[colInd - this.numberOfDisplayedIdColumns]
+                ] = item.id;
             }
             this.updateData({
                 ...this.useLazyLoading && { lazyLoad: this.getLazyLoadParamsForCurrentScope() },
@@ -975,19 +973,20 @@ export default {
       :table-config="tableConfig"
       :num-rows-above="numRowsAbove"
       :num-rows-below="numRowsBelow"
-      @pageChange="onPageChange"
-      @columnSort="onColumnSort"
-      @rowSelect="onRowSelect"
-      @selectAll="onSelectAll"
+      @page-change="onPageChange"
+      @column-sort="onColumnSort"
+      @row-select="onRowSelect"
+      @select-all="onSelectAll"
       @search="onSearch"
-      @columnFilter="onColumnFilter"
-      @clearFilter="onClearFilter"
-      @columnResize="onColumnResize"
-      @headerSubMenuItemSelection="onHeaderSubMenuItemSelection"
+      @column-filter="onColumnFilter"
+      @clear-filter="onClearFilter"
+      @column-resize="onColumnResize"
+      @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
       @lazyload="onScroll"
     >
       <template
         v-for="index in numberOfUsedColumns"
+        :key="index"
         #[`cellContent-${index}`]="data"
       >
         <img
@@ -1015,11 +1014,11 @@ export default {
   display: flex;
   flex-direction: column;
 
-  & >>> .table-header {
+  & :deep(.table-header) {
     background-color: var(--knime-porcelain);
   }
 
-  & >>> .row {
+  & :deep(.row) {
     border-bottom: 1px solid var(--knime-porcelain);
     align-content: center;
 

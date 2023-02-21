@@ -2,7 +2,7 @@
  * renderers, given a certain schema and uischema.
  * The functions below have mainly been copied directly from JSONForms v. 2.5.2 and adapted slightly to be usable
  * for tests. */
-import { vanillaRenderers } from '@jsonforms/vue2-vanilla';
+import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
 
 const maxBy = require('lodash/maxBy');
@@ -14,6 +14,7 @@ const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderer
 const findRenderer = (uiSchema, schema) => {
     const renderer = maxByDefault.default(renderers, (r) => r.tester(uiSchema, schema));
 
+    // eslint-disable-next-line no-undefined
     if (renderer === undefined || renderer.tester(uiSchema, schema) === -1) {
         return {};
     } else {

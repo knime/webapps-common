@@ -1,8 +1,8 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
-import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
+import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
@@ -82,23 +82,23 @@ export default SimpleTwinlistInput;
       <Twinlist
         v-if="possibleValues"
         :disabled="disabled"
-        :value="control.data"
+        :model-value="control.data"
         :possible-values="possibleValues"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"
-        @input="onChange"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-.twinlist >>> .lists >>> .multiselect-list-box >>> [role="listbox"] {
+.twinlist :deep(.lists) :deep(.multiselect-list-box) :deep([role="listbox"]) {
   font-size: 13px;
 }
 
-.twinlist >>> .header >>> .title {
+.twinlist :deep(.header) :deep(.title) {
   font-size: 13px;
   font-weight: 500;
   color: var(--knime-dove-gray);

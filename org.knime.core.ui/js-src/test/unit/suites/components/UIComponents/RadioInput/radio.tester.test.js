@@ -1,5 +1,6 @@
+import { expect, it } from 'vitest';
 import { radioTester } from '@/components/renderers/radioRenderer';
-import { dialogInitialData } from '~/test/unit/mocks/dialogInitialData';
+import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('radioTester', () => {
     expect(

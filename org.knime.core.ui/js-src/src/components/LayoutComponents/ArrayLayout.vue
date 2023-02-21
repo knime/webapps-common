@@ -1,10 +1,10 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { useJsonFormsArrayControl, rendererProps, DispatchRenderer } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { useJsonFormsArrayControl, rendererProps, DispatchRenderer } from '@jsonforms/vue';
 import { composePaths } from '@jsonforms/core';
-import Label from '~/webapps-common/ui/components/forms/Label.vue';
-import Button from '~/webapps-common/ui/components/Button.vue';
-import PlusIcon from '~/webapps-common/ui/assets/img/icons/plus.svg?inline';
+import Label from 'webapps-common/ui/components/forms/Label.vue';
+import Button from 'webapps-common/ui/components/Button.vue';
+import PlusIcon from 'webapps-common/ui/assets/img/icons/plus.svg';
 import DialogComponentWrapper from '../UIComponents/DialogComponentWrapper.vue';
 import ArrayLayoutItemControls from './ArrayLayoutItemControls.vue';
 
@@ -92,8 +92,8 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
-            @moveUp="moveUp(control.path, objIndex)()"
-            @moveDown="moveDown(control.path, objIndex)()"
+            @move-up="moveUp(control.path, objIndex)()"
+            @move-down="moveDown(control.path, objIndex)()"
             @delete="deleteItem(objIndex)"
           />
         </div>
@@ -117,8 +117,8 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
-            @moveUp="moveUp(control.path, objIndex)()"
-            @moveDown="moveDown(control.path, objIndex)()"
+            @move-up="moveUp(control.path, objIndex)()"
+            @move-down="moveDown(control.path, objIndex)()"
             @delete="deleteItem(objIndex)"
           />
         </div>

@@ -1,9 +1,9 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/utils/nodeDialogUtils';
-import RadioButtons from '~/webapps-common/ui/components/forms/RadioButtons.vue';
-import ValueSwitch from '~/webapps-common/ui/components/forms/ValueSwitch.vue';
+import RadioButtons from 'webapps-common/ui/components/forms/RadioButtons.vue';
+import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
@@ -85,8 +85,8 @@ export default RadioInputBase;
         :possible-values="options"
         :alignment="alignment"
         :disabled="disabled"
-        :value="control.data"
-        @input="onChange"
+        :model-value="control.data"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>

@@ -1,7 +1,8 @@
-import { vanillaRenderers } from '@jsonforms/vue2-vanilla';
+import { expect, it } from 'vitest';
+import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
-import { dialogInitialData, expectedRenderers } from '~/test/unit/mocks/dialogInitialData';
-import { determineRenderer } from '~/test/unit/suites/utils/rendererTestUtils';
+import { dialogInitialData, expectedRenderers } from '@@/test-setup/mocks/dialogInitialData';
+import { determineRenderer } from '@@/test-setup/utils/rendererTestUtils';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 

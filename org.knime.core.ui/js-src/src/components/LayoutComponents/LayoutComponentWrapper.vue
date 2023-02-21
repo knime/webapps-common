@@ -1,5 +1,5 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent } from 'vue';
 
 const LayoutComponentWrapper = defineComponent({
     name: 'LayoutComponentWrapper',
@@ -36,5 +36,5 @@ export default LayoutComponentWrapper;
 </template>
 
 <style lang="postcss" scoped>
-@import "../../utils/animation.css";
+@import url("../../utils/animation.css");
 </style>

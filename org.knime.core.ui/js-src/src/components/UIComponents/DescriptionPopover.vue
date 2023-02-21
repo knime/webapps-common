@@ -1,8 +1,8 @@
 <script>
-import FunctionButton from '~/webapps-common/ui/components/FunctionButton.vue';
-import Description from '~/webapps-common/ui/components/Description.vue';
-import DescriptionIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg?inline';
-import { mixin as clickaway } from 'vue-clickaway2';
+import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
+import Description from 'webapps-common/ui/components/Description.vue';
+import DescriptionIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
+import { mixin as VueClickAway } from 'vue3-click-away';
 
 
 export default {
@@ -11,7 +11,7 @@ export default {
         Description,
         DescriptionIcon
     },
-    mixins: [clickaway],
+    mixins: [VueClickAway],
     props: {
         html: {
             default: null,
@@ -22,6 +22,7 @@ export default {
             type: Boolean
         }
     },
+    emits: ['close'],
     data() {
         return {
             orientation: 'above',
@@ -67,7 +68,7 @@ export default {
 <template>
   <div
     v-show="expanded || hover"
-    v-on-clickaway="closeUnlessHover"
+    v-click-away="closeUnlessHover"
     class="popover"
   >
     <!-- use mouseup instead of click as the click event fires twice on key input in Firefox-->
@@ -75,9 +76,9 @@ export default {
       title="Click for more information"
       class="button"
       :active="expanded"
-      @mouseup.native.stop="toggle"
-      @keydown.native.space.stop="toggle"
-      @keydown.native.esc.stop="close"
+      @mouseup.stop="toggle"
+      @keydown.space.stop="toggle"
+      @keydown.esc.stop="close"
     >
       <DescriptionIcon />
     </FunctionButton>

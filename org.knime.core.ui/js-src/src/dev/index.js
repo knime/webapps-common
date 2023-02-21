@@ -1,24 +1,22 @@
 // Development app launcher. Not included in production build.
-import Vue from 'vue';
-import Vuex from 'vuex';
-import c from 'consola';
-import { logToConsole as enable, level } from '../../logger.config';
+import { createApp } from 'vue';
+import { createStore } from 'vuex';
+import consola from 'consola';
 import DevApp from './DevApp.vue';
-import VueCompositionAPI from '@vue/composition-api';
 
-Vue.use(VueCompositionAPI);
-Vue.use(Vuex);
 
-window.consola = c.create({
-    level: enable ? level : -1
+window.consola = consola.create({
+    level: import.meta.env.KNIME_LOG_TO_CONSOLE === 'true' ? import.meta.env.KNIME_LOG_LEVEL : -1
 });
 
-Vue.config.productionTip = false;
 const pagebuilderStoreMock = {
     pagebuilder: {
         namespaced: true,
         modules: {
             dialog: {
+                state: {
+                    dirtyModelSettings: false
+                },
                 namespaced: true,
                 actions: {
                     setApplySettings: () => {},
@@ -30,8 +28,8 @@ const pagebuilderStoreMock = {
         }
     }
 };
+const store = createStore({ modules: pagebuilderStoreMock });
 
-new Vue({
-    render: h => h(DevApp),
-    store: new Vuex.Store({ modules: pagebuilderStoreMock })
-}).$mount('#app');
+const app = createApp(DevApp);
+app.use(store);
+app.mount('#app');

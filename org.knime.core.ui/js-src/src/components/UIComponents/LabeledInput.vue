@@ -1,8 +1,8 @@
 <script>
-import Label from '~/webapps-common/ui/components/forms/Label.vue';
+import Label from 'webapps-common/ui/components/forms/Label.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import FlowVariableIcon from './FlowVariableIcon.vue';
-import ReexecutionIcon from '~/webapps-common/ui/assets/img/icons/reexecution.svg?inline';
+import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
 import DescriptionPopover from './DescriptionPopover.vue';
 
 const LabeledInput = {
@@ -102,7 +102,7 @@ export default LabeledInput;
     position: relative;
   }
 
-  & >>> .label-text {
+  & :deep(.label-text) {
     display: inline-block;
     z-index: 1;
     max-width: calc(100% - var(--description-button-size) - 20px);

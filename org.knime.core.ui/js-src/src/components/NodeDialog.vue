@@ -1,12 +1,11 @@
 <script>
-import { mapState } from 'vuex';
 import { JsonDataService, DialogService } from '@knime/ui-extension-service';
-import { vanillaRenderers } from '@jsonforms/vue2-vanilla';
-import { JsonForms } from '@jsonforms/vue2';
+import { vanillaRenderers } from '@jsonforms/vue-vanilla';
+import { JsonForms } from '@jsonforms/vue';
 import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
 import { hasAdvancedOptions } from '../utils/nodeDialogUtils';
-import Button from '~/webapps-common/ui/components/Button.vue';
-import { createAjv } from '@jsonforms/core';
+import Button from 'webapps-common/ui/components/Button.vue';
+import { mapState } from 'vuex';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
@@ -24,10 +23,8 @@ export default {
             renderers: Object.freeze(renderers)
         };
     },
-    computed: {
-        // TODO: UIEXT-236 Move to dialog service
-        ...mapState('pagebuilder/dialog', ['dirtyModelSettings'])
-    },
+    // TODO: UIEXT-236 Move to dialog service
+    computed: mapState('pagebuilder/dialog', ['dirtyModelSettings']),
     async mounted() {
         this.jsonDataService = new JsonDataService(this.getKnimeService());
         this.dialogService = new DialogService(this.getKnimeService());
@@ -41,9 +38,6 @@ export default {
         this.originalSettingsData = JSON.stringify(this.settings?.data || {});
         this.jsonDataService.registerDataGetter(this.getData);
         this.$store.dispatch('pagebuilder/dialog/setApplySettings', { applySettings: this.applySettings });
-        // TODO UIEXT-254: This is needed until we update to jsonforms 3.0.x as otherwise the different number types are
-        // not supported
-        this.ajv = createAjv({ unknownFormats: 'ignore' });
     },
     methods: {
         getData() {
@@ -101,7 +95,6 @@ export default {
         :schema="settings.schema"
         :uischema="settings.ui_schema"
         :renderers="renderers"
-        :ajv="ajv"
         @change="onSettingsChanged"
       />
       <a

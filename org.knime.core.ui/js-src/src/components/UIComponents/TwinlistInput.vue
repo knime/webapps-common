@@ -1,11 +1,11 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
     from '@/utils/nodeDialogUtils';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import MultiModeTwinlist from '~/webapps-common/ui/components/forms/MultiModeTwinlist.vue';
+import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = 'Excludes';
@@ -14,9 +14,9 @@ const defaultTwinlistRightLabel = 'Includes';
 const TwinlistInput = defineComponent({
     name: 'TwinListInput',
     components: {
-        MultiModeTwinlist,
         LabeledInput,
-        DialogComponentWrapper
+        DialogComponentWrapper,
+        MultiModeTwinlist
     },
     props: {
         ...rendererProps(),
@@ -176,7 +176,6 @@ export default TwinlistInput;
         :show-mode="showMode"
         :show-search="showSearch"
         :disabled="disabled"
-        :value="control.data.selected"
         :with-types="withTypes"
         :initial-selected-types="control.data.typeFilter.selectedTypes"
         :additional-possible-types="previouslySelectedTypes"
@@ -192,23 +191,23 @@ export default TwinlistInput;
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"
         @input="onSelectedChange"
-        @includeUnknownValuesInput="onIncludeUnknownColumnsChange"
-        @patternInput="onPatternChange"
-        @modeInput="onModeChange"
-        @typesInput="onSelectedTypesChange"
-        @inversePatternInput="onInversePatternChange"
-        @caseSensitivePatternInput="onCaseSensitiveChange"
+        @include-unknown-values-input="onIncludeUnknownColumnsChange"
+        @pattern-input="onPatternChange"
+        @mode-input="onModeChange"
+        @types-input="onSelectedTypesChange"
+        @inverse-pattern-input="onInversePatternChange"
+        @case-sensitive-pattern-input="onCaseSensitiveChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>
 </template>
 
 <style lang="postcss" scoped>
-.twinlist >>> .lists >>> .multiselect-list-box >>> [role="listbox"] {
+.twinlist :deep(.lists) :deep(.multiselect-list-box) :deep([role="listbox"]) {
   font-size: 13px;
 }
 
-.twinlist >>> .header >>> .title {
+.twinlist :deep(.header) :deep(.title) {
   font-size: 13px;
   font-weight: 500;
   color: var(--knime-dove-gray);

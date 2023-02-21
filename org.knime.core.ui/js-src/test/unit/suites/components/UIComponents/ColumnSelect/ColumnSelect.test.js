@@ -1,12 +1,13 @@
-import { mountJsonFormsComponent, initializesJsonFormsControl } from '~/test/unit/suites/utils/jsonFormsTestUtils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ColumnSelect from '@/components/UIComponents/ColumnSelect.vue';
 import DropdownInput from '@/components/UIComponents/DropdownInput.vue';
 
 describe('ColumnSelect.vue', () => {
-    let wrapper, propsData;
+    let wrapper, props;
 
     beforeEach(async () => {
-        propsData = {
+        props = {
             path: '',
             control: {
                 label: 'Column Selection',
@@ -43,11 +44,11 @@ describe('ColumnSelect.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(ColumnSelect, propsData);
+        wrapper = await mountJsonFormsComponent(ColumnSelect, props);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {
@@ -67,7 +68,7 @@ describe('ColumnSelect.vue', () => {
     it('optionsGenerator correctly transforms the data', async () => {
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.getComponent(ColumnSelect).vm.optionsGenerator(propsData.control)).toEqual(
+        expect(wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control)).toEqual(
             [{
                 id: 'Universe_0_0',
                 text: 'Universe_0_0'
@@ -89,10 +90,10 @@ describe('ColumnSelect.vue', () => {
 
     it('optionsGenerator correctly transforms the data with none column and row keys', async () => {
         await wrapper.vm.$nextTick();
-        propsData.control.uischema.options.showNoneColumn = true;
-        propsData.control.uischema.options.showRowKeys = true;
+        props.control.uischema.options.showNoneColumn = true;
+        props.control.uischema.options.showRowKeys = true;
         
-        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(propsData.control);
+        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
         expect(tmp).toEqual(
             [{
                 id: '<none>',
@@ -123,19 +124,19 @@ describe('ColumnSelect.vue', () => {
 
     it('optionsGenerator removes empty element coming because oneOfs cant be empty', async () => {
         await wrapper.vm.$nextTick();
-        propsData.control.schema.oneOf = [{ const: '', title: '' }];
+        props.control.schema.oneOf = [{ const: '', title: '' }];
         
-        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(propsData.control);
+        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
         expect(tmp).toEqual([]);
     });
 
     it('optionsGenerator removes empty element coming because oneOfs can\'t be empty with special rows', async () => {
         await wrapper.vm.$nextTick();
-        propsData.control.schema.oneOf = [{ const: '', title: '' }];
-        propsData.control.uischema.options.showNoneColumn = true;
-        propsData.control.uischema.options.showRowKeys = true;
+        props.control.schema.oneOf = [{ const: '', title: '' }];
+        props.control.uischema.options.showNoneColumn = true;
+        props.control.uischema.options.showRowKeys = true;
         
-        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(propsData.control);
+        const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
         expect(tmp).toEqual(
             [{
                 id: '<none>',

@@ -1,5 +1,6 @@
+import { expect, it } from 'vitest';
 import { valueSwitchTester } from '@/components/renderers/valueSwitchRenderer';
-import { dialogInitialData } from '~/test/unit/mocks/dialogInitialData';
+import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('check the switch tester will match a requested value switch input', () => {
     expect(

@@ -1,16 +1,17 @@
+import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
-    from '~/test/unit/suites/utils/jsonFormsTestUtils';
+    from '@@/test-setup/utils/jsonFormsTestUtils';
 import TwinlistInput from '@/components/UIComponents/TwinlistInput.vue';
 import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
-import MultiModeTwinlist from '~/webapps-common/ui/components/forms/MultiModeTwinlist.vue';
-import Twinlist from '~/webapps-common/ui/components/forms/Twinlist.vue';
-import { mergeDeep } from '~/src/utils/nodeDialogUtils';
+import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';
+import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
+import { mergeDeep } from '@/utils/nodeDialogUtils';
 
 describe('TwinlistInput.vue', () => {
-    let propsData;
+    let props;
 
     beforeEach(() => {
-        propsData = {
+        props = {
             control: {
                 path: 'test',
                 enabled: true,
@@ -152,17 +153,17 @@ describe('TwinlistInput.vue', () => {
     let wrapper, onChangeSpy, handleChangeSpy;
 
     beforeAll(() => {
-        onChangeSpy = jest.spyOn(TwinlistInput.methods, 'onChange');
-        handleChangeSpy = jest.fn();
+        onChangeSpy = vi.spyOn(TwinlistInput.methods, 'onChange');
+        handleChangeSpy = vi.fn();
         TwinlistInput.methods.handleChange = handleChangeSpy;
     });
 
     beforeEach(() => {
-        wrapper = mountJsonFormsComponent(TwinlistInput, propsData);
+        wrapper = mountJsonFormsComponent(TwinlistInput, props);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {
@@ -176,30 +177,30 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('calls onChange when twinlist input is changed', async () => {
-        const dirtySettingsMock = jest.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, propsData, {
+        const dirtySettingsMock = vi.fn();
+        const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, props, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
     it('indicates model settings change when model setting is changed', async () => {
-        const dirtySettingsMock = jest.fn();
-        propsData.control.uischema.scope = '#/properties/model/properties/yAxisColumn';
-        const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, propsData, {
+        const dirtySettingsMock = vi.fn();
+        props.control.uischema.scope = '#/properties/model/properties/yAxisColumn';
+        const localWrapper = await mountJsonFormsComponentWithStore(TwinlistInput, props, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
-        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true, expect.undefined);
+        expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
 
     describe('handles changes', () => {
@@ -207,7 +208,7 @@ describe('TwinlistInput.vue', () => {
             const selected = ['A', 'B', 'C'];
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('input', { selected, isManual: false });
             expect(handleChangeSpy)
-                .toHaveBeenNthCalledWith(3, propsData.control.path, expect.objectContaining({ selected }));
+                .toHaveBeenNthCalledWith(3, props.control.path, expect.objectContaining({ selected }));
         });
 
         it('handles selected values change', () => {
@@ -216,7 +217,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('input', { selected, isManual: true, deselected });
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({
                     selected,
                     manualFilter: expect.objectContaining({
@@ -232,7 +233,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('includeUnknownValuesInput', includeUnknownColumns);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({ manualFilter: expect.objectContaining({ includeUnknownColumns }) })
             );
         });
@@ -242,7 +243,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('patternInput', pattern);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ pattern }) })
             );
         });
@@ -252,7 +253,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('inversePatternInput', isInverted);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ isInverted }) })
             );
         });
@@ -262,7 +263,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('caseSensitivePatternInput', isCaseSensitive);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({ patternFilter: expect.objectContaining({ isCaseSensitive }) })
             );
         });
@@ -277,7 +278,7 @@ describe('TwinlistInput.vue', () => {
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('typesInput', selectedTypes, typeDisplays);
             expect(handleChangeSpy).toHaveBeenNthCalledWith(
                 3,
-                propsData.control.path,
+                props.control.path,
                 expect.objectContaining({ typeFilter: expect.objectContaining({ selectedTypes, typeDisplays }) })
             );
         });
@@ -326,17 +327,17 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('transforms empty anyof into empty possible values', async () => {
-        propsData.control.schema.properties.selected.anyOf = [{ const: '', title: '' }];
+        props.control.schema.properties.selected.anyOf = [{ const: '', title: '' }];
         const localWrapper = await mountJsonFormsComponentWithStore(
             TwinlistInput,
-            propsData
+            props
         );
         expect(localWrapper.findComponent(Twinlist).props().possibleValues).toEqual([]);
     });
 
     describe('unknown columns', () => {
         it('excludes unknown columns', () => {
-            const localPropsData = mergeDeep(propsData, {
+            const localProps = mergeDeep(props, {
                 control: {
                     data: {
                         manualFilter: {
@@ -359,8 +360,8 @@ describe('TwinlistInput.vue', () => {
                 }
             });
 
-            mountJsonFormsComponent(TwinlistInput, localPropsData);
-            expect(handleChangeSpy).toHaveBeenCalledWith(localPropsData.control.path, expect.objectContaining({
+            mountJsonFormsComponent(TwinlistInput, localProps);
+            expect(handleChangeSpy).toHaveBeenCalledWith(localProps.control.path, expect.objectContaining({
                 manualFilter: expect.objectContaining({
                     manuallySelected: ['A', 'B'],
                     manuallyDeselected: ['D', 'E']
@@ -369,7 +370,7 @@ describe('TwinlistInput.vue', () => {
         });
 
         it('includes unknown columns', () => {
-            const localPropsData = mergeDeep(propsData, {
+            const localProps = mergeDeep(props, {
                 control: {
                     data: {
                         manualFilter: {
@@ -391,8 +392,8 @@ describe('TwinlistInput.vue', () => {
                     }
                 }
             });
-            mountJsonFormsComponent(TwinlistInput, localPropsData);
-            expect(handleChangeSpy).toHaveBeenCalledWith(localPropsData.control.path, expect.objectContaining({
+            mountJsonFormsComponent(TwinlistInput, localProps);
+            expect(handleChangeSpy).toHaveBeenCalledWith(localProps.control.path, expect.objectContaining({
                 manualFilter: expect.objectContaining({
                     manuallySelected: ['A', 'B', 'E'],
                     manuallyDeselected: ['D']
@@ -402,41 +403,43 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialPattern).toBe(propsData.control.data.patternFilter.pattern);
-        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialSelectedTypes).toBe(
-            propsData.control.data.typeFilter.selectedTypes
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialPattern).toBe(
+            props.control.data.patternFilter.pattern
         );
-        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected).toBe(
-            propsData.control.data.manualFilter.manuallySelected
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialSelectedTypes).toStrictEqual(
+            props.control.data.typeFilter.selectedTypes
+        );
+        expect(wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected).toStrictEqual(
+            props.control.data.manualFilter.manuallySelected
         );
         expect(wrapper.findComponent(MultiModeTwinlist).vm.initialMode).toBe('manual');
     });
 
 
     it('sets correct label', () => {
-        expect(wrapper.findComponent('label').text()).toBe(propsData.control.label);
+        expect(wrapper.find('label').text()).toBe(props.control.label);
     });
 
     it('disables twinlist when controlled by a flow variable', () => {
-        const localpropsData = JSON.parse(JSON.stringify(propsData));
-        localpropsData.control.rootSchema
-            .flowVariablesMap[propsData.control.path] = {
+        const localprops = JSON.parse(JSON.stringify(props));
+        localprops.control.rootSchema
+            .flowVariablesMap[props.control.path] = {
                 controllingFlowVariableAvailable: true,
                 controllingFlowVariableName: 'knime.test',
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(TwinlistInput, localpropsData);
+        const localWrapper = mountJsonFormsComponent(TwinlistInput, localprops);
         expect(localWrapper.vm.disabled).toBeTruthy();
     });
 
     it('moves missing values correctly', async () => {
-        const dirtySettingsMock = jest.fn();
+        const dirtySettingsMock = vi.fn();
         const localProps = {
-            ...propsData,
+            ...props,
             control: {
-                ...propsData.control,
-                data: { ...propsData.control.data,
+                ...props.control,
+                data: { ...props.control.data,
                     manualFilter: {
                         manuallySelected: ['missing'],
                         manuallyDeselected: ['test_1', 'test_2', 'test_3'],
@@ -451,12 +454,12 @@ describe('TwinlistInput.vue', () => {
             }
         });
         expect(localWrapper.props().control.data.manualFilter).toMatchObject({ manuallySelected: ['missing'] });
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllLeft' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllLeft' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith({
             manualFilter: { manuallySelected: [], manuallyDeselected: ['test_1', 'test_2', 'test_3'] },
             selected: []
         });
-        await localWrapper.findComponent(Twinlist).findComponent({ ref: 'moveAllRight' }).trigger('click');
+        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith({
             manualFilter: { manuallySelected: ['test_1', 'test_2', 'test_3'], manuallyDeselected: [] },
             selected: ['test_1', 'test_2', 'test_3']
@@ -464,7 +467,7 @@ describe('TwinlistInput.vue', () => {
     });
 
     it('does not render content of TwinlistInput when visible is false', async () => {
-        wrapper.setProps({ control: { ...propsData.control, visible: false } });
+        wrapper.setProps({ control: { ...props.control, visible: false } });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });

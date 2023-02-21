@@ -1,13 +1,14 @@
-import { mountJsonFormsComponent, initializesJsonFormsControl } from '~/test/unit/suites/utils/jsonFormsTestUtils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import IntegerInput from '@/components/UIComponents/IntegerInput.vue';
 import NumberInputBase from '@/components/UIComponents/NumberInputBase.vue';
 import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
 
 describe('IntegerInput.vue', () => {
-    let defaultPropsData, wrapper;
+    let defaultProps, wrapper;
 
     beforeEach(async () => {
-        defaultPropsData = {
+        defaultProps = {
             path: '',
             control: {
                 visible: true,
@@ -28,11 +29,11 @@ describe('IntegerInput.vue', () => {
                 }
             }
         };
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
     
     it('renders', () => {
@@ -51,15 +52,15 @@ describe('IntegerInput.vue', () => {
     });
 
     it('checks that it is not rendered if it is an advanced setting', async () => {
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultPropsData);
+        defaultProps.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
-        defaultPropsData.control.rootSchema = { showAdvancedSettings: true };
-        defaultPropsData.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultPropsData);
+        defaultProps.control.rootSchema = { showAdvancedSettings: true };
+        defaultProps.control.uischema.options.isAdvanced = true;
+        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

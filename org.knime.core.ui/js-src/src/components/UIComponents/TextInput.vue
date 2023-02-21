@@ -1,8 +1,8 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
-import InputField from '~/webapps-common/ui/components/forms/InputField.vue';
+import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
@@ -58,9 +58,9 @@ export default TextInput;
       :flow-settings="flowSettings"
     >
       <InputField
-        :value="control.data"
+        :model-value="control.data"
         :disabled="disabled"
-        @input="onChange"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>

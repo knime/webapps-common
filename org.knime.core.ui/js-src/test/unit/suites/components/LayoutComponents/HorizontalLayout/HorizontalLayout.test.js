@@ -1,8 +1,9 @@
-import { mountJsonFormsComponent, initializesJsonFormsLayout } from '~/test/unit/suites/utils/jsonFormsTestUtils';
-import HorizontalLayout from '@/components/LayoutComponents/HorizontalLayout';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mountJsonFormsComponent, initializesJsonFormsLayout } from '@@/test-setup/utils/jsonFormsTestUtils';
+import HorizontalLayout from '@/components/LayoutComponents/HorizontalLayout.vue';
 
 describe('HorizontalLayout.vue', () => {
-    const defaultPropsData = {
+    const defaultProps = {
         layout: {
             cells: [],
             path: 'view.referenceLines',
@@ -30,11 +31,11 @@ describe('HorizontalLayout.vue', () => {
     let wrapper;
 
     beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultPropsData);
+        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     it('renders', () => {
@@ -46,14 +47,14 @@ describe('HorizontalLayout.vue', () => {
     });
 
     it('checks that it is not rendered if it is an advanced setting', async () => {
-        defaultPropsData.layout.uischema.options = { isAdvanced: true };
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultPropsData);
+        defaultProps.layout.uischema.options = { isAdvanced: true };
+        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps);
         expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
-        defaultPropsData.layout.uischema.options = { isAdvanced: true };
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultPropsData, true);
+        defaultProps.layout.uischema.options = { isAdvanced: true };
+        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps, true);
         expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(true);
     });
 });

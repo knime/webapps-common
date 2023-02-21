@@ -1,6 +1,7 @@
+import { expect, it } from 'vitest';
 import { twinlistTester } from '@/components/renderers/twinlistRenderer';
 import { inputFormats } from '@/constants/inputFormats';
-import { dialogInitialData } from '~/test/unit/mocks/dialogInitialData';
+import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('twinlistTester', () => {
     expect(

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import { KnimeService } from '@knime/ui-extension-service';
 import NodeDialog from '@/components/NodeDialog.vue';
+import { computed } from 'vue';
 
 export default {
     components: {
@@ -12,7 +13,7 @@ export default {
         if (localStorage && localStorage.dialogIdx) {
             this.currentDialogIndex = Number(localStorage.getItem('dialogIdx'));
         }
-        this.currentKS = this.getMockKnimeService();
+        this.currentKS = computed(() => this.getMockKnimeService());
         return {
             getKnimeService: () => this.currentKS
         };
@@ -26,10 +27,10 @@ export default {
     computed: {
         dialogMocks() {
             // eslint-disable-next-line no-undef
-            const mocks = require.context('../../mocks', false, /.json$/);
-            return mocks.keys().sort().map(x => ({
-                name: x.replace('./', ''),
-                config: mocks(x)
+            const mocks = import.meta.glob('@@/mocks/*.json', { eager: true });
+            return Object.keys(mocks).sort().map(file => ({
+                name: file.replace('/mocks/', ''),
+                config: mocks[file]
             }));
         },
         currentDialog() {
@@ -42,11 +43,7 @@ export default {
                 return;
             }
             localStorage.setItem('dialogIdx', newIdx);
-            this.currentKS = this.getMockKnimeService();
-        },
-        currentKS() {
-            // Only needed for dev app
-            this._provided.knimeService = this.currentKS;
+            this.currentKS = computed(() => this.getMockKnimeService());
         }
     },
     created() {
@@ -131,7 +128,7 @@ export default {
 </template>
 
 <style lang="postcss">
-@import "webapps-common/ui/css";
+@import url("webapps-common/ui/css");
 
 body {
   margin: 10px;

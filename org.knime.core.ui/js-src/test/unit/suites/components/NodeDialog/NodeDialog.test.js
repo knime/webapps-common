@@ -1,64 +1,66 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { JsonForms } from '@jsonforms/vue2';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
+import { createStore } from 'vuex';
+import { shallowMount } from '@vue/test-utils';
+import { JsonForms } from '@jsonforms/vue';
 import { JsonDataService } from '@knime/ui-extension-service';
-import { dialogInitialData } from '~/test/unit/mocks/dialogInitialData';
+import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 import NodeDialog from '@/components/NodeDialog.vue';
 
 window.closeCEFWindow = () => {};
 
 describe('NodeDialog.vue', () => {
-    let localVue;
-
     const getOptions = ({ setApplySettingsMock, dirtySettingsMock, cleanSettingsMock } = {}) => ({
-        provide: {
-            getKnimeService: () => ({
-                extensionConfig: {},
-                callService: jest.fn().mockResolvedValue({}),
-                registerDataGetter: jest.fn(),
-                addNotificationCallback: jest.fn()
-            })
+        global: {
+            provide: {
+                getKnimeService: () => ({
+                    extensionConfig: {},
+                    callService: vi.fn().mockResolvedValue({}),
+                    registerDataGetter: vi.fn(),
+                    addNotificationCallback: vi.fn()
+                })
+            },
+            mocks: {
+                $store: createStore({
+                    modules: {
+                        pagebuilder: {
+                            modules: {
+                                dialog: {
+                                    actions: {
+                                        setApplySettings: setApplySettingsMock || vi.fn(),
+                                        dirtySettings: dirtySettingsMock || vi.fn(),
+                                        cleanSettings: cleanSettingsMock || vi.fn()
+                                    },
+                                    namespaced: true
+                                }
+                            },
+                            namespaced: true
+                        }
+                    }
+                })
+            }
         },
-        propsData: {
+        props: {
             dialogSettings: {
                 nodeId: 'test'
             }
-        },
-        mocks: {
-            $store: new Vuex.Store({
-                modules: {
-                    'pagebuilder/dialog': {
-                        actions: {
-                            setApplySettings: setApplySettingsMock || jest.fn(),
-                            dirtySettings: dirtySettingsMock || jest.fn(),
-                            cleanSettings: cleanSettingsMock || jest.fn()
-                        },
-                        namespaced: true
-                    }
-                }
-            })
         }
     });
 
-    beforeAll(() => {
-        localVue = createLocalVue();
-        localVue.use(Vuex);
-    });
-
     beforeEach(() => {
-        jest.clearAllMocks();
-        jest.spyOn(JsonDataService.prototype, 'initialData').mockResolvedValue({ ...dialogInitialData });
-        jest.spyOn(JsonDataService.prototype, 'applyData').mockResolvedValue();
-        jest.spyOn(JsonDataService.prototype, 'publishData').mockResolvedValue();
+        vi.clearAllMocks();
+        vi.spyOn(JsonDataService.prototype, 'initialData').mockResolvedValue({ ...dialogInitialData });
+        vi.spyOn(JsonDataService.prototype, 'applyData').mockResolvedValue();
+        vi.spyOn(JsonDataService.prototype, 'publishData').mockResolvedValue();
     });
 
     it('renders empty wrapper', async () => {
-        const setApplySettingsMock = jest.fn();
+        const setApplySettingsMock = vi.fn();
         const wrapper = await shallowMount(NodeDialog, getOptions({ setApplySettingsMock }));
-        await Vue.nextTick();
-        await Vue.nextTick();
+        await nextTick();
+        await nextTick();
+        await nextTick();
 
         expect(wrapper.getComponent(NodeDialog).exists()).toBe(true);
         expect(setApplySettingsMock).toHaveBeenCalled();
@@ -66,8 +68,10 @@ describe('NodeDialog.vue', () => {
 
     it('passes props to jsonform', async () => {
         const wrapper = await shallowMount(NodeDialog, getOptions());
-        await Vue.nextTick();
-        await Vue.nextTick(); // needed twice
+        await nextTick();
+        await nextTick();
+        await nextTick();
+        await nextTick();
 
         const jsonformsStub = wrapper.getComponent(JsonForms);
 
@@ -78,8 +82,9 @@ describe('NodeDialog.vue', () => {
 
     it('returns current values on getData', async () => {
         const wrapper = await shallowMount(NodeDialog, getOptions());
-        await Vue.nextTick();
-        await Vue.nextTick(); // needed twice
+        await nextTick();
+        await nextTick();
+        await nextTick();
 
         expect(wrapper.vm.getData()).toStrictEqual(dialogInitialData.data);
     });
@@ -88,14 +93,16 @@ describe('NodeDialog.vue', () => {
         let wrapper, onSettingsChangedSpy, publishDataSpy, jsonformsStub, dirtySettingsMock, cleanSettingsMock;
 
         beforeEach(async () => {
-            dirtySettingsMock = jest.fn();
-            cleanSettingsMock = jest.fn();
+            dirtySettingsMock = vi.fn();
+            cleanSettingsMock = vi.fn();
             wrapper = await shallowMount(NodeDialog, getOptions({ dirtySettingsMock, cleanSettingsMock }));
-            onSettingsChangedSpy = jest.spyOn(wrapper.vm, 'onSettingsChanged');
-            publishDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'publishData');
+            onSettingsChangedSpy = vi.spyOn(wrapper.vm, 'onSettingsChanged');
+            publishDataSpy = vi.spyOn(wrapper.vm.jsonDataService, 'publishData');
 
-            await Vue.nextTick();
-            await Vue.nextTick(); // needed twice
+            await nextTick();
+            await nextTick();
+            await nextTick();
+            await nextTick();
 
             jsonformsStub = wrapper.getComponent(JsonForms);
         });
@@ -146,11 +153,12 @@ describe('NodeDialog.vue', () => {
     describe('applySettings', () => {
         it('calls apply data and closes window', async () => {
             const wrapper = await shallowMount(NodeDialog, getOptions());
-            const closeDialogSpy = jest.spyOn(wrapper.vm, 'closeDialog');
-            const applyDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({});
+            const closeDialogSpy = vi.spyOn(wrapper.vm, 'closeDialog');
+            const applyDataSpy = vi.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({});
             // Needed twice to make sure that the async mounted method is resolved first
-            await Vue.nextTick();
-            await Vue.nextTick();
+            await nextTick();
+            await nextTick();
+            await nextTick();
 
             await wrapper.vm.applySettingsCloseDialog();
 
@@ -160,13 +168,14 @@ describe('NodeDialog.vue', () => {
 
         it('calls apply data and does not close window if settings are invalid', async () => {
             const wrapper = await shallowMount(NodeDialog, getOptions());
-            const closeDialogSpy = jest.spyOn(wrapper.vm, 'closeDialog');
-            const applyDataSpy = jest.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({
+            const closeDialogSpy = vi.spyOn(wrapper.vm, 'closeDialog');
+            const applyDataSpy = vi.spyOn(wrapper.vm.jsonDataService, 'applyData').mockReturnValue({
                 result: 'test'
             });
-            // Needed twice to make sure that the async mounted method is resolved first
-            await Vue.nextTick();
-            await Vue.nextTick();
+            // Needed to make sure that the async mounted method is resolved first
+            await nextTick();
+            await nextTick();
+            await nextTick();
 
             await wrapper.vm.applySettingsCloseDialog();
 
@@ -175,9 +184,9 @@ describe('NodeDialog.vue', () => {
         });
 
         it('logs error that apply data been thrown', async () => {
-            jest.spyOn(JsonDataService.prototype, 'applyData').mockRejectedValue(new Error());
+            vi.spyOn(JsonDataService.prototype, 'applyData').mockRejectedValue(new Error());
             const wrapper = await shallowMount(NodeDialog, getOptions());
-            await Vue.nextTick();
+            await nextTick();
 
             expect(wrapper.vm.applySettingsCloseDialog()).rejects.toThrowError();
         });
@@ -185,7 +194,7 @@ describe('NodeDialog.vue', () => {
 
     it('calls window.closeCEFWindow in closeDialog', () => {
         const wrapper = shallowMount(NodeDialog, getOptions());
-        const spy = jest.spyOn(window, 'closeCEFWindow');
+        const spy = vi.spyOn(window, 'closeCEFWindow');
 
         wrapper.vm.closeDialog();
 

@@ -1,8 +1,8 @@
 <script>
-import { defineComponent } from '@vue/composition-api';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2';
+import { defineComponent } from 'vue';
+import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/utils/nodeDialogUtils';
-import NumberInput from '~/webapps-common/ui/components/forms/NumberInput.vue';
+import NumberInput from 'webapps-common/ui/components/forms/NumberInput.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
@@ -60,11 +60,11 @@ export default NumberInputBase;
       <NumberInput
         class="number-input"
         :disabled="disabled"
-        :value="control.data"
+        :model-value="control.data"
         :type="type"
         :min="control.schema.minimum"
         :max="control.schema.maximum"
-        @input="onChange"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>
@@ -74,7 +74,7 @@ export default NumberInputBase;
 .number-input {
   height: 40px;
 
-  & >>> input[type="number"] {
+  & :deep(input[type="number"]) {
     height: 38px;
   }
 }

@@ -1,4 +1,5 @@
-import { dialogInitialData } from '~/test/unit/mocks/dialogInitialData';
+import { expect, it } from 'vitest';
+import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 import { horizontalLayoutTester } from '@/components/renderers/horizontalLayoutRenderer';
 
 it('uses horizontal layout', () => {
