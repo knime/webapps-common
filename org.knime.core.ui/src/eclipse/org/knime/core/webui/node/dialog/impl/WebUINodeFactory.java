@@ -66,6 +66,7 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeView;
+import org.knime.core.util.Version;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogFactory;
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -102,7 +103,8 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         return createNodeDescription(m_configuration.getName(), m_configuration.getIcon(),
             m_configuration.getInPortDescriptions(), m_configuration.getOutPortDescriptions(),
             m_configuration.getShortDescription(), m_configuration.getFullDescription(),
-            m_configuration.getModelSettingsClass(), null, null, null, m_configuration.getKeywords());
+            m_configuration.getModelSettingsClass(), null, null, null, m_configuration.getKeywords(),
+            m_configuration.getSinceVersion());
     }
 
     /**
@@ -117,14 +119,15 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
      * @param viewDescription the view description, or null, if the node has no view
      * @param type the type of the node, or null, if it should be determined automatically
      * @param keywords the keywords for serach, or null.
+     * @param sinceVersion the KNIME AP version since which this node is available
      * @return a description for this node
      */
     public static NodeDescription createNodeDescription(final String name, final String icon, // NOSONAR
         final PortDescription[] inPortDescriptions, final PortDescription[] outPortDescriptions,
         final String shortDescription, final String fullDescription,
         final Class<? extends DefaultNodeSettings> modelSettingsClass,
-        final Class<? extends DefaultNodeSettings> viewSettingsClass, final String viewDescription,
-        final NodeType type, final String[] keywords) {
+        final Class<? extends DefaultNodeSettings> viewSettingsClass, final String viewDescription, final NodeType type,
+        final String[] keywords, final Version sinceVersion) {
         var fac = NodeDescription.getDocumentBuilderFactory();
         DocumentBuilder docBuilder;
         try {
@@ -204,7 +207,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
 
         doc.appendChild(node);
         try {
-            return new NodeDescription41Proxy(doc);
+            return new NodeDescription41Proxy(doc, sinceVersion);
         } catch (XmlException e) {
             // should never happen
             throw new IllegalStateException("Problem creating node description", e);

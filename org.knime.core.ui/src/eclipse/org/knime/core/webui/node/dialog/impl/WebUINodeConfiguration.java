@@ -57,6 +57,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.util.Version;
 
 /**
  * Configuration for a {@link WebUINodeFactory WebUI node}.
@@ -89,44 +90,6 @@ public final class WebUINodeConfiguration {
     private final String[] m_keywords;
 
     private final Version m_sinceVersion;
-
-    /**
-     * Version information
-     * @author Carsten Haubold, KNIME GmbH, Konstanz, Germany
-     */
-    public static class Version {
-        private final int m_major;
-        private final int m_minor;
-
-        /**
-         * Create a Version object
-         * @param major
-         * @param minor
-         */
-        public Version(final int major, final int minor) {
-            m_major = major;
-            m_minor = minor;
-        }
-
-        /**
-         * @return major version
-         */
-        public int getMajor() {
-            return m_major;
-        }
-
-        /**
-         * @return minor version
-         */
-        public int getMinor() {
-            return m_minor;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%i.%i", m_major, m_minor);
-        }
-    }
 
     private WebUINodeConfiguration(final NodeOptionals builder) {
         m_name = builder.m_name;
@@ -352,12 +315,11 @@ public final class WebUINodeConfiguration {
          * Specify since which KNIME AP version this node is available
          * @param major major version
          * @param minor minor version
+         * @param revision patch revision
          * @return this build stage
          */
-        public NodeOptionals sinceVersion(final int major, final int minor) {
-            CheckUtils.checkArgument(major > 0, "Illegal major version");
-            CheckUtils.checkArgument(minor > 0, "Illegal major version");
-            m_sinceVersion = new Version(major, minor);
+        public NodeOptionals sinceVersion(final int major, final int minor, final int revision) {
+            m_sinceVersion = new Version(major, minor, revision);
             return this;
         }
 
