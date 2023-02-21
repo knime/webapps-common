@@ -119,7 +119,31 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
      * @param viewDescription the view description, or null, if the node has no view
      * @param type the type of the node, or null, if it should be determined automatically
      * @param keywords the keywords for serach, or null.
-     * @param sinceVersion the KNIME AP version since which this node is available
+     * @return a description for this node
+     */
+    public static NodeDescription createNodeDescription(final String name, final String icon, // NOSONAR
+        final PortDescription[] inPortDescriptions, final PortDescription[] outPortDescriptions,
+        final String shortDescription, final String fullDescription,
+        final Class<? extends DefaultNodeSettings> modelSettingsClass,
+        final Class<? extends DefaultNodeSettings> viewSettingsClass, final String viewDescription, final NodeType type,
+        final String[] keywords) {
+        return createNodeDescription(name, icon, inPortDescriptions, outPortDescriptions, shortDescription,
+            fullDescription, modelSettingsClass, viewSettingsClass, viewDescription, type, keywords, null);
+    }
+
+    /**
+     * @param name the name of the node
+     * @param icon relative path to the node icon
+     * @param inPortDescriptions the descriptions of the node's input ports
+     * @param outPortDescriptions the descriptions of the node's output ports
+     * @param shortDescription the short node description
+     * @param fullDescription the full node description
+     * @param modelSettingsClass the type of the model settings, or null, if the node has no model settings
+     * @param viewSettingsClass the type of the view settings, or null, if the node has no view settings
+     * @param viewDescription the view description, or null, if the node has no view
+     * @param type the type of the node, or null, if it should be determined automatically
+     * @param keywords the keywords for serach, or null.
+     * @param sinceVersion the KNIME AP version since which this node is available, or null
      * @return a description for this node
      */
     public static NodeDescription createNodeDescription(final String name, final String icon, // NOSONAR
