@@ -55,6 +55,7 @@ import java.util.Optional;
 
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
+import org.knime.core.data.ExtensibleUtilityFactory;
 
 /**
  *
@@ -83,14 +84,34 @@ public class ColumnTypeDisplay implements PersistableSettings {
      * @return the display for the given preferredValueClass
      */
     public static Optional<ColumnTypeDisplay> fromPreferredValueClass(final String preferredValueClass) {
+        return getText(preferredValueClass).map(t -> createDisplay(preferredValueClass, t));
+    }
+
+    private static ColumnTypeDisplay createDisplay(final String id, final String text) {
+        var display = new ColumnTypeDisplay();
+        display.m_id = id;
+        display.m_text = text;
+        return display;
+    }
+
+    private static Optional<String> getText(final String preferredValueClass) {
         var text = PREFERRED_VALUE_CLASS_TO_DISPLAY.get(preferredValueClass);
         if (text == null) {
-            return Optional.empty();
-        } else {
-            var display = new ColumnTypeDisplay();
-            display.m_id = preferredValueClass;
-            display.m_text = text;
-            return Optional.of(display);
+            // some (old) DataTypes may not be registered via ExtensionPoint -> go through the utility factory
+            return getNameFromUtilityFactory(preferredValueClass);
         }
+        return Optional.of(text);
     }
+
+    private static Optional<String> getNameFromUtilityFactory(final String preferredValueClass) {
+        var valueClass = DataTypeRegistry.getInstance().getValueClass(preferredValueClass);
+        if (valueClass.isPresent()) {
+            var utilityFactory = DataType.getUtilityFor(valueClass.get());
+            if (utilityFactory instanceof ExtensibleUtilityFactory) {
+                return Optional.of(((ExtensibleUtilityFactory)utilityFactory).getName());
+            }
+        }
+        return Optional.empty();
+    }
+
 }
