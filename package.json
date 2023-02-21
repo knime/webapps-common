@@ -21,7 +21,7 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
+    "@popperjs/core": "2.11.6",
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0"
