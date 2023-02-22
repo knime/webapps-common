@@ -30,23 +30,21 @@ export default {
 </script>
 
 <template>
-  <div>
-    <Transition
-      name="expand"
-      @before-enter="onBeforeEnter"
-      @enter="onEnter"
-      @before-leave="onBeforeLeave"
-      @leave="onLeave"
-      @after-enter="onAfterEnter"
+  <Transition
+    name="expand"
+    @before-enter="onBeforeEnter"
+    @enter="onEnter"
+    @before-leave="onBeforeLeave"
+    @leave="onLeave"
+    @after-enter="onAfterEnter"
+  >
+    <div
+      v-show="isExpanded"
+      class="panel"
     >
-      <div
-        v-show="isExpanded"
-        class="panel"
-      >
-        <slot />
-      </div>
-    </Transition>
-  </div>
+      <slot />
+    </div>
+  </Transition>
 </template>
 
 <style lang="postcss" scoped>
