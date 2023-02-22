@@ -3,7 +3,7 @@
  * The functions below have mainly been copied directly from JSONForms v. 2.5.2 and adapted slightly to be usable
  * for tests. */
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
+import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
 
 const maxBy = require('lodash/maxBy');
 const _interopDefaultLegacy = (e) => e && typeof e === 'object' && 'default' in e ? e : { default: e };

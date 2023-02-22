@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
-import { arrayLayoutTester } from '@/components/renderers/arrayLayoutRenderer';
+import { arrayLayoutTester } from '@/nodeDialog/renderers/arrayLayoutRenderer';
 
 it('uses array layout', () => {
     expect(

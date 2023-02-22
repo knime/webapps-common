@@ -1,8 +1,8 @@
 /* eslint-disable no-undefined */
 import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsArrayControl } from '@@/test-setup/utils/jsonFormsTestUtils';
-import ArrayLayout from '@/components/LayoutComponents/ArrayLayout.vue';
-import ArrayLayoutItemControls from '@/components/LayoutComponents/ArrayLayoutItemControls.vue';
+import ArrayLayout from '@/nodeDialog/LayoutComponents/ArrayLayout.vue';
+import ArrayLayoutItemControls from '@/nodeDialog/LayoutComponents/ArrayLayoutItemControls.vue';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import ArrowUpIcon from 'webapps-common/ui/assets/img/icons/arrow-up.svg';
 import ArrowDownIcon from 'webapps-common/ui/assets/img/icons/arrow-down.svg';

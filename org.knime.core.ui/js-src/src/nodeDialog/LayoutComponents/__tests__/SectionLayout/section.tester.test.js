@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
-import { sectionLayoutTester } from '@/components/renderers/sectionLayoutRenderer';
+import { sectionLayoutTester } from '@/nodeDialog/renderers/sectionLayoutRenderer';
 
 it('uses section layout', () => {
     expect(

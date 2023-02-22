@@ -1,7 +1,7 @@
 <script>
 /* eslint-disable no-console */
 import { KnimeService } from '@knime/ui-extension-service';
-import NodeDialog from '@/components/NodeDialog.vue';
+import NodeDialog from '@/nodeDialog/NodeDialog.vue';
 import { computed } from 'vue';
 
 export default {

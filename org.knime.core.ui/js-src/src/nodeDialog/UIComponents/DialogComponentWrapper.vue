@@ -25,5 +25,5 @@ export default DialogComponentWrapper;
 </template>
 
 <style lang="postcss" scoped>
-@import url("../../utils/animation.css");
+@import url("../utils/animation.css");
 </style>

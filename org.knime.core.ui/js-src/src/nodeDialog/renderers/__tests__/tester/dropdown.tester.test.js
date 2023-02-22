@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
-import { dropDownTester } from '@/components/renderers/dropdownRenderer';
-import { inputFormats } from '@/constants/inputFormats';
+import { dropDownTester } from '@/nodeDialog/renderers/dropdownRenderer';
+import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('dropDownTester', () => {

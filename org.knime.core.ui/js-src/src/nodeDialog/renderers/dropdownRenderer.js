@@ -1,6 +1,6 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import DropdownInput from '@/components/UIComponents/DropdownInput.vue';
-import { priorityRanks, inputFormats } from '@/constants';
+import DropdownInput from '@/nodeDialog/UIComponents/DropdownInput.vue';
+import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const dropDownTester = (uischema, schema) => {
     const isOfControl = isOneOfControl(uischema, schema);

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import DropdownInput from '@/components/UIComponents/DropdownInput.vue';
-import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
+import DropdownInput from '@/nodeDialog/UIComponents/DropdownInput.vue';
+import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 
 describe('DropdownInput.vue', () => {
@@ -140,22 +140,22 @@ describe('DropdownInput.vue', () => {
         expect(localWrapper.findComponent(Dropdown).props().possibleValues).toEqual([]);
     });
 
-    it('Checks that placeholder text is correctly set if no possible values are present', async () => {
+    it('checks that placeholder text is correctly set if no possible values are present', async () => {
         defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
         );
-        expect(localWrapper.vm.placeholderText).toEqual('No values present');
+        expect(localWrapper.vm.placeholderText).toBe('No values present');
     });
 
-    it('Checks that placeholder text is correctly set if there are possible values present', async () => {
+    it('checks that placeholder text is correctly set if there are possible values present', async () => {
         defaultProps.control.data = '';
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
         );
-        expect(localWrapper.vm.placeholderText).toEqual('No value selected');
+        expect(localWrapper.vm.placeholderText).toBe('No value selected');
     });
 
     it('disables dropdown when controlled by a flow variable', () => {

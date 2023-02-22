@@ -1,13 +1,15 @@
+/* eslint-disable vitest/max-nested-describe */
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable max-lines */
-import { afterEach, beforeEach, describe, expect, it, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { shallowMountTableView, changeViewSetting } from '@@/test-setup/utils/tableViewTestUtils';
 import { createStore } from 'vuex';
 import flushPromises from 'flush-promises';
+import { constants as tableUIConstants } from '@knime/knime-ui-table';
 
-const { MIN_COLUMN_SIZE = 50 } = {};
+const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
 
 // eslint-disable-next-line no-invalid-this
@@ -228,7 +230,7 @@ describe('TableView.vue', () => {
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = tableUI.vm.$props;
             expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row])]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
-            expect(totalSelected).toStrictEqual(0);
+            expect(totalSelected).toBe(0);
             expect(tableConfig).toMatchObject({
                 subMenuItems: false,
                 pageConfig: {
@@ -1023,7 +1025,7 @@ describe('TableView.vue', () => {
             updateDataSpy = vi.spyOn(wrapper.vm, 'updateData');
         });
 
-        test.each([
+        it.each([
             ['displayedColumns', { selected: ['col3'] }],
             ['pageSize', 3], // eslint-disable-line no-magic-numbers
             ['enablePagination', false]
@@ -1034,7 +1036,7 @@ describe('TableView.vue', () => {
                 expect(wrapper.vm.$data.settings[settingsKey]).toStrictEqual(newValue);
             });
 
-        test.each([
+        it.each([
             ['showRowKeys', true],
             ['showColumnDataType', true],
             ['showRowIndices', true],
@@ -1170,7 +1172,7 @@ describe('TableView.vue', () => {
                     changeViewSetting(wrapper, 'displayedColumns', { selected: ['col2', 'col3', 'col4'] });
 
                     expect(updateSortingParamsSpy).toHaveBeenCalled();
-                    expect(wrapper.vm.columnSortIndex).toEqual(1); // eslint-disable-line no-magic-numbers
+                    expect(wrapper.vm.columnSortIndex).toBe(1);
                 });
         
             it('does not update the sort parameters when no sorting is active', () => {
@@ -1199,16 +1201,16 @@ describe('TableView.vue', () => {
                 changeViewSetting(wrapper, 'showRowKeys', false);
 
                 expect(resetSortingSpy).toHaveBeenCalled();
-                expect(wrapper.vm.columnSortColumnName).toEqual(null);
-                expect(wrapper.vm.columnSortIndex).toEqual(null);
-                expect(wrapper.vm.columnSortDirection).toEqual(null);
-                expect(wrapper.vm.currentPage).toEqual(1);
-                expect(wrapper.vm.currentIndex).toEqual(0);
+                expect(wrapper.vm.columnSortColumnName).toBeNull();
+                expect(wrapper.vm.columnSortIndex).toBeNull();
+                expect(wrapper.vm.columnSortDirection).toBeNull();
+                expect(wrapper.vm.currentPage).toBe(1);
+                expect(wrapper.vm.currentIndex).toBe(0);
             });
 
-            test.each([
-                ['showRowKeys', 2, 3], // eslint-disable-line no-magic-numbers
-                ['showRowIndices', 2, 3] // eslint-disable-line no-magic-numbers
+            it.each([
+                ['showRowKeys', 2, 3],
+                ['showRowIndices', 2, 3]
             ])('enabling viewSetting %p when sorting is active leads to incrementation of sortColIndex from %p to %p',
                 (settingsKey, colSortIndex, newColSortIndex) => {
                     wrapper.vm.onColumnSort(colSortIndex);
@@ -1220,9 +1222,9 @@ describe('TableView.vue', () => {
                     expect(updateSortingParamsSpy).toHaveBeenCalled();
                 });
 
-            test.each([
-                ['showRowKeys', 4, 3], // eslint-disable-line no-magic-numbers
-                ['showRowIndices', 4, 3] // eslint-disable-line no-magic-numbers
+            it.each([
+                ['showRowKeys', 4, 3],
+                ['showRowIndices', 4, 3]
             ])('disabling viewSetting %p when sorting is active leads to decrementation of sortColIndex from %p to %p',
                 async (settingsKey, colSortIndex, newColSortIndex) => {
                     await wrapper.setData({
@@ -1256,7 +1258,7 @@ describe('TableView.vue', () => {
                     method: 'getTable',
                     options: [initialDataMock.table.displayedColumns, 2, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
                 });
-                expect(wrapper.vm.currentPage).toStrictEqual(2);
+                expect(wrapper.vm.currentPage).toBe(2);
             });
 
         it('sets the correct parameters on prev page and requests new data with updated parameters', () => {
@@ -1267,7 +1269,7 @@ describe('TableView.vue', () => {
                 method: 'getTable',
                 options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
             });
-            expect(wrapper.vm.currentPage).toStrictEqual(1);
+            expect(wrapper.vm.currentPage).toBe(1);
         });
 
         it('disables sorting', async () => {
@@ -1297,7 +1299,7 @@ describe('TableView.vue', () => {
                 options: [initialDataMock.table.displayedColumns,
                     0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
-            expect(wrapper.vm.currentPage).toStrictEqual(1);
+            expect(wrapper.vm.currentPage).toBe(1);
         });
 
         it('sorts in the different direction when sorting the same column again', () => {
@@ -1309,7 +1311,7 @@ describe('TableView.vue', () => {
                 options: [initialDataMock.table.displayedColumns,
                     0, 2, 'col1', true, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
-            expect(wrapper.vm.currentPage).toStrictEqual(1);
+            expect(wrapper.vm.currentPage).toBe(1);
 
             wrapper.vm.onColumnSort(0);
             expect(getData).toBeCalledWith({
@@ -1328,7 +1330,7 @@ describe('TableView.vue', () => {
                 options: [initialDataMock.table.displayedColumns,
                     2, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
             });
-            expect(wrapper.vm.currentPage).toStrictEqual(2);
+            expect(wrapper.vm.currentPage).toBe(2);
         });
 
         it('passes the correct parameters when sorting by rowKeys', async () => {
@@ -1359,7 +1361,7 @@ describe('TableView.vue', () => {
 
             expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
             expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set());
-            expect(wrapper.vm.totalSelected).toEqual(0);
+            expect(wrapper.vm.totalSelected).toBe(0);
         });
 
         it('calls selectionService.onInit with correct parameters when mounting the view', async () => {
@@ -1388,14 +1390,14 @@ describe('TableView.vue', () => {
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('add', ['row2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, true, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([]);
-                    expect(wrapper.vm.totalSelected).toEqual(1);
+                    expect(wrapper.vm.totalSelected).toBe(1);
 
                     // unselect row
                     await tableUI.vm.$emit('rowSelect', false, 1, 0, true);
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('remove', ['row2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([]);
-                    expect(wrapper.vm.totalSelected).toEqual(0);
+                    expect(wrapper.vm.totalSelected).toBe(0);
                 });
 
 
@@ -1411,14 +1413,14 @@ describe('TableView.vue', () => {
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('add', ['bottomRow2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([false, true]);
-                    expect(wrapper.vm.totalSelected).toEqual(1);
+                    expect(wrapper.vm.totalSelected).toBe(1);
 
                     // unselect row
                     await tableUI.vm.$emit('rowSelect', false, 1, 0, false);
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('remove', ['bottomRow2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([false, false]);
-                    expect(wrapper.vm.totalSelected).toEqual(0);
+                    expect(wrapper.vm.totalSelected).toBe(0);
                 });
 
             describe('onSelectAll', () => {
@@ -1444,7 +1446,7 @@ describe('TableView.vue', () => {
                         expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(2,
                             'remove', getCurrentRowKeysResult);
                         expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
-                        expect(wrapper.vm.totalSelected).toEqual(0);
+                        expect(wrapper.vm.totalSelected).toBe(0);
                     });
 
                 it('calls the selection service and updates local selection on selectAll rows with no filters',
@@ -1472,7 +1474,7 @@ describe('TableView.vue', () => {
                         expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(2,
                             'replace', []);
                         expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
-                        expect(wrapper.vm.totalSelected).toEqual(0);
+                        expect(wrapper.vm.totalSelected).toBe(0);
                     });
             });
         });
@@ -1491,7 +1493,7 @@ describe('TableView.vue', () => {
                 await flushPromises();
 
                 expect(wrapper.vm.currentSelection).toEqual([false, true, false, false]);
-                expect(wrapper.vm.totalSelected).toEqual(1);
+                expect(wrapper.vm.totalSelected).toBe(1);
                 expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey2]));
             });
 
@@ -1502,7 +1504,7 @@ describe('TableView.vue', () => {
 
                 expect(wrapper.vm.currentSelection).toEqual([true, false, false, false]);
                 expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey1]));
-                expect(wrapper.vm.totalSelected).toEqual(1);
+                expect(wrapper.vm.totalSelected).toBe(1);
             });
 
             it('updates the local selection on replace with subscribe to selection', async () => {
@@ -1512,7 +1514,7 @@ describe('TableView.vue', () => {
 
                 expect(wrapper.vm.currentSelection).toEqual([false, true, false, false]);
                 expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey2]));
-                expect(wrapper.vm.totalSelected).toEqual(1);
+                expect(wrapper.vm.totalSelected).toBe(1);
             });
 
             it('calls selectionService.onSettingsChange with the correct parameters on settings change', () => {
@@ -1629,6 +1631,7 @@ describe('TableView.vue', () => {
 
     describe('column renderer selection', () => {
         let wrapper;
+
         beforeEach(async () => {
             wrapper = await shallowMountTableView(context);
         });
@@ -1639,7 +1642,7 @@ describe('TableView.vue', () => {
                 id: 'renderer1',
                 section: 'dataRendering'
             };
-            expect(Object.keys(wrapper.vm.colNameSelectedRendererId).length).toEqual(0);
+            expect(Object.keys(wrapper.vm.colNameSelectedRendererId).length).toBe(0);
 
             wrapper.vm.onHeaderSubMenuItemSelection(renderer, 2);
 
@@ -1673,7 +1676,7 @@ describe('TableView.vue', () => {
                 { id: 'loremId', section: 'dataSection', selected: false, text: 'lorem' },
                 2
             );
-            expect(Object.keys(wrapper.vm.colNameSelectedRendererId).length).toEqual(0);
+            expect(Object.keys(wrapper.vm.colNameSelectedRendererId).length).toBe(0);
         });
 
         it('uses settings.displayedColumns instead of displayedColumns to adjust renderers on displayedColumns change',
@@ -1737,7 +1740,7 @@ describe('TableView.vue', () => {
         });
 
         // TODO UIEXT-525 lets rethink these tests
-        test.each([
+        it.each([
             [{ clientWidth: 0 }, DEFAULT_COLUMN_SIZE],
             [{ clientWidth }, 210.5],
             [{ clientWidth, enableColumnSearch: true }, 203],

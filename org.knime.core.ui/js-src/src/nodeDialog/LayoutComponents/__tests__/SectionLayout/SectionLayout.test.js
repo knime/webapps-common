@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsLayout } from '@@/test-setup/utils/jsonFormsTestUtils';
-import SectionLayout from '@/components/LayoutComponents/SectionLayout.vue';
+import SectionLayout from '@/nodeDialog/LayoutComponents/SectionLayout.vue';
 
 describe('SectionLayout.vue', () => {
     let defaultProps, wrapper;

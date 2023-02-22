@@ -6,7 +6,7 @@ import { JsonForms } from '@jsonforms/vue';
 import { JsonDataService } from '@knime/ui-extension-service';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-import NodeDialog from '@/components/NodeDialog.vue';
+import NodeDialog from '@/nodeDialog/NodeDialog.vue';
 
 window.closeCEFWindow = () => {};
 

@@ -1,11 +1,11 @@
 <!-- eslint-disable max-lines -->
 <script>
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
-import { TableUI } from '@knime/knime-ui-table';
-import { createDefaultFilterConfig, arrayEquals, isImage } from '@/utils/tableViewUtils';
+import { TableUI, constants as tableUIConstants } from '@knime/knime-ui-table';
+import { createDefaultFilterConfig, arrayEquals, isImage } from '@/tableView/utils';
 import throttle from 'raf-throttle';
 
-const { MIN_COLUMN_SIZE = 50, SPECIAL_COLUMNS_SIZE = 30, DATA_COLUMNS_MARGIN = 10 } = {};
+const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } = tableUIConstants;
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
 const REMAINING_COLUMNS_SYMBOL = Symbol('Remaining columns');
@@ -65,8 +65,7 @@ export default {
             columnContentTypes: null,
             // a counter which is used to ignore all requests which were not the last sent one
             lastUpdateHash: 0,
-            wrapperResizeObserver: new ResizeObserver((entries) => {
-                // eslint-disable-next-line no-invalid-this
+            wrapperResizeObserver: new ResizeObserver(() => {
                 this.onResize();
             })
         };
@@ -506,7 +505,7 @@ export default {
                     this.table.rowCount = getFromTopOrBottom('rowCount');
                 }
                 this.bottomRows = this.getCombinedBottomRows(
-                    { bottomTable, bufferStart, bufferEnd, direction, topPreviousDataLength }
+                    { bottomTable, bufferStart, bufferEnd, direction }
                 );
                 this.currentScopeStartIndex = newScopeStart;
                 this.currentScopeEndIndex = Math.min(
@@ -613,7 +612,7 @@ export default {
                 direction
             });
         },
-        getCombinedBottomRows({ bottomTable, bufferStart, bufferEnd, direction, topPreviousDataLength }) {
+        getCombinedBottomRows({ bottomTable, bufferStart, bufferEnd, direction }) {
             // plus 1 because of the additional "…" row
             const previousBottomStartIndex = Math.max(this.numRowsTop + 1, this.currentScopeStartIndex);
             const bottomBufferStart = Math.max(bufferStart - previousBottomStartIndex, 0);

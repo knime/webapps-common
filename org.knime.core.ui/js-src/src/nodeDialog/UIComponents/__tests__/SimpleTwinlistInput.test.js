@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import SimpleTwinlistInput from '@/components/UIComponents/SimpleTwinlistInput.vue';
-import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
+import SimpleTwinlistInput from '@/nodeDialog/UIComponents/SimpleTwinlistInput.vue';
+import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
 import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 
 describe('SimpleTwinlistInput.vue', () => {

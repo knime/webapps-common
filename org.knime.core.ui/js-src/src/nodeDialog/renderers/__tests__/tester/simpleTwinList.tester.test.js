@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
-import { simpleTwinlistTester } from '@/components/renderers/simpleTwinlistRenderer';
-import { inputFormats } from '@/constants/inputFormats';
+import { simpleTwinlistTester } from '@/nodeDialog/renderers/simpleTwinlistRenderer';
+import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('simpleTwinlistTester', () => {

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent } from '@@/test-setup/utils/jsonFormsTestUtils';
-import RadioInput from '@/components/UIComponents/RadioInput.vue';
-import RadioInputBase from '@/components/UIComponents/RadioInputBase.vue';
-import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
+import RadioInput from '@/nodeDialog/UIComponents/RadioInput.vue';
+import RadioInputBase from '@/nodeDialog/UIComponents/RadioInputBase.vue';
+import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
 import RadioButtons from 'webapps-common/ui/components/forms/RadioButtons.vue';
 import BaseRadioButtons from 'webapps-common/ui/components/forms/BaseRadioButtons.vue';
 

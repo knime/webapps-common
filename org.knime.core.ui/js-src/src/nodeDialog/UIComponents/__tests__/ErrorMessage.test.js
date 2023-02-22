@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
+import ErrorMessage from '@/nodeDialog/UIComponents/ErrorMessage.vue';
 import { shallowMount } from '@vue/test-utils';
 
 describe('ErrorMessage.vue', () => {

@@ -1,10 +1,10 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { optionsMapper,
     isModelSettingAndHasNodeView,
     hasAdvancedOptions,
     optionsMapperWithType,
     getFlowVariablesMap,
-    mergeDeep } from '@/utils/nodeDialogUtils';
+    mergeDeep } from '@/nodeDialog/utils';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -46,7 +46,7 @@ describe('Utils', () => {
         expect(mergeDeep(1, { a: 1 })).toStrictEqual({ a: 1 });
     });
 
-    test('isModelSettingsAndhasNodeView', () => {
+    it('isModelSettingsAndhasNodeView', () => {
         const control = {
             rootSchema: {
                 hasNodeView: true
@@ -141,7 +141,7 @@ describe('Utils', () => {
         const MERGED_FLOW_SETTINGS = createFlowSetting(true, 'my_controlling_variable', 'my_exposed_variable');
 
         it('should return null for an missing flowVariablesMap', () => {
-            expect(getFlowVariablesMap({ rootSchema: {}, path: '', schema: {} })).toBe(null);
+            expect(getFlowVariablesMap({ rootSchema: {}, path: '', schema: {} })).toBeNull();
         });
 
         it('should return undefined for missing flow setting for path', () => {
@@ -149,13 +149,13 @@ describe('Utils', () => {
                 path: 'path.to.another_setting',
                 rootSchema: { flowVariablesMap: { 'path.to.my_setting': CONTROLLING_FLOW_SETTINGS } },
                 schema: {}
-            })).toBe(null);
+            })).toBeNull();
 
             expect(getFlowVariablesMap({
                 path: 'path.to.another_setting',
                 rootSchema: { flowVariablesMap: { 'path.to.my_setting': CONTROLLING_FLOW_SETTINGS } },
                 schema: { configKeys: ['also_another_setting'] }
-            })).toBe(null);
+            })).toBeNull();
         });
 
         it('should use path if configKeys is undefined', () => {

@@ -2,8 +2,8 @@
 import { JsonDataService, DialogService } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { JsonForms } from '@jsonforms/vue';
-import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
-import { hasAdvancedOptions } from '../utils/nodeDialogUtils';
+import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
+import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
 import { mapState } from 'vuex';
 

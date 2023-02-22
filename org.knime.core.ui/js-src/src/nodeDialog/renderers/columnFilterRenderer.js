@@ -1,6 +1,6 @@
 import { rankWith } from '@jsonforms/core';
-import ColumnFilter from '@/components/UIComponents/ColumnFilter.vue';
-import { priorityRanks, inputFormats } from '@/constants';
+import ColumnFilter from '@/nodeDialog/UIComponents/ColumnFilter.vue';
+import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 import { checkTwinlistStructure } from './twinlistRenderer';
 
 export const columnFilterTester = (uischema, schema) => checkTwinlistStructure(uischema, schema) &&

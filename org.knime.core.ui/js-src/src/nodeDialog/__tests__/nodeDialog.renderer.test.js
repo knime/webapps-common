@@ -1,6 +1,6 @@
-import { expect, it } from 'vitest';
+import { expect, test } from 'vitest';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
+import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
 import { dialogInitialData, expectedRenderers } from '@@/test-setup/mocks/dialogInitialData';
 import { determineRenderer } from '@@/test-setup/utils/rendererTestUtils';
 
@@ -13,7 +13,7 @@ const getElementsToTest = (elements) => elements.map(element => {
     return element.scope && (!element.rule || (element.rule && element.rule.effect !== 'DISABLE')) && element;
 }).flat().filter(Boolean);
 
-it('renders test dialog elements', () => {
+test('renders test dialog elements', () => {
     const elementsToTest = getElementsToTest(dialogInitialData.ui_schema.elements);
 
     elementsToTest.forEach(element => {

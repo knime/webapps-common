@@ -1,6 +1,6 @@
 import { rankWith, uiTypeIs } from '@jsonforms/core';
-import SectionLayout from '@/components/LayoutComponents/SectionLayout.vue';
-import { priorityRanks } from '@/constants';
+import SectionLayout from '@/nodeDialog/LayoutComponents/SectionLayout.vue';
+import { priorityRanks } from '@/nodeDialog/constants';
 
 export const sectionLayoutTester = uiTypeIs('Section');
 

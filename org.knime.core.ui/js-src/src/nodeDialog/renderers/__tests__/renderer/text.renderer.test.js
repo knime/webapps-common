@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-import { fallbackRenderers, defaultRenderers } from '@/components/renderers';
+import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
 import { determineRenderer } from '@@/test-setup/utils/rendererTestUtils';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];

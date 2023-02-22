@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
-import { horizontalLayoutTester } from '@/components/renderers/horizontalLayoutRenderer';
+import { horizontalLayoutTester } from '@/nodeDialog/renderers/horizontalLayoutRenderer';
 
 it('uses horizontal layout', () => {
     expect(

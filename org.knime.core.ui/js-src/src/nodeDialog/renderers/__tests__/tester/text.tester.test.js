@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { textTester } from '@/components/renderers/textRenderer';
+import { textTester } from '@/nodeDialog/renderers/textRenderer';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('textTester', () => {

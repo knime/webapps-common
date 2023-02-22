@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import TwinlistInput from '@/components/UIComponents/TwinlistInput.vue';
-import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
+import TwinlistInput from '@/nodeDialog/UIComponents/TwinlistInput.vue';
+import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
 import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';
 import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
-import { mergeDeep } from '@/utils/nodeDialogUtils';
+import { mergeDeep } from '@/nodeDialog/utils';
 
 describe('TwinlistInput.vue', () => {
     let props;

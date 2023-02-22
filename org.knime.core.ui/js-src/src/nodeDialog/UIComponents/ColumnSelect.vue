@@ -1,5 +1,5 @@
 <script>
-import { optionsMapper } from '@/utils/nodeDialogUtils';
+import { optionsMapper } from '@/nodeDialog/utils';
 import DropdownInput from './DropdownInput.vue';
 
 export default {

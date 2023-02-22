@@ -1,6 +1,6 @@
 import { rankWith, isIntegerControl } from '@jsonforms/core';
-import IntegerInput from '@/components/UIComponents/IntegerInput.vue';
-import { priorityRanks, inputFormats } from '@/constants';
+import IntegerInput from '@/nodeDialog/UIComponents/IntegerInput.vue';
+import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const integerTester = (uischema, schema) => {
     const isInteger = isIntegerControl(uischema, schema);

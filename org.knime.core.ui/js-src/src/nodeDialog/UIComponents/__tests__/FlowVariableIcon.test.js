@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import FlowVariableIcon from '@/components/UIComponents/FlowVariableIcon.vue';
+import FlowVariableIcon from '@/nodeDialog/UIComponents/FlowVariableIcon.vue';
 import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';
 import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
 import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';

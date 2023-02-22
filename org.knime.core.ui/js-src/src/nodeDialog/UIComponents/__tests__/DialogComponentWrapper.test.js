@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import DialogComponentWrapper from '@/components/UIComponents/DialogComponentWrapper.vue';
+import DialogComponentWrapper from '@/nodeDialog/UIComponents/DialogComponentWrapper.vue';
 
 const defaultProps = {
     control: {

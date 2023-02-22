@@ -5,7 +5,7 @@ import { rankWith,
     isIntegerControl,
     isStringControl,
     isAnyOfControl } from '@jsonforms/core';
-import { priorityRanks } from '@/constants';
+import { priorityRanks } from '@/nodeDialog/constants';
 import { numberRenderer } from './numberRenderer';
 import { checkboxRenderer } from './checkboxRenderer';
 import { dropdownRenderer } from './dropdownRenderer';

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
-import IntegerInput from '@/components/UIComponents/IntegerInput.vue';
-import NumberInputBase from '@/components/UIComponents/NumberInputBase.vue';
-import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
+import IntegerInput from '@/nodeDialog/UIComponents/IntegerInput.vue';
+import NumberInputBase from '@/nodeDialog/UIComponents/NumberInputBase.vue';
+import ErrorMessage from '@/nodeDialog/UIComponents/ErrorMessage.vue';
 
 describe('IntegerInput.vue', () => {
     let defaultProps, wrapper;

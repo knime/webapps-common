@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import LabeledInput from '@/components/UIComponents/LabeledInput.vue';
-import ErrorMessage from '@/components/UIComponents/ErrorMessage.vue';
-import FlowVariableIcon from '@/components/UIComponents/FlowVariableIcon.vue';
-import DescriptionPopover from '@/components/UIComponents/DescriptionPopover.vue';
+import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
+import ErrorMessage from '@/nodeDialog/UIComponents/ErrorMessage.vue';
+import FlowVariableIcon from '@/nodeDialog/UIComponents/FlowVariableIcon.vue';
+import DescriptionPopover from '@/nodeDialog/UIComponents/DescriptionPopover.vue';
 import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
 import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';
 import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';

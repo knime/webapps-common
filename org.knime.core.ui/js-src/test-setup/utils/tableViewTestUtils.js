@@ -1,4 +1,4 @@
-import TableView from '@/components/TableView.vue';
+import TableView from '@/tableView/TableView.vue';
 import { shallowMount } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 
