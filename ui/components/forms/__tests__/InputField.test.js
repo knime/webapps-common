@@ -169,6 +169,18 @@ describe('InputField.vue', () => {
         expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(newValue);
     });
 
+    it.each([
+        ['keydown'],
+        ['keypress'],
+        ['keyup']
+    ])('emits %s events', (eventName) => {
+        const wrapper = mount(InputField);
+
+        const input = wrapper.find('input');
+        input.trigger(eventName, { key: 'X' });
+        expect(wrapper.emitted(eventName)[0][0].key).toEqual('X');
+    });
+
     it('focuses on focus call', () => {
         const wrapper = mount(InputField, {
             attachTo: document.body

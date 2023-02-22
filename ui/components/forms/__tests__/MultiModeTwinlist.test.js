@@ -420,7 +420,7 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
 
         it('takes additionalPossibleTypes into account', () => {
             const additionalPossibleTypes = [
-                { id: 'StringValue', text: 'String' },
+                { id: 'StringValue', text: 'Different String' },
                 { id: 'IntValue', text: 'Int' }
             ];
             const propsData = {
@@ -432,8 +432,8 @@ describe('MultiModeMultiModeTwinlist.vue', () => {
             };
             const wrapper = mount(MultiModeTwinlist, { propsData });
             expect(wrapper.vm.possibleTypes).toStrictEqual([
-                { id: 'StringValue', text: 'String' },
                 { id: 'IntValue', text: 'Int' },
+                { id: 'StringValue', text: 'String' },
                 { id: 'DoubleValue', text: 'Double' }
             ]);
         });
