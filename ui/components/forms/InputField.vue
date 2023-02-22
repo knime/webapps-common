@@ -167,7 +167,7 @@ export default {
     /* The gap is needed if there are adjacent activated buttons, to keep some space. */
     gap: 1px;
 
-    & svg {
+    & :slotted(svg) {
       vertical-align: top;
       width: calc(var(--icon-size) * 1px);
       height: calc(var(--icon-size) * 1px);

@@ -149,14 +149,16 @@ export default {
             model-value="demo with left icon"
             type="text"
           >
-            <template #icon><MailIcon :style="{ width: '18px'}" /></template>
+            <template #icon>
+              <MailIcon/>
+            </template>
           </InputField>
           <InputField
             model-value="demo with right icon"
             type="text"
           >
             <template #iconRight>
-              <CircleCheckIcon :style="{ width: '18px'}" />
+              <CircleCheckIcon/>
             </template>
           </InputField>
           <InputField
