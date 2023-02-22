@@ -20,6 +20,7 @@ describe('FileLink.vue', () => { // TODO .vue or not?
         expect(a.attributes('href')).toBe('https://example.com/file.pdf');
         expect(a.attributes('download')).toBe('');
     });
+    
     it('renders with icon', () => {
         const wrapper = mount(FileLink, {
             props: {
@@ -32,6 +33,7 @@ describe('FileLink.vue', () => { // TODO .vue or not?
         expect(wrapper.find('a').find('svg').exists()).toBeTruthy();
         expect(wrapper.find('a').attributes('type')).toBe('application/pdf');
     });
+
     it('renders with size', () => {
         const wrapper = mount(FileLink, {
             props: {

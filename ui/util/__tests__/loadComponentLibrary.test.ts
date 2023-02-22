@@ -37,7 +37,7 @@ describe.skip('loadComponentLibrary', () => {
         mockVueInstance.clearAllRegistered();
     });
 
-    it('Resolves when the component is added to the window object', async () => {
+    it('resolves when the component is added to the window object', async () => {
         vi
             .spyOn(HTMLScriptElement.prototype, 'addEventListener')
             .mockImplementation((event, handler) => {
@@ -83,7 +83,7 @@ describe.skip('loadComponentLibrary', () => {
         expect(onLoad).toHaveBeenCalledWith({ component: mockComponent });
     });
 
-    it('Throws if component is not added to window', async () => {
+    it('throws if component is not added to window', async () => {
         vi
             .spyOn(HTMLScriptElement.prototype, 'addEventListener')
             .mockImplementation((event, handler) => {
@@ -104,7 +104,7 @@ describe.skip('loadComponentLibrary', () => {
             .toThrow(`Component "${mockComponentId}" loading failed. Script invalid.`);
     });
 
-    it('Throws if script load fails', async () => {
+    it('throws if script load fails', async () => {
         vi
             .spyOn(HTMLScriptElement.prototype, 'addEventListener')
             .mockImplementation((event, handler) => {

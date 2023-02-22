@@ -150,7 +150,7 @@ export default {
             type="text"
           >
             <template #icon>
-              <MailIcon/>
+              <MailIcon />
             </template>
           </InputField>
           <InputField
@@ -158,7 +158,7 @@ export default {
             type="text"
           >
             <template #iconRight>
-              <CircleCheckIcon/>
+              <CircleCheckIcon />
             </template>
           </InputField>
           <InputField
