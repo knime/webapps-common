@@ -49,7 +49,7 @@ export default {
             type: Boolean
         }
     },
-    emits: ['update:modelValue', 'focus'],
+    emits: ['update:modelValue', 'focus', 'keyup', 'keypress', 'keydown'],
     computed: {
         hasLeftIcon() {
             return this.$slots.icon && this.$slots.icon().length;
