@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsLayout } from '@@/test-setup/utils/jsonFormsTestUtils';
-import HorizontalLayout from '@/nodeDialog/LayoutComponents/HorizontalLayout.vue';
+import HorizontalLayout from '../HorizontalLayout.vue';
 
 describe('HorizontalLayout.vue', () => {
     const defaultProps = {

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
-import ColumnFilter from '@/nodeDialog/UIComponents/ColumnFilter.vue';
-import TwinlistInput from '@/nodeDialog/UIComponents/TwinlistInput.vue';
+import ColumnFilter from '../ColumnFilter.vue';
+import TwinlistInput from '../TwinlistInput.vue';
 
 
 describe('ColumnFilter.vue', () => {

@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 
-import DescriptionPopover from '@/nodeDialog/UIComponents/DescriptionPopover.vue';
+import DescriptionPopover from '../DescriptionPopover.vue';
 
 describe('DescriptionPopover.vue', () => {
     let toggleSpy, closeSpy;

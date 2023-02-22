@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { columnFilterTester } from '@/nodeDialog/renderers/columnFilterRenderer';
+import { columnFilterTester } from '../../columnFilterRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 

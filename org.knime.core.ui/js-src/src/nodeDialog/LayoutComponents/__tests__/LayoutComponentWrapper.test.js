@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import LayoutComponentWrapper from '@/nodeDialog/LayoutComponents/LayoutComponentWrapper.vue';
+import LayoutComponentWrapper from '../LayoutComponentWrapper.vue';
 
 const defaultProps = {
     layout: {

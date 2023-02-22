@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import TextInput from '@/nodeDialog/UIComponents/TextInput.vue';
-import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
+import TextInput from '../TextInput.vue';
+import LabeledInput from '../LabeledInput.vue';
 import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 
 describe('TextInput.vue', () => {

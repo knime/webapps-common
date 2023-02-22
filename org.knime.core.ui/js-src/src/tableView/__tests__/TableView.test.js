@@ -4,7 +4,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
-import { shallowMountTableView, changeViewSetting } from '@@/test-setup/utils/tableViewTestUtils';
+import { shallowMountTableView, changeViewSetting } from './tableViewTestUtils';
 import { createStore } from 'vuex';
 import flushPromises from 'flush-promises';
 import { constants as tableUIConstants } from '@knime/knime-ui-table';
@@ -21,7 +21,7 @@ const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
 
 describe('TableView.vue', () => {
     const emptyColumnFilterValues = [[''], [], [], [''], [''], ['']];
-    const emptyRenderers = new Array(4).fill(null); // eslint-disable-line no-magic-numbers
+    const emptyRenderers = new Array(4).fill(null);
 
     let context,
         initialDataMock,
@@ -202,8 +202,8 @@ describe('TableView.vue', () => {
 
         it('requests new data and updates table view', async () => {
             const wrapper = await shallowMountTableView(context);
-            await wrapper.vm.performRequest('getTable', [['col1', 'col2'], 0, rowCount]); // eslint-disable-line no-magic-numbers
-            expect(getData).toBeCalledWith({ method: 'getTable', options: [['col1', 'col2'], 0, rowCount] }); // eslint-disable-line no-magic-numbers
+            await wrapper.vm.performRequest('getTable', [['col1', 'col2'], 0, rowCount]);
+            expect(getData).toBeCalledWith({ method: 'getTable', options: [['col1', 'col2'], 0, rowCount] });
         });
 
         it('does not render the TableUI when no columns are to be displayed', async () => {
@@ -811,7 +811,7 @@ describe('TableView.vue', () => {
                             currentScopeEndIndex: 2
                         });
 
-                        wrapper.vm.onScroll({ direction: 1, startIndex: 1, endIndex: 2 }); // eslint-disable-line no-magic-numbers
+                        wrapper.vm.onScroll({ direction: 1, startIndex: 1, endIndex: 2 });
 
                         expect(updateDataSpy).toHaveBeenCalledWith(expect.objectContaining(
                             { lazyLoad: {
@@ -834,7 +834,7 @@ describe('TableView.vue', () => {
                                 currentRowCount: 1000
                             });
 
-                            wrapper.vm.onScroll({ direction: 1, startIndex: 130, endIndex: 140 }); // eslint-disable-line no-magic-numbers
+                            wrapper.vm.onScroll({ direction: 1, startIndex: 130, endIndex: 140 });
 
                             expect(updateDataSpy).toHaveBeenCalledTimes(0);
                         });
@@ -849,7 +849,7 @@ describe('TableView.vue', () => {
                             });
                             dataRequestResult.rowCount = currentRowCount;
 
-                            wrapper.vm.onScroll({ direction: 1, startIndex: 440, endIndex: 480 }); // eslint-disable-line no-magic-numbers
+                            wrapper.vm.onScroll({ direction: 1, startIndex: 440, endIndex: 480 });
 
                             const lazyLoad = {
                                 direction: 1,
@@ -902,7 +902,7 @@ describe('TableView.vue', () => {
                             currentScopeEndIndex: 4
                         });
 
-                        wrapper.vm.onScroll({ direction: 1, startIndex: 1, endIndex: 2 }); // eslint-disable-line no-magic-numbers
+                        wrapper.vm.onScroll({ direction: 1, startIndex: 1, endIndex: 2 });
 
                         expect(updateDataSpy).toHaveBeenCalledTimes(0);
                     });
@@ -915,7 +915,7 @@ describe('TableView.vue', () => {
                             currentScopeEndIndex: 4
                         });
 
-                        wrapper.vm.onScroll({ direction: -1, startIndex: 1, endIndex: 2 }); // eslint-disable-line no-magic-numbers
+                        wrapper.vm.onScroll({ direction: -1, startIndex: 1, endIndex: 2 });
 
                         expect(updateDataSpy).toHaveBeenCalledWith(expect.objectContaining(
                             { lazyLoad: {
@@ -937,7 +937,7 @@ describe('TableView.vue', () => {
                                 rowCount: 1000
                             });
 
-                            wrapper.vm.onScroll({ direction: -1, startIndex: 60, endIndex: 70 }); // eslint-disable-line no-magic-numbers
+                            wrapper.vm.onScroll({ direction: -1, startIndex: 60, endIndex: 70 });
 
                             expect(updateDataSpy).toHaveBeenCalledTimes(0);
                         });
@@ -952,7 +952,7 @@ describe('TableView.vue', () => {
                             });
                             dataRequestResult.rowCount = currentRowCount;
 
-                            wrapper.vm.onScroll({ direction: -1, startIndex: 160, endIndex: 170 }); // eslint-disable-line no-magic-numbers
+                            wrapper.vm.onScroll({ direction: -1, startIndex: 160, endIndex: 170 });
 
                             const lazyLoad = {
                                 direction: -1,
@@ -1006,7 +1006,7 @@ describe('TableView.vue', () => {
                             currentScopeEndIndex: 2
                         });
 
-                        wrapper.vm.onScroll({ direction: -1, startIndex: 1, endIndex: 2 }); // eslint-disable-line no-magic-numbers
+                        wrapper.vm.onScroll({ direction: -1, startIndex: 1, endIndex: 2 });
 
                         expect(updateDataSpy).toHaveBeenCalledTimes(0);
                     });
@@ -1027,7 +1027,7 @@ describe('TableView.vue', () => {
 
         it.each([
             ['displayedColumns', { selected: ['col3'] }],
-            ['pageSize', 3], // eslint-disable-line no-magic-numbers
+            ['pageSize', 3],
             ['enablePagination', false]
         ])('view setting %p change causes table to be refreshed',
             (settingsKey, newValue) => {
@@ -1256,7 +1256,7 @@ describe('TableView.vue', () => {
                 wrapper.vm.onPageChange(1);
                 expect(getData).toBeCalledWith({
                     method: 'getTable',
-                    options: [initialDataMock.table.displayedColumns, 2, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
+                    options: [initialDataMock.table.displayedColumns, 2, 2, emptyRenderers, false, true, false]
                 });
                 expect(wrapper.vm.currentPage).toBe(2);
             });
@@ -1267,7 +1267,7 @@ describe('TableView.vue', () => {
 
             expect(getData).toHaveBeenNthCalledWith(2, {
                 method: 'getTable',
-                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
+                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false]
             });
             expect(wrapper.vm.currentPage).toBe(1);
         });
@@ -1297,7 +1297,7 @@ describe('TableView.vue', () => {
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false]
             });
             expect(wrapper.vm.currentPage).toBe(1);
         });
@@ -1309,7 +1309,7 @@ describe('TableView.vue', () => {
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', true, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', true, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false]
             });
             expect(wrapper.vm.currentPage).toBe(1);
 
@@ -1317,7 +1317,7 @@ describe('TableView.vue', () => {
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
+                    0, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false]
             });
         });
 
@@ -1328,7 +1328,7 @@ describe('TableView.vue', () => {
             expect(getData).toHaveBeenNthCalledWith(2, {
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
-                    2, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
+                    2, 2, 'col1', false, '', emptyColumnFilterValues, false, emptyRenderers, false, false, true, false]
             });
             expect(wrapper.vm.currentPage).toBe(2);
         });
@@ -1342,7 +1342,7 @@ describe('TableView.vue', () => {
             expect(getData).toHaveBeenCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns, 0, 2, '-1', false, '', emptyColumnFilterValues,
-                    true, emptyRenderers, false, false, true, false] // eslint-disable-line no-magic-numbers
+                    true, emptyRenderers, false, false, true, false]
             });
         });
     });
@@ -1547,7 +1547,7 @@ describe('TableView.vue', () => {
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
                     0,
-                    2, // eslint-disable-line no-magic-numbers
+                    2,
                     null,
                     false,
                     '',
@@ -1570,7 +1570,7 @@ describe('TableView.vue', () => {
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
                     0,
-                    2, // eslint-disable-line no-magic-numbers
+                    2,
                     null,
                     false,
                     globalSearchTerm,
@@ -1592,7 +1592,7 @@ describe('TableView.vue', () => {
 
             expect(getData).toHaveBeenNthCalledWith(2, {
                 method: 'getTable',
-                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false] // eslint-disable-line no-magic-numbers
+                options: [initialDataMock.table.displayedColumns, 0, 2, emptyRenderers, false, true, false]
             });
         });
 
@@ -1611,7 +1611,7 @@ describe('TableView.vue', () => {
                 method: 'getFilteredAndSortedTable',
                 options: [newColumns,
                     0,
-                    2, // eslint-disable-line no-magic-numbers
+                    2,
                     null,
                     false,
                     '',
@@ -1651,7 +1651,7 @@ describe('TableView.vue', () => {
                 method: 'getTable',
                 options: [initialDataMock.table.displayedColumns,
                     0,
-                    2, // eslint-disable-line no-magic-numbers
+                    2,
                     [null, null, renderer.id, null],
                     false, true, false]
             });
@@ -1666,7 +1666,7 @@ describe('TableView.vue', () => {
 
             wrapper.vm.onHeaderSubMenuItemSelection(
                 { id: 't3r2', section: 'dataRendering', selected: false, text: 'type3renderer2' },
-                3 // eslint-disable-line no-magic-numbers
+                3
             );
             expect(wrapper.vm.colNameSelectedRendererId).toEqual({ col1: 't1r4', col4: 't3r2' });
         });
@@ -1683,7 +1683,7 @@ describe('TableView.vue', () => {
             () => {
                 wrapper.vm.onHeaderSubMenuItemSelection(
                     { id: 't2r1', section: 'dataRendering', selected: false, text: 'type2renderer1' },
-                    2 // eslint-disable-line no-magic-numbers
+                    2
                 );
                 const newColumns = ['col3', 'col4'];
 

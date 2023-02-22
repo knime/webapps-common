@@ -14,9 +14,6 @@ const pagebuilderStoreMock = {
         namespaced: true,
         modules: {
             dialog: {
-                state: {
-                    dirtyModelSettings: false
-                },
                 namespaced: true,
                 actions: {
                     setApplySettings: () => {},

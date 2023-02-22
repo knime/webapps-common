@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { columnSelectTester } from '@/nodeDialog/renderers/columnSelectRenderer';
+import { columnSelectTester } from '../../columnSelectRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 

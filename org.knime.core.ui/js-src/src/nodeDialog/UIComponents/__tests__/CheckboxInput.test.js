@@ -1,11 +1,11 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore } from
     '@@/test-setup/utils/jsonFormsTestUtils';
-import CheckboxInput from '@/nodeDialog/UIComponents/CheckboxInput.vue';
-import ErrorMessage from '@/nodeDialog/UIComponents/ErrorMessage.vue';
-import FlowVariableIcon from '@/nodeDialog/UIComponents/FlowVariableIcon.vue';
+import CheckboxInput from '../CheckboxInput.vue';
+import ErrorMessage from '../ErrorMessage.vue';
+import FlowVariableIcon from '../FlowVariableIcon.vue';
+import DescriptionPopover from '../DescriptionPopover.vue';
 import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
-import DescriptionPopover from '@/nodeDialog/UIComponents/DescriptionPopover.vue';
 import Checkbox from 'webapps-common/ui/components/forms/Checkbox.vue';
 import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';
 import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';

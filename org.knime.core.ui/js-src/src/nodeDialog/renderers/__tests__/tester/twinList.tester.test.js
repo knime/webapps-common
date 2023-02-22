@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { twinlistTester } from '@/nodeDialog/renderers/twinlistRenderer';
+import { twinlistTester } from '../../twinlistRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 

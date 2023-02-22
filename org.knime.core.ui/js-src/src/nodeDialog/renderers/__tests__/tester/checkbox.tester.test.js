@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
-import { checkboxTester } from '@/nodeDialog/renderers/checkboxRenderer';
+import { checkboxTester } from '../../checkboxRenderer';
 
 it('checkboxTester', () => {
     expect(

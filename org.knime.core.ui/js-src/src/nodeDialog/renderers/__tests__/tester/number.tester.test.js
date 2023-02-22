@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { numberTester } from '@/nodeDialog/renderers/numberRenderer';
+import { numberTester } from '../../numberRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 

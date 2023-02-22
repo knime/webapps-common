@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import DropdownInput from '@/nodeDialog/UIComponents/DropdownInput.vue';
-import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
+import DropdownInput from '../DropdownInput.vue';
+import LabeledInput from '../LabeledInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 
 describe('DropdownInput.vue', () => {

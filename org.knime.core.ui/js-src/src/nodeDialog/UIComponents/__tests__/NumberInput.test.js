@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
     from '@@/test-setup/utils/jsonFormsTestUtils';
-import NumberInput from '@/nodeDialog/UIComponents/NumberInput.vue';
-import NumberInputBase from '@/nodeDialog/UIComponents/NumberInputBase.vue';
-import ErrorMessage from '@/nodeDialog/UIComponents/ErrorMessage.vue';
-import LabeledInput from '@/nodeDialog/UIComponents/LabeledInput.vue';
+import NumberInput from '../NumberInput.vue';
+import NumberInputBase from '../NumberInputBase.vue';
+import ErrorMessage from '../ErrorMessage.vue';
+import LabeledInput from '../LabeledInput.vue';
 
 describe('NumberInput.vue', () => {
     let defaultProps, wrapper, onChangeSpy;

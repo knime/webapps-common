@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { determineRenderer } from '@@/test-setup/utils/rendererTestUtils';
+import { determineRenderer } from '../rendererTestUtils';
 
 describe('CheckboxInput', () => {
     const schema = {

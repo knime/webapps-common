@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { radioTester } from '@/nodeDialog/renderers/radioRenderer';
+import { radioTester } from '../../radioRenderer';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 it('radioTester', () => {

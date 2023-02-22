@@ -4,7 +4,7 @@ import { optionsMapper,
     hasAdvancedOptions,
     optionsMapperWithType,
     getFlowVariablesMap,
-    mergeDeep } from '@/nodeDialog/utils';
+    mergeDeep } from '..';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
