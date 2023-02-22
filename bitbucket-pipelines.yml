@@ -31,7 +31,7 @@ definitions:
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
           - cd demo
           - npm ci
-          - npm run generate
+          - npm run build
 
 pipelines:
   pull-requests:
