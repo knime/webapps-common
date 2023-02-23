@@ -72,7 +72,7 @@ describe('filters', () => {
         expect(filter.test('--A--', normalized, isCaseSensitive, isInverted)).toBeFalsy();
     });
 
-    it('wildcard search matches correctly', () => {
+    it('test wildcard "*" search matches correctly', () => {
         const filter = filters.wildcard;
         let searchTerm = '*A*';
 
@@ -106,6 +106,24 @@ describe('filters', () => {
         isInverted = false;
         normalized = filter.normalize('', isCaseSensitive, isInverted);
         expect(filter.test('--A--', normalized, isCaseSensitive, isInverted)).toBeFalsy();
+    });
+
+    it('tests wildcard "?" search matches correctly', () => {
+        const filter = filters.wildcard;
+        let searchTerm = '??A??';
+
+        let isCaseSensitive = false;
+        let isInverted = false;
+        let normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+        expect(filter.test('--a--', normalized, isCaseSensitive, isInverted)).toBeTruthy();
+        expect(filter.test('--b--', normalized, isCaseSensitive, isInverted)).toBeFalsy();
+
+        // checks that '?' only accepts one random character
+        isCaseSensitive = false;
+        isInverted = false;
+        normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+        expect(filter.test('---a--', normalized, isCaseSensitive, isInverted)).toBeFalsy();
+        expect(filter.test('--a---', normalized, isCaseSensitive, isInverted)).toBeFalsy();
     });
 
     it('type search matches correctly', () => {
