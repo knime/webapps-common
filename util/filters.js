@@ -19,10 +19,10 @@ const modeDefinitions = [
         id: 'wildcard',
         normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
         // Do a regex search, explicitly matching start and end of the search term.
-        // All regex special character except from "*" (wildcard) are escaped.
+        // All regex special character except from "* and ?" (wildcards) are escaped.
             if (searchTerm.length > 0) {
-                const escapedSearchTerm = searchTerm.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-                const wildcardSearchTerm = escapedSearchTerm.replace(/\*/g, '.*');
+                const escapedSearchTerm = searchTerm.replace(/[-[\]{}()+.,\\^$|#\s]/g, '\\$&');
+                const wildcardSearchTerm = escapedSearchTerm.replace(/\*/g, '.*').replace(/\?/g, '.?');
                 searchTerm = `^${wildcardSearchTerm}$`;
             } else {
                 return { test: () => false };
