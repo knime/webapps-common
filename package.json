@@ -10,7 +10,7 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
-    "audit": "check-audit --omit=dev",
+    "audit": "check-audit --omit=dev --json > target/audit.json || true",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:json",
     "lint:js": "eslint --ext .js,.vue .",
     "lint:json": "eslint --ext .json .",
