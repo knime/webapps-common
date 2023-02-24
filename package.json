@@ -10,7 +10,7 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "postinstall": "npm run generate-css",
     "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
-    "audit": "check-audit --production --json > target/audit.json || true",
+    "audit": "check-audit --omit=dev",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:json",
     "lint:js": "eslint --ext .js,.vue .",
     "lint:json": "eslint --ext .json .",
@@ -21,7 +21,7 @@
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits"
   },
   "dependencies": {
-    "@popperjs/core": "2.11.6",
+    "@popperjs/core": "2.5.4",
     "date-fns": "2.16.1",
     "date-fns-tz": "1.0.12",
     "filesize": "6.1.0"
@@ -44,7 +44,7 @@
     "jest": "24.9.0",
     "jest-junit": "6.4.0",
     "jest-transform-stub": "2.0.0",
-    "npm-audit-resolver": "2.3.1",
+    "npm-audit-resolver": "3.0.0-7",
     "stylelint": "13.6.1",
     "stylelint-config-standard": "20.0.0",
     "typescript": "4.5.4",
@@ -74,6 +74,6 @@
   },
   "private": true,
   "volta": {
-    "node": "14.20.0"
+    "node": "18.14.2"
   }
 }
