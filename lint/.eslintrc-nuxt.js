@@ -3,6 +3,8 @@ const parentRules = require('./.eslintrc-vue').rules;
 module.exports = {
     extends: ['./.eslintrc-vue.js'],
     rules: {
+        'vue/multi-word-component-names': 'off',
+        'vue/no-reserved-component-names': 'off',
         'vue/component-name-in-template-casing': ['error', 'PascalCase', {
             ignores: [
                 ...parentRules['vue/component-name-in-template-casing'][2].ignores,

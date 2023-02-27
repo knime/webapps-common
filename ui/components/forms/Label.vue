@@ -72,7 +72,7 @@ export default {
       :class="['label-text', {compact: isCompact}]"
       v-text="text"
     />
-    <slot :labelForId="labelFor" />
+    <slot :label-for-id="labelFor" />
   </div>
 </template>
 
