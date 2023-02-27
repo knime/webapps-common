@@ -1,5 +1,5 @@
 module.exports = {
-    extends: 'stylelint-config-standard',
+    extends: 'stylelint-config-recommended-vue',
     rules: {
         'color-no-hex': true,
         'custom-property-empty-line-before': null,
