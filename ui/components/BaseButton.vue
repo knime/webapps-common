@@ -39,7 +39,29 @@ export default {
         // TODO: Can be made into a composition function
         linkComponent() {
             return resolveNuxtLinkComponent();
+        },
+        component() {
+            if (this.to) {
+                return this.linkComponent;
+            } else if (this.href) {
+                return 'a';
+            }
+            return 'button';
+        },
+        props() {
+            if (this.to) {
+                return {
+                    to: this.to,
+                    event: this.preventDefault ? [] : 'click'
+                };
+            } else if (this.href) {
+                return {
+                    href: this.href
+                };
+            }
+            return {};
         }
+
     },
     methods: {
         onClick(e) {
@@ -62,34 +84,13 @@ export default {
 </script>
 
 <template>
+  <!-- Note: @click events also fire on keyboard activation via Enter -->
   <Component
-    :is="linkComponent"
-    v-if="to"
-    v-bind="$attrs"
+    :is="component"
+    v-bind="{...$attrs, ...props}"
     ref="button"
-    :to="to"
-    :event="preventDefault ? [] : 'click'"
     @click="onClick"
   >
     <slot />
   </Component>
-  <!-- Note: @click events also fire on keyboard activation via Enter -->
-  <a
-    v-else-if="href"
-    v-bind="$attrs"
-    ref="button"
-    :href="href"
-    @click="onClick"
-  >
-    <slot />
-  </a>
-  <!-- Note: @click events also fire on keyboard activation via Space -->
-  <button
-    v-else
-    v-bind="$attrs"
-    ref="button"
-    @click="onClick"
-  >
-    <slot />
-  </button>
 </template>
