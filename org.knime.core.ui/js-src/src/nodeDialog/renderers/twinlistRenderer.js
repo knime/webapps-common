@@ -1,5 +1,5 @@
 import { uiTypeIs, rankWith, schemaMatches, and } from '@jsonforms/core';
-import TwinlistInput from '@/nodeDialog/UIComponents/TwinlistInput.vue';
+import TwinlistInput from '@/nodeDialog/uiComponents/TwinlistInput.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const checkTwinlistStructure = and(uiTypeIs('Control'), schemaMatches(

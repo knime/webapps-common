@@ -1,11 +1,11 @@
 <!-- eslint-disable max-lines -->
 <script>
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
-import { TableUI, constants as tableUIConstants } from '@knime/knime-ui-table';
+import { TableUI } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/tableView/utils';
 import throttle from 'raf-throttle';
 
-const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } = tableUIConstants;
+const { MIN_COLUMN_SIZE = 50, SPECIAL_COLUMNS_SIZE = 30, DATA_COLUMNS_MARGIN = 10 } = {};
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
 const REMAINING_COLUMNS_SYMBOL = Symbol('Remaining columns');

@@ -146,7 +146,7 @@ describe('RadioInputBase.vue', () => {
             }
         );
         const changedRadioInputBase = 'Shaken not stirred';
-        await localWrapper.findComponent(RadioButtons).vm.$emit('update:model-value', changedRadioInputBase);
+        await localWrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
         expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
     });

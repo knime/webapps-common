@@ -5,7 +5,7 @@ import { composePaths } from '@jsonforms/core';
 import Label from 'webapps-common/ui/components/forms/Label.vue';
 import Button from 'webapps-common/ui/components/Button.vue';
 import PlusIcon from 'webapps-common/ui/assets/img/icons/plus.svg';
-import DialogComponentWrapper from '../UIComponents/DialogComponentWrapper.vue';
+import DialogComponentWrapper from '../uiComponents/DialogComponentWrapper.vue';
 import ArrayLayoutItemControls from './ArrayLayoutItemControls.vue';
 
 const ArrayLayout = defineComponent({

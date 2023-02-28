@@ -1,5 +1,5 @@
 import { rankWith, isAnyOfControl } from '@jsonforms/core';
-import SimpleTwinlistInput from '@/nodeDialog/UIComponents/SimpleTwinlistInput.vue';
+import SimpleTwinlistInput from '@/nodeDialog/uiComponents/SimpleTwinlistInput.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const simpleTwinlistTester = (uischema, schema) => {

@@ -1,5 +1,5 @@
 import { rankWith, uiTypeIs } from '@jsonforms/core';
-import HorizontalLayout from '@/nodeDialog/LayoutComponents/HorizontalLayout.vue';
+import HorizontalLayout from '@/nodeDialog/layoutComponents/HorizontalLayout.vue';
 import { priorityRanks } from '@/nodeDialog/constants';
 
 export const horizontalLayoutTester = uiTypeIs('HorizontalLayout');

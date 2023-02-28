@@ -1,5 +1,5 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import DropdownInput from '@/nodeDialog/UIComponents/DropdownInput.vue';
+import DropdownInput from '@/nodeDialog/uiComponents/DropdownInput.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const dropDownTester = (uischema, schema) => {

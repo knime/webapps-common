@@ -1,5 +1,5 @@
 import { rankWith, isBooleanControl } from '@jsonforms/core';
-import CheckboxInput from '@/nodeDialog/UIComponents/CheckboxInput.vue';
+import CheckboxInput from '@/nodeDialog/uiComponents/CheckboxInput.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const checkboxTester = (uischema, schema) => {

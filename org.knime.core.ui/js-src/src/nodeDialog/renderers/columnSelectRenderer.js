@@ -1,5 +1,5 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import ColumnSelect from '@/nodeDialog/UIComponents/ColumnSelect.vue';
+import ColumnSelect from '@/nodeDialog/uiComponents/ColumnSelect.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 
 export const columnSelectTester = (uischema, schema) => {

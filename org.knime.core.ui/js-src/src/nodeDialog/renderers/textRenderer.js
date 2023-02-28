@@ -1,6 +1,6 @@
 import { rankWith, isStringControl } from '@jsonforms/core';
 import { priorityRanks } from '@/nodeDialog/constants';
-import TextInput from '@/nodeDialog/UIComponents/TextInput.vue';
+import TextInput from '@/nodeDialog/uiComponents/TextInput.vue';
 
 export const textTester = isStringControl;
 

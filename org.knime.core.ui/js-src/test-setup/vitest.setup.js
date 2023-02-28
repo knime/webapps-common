@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 import * as Vue from 'vue';
 window.Vue = Vue;
 
+window.alert = vi.fn();
 
 vi.mock('@knime/ui-extension-service');
 vi.mock('@jsonforms/vue', async () => {

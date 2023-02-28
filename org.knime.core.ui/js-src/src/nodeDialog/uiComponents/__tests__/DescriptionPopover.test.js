@@ -33,8 +33,8 @@ describe('DescriptionPopover.vue', () => {
         expect(wrapper.find('.button').exists()).toBeTruthy();
         expect(wrapper.find('svg').exists()).toBeTruthy();
         expect(wrapper.find('.box').exists()).toBeTruthy();
-        expect(wrapper.find('.content').exists()).toBeTruthy();
-        expect(wrapper.find('.content').text()).toContain('foo');
+        expect(wrapper.find('.description').exists()).toBeTruthy();
+        expect(wrapper.find('.description').text()).toContain('foo');
     });
 
     it('shows description button when hovering', async () => {
@@ -53,74 +53,74 @@ describe('DescriptionPopover.vue', () => {
         const wrapper = mount(DescriptionPopover);
         
         expect(toggleSpy).toHaveBeenCalledTimes(0);
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
 
         // opens content
         wrapper.find('.button').trigger('mouseup');
         expect(toggleSpy).toHaveBeenCalledTimes(1);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeTruthy();
+        expect(wrapper.find('.description').exists()).toBeTruthy();
 
         // closes content
         wrapper.find('.button').trigger('mouseup');
         expect(toggleSpy).toHaveBeenCalledTimes(2);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
     });
 
     it('expands and closes via space', async () => {
         const wrapper = mount(DescriptionPopover);
         
         expect(toggleSpy).toHaveBeenCalledTimes(0);
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
 
         // opens content
         wrapper.find('.button').trigger('keydown.space');
         expect(toggleSpy).toHaveBeenCalledTimes(1);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeTruthy();
+        expect(wrapper.find('.description').exists()).toBeTruthy();
 
         // closes content
         wrapper.find('.button').trigger('keydown.space');
         expect(toggleSpy).toHaveBeenCalledTimes(2);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
     });
 
     it('closes via escape', async () => {
         const wrapper = mount(DescriptionPopover);
         
         expect(toggleSpy).toHaveBeenCalledTimes(0);
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
 
         // opens content
         wrapper.find('.button').trigger('keydown.space');
         expect(closeSpy).toHaveBeenCalledTimes(0);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeTruthy();
+        expect(wrapper.find('.description').exists()).toBeTruthy();
 
         // closes content
         wrapper.find('.button').trigger('keydown.esc');
         expect(closeSpy).toHaveBeenCalledTimes(1);
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
     });
 
     it('closeUnlessHover closes only when not hovering', async () => {
         const wrapper = mount(DescriptionPopover, { props: { hover: true } });
         
         expect(toggleSpy).toHaveBeenCalledTimes(0);
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
 
         // opens content
         wrapper.find('.button').trigger('keydown.space');
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeTruthy();
+        expect(wrapper.find('.description').exists()).toBeTruthy();
 
         wrapper.vm.closeUnlessHover();
 
         // closes content
-        expect(wrapper.find('.content').exists()).toBeTruthy();
+        expect(wrapper.find('.description').exists()).toBeTruthy();
 
         wrapper.setProps({ hover: false });
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
@@ -128,7 +128,7 @@ describe('DescriptionPopover.vue', () => {
 
         // closes content
         await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-        expect(wrapper.find('.content').exists()).toBeFalsy();
+        expect(wrapper.find('.description').exists()).toBeFalsy();
     });
 
     it('sets orientation to below if out of bounds', async () => {

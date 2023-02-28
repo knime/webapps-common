@@ -1,5 +1,5 @@
 import { rankWith } from '@jsonforms/core';
-import ColumnFilter from '@/nodeDialog/UIComponents/ColumnFilter.vue';
+import ColumnFilter from '@/nodeDialog/uiComponents/ColumnFilter.vue';
 import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
 import { checkTwinlistStructure } from './twinlistRenderer';
 
