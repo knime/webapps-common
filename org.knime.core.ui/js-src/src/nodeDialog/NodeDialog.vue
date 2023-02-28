@@ -2,10 +2,9 @@
 import { JsonDataService, DialogService } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { JsonForms } from '@jsonforms/vue';
-import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
+import { fallbackRenderers, defaultRenderers } from './renderers';
 import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
-import { mapState } from 'vuex';
 import { cloneDeep } from 'lodash';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];

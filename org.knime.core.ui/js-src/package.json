@@ -9,6 +9,7 @@
     "dev": "run-s \"dev:build -- --mode {1} -- --watch\" \"dev:serve -- --port {2}\" --",
     "dev:build": "vite build",
     "dev:serve": "vite preview",
+    "dev:NodeDialog:standalone": "vite",
     "build": "npm run cleanDist && run-p type-check build:*",
     "build:NodeDialog": "vite build --mode NodeDialog",
     "build:TableView": "vite build --mode TableView",
@@ -21,8 +22,8 @@
     "audit": "check-audit --omit dev",
     "jenkins:lint": "eslint --ext .js,.vue,.json -f json -o target/eslint.json || true; stylelint '**/*.{css,vue}' -f json -o target/stylelint.json || true",
     "jenkins:audit": "check-audit --omit=dev --json > target/audit.json || true",
-    "test:unit": "TZ='Europe/Berlin' vitest",
-    "coverage": "TZ='Europe/Berlin' vitest run --coverage"
+    "test:unit": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",

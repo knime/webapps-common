@@ -1,6 +1,6 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import ColumnSelect from '@/nodeDialog/uiComponents/ColumnSelect.vue';
-import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
+import ColumnSelect from '../uiComponents/ColumnSelect.vue';
+import { priorityRanks, inputFormats } from '../constants';
 
 export const columnSelectTester = (uischema, schema) => {
     const isOneOf = isOneOfControl(uischema, schema);

@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '@/nodeDialog/utils';
+import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
 import Checkbox from 'webapps-common/ui/components/forms/Checkbox.vue';
 import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
 import FlowVariableIcon from './FlowVariableIcon.vue';

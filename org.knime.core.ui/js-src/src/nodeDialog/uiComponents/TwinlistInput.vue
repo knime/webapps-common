@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
-    from '@/nodeDialog/utils';
+    from '../utils';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';

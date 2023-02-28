@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/nodeDialog/utils';
+import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
 import RadioButtons from 'webapps-common/ui/components/forms/RadioButtons.vue';
 import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
 import LabeledInput from './LabeledInput.vue';

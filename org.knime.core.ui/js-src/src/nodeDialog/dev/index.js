@@ -10,18 +10,13 @@ window.consola = consola.create({
 });
 
 const pagebuilderStoreMock = {
-    pagebuilder: {
+    'pagebuilder/dialog': {
         namespaced: true,
-        modules: {
-            dialog: {
-                namespaced: true,
-                actions: {
-                    setApplySettings: () => {},
-                    dirtySettings: () => {},
-                    cleanSettings: () => {},
-                    callApplySettings: () => {}
-                }
-            }
+        actions: {
+            setApplySettings: () => {},
+            dirtySettings: () => {},
+            cleanSettings: () => {},
+            callApplySettings: () => {}
         }
     }
 };

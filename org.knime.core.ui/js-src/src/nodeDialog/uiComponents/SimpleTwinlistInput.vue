@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '@/nodeDialog/utils';
+import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
 import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';

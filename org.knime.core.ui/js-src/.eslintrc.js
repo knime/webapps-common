@@ -2,7 +2,7 @@
 require('@rushstack/eslint-patch/modern-module-resolution');
 
 module.exports = {
-    extends: ['@knime/eslint-config/vue3-typescript'],
+    extends: ['@knime/eslint-config/vue3-typescript', '@knime/eslint-config/vitest'],
     env: {
         node: true,
         browser: true
@@ -22,14 +22,5 @@ module.exports = {
             'error',
             { vue: 'always', json: 'always', mjs: 'always', svg: 'always', config: 'ignorePackages' }
         ]
-    },
-    overrides: [
-        {
-            extends: ['@knime/eslint-config/vitest'],
-            files: ['src/**/__tests__/**/*.test.*'],
-            rules: {
-                'no-magic-numbers': 'off'
-            }
-        }
-    ]
+    }
 };

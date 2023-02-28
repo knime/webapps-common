@@ -1,6 +1,6 @@
 import { rankWith, isAnyOfControl } from '@jsonforms/core';
-import SimpleTwinlistInput from '@/nodeDialog/uiComponents/SimpleTwinlistInput.vue';
-import { priorityRanks, inputFormats } from '@/nodeDialog/constants';
+import SimpleTwinlistInput from '../uiComponents/SimpleTwinlistInput.vue';
+import { priorityRanks, inputFormats } from '../constants';
 
 export const simpleTwinlistTester = (uischema, schema) => {
     const isAnyOf = isAnyOfControl(uischema, schema);
