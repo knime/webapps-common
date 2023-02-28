@@ -79,7 +79,6 @@ export default {
         /**
          * Labels
          */
-
         modeLabel: {
             type: String,
             required: false,
@@ -159,7 +158,7 @@ export default {
             return Object.assign({}, ...this.possibleValues.map(obj => ({ [obj.id]: obj })));
         },
         possibleValueIds() {
-            return this.possibleValues.map(x => x.id);
+            return this.possibleValues.map(({ id }) => id);
         },
         possibleTypes() {
             const possibleTypes = this.possibleValues.map(x => x.type).filter(type => type);
