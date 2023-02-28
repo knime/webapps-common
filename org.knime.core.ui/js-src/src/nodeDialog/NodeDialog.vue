@@ -6,6 +6,7 @@ import { fallbackRenderers, defaultRenderers } from '@/nodeDialog/renderers';
 import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
 import { mapState } from 'vuex';
+import { cloneDeep } from 'lodash';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
@@ -24,7 +25,11 @@ export default {
         };
     },
     // TODO: UIEXT-236 Move to dialog service
-    computed: mapState('pagebuilder/dialog', ['dirtyModelSettings']),
+    computed: {
+        dirtyModelSettings() {
+            return this.$store.state['pagebuilder/dialog'].dirtyModelSettings;
+        }
+    },
     async mounted() {
         this.jsonDataService = new JsonDataService(this.getKnimeService());
         this.dialogService = new DialogService(this.getKnimeService());
@@ -54,7 +59,8 @@ export default {
                 }
                 // TODO: UIEXT-236 Move to dialog service
                 if (!this.dirtyModelSettings) {
-                    this.jsonDataService.publishData(this.settings);
+                    const rawSettings = cloneDeep(this.settings);
+                    this.jsonDataService.publishData(rawSettings);
                 }
             }
         },

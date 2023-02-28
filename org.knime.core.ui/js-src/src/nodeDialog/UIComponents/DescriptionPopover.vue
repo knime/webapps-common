@@ -90,7 +90,6 @@ export default {
       <Description
         :text="html"
         render-as-html
-        class="content"
       />
     </div>
   </div>
@@ -154,7 +153,10 @@ export default {
       }
     }
 
-    & .content {
+    /** A deep selector is necessary, since Description is a multi-root component
+    * (see https://github.com/vuejs/core/issues/5446)
+    */
+    & :deep(.description) {
       max-height: 300px;
       overflow: auto;
       pointer-events: auto;

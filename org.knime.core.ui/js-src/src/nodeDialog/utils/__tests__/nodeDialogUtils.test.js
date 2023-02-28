@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
 import { optionsMapper,
     isModelSettingAndHasNodeView,
     hasAdvancedOptions,
@@ -46,7 +46,8 @@ describe('Utils', () => {
         expect(mergeDeep(1, { a: 1 })).toStrictEqual({ a: 1 });
     });
 
-    it('isModelSettingsAndhasNodeView', () => {
+    // eslint-disable-next-line vitest/consistent-test-it
+    test('isModelSettingsAndHasNodeView', () => {
         const control = {
             rootSchema: {
                 hasNodeView: true

@@ -1,55 +1,45 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { valueSwitchTester } from '../../valueSwitchRenderer';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-it('check the switch tester will match a requested value switch input', () => {
-    expect(
-        valueSwitchTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/yAxisScale',
-            options: {
-                format: 'valueSwitch'
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(true);
-});
 
-it('check the switch tester won\'t match other requested formats', () => {
-    expect(
-        valueSwitchTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/yAxisScale',
-            options: {
-                format: 'columnSelection'
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
-});
-
-it('check the switch tester won\'t match non-control types', () => {
-    expect(
-        valueSwitchTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/yAxisScale',
-            options: {
-                format: 'valueSwitch'
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
-});
-
-it('check the switch tester won\'t match wrong type and format', () => {
-    expect(
-        valueSwitchTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/yAxisScale',
-            options: {
-                format: 'columnSelect'
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+describe('valueSwitchTester', () => {
+    it('applies on a oneOf control with valueSwitch format', () => {
+        expect(
+            valueSwitchTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/yAxisScale',
+                options: {
+                    format: 'valueSwitch'
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(true);
+    });
+    
+    it('does not apply without valueSwitch format', () => {
+        expect(
+            valueSwitchTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/yAxisScale',
+                options: {
+                    format: 'columnSelection'
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
+    
+    it('does not apply if not a control', () => {
+        expect(
+            valueSwitchTester({
+                type: 'Section',
+                scope: '#/properties/view/properties/yAxisScale',
+                options: {
+                    format: 'valueSwitch'
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 });

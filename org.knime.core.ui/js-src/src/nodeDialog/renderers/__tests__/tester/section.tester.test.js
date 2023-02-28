@@ -1,29 +1,33 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 import { sectionLayoutTester } from '../../sectionLayoutRenderer';
 
-it('uses section layout', () => {
-    expect(
-        sectionLayoutTester({
-            type: 'Section',
-            label: 'Data'
-        },
-        dialogInitialData.schema)
-    ).toEqual(true);
+describe('uses section layout', () => {
+    it('applies on Section type', () => {
+        expect(
+            sectionLayoutTester({
+                type: 'Section',
+                label: 'Data'
+            },
+            dialogInitialData.schema)
+        ).toEqual(true);
+    });
 
-    expect(
-        sectionLayoutTester({
-            type: 'Group',
-            label: 'Data'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
-
-    expect(
-        sectionLayoutTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/xAxisColumn'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+    it('does not apply on a type other than Section', () => {
+        expect(
+            sectionLayoutTester({
+                type: 'Group',
+                label: 'Data'
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+        
+        expect(
+            sectionLayoutTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/xAxisColumn'
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 });

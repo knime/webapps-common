@@ -1,44 +1,42 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { integerTester } from '../../integerRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-it('integerTester', () => {
-    expect(
-        integerTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/maxRows',
-            options: {
-                format: inputFormats.integer
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(true);
+describe('integerTester', () => {
+    it('applies on number control with integer format', () => {
+        expect(
+            integerTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/maxRows',
+                options: {
+                    format: inputFormats.integer
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(true);
+    });
 
-    expect(
-        integerTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/maxRows'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+    it('does not apply without integer format', () => {
+        expect(
+            integerTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/maxRows'
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 
-    expect(
-        integerTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/maxRows',
-            options: {
-                format: inputFormats.integer
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
-
-    expect(
-        integerTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/maxRows'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+    it('does not apply if not a control', () => {
+        expect(
+            integerTester({
+                type: 'Section',
+                scope: '#/properties/view/properties/maxRows',
+                options: {
+                    format: inputFormats.integer
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 });

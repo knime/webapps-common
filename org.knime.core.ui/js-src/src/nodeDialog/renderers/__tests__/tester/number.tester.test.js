@@ -1,44 +1,42 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { numberTester } from '../../numberRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-it('numberTester', () => {
-    expect(
-        numberTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/fraction',
-            options: {
-                format: inputFormats.number
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(true);
+describe('numberTester', () => {
+    it('applies on number control with number format', () => {
+        expect(
+            numberTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/fraction',
+                options: {
+                    format: inputFormats.number
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(true);
+    });
 
-    expect(
-        numberTester({
-            type: 'Control',
-            scope: '#/properties/view/properties/fraction'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+    it('does not apply without number format', () => {
+        expect(
+            numberTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/fraction'
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 
-    expect(
-        numberTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/fraction',
-            options: {
-                format: inputFormats.number
-            }
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
-
-    expect(
-        numberTester({
-            type: 'Section',
-            scope: '#/properties/view/properties/fraction'
-        },
-        dialogInitialData.schema)
-    ).toEqual(false);
+    it('does not apply if not a control', () => {
+        expect(
+            numberTester({
+                type: 'Section',
+                scope: '#/properties/view/properties/fraction',
+                options: {
+                    format: inputFormats.number
+                }
+            },
+            dialogInitialData.schema)
+        ).toEqual(false);
+    });
 });

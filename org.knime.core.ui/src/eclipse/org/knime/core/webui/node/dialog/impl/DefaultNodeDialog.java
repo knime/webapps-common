@@ -70,7 +70,7 @@ public final class DefaultNodeDialog extends NodeDialog {
     /**
      * The page representing the default node dialog.
      */
-    public static final Page PAGE = Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.min.js")
+    public static final Page PAGE = Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.js")
         .markAsReusable("defaultdialog").build();
 
     private final DefaultNodeSettingsService m_settingsDataService;

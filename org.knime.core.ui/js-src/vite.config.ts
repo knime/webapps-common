@@ -8,23 +8,23 @@ import type { LibraryOptions } from 'vite';
 const libraries = {
     NodeDialog: {
         entry: fileURLToPath(new URL('./src/nodeDialog/NodeDialog.vue', import.meta.url)),
-        name: 'DefaultNodeDialog',
+        name: 'defaultdialog',
         fileName: 'NodeDialog',
         formats: ['umd']
     } as LibraryOptions,
     TableView: {
         entry: fileURLToPath(new URL('./src/tableView/TableView.vue', import.meta.url)),
-        name: 'DefaultNodeDialog',
+        name: 'tableview',
         fileName: 'TableView',
         formats: ['umd']
     } as LibraryOptions
 };
 
 const getCurrentLibrary = (mode: string) => {
-    if (mode !== 'NodeDialog' && mode !== 'TableView') {
-        return false;
+    if (mode === 'NodeDialog' || mode === 'TableView') {
+        return libraries[mode];
     }
-    return libraries[mode];
+    return false;
 };
 
 
@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => ({
     },
     build: {
         lib: getCurrentLibrary(mode),
+        emptyOutDir: false,
         rollupOptions: {
             external: ['vue'],
             output: {

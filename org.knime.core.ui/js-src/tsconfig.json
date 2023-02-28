@@ -15,7 +15,6 @@
         "./*"
       ]
     },
-    "outDir": "bla",
     "allowJs": true,
     "jsx": "preserve"
   },

@@ -89,7 +89,7 @@ public final class TableViewUtil {
     /**
      * The page representing the table view.
      */
-    public static final Page PAGE = Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.min.js")
+    public static final Page PAGE = Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.js")
         .markAsReusable(TABLEVIEW_PAGE_ID).addResources(createTableCellImageResourceSupplier(),
             DataValueImageRendererRegistry.RENDERED_CELL_IMAGES_PATH_PREFIX, true)
         .build();
