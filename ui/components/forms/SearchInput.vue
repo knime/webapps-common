@@ -115,7 +115,7 @@ export default {
     </template>
     <template #iconRight>
       <FunctionButton
-        v-show="!disabled"
+        v-show="!disabled && modelValue"
         class="clear-search"
         @click="clearSearch"
       >
@@ -142,11 +142,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.search-input {
-  &:has(input:placeholder-shown) .clear-search {
-    visibility: hidden;
-  }
-}
 
 .disabled {
   opacity: 0.5;
