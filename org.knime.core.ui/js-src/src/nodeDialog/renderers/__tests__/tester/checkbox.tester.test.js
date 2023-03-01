@@ -14,7 +14,7 @@ describe('checkboxTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply if checkbox format is not set', () => {
@@ -24,7 +24,7 @@ describe('checkboxTester', () => {
                 scope: '#/properties/view/properties/showTooltip'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a Control', () => {
@@ -37,6 +37,6 @@ describe('checkboxTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

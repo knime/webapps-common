@@ -11,7 +11,7 @@ describe('CheckboxInput', () => {
         }
     };
 
-    it('CheckboxInput config error', () => {
+    it('checkboxInput config error', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/checkbox',
@@ -23,7 +23,7 @@ describe('CheckboxInput', () => {
         expect(determineRenderer(uiSchema, schema)).toBe('CheckboxInput');
     });
 
-    it('CheckboxInput with options', () => {
+    it('checkboxInput with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/checkbox',
@@ -35,7 +35,7 @@ describe('CheckboxInput', () => {
         expect(determineRenderer(uiSchema, schema)).toBe('CheckboxInput');
     });
 
-    it('CheckboxInput without options', () => {
+    it('checkboxInput without options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/checkbox'

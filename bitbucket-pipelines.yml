@@ -1,4 +1,4 @@
-image: node:18.10
+image: node:18.14.2
 
 definitions: 
   steps:
@@ -11,9 +11,9 @@ definitions:
           - cd org.knime.core.ui/js-src
           - npm ci
           - npm run ci:lint
-          - npm run coverage -- --ci
+          - npm run coverage
           - npm run build
-          - npm run ci:audit
+          - npm run audit
         artifacts:
           - org.knime.core.ui/js-src/dist/**
 

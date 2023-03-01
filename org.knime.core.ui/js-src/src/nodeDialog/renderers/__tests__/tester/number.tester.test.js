@@ -14,7 +14,7 @@ describe('numberTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without number format', () => {
@@ -24,7 +24,7 @@ describe('numberTester', () => {
                 scope: '#/properties/view/properties/fraction'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -37,6 +37,6 @@ describe('numberTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

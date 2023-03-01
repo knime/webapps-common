@@ -8,7 +8,7 @@ const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderer
 describe('Section', () => {
     const schema = {};
 
-    it('Empty SectionLayout', () => {
+    it('empty SectionLayout', () => {
         const uiSchema = {
             type: 'Section',
             scope: '#/properties/test'

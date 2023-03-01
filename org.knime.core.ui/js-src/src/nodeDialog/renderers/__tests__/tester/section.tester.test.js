@@ -10,7 +10,7 @@ describe('uses section layout', () => {
                 label: 'Data'
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply on a type other than Section', () => {
@@ -20,7 +20,7 @@ describe('uses section layout', () => {
                 label: 'Data'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
         
         expect(
             sectionLayoutTester({
@@ -28,6 +28,6 @@ describe('uses section layout', () => {
                 scope: '#/properties/view/properties/xAxisColumn'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

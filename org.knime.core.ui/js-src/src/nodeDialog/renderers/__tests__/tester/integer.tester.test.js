@@ -14,7 +14,7 @@ describe('integerTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without integer format', () => {
@@ -24,7 +24,7 @@ describe('integerTester', () => {
                 scope: '#/properties/view/properties/maxRows'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -37,6 +37,6 @@ describe('integerTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

@@ -16,7 +16,7 @@ describe('twinlistTester', () => {
                 },
                 dialogInitialData.schema
             )
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without twinlist format', () => {
@@ -26,7 +26,7 @@ describe('twinlistTester', () => {
                 scope: '#/properties/view/properties/frequencyColumns'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -39,7 +39,7 @@ describe('twinlistTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply without selected property', () => {
@@ -52,6 +52,6 @@ describe('twinlistTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

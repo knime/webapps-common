@@ -33,7 +33,7 @@ describe('ColumnFilter', () => {
         }
     };
 
-    it('ColumnFilter with options', () => {
+    it('columnFilter with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnFilter',
@@ -45,7 +45,7 @@ describe('ColumnFilter', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnFilter');
     });
 
-    it('ColumnFilter without options uses twinlist fallback', () => {
+    it('columnFilter without options uses twinlist fallback', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnFilter'

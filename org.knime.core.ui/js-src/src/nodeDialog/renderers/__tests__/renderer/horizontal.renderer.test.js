@@ -8,7 +8,7 @@ const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderer
 describe('HorizontalLayout', () => {
     const schema = {};
 
-    it('Empty HorizontalLayout', () => {
+    it('empty HorizontalLayout', () => {
         const uiSchema = {
             type: 'HorizontalLayout',
             scope: '#/properties/test'

@@ -15,16 +15,16 @@ describe('NumberInput', () => {
         }
     };
 
-    it('NumberInput config error', () => {
+    it('numberInput config error', () => {
         const uiSchema = {
             type: 'Controll',
             scope: '#/properties/number'
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).not.toBeDefined();
+        expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
     });
 
-    it('NumberInput with options', () => {
+    it('numberInput with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/number',
@@ -36,7 +36,7 @@ describe('NumberInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('IntegerInput');
     });
 
-    it('NumberInput without options', () => {
+    it('numberInput without options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/number'

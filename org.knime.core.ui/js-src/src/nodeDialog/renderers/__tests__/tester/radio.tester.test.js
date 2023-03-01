@@ -13,7 +13,7 @@ describe('radioTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without radio format', () => {
@@ -26,7 +26,7 @@ describe('radioTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -39,6 +39,6 @@ describe('radioTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

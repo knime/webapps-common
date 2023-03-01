@@ -16,7 +16,7 @@ describe('simpleTwinlistTester', () => {
                 },
                 dialogInitialData.schema
             )
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without twinlist format', () => {
@@ -26,7 +26,7 @@ describe('simpleTwinlistTester', () => {
                 scope: '#/properties/view/properties/simpleTwinlist'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -39,6 +39,6 @@ describe('simpleTwinlistTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

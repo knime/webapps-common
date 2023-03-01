@@ -28,7 +28,7 @@ describe('TwinlistInput', () => {
         }
     };
 
-    it('TwinListInput config error', () => {
+    it('twinListInput config error', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/twinlist',
@@ -40,7 +40,7 @@ describe('TwinlistInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleTwinListInput');
     });
 
-    it('TwinListInput with options', () => {
+    it('twinListInput with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/twinlist',
@@ -52,7 +52,7 @@ describe('TwinlistInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleTwinListInput');
     });
 
-    it('TwinListInput without options uses oneOf fallback', () => {
+    it('twinListInput without options uses oneOf fallback', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/twinlist'

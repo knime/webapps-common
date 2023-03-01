@@ -12,7 +12,7 @@ describe('textTester', () => {
                 },
                 dialogInitialData.schema
             )
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply if not a control', () => {
@@ -22,7 +22,7 @@ describe('textTester', () => {
                 scope: '#/properties/view/properties/xAxisLabel'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a string', () => {
@@ -35,6 +35,6 @@ describe('textTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

@@ -211,7 +211,7 @@ describe('TwinlistInput.vue', () => {
                 .toHaveBeenNthCalledWith(3, props.control.path, expect.objectContaining({ selected }));
         });
 
-        it('handles selected values change', () => {
+        it('handles selected values change on manual input', () => {
             const selected = ['A', 'B', 'C'];
             const deselected = ['E', 'F', 'G'];
             wrapper.findComponent(MultiModeTwinlist).vm.$emit('input', { selected, isManual: true, deselected });

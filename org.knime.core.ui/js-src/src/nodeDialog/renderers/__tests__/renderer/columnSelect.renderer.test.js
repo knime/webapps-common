@@ -28,7 +28,7 @@ describe('ColumnSelect', () => {
         }
     };
 
-    it('ColumnSelect with options', () => {
+    it('columnSelect with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnselect',
@@ -42,7 +42,7 @@ describe('ColumnSelect', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnSelect');
     });
 
-    it('ColumnSelect without options', () => {
+    it('columnSelect without options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnselect'

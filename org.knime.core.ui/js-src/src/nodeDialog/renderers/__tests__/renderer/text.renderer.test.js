@@ -15,16 +15,16 @@ describe('TextInput', () => {
         }
     };
 
-    it('TextInput config error', () => {
+    it('textInput config error', () => {
         const uiSchema = {
             type: 'Controll',
             scope: '#/properties/text'
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).not.toBeDefined();
+        expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
     });
 
-    it('TextInput with options', () => {
+    it('textInput with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/text',
@@ -36,7 +36,7 @@ describe('TextInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('TextInput');
     });
 
-    it('TextInput without options', () => {
+    it('textInput without options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/text'

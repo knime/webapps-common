@@ -14,7 +14,7 @@ describe('dropDownTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without dropdown format', () => {
@@ -24,7 +24,7 @@ describe('dropDownTester', () => {
                 scope: '#/properties/view/properties/xAxisColumn'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -37,6 +37,6 @@ describe('dropDownTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

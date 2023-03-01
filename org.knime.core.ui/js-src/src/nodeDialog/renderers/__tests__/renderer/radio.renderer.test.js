@@ -24,7 +24,7 @@ describe('RadioInput', () => {
         }
     };
 
-    it('RadioInput config error', () => {
+    it('radioInput config error', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/radio',
@@ -36,7 +36,7 @@ describe('RadioInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
     });
 
-    it('RadioInput with options', () => {
+    it('radioInput with options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/radio',
@@ -48,7 +48,7 @@ describe('RadioInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('RadioInput');
     });
 
-    it('RadioInput without options', () => {
+    it('radioInput without options', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/radio'

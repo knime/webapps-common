@@ -13,7 +13,7 @@ describe('array tester', () => {
                 ]
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
     
     it('does not use array layout without reference to object array', () => {
@@ -23,13 +23,13 @@ describe('array tester', () => {
                 label: 'Data'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
         expect(
             arrayLayoutTester({
                 type: 'Control',
                 scope: '#/properties/view/properties/xAxisColumn'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

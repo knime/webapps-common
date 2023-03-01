@@ -23,8 +23,8 @@
 		<sonar.exclusions>node_modules/**/*,dist/**/*,src/dev/**/*,.nyc_output/**/*,coverage/**/*,*.log,config/**/*,**/config.js,**/*.config.js,buildtools/**,webapps-common/**</sonar.exclusions>
 		<sonar.css.stylelint.reportPaths>target/stylelint.json</sonar.css.stylelint.reportPaths>
 		<sonar.eslint.reportPaths>target/eslint.json</sonar.eslint.reportPaths>
-		<node.version>v18.10.0</node.version>
-		<npm.version>8.19.2</npm.version>
+		<node.version>v18.14.2</node.version>
+		<npm.version>9.5.0</npm.version>
 	</properties>
 
 	<build>
@@ -90,39 +90,6 @@
 						</goals>
 						<configuration>
 							<arguments>run build</arguments>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>npm run coverage</id>
-						<phase>test</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run coverage -- --ci</arguments>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>npm run jenkins:audit</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run jenkins:audit</arguments>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>npm run jenkins:lint</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run jenkins:lint</arguments>
 						</configuration>
 					</execution>
 				</executions>

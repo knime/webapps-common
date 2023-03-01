@@ -9,7 +9,7 @@ describe('horizontalLayoutTester', () => {
                 type: 'HorizontalLayout'
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
     
     it('does not apply if type is not HorizontalLayout', () => {
@@ -19,7 +19,7 @@ describe('horizontalLayoutTester', () => {
                 label: 'Data'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     
         expect(
             horizontalLayoutTester({
@@ -27,6 +27,6 @@ describe('horizontalLayoutTester', () => {
                 scope: '#/properties/view/properties/xAxisColumn'
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

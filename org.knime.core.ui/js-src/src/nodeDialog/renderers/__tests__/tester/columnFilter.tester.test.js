@@ -14,7 +14,7 @@ describe('ColumnFilterTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(true);
+        ).toBe(true);
     });
 
     it('does not apply without columnFilter format', () => {
@@ -27,7 +27,7 @@ describe('ColumnFilterTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 
     it('does not apply if not a control', () => {
@@ -40,6 +40,6 @@ describe('ColumnFilterTester', () => {
                 }
             },
             dialogInitialData.schema)
-        ).toEqual(false);
+        ).toBe(false);
     });
 });

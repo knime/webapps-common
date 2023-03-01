@@ -16,11 +16,5 @@ module.exports = {
                 ]
             }
         }
-    },
-    rules: {
-        'import/extensions': [
-            'error',
-            { vue: 'always', json: 'always', mjs: 'always', svg: 'always', config: 'ignorePackages' }
-        ]
     }
 };
