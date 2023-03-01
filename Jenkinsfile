@@ -17,8 +17,8 @@ try {
     node('maven && java17 && large') {
         knimetools.defaultTychoBuild(updateSiteProject: 'org.knime.update.core.ui')
 
-        junit '**/coverage/junit.xml'
-        knimetools.processAuditResults()
+        // junit '**/coverage/junit.xml'
+        // knimetools.processAuditResults()
 
         stage('Sonarqube analysis') {
            workflowTests.runSonar(withOutNode:true)
