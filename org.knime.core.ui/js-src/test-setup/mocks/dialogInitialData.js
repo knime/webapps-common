@@ -4,6 +4,7 @@ export const dialogInitialData = {
             title: 'Scatter Plot',
             yAxisScale: 'VALUE',
             simpleDropdown: 'value 1',
+            simpleColumnSelect: 'column 1',
             xAxisColumn: {
                 selected: 'Universe_1_1'
             },
@@ -46,6 +47,23 @@ export const dialogInitialData = {
                             {
                                 const: 'Value 3',
                                 title: 'Value 3'
+                            }
+                        ],
+                        title: 'Simple Dropdown'
+                    },
+                    simpleColumnSelect: {
+                        oneOf: [
+                            {
+                                const: 'column 1',
+                                title: 'Column 1'
+                            },
+                            {
+                                const: 'column 2',
+                                title: 'Column 2'
+                            },
+                            {
+                                const: 'column 3',
+                                title: 'Column 3'
                             }
                         ],
                         title: 'Simple Dropdown'
@@ -440,7 +458,7 @@ export const expectedRenderers = [
     { scope: '#/properties/view/properties/fraction', component: 'IntegerInput' },
     { scope: '#/properties/view/properties/showTooltip', component: 'CheckboxInput' },
     { scope: '#/properties/view/properties/xAxisColumn', component: 'ColumnSelect' },
-    { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleDropdownInput' },
+    { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleColumnSelect' },
     { scope: '#/properties/view/properties/xAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/yAxisLabel', component: 'TextInput' },
     { scope: '#/properties/model/properties/frequencyColumns', component: 'TwinListInput' },

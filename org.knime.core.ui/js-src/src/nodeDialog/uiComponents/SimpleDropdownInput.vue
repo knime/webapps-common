@@ -5,6 +5,7 @@ import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import { generatePossibleColumnValues } from './ColumnSelect.vue';
 
 const SimpleDropdownInput = defineComponent({
     name: 'SimpleDropdownInput',
@@ -18,7 +19,7 @@ const SimpleDropdownInput = defineComponent({
         optionsGenerator: {
             type: Function,
             required: false,
-            default: (control) => control.schema.oneOf.map(optionsMapper)
+            default: (control) => generatePossibleColumnValues(control.schema.oneOf)
         }
     },
     setup(props) {

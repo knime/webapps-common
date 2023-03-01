@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { dropdownTester } from '../../dropdownRenderer';
+import { simpleColumnSelectTester } from '../../simpleColumnSelectRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-describe('dropdownTester', () => {
-    it('applies on oneOf control with dropdown format', () => {
+describe('simpleColumnSelectTester', () => {
+    it('applies on oneOf control with columnSelect format', () => {
         expect(
-            dropdownTester({
+            simpleColumnSelectTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn',
+                scope: '#/properties/view/properties/simpleColumnSelect',
                 options: {
-                    format: inputFormats.oneOfDropdown
+                    format: inputFormats.columnSelect
                 }
             },
             dialogInitialData.schema)
@@ -19,9 +19,9 @@ describe('dropdownTester', () => {
 
     it('does not apply without dropdown format', () => {
         expect(
-            dropdownTester({
+            simpleColumnSelectTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn'
+                scope: '#/properties/view/properties/simpleColumnSelect'
             },
             dialogInitialData.schema)
         ).toBe(false);
@@ -29,11 +29,11 @@ describe('dropdownTester', () => {
 
     it('does not apply if not a control', () => {
         expect(
-            dropdownTester({
+            simpleColumnSelectTester({
                 type: 'Section',
-                scope: '#/properties/view/properties/xAxisColumn',
+                scope: '#/properties/view/properties/simpleColumnSelect',
                 options: {
-                    format: inputFormats.oneOfDropdown
+                    format: inputFormats.columnSelect
                 }
             },
             dialogInitialData.schema)

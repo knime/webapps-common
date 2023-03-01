@@ -1,21 +1,11 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
+import { getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
-
-
-const defaultOptionsGenerator = (control) => {
-    let options = control.schema.properties.selected.oneOf.map(optionsMapper);
-    // Since an oneOf cannot be empty, we currently add one option in the backend with empty id and title.
-    // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
-    if (options.length === 1 && options[0].id === '') {
-        options = [];
-    }
-    return options;
-};
+import { generatePossibleColumnValues } from './ColumnSelect.vue';
 
 
 const DropdownInput = defineComponent({
@@ -30,7 +20,7 @@ const DropdownInput = defineComponent({
         optionsGenerator: {
             type: Function,
             required: false,
-            default: defaultOptionsGenerator
+            default: (control) => generatePossibleColumnValues(control.schema.properties.selected.oneOf)
         }
     },
     setup(props) {
