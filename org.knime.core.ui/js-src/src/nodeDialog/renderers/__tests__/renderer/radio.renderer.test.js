@@ -33,7 +33,7 @@ describe('RadioInput', () => {
             }
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleDropdownInput');
     });
 
     it('radioInput with options', () => {
@@ -54,6 +54,6 @@ describe('RadioInput', () => {
             scope: '#/properties/radio'
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleDropdownInput');
     });
 });

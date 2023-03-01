@@ -6,8 +6,8 @@ import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 
-const DropdownInput = defineComponent({
-    name: 'DropdownInput',
+const SimpleDropdownInput = defineComponent({
+    name: 'SimpleDropdownInput',
     components: {
         Dropdown,
         LabeledInput,
@@ -62,7 +62,7 @@ const DropdownInput = defineComponent({
         }
     }
 });
-export default DropdownInput;
+export default SimpleDropdownInput;
 </script>
 
 <template>

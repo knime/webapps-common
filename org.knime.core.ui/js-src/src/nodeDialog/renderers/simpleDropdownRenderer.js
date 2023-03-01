@@ -1,13 +1,13 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import DropdownInput from '../uiComponents/DropdownInput.vue';
+import SimpleDropdownInput from '../uiComponents/SimpleDropdownInput.vue';
 import { priorityRanks, inputFormats } from '../constants';
 
-export const dropDownTester = (uischema, schema) => {
+export const simpleDropdownTester = (uischema, schema) => {
     const isOfControl = isOneOfControl(uischema, schema);
     return isOfControl && uischema.options?.format === inputFormats.oneOfDropdown;
 };
 
-export const dropdownRenderer = {
-    renderer: DropdownInput,
-    tester: rankWith(priorityRanks.default, dropDownTester)
+export const simpleDropdownRenderer = {
+    renderer: SimpleDropdownInput,
+    tester: rankWith(priorityRanks.default, simpleDropdownTester)
 };

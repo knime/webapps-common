@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { dropDownTester } from '../../dropdownRenderer';
+import { simpleDropdownTester } from '../../simpleDropdownRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
-describe('dropDownTester', () => {
+describe('simpleDropdownTester', () => {
     it('applies on oneOf control with dropdown format', () => {
         expect(
-            dropDownTester({
+            simpleDropdownTester({
                 type: 'Control',
                 scope: '#/properties/view/properties/xAxisColumn',
                 options: {
@@ -19,7 +19,7 @@ describe('dropDownTester', () => {
 
     it('does not apply without dropdown format', () => {
         expect(
-            dropDownTester({
+            simpleDropdownTester({
                 type: 'Control',
                 scope: '#/properties/view/properties/xAxisColumn'
             },
@@ -29,7 +29,7 @@ describe('dropDownTester', () => {
 
     it('does not apply if not a control', () => {
         expect(
-            dropDownTester({
+            simpleDropdownTester({
                 type: 'Section',
                 scope: '#/properties/view/properties/xAxisColumn',
                 options: {

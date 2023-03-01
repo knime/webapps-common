@@ -1,6 +1,7 @@
 <script>
 import { optionsMapper } from '../utils';
-import DropdownInput from './DropdownInput.vue';
+// TODO: Use the new DropdownInput instead here.
+import DropdownInput from './SimpleDropdownInput.vue';
 
 export default {
     name: 'ColumnSelect',

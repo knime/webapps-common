@@ -33,7 +33,7 @@ describe('ValueSwitchInput', () => {
             }
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleDropdownInput');
     });
 
     it('ensure a value switch is created if explicitly requested', () => {
@@ -54,6 +54,6 @@ describe('ValueSwitchInput', () => {
             scope: '#/properties/valueSwitch'
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleDropdownInput');
     });
 });

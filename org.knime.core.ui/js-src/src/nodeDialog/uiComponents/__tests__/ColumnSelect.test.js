@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ColumnSelect from '../ColumnSelect.vue';
-import DropdownInput from '../DropdownInput.vue';
+import DropdownInput from '../SimpleDropdownInput.vue';
 
 describe('ColumnSelect.vue', () => {
     let wrapper, props;

@@ -48,6 +48,6 @@ describe('ColumnSelect', () => {
             scope: '#/properties/columnselect'
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleDropdownInput');
     });
 });
