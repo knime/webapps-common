@@ -77,13 +77,15 @@ export default {
   /*
   Add margin to first children, using last-child and first-child to avoid problems in build
   */
-  & >>> > * {
-    &:first-child {
-      margin-right: 8px;
-    }
+  & /deep/ { /* different deep selector needed for postcss parsing */
+    & > * {
+      &:first-child {
+        margin-right: 8px;
+      }
 
-    &:last-child {
-      margin-right: 0;
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 

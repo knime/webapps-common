@@ -198,7 +198,9 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-.inputs >>> > * {
-  margin-bottom: 5px;
+.inputs /deep/ { /* different deep selector needed for postcss parsing */
+  & > * {
+    margin-bottom: 5px;
+  }
 }
 </style>
