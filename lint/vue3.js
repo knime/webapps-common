@@ -7,7 +7,13 @@ module.exports = {
         }
     },
     rules: {
-        'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }],
+        'import/extensions': ['error', {
+            vue: 'always',
+            json: 'always',
+            mjs: 'always',
+            svg: 'always',
+            config: 'ignorePackages'
+        }],
         'vue/html-closing-bracket-newline': ['error', {
             singleline: 'never',
             multiline: 'always'
