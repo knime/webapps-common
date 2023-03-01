@@ -57,7 +57,7 @@ npm run dev:NodeDialog
 
 and set the following in the run configuration of Eclipse:
 ```
--Dorg.knime.ui.dev.node.dialog.url=http://localhost:3333/NodeDialog.umd.min.js
+-Dorg.knime.ui.dev.node.dialog.url=http://localhost:3333/NodeDialog.umd.js
 ```
 
 For dialogs there also is a standalone dev app with mocks available:

@@ -200,7 +200,7 @@ public class NodeDialogManagerTest {
 
             assertThat(NodeDialogManager.hasNodeDialog(component)).as("node expected to have a node dialog").isTrue();
             var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(component);
-            assertThat(nodeDialog.getPage().getRelativePath()).isEqualTo("NodeDialog.umd.min.js");
+            assertThat(nodeDialog.getPage().getRelativePath()).isEqualTo("NodeDialog.umd.js");
 
             var pageId = NodeDialogManager.getInstance().getPageId(NodeWrapper.of(component), nodeDialog.getPage());
             assertThat(pageId).isEqualTo("defaultdialog");
