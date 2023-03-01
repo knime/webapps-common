@@ -72,7 +72,7 @@ describe('BaseModal', () => {
         expect(wrapper.emitted().cancel).toBeTruthy();
     });
 
-    it.skip('does not propagate event on overlay click', async () => {
+    it('does not propagate event on overlay click', async () => {
         let wrapper = shallowMount(BaseModal, {
             slots: {
                 default: '<p class="content-item">test</p>'

@@ -90,6 +90,7 @@ export default {
       <div
         ref="dialog"
         tabindex="-1"
+        @click.stop
       >
         <div
           class="overlay"
