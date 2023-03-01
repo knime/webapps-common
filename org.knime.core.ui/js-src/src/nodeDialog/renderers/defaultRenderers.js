@@ -1,6 +1,7 @@
 import { sectionLayoutRenderer } from './sectionLayoutRenderer';
 import { checkboxRenderer } from './checkboxRenderer';
 import { simpleDropdownRenderer } from './simpleDropdownRenderer';
+import { dropdownRenderer } from './dropdownRenderer';
 import { numberRenderer } from './numberRenderer';
 import { radioRenderer } from './radioRenderer';
 import { textRenderer } from './textRenderer';
@@ -16,6 +17,7 @@ export const defaultRenderers = [
     sectionLayoutRenderer,
     checkboxRenderer,
     simpleDropdownRenderer,
+    dropdownRenderer,
     numberRenderer,
     radioRenderer,
     textRenderer,

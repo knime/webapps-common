@@ -9,12 +9,14 @@ import { priorityRanks } from '../constants';
 import { numberRenderer } from './numberRenderer';
 import { checkboxRenderer } from './checkboxRenderer';
 import { simpleDropdownRenderer } from './simpleDropdownRenderer';
+import { checkDropdownStructure, dropdownRenderer } from './dropdownRenderer';
 import { textRenderer } from './textRenderer';
 import { checkTwinlistStructure, twinlistRenderer } from './twinlistRenderer';
 import { simpleTwinlistRenderer } from './simpleTwinlistRenderer';
 import { integerRenderer } from './integerRenderer';
 
 export const fallbackRenderers = [
+    { ...dropdownRenderer, tester: rankWith(priorityRanks.fallback, checkDropdownStructure) },
     { ...simpleDropdownRenderer, tester: rankWith(priorityRanks.fallback, isOneOfControl) },
     { ...simpleTwinlistRenderer, tester: rankWith(priorityRanks.fallback, isAnyOfControl) },
     { ...twinlistRenderer, tester: rankWith(priorityRanks.fallback, checkTwinlistStructure) },

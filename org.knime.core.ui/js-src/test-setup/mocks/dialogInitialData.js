@@ -3,7 +3,10 @@ export const dialogInitialData = {
         view: {
             title: 'Scatter Plot',
             yAxisScale: 'VALUE',
-            xAxisColumn: 'Universe_1_1',
+            simpleDropdown: 'value 1',
+            xAxisColumn: {
+                selected: 'Universe_1_1'
+            },
             yAxisColumn: 'Universe_0_1',
             xAxisLabel: '',
             yAxisLabel: '',
@@ -30,25 +33,47 @@ export const dialogInitialData = {
                         title: 'Title',
                         description: 'some description'
                     },
-                    xAxisColumn: {
+                    simpleDropdown: {
                         oneOf: [
                             {
-                                const: 'Universe_0_0',
-                                title: 'Universe_0_0'
+                                const: 'value 1',
+                                title: 'Value 1'
                             },
                             {
-                                const: 'Universe_0_1',
-                                title: 'Universe_0_1'
+                                const: 'value 2',
+                                title: 'Value 2'
                             },
                             {
-                                const: 'Universe_1_0',
-                                title: 'Universe_1_0'
-                            },
-                            {
-                                const: 'Universe_1_1',
-                                title: 'Universe_1_1'
+                                const: 'Value 3',
+                                title: 'Value 3'
                             }
                         ],
+                        title: 'Simple Dropdown'
+                    },
+                    xAxisColumn: {
+                        type: 'object',
+                        properties: {
+                            selected: {
+                                oneOf: [
+                                    {
+                                        const: 'Universe_0_0',
+                                        title: 'Universe_0_0'
+                                    },
+                                    {
+                                        const: 'Universe_0_1',
+                                        title: 'Universe_0_1'
+                                    },
+                                    {
+                                        const: 'Universe_1_0',
+                                        title: 'Universe_1_0'
+                                    },
+                                    {
+                                        const: 'Universe_1_1',
+                                        title: 'Universe_1_1'
+                                    }
+                                ]
+                            }
+                        },
                         title: 'X Axis Column'
                     },
                     xAxisLabel: {
@@ -415,7 +440,7 @@ export const expectedRenderers = [
     { scope: '#/properties/view/properties/fraction', component: 'IntegerInput' },
     { scope: '#/properties/view/properties/showTooltip', component: 'CheckboxInput' },
     { scope: '#/properties/view/properties/xAxisColumn', component: 'ColumnSelect' },
-    { scope: '#/properties/view/properties/yAxisColumn', component: 'ColumnSelect' },
+    { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleDropdownInput' },
     { scope: '#/properties/view/properties/xAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/yAxisLabel', component: 'TextInput' },
     { scope: '#/properties/model/properties/frequencyColumns', component: 'TwinListInput' },

@@ -5,11 +5,11 @@ import { determineRenderer } from '../rendererTestUtils';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
-describe('ColumnSelect', () => {
+describe('Dropdown', () => {
     const schema = {
         type: 'object',
         properties: {
-            columnselect: {
+            dropdown: {
                 type: 'object',
                 properties: {
                     selected: {
@@ -33,26 +33,15 @@ describe('ColumnSelect', () => {
         }
     };
 
-    it('columnSelect with options', () => {
+    it('renders DropdownInput', () => {
         const uiSchema = {
             type: 'Control',
-            scope: '#/properties/columnselect',
+            scope: '#/properties/dropdown',
             options: {
-                format: 'columnSelection',
-                showRowKeys: false,
-                showNoneColumn: false
+                format: 'dropDown'
             }
         };
         
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnSelect');
-    });
-
-    it('columnSelect without options', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/columnselect'
-        };
-
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
     });
 });
