@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount, shallowMount } from '@vue/test-utils';
 
-import { createPopper as createPopperMock } from '@popperjs/core';
+import { createPopper as createPopperMock } from '@popperjs/core/dist/esm';
 
 import SubMenu from '../SubMenu.vue';
 import FunctionButton from '../FunctionButton.vue';
 
-vi.mock('@popperjs/core');
+vi.mock('@popperjs/core/dist/esm');
 
 describe('SubMenu.vue', () => {
     const setOptionsMock = vi.fn();

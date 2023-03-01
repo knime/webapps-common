@@ -1,5 +1,5 @@
 <script>
-import { createPopper } from '@popperjs/core';
+import { createPopper } from '@popperjs/core/dist/esm';
 import FunctionButton from './FunctionButton.vue';
 import MenuItems from './MenuItems.vue';
 
