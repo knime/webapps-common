@@ -12,24 +12,29 @@ describe('ColumnSelect.vue', () => {
             control: {
                 label: 'Column Selection',
                 schema: {
-                    oneOf: [
-                        {
-                            const: 'Universe_0_0',
-                            title: 'Universe_0_0'
-                        },
-                        {
-                            const: 'Universe_0_1',
-                            title: 'Universe_0_1'
-                        },
-                        {
-                            const: 'Universe_1_0',
-                            title: 'Universe_1_0'
-                        },
-                        {
-                            const: 'Universe_1_1',
-                            title: 'Universe_1_1'
+                    type: 'object',
+                    properties: {
+                        selected: {
+                            oneOf: [
+                                {
+                                    const: 'Universe_0_0',
+                                    title: 'Universe_0_0'
+                                },
+                                {
+                                    const: 'Universe_0_1',
+                                    title: 'Universe_0_1'
+                                },
+                                {
+                                    const: 'Universe_1_0',
+                                    title: 'Universe_1_0'
+                                },
+                                {
+                                    const: 'Universe_1_1',
+                                    title: 'Universe_1_1'
+                                }
+                            ]
                         }
-                    ],
+                    },
                     title: 'Y Axis Column'
                 },
                 uischema: {
@@ -124,7 +129,7 @@ describe('ColumnSelect.vue', () => {
 
     it('optionsGenerator removes empty element coming because oneOfs cant be empty', async () => {
         await wrapper.vm.$nextTick();
-        props.control.schema.oneOf = [{ const: '', title: '' }];
+        props.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
         
         const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
         expect(tmp).toEqual([]);
@@ -132,7 +137,7 @@ describe('ColumnSelect.vue', () => {
 
     it('optionsGenerator removes empty element coming because oneOfs can\'t be empty with special rows', async () => {
         await wrapper.vm.$nextTick();
-        props.control.schema.oneOf = [{ const: '', title: '' }];
+        props.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
         props.control.uischema.options.showNoneColumn = true;
         props.control.uischema.options.showRowKeys = true;
         

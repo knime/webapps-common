@@ -2,59 +2,79 @@
   "result": {
     "name": "Dropdowns",
     "data": {
-      "EmptyState": "",
-      "NoPossibleValues": "",
-      "EmptyButSpecialValuesShown": "test"
+      "EmptyState": {
+        "selected": ""
+      },
+      "NoPossibleValues": {
+        "selected": ""
+      },
+      "EmptyButSpecialValuesShown": {
+        "selected": "test"
+      }
     },
     "schema": {
       "type": "object",
       "properties": {
         "EmptyState": {
-          "oneOf": [
-            {
-              "const": "NONE",
-              "title": "None"
-            },
-            {
-              "const": "COUNT",
-              "title": "Occurrence count"
-            },
-            {
-              "const": "SUM",
-              "title": "Sum"
-            },
-            {
-              "const": "AVG",
-              "title": "Average"
+          "type": "object",
+          "properties": {
+            "selected": {
+              "oneOf": [
+                {
+                  "const": "NONE",
+                  "title": "None"
+                },
+                {
+                  "const": "COUNT",
+                  "title": "Occurrence count"
+                },
+                {
+                  "const": "SUM",
+                  "title": "Sum"
+                },
+                {
+                  "const": "AVG",
+                  "title": "Average"
+                }
+              ]
             }
-          ],
+          },
           "title": "Empty state",
           "description": "Tests a dropdown with no initial selection",
           "default": ""
         },
         "NoPossibleValues": {
-          "oneOf": [
-            {
-              "const": "",
-              "title": ""
+          "type": "object",
+          "properties": {
+            "selected": {
+              "oneOf": [
+                {
+                  "const": "",
+                  "title": ""
+                }
+              ]
             }
-          ],
+          },
           "title": "No possible values",
           "description": "Tests a dropdown with no possible values",
           "default": ""
         },
         "EmptyButSpecialValuesShown": {
-          "oneOf": [
-            {
-              "const": "",
-              "title": ""
+          "type": "object",
+          "properties": {
+            "selected": {
+              "oneOf": [
+                {
+                  "const": "",
+                  "title": ""
+                }
+              ]
             }
-          ],
+          },
           "title": "No possible values but special values",
           "description": "Tests a dropdown with no possible values but therefore special values",
           "default": ""
         }
-
       }
     },
     "ui_schema": {
