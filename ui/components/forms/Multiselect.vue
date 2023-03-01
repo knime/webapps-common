@@ -73,21 +73,35 @@ export default {
         summaryName: {
             type: String,
             default: null
+        },
+        useCustomSummary: {
+            type: Boolean,
+            default: false
+        },
+        size: {
+            type: Number,
+            default: 0,
+            validator(value) {
+                return value >= 0;
+            }
+        },
+        parentFocusElements: {
+            type: Array,
+            default: () => []
         }
     },
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'focusOutside'],
     data() {
         return {
             checkedValue: this.modelValue,
-            collapsed: true
+            collapsed: true,
+            optionHeight: 28.5,
+            focusOptions: []
         };
     },
     computed: {
-        /**
-         * @returns {Array<Element>} - HTML Elements to use for focus and events.
-         */
-        focusOptions() {
-            return this.$refs.option.map(el => el.$el && el.$el.firstChild);
+        focusElements() {
+            return [...this.focusOptions, ...this.parentFocusElements];
         },
         summary() {
             if (this.checkedValue.length === 0) {
@@ -102,6 +116,12 @@ export default {
                 .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
                 .map(({ text, selectedText = text }) => selectedText)
                 .join(this.separator);
+        },
+        showOptions() {
+            return this.useCustomSummary ? this.possibleValues.length > 0 : !this.collapsed;
+        },
+        cssStyleSize() {
+            return this.size > 0 ? { 'max-height': `${this.size * this.optionHeight}px` } : {};
         }
     },
     watch: {
@@ -111,6 +131,9 @@ export default {
             },
             deep: true
         }
+    },
+    mounted() {
+        this.updateFocusOptions();
     },
     methods: {
         /**
@@ -180,8 +203,12 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.focusOptions.includes(document.activeElement)) {
-                    this.closeOptions(false);
+                if (!this.focusElements.includes(document.activeElement)) {
+                    if (this.useCustomSummary) {
+                        this.$emit('focusOutside');
+                    } else {
+                        this.closeOptions(false);
+                    }
                 }
             }, BLUR_TIMEOUT);
         },
@@ -193,6 +220,14 @@ export default {
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
+        },
+        updateFocusOptions() {
+            if (this.$refs.option) {
+                this.focusOptions = this.$refs.option
+                    .sort((option1, option2) => parseInt(option1.$el.dataset.index, 10) -
+                    parseInt(option2.$el.dataset.index, 10))
+                    .map(el => el.$el && el.$el.firstChild);
+            }
         }
     }
 };
@@ -207,25 +242,35 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onMousedown"
   >
-    <div
-      ref="toggle"
-      role="button"
-      tabindex="0"
-      :class="{ placeholder: !checkedValue.length }"
-      @click="toggle"
-      @keydown.space.prevent="toggle"
-    >
-      {{ summary }}
+    <slot
+      v-if="useCustomSummary"
+      name="summary"
+    />
+    <div v-else>
+      <div
+        ref="toggle"
+        role="button"
+        tabindex="0"
+        :class="{ placeholder: !checkedValue.length }"
+        @click="toggle"
+        @keydown.space.prevent="toggle"
+      >
+        {{ summary }}
+      </div>
+      <DropdownIcon class="icon" />
     </div>
-    <DropdownIcon class="icon" />
     <div
-      v-show="!collapsed"
+      v-show="showOptions"
       class="options"
+      :style="cssStyleSize"
     >
+      <!-- $refs are unordered, suggested solution is to use a data-index (the options change e.g using ComboBox.vue)
+          https://github.com/vuejs/vue/issues/4952#issuecomment-407550765 -->
       <Checkbox
-        v-for="item of possibleValues"
+        v-for="(item, index) of possibleValues"
         ref="option"
         :key="`multiselect-${item.id}`"
+        :data-index="index"
         :model-value="isChecked(item.id)"
         :disabled="item.disabled"
         class="boxes"
@@ -280,7 +325,7 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  &.collapsed:hover {
+  &.collapsed:hover:not(:focus-within) {
     background: var(--theme-multiselect-background-color-hover);
   }
 
@@ -301,6 +346,7 @@ export default {
   }
 
   & .options {
+    overflow: auto;
     position: absolute;
     z-index: var(--z-index-common-multiselect-expanded, 2);
     width: 100%;

@@ -62,6 +62,7 @@ const demoComponents = {
         NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
         Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
         Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
+        Combobox: defineAsyncComponent(() => import('./components/ComboBox.vue')),
         RadioButtons: defineAsyncComponent(() => import('./components/RadioButtons.vue')),
         ValueSwitch: defineAsyncComponent(() => import('./components/ValueSwitch.vue')),
         DateTimeInput: defineAsyncComponent(() => import('./components/DateTimeInput.vue')),
