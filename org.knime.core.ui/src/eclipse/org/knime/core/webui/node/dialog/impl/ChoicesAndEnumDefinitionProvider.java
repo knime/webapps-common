@@ -90,7 +90,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         final var schema = field.getAnnotation(Schema.class);
 
         if (hasChoices(schema, field)) {
-            if (type.canCreateSubtype(ColumnFilter.class)) {
+            if (type.canCreateSubtype(ColumnFilter.class) || type.canCreateSubtype(ColumnSelection.class)) {
                 m_lastSchemaWithColumns = schema;
             } else {
                 arrayNode = determineChoiceValues(schemaContext, schema.choices());

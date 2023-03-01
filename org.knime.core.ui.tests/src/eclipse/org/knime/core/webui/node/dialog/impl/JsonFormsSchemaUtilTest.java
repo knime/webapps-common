@@ -368,6 +368,41 @@ class JsonFormsSchemaUtilTest {
         }
     }
 
+    private static class ColumnSelectionSettings{
+
+        private static DataTableSpec spec =
+            new DataTableSpec(new DataColumnSpecCreator(ColumnChoices.included[0], DoubleCell.TYPE).createSpec(),
+                new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
+                new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
+
+        private static String SNAPSHOT = "{" + //
+            "\"testColumnSelection\":{"// +
+            + "\"title\":\"column\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
+            + "}}," //
+            + "\"testColumnSelectionNoTypes\":{"// +
+            + "\"title\":\"strings\","//
+            + "\"type\":\"object\","//
+            + "\"properties\":{" //
+            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}"//
+            + "}}"
+            + "}";
+
+        @Schema(title = "column", choices = ColumnChoices.class)
+        public ColumnSelection testColumnSelection;
+
+
+        @Schema(title = "strings", choices = NonColumnChoices.class)
+        public ColumnSelection testColumnSelectionNoTypes;
+    }
+
+    @Test
+    void testColumnSelection() throws JsonProcessingException {
+        testSettings(ColumnSelectionSettings.class, ColumnSelectionSettings.spec);
+    }
+
     private static String COLUMN_FILTER_SNAPSHOT_IDENTICAL =
         "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"m_manuallySelected\":[], \"m_manuallyDeselected\":[], \"m_includeUnknownColumns\":false}},"
             + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
