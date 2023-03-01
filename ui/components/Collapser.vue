@@ -24,7 +24,7 @@ export default {
         };
     },
     methods: {
-        onTrigger(e) {
+        onTrigger() {
             this.isExpanded = !this.isExpanded;
         }
     }

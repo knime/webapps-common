@@ -29,7 +29,7 @@ describe('Collapser.vue', () => {
         expect(wrapper.find('.icon').exists()).toBeTruthy();
     });
 
-    it('handles button click', () => {
+    it('handles button click', async () => {
         const triggerSpy = vi.spyOn(Collapser.methods, 'onTrigger');
 
         const wrapper = mount(Collapser, {
@@ -39,7 +39,7 @@ describe('Collapser.vue', () => {
             }
         });
 
-        wrapper.find('.button').trigger('click');
+        await wrapper.find('.button').trigger('click');
         expect(triggerSpy).toHaveBeenCalled();
     });
 });
