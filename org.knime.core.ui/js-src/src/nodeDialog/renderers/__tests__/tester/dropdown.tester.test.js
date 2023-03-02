@@ -8,7 +8,7 @@ describe('dropdownTester', () => {
         expect(
             dropdownTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn',
+                scope: '#/properties/view/properties/dropdown',
                 options: {
                     format: inputFormats.oneOfDropdown
                 }
@@ -21,7 +21,7 @@ describe('dropdownTester', () => {
         expect(
             dropdownTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn'
+                scope: '#/properties/view/properties/dropdown'
             },
             dialogInitialData.schema)
         ).toBe(false);
@@ -31,7 +31,7 @@ describe('dropdownTester', () => {
         expect(
             dropdownTester({
                 type: 'Section',
-                scope: '#/properties/view/properties/xAxisColumn',
+                scope: '#/properties/view/properties/dropdown',
                 options: {
                     format: inputFormats.oneOfDropdown
                 }

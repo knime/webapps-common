@@ -3,7 +3,9 @@
     "name": "Line Plot Dialog",
     "data": {
       "view": {
-        "xAxisColumn": "Universe_0_0",
+        "xAxisColumn": {
+          "selected": "Universe_0_0"
+        },
         "yAxisColumn": {
           "mode": "MANUAL",
           "patternFilter": {
@@ -22,7 +24,8 @@
             "includeUnknownColumns": false
           },
           "typeFilter": {
-            "selectedTypes": []
+            "selectedTypes": [],
+            "typeDisplays": []
           }
         },
         "maxRows": 2500,
@@ -39,6 +42,11 @@
         "showTooltip": true,
         "axisExtentMethod": "AUTO",
         "enableAnimation": true
+      },
+      "model": {
+        "generateImage": false,
+        "width": 800,
+        "height": 600
       }
     },
     "schema": {
@@ -66,7 +74,10 @@
               ],
               "title": "Value axis limits",
               "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
-              "default": "AUTO"
+              "default": "AUTO",
+              "configKeys": [
+                "axisExtentMethod"
+              ]
             },
             "dataPointMarkerSize": {
               "type": "integer",
@@ -74,13 +85,19 @@
               "title": "Marker size",
               "description": "Numeric value that defines the marker size.",
               "default": 5,
-              "minimum": 1
+              "minimum": 1,
+              "configKeys": [
+                "dataPointMarkerSize"
+              ]
             },
             "enableAnimation": {
               "type": "boolean",
               "title": "Enable animation",
               "description": "When checked, the animation of the graph is active.",
-              "default": true
+              "default": true,
+              "configKeys": [
+                "enableAnimation"
+              ]
             },
             "enableDataZoom": {
               "type": "boolean",
@@ -108,7 +125,10 @@
               "type": "boolean",
               "title": "Show data point markers",
               "description": "When checked, markers show the location of each data point.",
-              "default": false
+              "default": false,
+              "configKeys": [
+                "showDataPointMarkers"
+              ]
             },
             "showTooltip": {
               "type": "boolean",
@@ -129,31 +149,41 @@
               "default": "Line Plot"
             },
             "xAxisColumn": {
-              "oneOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                },
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1"
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
                 }
-              ],
+              },
               "title": "Horizontal dimension",
               "description": "Defines the column that contains the values for horizontal dimension.",
-              "default": "Universe_0_0"
+              "default": {
+                "m_selected": "Universe_0_0"
+              },
+              "configKeys": [
+                "xAxisColumn"
+              ]
             },
             "xAxisLabel": {
               "type": "string",
@@ -238,27 +268,30 @@
                     {
                       "const": "Universe_0_0",
                       "title": "Universe_0_0",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_0_1",
                       "title": "Universe_0_1",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_1_0",
                       "title": "Universe_1_0",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_1_1",
                       "title": "Universe_1_1",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     }
+                  ],
+                  "configKeys": [
+                    "selected_Internals"
                   ]
                 },
                 "typeFilter": {
@@ -270,10 +303,26 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "typeDisplays": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   },
                   "default": {
-                    "m_selectedTypes": []
+                    "m_selectedTypes": [],
+                    "m_typeDisplays": []
                   }
                 }
               },
@@ -298,9 +347,13 @@
                   "m_includeUnknownColumns": false
                 },
                 "m_typeFilter": {
-                  "m_selectedTypes": []
+                  "m_selectedTypes": [],
+                  "m_typeDisplays": []
                 }
-              }
+              },
+              "configKeys": [
+                "yAxisColumn"
+              ]
             },
             "yAxisLabel": {
               "type": "string",
@@ -324,6 +377,42 @@
               "default": "VALUE"
             }
           }
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "generateImage": {
+              "type": "boolean",
+              "title": "Generate image",
+              "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
+              "default": false,
+              "configKeys": [
+                "generateImage"
+              ]
+            },
+            "height": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Height",
+              "description": "The height of the generated image (in pixels).",
+              "default": 600,
+              "minimum": 1,
+              "configKeys": [
+                "height"
+              ]
+            },
+            "width": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Width",
+              "description": "The width of the generated image (in pixels).",
+              "default": 800,
+              "minimum": 1,
+              "configKeys": [
+                "width"
+              ]
+            }
+          }
         }
       },
       "flowVariablesMap": {},
@@ -340,7 +429,6 @@
               "type": "Control",
               "scope": "#/properties/view/properties/xAxisColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": true,
                 "showNoneColumn": false
               }
@@ -459,6 +547,45 @@
               "scope": "#/properties/view/properties/enableAnimation",
               "options": {
                 "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Image Generation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/generateImage",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/width",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/height",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
               }
             }
           ]

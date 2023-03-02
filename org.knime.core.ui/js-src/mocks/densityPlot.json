@@ -2,66 +2,36 @@
   "result": {
     "name": "Density Plot Dialog",
     "data": {
-      "model": {
-        "frequencyColumn": "Universe_0_0",
-        "categoryColumn": "<none>"
-      },
       "view": {
         "title": "Density Plot",
         "bandwidthOption": "RULE",
         "adjustmentFactor": 1,
         "customBandwidth": 1,
         "xAxisLabel": "Dimension",
-        "yAxisLabel": "Value",
+        "yAxisLabel": "Density",
         "lineSize": 2,
+        "fillArea": false,
+        "axisExtentMethod": "AUTO",
         "showLegend": true,
         "allowImageDownload": true,
         "showTooltip": true,
         "enableAnimation": true
+      },
+      "model": {
+        "generateImage": false,
+        "width": 800,
+        "height": 600,
+        "frequencyColumn": {
+          "selected": "Universe_0_0"
+        },
+        "categoryColumn": {
+          "selected": "<none>"
+        }
       }
     },
     "schema": {
       "type": "object",
       "properties": {
-        "model": {
-          "type": "object",
-          "properties": {
-            "categoryColumn": {
-              "oneOf": [
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
-                }
-              ],
-              "title": "Condition column",
-              "description": "Select the column with respect to which you want to plot conditional densities. The values of the selected column are treated as categories. Note: Also missing values are treated as a separate category.",
-              "default": "<none>"
-            },
-            "frequencyColumn": {
-              "oneOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                }
-              ],
-              "title": "Dimension column",
-              "description": "Select the column with numerical values for which you wish to plot a density. Note: Missing and NaN (not a number) values will be ignored.",
-              "default": "Universe_0_0"
-            }
-          }
-        },
         "view": {
           "type": "object",
           "properties": {
@@ -72,6 +42,12 @@
               "description": "The kernel bandwidth computed by the rule of thumb is multiplied by this adjustment factor.",
               "default": 1,
               "minimum": 0.01
+            },
+            "allowImageDownload": {
+              "type": "boolean",
+              "title": "Enable image download",
+              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
+              "default": true
             },
             "axisExtentMethod": {
               "oneOf": [
@@ -85,14 +61,8 @@
                 }
               ],
               "title": "Dimension axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "description": "Choose if the dimension axis range should be calculated automatically or should be derived from the domain range. If “Automatic” is selected the axis ranges from (min - 3 * bw) to (max + 3 * bw) where min and max are the minimum and maximum values of the data and bw is the selected bandwidth. If you select “Domain bounds”, you might need to use a Domain calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
-            },
-            "allowImageDownload": {
-              "type": "boolean",
-              "title": "Enable image download",
-              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
-              "default": true
             },
             "bandwidthOption": {
               "oneOf": [
@@ -106,7 +76,7 @@
                 }
               ],
               "title": "Kernel bandwidth",
-              "description": "The bandwidth of the gaussian kernel used for the density estimation can be configured here. If “Rule of thumb” is selected, the bandwidth is computed with \"<a href=\"https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316849\" target=\"_blank\" rel=\"noopener noreferrer\">Scott's rule of thumb</a>:\" bw = 1.06 * min(std, IQR/1.34) * n^(-1/5), where std is the sample standard deviation, IQR is the interquartile range and n is the number of observations (see also R's \"<a href =\"https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/bandwidth\">bw.nrd</a>).",
+              "description": "The bandwidth of the gaussian kernel used for the density estimation can be configured here. If “Rule of thumb” is selected, the bandwidth is computed with <a href=\"https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316849\">Scott's rule of thumb</a>: bw = 1.06 * min(std, IQR/1.34) * n^(-1/5), where std is the sample standard deviation, IQR is the interquartile range and n is the number of observations (see also R's <a href =\"https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/bandwidth\">bw.nrd</a>).",
               "default": "RULE"
             },
             "customBandwidth": {
@@ -122,6 +92,13 @@
               "title": "Enable animation",
               "description": "When checked, the animation of the graph is active.",
               "default": true
+            },
+            "fillArea": {
+              "type": "boolean",
+              "title": "Fill area",
+              "description": "When checked, the area under the curve is filled.",
+              "default": false,
+              "minimum": 1
             },
             "lineSize": {
               "type": "integer",
@@ -157,14 +134,106 @@
             },
             "yAxisLabel": {
               "type": "string",
-              "title": "Value axis label",
+              "title": "Density axis label",
               "description": "The label used for the vertical value axis. If left blank, no label will be shown.",
-              "default": "Value"
+              "default": "Density"
+            }
+          }
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "categoryColumn": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
+                }
+              },
+              "title": "Condition column",
+              "description": "Select the column with respect to which you want to plot conditional densities. The values of the selected column are treated as categories. Note: Also missing values are treated as a separate category.",
+              "default": {
+                "m_selected": "<none>"
+              },
+              "configKeys": [
+                "categoryColumn"
+              ]
+            },
+            "frequencyColumn": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1"
+                    }
+                  ]
+                }
+              },
+              "title": "Dimension column",
+              "description": "Select the column with numerical values for which you wish to plot a density. Note: Missing and NaN (not a number) values will be ignored.",
+              "default": {
+                "m_selected": "Universe_0_0"
+              },
+              "configKeys": [
+                "frequencyColumn"
+              ]
+            },
+            "generateImage": {
+              "type": "boolean",
+              "title": "Generate image",
+              "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
+              "default": false,
+              "configKeys": [
+                "generateImage"
+              ]
+            },
+            "height": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Height",
+              "description": "The height of the generated image (in pixels).",
+              "default": 600,
+              "minimum": 1,
+              "configKeys": [
+                "height"
+              ]
+            },
+            "width": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Width",
+              "description": "The width of the generated image (in pixels).",
+              "default": 800,
+              "minimum": 1,
+              "configKeys": [
+                "width"
+              ]
             }
           }
         }
       },
-      "flowVariablesMap": {}
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
     },
     "ui_schema": {
       "elements": [
@@ -176,7 +245,6 @@
               "type": "Control",
               "scope": "#/properties/model/properties/frequencyColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }
@@ -185,7 +253,6 @@
               "type": "Control",
               "scope": "#/properties/model/properties/categoryColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": true
               }
@@ -259,6 +326,22 @@
             },
             {
               "type": "Control",
+              "scope": "#/properties/view/properties/fillArea",
+              "options": {
+                "format": "checkbox"
+              },
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/model/properties/categoryColumn",
+                  "schema": {
+                    "const": "<none>"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
               "scope": "#/properties/view/properties/showLegend",
               "options": {
                 "format": "checkbox"
@@ -298,6 +381,45 @@
               "scope": "#/properties/view/properties/enableAnimation",
               "options": {
                 "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Image Generation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/generateImage",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/width",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/height",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
               }
             }
           ]

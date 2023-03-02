@@ -4,7 +4,8 @@ import { optionsMapper,
     hasAdvancedOptions,
     optionsMapperWithType,
     getFlowVariablesMap,
-    mergeDeep } from '..';
+    mergeDeep,
+    generatePossibleValues } from '..';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -29,6 +30,41 @@ describe('Utils', () => {
             { id: 'rowName', text: 'Row Name', type: { id: 'typeA', text: 'Type A' } },
             { id: 'columName', text: 'Colum Name', type: { id: 'typeB', text: 'Type B' } }
         ]);
+    });
+
+    describe('generatePossibleValues', () => {
+        const optionsArray = [
+            { const: 'column_1', title: 'Column Name 1' },
+            { const: 'column_2', title: 'Column Name 2' }
+        ];
+
+        it('uses optionsMapper per default', () => {
+            expect(generatePossibleValues(optionsArray)).toStrictEqual(optionsArray.map(optionsMapper));
+        });
+
+        it('uses custom mapper if provided', () => {
+            expect(generatePossibleValues(optionsArray, {}, () => 1)).toStrictEqual([1, 1]);
+        });
+
+        it('adds additional options', () => {
+            expect(generatePossibleValues(optionsArray, { showNoneColumn: true })).toEqual(
+                expect.arrayContaining([{
+                    id: '<none>',
+                    text: 'None'
+                }])
+            );
+            expect(generatePossibleValues(optionsArray, { showRowKeys: true })).toEqual(
+                expect.arrayContaining([{
+                    id: '<row-keys>',
+                    text: 'RowIDs'
+                   
+                }])
+            );
+        });
+
+        it('returns empty options if options contain only one empty value', () => {
+            expect(generatePossibleValues([{ const: '', title: '' }])).toEqual([]);
+        });
     });
 
     it('mergeDeep', () => {

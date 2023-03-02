@@ -3,7 +3,7 @@ export const dialogInitialData = {
         view: {
             title: 'Scatter Plot',
             yAxisScale: 'VALUE',
-            simpleDropdown: 'value 1',
+            dropdown: 'value 1',
             simpleColumnSelect: 'column 1',
             xAxisColumn: {
                 selected: 'Universe_1_1'
@@ -34,7 +34,7 @@ export const dialogInitialData = {
                         title: 'Title',
                         description: 'some description'
                     },
-                    simpleDropdown: {
+                    dropdown: {
                         oneOf: [
                             {
                                 const: 'value 1',

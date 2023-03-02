@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType }
+import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType, generatePossibleValues }
     from '../utils';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
@@ -68,15 +68,9 @@ const TwinlistInput = defineComponent({
         }
     },
     created() {
-        let possibleValues = this.control.schema.properties.selected.anyOf.map(
-            this.withTypes ? optionsMapperWithType : optionsMapper
-        );
-        // Since an anyOf cannot be empty, we currently add one option in the backend with empty id and title.
-        // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
-        if (possibleValues.length === 1 && possibleValues[0].id === '') {
-            possibleValues = [];
-        }
-        this.possibleValues = possibleValues;
+        const mapper = this.withTypes ? optionsMapperWithType : optionsMapper;
+        const anyOfOption = this.control.schema.properties.selected.anyOf;
+        this.possibleValues = generatePossibleValues(anyOfOption, {}, mapper);
         this.updateManualFilter(this.possibleValues.map(col => col.id));
 
         this.previouslySelectedTypes = this.getPreviouslySelectedTypes();

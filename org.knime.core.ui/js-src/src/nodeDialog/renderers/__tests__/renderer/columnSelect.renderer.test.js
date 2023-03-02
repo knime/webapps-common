@@ -33,26 +33,16 @@ describe('ColumnSelect', () => {
         }
     };
 
-    it('columnSelect with options', () => {
+    it('determines ColumnSelect renderer', () => {
         const uiSchema = {
             type: 'Control',
             scope: '#/properties/columnselect',
             options: {
-                format: 'columnSelection',
                 showRowKeys: false,
                 showNoneColumn: false
             }
         };
         
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnSelect');
-    });
-
-    it('columnSelect without options', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/columnselect'
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
     });
 });

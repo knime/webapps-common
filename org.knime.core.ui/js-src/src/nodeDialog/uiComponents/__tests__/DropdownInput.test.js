@@ -19,34 +19,27 @@ describe('DropdownInput.vue', () => {
                 path: 'test',
                 enabled: true,
                 visible: true,
-                data: {
-                    selected: 'Universe_0_0'
-                },
+                data: 'Universe_0_0',
                 label: 'defaultLabel',
                 schema: {
-                    type: 'object',
-                    properties: {
-                        selected: {
-                            oneOf: [
-                                {
-                                    const: 'Universe_0_0',
-                                    title: 'Universe_0_0'
-                                },
-                                {
-                                    const: 'Universe_0_1',
-                                    title: 'Universe_0_1'
-                                },
-                                {
-                                    const: 'Universe_1_0',
-                                    title: 'Universe_1_0'
-                                },
-                                {
-                                    const: 'Universe_1_1',
-                                    title: 'Universe_1_1'
-                                }
-                            ]
+                    oneOf: [
+                        {
+                            const: 'Universe_0_0',
+                            title: 'Universe_0_0'
+                        },
+                        {
+                            const: 'Universe_0_1',
+                            title: 'Universe_0_1'
+                        },
+                        {
+                            const: 'Universe_1_0',
+                            title: 'Universe_1_0'
+                        },
+                        {
+                            const: 'Universe_1_1',
+                            title: 'Universe_1_1'
                         }
-                    },
+                    ],
                     title: 'Y Axis Column'
                 },
                 uischema: {
@@ -99,7 +92,7 @@ describe('DropdownInput.vue', () => {
         const changedDropdownInput = 'Shaken not stirred';
         localWrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedDropdownInput);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, { selected: changedDropdownInput });
+        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
@@ -127,11 +120,11 @@ describe('DropdownInput.vue', () => {
         const changedDropdownInput = 'Shaken not stirred';
         localWrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, { selected: changedDropdownInput });
+        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
     });
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(defaultProps.control.data.selected);
+        expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(defaultProps.control.data);
     });
 
     it('sets correct label', () => {
@@ -139,7 +132,7 @@ describe('DropdownInput.vue', () => {
     });
 
     it('transforms empty oneOf into empty possible values', async () => {
-        defaultProps.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
+        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
@@ -148,7 +141,7 @@ describe('DropdownInput.vue', () => {
     });
 
     it('checks that placeholder text is correctly set if no possible values are present', async () => {
-        defaultProps.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
+        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
@@ -157,7 +150,7 @@ describe('DropdownInput.vue', () => {
     });
 
     it('checks that placeholder text is correctly set if there are possible values present', async () => {
-        defaultProps.control.data.selected = '';
+        defaultProps.control.data = '';
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
@@ -178,7 +171,7 @@ describe('DropdownInput.vue', () => {
     });
 
     it('disables dropdown when there are no possible values', async () => {
-        defaultProps.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
+        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
         wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
         expect(wrapper.vm.disabled).toBeTruthy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();

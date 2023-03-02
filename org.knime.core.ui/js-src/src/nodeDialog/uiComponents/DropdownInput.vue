@@ -1,12 +1,10 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
+import { generatePossibleValues, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import { generatePossibleColumnValues } from './ColumnSelect.vue';
-
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -20,8 +18,19 @@ const DropdownInput = defineComponent({
         optionsGenerator: {
             type: Function,
             required: false,
-            default: (control) => generatePossibleColumnValues(control.schema.properties.selected.oneOf)
+            default: (control) => generatePossibleValues(control.schema.oneOf)
+        },
+        controlDataToDropdownValue: {
+            type: Function,
+            required: false,
+            default: (data) => data
+        },
+        dropdownValueToControlData: {
+            type: Function,
+            required: false,
+            default: (value) => value
         }
+
     },
     setup(props) {
         return useJsonFormsControl(props);
@@ -44,14 +53,23 @@ const DropdownInput = defineComponent({
         },
         placeholderText() {
             return this.options.length > 0 ? 'No value selected' : 'No values present';
+        },
+        dropdownValue() {
+            return this.controlDataToDropdownValue(this.control.data);
         }
     },
     mounted() {
-        this.options = this.optionsGenerator(this.control);
+        let options = this.optionsGenerator(this.control);
+        // Since an oneOf cannot be empty, we currently add one option in the backend with empty id and title.
+        // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
+        if (options.length === 1 && options[0].id === '') {
+            options = [];
+        }
+        this.options = options;
     },
     methods: {
-        onChange(selectedValue) {
-            this.handleChange(this.control.path, { selected: selectedValue });
+        onChange(value) {
+            this.handleChange(this.control.path, this.dropdownValueToControlData(value));
             if (this.isModelSettingAndHasNodeView) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
@@ -77,7 +95,7 @@ export default DropdownInput;
         v-if="options"
         :aria-label="control.label"
         :disabled="disabled"
-        :model-value="control.data.selected"
+        :model-value="dropdownValue"
         :possible-values="options"
         :placeholder="placeholderText"
         @update:model-value="onChange"

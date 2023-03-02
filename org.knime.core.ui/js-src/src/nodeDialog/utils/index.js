@@ -9,6 +9,24 @@ export const optionsMapperWithType =
 
 const isObject = (item) => item && typeof item === 'object' && !Array.isArray(item);
 
+
+// Generates the possible values from an array of options and additional information on special values
+export const generatePossibleValues = (
+    optionsArray,
+    { showNoneColumn = false, showRowKeys = false } = {},
+    mapper = optionsMapper
+) => {
+    // Since an oneOf cannot be empty, we currently add one option in the backend with empty id and title.
+    // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
+    const correctedOneOf = optionsArray.length === 1 && optionsArray[0].const === '' ? [] : optionsArray;
+    return [
+        ...showNoneColumn ? [{ id: '<none>', text: 'None' }] : [],
+        ...showRowKeys ? [{ id: '<row-keys>', text: 'RowIDs' }] : [],
+        ...correctedOneOf.map(mapper)
+    ];
+};
+
+
 // Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
 // in the dialog settings in a more simple way for complex data structures.
 export const mergeDeep = (obj1, obj2) => {

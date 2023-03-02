@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import SimpleColumnSelect from '../SimpleColumnSelect.vue';
-import SimpleDropdownInput from '../SimpleDropdownInput.vue';
+import DropdownInput from '../DropdownInput.vue';
 
 describe('SimpleColumnSelect.vue', () => {
     let wrapper, props;
@@ -53,16 +53,16 @@ describe('SimpleColumnSelect.vue', () => {
 
     it('renders', () => {
         expect(wrapper.getComponent(SimpleColumnSelect).exists()).toBe(true);
-        expect(wrapper.getComponent(SimpleDropdownInput).exists()).toBe(true);
+        expect(wrapper.getComponent(DropdownInput).exists()).toBe(true);
     });
 
     it('passes default props', () => {
-        const dropdownProps = wrapper.getComponent(SimpleDropdownInput).props();
+        const dropdownProps = wrapper.getComponent(DropdownInput).props();
         expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(SimpleDropdownInput));
+        initializesJsonFormsControl(wrapper.getComponent(DropdownInput));
     });
 
     it('optionsGenerator correctly transforms the data', async () => {

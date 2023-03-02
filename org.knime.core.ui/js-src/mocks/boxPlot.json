@@ -2,8 +2,27 @@
   "result": {
     "name": "Box Plot Dialog",
     "data": {
+      "view": {
+        "title": "Box Plot",
+        "xAxisLabel": "Dimension",
+        "yAxisLabel": "Value",
+        "axisExtentMethod": "AUTO",
+        "showLegend": true,
+        "allowImageDownload": true,
+        "showTooltip": true,
+        "enableAnimation": true
+      },
       "model": {
+        "generateImage": false,
+        "width": 800,
+        "height": 600,
         "frequencyColumns": {
+          "selected": [
+            "Universe_0_0",
+            "Universe_0_1",
+            "Universe_1_0",
+            "Universe_1_1"
+          ],
           "mode": "MANUAL",
           "patternFilter": {
             "pattern": "",
@@ -21,38 +40,103 @@
             "includeUnknownColumns": false
           },
           "typeFilter": {
-            "selectedTypes": []
+            "selectedTypes": [],
+            "typeDisplays": []
           }
         },
-        "categoryColumn": "<none>"
-      },
-      "view": {
-        "title": "Box Plot",
-        "xAxisLabel": "Dimension",
-        "yAxisLabel": "Value",
-        "axisExtentMethod": "AUTO",
-        "showLegend": true,
-        "allowImageDownload": true,
-        "showTooltip": true,
-        "enableAnimation": true
+        "categoryColumn": {
+          "selected": "<none>"
+        }
       }
     },
     "schema": {
       "type": "object",
       "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "allowImageDownload": {
+              "type": "boolean",
+              "title": "Enable image download",
+              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
+              "default": true
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                }
+              ],
+              "title": "Value axis limits",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "default": "AUTO"
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "showLegend": {
+              "type": "boolean",
+              "title": "Display legend",
+              "description": "When checked, the chart’s legend containing the categories of the condition column is displayed.",
+              "default": true
+            },
+            "showTooltip": {
+              "type": "boolean",
+              "title": "Show tooltip",
+              "description": "When checked, hovering over a box will show information about the data.",
+              "default": true
+            },
+            "title": {
+              "type": "string",
+              "title": "Title",
+              "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
+              "default": "Box Plot"
+            },
+            "xAxisLabel": {
+              "type": "string",
+              "title": "Dimension axis label",
+              "description": "The label used for the horizontal dimension axis. If left blank, no label will be shown.",
+              "default": "Dimension"
+            },
+            "yAxisLabel": {
+              "type": "string",
+              "title": "Value axis label",
+              "description": "The label used for the vertical value axis. If left blank, no label will be shown.",
+              "default": "Value"
+            }
+          }
+        },
         "model": {
           "type": "object",
           "properties": {
             "categoryColumn": {
-              "oneOf": [
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
                 }
-              ],
+              },
               "title": "Condition column",
               "description": "Select a column with respect to which a conditional box plot should be created. The values of the selected column are treated as categories. For each of these categories there is one box (indicated by color) within each of the dimensions. Note: Missing values are treated as a separate category.",
-              "default": "<none>"
+              "default": {
+                "m_selected": "<none>"
+              },
+              "configKeys": [
+                "categoryColumn"
+              ]
             },
             "frequencyColumns": {
               "type": "object",
@@ -131,27 +215,30 @@
                     {
                       "const": "Universe_0_0",
                       "title": "Universe_0_0",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_0_1",
                       "title": "Universe_0_1",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_1_0",
                       "title": "Universe_1_0",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     },
                     {
                       "const": "Universe_1_1",
                       "title": "Universe_1_1",
-                      "columnType": "DoubleValue",
-                      "columnTypeDisplayed": "Double"
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)"
                     }
+                  ],
+                  "configKeys": [
+                    "selected_Internals"
                   ]
                 },
                 "typeFilter": {
@@ -163,10 +250,26 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "typeDisplays": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   },
                   "default": {
-                    "m_selectedTypes": []
+                    "m_selectedTypes": [],
+                    "m_typeDisplays": []
                   }
                 }
               },
@@ -191,71 +294,44 @@
                   "m_includeUnknownColumns": false
                 },
                 "m_typeFilter": {
-                  "m_selectedTypes": []
+                  "m_selectedTypes": [],
+                  "m_typeDisplays": []
                 }
-              }
-            }
-          }
-        },
-        "view": {
-          "type": "object",
-          "properties": {
-            "allowImageDownload": {
+              },
+              "configKeys": [
+                "frequencyColumns"
+              ]
+            },
+            "generateImage": {
               "type": "boolean",
-              "title": "Enable image download",
-              "description": "When checked, an image of the chart can be downloaded by clicking the image download button in the view.",
-              "default": true
+              "title": "Generate image",
+              "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
+              "default": false,
+              "configKeys": [
+                "generateImage"
+              ]
             },
-            "axisExtentMethod": {
-              "oneOf": [
-                {
-                  "const": "AUTO",
-                  "title": "Automatic"
-                },
-                {
-                  "const": "COLUMN_DOMAIN",
-                  "title": "Domain bounds"
-                }
-              ],
-              "title": "Value axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
-              "default": "AUTO"
+            "height": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Height",
+              "description": "The height of the generated image (in pixels).",
+              "default": 600,
+              "minimum": 1,
+              "configKeys": [
+                "height"
+              ]
             },
-            "enableAnimation": {
-              "type": "boolean",
-              "title": "Enable animation",
-              "description": "When checked, the animation of the graph is active.",
-              "default": true
-            },
-            "showLegend": {
-              "type": "boolean",
-              "title": "Display legend",
-              "description": "When checked, the chart’s legend containing the categories of the condition column is displayed.",
-              "default": true
-            },
-            "showTooltip": {
-              "type": "boolean",
-              "title": "Show tooltip",
-              "description": "When checked, hovering over a box will show information about the data.",
-              "default": true
-            },
-            "title": {
-              "type": "string",
-              "title": "Title",
-              "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
-              "default": "Box Plot"
-            },
-            "xAxisLabel": {
-              "type": "string",
-              "title": "Dimension axis label",
-              "description": "The label used for the horizontal dimension axis. If left blank, no label will be shown.",
-              "default": "Dimension"
-            },
-            "yAxisLabel": {
-              "type": "string",
-              "title": "Value axis label",
-              "description": "The label used for the vertical value axis. If left blank, no label will be shown.",
-              "default": "Value"
+            "width": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Width",
+              "description": "The width of the generated image (in pixels).",
+              "default": 800,
+              "minimum": 1,
+              "configKeys": [
+                "width"
+              ]
             }
           }
         }
@@ -281,7 +357,6 @@
               "type": "Control",
               "scope": "#/properties/model/properties/categoryColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": true
               }
@@ -353,6 +428,45 @@
               "scope": "#/properties/view/properties/enableAnimation",
               "options": {
                 "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Image Generation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/generateImage",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/width",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/height",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
               }
             }
           ]

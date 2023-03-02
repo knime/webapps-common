@@ -1,17 +1,7 @@
 <script>
-import { optionsMapper } from '../utils';
+import { generatePossibleValues } from '../utils';
 import DropdownInput from './DropdownInput.vue';
 
-export const generatePossibleColumnValues = (oneOf, { showNoneColumn = false, showRowKeys = false } = {}) => {
-    // Since an oneOf cannot be empty, we currently add one option in the backend with empty id and title.
-    // TODO: Remove this when the respective schema structure is adjusted with UIEXT-715
-    const correctedOneOf = oneOf.length === 1 && oneOf[0].const === '' ? [] : oneOf;
-    return [
-        ...showNoneColumn ? [{ id: '<none>', text: 'None' }] : [],
-        ...showRowKeys ? [{ id: '<row-keys>', text: 'RowIDs' }] : [],
-        ...correctedOneOf.map(optionsMapper)
-    ];
-};
 
 export default {
     name: 'ColumnSelect',
@@ -22,8 +12,14 @@ export default {
     methods: {
         optionsGenerator(control) {
             const oneOf = control.schema.properties.selected.oneOf;
-            const options = control.uischema.options;
-            return generatePossibleColumnValues(oneOf, options);
+            const additionalInformation = control.uischema.options;
+            return generatePossibleValues(oneOf, additionalInformation);
+        },
+        toValue(data) {
+            return data.selected;
+        },
+        toData(value) {
+            return { selected: value };
         }
     }
 };
@@ -33,5 +29,7 @@ export default {
   <DropdownInput
     v-bind="$attrs"
     :options-generator="optionsGenerator"
+    :control-data-to-dropdown-value="toValue"
+    :dropdown-value-to-control-data="toData"
   />
 </template>

@@ -3,32 +3,40 @@
     "name": "Scatter Plot Dialog",
     "data": {
       "view": {
-        "xAxisColumn": "Universe_0_0",
-        "yAxisColumn": "Universe_0_1",
-        "maxRows": 2500,
+        "xAxisColumn": {
+          "selected": "Universe_0_0"
+        },
+        "yAxisColumn": {
+          "selected": "Universe_1_0"
+        },
+        "maxRows": 25,
+        "title": "Scatter Ploter",
         "xAxisLabel": "",
         "xAxisScale": "VALUE",
-        "yAxisLabel": "",
+        "yAxisLabel": "sdf",
         "yAxisScale": "VALUE",
-        "title": "Scatter Plot",
-        "displayLegend": false,
-        "showTooltip": true,
-        "enableDataZoom": true,
-        "allowImageDownload": true,
         "dataPointSize": 10,
-        "axisExtentMethod": "AUTO",
+        "axisExtentMethod": "COLUMN_DOMAIN",
+        "allowImageDownload": true,
+        "enableDataZoom": true,
+        "showTooltip": true,
         "publishSelection": true,
         "subscribeToSelection": true,
-        "enableAnimation": true,
         "referenceLines": [
           {
-            "borderStyle": "DASHED",
-            "color": "blue",
-            "label": "label 1",
-            "size": 0,
-            "value": 0
+            "value": 0.4,
+            "label": "2",
+            "size": 1,
+            "borderStyle": "DOTTED",
+            "color": "blue"
           }
-        ]
+        ],
+        "enableAnimation": true
+      },
+      "model": {
+        "generateImage": true,
+        "width": 800,
+        "height": 600
       }
     },
     "schema": {
@@ -55,7 +63,7 @@
                 }
               ],
               "title": "Axis limits",
-              "description": "Choose if the axis extents should be calculated by the charting framework or should be used from the domain extents. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "description": "Choose if the axis range should be calculated by the charting framework or should be used from the domain range. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
             },
             "dataPointSize": {
@@ -65,6 +73,12 @@
               "description": "Numeric value that defines the point size for each data point.",
               "default": 10,
               "minimum": 1
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
             },
             "enableDataZoom": {
               "type": "boolean",
@@ -80,10 +94,73 @@
               "default": 2500,
               "minimum": 1
             },
+            "publishSelection": {
+              "type": "boolean",
+              "title": "Publish Selection",
+              "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
+              "default": true
+            },
+            "referenceLines": {
+              "title": "Reference lines",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "borderStyle": {
+                    "oneOf": [
+                      {
+                        "const": "DASHED",
+                        "title": "Dashed"
+                      },
+                      {
+                        "const": "DOTTED",
+                        "title": "Dotted"
+                      },
+                      {
+                        "const": "SOLID",
+                        "title": "Solid"
+                      }
+                    ],
+                    "title": "Borderstyle",
+                    "default": "DASHED"
+                  },
+                  "color": {
+                    "type": "string",
+                    "title": "Color",
+                    "default": "blue"
+                  },
+                  "label": {
+                    "type": "string",
+                    "title": "Label",
+                    "default": ""
+                  },
+                  "size": {
+                    "type": "integer",
+                    "format": "int32",
+                    "title": "Size",
+                    "default": 1,
+                    "minimum": 0,
+                    "maximum": 10
+                  },
+                  "value": {
+                    "type": "number",
+                    "format": "double",
+                    "title": "Value",
+                    "default": 0
+                  }
+                }
+              }
+            },
             "showTooltip": {
               "type": "boolean",
               "title": "Show tooltip",
               "description": "When checked, hovering over a data point will show information about the data.",
+              "default": true
+            },
+            "subscribeToSelection": {
+              "type": "boolean",
+              "title": "Subscribe to Selection",
+              "description": "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
               "default": true
             },
             "title": {
@@ -93,30 +170,41 @@
               "default": "Scatter Plot"
             },
             "xAxisColumn": {
-              "oneOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                },
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1"
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
                 }
-              ],
+              },
               "title": "Horizontal dimension",
-              "description": "Defines the column that contains the values for x coordinates."
+              "description": "Defines the column that contains the values for x coordinates.",
+              "default": {
+                "m_selected": "Universe_0_0"
+              },
+              "configKeys": [
+                "xAxisColumn"
+              ]
             },
             "xAxisLabel": {
               "type": "string",
@@ -140,31 +228,41 @@
               "default": "VALUE"
             },
             "yAxisColumn": {
-              "oneOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                },
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1"
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
                 }
-              ],
+              },
               "title": "Vertical dimension",
-              "default": "Universe_0_1",
-              "description": "Defines the column that contains the values for y coordinates."
+              "description": "Defines the column that contains the values for y coordinates.",
+              "default": {
+                "m_selected": "Universe_0_1"
+              },
+              "configKeys": [
+                "yAxisColumn"
+              ]
             },
             "yAxisLabel": {
               "type": "string",
@@ -186,77 +284,49 @@
               "title": "Vertical axis scale",
               "description": "Choose if the Y-Axis should be displayed in linear or logarithmic scale.",
               "default": "VALUE"
-            },
-            "referenceLines": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "value": {
-                    "type": "number",
-                    "title": "Value",
-                    "default": 0
-                  },
-                  "label": {
-                    "type": "string",
-                    "title": "Label",
-                    "default": ""
-                  },
-                  "borderStyle": {
-                    "oneOf": [
-                      {
-                        "const": "DASHED",
-                        "title": "Dashed"
-                      },
-                      {
-                        "const": "DOTTED",
-                        "title": "Dotted"
-                      },
-                      {
-                        "const": "SOLID",
-                        "title": "Solid"
-                      }
-                    ],
-                    "title": "Borderstyle",
-                    "default": "DASHED"
-                  },
-                  "size": {
-                    "type": "integer",
-                    "format": "int32",
-                    "title": "Size",
-                    "default": 1,
-                    "min": 0,
-                    "max": 10
-                  },
-                  "color": {
-                    "type": "string",
-                    "title": "Color",
-                    "default": "blue"
-                  }
-                }
-              }
-            },
-            "publishSelection": {
+            }
+          }
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "generateImage": {
               "type": "boolean",
-              "title": "Publish Selection",
-              "description": "Publish Selection description",
-              "default": true
+              "title": "Generate image",
+              "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
+              "default": false,
+              "configKeys": [
+                "generateImage"
+              ]
             },
-            "subscribeToSelection": {
-              "type": "boolean",
-              "title": "Subscribe to Selection",
-              "description": "Subscribe to Selection description",
-              "default": true
+            "height": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Height",
+              "description": "The height of the generated image (in pixels).",
+              "default": 600,
+              "minimum": 1,
+              "configKeys": [
+                "height"
+              ]
             },
-            "enableAnimation": {
-              "type": "boolean",
-              "title": "Enable animation",
-              "description": "Enable animation description",
-              "default": true
+            "width": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Width",
+              "description": "The width of the generated image (in pixels).",
+              "default": 800,
+              "minimum": 1,
+              "configKeys": [
+                "width"
+              ]
             }
           }
         }
-      }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
     },
     "ui_schema": {
       "elements": [
@@ -268,7 +338,6 @@
               "type": "Control",
               "scope": "#/properties/view/properties/xAxisColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }
@@ -277,7 +346,6 @@
               "type": "Control",
               "scope": "#/properties/view/properties/yAxisColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }
@@ -342,7 +410,7 @@
         },
         {
           "type": "Section",
-          "label": "Reference lines",
+          "label": "Reference Lines",
           "elements": [
             {
               "type": "Control",
@@ -429,6 +497,45 @@
               "scope": "#/properties/view/properties/enableAnimation",
               "options": {
                 "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Image Generation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/generateImage",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/width",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/height",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
               }
             }
           ]

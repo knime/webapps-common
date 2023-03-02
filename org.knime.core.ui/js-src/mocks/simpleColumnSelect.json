@@ -1,9 +1,9 @@
 {
   "result": {
-    "name": "Simple Dropdown Showcase",
+    "name": "Simple ColumnSelect Showcase",
     "data": {
       "view": {
-        "simpleDropdown": "value 1"
+        "dropdown": "value 1"
       }
     },
     "schema": {
@@ -12,7 +12,7 @@
         "view": {
           "type": "object",
           "properties": {
-            "simpleDropdown": {
+            "dropdown": {
               "oneOf": [
                 {
                   "const": "value 1",
@@ -41,7 +41,7 @@
           "elements": [
             {
               "type": "Control",
-              "scope": "#/properties/view/properties/simpleDropdown"
+              "scope": "#/properties/view/properties/dropdown"
             }
           ]
         }

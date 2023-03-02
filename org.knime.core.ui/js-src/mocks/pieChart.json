@@ -2,98 +2,43 @@
   "result": {
     "name": "Pie Chart Dialog",
     "data": {
-      "model": {
-        "categoryColumn": "Cluster Membership",
-        "frequencyColumn": "Universe_0_0",
-        "aggregationMethod": "NONE"
-      },
       "view": {
+        "aggregateSmallCategories": true,
+        "aggregateSmallCategoriesThreshold": 3,
         "title": "Pie Chart",
         "pieSize": 50,
         "donutChart": false,
-        "donutSize": 60,
+        "holeSize": 60,
         "sortCategoriesBy": "SIZE",
         "showLabels": true,
         "labelContent": "CAT",
-        "labelPosition": "OUT",
         "labelValueFormat": "ABS",
+        "labelPosition": "OUT",
         "showLegend": false,
-        "tooltipValueFormat": "ABSPROP",
         "smallCategoriesLabel": "Other",
-        "aggregateSmallCategories": true,
-        "aggregateSmallCategoriesThreshold": 3,
         "allowImageDownload": true,
         "showTooltip": true,
+        "tooltipValueFormat": "ABSPROP",
         "publishSelection": true,
         "subscribeToSelection": true,
         "enableAnimation": true
+      },
+      "model": {
+        "generateImage": false,
+        "width": 800,
+        "height": 600,
+        "categoryColumn": {
+          "selected": "Cluster Membership"
+        },
+        "frequencyColumn": {
+          "selected": "Universe_0_0"
+        },
+        "aggregationMethod": "NONE"
       }
     },
     "schema": {
       "type": "object",
       "properties": {
-        "model": {
-          "type": "object",
-          "properties": {
-            "aggregationMethod": {
-              "oneOf": [
-                {
-                  "const": "NONE",
-                  "title": "None"
-                },
-                {
-                  "const": "COUNT",
-                  "title": "Occurrence count"
-                },
-                {
-                  "const": "SUM",
-                  "title": "Sum"
-                },
-                {
-                  "const": "AVG",
-                  "title": "Average"
-                }
-              ],
-              "title": "Aggregation",
-              "description": "Select the aggregation method used on the selected frequency column. In case of “None” every row of the table is treated as a separate category. Note that in this case duplicate categories can exist. In case of “Occurence Count” the occurence of the unique values of the selected category column are determined.",
-              "default": "NONE"
-            },
-            "categoryColumn": {
-              "oneOf": [
-                {
-                  "const": "Cluster Membership",
-                  "title": "Cluster Membership"
-                }
-              ],
-              "title": "Category dimension",
-              "description": "Select the column that contains the category values. Note: Missing values are treated as separate category.",
-              "default": "Cluster Membership"
-            },
-            "frequencyColumn": {
-              "oneOf": [
-                {
-                  "const": "Universe_0_0",
-                  "title": "Universe_0_0"
-                },
-                {
-                  "const": "Universe_0_1",
-                  "title": "Universe_0_1"
-                },
-                {
-                  "const": "Universe_1_0",
-                  "title": "Universe_1_0"
-                },
-                {
-                  "const": "Universe_1_1",
-                  "title": "Universe_1_1"
-                }
-              ],
-              "title": "Frequency dimension",
-              "description": "Select the column that contains the frequency values. Note: Missing values in the frequency column will be ignored with a corresponding warning message. If, after aggregation, some categories contain only missing values, they will be excluded from the view and a warning message will be raised.",
-              "default": "Universe_0_0"
-            }
-          }
-        },
         "view": {
           "type": "object",
           "properties": {
@@ -123,6 +68,21 @@
               "title": "Donut chart",
               "description": "If checked, the chart will be displayed as a donut chart.",
               "default": false
+            },
+            "enableAnimation": {
+              "type": "boolean",
+              "title": "Enable animation",
+              "description": "When checked, the animation of the graph is active.",
+              "default": true
+            },
+            "holeSize": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Hole size",
+              "description": "Size of the hole relative to the size of the pie chart.",
+              "default": 60,
+              "minimum": 1,
+              "maximum": 99
             },
             "labelContent": {
               "oneOf": [
@@ -177,15 +137,6 @@
               "description": "Select how values should be formatted inside the label.",
               "default": "ABS"
             },
-            "holeSize": {
-              "type": "integer",
-              "format": "int32",
-              "title": "Hole size",
-              "description": "Size of the hole relative to the size of the pie chart.",
-              "default": 60,
-              "minimum": 1,
-              "maximum": 99
-            },
             "pieSize": {
               "type": "integer",
               "format": "int32",
@@ -194,6 +145,12 @@
               "default": 50,
               "minimum": 1,
               "maximum": 100
+            },
+            "publishSelection": {
+              "type": "boolean",
+              "title": "Publish Selection",
+              "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
+              "default": true
             },
             "showLabels": {
               "type": "boolean",
@@ -227,7 +184,7 @@
                 },
                 {
                   "const": "LABEL",
-                  "title": "Label (lexically)"
+                  "title": "Name"
                 },
                 {
                   "const": "INS",
@@ -237,6 +194,12 @@
               "title": "Sort categories by",
               "description": "Select the rule by which the pie slices should be sorted. If a slice of aggregated small categories is displayed, it is excluded from this sorting as it is always the last segment.",
               "default": "SIZE"
+            },
+            "subscribeToSelection": {
+              "type": "boolean",
+              "title": "Subscribe to Selection",
+              "description": "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
+              "default": true
             },
             "title": {
               "type": "string",
@@ -262,29 +225,126 @@
               "title": "Tooltip value format",
               "description": "Select how values should be formatted inside the tooltip.",
               "default": "ABSPROP"
+            }
+          }
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "aggregationMethod": {
+              "oneOf": [
+                {
+                  "const": "NONE",
+                  "title": "None"
+                },
+                {
+                  "const": "COUNT",
+                  "title": "Occurrence count"
+                },
+                {
+                  "const": "SUM",
+                  "title": "Sum"
+                },
+                {
+                  "const": "AVG",
+                  "title": "Average"
+                }
+              ],
+              "title": "Aggregation",
+              "description": "Select the aggregation method used on the selected frequency column. In case of “None” every row of the table is treated as a separate category. Note that in this case duplicate categories can exist. In case of “Occurrence Count” the occurrence of the unique values of the selected category column is determined.",
+              "default": "NONE"
             },
-            "publishSelection": {
-              "type": "boolean",
-              "title": "Publish Selection",
-              "description": "Publish Selection description",
-              "default": true
+            "categoryColumn": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership"
+                    }
+                  ]
+                }
+              },
+              "title": "Category dimension",
+              "description": "Select the column that contains the category values. Note: Missing values are treated as separate category.",
+              "default": {
+                "m_selected": "Cluster Membership"
+              },
+              "configKeys": [
+                "categoryColumn"
+              ]
             },
-            "subscribeToSelection": {
-              "type": "boolean",
-              "title": "Subscribe to Selection",
-              "description": "Subscribe to Selection description",
-              "default": true
+            "frequencyColumn": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0"
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1"
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0"
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1"
+                    }
+                  ]
+                }
+              },
+              "title": "Frequency dimension",
+              "description": "Select the column that contains the frequency values. Note: Missing values in the frequency column will be ignored with a corresponding warning message. If, after aggregation, some categories contain only missing values, they will be excluded from the view and a warning message will be raised.",
+              "default": {
+                "m_selected": "Universe_0_0"
+              },
+              "configKeys": [
+                "frequencyColumn"
+              ]
             },
-            "enableAnimation": {
+            "generateImage": {
               "type": "boolean",
-              "title": "Enable animation",
-              "description": "Enable animation description",
-              "default": true
+              "title": "Generate image",
+              "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
+              "default": false,
+              "configKeys": [
+                "generateImage"
+              ]
+            },
+            "height": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Height",
+              "description": "The height of the generated image (in pixels).",
+              "default": 600,
+              "minimum": 1,
+              "configKeys": [
+                "height"
+              ]
+            },
+            "width": {
+              "type": "integer",
+              "format": "int32",
+              "title": "Width",
+              "description": "The width of the generated image (in pixels).",
+              "default": 800,
+              "minimum": 1,
+              "configKeys": [
+                "width"
+              ]
             }
           }
         }
       },
-      "flowVariablesMap": {}
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
     },
     "ui_schema": {
       "elements": [
@@ -296,7 +356,6 @@
               "type": "Control",
               "scope": "#/properties/model/properties/categoryColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               }
@@ -305,7 +364,6 @@
               "type": "Control",
               "scope": "#/properties/model/properties/frequencyColumn",
               "options": {
-                "format": "columnSelection",
                 "showRowKeys": false,
                 "showNoneColumn": false
               },
@@ -433,34 +491,33 @@
                 "format": "radio",
                 "radioLayout": "horizontal"
               },
-              "rule":
-                            {
-                              "effect": "SHOW",
-                              "condition": {
-                                "type": "AND",
-                                "conditions": [
-                                  {
-                                    "scope": "#/properties/view/properties/labelContent",
-                                    "schema": {
-                                      "oneOf": [
-                                        {
-                                          "const": "VAL"
-                                        },
-                                        {
-                                          "const": "BOTH"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  {
-                                    "scope": "#/properties/view/properties/showLabels",
-                                    "schema": {
-                                      "const": true
-                                    }
-                                  }
-                                ]
-                              }
-                            }
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "type": "AND",
+                  "conditions": [
+                    {
+                      "scope": "#/properties/view/properties/labelContent",
+                      "schema": {
+                        "oneOf": [
+                          {
+                            "const": "VAL"
+                          },
+                          {
+                            "const": "BOTH"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "scope": "#/properties/view/properties/showLabels",
+                      "schema": {
+                        "const": true
+                      }
+                    }
+                  ]
+                }
+              }
             },
             {
               "type": "Control",
@@ -555,6 +612,45 @@
               "scope": "#/properties/view/properties/enableAnimation",
               "options": {
                 "format": "checkbox"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Image Generation",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/generateImage",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/width",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/height",
+              "rule": {
+                "effect": "HIDE",
+                "condition": {
+                  "scope": "#/properties/model/properties/generateImage",
+                  "schema": {
+                    "const": false
+                  }
+                }
               }
             }
           ]

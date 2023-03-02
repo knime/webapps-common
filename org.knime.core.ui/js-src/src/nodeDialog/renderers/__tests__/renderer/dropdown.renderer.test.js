@@ -10,25 +10,20 @@ describe('Dropdown', () => {
         type: 'object',
         properties: {
             dropdown: {
-                type: 'object',
-                properties: {
-                    selected: {
-                        oneOf: [
-                            {
-                                const: '1',
-                                title: 'One'
-                            },
-                            {
-                                const: '2',
-                                title: 'Two'
-                            },
-                            {
-                                const: '3',
-                                title: 'Three'
-                            }
-                        ]
+                oneOf: [
+                    {
+                        const: '1',
+                        title: 'One'
+                    },
+                    {
+                        const: '2',
+                        title: 'Two'
+                    },
+                    {
+                        const: '3',
+                        title: 'Three'
                     }
-                }
+                ]
             }
         }
     };
