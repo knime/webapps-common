@@ -1,8 +1,18 @@
 /*!
- * Vue.js v2.7.14
- * (c) 2014-2022 Evan You
- * Released under the MIT License.
- */
+  * focus-trap-vue v1.1.1
+  * (c) 2021 Eduardo San Martin Morote
+  * @license MIT
+  */
+
+/*!
+* focus-trap 6.2.3
+* @license MIT, https://github.com/focus-trap/focus-trap/blob/master/LICENSE
+*/
+
+/*!
+* tabbable 5.1.4
+* @license MIT, https://github.com/focus-trap/tabbable/blob/master/LICENSE
+*/
 
 
 /*!
@@ -19,24 +29,14 @@
 
 
 /*!
- * Vue.js v2.6.11
- * (c) 2014-2019 Evan You
+ * Vue.js v2.7.14
+ * (c) 2014-2022 Evan You
  * Released under the MIT License.
  */
 
 
 /*!
-  * focus-trap-vue v1.1.1
-  * (c) 2021 Eduardo San Martin Morote
-  * @license MIT
-  */
-
-/*!
-* focus-trap 6.2.3
-* @license MIT, https://github.com/focus-trap/focus-trap/blob/master/LICENSE
-*/
-
-/*!
-* tabbable 5.1.4
-* @license MIT, https://github.com/focus-trap/tabbable/blob/master/LICENSE
-*/
+ * Vue.js v2.7.14
+ * (c) 2014-2022 Evan You
+ * Released under the MIT License.
+ */
