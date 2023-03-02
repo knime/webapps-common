@@ -1,10 +1,7 @@
 image: node:18.14.2
 
 options:
-  max-time: 30
-
-clone:
-  depth: full # SonarCloud scanner needs the full history to assign issues properly
+  max-time: 10
 
 definitions:
   services:
@@ -12,14 +9,18 @@ definitions:
       memory: 6000
   caches:
     sonar: ~/.sonar/cache
+    node-demo: demo/node_modules # needed because default node cache doesn't include sub folders
   steps:
     - step: &lint-test-build
         name: Lint, tests and build
         caches:
           - node
+          - node-demo
           - sonar
           - docker # used by sonar pipes
         size: 2x # needed for additional memory requirements
+        clone:
+          depth: full # SonarCloud scanner needs the full history to assign issues properly
         script:
           - npm ci
           - npm run ci:lint
@@ -32,6 +33,18 @@ definitions:
           - cd demo
           - npm ci
           - npm run build
+        artifacts:
+          - demo/dist/**
+    - step: &deploy
+        name: Deploy demo to GitHub Pages
+        caches:
+          - node-demo
+        deployment: Production
+        script:
+          - cd demo
+          # doesn't work without next line, see https://community.atlassian.com/t5/Bitbucket-questions/Problem-getting-BitBucket-Pipelines-to-commit-back-version/qaq-p/760022#M63124
+          - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
+          - npm run deploy
 
 pipelines:
   pull-requests:
@@ -40,3 +53,4 @@ pipelines:
   branches:
     master:
       - step: *lint-test-build
+      - step: *deploy
