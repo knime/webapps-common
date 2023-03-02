@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" fill="none" stroke-linejoin="round"
+    stroke-width="2">
+  <!-- default stroke-width of 2 is required for use as themeable background as in https://stackoverflow.com/a/43340423/5134084 -->
+  <path d="M17 4.8h10.5v10.5M27.5 4.8L15.9 16.4M27.4 27.2H4.5V5.1"/>
+</svg>

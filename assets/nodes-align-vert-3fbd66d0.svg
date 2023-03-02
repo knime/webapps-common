@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+    fill="none" stroke="#000" stroke-width="1.4">
+  <path stroke-linejoin="round" d="M19.5 3h-7c-.825 0-1.5.675-1.5 1.5v7c0 .825.675 1.5 1.5 1.5h7c.825 0 1.5-.675 1.5
+  -1.5v-7c0-.825-.675-1.5-1.5-1.5zM19.5 19h-7c-.825 0-1.5.675-1.5 1.5v7c0 .825.675 1.5 1.5 1.5h7c.825 0 1.5-.675 1.5
+  -1.5v-7c0-.825-.675-1.5-1.5-1.5zM16 19v-6M11.441 3.441l9.118 9.118M11.441 19.441l9.118 9.118"/>
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 28.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 23.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 18.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 13.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 8.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(8, 3.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 28.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 23.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 18.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 13.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 8.5) scale(2)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0" transform="translate(24, 3.5) scale(2)" />
+
+</svg>
