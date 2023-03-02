@@ -35,12 +35,12 @@ npm run dev:TableView
 
 Second, please add following to the run configuration in Eclipse and start KNIME Analytics Platform:
 ```
--Dorg.knime.ui.dev.node.view.url=http://localhost:4000/<ComponentName>.umd.min.js
+-Dorg.knime.ui.dev.node.view.url=http://localhost:4000/<ComponentName>.umd.js
 -Dchromium.remote_debugging_port=8888
 ```
 
 `<ComponentName>` needs to be filled with the component you want to develop, e.g.:
-`-Dorg.knime.ui.dev.node.view.url=http://localhost:4000/TableView.umd.min.js`
+`-Dorg.knime.ui.dev.node.view.url=http://localhost:4000/TableView.umd.js`
 
 When opening a view in KNIME Analytics Platform the above JS file will be loaded instead of the bundled one.
 Hot-code reloading is not supported yet, so you need to refresh the browser window manually for now.

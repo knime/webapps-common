@@ -94,7 +94,7 @@ public class PageTest {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").build();
         assertThat(page.getContentType()).isEqualTo(ContentType.HTML);
 
-        page = Page.builder(BUNDLE_ID, "files", "component.umd.min.js").build();
+        page = Page.builder(BUNDLE_ID, "files", "component.umd.js").build();
         assertThat(page.getContentType()).isEqualTo(ContentType.VUE_COMPONENT_LIB);
 
         var page2 = Page.builder(() -> "content", "component.blub").build();
@@ -108,7 +108,7 @@ public class PageTest {
     public void testCreateResourcesFromDir() {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").addResourceDirectory("dir").build();
         assertThat(page.getResource("dir/subdir/res.html")).isPresent();
-        assertThat(page.getResource("dir/res2.umd.min.js")).isPresent();
+        assertThat(page.getResource("dir/res2.umd.js")).isPresent();
         assertThat(page.getResource("dir/res1.html")).isPresent();
         assertThat(page.getResource("path/to/non/existent/resource.html")).isEmpty();
     }

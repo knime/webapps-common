@@ -166,7 +166,7 @@ public class NodeViewEntTest {
 
         // a node view as a 'component' without initial data
         nodeViewCreator = m -> {
-            Page p = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.min.js").build();
+            Page p = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.js").build();
             return NodeViewTest.createNodeView(p);
         };
         nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
@@ -175,14 +175,14 @@ public class NodeViewEntTest {
         resourceInfo = ent.getResourceInfo();
         assertThat(ent.getInitialData()).isNull();
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.VUE_COMPONENT_LIB.toString());
-        assertThat(resourceInfo.getPath()).endsWith("component.umd.min.js");
+        assertThat(resourceInfo.getPath()).endsWith("component.umd.js");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
 
         // test to create a node view entity while running headless (e.g. on the executor)
         NativeNodeContainer nnc2 = nnc;
         runOnExecutor(() -> {
             var ent2 = NodeViewEnt.create(nnc2, null);
-            assertThat(ent2.getResourceInfo().getPath()).endsWith("component.umd.min.js");
+            assertThat(ent2.getResourceInfo().getPath()).endsWith("component.umd.js");
             assertThat(ent2.getResourceInfo().getBaseUrl()).isNull();
         });
 
