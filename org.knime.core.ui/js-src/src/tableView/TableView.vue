@@ -201,9 +201,9 @@ export default {
             // we want the indices to start at 1
             const rows = this.table.rows;
             if (this.indicateRemainingColumnsSkipped) {
-                return rows.map((row, index) => [index + this.numRowsAbove + 1, ...row, '…']);
+                return rows.map((row) => [...row, '…']);
             } else {
-                return rows.map((row, index) => [index + this.numRowsAbove + 1, ...row]);
+                return rows.map((row) => [...row]);
             }
         },
         bottomRowData() {

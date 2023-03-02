@@ -72,6 +72,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
+import org.knime.core.data.LongValue;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.BooleanCell;
@@ -245,6 +246,9 @@ public final class TableTestUtil {
                             break;
                         case "Double":
                             out[j][i] = ((DoubleValue)value).getDoubleValue();
+                            break;
+                        case "Long":
+                            out[j][i] = ((LongValue)value).getLongValue();
                             break;
                         case "String":
                             out[j][i] = ((StringValue)value).getStringValue();

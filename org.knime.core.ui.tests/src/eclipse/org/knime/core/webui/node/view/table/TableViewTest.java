@@ -108,7 +108,7 @@ class TableViewTest {
 
     @Test
     void testDataServiceGetData() {
-        final var expectedResult = new String[][]{{"1", "1", "1", "11", "pageId/images/tableId/2018748495.png", "0001",
+        final var expectedResult = new String[][]{{"1", "1", "1", "1", "11", "pageId/images/tableId/2018748495.png", "0001",
             "true", "pageId/images/tableId/-1084641940.png"}};
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
         var rendererIds = new String[expectedResult[0].length];
@@ -150,8 +150,8 @@ class TableViewTest {
         // request rows to create the 'image renderers' whose images are later access as 'page resources'
         var dataServiceResult = mapper.readTree(nodeViewManager.callTextDataService(NodeWrapper.of(nnc),
             jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false")));
-        var imgPath = dataServiceResult.get("result").get("rows").get(0).get(1).asText();
-        var imgPath2 = dataServiceResult.get("result").get("rows").get(1).get(1).asText();
+        var imgPath = dataServiceResult.get("result").get("rows").get(0).get(2).asText();
+        var imgPath2 = dataServiceResult.get("result").get("rows").get(1).get(2).asText();
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
         // get page path to 'register' the page
@@ -284,7 +284,7 @@ class TableViewTest {
             new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
         final var rows = testTable
-            .getTable(Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo"))
+            .getTable(Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
                 .toArray(String[]::new), 0, 1, null, true, true, false)
             .getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")
@@ -346,7 +346,7 @@ class TableViewTest {
             "The selected columns foo, bar are not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
         final var rows = testTable.getTable(
-            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo", "bar"))
+            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
                 .toArray(String[]::new),
             0, 1, null, true, true, false).getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")

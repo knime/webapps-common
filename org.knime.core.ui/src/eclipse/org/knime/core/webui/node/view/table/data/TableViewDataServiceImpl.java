@@ -319,8 +319,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
         var resultContainer = new DataContainer(spec, true);
 
-        // column offset due to rowKey
-        final var columnOffset = 1;
+        // column offset due to index and rowKey
+        final var columnOffset = 2;
         final var numColumns = columns.length + columnOffset;
 
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
@@ -367,7 +367,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final boolean filterRowKeys) {
         var colFilterMatch = true;
         var globalMatch = false;
-        final var startingIndex = filterRowKeys ? 0 : 1;
+        final var indexOffset = 1;
+        final var rowKeyOffset = filterRowKeys ? 0 : 1;
+        final var startingIndex = indexOffset + rowKeyOffset;
         for (var currentIndex = startingIndex; currentIndex < numColumns
             && (!globalMatch || colFilterMatch); currentIndex++) {
             final var isRowKey = currentIndex < columnOffset;
@@ -388,7 +390,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 continue;
             }
 
-            final var currentColumnFilters = columnFilterValue[currentIndex];
+            final var currentColumnFilters = columnFilterValue[currentIndex - indexOffset];
 
             // if the domain values exists we want an exact match, otherwise we
             // just check if the cell value matches the search term
@@ -424,7 +426,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         try (final var iterator = rowIteratorSupplier.get()) {
             IntStream.range(0, size).forEach(index -> {
                 final var row = iterator.next();
-                rows[index] = Stream.concat(Stream.of(row.getKey().toString()), //
+                rows[index] = Stream.concat(Stream.of(row.getCell(0).toString(), row.getKey().toString()), //
                     IntStream.range(0, columns.length) //
                         .mapToObj(i -> {
                             var cell = row.getCell(colIndices[i]);
