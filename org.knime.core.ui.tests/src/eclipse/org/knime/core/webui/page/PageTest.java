@@ -76,7 +76,7 @@ public class PageTest {
      * Tests {@link Page#isCompletelyStatic()}.
      */
     @Test
-    public void testIsCompletelyStaticPage() {
+    void testIsCompletelyStaticPage() {
         var page = Page.builder(BUNDLE_ID, "files", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
         assertThat(page.isCompletelyStatic()).isFalse();
@@ -90,7 +90,7 @@ public class PageTest {
      * Tests {@link Page#getContentType()}.
      */
     @Test
-    public void testIsComponent() {
+    void testIsComponent() {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").build();
         assertThat(page.getContentType()).isEqualTo(ContentType.HTML);
 
@@ -105,7 +105,7 @@ public class PageTest {
      * Tests a page that references an entire directory to define other page-related resources.
      */
     @Test
-    public void testCreateResourcesFromDir() {
+    void testCreateResourcesFromDir() {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").addResourceDirectory("dir").build();
         assertThat(page.getResource("dir/subdir/res.html")).isPresent();
         assertThat(page.getResource("dir/res2.umd.js")).isPresent();
@@ -119,7 +119,7 @@ public class PageTest {
      * @throws IOException
      */
     @Test
-    public void testCreateResourcesWithDynamicPaths() throws IOException {
+    void testCreateResourcesWithDynamicPaths() throws IOException {
         Function<String, InputStream> resourceSupplier = relativePath -> {
             if (relativePath.equals("null")) {
                 return null;
@@ -154,7 +154,7 @@ public class PageTest {
      * Tests {@link FromFilePageBuilder#markAsReusable(String)} and the impact on the resulting {@link Page}.
      */
     @Test
-    public void testMarkAsResuable() {
+    void testMarkAsResuable() {
         final var pageName = "page-name";
         var page = Page.builder(BUNDLE_ID, "files", "page.html").markAsReusable(pageName).build();
         assertThat(page.getPageIdForReusablePage().orElse(null))
@@ -170,8 +170,8 @@ public class PageTest {
 
         var illegalStatePage = Page.builder(BUNDLE_ID, "files", "page.html").addResource(() -> null, "resource.html")
             .markAsReusable(pageName).build();
-        Assertions.assertThatThrownBy(() -> illegalStatePage.getPageIdForReusablePage().orElse(null))
-            .isInstanceOf(IllegalStateException.class).withFailMessage("test");
+        Assertions.assertThatThrownBy(() -> illegalStatePage.getPageIdForReusablePage().orElse(null)) // NOSONAR
+            .withFailMessage("test").isInstanceOf(IllegalStateException.class);
     }
 
     private static InputStream stringToInputStream(final String s) {
