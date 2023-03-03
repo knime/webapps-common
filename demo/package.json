@@ -14,7 +14,7 @@
     "lint": "run-p 'lint:* -- --fix --cache'",
     "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json",
     "lint:css": "stylelint '**/*.{css,vue}'",
-    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages [skip ci]' --dotfiles"
+    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles"
   },
   "dependencies": {
     "prismjs": "1.29.0",
