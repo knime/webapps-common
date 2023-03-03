@@ -423,21 +423,21 @@ class TableViewTest {
         var dataTypes = initData.getDataTypes();
         var table = initData.getTable();
 
-        var stringType = dataTypes.get(table.getColumnDataTypeIds()[1]);
+        var stringType = dataTypes.get(table.getColumnDataTypeIds()[0]);
         assertThat(stringType.getName()).isEqualTo("String");
         assertRendererNames(stringType.getRenderers(), "Multi-line String", "String");
 
-        var doubleType = dataTypes.get(table.getColumnDataTypeIds()[3]);
+        var doubleType = dataTypes.get(table.getColumnDataTypeIds()[2]);
         assertThat(doubleType.getName()).isEqualTo("Number (double)");
         assertRendererNames(doubleType.getRenderers(), "Standard Double", "Percentage", "Full Precision", "Gray Scale",
             "Bars", "Standard Complex Number", "Default");
 
-        var booleanType = dataTypes.get(table.getColumnDataTypeIds()[5]);
+        var booleanType = dataTypes.get(table.getColumnDataTypeIds()[4]);
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
         assertRendererNames(booleanType.getRenderers(), "Default", "Default", "Standard Double", "Percentage",
             "Full Precision", "Gray Scale", "Bars", "Standard Complex Number", "Default");
 
-        var imageType = dataTypes.get(table.getColumnDataTypeIds()[6]);
+        var imageType = dataTypes.get(table.getColumnDataTypeIds()[5]);
         assertThat(imageType.getName()).isEqualTo("PNG Image");
         assertRendererNames(imageType.getRenderers(), "PNG Image", "Default");
     }

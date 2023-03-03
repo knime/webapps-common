@@ -205,20 +205,33 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * @param context
      */
     protected TableViewViewSettings(final SettingsCreationContext context) {
-        this(context.getDataTableSpecs()[0]);
+        setDisplayedColumns(getAllColumns(context.getDataTableSpecs()[0]));
     }
 
     /**
      * @param spec
      */
     public TableViewViewSettings(final DataTableSpec spec) {
-        m_displayedColumns = new ColumnFilter(spec.getColumnNames());
+        setDisplayedColumns(getNonIndexColumns(spec));
+    }
+
+    private void setDisplayedColumns(final String[] choices) {
+        m_displayedColumns = new ColumnFilter(choices);
     }
 
     @SuppressWarnings("javadoc")
     @JsonIgnore //
     public String[] getDisplayedColumns(final DataTableSpec spec) {
-        final var choices = spec.getColumnNames();
+        final var choices = getNonIndexColumns(spec);
         return m_displayedColumns.getSelected(choices, spec);
     }
+
+    private static String[] getAllColumns(final DataTableSpec spec) {
+        return spec.stream().map(DataColumnSpec::getName).toArray(String[]::new);
+    }
+
+    private static String[] getNonIndexColumns(final DataTableSpec spec) {
+        return spec.stream().skip(1).map(DataColumnSpec::getName).toArray(String[]::new);
+    }
+
 }
