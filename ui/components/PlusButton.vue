@@ -1,14 +1,16 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import Button from './Button.vue';
 import Tooltip from './Tooltip.vue';
 import PlusIcon from '../assets/img/icons/plus-small.svg';
 
-export default {
+export default defineComponent({
     components: {
         Button,
         Tooltip,
         PlusIcon
     },
+    inheritAttrs: false,
     props: {
         /**
          * @see {@link Button.vue}
@@ -23,7 +25,7 @@ export default {
             default: null
         }
     }
-};
+});
 </script>
 
 <template>

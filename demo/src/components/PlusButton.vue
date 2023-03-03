@@ -7,18 +7,18 @@ import buttonCode from 'webapps-common/ui/components/Button.vue?raw';
 const codeExample =
 `
   <PlusButton title="Plus button"/>
-  
+
   <PlusButton
     title="Plus button on dark"
     on-dark
     with-border
   />
-    
+
   <PlusButton
     title="Primary plus button"
     primary
   />
-  
+
   <PlusButton
     title="Primary plus button on dark"
     primary
@@ -57,7 +57,7 @@ export default {
           <div class="background">
             <PlusButton
               title="Plus button on dark"
-              on-dark
+              :on-dark="true"
               with-border
             />
           </div>
@@ -69,7 +69,7 @@ export default {
             <PlusButton
               title="Primary plus button on dark"
               primary
-              on-dark
+              :on-dark="true"
             />
           </div>
           <PlusButton

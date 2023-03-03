@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
 
-export default {
+export default defineComponent({
     props: {
         /**
          * If set, the button renders an <a> element instead of a <button> element
@@ -25,69 +26,61 @@ export default {
         preventDefault: {
             type: Boolean,
             default: false
-        },
-        /**
-         * toggle to set disabled state on button
-         */
-        disabled: {
-            type: Boolean,
-            default: false
         }
     },
     emits: ['click'],
     computed: {
         // TODO: Can be made into a composition function
-        linkComponent() {
-            return resolveNuxtLinkComponent();
-        },
         component() {
             if (this.to) {
-                return this.linkComponent;
-            } else if (this.href) {
+                return resolveNuxtLinkComponent();
+            }
+
+            if (this.href) {
                 return 'a';
             }
+
             return 'button';
         },
-        props() {
+        dynamicProps() {
             if (this.to) {
                 return {
                     to: this.to,
                     event: this.preventDefault ? [] : 'click'
                 };
-            } else if (this.href) {
+            }
+
+            if (this.href) {
                 return {
                     href: this.href
                 };
             }
+
             return {};
         }
-
     },
     methods: {
-        onClick(e) {
-            /**
-             * Click event. Fired when the button is clicked.
-             *
-             * @event click
-             */
+        onClick(e: MouseEvent) {
             this.$emit('click', e);
+
             if (this.preventDefault) {
                 e.preventDefault();
             }
         },
         // This can be called from outside via focus on a $ref
         focus() {
-            this.$refs.button?.focus();
+            // eslint-disable-next-line no-extra-parens
+            (this.$refs.button as HTMLButtonElement)?.focus();
         }
     }
-};
+});
 </script>
 
 <template>
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <Component
     :is="component"
-    v-bind="{...$attrs, ...props}"
+    v-bind="{ ...$attrs, ...dynamicProps }"
     ref="button"
     @click="onClick"
   >

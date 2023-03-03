@@ -1,10 +1,12 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import BaseButton from './BaseButton.vue';
 
-export default {
+export default defineComponent({
     components: {
         BaseButton
     },
+    inheritAttrs: false,
     props: {
         /**
          * @see {@link BaseButton.vue}
@@ -50,7 +52,7 @@ export default {
             ];
         }
     }
-};
+});
 </script>
 
 <template>
