@@ -403,7 +403,7 @@ class JsonFormsSchemaUtilTest {
         @Schema(title = "columns", choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = NonColumnChoices.class, withTypes = false)
+        @Schema(title = "otherSelection", choices = NonColumnChoices.class)
         public ColumnFilter testColumnFilterNoTypes;
     }
 
@@ -434,7 +434,7 @@ class JsonFormsSchemaUtilTest {
         @Schema(title = "columns", choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = NonColumnChoices.class, withTypes = false)
+        @Schema(title = "otherSelection", choices = NonColumnChoices.class)
         public ColumnFilter testColumnFilterNoTypes;
     }
 

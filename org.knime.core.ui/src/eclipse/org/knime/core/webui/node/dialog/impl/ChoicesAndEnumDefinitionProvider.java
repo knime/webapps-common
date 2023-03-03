@@ -54,7 +54,6 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_ONEO
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITLE;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
@@ -63,20 +62,19 @@ import com.github.victools.jsonschema.generator.CustomPropertyDefinition;
 import com.github.victools.jsonschema.generator.CustomPropertyDefinitionProvider;
 import com.github.victools.jsonschema.generator.FieldScope;
 import com.github.victools.jsonschema.generator.SchemaGenerationContext;
-import com.github.victools.jsonschema.generator.SchemaGeneratorConfig;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinitionProvider<FieldScope> {
 
-    private final SettingsCreationContext m_context;
+    private final SettingsCreationContext m_settingsContext;
 
     @SuppressWarnings("unused")
     private final DefaultNodeSettings m_settings;
 
-    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext context, final DefaultNodeSettings settings) {
-        m_context = context;
+    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext, final DefaultNodeSettings settings) {
+        m_settingsContext = settingsContext;
         m_settings = settings;
     }
 
@@ -84,7 +82,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
 
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
-        final SchemaGenerationContext context) {
+        final SchemaGenerationContext schemaContext) {
         ArrayNode arrayNode = null;
         final var type = field.getType();
         final var erasedType = type.getErasedType();
@@ -94,21 +92,20 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
             if (type.canCreateSubtype(ColumnFilter.class)) {
                 m_lastSchemaWithColumns = schema;
             } else {
-                arrayNode = determineChoicesValues(context, schema.choices(), false);
+                arrayNode = determineChoiceValues(schemaContext, schema.choices());
             }
         }
         if (usesCachedChoices(schema)) {
-            arrayNode =
-                determineChoicesValues(context, m_lastSchemaWithColumns.choices(), m_lastSchemaWithColumns.withTypes());
+            arrayNode = determineChoiceValues(schemaContext, m_lastSchemaWithColumns.choices());
         }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
-            arrayNode = determineEnumValues(context, erasedType);
+            arrayNode = determineEnumValues(schemaContext, erasedType);
         }
         if (arrayNode == null) {
             return null;
         }
 
-        final var outerObjectNode = context.getGeneratorConfig().createObjectNode();
+        final var outerObjectNode = schemaContext.getGeneratorConfig().createObjectNode();
 
         outerObjectNode.set(determineEnumTagType(field), arrayNode);
         return new CustomPropertyDefinition(outerObjectNode);
@@ -122,105 +119,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null;
     }
 
-    private ArrayNode determineChoicesValues(final SchemaGenerationContext context,
-        final Class<? extends ChoicesProvider> choices, final boolean withTypes) {
-        ArrayNode arrayNode;
-        arrayNode = determineChoiceValues(context.getGeneratorConfig(), choices, withTypes, m_context);
-        return arrayNode;
+    private ArrayNode determineChoiceValues(final SchemaGenerationContext schemaContext, final Class<? extends ChoicesProvider> choicesProviderClass) {
+        return new ChoicesArrayNodeGenerator(schemaContext, m_settingsContext).createChoicesNode(choicesProviderClass);
     }
 
-    private static ArrayNode determineChoiceValues(final SchemaGeneratorConfig config,
-        final Class<? extends ChoicesProvider> choicesProviderClass, final boolean withTypes,
-        final SettingsCreationContext context) {
-        if (context != null) {
-            final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
-            if (choicesProvider != null) {
-                return createChoicesFromProvider(config, choicesProvider, withTypes, context);
-            }
-        }
-        return createArrayNodeWithEmptyChoice(config, withTypes || isColumnChoicesProvider(choicesProviderClass));
-    }
-
-    private static boolean isColumnChoicesProvider(final Class<? extends ChoicesProvider> choicesProviderClass) {
-        return ColumnChoicesProvider.class.isAssignableFrom(choicesProviderClass);
-    }
-
-    private static ArrayNode createChoicesFromProvider(final SchemaGeneratorConfig config,
-        final ChoicesProvider choicesProvider, final boolean withTypes, final SettingsCreationContext context) {
-        if (choicesProvider instanceof ColumnChoicesProvider) {
-            return createColumnChoices(config, ((ColumnChoicesProvider)choicesProvider).columnChoices(context));
-        }
-        String[] choices = choicesProvider.choices(context);
-        if (choices.length != 0) {
-            return createArrayNodeWithChoices(config, choices, withTypes, context);
-        } else {
-            return createArrayNodeWithEmptyChoice(config, withTypes);
-        }
-    }
-
-    private static ArrayNode createColumnChoices(final SchemaGeneratorConfig config, final DataColumnSpec[] choices) {
-        if (choices.length > 0) {
-            return createArrayNodeWithColumnChoices(config, choices);
-        } else {
-            return createArrayNodeWithEmptyChoice(config, true);
-        }
-    }
-
-
-    private static ArrayNode createArrayNodeWithColumnChoices(final SchemaGeneratorConfig config,
-        final DataColumnSpec[] colChoices) {
-        ArrayNode arrayNode = config.createArrayNode();
-        for (DataColumnSpec colChoice : colChoices) {
-            final String typeIdentifier = TypeColumnFilter.typeToString(colChoice.getType());
-            final String displayedType = colChoice.getType().getName();
-            final String colName = colChoice.getName();
-            addChoice(arrayNode, colName, colName, typeIdentifier, displayedType, config);
-        }
-        return arrayNode;
-    }
-
-    private static ArrayNode createArrayNodeWithChoices(final SchemaGeneratorConfig config, final String[] choices,
-        final boolean withTypes, final SettingsCreationContext context) {
-        final var arrayNode = config.createArrayNode();
-        if (withTypes) {
-            final var spec = context.getDataTableSpecs()[0];
-            for (var choice : choices) {
-                var type = spec.getColumnSpec(choice).getType();
-                final var typeIdentifier = TypeColumnFilter.typeToString(type);
-                final var displayedType = type.getName();
-                addChoice(arrayNode, choice, choice, typeIdentifier, displayedType, config);
-            }
-        } else {
-            for (var choice : choices) {
-                addChoice(arrayNode, choice, choice, null, null, config);
-            }
-        }
-        return arrayNode;
-    }
-
-    private static ArrayNode createArrayNodeWithEmptyChoice(final SchemaGeneratorConfig config,
-        final boolean withTypes) {
-        final var arrayNode = config.createArrayNode();
-        if (withTypes) {
-            addChoice(arrayNode, "", "", "", "", config);
-        } else {
-            addChoice(arrayNode, "", "", null, null, config);
-        }
-        return arrayNode;
-    }
-
-    private static void addChoice(final ArrayNode arrayNode, final String id, final String text, final String type,
-        final String displayedType, final SchemaGeneratorConfig config) {
-        final var entry = config.createObjectNode().put(TAG_CONST, id).put(TAG_TITLE, text);
-        if (type != null) {
-            entry.put("columnType", type);
-            entry.put("columnTypeDisplayed", displayedType);
-        }
-        arrayNode.add(entry);
-    }
-
-    private ArrayNode determineEnumValues(final SchemaGenerationContext context, final Class<?> erasedType) {
-        var config = context.getGeneratorConfig();
+    private ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext, final Class<?> erasedType) {
+        var config = schemaContext.getGeneratorConfig();
         final var arrayNode = config.createArrayNode();
 
         for (var enumConstant : erasedType.getEnumConstants()) {

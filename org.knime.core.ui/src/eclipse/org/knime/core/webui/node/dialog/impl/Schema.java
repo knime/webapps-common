@@ -70,11 +70,6 @@ public @interface Schema {
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 
     /**
-     * @return true if the choices have a type by which they can be filtered in the dialog
-     */
-    boolean withTypes() default true;
-
-    /**
      * @return true if a parent contains the annotation for the choices of this field
      */
     boolean takeChoicesFromParent() default false;
