@@ -198,21 +198,13 @@ export default {
             return this.stretchOneColumnToFillAvailableSpace(currentColumnSizes, lastColumnIndex, availableWidth);
         },
         rowData() {
-            // we want the indices to start at 1
-            const rows = this.table.rows;
-            if (this.indicateRemainingColumnsSkipped) {
-                return rows.map((row) => [...row, '…']);
-            } else {
-                return rows.map((row) => [...row]);
-            }
+            return this.appendDotsIfColumnsSkipped(this.table.rows);
         },
         bottomRowData() {
             if (typeof this.bottomRows === 'undefined') {
                 return [];
             }
-            const bottomRowsLength = this.bottomRows.length;
-            const bottomRowsEnd = this.currentPageEnd - this.numRowsBelow;
-            return this.bottomRows.map((row, index) => [index + bottomRowsEnd - bottomRowsLength, ...row]);
+            return this.appendDotsIfColumnsSkipped(this.bottomRows);
         },
         columnFilterValues() {
             const columnFilterValues = [];
@@ -336,6 +328,13 @@ export default {
                 columnSizes[index] += availableSpace - totalSize;
             }
             return columnSizes;
+        },
+        appendDotsIfColumnsSkipped(rows) {
+            if (this.indicateRemainingColumnsSkipped) {
+                return rows.map((row) => [...row, '…']);
+            } else {
+                return rows;
+            }
         },
         async initializeLazyLoading(params) {
             const { updateDisplayedColumns = false, updateTotalSelected = true } = params || {};
@@ -722,7 +721,7 @@ export default {
             }
         },
         onRowSelect(selected, rowInd, _groupInd, isTop) {
-            const rowKey = isTop ? this.table.rows[rowInd][0] : this.bottomRows[rowInd][0];
+            const rowKey = isTop ? this.table.rows[rowInd][1] : this.bottomRows[rowInd][1];
             this.totalSelected += selected ? 1 : -1;
             this.updateSelection(selected, [rowKey]);
         },
@@ -827,8 +826,9 @@ export default {
             if (typeof this.table.rows === 'undefined') {
                 return;
             }
-            const rowKeysTop = this.table.rows.map(row => row[0]).filter(x => typeof x !== 'undefined');
-            const rowKeysBottom = this.bottomRows.map(row => row[0]);
+            const getRowKey = (row) => row[1];
+            const rowKeysTop = this.table.rows.map(getRowKey).filter(x => typeof x !== 'undefined');
+            const rowKeysBottom = this.bottomRows.map(getRowKey);
             this.currentSelection = rowKeysTop.map(rowKey => this.currentSelectedRowKeys.has(rowKey));
             this.currentBottomSelection = rowKeysBottom.map(rowKey => this.currentSelectedRowKeys.has(rowKey));
         },

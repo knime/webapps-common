@@ -38,10 +38,10 @@ describe('TableView.vue', () => {
     beforeEach(() => {
         initialDataMock = {
             table: {
-                rows: [['row1', 'entry1col1', 'entry1col2', '1', 'view_x_y/datacell/hash1.png'],
-                    ['row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png'],
-                    ['row3', 'entry3col1', 'entry3col2', '3', 'view_x_y/datacell/hash3.png'],
-                    ['row4', 'entry4col1', 'entry4col2', '4', 'view_x_y/datacell/hash4.png']],
+                rows: [['1', 'row1', 'entry1col1', 'entry1col2', '1', 'view_x_y/datacell/hash1.png'],
+                    ['2', 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png'],
+                    ['3', 'row3', 'entry3col1', 'entry3col2', '3', 'view_x_y/datacell/hash3.png'],
+                    ['4', 'row4', 'entry4col1', 'entry4col2', '4', 'view_x_y/datacell/hash4.png']],
                 columnContentTypes: ['txt', 'txt', 'txt', 'img_path'],
                 columnDataTypeIds: ['datatype1', 'datatype1', 'datatype2', 'datatype3'],
                 rowCount,
@@ -228,7 +228,7 @@ describe('TableView.vue', () => {
             const tableUI = wrapper.findComponent(TableUIStub);
             expect(tableUI.exists()).toBe(true);
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = tableUI.vm.$props;
-            expect(data).toEqual([initialDataMock.table.rows.map((row, index) => [index + 1, ...row])]);
+            expect(data).toEqual([initialDataMock.table.rows]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
             expect(totalSelected).toBe(0);
             expect(tableConfig).toMatchObject({
@@ -1128,7 +1128,7 @@ describe('TableView.vue', () => {
             });
             expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
             expect(wrapper.vm.rowData[0]).toStrictEqual(
-                [1, 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png', '…']
+                ['2', 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png', '…']
             );
         });
 
@@ -1404,7 +1404,7 @@ describe('TableView.vue', () => {
             it('calls the selection service and updates local selection on select bottom row',
                 async () => {
                     await wrapper.setData({
-                        bottomRows: [['bottomRow1'], ['bottomRow2']]
+                        bottomRows: [['7', 'bottomRow1'], ['8', 'bottomRow2']]
                     });
 
                     // select row
@@ -1484,8 +1484,8 @@ describe('TableView.vue', () => {
 
             beforeEach(async () => {
                 wrapper = await shallowMountTableView(context);
-                rowKey1 = initialDataMock.table.rows[0][0];
-                rowKey2 = initialDataMock.table.rows[1][0];
+                rowKey1 = initialDataMock.table.rows[0][1];
+                rowKey2 = initialDataMock.table.rows[1][1];
             });
 
             it('updates the local selection on addSelection', async () => {
@@ -1698,8 +1698,9 @@ describe('TableView.vue', () => {
 
     describe('image rendering', () => {
         it('creates the correct source urls', async () => {
-            const row = initialDataMock.table.rows[0].slice(1); // slice(1), since we do not show row keys
-            const imageIndex = 5;
+            const completeRow = initialDataMock.table.rows[0];
+            const row = [completeRow[0], ...completeRow.slice(2)]; // we do not show row keys
+            const imageIndex = 6;
             TableUIStub.template = `<div>
                 <slot 
                     name="cellContent-${imageIndex}" 

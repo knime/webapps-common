@@ -84,7 +84,7 @@ public class DataValueImageRendererRegistryTest {
 
         // access the same image multiple times (within the same chunk/page of rows)
         table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
-        var imgPath = table.getRows()[3][1].replace(pathPrefix, "");
+        var imgPath = table.getRows()[3][2].replace(pathPrefix, "");
         var img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         img = imgReg.renderImage(imgPath);
@@ -95,7 +95,7 @@ public class DataValueImageRendererRegistryTest {
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         // request image from the new chunk
-        imgPath = table.getRows()[3][1].replace(pathPrefix, "");
+        imgPath = table.getRows()[3][2].replace(pathPrefix, "");
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
 
@@ -104,7 +104,7 @@ public class DataValueImageRendererRegistryTest {
         // request image from the previous chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSize(0);
-        imgPath = table.getRows()[3][1].replace(pathPrefix, "");
+        imgPath = table.getRows()[3][2].replace(pathPrefix, "");
         // request image from the new chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
@@ -134,8 +134,8 @@ public class DataValueImageRendererRegistryTest {
             var batchSizes = new int[i + 1];
             Arrays.fill(batchSizes, 100 * 2);
             assertThat(stats.batchSizes()).isEqualTo(batchSizes);
-            imgReg.renderImage(table.getRows()[0][1].replace(pathPrefix, ""));
-            imgReg.renderImage(table.getRows()[50][1].replace(pathPrefix, ""));
+            imgReg.renderImage(table.getRows()[0][2].replace(pathPrefix, ""));
+            imgReg.renderImage(table.getRows()[50][2].replace(pathPrefix, ""));
             assertThat(stats.numRenderedImages()).isEqualTo(2 * (i + 1));
         }
         assertThat(imgReg.getStatsPerTable(tableId).batchSizes()).isEqualTo(new int[]{200, 200});
