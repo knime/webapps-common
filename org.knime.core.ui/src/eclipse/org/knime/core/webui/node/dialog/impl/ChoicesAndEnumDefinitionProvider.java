@@ -73,7 +73,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     @SuppressWarnings("unused")
     private final DefaultNodeSettings m_settings;
 
-    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext, final DefaultNodeSettings settings) {
+    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext,
+        final DefaultNodeSettings settings) {
         m_settingsContext = settingsContext;
         m_settings = settings;
     }
@@ -119,7 +120,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null;
     }
 
-    private ArrayNode determineChoiceValues(final SchemaGenerationContext schemaContext, final Class<? extends ChoicesProvider> choicesProviderClass) {
+    private ArrayNode determineChoiceValues(final SchemaGenerationContext schemaContext,
+        final Class<? extends ChoicesProvider> choicesProviderClass) {
         return new ChoicesArrayNodeGenerator(schemaContext, m_settingsContext).createChoicesNode(choicesProviderClass);
     }
 

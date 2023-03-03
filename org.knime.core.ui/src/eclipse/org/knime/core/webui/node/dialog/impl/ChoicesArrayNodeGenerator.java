@@ -62,9 +62,9 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfig;
  */
 final class ChoicesArrayNodeGenerator {
 
-    final private SettingsCreationContext m_settingsContext;
+    private final SettingsCreationContext m_settingsContext;
 
-    final private SchemaGeneratorConfig m_config;
+    private final SchemaGeneratorConfig m_config;
 
     private ArrayNode m_arrayNode;
 
