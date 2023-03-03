@@ -2,7 +2,7 @@
 Custom image rule for SVGs including optimization (inspired by https://github.com/sam3d/nuxt-svg)
 
 Example usage in Nuxt nuxt.config.js:
-    import svgConfig from '~/webapps-common/webpack/webpack.svg.config';
+    import svgConfig from 'webapps-common/webpack/webpack.svg.config';
     export default {
         build: {
             extend(config) {

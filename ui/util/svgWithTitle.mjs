@@ -1,4 +1,4 @@
-import svgLoader from '~/node_modules/vue-svg-loader/package.json';
+import svgLoader from 'vue-svg-loader/package.json';
 
 /**
  * Higher order component that decorates a SVG component (loaded with vue-svg-loader) with a `<title>` element
