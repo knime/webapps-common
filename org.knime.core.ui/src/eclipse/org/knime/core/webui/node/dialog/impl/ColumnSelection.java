@@ -53,20 +53,19 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreatio
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A class used to store a selected columns together with additional information
- * (e.g. type).
+ * A class used to store a selected column together with additional information (e.g. type).
  *
  * @author Paul Bärnreuther
  */
-public class ColumnSelection implements DialogComponentSettings {
+public final class ColumnSelection implements DialogComponentSettings {
 
-	/**
-	 * The selected column
-	 */
-	@Schema(takeChoicesFromParent = true)
-	public String m_selected;
+    /**
+     * The selected column
+     */
+    @Schema(takeChoicesFromParent = true)
+    public String m_selected;
 
-	/**
+    /**
      * Initialises the column selection with an initial array of columns which are manually selected
      *
      * @param initialSelected the initial manually selected non-null columns
@@ -75,24 +74,26 @@ public class ColumnSelection implements DialogComponentSettings {
         m_selected = initialSelected;
     }
 
-	/**
+    /**
      * Initialises the column selection with no initially selected columns.
      */
     public ColumnSelection() {
+        // Default constructor is needed for schema generation but does not need to set anything.
     }
 
-	/**
+    /**
      * Initialises the column selection based on the given context.
+     *
      * @param context settings creation context
      */
     public ColumnSelection(final SettingsCreationContext context) {
     }
 
-	/**
-	 * @return the currently selected column
-	 */
-	@JsonIgnore
-	public String getSelected() {
-		return m_selected;
-	}
+    /**
+     * @return the currently selected column
+     */
+    @JsonIgnore
+    public String getSelected() {
+        return m_selected;
+    }
 }

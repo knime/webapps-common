@@ -71,7 +71,7 @@ class StringToColumnSelectionPersistorTest {
 
 
     @Test
-    void testLoadLegacy() throws InvalidSettingsException {
+    void testLoadLegacyString() throws InvalidSettingsException {
         final var savedString = "bar";
 
         final var savedSettings = new NodeSettings(ROOT_KEY);
@@ -81,6 +81,17 @@ class StringToColumnSelectionPersistorTest {
 
         final var expected = new StringToColumnSelectionPersistorSettings();
         expected.m_foo = new ColumnSelection(savedString);
+        assertResults(expected, loaded);
+    }
+
+    @Test
+    void testLoadLegacyNull() throws InvalidSettingsException {
+        final var savedSettings = new NodeSettings(ROOT_KEY);
+        final var persistor = new FieldBasedNodeSettingsPersistor<>(StringToColumnSelectionPersistorSettings.class);
+        final var loaded = persistor.load(savedSettings);
+
+        final var expected = new StringToColumnSelectionPersistorSettings();
+        expected.m_foo = new ColumnSelection();
         assertResults(expected, loaded);
     }
 

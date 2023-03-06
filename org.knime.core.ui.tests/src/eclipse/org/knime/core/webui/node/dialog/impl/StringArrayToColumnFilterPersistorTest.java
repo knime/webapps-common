@@ -71,7 +71,7 @@ class StringArrayToColumnFilterPersistorTest {
 
 
     @Test
-    void testLoadLegacy() throws InvalidSettingsException {
+    void testLoadLegacyStringArray() throws InvalidSettingsException {
         final var array = new String[] {"bar", "baz"};
 
         final var savedSettings = new NodeSettings(ROOT_KEY);
@@ -81,6 +81,17 @@ class StringArrayToColumnFilterPersistorTest {
 
         final var expected = new StringArrayToColumnFilterPersistorSettings();
         expected.m_foo = new ColumnFilter(array);
+        assertResults(expected, loaded);
+    }
+
+    @Test
+    void testLoadLegacyNull() throws InvalidSettingsException {
+        final var savedSettings = new NodeSettings(ROOT_KEY);
+        final var persistor = new FieldBasedNodeSettingsPersistor<>(StringArrayToColumnFilterPersistorSettings.class);
+        final var loaded = persistor.load(savedSettings);
+
+        final var expected = new StringArrayToColumnFilterPersistorSettings();
+        expected.m_foo = new ColumnFilter();
         assertResults(expected, loaded);
     }
 
