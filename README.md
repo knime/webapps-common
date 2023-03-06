@@ -11,9 +11,9 @@ commonly used in KNIME web projects.
 A demo of all contained UI components, icons, CSS colors etc. can be found here:
 https://knime.github.io/webapps-common/
 
-or by calling
+Same application also serves as a development environment (code lives in `demo` folder) and can be run locally by calling
 ```sh
-npm run demo
+npm run dev
 ```
 
 

@@ -8,7 +8,7 @@
   "scripts": {
     "preinstall": "node ./install-subDependencies",
     "postinstall": "run-p generate-css opensourcecredits",
-    "demo": "npm --prefix demo/ install && npm run --prefix demo/ dev",
+    "dev": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "lint": "run-p 'lint:* -- --fix'",
     "lint:js": "eslint . --cache --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.json",
     "lint:css": "stylelint --cache '**/*.{css,vue}'",
