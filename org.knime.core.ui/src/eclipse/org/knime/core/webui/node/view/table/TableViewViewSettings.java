@@ -233,6 +233,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         return spec.stream().map(DataColumnSpec::getName).toArray(String[]::new);
     }
 
+    //TODO: Revert this with UIEXT-803 when we move appending the indices to a later point in the lifecycle.
     private static String[] getNonIndexColumns(final DataTableSpec spec) {
         if (spec == null) {
             return new String[0];
