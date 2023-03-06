@@ -227,10 +227,16 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     }
 
     private static String[] getAllColumns(final DataTableSpec spec) {
+        if (spec == null) {
+            return new String[0];
+        }
         return spec.stream().map(DataColumnSpec::getName).toArray(String[]::new);
     }
 
     private static String[] getNonIndexColumns(final DataTableSpec spec) {
+        if (spec == null) {
+            return new String[0];
+        }
         return spec.stream().skip(1).map(DataColumnSpec::getName).toArray(String[]::new);
     }
 
