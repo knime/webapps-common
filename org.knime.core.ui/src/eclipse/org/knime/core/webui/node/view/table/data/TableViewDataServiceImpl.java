@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -64,7 +65,6 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.LongValue;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CloseableRowIterator;
@@ -438,18 +438,25 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         try (final var iterator = rowIteratorSupplier.get()) {
             IntStream.range(0, size).forEach(index -> {
                 final var row = iterator.next();
-                final var rowIndex = Long.toString(((LongValue)row.getCell(0)).getLongValue());
-                final var rowKey = row.getKey().toString();
-                rows[index] = Stream.concat(Stream.of(rowIndex, rowKey), //
-                    IntStream.range(0, columns.length) //
-                        .mapToObj(i -> {
-                            var cell = row.getCell(colIndices[i]);
-                            return cell.isMissing() ? null : renderCell(cell, renderers[i], rendererRegistry, tableId);
-                        }))
-                    .toArray(String[]::new);
+                rows[index] = renderRow(row, colIndices, renderers, (cell, renderer) -> cell.isMissing() ? null
+                    : renderCell(cell, renderer, rendererRegistry, tableId));
             });
         }
         return rows;
+    }
+
+    private static String[] renderRow(final DataRow row, final int[] colIndices, final DataValueRenderer[] renderers,
+        final BiFunction<DataCell, DataValueRenderer, String> renderCell) {
+        final var rowIndex = row.getCell(0).toString();
+        final var rowKey = row.getKey().toString();
+        return Stream.concat(Stream.of(rowIndex, rowKey), //
+            IntStream.range(0, colIndices.length) //
+                .mapToObj(i -> {
+                    var cell = row.getCell(colIndices[i]);
+                    var renderer = renderers[i];
+                    return renderCell.apply(cell, renderer);
+                }))
+            .toArray(String[]::new);
     }
 
     private static String renderCell(final DataCell cell, final DataValueRenderer renderer,
