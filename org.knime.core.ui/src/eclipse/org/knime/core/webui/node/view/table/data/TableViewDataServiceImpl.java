@@ -64,6 +64,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.LongValue;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CloseableRowIterator;
@@ -315,19 +316,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     private static ContainerTable filterTable(final DataTable table, final String[] columns,
         final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys) {
         final var spec = table.getDataTableSpec();
-        final var colIndices = spec.columnsToIndices(columns);
 
         var resultContainer = new DataContainer(spec, true);
-
-        // column offset due to index and rowKey
-        final var columnOffset = 2;
-        final var numColumns = columns.length + columnOffset;
 
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
-                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, colIndices, numColumns, columnOffset,
-                    filterRowKeys)) {
+                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys)) {
                     resultContainer.addRowToTable(row);
                 }
             }
@@ -363,48 +358,65 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     @SuppressWarnings("java:S107") // accept the large number of parameters
     private static boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
-        final String[][] columnFilterValue, final int[] colIndices, final int numColumns, final int columnOffset,
-        final boolean filterRowKeys) {
-        var colFilterMatch = true;
+        final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys) {
+
         var globalMatch = false;
-        final var indexOffset = 1;
-        final var rowKeyOffset = filterRowKeys ? 0 : 1;
-        final var startingIndex = indexOffset + rowKeyOffset;
-        for (var currentIndex = startingIndex; currentIndex < numColumns
-            && (!globalMatch || colFilterMatch); currentIndex++) {
-            final var isRowKey = currentIndex < columnOffset;
 
-            final String cellStringValue;
-            if (isRowKey) {
-                cellStringValue = row.getKey().toString().toLowerCase();
-            } else {
-                final var cell = row.getCell(colIndices[currentIndex - columnOffset]);
-                cellStringValue = cell.toString().toLowerCase();
-            }
-
-            if (globalSearchTerm == null || globalSearchTerm.isEmpty()
-                || cellStringValue.contains(globalSearchTerm.toLowerCase())) {
+        if (filterRowKeys) {
+            final var rowKeyValue = row.getKey().toString().toLowerCase();
+            if (matchesGlobalSearchTerm(rowKeyValue, globalSearchTerm)) {
                 globalMatch = true;
             }
-            if (columnFilterValue == null || columnFilterValue.length < 1) {
-                continue;
-            }
-
-            final var currentColumnFilters = columnFilterValue[currentIndex - indexOffset];
-
-            // if the domain values exists we want an exact match, otherwise we
-            // just check if the cell value matches the search term
-            final var needsExactMatch = isRowKey ? false
-                : (spec.getColumnSpec(colIndices[currentIndex - columnOffset]).getDomain().getValues() != null);
-
-            final var currentFilterMatch = currentColumnFilters.length == 0 || currentColumnFilters[0].isEmpty()
-                || Arrays.stream(currentColumnFilters).map(String::toLowerCase)
-                    .anyMatch(needsExactMatch ? cellStringValue::equals : cellStringValue::contains);
-            if (!currentFilterMatch) {
-                colFilterMatch = false;
+            if (!matchesColumnFilter(rowKeyValue, columnFilterValue, 0, false)) {
+                return false;
             }
         }
-        return colFilterMatch && globalMatch;
+
+        final var colIndices = spec.columnsToIndices(columns);
+        for (var i = 0; i < columns.length; i++) {
+
+            final var colIndex = colIndices[i];
+            final var cellStringValue = row.getCell(colIndex).toString().toLowerCase();
+
+            if (matchesGlobalSearchTerm(cellStringValue, globalSearchTerm)) {
+                globalMatch = true;
+            }
+            // if the domain values exists we want an exact match, otherwise we
+            // just check if the cell value matches the search term
+            var needsExactMatch = spec.getColumnSpec(colIndex).getDomain().getValues() != null;
+            // The first entry of the columnFilters is for row keys. Thus we have an offset of one for the others.
+            final var columnFilterIndex = i + 1;
+            if (!matchesColumnFilter(cellStringValue, columnFilterValue, columnFilterIndex, needsExactMatch)) {
+                return false;
+            }
+        }
+        return globalMatch;
+    }
+
+    private static boolean matchesColumnFilter(final String cellStringValue, final String[][] columnFilters,
+        final int columnFilterIndex, final boolean needsExactMatch) {
+        if (allColumnFiltersEmpty(columnFilters)) {
+            return true;
+        }
+        var currentColumnFilters = columnFilters[columnFilterIndex];
+        if (columnFiltersEmpty(currentColumnFilters)) {
+            return true;
+        }
+        return Arrays.stream(currentColumnFilters).map(String::toLowerCase)
+            .anyMatch(needsExactMatch ? cellStringValue::equals : cellStringValue::contains);
+    }
+
+    private static boolean allColumnFiltersEmpty(final String[][] columnFilters) {
+        return columnFilters == null || columnFilters.length == 0;
+    }
+
+    private static boolean columnFiltersEmpty(final String[] columnFilter) {
+        return columnFilter.length == 0 || columnFilter[0].isEmpty();
+    }
+
+    private static boolean matchesGlobalSearchTerm(final String cellStringValue, final String globalSearchTerm) {
+        return globalSearchTerm == null || globalSearchTerm.isEmpty()
+            || cellStringValue.contains(globalSearchTerm.toLowerCase());
     }
 
     private static long getTableSize(final DataTable table) {
@@ -426,7 +438,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         try (final var iterator = rowIteratorSupplier.get()) {
             IntStream.range(0, size).forEach(index -> {
                 final var row = iterator.next();
-                rows[index] = Stream.concat(Stream.of(row.getCell(0).toString(), row.getKey().toString()), //
+                final var rowIndex = Long.toString(((LongValue)row.getCell(0)).getLongValue());
+                final var rowKey = row.getKey().toString();
+                rows[index] = Stream.concat(Stream.of(rowIndex, rowKey), //
                     IntStream.range(0, columns.length) //
                         .mapToObj(i -> {
                             var cell = row.getCell(colIndices[i]);
