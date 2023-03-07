@@ -41,7 +41,7 @@ if (!skip) {
     config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
 
     config.excludePackages.push(
-        excludeScopedPackages(parentPkg, '@knime')
+        excludeScopedPackages(parentPkg)
     );
 
     // collect all used production packages and their licenses
