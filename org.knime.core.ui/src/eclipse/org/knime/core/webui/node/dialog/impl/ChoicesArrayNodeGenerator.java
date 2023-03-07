@@ -77,15 +77,12 @@ final class ChoicesArrayNodeGenerator {
     public ArrayNode createChoicesNode(final Class<? extends ChoicesProvider> choicesProviderClass) {
         m_arrayNode = m_config.createArrayNode();
         final ChoicesProvider choicesProvider = JsonFormsDataUtil.createInstance(choicesProviderClass);
-        if (m_settingsContext == null || choicesProvider == null) {
-            if (isColumnChoicesProvider(choicesProviderClass)) {
-                addEmptyColumnChoice();
-            } else {
-                addEmptyStringChoice();
-            }
+        if (isColumnChoicesProvider(choicesProviderClass)) {
+            addColumnsFromColumnChoicesProvider((ColumnChoicesProvider)choicesProvider);
         } else {
-            addChoicesFromProvider(choicesProvider);
+            addStringsFromChoicesProvider(choicesProvider);
         }
+
         return m_arrayNode;
     }
 
@@ -93,17 +90,9 @@ final class ChoicesArrayNodeGenerator {
         return ColumnChoicesProvider.class.isAssignableFrom(choicesProviderClass);
     }
 
-    private void addChoicesFromProvider(final ChoicesProvider choicesProvider) {
-        if (choicesProvider instanceof ColumnChoicesProvider) {
-            addColumnsFromColumnChoicesProvider((ColumnChoicesProvider)choicesProvider);
-        } else {
-
-            addStringsFromChoicesProvider(choicesProvider);
-        }
-    }
-
     private void addColumnsFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider) {
-        DataColumnSpec[] columnChoices = choicesProvider.columnChoices(m_settingsContext);
+        DataColumnSpec[] columnChoices = choicesProvider == null || m_settingsContext == null ? new DataColumnSpec[0]
+            : choicesProvider.columnChoices(m_settingsContext);
         if (columnChoices.length > 0) {
             addNonEmptyColumnChoices(columnChoices);
         } else {
@@ -113,9 +102,9 @@ final class ChoicesArrayNodeGenerator {
 
     private void addNonEmptyColumnChoices(final DataColumnSpec[] colChoices) {
         for (DataColumnSpec colChoice : colChoices) {
-            final String typeIdentifier = TypeColumnFilter.typeToString(colChoice.getType());
-            final String displayedType = colChoice.getType().getName();
-            final String colName = colChoice.getName();
+            final var typeIdentifier = TypeColumnFilter.typeToString(colChoice.getType());
+            final var displayedType = colChoice.getType().getName();
+            final var colName = colChoice.getName();
             addChoiceWithTypeInformation(colName, colName, typeIdentifier, displayedType);
         }
     }
@@ -125,7 +114,9 @@ final class ChoicesArrayNodeGenerator {
     }
 
     private void addStringsFromChoicesProvider(final ChoicesProvider choicesProvider) {
-        String[] choices = choicesProvider.choices(m_settingsContext);
+        String[] choices = choicesProvider == null || m_settingsContext == null //
+            ? new String[0] //
+            : choicesProvider.choices(m_settingsContext);
         if (choices.length != 0) {
             addNonEmptyStringChoices(choices);
         } else {
