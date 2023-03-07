@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
 import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
 import static org.knime.testing.node.view.TableTestUtil.createTableFromColumns;
 import static org.knime.testing.node.view.TableTestUtil.getDefaultTestSpec;
@@ -76,6 +77,7 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeModel;
 import org.knime.core.node.workflow.virtual.VirtualNodeInput;
@@ -95,7 +97,6 @@ import org.knime.testing.node.view.TableTestUtil.ObjectColumn;
 import org.knime.testing.node.view.WarningMessageAsserterUtil.DataServiceContextWarningMessagesAsserter;
 import org.knime.testing.util.WorkflowManagerUtil;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -112,9 +113,9 @@ class TableViewTest {
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
         var rendererIds = new String[expectedResult[0].length];
         rendererIds[3] = "org.knime.core.data.renderer.DoubleBarRenderer$Factory";
-        final var table =
-            new TableViewDataServiceImpl(createDefaultTestTable(2), "tableId", new SwingBasedRendererFactory(),
-                rendererRegistry).getTable(getDefaultTestSpec().getColumnNames(), 1, 1, rendererIds, false, true, false);
+        final var table = new TableViewDataServiceImpl(createDefaultTestTable(2), "tableId",
+            new SwingBasedRendererFactory(), rendererRegistry).getTable(getDefaultTestSpec().getColumnNames(), 1, 1,
+                rendererIds, false, true, false);
         var rows = table.getRows();
         assertThat(rows).as("check that the first row has the correct test values")
             .overridingErrorMessage("The values of the first row should be %s, not %s.", rows[0].toString(),
@@ -147,9 +148,10 @@ class TableViewTest {
         var mapper = new ObjectMapper();
 
         // request rows to create the 'image renderers' whose images are later access as 'page resources'
-        JsonNode initialData = mapper.readTree(nodeViewManager.callTextInitialDataService(NodeWrapper.of(nnc)));
-        var imgPath = initialData.get("result").get("table").get("rows").get(0).get(7).asText();
-        var imgPath2 = initialData.get("result").get("table").get("rows").get(1).get(7).asText();
+        var dataServiceResult = mapper.readTree(nodeViewManager.callTextDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false")));
+        var imgPath = dataServiceResult.get("result").get("rows").get(0).get(1).asText();
+        var imgPath2 = dataServiceResult.get("result").get("rows").get(1).get(1).asText();
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
         // get page path to 'register' the page
@@ -207,8 +209,8 @@ class TableViewTest {
 
         var nodeViewManager = NodeViewManager.getInstance();
 
-        // call initial data service to register renderers
-        nodeViewManager.callTextInitialDataService(NodeWrapper.of(nnc));
+        // call data service to register renderers
+        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
         // must clear the registry for the given 'table id' (i.e. node id here)
@@ -218,17 +220,23 @@ class TableViewTest {
         // make sure that the a 2nd node state change still clears the registry
         wfm.executeAllAndWaitUntilDone();
         ((NodeViewNodeModel)nnc.getNodeModel()).setInternalTables(tables);
-        nodeViewManager.callTextInitialDataService(NodeWrapper.of(nnc));
+        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
         wfm.resetAndConfigureNode(nnc.getID());
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
 
         // assert that registry is cleared on delete
         ((NodeViewNodeModel)nnc.getNodeModel()).setInternalTables(tables);
-        nodeViewManager.callTextInitialDataService(NodeWrapper.of(nnc));
+        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
         wfm.removeNode(nnc.getID());
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
+    }
+
+    private static void callDataServiceToRegisterRenderes(final NativeNodeContainer nnc,
+        final NodeViewManager nodeViewManager) {
+        nodeViewManager.callTextDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false"));
     }
 
     @Test
@@ -237,9 +245,8 @@ class TableViewTest {
         final var sortColumnIndex = 0;
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         var columns = getDefaultTestSpec().getColumnNames();
-        final var tableSortedAscending = testTable
-            .getFilteredAndSortedTable(columns, 0, 5, sortColumnName, true, null, null, true, null, false, false, true, false)
-            .getRows();
+        final var tableSortedAscending = testTable.getFilteredAndSortedTable(columns, 0, 5, sortColumnName, true, null,
+            null, true, null, false, false, true, false).getRows();
         IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
             assertThat(tableSortedAscending[rowIndex][sortColumnIndex])
                 .isGreaterThanOrEqualTo(tableSortedAscending[rowIndex - 1][sortColumnIndex]);
@@ -286,8 +293,6 @@ class TableViewTest {
             "Adds warning message for single missing column.");
     }
 
-
-
     @Test
     void testDataServiceSetsGetTableColumnCount() {
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
@@ -295,13 +300,12 @@ class TableViewTest {
         assertThat(result.getColumnCount()).isEqualTo(7);
     }
 
-
     @Test
     void testDataServiceSetsGetTableTrimColumns() {
         final var numColumns = 200;
-        var stringColumns = IntStream.range(0, numColumns).mapToObj(i  ->
-            new ObjectColumn(String.format("Column %s", i), StringCell.TYPE, new String[]{"content"})
-        ).toArray(ObjectColumn[]::new);
+        var stringColumns = IntStream.range(0, numColumns)
+            .mapToObj(i -> new ObjectColumn(String.format("Column %s", i), StringCell.TYPE, new String[]{"content"}))
+            .toArray(ObjectColumn[]::new);
         final var inputTable = createTableFromColumns(stringColumns);
         final var testTable = createTableViewDataServiceInstance(() -> inputTable);
         final var result = testTable.getTable(inputTable.getSpec().getColumnNames(), 0, 1, null, true, true, true);
@@ -331,8 +335,8 @@ class TableViewTest {
         final var filterRowKeys = false;
         final var selection = Set.of(new RowKey("0"));
         final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
-        dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string",
-            true, globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false);
+        dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
+            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false);
         assertThat(dataService.getTotalSelected()).isEqualTo(1);
     }
 
@@ -366,7 +370,8 @@ class TableViewTest {
         final var sortColumnName = "string";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
         final var emptyTable = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(),
-            0, 2, sortColumnName, true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false).getRows();
+            0, 2, sortColumnName, true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false)
+            .getRows();
         assertThat(emptyTable.length).as("filters and excludes all rows").isEqualTo(0);
 
         final var table = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2,
@@ -382,8 +387,9 @@ class TableViewTest {
         final var globalSearchTerm = "1";
         final var columnFilterValue = new String[][]{new String[0], new String[]{"1"}, new String[0], new String[0],
             new String[0], new String[0], new String[0], new String[0], new String[0]};
-        final var tableSortedAscending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
-            5, sortColumnName, true, globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+        final var tableSortedAscending =
+            testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
+                globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
         IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
             assertThat(tableSortedAscending[rowIndex][sortColumnIndex])
                 .isGreaterThanOrEqualTo(tableSortedAscending[rowIndex - 1][sortColumnIndex]);

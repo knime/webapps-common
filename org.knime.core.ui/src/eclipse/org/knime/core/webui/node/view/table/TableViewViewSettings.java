@@ -128,7 +128,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Schema(title = "Pagination",
         description = "Enables or disables the ability to only show a certain number of rows.")
     @Persist(optional = true)
-    public boolean m_enablePagination = false;
+    public boolean m_enablePagination;
 
     /**
      * The page size, i.e., number of rows to be displayed.
