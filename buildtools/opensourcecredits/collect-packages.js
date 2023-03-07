@@ -21,17 +21,18 @@ const excludeScopedPackages = (allPackages, scope) => {
         ...formatDependencyList(allPackages.dependencies, orgPrefix),
         ...formatDependencyList(allPackages.devDependencies, orgPrefix)
     ];
-    
+
     return excludePackagesByScope('@knime').join(';');
 };
 
 if (!skip) {
     // exclude parent package
     const parentPkg = require(parentPkgPath);
-    
+
     // licensechecker only accepts semver versions
     const parentPkgVersion = semver.coerce(parentPkg.version);
-    
+    console.log({ parentPkgVersion });
+
     config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
 
     config.excludePackages.push(
