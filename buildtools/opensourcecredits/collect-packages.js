@@ -12,7 +12,7 @@ const parentRoot = path.resolve(parentPkgPath, '..');
 
 const skip = process.argv.includes('--no-overwrite') && fs.existsSync(outFile);
 
-const excludeScopedPackages = (allPackages, scope) => {
+const excludeScopedPackages = (allPackages) => {
     const formatDependencyList = (packages, orgPrefix) => Object.entries(packages)
         .filter(([name]) => name.startsWith(orgPrefix))
         .map(([name, version]) => `${name}@${semver.coerce(version)}`, []);
@@ -29,9 +29,14 @@ if (!skip) {
     // exclude parent package
     const parentPkg = require(parentPkgPath);
 
-    // licensechecker only accepts semver versions
-    const parentPkgVersion = semver.coerce(parentPkg.version);
-    console.log({ parentPkgVersion });
+    // license-checker only accepts semver versions
+    if (!semver.valid(parentPkg.version)) {
+        throw new Error(`Invalid version ${parentPkg.version}`);
+    }
+
+    // semver.coerce does not respect prerelease, so we use semver.parse instead
+    // see https://github.com/npm/node-semver/issues/473
+    const parentPkgVersion = semver.parse(parentPkg.version, { includePrerelease: true }).version;
 
     config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
 
