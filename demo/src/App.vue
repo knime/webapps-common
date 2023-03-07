@@ -1,5 +1,6 @@
 <script>
-import { defineAsyncComponent, h as createElement } from 'vue';
+import { defineAsyncComponent, h as createElement, ref} from 'vue';
+import { useClipboard } from '@vueuse/core';
 import './assets/index.css';
 
 import TabBar from 'webapps-common/ui/components/TabBar.vue';
@@ -14,6 +15,8 @@ import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
 import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
 
 import NpmLink from './components/demo/NpmLink.vue';
+
+const { text, copy } = useClipboard()
 
 const demoComponents = {
     layout: {
@@ -194,59 +197,74 @@ export default {
         if (this.$route.query.q) {
             this.searchQuery = this.$route.query.q.trim();
         }
+    },
+    method: {
+        copyToClipboard(name) {
+            let path = window.location.href.split('?')[0];
+            const source = `${path}?q=${name}`;
+            copy(source);
+        }
     }
+
 };
 </script>
 
 <template>
-  <header>
-    <img
-      src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
-      class="logo"
-    >
-  </header>
-  <main>
-    <section>
-      <div class="grid-container header">
-        <div class="grid-item-12">
-          <h1>KNIME WebApps Common</h1>
-          <p>
-            This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
-            To use them, it's recommended to integrate them as Git submodule as described in the
-            <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
-            More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
-          </p>
+  <div>
+    <header>
+      <img
+        src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
+        class="logo"
+      >
+    </header>
+    <main>
+      <section>
+        <div class="grid-container header">
+          <div class="grid-item-12">
+            <h1>KNIME WebApps Common</h1>
+            <p>
+              This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
+              To use them, it's recommended to integrate them as Git submodule as described in the
+              <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
+              More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
+            </p>
 
-          <div class="categories">
-            <TabBar
-              v-model="activeTab"
-              :disabled="isSearchActive"
-              :possible-values="possibleTabValues"
-            />
-            <SearchInput
-              v-model.trim="searchQuery"
-              autofocus
-              placeholder="Filter by component name…"
-              class="search"
+            <div class="categories">
+              <TabBar
+                v-model="activeTab"
+                :disabled="isSearchActive"
+                :possible-values="possibleTabValues"
+              />
+              <SearchInput
+                v-model.trim="searchQuery"
+                autofocus
+                placeholder="Filter by component name…"
+                class="search"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <template v-for="(componentByName, category) in filteredDemoComponents">
+        <div
+          v-if="activeTab === category || isSearchActive"
+          :key="category"
+        >
+          <div
+            v-for="(component, name) in componentByName"
+            :key="category+name"
+          >
+            <!-- <h2>{{ name }}</h2> -->
+            <button @click="copyToClipboard(name)">Test</button>
+            <component
+              :is="name"
             />
           </div>
         </div>
-      </div>
-    </section>
-
-    <template v-for="(componentByName, category) in filteredDemoComponents">
-      <div
-        v-if="activeTab === category || isSearchActive"
-        :key="category"
-      >
-        <component
-          :is="name"
-          v-for="(component, name) in componentByName"
-          :key="category+name"
-        />
-      </div>
-    </template>
-  </main>
+      </template>
+    </main>
+  </div>
 </template>
 
 <style scoped lang="postcss">
