@@ -1,9 +1,9 @@
 <script>
 import CodeExample from './demo/CodeExample.vue';
-import Combobox from 'webapps-common/ui/components/forms/ComboBox.vue';
+import ComboBox from 'webapps-common/ui/components/forms/ComboBox.vue';
 import code from 'webapps-common/ui/components/forms/ComboBox.vue?raw';
 
-const codeExample = `<Combobox
+const codeExample = `<ComboBox
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -14,33 +14,29 @@ const codeExample = `<Combobox
     id: 'baz',
     text: 'Baz'
   }]"
-  @update:selected-values="selectedValues => selected = selectedValues"
+  :possible-values="values"
+  :initialSelectedIds="selected"
+  :size-visible-options="3"
+  @update:selected-ids="selectedValues => selected = selectedValues"
 />`;
 
 export default {
     components: {
-        Combobox,
+        ComboBox,
         CodeExample
     },
     data() {
         return {
             codeExample,
             selected: [],
-            values: [{ id: 'foo', text: 'Foo' }, { id: 'bar', text: 'Bar' }, { id: 'baz', text: 'Baz' }]
+            values: [{ id: 'foo', text: 'Foo' }, { id: 'bar', text: 'Bar' }, { id: 'baz', text: 'Baz' },
+                { id: 'lorem', text: 'Lorem' }, { id: 'ipsum', text: 'Ipsum' }, { id: 'dolor', text: 'dolor' }]
         };
     },
     computed: {
         code() {
             return code;
         }
-    },
-    mounted() {
-        const words = ['jashfl kjsdahf kjsdahf ajksh ksajhf klasjfhkjsdahfksjhfakhfjkdash fah flsakh fkasj jaksdfhla jfh sjlkf asljhf ', 'Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'Vivamus', 'nec', 'ex', 'sit', 'amet', 'turpis', 'interdum', 'congue', 'at', 'quis', 'augue', 'Donec', 'id', 'finibus', 'erat', 'Aliquam', 'eros', 'libero', 'convallis', 'quis', 'quam', 'et', 'posuere', 'placerat', 'est', 'In', 'feugiat', 'cursus', 'condimentum'];
-        for (let i = 0; i < 100; i++) {
-            const word = words[i % words.length];
-            this.values.splice(i, 1, { id: `${word.toLowerCase()} ${i}`, text: `${word.toLowerCase()} ${i}` });
-        }
-
     }
 };
 </script>
@@ -50,18 +46,19 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Combobox</h2>
+          <h2>ComboBox</h2>
           <p>
-            A combobox component.
+            A combobox component. It emits an <code>update</code> event when an option is (de-)selected and has a list
+            of selected <code>values</code>.
           </p>
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Combobox
+          <ComboBox
             :possible-values="values"
-            :size="4"
-            :initialSelectedIds="selected"
+            :initial-selected-ids="selected"
+            :size-visible-options="3"
             @update:selected-ids="selectedValues => selected = selectedValues"
           />
         </div>

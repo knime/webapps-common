@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import Multiselect from '../Multiselect.vue';
 import Checkbox from '../Checkbox.vue';
 
-const doMount = (options) => mount(Multiselect, {
+const doMount = (options, dynamicProps) => mount(Multiselect, {
     props: {
         possibleValues: [{
             id: 'test1',
@@ -15,7 +15,8 @@ const doMount = (options) => mount(Multiselect, {
         }, {
             id: 'test3',
             text: 'test3'
-        }]
+        }],
+        ...dynamicProps
     },
     ...options
 });
@@ -120,7 +121,7 @@ describe('Multiselect.vue', () => {
             expect(toggleFocusMock).toHaveBeenCalled();
         });
 
-        it('hide options when focus leaves the component', () => {
+        it('hide options when focus leaves the component when not using the custom list box', () => {
             vi.useFakeTimers();
             const wrapper = doMount();
             let refocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
@@ -139,6 +140,18 @@ describe('Multiselect.vue', () => {
             expect(refocusMock).not.toHaveBeenCalled();
             expect(wrapper.vm.collapsed).toBe(true);
         });
+
+        it('hides options and emits focusOutside when focus leaves the component when using the custom list box',
+            () => {
+                vi.useFakeTimers();
+                const wrapper = doMount({}, { useCustomListBox: true });
+                let closeMenuMock = vi.spyOn(wrapper.vm, 'closeOptions');
+                wrapper.setData({ collapsed: false });
+                wrapper.trigger('focusout');
+                vi.runAllTimers();
+                expect(closeMenuMock).toHaveBeenCalledWith(false);
+                expect(wrapper.emitted()).toHaveProperty('focusOutside');
+            });
 
         describe('arrow key navigation', () => {
             it('gets next item to focus', () => {
@@ -308,6 +321,33 @@ describe('Multiselect.vue', () => {
                 const button = wrapper.find('[role="button"]');
                 expect(button.text()).toBe('3 Fische');
             });
+        });
+    });
+
+    describe('height of options wrapper', () => {
+        it('only sets a max-height when sizeVisibleOptions is specified', () => {
+            const wrapper = doMount();
+            expect(wrapper.vm.optionsHeight).toEqual({});
+            expect(wrapper.find('.options').element.style.maxHeight).toBeFalsy();
+        });
+
+        it('sets no max-height when the number of possibleValues is smaller than the number of visible options', () => {
+            const wrapper = doMount({}, { sizeVisibleOptions: 7 });
+            expect(wrapper.vm.optionsHeight).toEqual({});
+            expect(wrapper.find('.options').element.style.maxHeight).toBe('');
+        });
+
+        it('sets no max-height when the number of possibleValues equals the number of visible options', () => {
+            const wrapper = doMount({}, { sizeVisibleOptions: 3 });
+            expect(wrapper.vm.optionsHeight).toEqual({});
+            expect(wrapper.find('.options').element.style.maxHeight).toBe('');
+        });
+
+        it('sets a max-height when the number of possibleValues is greater than the number of visible options', () => {
+            const wrapper = doMount({}, { sizeVisibleOptions: 2 });
+            const maxHeight = '65px';
+            expect(wrapper.vm.optionsHeight).toEqual({ 'max-height': maxHeight });
+            expect(wrapper.find('.options').element.style.maxHeight).toBe(maxHeight);
         });
     });
 });

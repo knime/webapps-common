@@ -10,6 +10,10 @@ export default {
         CloseIcon
     },
     props: {
+        /**
+         * List of possible values. Each item must have an `id` and a `text` property. Some optional properties
+         * can be used that are specified in Multiselect.vue.
+         */
         possibleValues: {
             type: Array,
             default: () => [],
@@ -20,13 +24,19 @@ export default {
                 return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
             }
         },
+        /**
+         * List of initial selected ids.
+         */
         initialSelectedIds: {
             type: Array,
             default: () => []
         },
-        size: {
+        /**
+         * Limit the number of visible options in the dropdown
+         */
+        sizeVisibleOptions: {
             type: Number,
-            default: 0,
+            default: 5,
             validator(value) {
                 return value >= 0;
             }
@@ -36,19 +46,22 @@ export default {
     data() {
         return {
             selectedIds: this.initialSelectedIds,
+            /*
+             * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
+             * When the input/removeAllTags-Button of this component is focussed then they shouldn't be closed either,
+             * which is why the need to be passed to the Multiselect component
+             */
+            focusElements: [],
             searchValue: '',
-            inputFocussed: false,
-            componentMounted: false
+            inputFocussed: false
         };
     },
     computed: {
         filteredValues() {
-            return this.searchValue === ''
-                ? []
-                : this.possibleValues.filter(value => value.id.includes(this.searchValue));
+            return this.possibleValues.filter(value => value.id.includes(this.searchValue));
         },
-        hasRemoveAllTagsIcon() {
-            return this.selectedValues.length > 1;
+        hasSelection() {
+            return this.selectedValues.length > 0;
         },
         inputWidth() {
             return this.inputFocussed && this.filteredValues.length > 0 ? {} : { width: '0%' };
@@ -58,28 +71,40 @@ export default {
                 ? []
                 : this.possibleValues.filter(ele => this.selectedIds.includes(ele.id));
         },
-        focusElements() {
-            if (this.componentMounted) {
-                if (this.hasRemoveAllTagsIcon) {
-                    return [this.$refs.searchInput,
-                        this.$refs.removeAllTags.$el && this.$refs.removeAllTags.$el.nextElementSibling];
-                }
-                return [this.$refs.searchInput];
-            }
-            return [];
+        maxSizeVisibleOptions() {
+            return this.filteredValues.length < this.sizeVisibleOptions
+                ? this.filteredValues.length
+                : this.sizeVisibleOptions;
+        }
+    },
+    watch: {
+        hasSelection() {
+            this.setFocusElements();
         }
     },
     mounted() {
-        this.componentMounted = true;
+        this.setFocusElements();
     },
     methods: {
+        focusInput() {
+            this.$refs.searchInput.focus();
+        },
+        onInputFocus() {
+            if (!this.inputFocussed) {
+                this.$refs.multiselect.toggle();
+            }
+            this.inputFocussed = true;
+            this.$refs.multiselect.updateFocusOptions();
+        },
         onFocusOutside() {
             this.inputFocussed = false;
             this.searchValue = '';
         },
-        focusInput() {
-            this.$refs.searchInput.focus();
-            this.inputFocussed = true;
+        setFocusElements() {
+            this.focusElements = this.hasSelection
+                ? [this.$refs.searchInput,
+                    this.$refs.removeAllTags.$el && this.$refs.removeAllTags.$el.nextElementSibling]
+                : [this.$refs.searchInput];
         },
         updateSelectedIds(selectedIds) {
             this.selectedIds = selectedIds;
@@ -95,9 +120,11 @@ export default {
             this.updateSelectedIds([]);
             this.focusInput();
         },
-        async onInput() {
-            await this.$nextTick(); // wait for until new values in dropdown of the child are rendered
+        onInput() {
             this.$refs.multiselect.updateFocusOptions();
+        },
+        onInputEscape() {
+            this.$refs.listBox.focus();
         }
     }
 };
@@ -108,26 +135,28 @@ export default {
     ref="multiselect"
     :model-value="selectedIds"
     :possible-values="filteredValues"
-    use-custom-summary
-    :size="size"
+    use-custom-list-box
+    :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-elements="focusElements"
     @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >
-    <template #summary>
+    <template #listBox>
       <div
+        ref="listBox"
         class="summary-input-icon-wrapper"
         tabindex="0"
         @keydown.enter.prevent.self="focusInput"
       >
         <div
-          :class="['summary-input-wrapper', {'with-icon-right': hasRemoveAllTagsIcon}]"
+          :class="['summary-input-wrapper', {'with-icon-right': hasSelection}]"
           @click.stop="focusInput"
         >
           <div
             v-for="item, index in selectedValues"
             :key="`item.id${index}`"
             class="tag"
+            :title="item.text"
           >
             <span class="text">{{ item.text }}</span>
             <FunctionButton
@@ -143,12 +172,14 @@ export default {
             class="search-input"
             type="text"
             :style="inputWidth"
+            @focus="onInputFocus"
             @input="onInput"
             @keydown.down.stop.prevent="onDown"
+            @keydown.esc.stop.prevent="onInputEscape"
           >
         </div>
         <div
-          v-show="hasRemoveAllTagsIcon"
+          v-show="hasSelection"
           class="icon-right"
         >
           <FunctionButton
@@ -192,6 +223,7 @@ export default {
 
       &.with-icon-right {
         max-width: calc(100% - 40px);
+        padding: 11px 0 11px 11px;
       }
 
       & .search-input {
@@ -221,17 +253,19 @@ export default {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          
+          line-height: 12px;
         }
 
         & .remove-tag-button {
           padding: 2px;
+          
+          & :deep(svg) {
+            --icon-size: 10;
 
-          & .remove-tag-button-icon {
-            width: 10px;
-            height: 10px;
-            cursor: pointer;
-          }
+            width: calc(var(--icon-size) * 1px);
+            height: calc(var(--icon-size) * 1px);
+            stroke-width: calc(32px / var(--icon-size));
+           }
         }
       }
     }
@@ -241,16 +275,6 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-
-      & .remove-all-tags-button {
-        --icon-size: 12;
-
-        & :deep(svg) {
-          width: calc(var(--icon-size) * 1px);
-          height: calc(var(--icon-size) * 1px);
-          stroke-width: calc(32px / var(--icon-size));
-        }
-      }
     }
   }
 }

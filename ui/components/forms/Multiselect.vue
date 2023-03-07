@@ -3,6 +3,9 @@ import Checkbox from '../forms/Checkbox.vue';
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 
 const BLUR_TIMEOUT = 1;
+const BOXES_HEIGHT = 28.5; // 22.5px for the checkbox label and 2 * 3px for vertical padding of a single option
+// vertical padding, 5px for either top/bottom of the options wrapper and 3px either top/bottom of a single option
+const OPTIONS_WRAPPER_VERT_PAD = 8;
 
 export default {
     components: {
@@ -74,17 +77,27 @@ export default {
             type: String,
             default: null
         },
-        useCustomSummary: {
+        /**
+         * Use a custom list box (slot: 'listBox') that replaces the standard Multiselect element containing the button
+         * to toggle the dropdown and the summary
+         */
+        useCustomListBox: {
             type: Boolean,
             default: false
         },
-        size: {
+        /**
+         * Limit the number of visible options (more options are reachable by scrolling)
+         */
+        sizeVisibleOptions: {
             type: Number,
             default: 0,
             validator(value) {
                 return value >= 0;
             }
         },
+        /**
+         * Focus elements of the parent that also should be used for focus with keyboard navigation
+         */
         parentFocusElements: {
             type: Array,
             default: () => []
@@ -95,7 +108,6 @@ export default {
         return {
             checkedValue: this.modelValue,
             collapsed: true,
-            optionHeight: 28.5,
             focusOptions: []
         };
     },
@@ -118,10 +130,15 @@ export default {
                 .join(this.separator);
         },
         showOptions() {
-            return this.useCustomSummary ? this.possibleValues.length > 0 : !this.collapsed;
+            return !this.collapsed && this.possibleValues.length > 0;
         },
-        cssStyleSize() {
-            return this.size > 0 ? { 'max-height': `${this.size * this.optionHeight}px` } : {};
+        useSpecificOptionsHeight() {
+            return this.sizeVisibleOptions > 0 && this.sizeVisibleOptions < this.possibleValues.length;
+        },
+        optionsHeight() {
+            return this.useSpecificOptionsHeight
+                ? { 'max-height': `${this.sizeVisibleOptions * BOXES_HEIGHT + OPTIONS_WRAPPER_VERT_PAD}px` }
+                : {};
         }
     },
     watch: {
@@ -166,7 +183,7 @@ export default {
         toggle() {
             this.collapsed = !this.collapsed;
             setTimeout(() => {
-                this.$refs.toggle.focus();
+                this.$refs.toggle?.focus();
             }, BLUR_TIMEOUT);
         },
         isChecked(itemId) {
@@ -182,7 +199,7 @@ export default {
             this.collapsed = true;
             if (refocusToggle) {
                 setTimeout(() => {
-                    this.$refs.toggle.focus();
+                    this.$refs.toggle?.focus();
                 }, BLUR_TIMEOUT);
             }
         },
@@ -204,10 +221,9 @@ export default {
         onFocusOut() {
             setTimeout(() => {
                 if (!this.focusElements.includes(document.activeElement)) {
-                    if (this.useCustomSummary) {
+                    this.closeOptions(false);
+                    if (this.useCustomListBox) {
                         this.$emit('focusOutside');
-                    } else {
-                        this.closeOptions(false);
                     }
                 }
             }, BLUR_TIMEOUT);
@@ -221,6 +237,11 @@ export default {
             event.stopPropagation();
             event.stopImmediatePropagation();
         },
+        /*
+         * Update focus options when possibleValues change to adapt keyboard navigation (e.g using ComboBox.vue)
+         * $refs are unordered, suggested solution is to use a data-index
+         * https://github.com/vuejs/vue/issues/4952#issuecomment-407550765
+         */
         updateFocusOptions() {
             if (this.$refs.option) {
                 this.focusOptions = this.$refs.option
@@ -243,8 +264,8 @@ export default {
     @mousedown="onMousedown"
   >
     <slot
-      v-if="useCustomSummary"
-      name="summary"
+      v-if="useCustomListBox"
+      name="listBox"
     />
     <div v-else>
       <div
@@ -262,10 +283,8 @@ export default {
     <div
       v-show="showOptions"
       class="options"
-      :style="cssStyleSize"
+      :style="optionsHeight"
     >
-      <!-- $refs are unordered, suggested solution is to use a data-index (the options change e.g using ComboBox.vue)
-          https://github.com/vuejs/vue/issues/4952#issuecomment-407550765 -->
       <Checkbox
         v-for="(item, index) of possibleValues"
         ref="option"
@@ -346,7 +365,6 @@ export default {
   }
 
   & .options {
-    overflow: auto;
     position: absolute;
     z-index: var(--z-index-common-multiselect-expanded, 2);
     width: 100%;
@@ -354,11 +372,11 @@ export default {
     margin-top: -1px;
     background: var(--theme-multiselect-background-color);
     box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
+    overflow-y: auto;
 
     & .boxes {
       display: block;
     }
   }
 }
-
 </style>
