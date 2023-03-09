@@ -73,6 +73,7 @@ import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Utility class mainly for creating json-forms data content from a {@link DefaultNodeSettings} POJO and vice-versa.
@@ -108,6 +109,7 @@ final class JsonFormsDataUtil {
         final var mapper = new ObjectMapper();
 
         mapper.registerModule(new Jdk8Module());
+        mapper.registerModule(new JavaTimeModule());
         mapper.registerModule(createDialogModule());
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);

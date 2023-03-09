@@ -119,11 +119,16 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         var loadedSettings = settings.entrySet().stream()//
             .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
         final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, creationContext);
-        final var root = JsonFormsDataUtil.getMapper().createObjectNode();
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
-        return root.toString();
+        try {
+            return mapper.writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); // not worse than root.toString before...
+        }
     }
 
     private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeSettingsRO> nodeSettings,
