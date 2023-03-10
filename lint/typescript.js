@@ -14,6 +14,8 @@ module.exports = {
                 '@typescript-eslint/no-extra-parens': 'error',
                 'prefer-const': 'error'
             },
+            // TODO: Consider removing this setting when this typescript configuration
+            // is used on projects that are not necessarily node or browser
             env: { browser: true, node: true }
         }
     ]
