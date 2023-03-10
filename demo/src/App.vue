@@ -1,6 +1,5 @@
 <script>
-import { defineAsyncComponent, h as createElement, ref} from 'vue';
-import { useClipboard } from '@vueuse/core';
+import { defineAsyncComponent, h as createElement, ref } from 'vue';
 import './assets/index.css';
 
 import TabBar from 'webapps-common/ui/components/TabBar.vue';
@@ -11,12 +10,12 @@ import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
+import HeadlineWithAnchorLink from 'webapps-common/ui/components/HeadlineWithAnchorLink.vue';
 
 import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
 
 import NpmLink from './components/demo/NpmLink.vue';
 
-const { text, copy } = useClipboard()
 
 const demoComponents = {
     layout: {
@@ -115,6 +114,7 @@ const flattenComponents = (componentsByCategory) => {
 // Transform the components into a flat object
 const components = {
     TabBar,
+    HeadlineWithAnchorLink,
     SearchInput,
     ...flattenComponents(demoComponents)
 };
@@ -197,13 +197,6 @@ export default {
         if (this.$route.query.q) {
             this.searchQuery = this.$route.query.q.trim();
         }
-    },
-    method: {
-        copyToClipboard(name) {
-            let path = window.location.href.split('?')[0];
-            const source = `${path}?q=${name}`;
-            copy(source);
-        }
     }
 
 };
@@ -255,19 +248,24 @@ export default {
             v-for="(component, name) in componentByName"
             :key="category+name"
           >
-            <!-- <h2>{{ name }}</h2> -->
-            <button @click="copyToClipboard(name)">Test</button>
+            <HeadlineWithAnchorLink
+              :title="name"
+            />
             <component
               :is="name"
             />
           </div>
         </div>
       </template>
+
+
+
     </main>
   </div>
 </template>
 
 <style scoped lang="postcss">
+
 .logo {
   height: 4vmin;
   margin: 2vmin 0;
