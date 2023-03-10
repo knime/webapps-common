@@ -87,6 +87,14 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public ColumnFilter m_displayedColumns;
 
     /**
+     * If the row numbers should be displayed
+     */
+    @Schema(title = "Show row numbers", description = "Whether to display the row numbers or not")
+    @Persist(optional = true)
+    public boolean m_showRowIndices;
+
+
+    /**
      * If the rows keys should be displayed
      */
     @Schema(title = "Show RowIDs", description = "Whether to display the RowIDs or not")
@@ -100,14 +108,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         description = "Whether to display the data type of the " + "columns in the header or not")
     @Persist(optional = true)
     public boolean m_showColumnDataType = true;
-
-    /**
-     * If the row numbers should be displayed
-     */
-    @Schema(title = "Show row numbers", description = "Whether to display the row numbers or not")
-    @Persist(optional = true)
-    public boolean m_showRowIndices;
-
     /**
      * The title of the table
      */

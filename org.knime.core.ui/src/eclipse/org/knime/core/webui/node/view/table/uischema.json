@@ -14,6 +14,13 @@
                 },
                 {
                     "type": "Control",
+                    "scope": "#/properties/view/properties/showRowIndices",
+                    "options": {
+                        "format": "checkbox"
+                    }
+                },
+                {
+                    "type": "Control",
                     "scope": "#/properties/view/properties/showRowKeys",
                     "options": {
                         "format": "checkbox"
@@ -22,13 +29,6 @@
                 {
                     "type": "Control",
                     "scope": "#/properties/view/properties/showColumnDataType",
-                    "options": {
-                        "format": "checkbox"
-                    }
-                },
-                {
-                    "type": "Control",
-                    "scope": "#/properties/view/properties/showRowIndices",
                     "options": {
                         "format": "checkbox"
                     }
