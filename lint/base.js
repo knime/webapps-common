@@ -11,6 +11,7 @@ let parserOptions = {
 module.exports = {
     root: true,
     extends: ['eslint:recommended', 'plugin:jsonc/recommended-with-json'],
+    plugins: ['unused-imports'],
     parserOptions,
     env: {
         browser: false,
@@ -145,7 +146,6 @@ module.exports = {
         'no-unmodified-loop-condition': 'warn',
         'no-unneeded-ternary': 'error',
         'no-unused-expressions': 'warn',
-        'no-unused-vars': ['error', { vars: 'all', args: 'none', ignoreRestSiblings: false }],
         'no-use-before-define': 'error',
         'no-useless-call': 'warn',
         'no-useless-catch': 'off',
@@ -216,7 +216,19 @@ module.exports = {
             requireParamDescription: false
         }],
         'wrap-iife': ['error', 'inside', { functionPrototypeMethods: true }],
-        yoda: ['error', 'never', { exceptRange: true }]
+        yoda: ['error', 'never', { exceptRange: true }],
+
+        'no-unused-vars': 'off',
+        'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-vars': [
+            'error',
+            {
+                vars: 'all',
+                varsIgnorePattern: '^_',
+                args: 'after-used',
+                argsIgnorePattern: '^_'
+            }
+        ]
     },
     overrides: [{
         files: ['.eslintrc*.{js,cjs}'],
