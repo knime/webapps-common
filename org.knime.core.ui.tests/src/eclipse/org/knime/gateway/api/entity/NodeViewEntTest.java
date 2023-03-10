@@ -52,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.FIVE_SECONDS;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
+import static org.knime.core.webui.data.InitialDataServiceTestUtil.parseResult;
 import static org.knime.core.webui.node.view.NodeViewManagerTest.runOnExecutor;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -82,9 +83,8 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewTest;
@@ -148,7 +148,7 @@ public class NodeViewEntTest {
         assertThat(ent.getProjectId()).startsWith("workflow");
         assertThat(ent.getWorkflowId()).isEqualTo("root");
         assertThat(ent.getNodeId()).isEqualTo("root:2");
-        assertThat(ent.getInitialData()).startsWith("dummy initial data");
+        assertThat(ent.getInitialData()).contains("view setting key");
         assertThat(ent.isImageGeneration()).isFalse();
         assertThat(ent.getInitialSelection()).isNull();
         var resourceInfo = ent.getResourceInfo();
@@ -278,7 +278,7 @@ public class NodeViewEntTest {
         throws IOException, InvalidSettingsException {
         var settingsWithOverwrittenFlowVariable = new NodeSettings("");
         JSONConfig.readJSON(settingsWithOverwrittenFlowVariable,
-            new StringReader(ent.getInitialData().replace("dummy initial data", "")));
+            new StringReader(parseResult(ent.getInitialData(), false)));
         assertThat(settingsWithOverwrittenFlowVariable.getString("view setting key")).isEqualTo(expectedSettingValue);
     }
 
@@ -327,23 +327,19 @@ public class NodeViewEntTest {
         private NodeSettingsRO m_settings;
 
         @Override
-        public Optional<InitialDataService> createInitialDataService() {
-            return Optional.of(new TextInitialDataService() {
-
-                @Override
-                public String getInitialData() {
-                    return "dummy initial data\n" + JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT);
-                }
-            });
+        public Optional<InitialDataService<String>> createInitialDataService() {
+            return Optional.of(InitialDataService
+                .builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT))
+                .build());
         }
 
         @Override
-        public Optional<DataService> createDataService() {
+        public Optional<RpcDataService> createRpcDataService() {
             return Optional.empty();
         }
 
         @Override
-        public Optional<ApplyDataService> createApplyDataService() {
+        public Optional<ApplyDataService<?>> createApplyDataService() {
             return Optional.empty();
         }
 

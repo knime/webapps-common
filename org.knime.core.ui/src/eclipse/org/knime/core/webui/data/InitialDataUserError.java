@@ -44,58 +44,27 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 14, 2021 (hornm): created
+ *   7 Mar 2022 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.data.json;
-
-import java.io.IOException;
-import java.util.Optional;
-
-import org.knime.core.webui.data.text.TextApplyDataService;
+package org.knime.core.webui.data;
 
 /**
- * A {@link TextApplyDataService} where the data to apply is represented as a JSON-object.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <D> the type of the data object to apply
- *
- * @since 4.5
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public interface JsonApplyDataService<D> extends TextApplyDataService {
+final class InitialDataUserError {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default Optional<String> validateData(final String data) throws IOException {
-        return validateData(fromJson(data));
+    private final DataServiceException m_exception;
+
+    InitialDataUserError(final DataServiceException exception) {
+        m_exception = exception;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default void applyData(final String data) throws IOException {
-        applyData(fromJson(data));
+    public String getMessage() {
+        return m_exception.getMessage();
     }
 
-    /**
-     * @param data the data object to validate
-     * @return an empty optional if data is valid, otherwise a validation error string
-     */
-    Optional<String> validateData(D data);
+    public String getDetails() {
+        return m_exception.getDetails();
+    }
 
-    /**
-     * @param data the data object to apply
-     */
-    void applyData(D data);
-
-    /**
-     * Deserializes the data object from a JSON-string.
-     *
-     * @param data a JSON-string
-     * @return the deserialized data object
-     * @throws IOException if the deserialization failed
-     */
-    D fromJson(String data) throws IOException;
 }

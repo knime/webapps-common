@@ -53,9 +53,8 @@ import java.util.Optional;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.json.impl.JsonReExecuteDataServiceImpl;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeModel;
@@ -73,8 +72,7 @@ public final class NodeViewTest {
     }
 
     static NodeView createNodeView(final Page page, final NodeViewNodeModel m) {
-        return createNodeView(page, null, null,
-            new JsonReExecuteDataServiceImpl<String, NodeViewNodeModel>(m, String.class));
+        return createNodeView(page, null, null, ApplyDataService.builder(m).build());
     }
 
     @SuppressWarnings("javadoc")
@@ -83,29 +81,29 @@ public final class NodeViewTest {
     }
 
     @SuppressWarnings("javadoc")
-    public static NodeView createNodeView(final Page page, final InitialDataService initDataService,
-        final DataService dataService, final ApplyDataService applyDataService) {
+    public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
+        final RpcDataService dataService, final ApplyDataService<?> applyDataService) {
         return createNodeView(page, initDataService, dataService, applyDataService, null);
     }
 
     @SuppressWarnings("javadoc")
-    public static NodeView createNodeView(final Page page, final InitialDataService initDataService,
-        final DataService dataService, final ApplyDataService applyDataService,
+    public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
+        final RpcDataService dataService, final ApplyDataService<?> applyDataService,
         final SelectionTranslationService selectionTranslationService) {
         return new NodeView() { // NOSONAR
 
             @Override
-            public Optional<InitialDataService> createInitialDataService() {
+            public Optional<InitialDataService<?>> createInitialDataService() {
                 return Optional.ofNullable(initDataService);
             }
 
             @Override
-            public Optional<DataService> createDataService() {
+            public Optional<RpcDataService> createRpcDataService() {
                 return Optional.ofNullable(dataService);
             }
 
             @Override
-            public Optional<ApplyDataService> createApplyDataService() {
+            public Optional<ApplyDataService<?>> createApplyDataService() {
                 return Optional.ofNullable(applyDataService);
             }
 

@@ -49,45 +49,211 @@
 package org.knime.core.webui.data;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.interactive.ReExecutable;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
 /**
  * A data service that applies the data to the underlying model (usually the {@link NodeModel}). Applying the data often
  * implies persisting it.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @param <D>
  *
  * @since 4.5
  */
-public interface ApplyDataService {
+public final class ApplyDataService<D> {
+
+    private final Applier<D> m_dataApplier;
+
+    private final ReExecutable<D> m_reExecutable;
+
+    private final Function<D, String> m_dataValidator;
+
+    private WorkflowManager m_wfm;
+
+    private NodeID m_nodeId;
+
+    private Runnable m_cleanUp;
+
+    private final Deserializer<D> m_deserializer;
+
+    private ApplyDataService(final ApplyDataServiceBuilder<D> builder) {
+        m_dataApplier = builder.m_dataApplier;
+        m_cleanUp = builder.m_cleanUp;
+        m_reExecutable = builder.m_reExecutable;
+        m_dataValidator = builder.m_validator;
+        if (builder.m_deserializer == null) {
+            var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
+            m_deserializer = s -> {
+                if (builder.m_dataType.equals(String.class)) {
+                    return (D) s;
+                }
+                return mapper.readValue(s, builder.m_dataType);
+            };
+        } else {
+            m_deserializer = builder.m_deserializer;
+        }
+        if (m_reExecutable != null) {
+            var nc = NodeContext.getContext().getNodeContainer();
+            m_wfm = nc.getParent();
+            m_nodeId = nc.getID();
+        }
+    }
 
     /**
      * Checks whether the data in the input stream is valid.
      *
-     * @param in the data to validate
+     * @param data the data to validate
      * @return an empty optional if the validation was successful otherwise a validation error string
-     * @throws IOException if the data couldn't be read
+     * @throws IOException
      */
-    Optional<String> validateData(InputStream in) throws IOException;
+    public Optional<String> validateData(final String data) throws IOException {
+        if (m_dataValidator != null) {
+            return Optional.ofNullable(m_dataValidator.apply(m_deserializer.deserialize(data)));
+        } else {
+            return Optional.empty();
+        }
+    }
 
     /**
-     * Applies the data in the input stream
+     * Applies the data from a string.
      *
-     * @param in the data to apply
-     * @throws IOException if applying the data failed
+     * @param dataString the data to apply
+     * @throws IOException
      */
-    void applyData(InputStream in) throws IOException;
+    public void applyData(final String dataString) throws IOException {
+        var data = m_deserializer.deserialize(dataString);
+        if (m_dataApplier != null) {
+            m_dataApplier.apply(data);
+        } else if (m_reExecutable != null) {
+            m_reExecutable.preReExecute(data, false);
+        }
+    }
 
     /**
      * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
      * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
      * later.
      */
-    default void cleanUp() {
-        //
+    public void cleanUp() {
+        if (m_cleanUp != null) {
+            m_cleanUp.run();
+        }
+    }
+
+    /**
+     * @return whether a re-execution of the respective node is required on apply
+     */
+    public boolean shallReExecute() {
+        return m_reExecutable != null;
+    }
+
+    /**
+     * Re-executes the underlying node in order to apply new data.
+     *
+     * @param data the data to execute the node with
+     * @throws IOException
+     */
+    public void reExecute(final String data) throws IOException {
+        if (m_reExecutable != null) {
+            m_wfm.reExecuteNode(m_nodeId, m_deserializer.deserialize(data), false);
+        }
+    }
+
+    /**
+     * @param dataApplier
+     * @return the builder for this data service
+     */
+    public static ApplyDataServiceBuilder<String> builder(final Applier<String> dataApplier) {
+        return new ApplyDataServiceBuilder<>(String.class, dataApplier);
+    }
+
+    /**
+     * @param reExecutable
+     * @return the builder for this data service
+     */
+    public static ApplyDataServiceBuilder<String> builder(final ReExecutable<String> reExecutable) {
+        return new ApplyDataServiceBuilder<>(String.class, reExecutable);
+    }
+
+    @SuppressWarnings("javadoc")
+    public interface Deserializer<D> {
+        D deserialize(String data) throws IOException;
+    }
+
+    @SuppressWarnings("javadoc")
+    public interface Applier<D> {
+        void apply(D data) throws IOException;
+    }
+
+    /**
+     * The builder.
+     * @param <D>
+     */
+    public static final class ApplyDataServiceBuilder<D> {
+
+        private Applier<D> m_dataApplier;
+
+        private Function<D, String> m_validator;
+
+        private Runnable m_cleanUp;
+
+        private ReExecutable<D> m_reExecutable;
+
+        private Deserializer<D> m_deserializer;
+
+        private final Class<D> m_dataType;
+
+        private ApplyDataServiceBuilder(final Class<D> dataType, final Applier<D> dataApplier) {
+            m_dataApplier = dataApplier;
+            m_dataType = dataType;
+        }
+
+        private ApplyDataServiceBuilder(final Class<D> dataType, final ReExecutable<D> reExecutable) {
+            m_dataType = dataType;
+            m_reExecutable = reExecutable;
+        }
+
+        /**
+         * @param validator logic that carries out the validation before apply
+         * @return this builder
+         */
+        public ApplyDataServiceBuilder<D> validator(final Function<D, String> validator) {
+            m_validator = validator;
+            return this;
+        }
+
+        /**
+         * @param cleanUp logic to run on clean-up; see {@link ApplyDataService#cleanUp()}
+         * @return this builder
+         */
+        public ApplyDataServiceBuilder<D> onCleanUp(final Runnable cleanUp) {
+            m_cleanUp = cleanUp;
+            return this;
+        }
+
+        /**
+         * @param deserializer a custom deserializer to create the data object from a string
+         * @return this builder
+         */
+        public ApplyDataServiceBuilder<D> deserializer(final Deserializer<D> deserializer) {
+            m_deserializer = deserializer;
+            return this;
+        }
+
+        /**
+         * @return a new instance
+         */
+        public ApplyDataService<D> build() {
+            return new ApplyDataService<>(this);
+        }
     }
 
 }

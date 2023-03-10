@@ -44,57 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 9, 2021 (hornm): created
+ *   Sep 15, 2021 (hornm): created
  */
-package org.knime.core.webui.data.text;
+package org.knime.core.webui.node.view;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
-import org.knime.core.webui.data.ApplyDataService;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Test;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.page.Page;
+import org.knime.testing.node.view.NodeViewNodeModel;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
- * A {@link ApplyDataService} with text-based data (i.e. strings).
+ * Tests that a node is properly re-executed when the apply-data-service is called (and configured to re-execute the
+ * node).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @since 4.5
  */
-public interface TextApplyDataService extends ApplyDataService {
+class ReexecuteApplyDataServiceTest {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default Optional<String> validateData(final InputStream in) throws IOException {
-        return validateData(new String(in.readAllBytes(), StandardCharsets.UTF_8));
+    @SuppressWarnings("javadoc")
+    @Test
+    void testReexecuteApplyDataService() throws IOException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var page = Page.builder(() -> "content", "index.html").build();
+        NativeNodeContainer nnc =
+            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, m));
+        wfm.executeAllAndWaitUntilDone();
+
+        NodeViewManager.getInstance().callApplyDataService(NodeWrapper.of(nnc), "data to apply");
+        NodeViewNodeModel model = (NodeViewNodeModel)nnc.getNodeModel();
+        Awaitility.await().untilAsserted(() -> {
+            assertThat(model.getPreReexecuteData()).isEqualTo("data to apply");
+            assertThat(model.getExecuteCount()).isEqualTo(2);
+        });
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default void applyData(final InputStream in) throws IOException {
-        applyData(new String(in.readAllBytes(), StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Validates the data, see {@link #validateData(InputStream)}.
-     *
-     * @param data
-     * @return an empty optional if successful, otherwise a validation error string
-     * @throws IOException
-     */
-    Optional<String> validateData(String data) throws IOException;
-
-    /**
-     * Applies data.
-     *
-     * @param data the data to apply
-     * @throws IOException if applying the data failed
-     */
-    void applyData(String data) throws IOException;
 
 }

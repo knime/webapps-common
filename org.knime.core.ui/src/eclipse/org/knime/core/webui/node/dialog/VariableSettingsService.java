@@ -50,43 +50,32 @@ package org.knime.core.webui.node.dialog;
 
 import java.util.Map;
 
-import org.knime.core.node.NodeSettings;
-
 /**
- * A {@link TextVariableSettingsService}-specialization where json-strings are translated to {@link VariableSettingsWO}.
+ * Similar to the {@link NodeSettingsService} but for handling settings that are overwritten or exposed by flow
+ * variables. Translates the same text-based settings (strings) as used in the {@link NodeSettingsService} to the
+ * backend-side representation (i.e. {@link VariableSettingsWO}).
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
- * @param <S> the type of the settings object {@link NodeSettings} are translated from/to
  */
-public interface JsonVariableSettingsService<S> extends TextVariableSettingsService {
+public interface VariableSettingsService {
 
-    @Override
-    default void toVariableSettings(final String textSettings, final Map<SettingsType, VariableSettingsWO> settings) {
-        toVariableSettingsFromObject(fromJson(textSettings), settings);
-    }
+    /*
+     * TODO UIEXT-479
+     * It would make sense to also have a fromNodeSettings method that knows about the variables.
+     * Right now, the values of settings that are overwritten by variables are replaced by the
+     * current value of the variable. Therefore the TextNodeSettingsService#fromNodeSettings method
+     * has no idea if a setting was saved like this or is overwritten by a variable.
+     * If the dialog is supposed to display these cases separately it must use the DialogService which
+     * gets the flowVariableSettings from the extension config. This is not intuitive.
+     */
 
     /**
-     * Similar to {@link #toVariableSettings(String, Map)}, but instead translates an arbitrary object to
-     * {@link VariableSettingsWO}-instances
+     * Called when dialog settings are applied.
      *
-     * @param jsonSettings the de-serialized object
-     * @param settings the variable settings to write to
-     */
-    void toVariableSettingsFromObject(S jsonSettings, final Map<SettingsType, VariableSettingsWO> settings);
-
-    /**
-     * De-serializes the settings object from a json string.
+     * Translates text-based settings to {@link VariableSettingsWO}-instances of certain {@link SettingsType}.
      *
-     * @param json
-     * @return the deserialized settings object
+     * @param textSettings the text-based settings object
+     * @param settings the settings to overwrite other settings with flow variables
      */
-    S fromJson(String json);
-
-    /**
-     * Serializes the settings object into a json-string.
-     *
-     * @param obj
-     * @return the serialized json string
-     */
-    String toJson(S obj);
+    void toVariableSettings(final String textSettings, Map<SettingsType, VariableSettingsWO> settings);
 }

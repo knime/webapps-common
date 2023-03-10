@@ -86,8 +86,8 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
@@ -257,17 +257,17 @@ public class SelectionEventSourceTest {
                 }
 
                 @Override
-                public Optional<InitialDataService> createInitialDataService() {
+                public Optional<InitialDataService<?>> createInitialDataService() {
                     return Optional.empty();
                 }
 
                 @Override
-                public Optional<DataService> createDataService() {
+                public Optional<RpcDataService> createRpcDataService() {
                     return Optional.empty();
                 }
 
                 @Override
-                public Optional<ApplyDataService> createApplyDataService() {
+                public Optional<ApplyDataService<?>> createApplyDataService() {
                     return Optional.empty();
                 }
 

@@ -51,6 +51,7 @@ package org.knime.gateway.api.entity;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.FIVE_SECONDS;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
+import static org.knime.core.webui.data.InitialDataServiceTestUtil.parseResult;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -93,6 +94,7 @@ public class NodeViewEntUtilTest {
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(0, 0));
         var hlh = nnc.getNodeModel().getInHiLiteHandler(0);
         wfm.executeAllAndWaitUntilDone();
+
 
         BiConsumer<String, Object> eventConsumer = Mockito.mock(BiConsumer.class);
 
@@ -145,7 +147,7 @@ public class NodeViewEntUtilTest {
     private static boolean verifyNodeViewStateEvent(final NodeViewStateEvent e, final String state,
         final String initialData) {
         return e.getNodeView().getNodeInfo().getNodeState().equals(state)
-            && Objects.equals(e.getNodeView().getInitialData(), initialData);
+            && Objects.equals(parseResult(e.getNodeView().getInitialData(), true), initialData);
     }
 
     private static void fireHiLiteEvent(final HiLiteHandler hlh, final String rowKey) {

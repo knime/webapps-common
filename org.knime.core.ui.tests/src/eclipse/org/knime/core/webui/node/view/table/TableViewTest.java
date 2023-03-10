@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
+import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
 import static org.knime.testing.node.view.TableTestUtil.createTableFromColumns;
 import static org.knime.testing.node.view.TableTestUtil.getDefaultTestSpec;
@@ -148,7 +148,7 @@ class TableViewTest {
         var mapper = new ObjectMapper();
 
         // request rows to create the 'image renderers' whose images are later access as 'page resources'
-        var dataServiceResult = mapper.readTree(nodeViewManager.callTextDataService(NodeWrapper.of(nnc),
+        var dataServiceResult = mapper.readTree(nodeViewManager.callRpcDataService(NodeWrapper.of(nnc),
             jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false")));
         var imgPath = dataServiceResult.get("result").get("rows").get(0).get(2).asText();
         var imgPath2 = dataServiceResult.get("result").get("rows").get(1).get(2).asText();
@@ -235,7 +235,7 @@ class TableViewTest {
 
     private static void callDataServiceToRegisterRenderes(final NativeNodeContainer nnc,
         final NodeViewManager nodeViewManager) {
-        nodeViewManager.callTextDataService(NodeWrapper.of(nnc),
+        nodeViewManager.callRpcDataService(NodeWrapper.of(nnc),
             jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false"));
     }
 

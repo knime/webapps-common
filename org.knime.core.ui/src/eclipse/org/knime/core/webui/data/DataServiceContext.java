@@ -51,13 +51,10 @@ package org.knime.core.webui.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.webui.data.json.JsonInitialDataService;
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
-
 /**
  * A {@link DataServiceContext} allows to report warning messages during a data service invocation or assembly of
- * initial data. These warning messages can then be obtained by the {@link JsonRpcDataService} or
- * {@link JsonInitialDataService} and passed to the frontend for display along a valid result.
+ * initial data. These warning messages can then be obtained by the {@link RpcDataService} or {@link InitialDataService}
+ * and passed to the frontend for display along a valid result.
  *
  * Marc Bux, KNIME GmbH, Berlin, Germany
  */

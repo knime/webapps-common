@@ -71,8 +71,8 @@ import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager.NodeModelFilter;
 import org.knime.core.util.ui.converter.JsonFormsDialogBuilder;
 import org.knime.core.util.ui.converter.UiComponentConverterRegistry;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.DataServiceContext;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeDialog;
 import org.knime.core.webui.page.Page;
 
@@ -171,16 +171,16 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
     }
 
     private class SubNodeContainerNodeDialog extends NodeDialog {
-        private final TextNodeSettingsService m_settingsService;
+        private final NodeSettingsService m_settingsService;
 
         @SuppressWarnings("rawtypes")
         public SubNodeContainerNodeDialog(final Map<NodeID, DialogNode> dialogNodes) {
             super(SettingsType.MODEL);
-            m_settingsService = new SubNodeContainerJsonSettingsService(dialogNodes);
+            m_settingsService = new SubNodeContainerSettingsService(dialogNodes);
         }
 
         @Override
-        public Optional<DataService> createDataService() {
+        public Optional<RpcDataService> createRpcDataService() {
             return Optional.empty();
         }
 
@@ -190,17 +190,17 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         }
 
         @Override
-        protected TextNodeSettingsService getNodeSettingsService() {
+        protected NodeSettingsService getNodeSettingsService() {
             return m_settingsService;
         }
     }
 
-    private class SubNodeContainerJsonSettingsService implements JsonNodeSettingsService<String> {
+    private class SubNodeContainerSettingsService implements NodeSettingsService {
         @SuppressWarnings("rawtypes")
         private final Map<NodeID, DialogNode> m_dialogNodes;
 
         @SuppressWarnings("rawtypes")
-        public SubNodeContainerJsonSettingsService(final Map<NodeID, DialogNode> dialogNodes) {
+        public SubNodeContainerSettingsService(final Map<NodeID, DialogNode> dialogNodes) {
             m_dialogNodes = dialogNodes;
         }
 
@@ -215,7 +215,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void toNodeSettingsFromObject(final String jsonSettings,
+        public void toNodeSettings(final String jsonSettings,
             final Map<SettingsType, NodeSettingsWO> settings) {
 
             JsonNode newSettingsJson;
@@ -254,12 +254,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         }
 
         @Override
-        public String fromJson(final String json) {
-            return json;
-        }
-
-        @Override
-        public String fromNodeSettingsToObject(final Map<SettingsType, NodeSettingsRO> settings,
+        public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
             final PortObjectSpec[] specs) {
             JsonFormsDialogBuilder dialogBuilder = new JsonFormsDialogBuilder();
 
@@ -277,11 +272,6 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
             }
 
             return dialogBuilder.build();
-        }
-
-        @Override
-        public String toJson(final String obj) {
-            return obj;
         }
 
         /**

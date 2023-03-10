@@ -58,21 +58,20 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.webui.node.dialog.JsonNodeSettingsService;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.TextNodeSettingsService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A {@link TextNodeSettingsService} that translates {@link DefaultNodeSettings}-implementations into
+ * A {@link NodeSettingsService} that translates {@link DefaultNodeSettings}-implementations into
  * {@link NodeSettings}-objects (on data apply) and vice-versa (initial data).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-final class DefaultNodeSettingsService implements JsonNodeSettingsService<String> {
+final class DefaultNodeSettingsService implements NodeSettingsService {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeSettingsService.class);
 
@@ -92,7 +91,7 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     }
 
     @Override
-    public void toNodeSettingsFromObject(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
+    public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
         try {
             final var root = (ObjectNode)JsonFormsDataUtil.getMapper().readTree(textSettings);
             textSettingsToNodeSettings(root, SettingsType.MODEL, settings);
@@ -114,7 +113,7 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
     }
 
     @Override
-    public String fromNodeSettingsToObject(final Map<SettingsType, NodeSettingsRO> settings,
+    public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
         final PortObjectSpec[] specs) {
         var creationContext = DefaultNodeSettings.createSettingsCreationContext(specs);
         var loadedSettings = settings.entrySet().stream()//
@@ -159,16 +158,6 @@ final class DefaultNodeSettingsService implements JsonNodeSettingsService<String
         final NodeSettingsWO nodeSettings, final PortObjectSpec[] specs) {
         var settingsObj = DefaultNodeSettings.createSettings(settingsClass, specs);
         DefaultNodeSettings.saveSettings(settingsClass, settingsObj, nodeSettings);
-    }
-
-    @Override
-    public String fromJson(final String json) {
-        return json;
-    }
-
-    @Override
-    public String toJson(final String obj) {
-        return obj;
     }
 
 }

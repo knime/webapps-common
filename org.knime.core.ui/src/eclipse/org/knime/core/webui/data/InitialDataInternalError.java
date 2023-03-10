@@ -44,63 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 5, 2022 (hornm): created
+ *   7 Mar 2022 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.node.dialog;
+package org.knime.core.webui.data;
 
-import java.util.Map;
-
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.port.PortObjectSpec;
+import java.util.Arrays;
 
 /**
- * Functionality around {@link NodeSettings} as required by the {@link NodeDialog}.
- *
- * Translates text-based settings (strings) used on the frontend-side from and to the backend-side settings
- * representation (i.e. {@link NodeSettings}).
- *
- * Also provides default node settings.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public interface TextNodeSettingsService {
+final class InitialDataInternalError {
 
-    /**
-     * Called when a dialog is initialized.
-     *
-     * Infers a single text-based settings representation from possibly multiple {@link NodeSettingsRO}-instances (one
-     * per {@link SettingsType}).
-     *
-     * @param settings the settings to read from; if there are no settings with the node stored, yet, the default node
-     *            settings will be supplied (see {@link #getDefaultNodeSettings(Map, PortObjectSpec[])})
-     * @param specs the specs for configuring the settings (includes the flow variable port). NOTE: can contain
-     *            {@code null}-values, e.g., in case an input port is not connected
-     * @return a new text-based settings representation
-     */
-    String fromNodeSettings(Map<SettingsType, NodeSettingsRO> settings, PortObjectSpec[] specs);
+    private final Throwable m_throwable;
 
-    /**
-     * Called when dialog settings are applied.
-     *
-     * Translates text-based settings to {@link NodeSettingsWO}-instances of certain {@link SettingsType}.
-     *
-     * @param textSettings the text-based settings object
-     * @param settings the settings instances to write into
-     */
-    void toNodeSettings(final String textSettings, Map<SettingsType, NodeSettingsWO> settings);
+    InitialDataInternalError(final Throwable throwable) {
+        m_throwable = throwable;
+    }
 
-    /**
-     * Saves the default settings to the given settings objects. Will be called if there are no settings stored with the
-     * node, yet, and is mainly used to be able to properly show the flow variable configuration (e.g., to overwrite
-     * settings).
-     *
-     * @param settings the settings to write into
-     * @param specs the node's input specs (includes the flow variable port). NOTE: can contain {@code null}-values,
-     *            e.g., in case the input port is not connected
-     */
-    void getDefaultNodeSettings(Map<SettingsType, NodeSettingsWO> settings, PortObjectSpec[] specs);
+    public String getMessage() {
+        return m_throwable.getMessage();
+    }
+
+    public String getTypeName() {
+        return m_throwable.getClass().getName();
+    }
+
+    public String[] getStackTrace() {
+        return Arrays.stream(m_throwable.getStackTrace()).map(StackTraceElement::toString).toArray(String[]::new);
+    }
 
 }

@@ -58,8 +58,8 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -126,12 +126,12 @@ public class PortViewManagerTest {
         return new PortView() {
 
             @Override
-            public Optional<InitialDataService> createInitialDataService() {
+            public Optional<InitialDataService<?>> createInitialDataService() {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<DataService> createDataService() {
+            public Optional<RpcDataService> createRpcDataService() {
                 return Optional.empty();
             }
 

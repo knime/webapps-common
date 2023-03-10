@@ -76,17 +76,15 @@ import org.knime.core.data.RowKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.interactive.ReExecutable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.text.TextDataService;
-import org.knime.core.webui.data.text.TextInitialDataService;
-import org.knime.core.webui.data.text.TextReExecuteDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
@@ -140,8 +138,7 @@ public class NodeViewManagerTest {
         var nodeView = NodeViewManager.getInstance().getNodeView(nc);
         assertThat(nodeView.getPage() == page).isTrue();
 
-        Assertions
-            .assertThatThrownBy(() -> NodeViewManager.getInstance().callTextInitialDataService(NodeWrapper.of(nc)))
+        Assertions.assertThatThrownBy(() -> NodeViewManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
             .isInstanceOf(IllegalStateException.class).hasMessageContaining("No text initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
         assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc), nodeView.getPage()))
@@ -163,17 +160,17 @@ public class NodeViewManagerTest {
         NativeNodeContainer nc = createNodeWithNodeView(m_wfm, m -> new NodeView() { // NOSONAR
 
             @Override
-            public Optional<InitialDataService> createInitialDataService() {
+            public Optional<InitialDataService<?>> createInitialDataService() {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<DataService> createDataService() {
+            public Optional<RpcDataService> createRpcDataService() {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ApplyDataService> createApplyDataService() {
+            public Optional<ApplyDataService<?>> createApplyDataService() {
                 return Optional.empty();
             }
 
@@ -254,7 +251,8 @@ public class NodeViewManagerTest {
             assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
             String path2 = nodeViewManager.getPagePath(nnc2);
             assertThat(nodeViewManager.getPageMapSize()).isEqualTo(2);
-            var resourcePrefix1 = "view_" + ((NativeNodeContainer)nnc.get()).getNode().getFactory().getClass().getName();
+            var resourcePrefix1 =
+                "view_" + ((NativeNodeContainer)nnc.get()).getNode().getFactory().getClass().getName();
             var resourcePrefix2 = "view_" + nnc2.get().getID().toString().replace(":", "_");
             assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
             assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
@@ -349,50 +347,27 @@ public class NodeViewManagerTest {
     }
 
     /**
-     * Tests {@link NodeViewManager#callTextInitialDataService(NodeContainer)},
-     * {@link NodeViewManager#callTextDataService(NodeContainer, String)} and
-     * {@link NodeViewManager#callTextApplyDataService(NodeContainer, String)}
+     * Tests {@link NodeViewManager#callInitialDataService(NodeWrapper))},
+     * {@link NodeViewManager#callRpcDataService(NodeWrapper, String))} and
+     * {@link NodeViewManager#callApplyDataService(NodeWrapper, String))}
      */
     @Test
     public void testCallDataServices() {
         var page = Page.builder(() -> "test page content", "index.html").build();
-        var nodeView = createNodeView(page, new TextInitialDataService() {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
+            m -> createNodeView(page, InitialDataService.builder(() -> "init service").build(),
+                RpcDataService.builder(new TestService()).build(), ApplyDataService.builder((ReExecutable)(d, b) -> {
+                    throw new UnsupportedOperationException("re-execute data service");
+                }).build());
 
-            @Override
-            public String getInitialData() {
-                return "init service";
-            }
-        }, new TextDataService() {
-
-            @Override
-            public String handleRequest(final String request) {
-                return "general data service";
-            }
-        }, new TextReExecuteDataService() {
-
-            @Override
-            public Optional<String> validateData(final String data) throws IOException {
-                throw new UnsupportedOperationException("should not be called in this test");
-            }
-
-            @Override
-            public void applyData(final String data) throws IOException {
-                throw new UnsupportedOperationException("should not be called in this test");
-            }
-
-            @Override
-            public void reExecute(final String data) throws IOException {
-                throw new IOException("re-execute data service");
-
-            }
-        });
-        var nc = NodeWrapper.of(NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView));
+        var nc = NodeWrapper.of(NodeViewManagerTest.createNodeWithNodeView(m_wfm, nodeViewCreator));
 
         var nodeViewManager = NodeViewManager.getInstance();
-        assertThat(nodeViewManager.callTextInitialDataService(nc)).isEqualTo("init service");
-        assertThat(nodeViewManager.callTextDataService(nc, "")).isEqualTo("general data service");
-        Assertions.assertThatThrownBy(() -> nodeViewManager.callTextApplyDataService(nc, "ERROR,test"))
-            .isInstanceOf(IOException.class).hasMessage("re-execute data service");
+        assertThat(nodeViewManager.callInitialDataService(nc)).isEqualTo("{\"result\":\"init service\"}");
+        assertThat(nodeViewManager.callRpcDataService(nc, RpcDataService.jsonRpcRequest("method", "test param")))
+            .contains("\"result\":\"test param\"");
+        Assertions.assertThatThrownBy(() -> nodeViewManager.callApplyDataService(nc, "ERROR,test"))
+            .isInstanceOf(IllegalArgumentException.class).hasMessage("Can't reexecute executing nodes.");
     }
 
     /**
@@ -453,6 +428,14 @@ public class NodeViewManagerTest {
         } finally {
             System.clearProperty(JAVA_AWT_HEADLESS);
         }
+    }
+
+    public static class TestService {
+
+        public String method(final String param) {
+            return param;
+        }
+
     }
 
 }

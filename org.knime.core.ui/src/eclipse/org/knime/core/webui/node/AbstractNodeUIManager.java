@@ -59,13 +59,9 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.text.TextApplyDataService;
-import org.knime.core.webui.data.text.TextDataService;
-import org.knime.core.webui.data.text.TextInitialDataService;
-import org.knime.core.webui.data.text.TextReExecuteDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageUtil.PageType;
@@ -76,7 +72,7 @@ import org.knime.core.webui.page.Resource;
  *
  * It manages
  * <p>
- * (i) the data services (i.e. {@link InitialDataService}, {@link DataService} and {@link ApplyDataService}). Data
+ * (i) the data services (i.e. {@link InitialDataService}, {@link RpcDataService} and {@link ApplyDataService}). Data
  * service instances are only created once and cached until the respective node is disposed or the node state changes in
  * case of port views.
  * <p>
@@ -91,9 +87,9 @@ import org.knime.core.webui.page.Resource;
 public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     implements DataServiceManager<N>, PageResourceManager<N> {
 
-    private final Map<N, InitialDataService> m_initialDataServices = new WeakHashMap<>();
+    private final Map<N, InitialDataService<?>> m_initialDataServices = new WeakHashMap<>();
 
-    private final Map<N, DataService> m_dataServices = new WeakHashMap<>();
+    private final Map<N, RpcDataService> m_dataServices = new WeakHashMap<>();
 
     private final Map<N, ApplyDataService> m_applyDataServices = new WeakHashMap<>();
 
@@ -141,8 +137,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         Object ds = null;
         if (InitialDataService.class.isAssignableFrom(dataServiceClass)) {
             ds = getInitialDataService(nodeWrapper).orElse(null);
-        } else if (DataService.class.isAssignableFrom(dataServiceClass)) {
-            ds = getDataService(nodeWrapper).orElse(null);
+        } else if (RpcDataService.class.isAssignableFrom(dataServiceClass)) {
+            ds = getRpcDataService(nodeWrapper).orElse(null);
         } else if (ApplyDataService.class.isAssignableFrom(dataServiceClass)) {
             ds = getApplyDataService(nodeWrapper).orElse(null);
         }
@@ -153,7 +149,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     }
 
     /**
-     * Calls {@link DataService#cleanUp()} if there is a data service instance available for the given node (wrapper).
+     * Calls {@code cleanUp} on a data service if there is a data service instance available for the given node
+     * (wrapper).
      *
      * @param nodeWrapper
      */
@@ -173,17 +170,17 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      * {@inheritDoc}
      */
     @Override
-    public final String callTextInitialDataService(final N nodeWrapper) {
-        var service = getInitialDataService(nodeWrapper).filter(TextInitialDataService.class::isInstance).orElse(null);
+    public final String callInitialDataService(final N nodeWrapper) {
+        var service = getInitialDataService(nodeWrapper).filter(InitialDataService.class::isInstance).orElse(null);
         if (service != null) {
-            return ((TextInitialDataService)service).getInitialData();
+            return service.getInitialData();
         } else {
             throw new IllegalStateException("No text initial data service available");
         }
     }
 
-    private Optional<InitialDataService> getInitialDataService(final N nodeWrapper) {
-        InitialDataService ds;
+    private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
+        InitialDataService<?> ds;
         if (!m_initialDataServices.containsKey(nodeWrapper)) {
             ds = getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null);
             m_initialDataServices.put(nodeWrapper, ds);
@@ -199,19 +196,19 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      * {@inheritDoc}
      */
     @Override
-    public final String callTextDataService(final N nodeWrapper, final String request) {
-        var service = getDataService(nodeWrapper).filter(TextDataService.class::isInstance).orElse(null);
+    public final String callRpcDataService(final N nodeWrapper, final String request) {
+        var service = getRpcDataService(nodeWrapper).filter(RpcDataService.class::isInstance).orElse(null);
         if (service != null) {
-            return ((TextDataService)service).handleRequest(request);
+            return service.handleRpcRequest(request);
         } else {
             throw new IllegalStateException("No text data service available");
         }
     }
 
-    private Optional<DataService> getDataService(final N nodeWrapper) {
-        DataService ds;
+    private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
+        RpcDataService ds;
         if (!m_dataServices.containsKey(nodeWrapper)) {
-            ds = getDataServiceProvider(nodeWrapper).createDataService().orElse(null);
+            ds = getDataServiceProvider(nodeWrapper).createRpcDataService().orElse(null);
             m_dataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);
@@ -229,19 +226,19 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      * {@inheritDoc}
      */
     @Override
-    public final void callTextApplyDataService(final N nodeWrapper, final String request) throws IOException {
+    public final void callApplyDataService(final N nodeWrapper, final String request) throws IOException {
         var service = getApplyDataService(nodeWrapper).orElse(null);
-        if (service instanceof TextReExecuteDataService) {
-            ((TextReExecuteDataService)service).reExecute(request);
-        } else if (service instanceof TextApplyDataService) {
-            ((TextApplyDataService)service).applyData(request);
-        } else {
+        if (service == null) {
             throw new IllegalStateException("No text apply data service available");
+        } else if (service.shallReExecute()) {
+            service.reExecute(request);
+        } else {
+            service.applyData(request);
         }
     }
 
-    private Optional<ApplyDataService> getApplyDataService(final N nodeWrapper) {
-        ApplyDataService ds;
+    private Optional<ApplyDataService<?>> getApplyDataService(final N nodeWrapper) {
+        ApplyDataService<?> ds;
         if (!m_applyDataServices.containsKey(nodeWrapper)) {
             ds = getDataServiceProvider(nodeWrapper).createApplyDataService().orElse(null);
             m_applyDataServices.put(nodeWrapper, ds);

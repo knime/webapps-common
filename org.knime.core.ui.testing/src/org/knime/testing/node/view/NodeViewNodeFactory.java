@@ -66,12 +66,9 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.ApplyDataService.Applier;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.ReExecuteDataService;
-import org.knime.core.webui.data.text.TextDataService;
-import org.knime.core.webui.data.text.TextInitialDataService;
-import org.knime.core.webui.data.text.TextReExecuteDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewFactory;
 import org.knime.core.webui.page.Page;
@@ -133,17 +130,14 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_nodeViewCreator = m -> { // NOSONAR
             return createNodeView(
                 Page.builder(() -> "foo", "index.html").addResourceFromString(() -> "bar", "resource.html").build(),
-                new TextInitialDataService() {
+                InitialDataService.builder(() -> m_initialData).build(),
+                RpcDataService.builder(new Runnable() {
+
                     @Override
-                    public String getInitialData() {
-                        return m_initialData;
+                    public void run() {
                     }
-                }, new TextDataService() {
-                    @Override
-                    public String handleRequest(final String request) {
-                        return "ECHO " + request;
-                    }
-                }, createReExecuteDataService());
+
+                }).build(), createApplyDataService());
         };
         m_hasView = () -> true;
     }
@@ -156,28 +150,15 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_hasView = () -> true;
     }
 
-    private ReExecuteDataService createReExecuteDataService() {
-        return new TextReExecuteDataService() {
-
-            @Override
-            public Optional<String> validateData(final String data) throws IOException {
+    private ApplyDataService<String> createApplyDataService() {
+        return ApplyDataService.builder((Applier<String>)data -> m_initialData = data)
+            .validator(data -> {
                 if (data.startsWith("ERROR")) {
-                    return Optional.of(data);
+                    return data;
                 } else {
-                    return Optional.empty();
+                    return null;
                 }
-            }
-
-            @Override
-            public void applyData(final String data) throws IOException {
-                m_initialData = data;
-            }
-
-            @Override
-            public void reExecute(final String data) throws IOException {
-                m_initialData = data;
-            }
-        };
+            }).build();
     }
 
     /**
@@ -240,22 +221,22 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
     }
 
     @SuppressWarnings("javadoc")
-    public static NodeView createNodeView(final Page page, final InitialDataService initDataService,
-        final DataService dataService, final ApplyDataService applyDataService) {
+    public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
+        final RpcDataService rpcDataService, final ApplyDataService<?> applyDataService) {
         return new NodeView() { // NOSONAR
 
             @Override
-            public Optional<InitialDataService> createInitialDataService() {
+            public Optional<InitialDataService<?>> createInitialDataService() {
                 return Optional.ofNullable(initDataService);
             }
 
             @Override
-            public Optional<DataService> createDataService() {
-                return Optional.ofNullable(dataService);
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.ofNullable(rpcDataService);
             }
 
             @Override
-            public Optional<ApplyDataService> createApplyDataService() {
+            public Optional<ApplyDataService<?>> createApplyDataService() {
                 return Optional.ofNullable(applyDataService);
             }
 

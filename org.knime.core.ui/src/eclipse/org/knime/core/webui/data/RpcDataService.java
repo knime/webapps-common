@@ -46,39 +46,50 @@
  * History
  *   Sep 14, 2021 (hornm): created
  */
-package org.knime.core.webui.data.rpc.json;
+package org.knime.core.webui.data;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
-import org.knime.core.webui.data.DataServiceContext;
-import org.knime.core.webui.data.rpc.RpcDataService;
+import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.RpcServerManager;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
-import org.knime.core.webui.data.text.TextDataService;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A {@link RpcDataService} where the rpc requests and responses are encoded using the json-rpc standard
- * (https://www.jsonrpc.org/specification).
- * <p>
- * Data service implementations can obtain a {@link DataServiceContext}. This context can be used to add warning
- * messages, which will then be added to the data service response.
+ * A {@link RpcDataService} where the requests result in actual method-calls of registered handler(s) (aka remote
+ * procedure calls).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  *
  * @since 4.5
  */
-public interface JsonRpcDataService extends RpcDataService, TextDataService {
+public final class RpcDataService {
+
+    private final RpcServer m_rpcServer;
+
+    private final Runnable m_cleanUp;
+
+    private RpcDataService(final RpcDataServiceBuilder builder) {
+        if (builder.m_handlers.size() == 1) {
+            m_rpcServer = new JsonRpcSingleServer<>(builder.m_handlers.get(0));
+        } else {
+            throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
+        }
+        m_cleanUp = builder.m_cleanUp;
+    }
 
     /**
-     * {@inheritDoc}
+     * @param request the rpc request (e.g. encoded in json-rpc)
+     * @return the rpc-response (e.g. a json-rpc response)
      */
-    @Override
-    default String handleRequest(final String request) {
+    public String handleRpcRequest(final String request) {
         try {
             DataServiceContext.getContext().clear();
-            final var response = RpcServerManager.doRpc(getRpcServer(), request);
+            final var response = RpcServerManager.doRpc(m_rpcServer, request);
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
             // consequence of) clearing it
             final var warningMessages = DataServiceContext.getContext().getWarningMessages();
@@ -98,6 +109,13 @@ public interface JsonRpcDataService extends RpcDataService, TextDataService {
     }
 
     /**
+     * @return the rpc server being used
+     */
+    public RpcServer getRpcServer() {
+        return m_rpcServer;
+    }
+
+    /**
      * Helper to create a json rpc request string.
      *
      * @param method
@@ -112,6 +130,59 @@ public interface JsonRpcDataService extends RpcDataService, TextDataService {
         }
         return mapper.createObjectNode().put("jsonrpc", "2.0").put("id", 1).put("method", method)
             .set("params", paramsArrayNode).toPrettyString();
+    }
+
+    /**
+     * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
+     * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
+     * later.
+     *
+     * TODO: this could also be turned into two suspend/resume life-cycle methods?
+     */
+    public void cleanUp() {
+        if (m_cleanUp != null) {
+            m_cleanUp.run();
+        }
+    }
+
+    /**
+     * @param <S>
+     * @param handler the handler whose methods are called
+     * @return a new builder instance
+     */
+    public static <S> RpcDataServiceBuilder builder(final S handler) {
+        return new RpcDataServiceBuilder(handler);
+    }
+
+    /**
+     * The builder.
+     */
+    public static final class RpcDataServiceBuilder {
+
+        private final List<Object> m_handlers;
+
+        private Runnable m_cleanUp;
+
+        private RpcDataServiceBuilder(final Object handler) {
+            m_handlers = Collections.singletonList(handler);
+        }
+
+        /**
+         * @param cleanUp logic top run on clean-up; see {@link RpcDataService#cleanUp()}
+         * @return this builder
+         */
+        public RpcDataServiceBuilder onCleanup(final Runnable cleanUp) {
+            m_cleanUp = cleanUp;
+            return this;
+        }
+
+        /**
+         * @return a new instance
+         */
+        public RpcDataService build() {
+            return new RpcDataService(this);
+        }
+
     }
 
 }

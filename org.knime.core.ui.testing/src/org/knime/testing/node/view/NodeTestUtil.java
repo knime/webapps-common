@@ -52,14 +52,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
-import org.knime.core.webui.data.json.JsonInitialDataService;
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
@@ -85,33 +87,54 @@ public final class NodeTestUtil {
      */
     public static Page testNodeAndGetNodeViewPage(final Supplier<NodeFactory<? extends NodeModel>> nodeFactorySupplier,
         final Class<?> initialDataType, final Class<?> dataServiceType) throws Exception {
+        return testNodeAndGetNodeViewPage(nodeFactorySupplier, initialDataType, dataServiceType, null);
+    }
+
+    /**
+     * Instantiates a given {@link BaseViewsNodeFactory}, connects it to a data generator node, executes it, and checks
+     * for the presence of its services. Returns the {@link Page} of the node's view.
+     *
+     * @param nodeFactorySupplier a supplier for the to-be-instantiated factory
+     * @param initialDataType the type of the node's initial data, or null, if the node has no initial data
+     * @param dataServiceType the type of the node's data service, or null, if the node has no data service
+     * @param configureNode optional logic to configure the node before it's executed
+     * @return the page of the node view for further assertions
+     * @throws Exception
+     */
+    public static Page testNodeAndGetNodeViewPage(final Supplier<NodeFactory<? extends NodeModel>> nodeFactorySupplier,
+        final Class<?> initialDataType, final Class<?> dataServiceType, final Consumer<NativeNodeContainer> configureNode)
+        throws Exception {
 
         final var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         final var node = WorkflowManagerUtil.createAndAddNode(wfm, nodeFactorySupplier.get());
+        final var nodeWrapper = NodeWrapper.of(node);
         final var dataGeneratorNodeFactory = FileNativeNodeContainerPersistor
             .loadNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory");
         final var dataGeneratorNode = WorkflowManagerUtil.createAndAddNode(wfm, dataGeneratorNodeFactory);
         wfm.addConnection(dataGeneratorNode.getID(), 1, node.getID(), 1);
         wfm.executeAllAndWaitUntilDone();
+        if (configureNode != null) {
+            configureNode.accept(node);
+            wfm.executeAllAndWaitUntilDone();
+        }
+
         final var nodeViewManager = NodeViewManager.getInstance();
 
         // check for presence of initial data service
         final var initialDataService =
-            nodeViewManager.getDataServiceOfType(NodeWrapper.of(node), JsonInitialDataService.class);
+            nodeViewManager.getDataServiceOfType(nodeWrapper, InitialDataService.class);
         if (initialDataType != null) {
             assertThat(initialDataService).isNotEmpty();
-            assertThat(initialDataType.isAssignableFrom(initialDataService.get().getInitialDataObject().getClass()))
-                .isTrue();
+            assertThat(initialDataService.get().getInitialData()).startsWith("{\"result\":");
         } else {
             assertThat(initialDataService).isEmpty();
         }
 
         // check for presence of data service
-        final var rpcDataService = nodeViewManager.getDataServiceOfType(NodeWrapper.of(node), JsonRpcDataService.class);
+        final var rpcDataService = nodeViewManager.getDataServiceOfType(nodeWrapper, RpcDataService.class);
         if (dataServiceType != null) {
             assertThat(rpcDataService).isNotEmpty();
             assertThat(rpcDataService.get().getRpcServer().getHandler(dataServiceType)).isNotNull();
-            assertThat(nodeViewManager.callTextInitialDataService(NodeWrapper.of(node))).isNotNull();
         } else {
             assertThat(rpcDataService).isEmpty();
         }
@@ -120,7 +143,7 @@ public final class NodeTestUtil {
         assertThat(nodeViewManager.callSelectionTranslationService(node, Set.of(RowKey.createRowKey(0L)))).isNotNull();
         assertThat(nodeViewManager.callSelectionTranslationService(node, Collections.emptyList())).isNotNull();
 
-        return nodeViewManager.getPage(NodeWrapper.of(node));
+        return nodeViewManager.getPage(nodeWrapper);
     }
 
 }

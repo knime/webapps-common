@@ -44,47 +44,32 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 15, 2021 (hornm): created
+ *   Mar 10, 2023 (hornm): created
  */
-package org.knime.core.webui.node.view;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package org.knime.core.webui.node.dialog.impl;
 
 import java.io.IOException;
 
-import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
-import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.webui.data.json.impl.JsonReExecuteDataServiceImpl;
-import org.knime.core.webui.node.NodeWrapper;
-import org.knime.core.webui.page.Page;
-import org.knime.testing.node.view.NodeViewNodeModel;
-import org.knime.testing.util.WorkflowManagerUtil;
+import org.knime.core.webui.data.InitialDataService.Serializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests {@link JsonReExecuteDataServiceImpl}.
+ * TODO
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @param <D>
  */
-public class JsonReexecuteDataServiceTest {
+public class DefaultNodeSettingsSerializer<D> implements Serializer<D> {
 
-    @SuppressWarnings("javadoc")
-    @Test
-    public void testJsonReexecuteDataService() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var page = Page.builder(() -> "content", "index.html").build();
-        NativeNodeContainer nnc =
-            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, m));
-        wfm.executeAllAndWaitUntilDone();
+    private static final ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
 
-        NodeViewManager.getInstance().callTextApplyDataService(NodeWrapper.of(nnc), "data to apply");
-        NodeViewNodeModel model = (NodeViewNodeModel)nnc.getNodeModel();
-        Awaitility.await().untilAsserted(() -> {
-            assertThat(model.getPreReexecuteData()).isEqualTo("data to apply");
-            assertThat(model.getExecuteCount()).isEqualTo(2);
-        });
-
-        WorkflowManagerUtil.disposeWorkflow(wfm);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String serialize(final D obj) throws IOException {
+        return MAPPER.writeValueAsString(obj);
     }
 
 }

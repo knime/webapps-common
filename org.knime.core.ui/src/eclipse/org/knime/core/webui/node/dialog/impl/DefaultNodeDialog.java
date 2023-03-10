@@ -52,10 +52,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.TextNodeSettingsService;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -129,12 +129,12 @@ public final class DefaultNodeDialog extends NodeDialog {
     }
 
     @Override
-    public Optional<DataService> createDataService() {
+    public Optional<RpcDataService> createRpcDataService() {
         return Optional.empty();
     }
 
     @Override
-    protected TextNodeSettingsService getNodeSettingsService() {
+    protected NodeSettingsService getNodeSettingsService() {
         return m_settingsDataService;
     }
 

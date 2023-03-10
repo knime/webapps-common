@@ -44,24 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 14, 2021 (hornm): created
+ *   Mar 10, 2023 (hornm): created
  */
-package org.knime.core.webui.data.rpc;
+package org.knime.core.webui.data;
 
-import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * A {@link DataService} where the requests result in actual method-calls (aka remote procedure calls).
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @since 4.5
  */
-public interface RpcDataService extends DataService {
+public class InitialDataServiceTestUtil {
+
+    private InitialDataServiceTestUtil() {
+        // utility
+    }
 
     /**
-     * @return the rpc server which takes the rpc requests and returns the rpc responses
+     * Parses the result from the return value of {@link InitialDataService#getInitialData()}.
+     *
+     * @param initialDataResponse
+     * @param asText whether the result is expected to be a text string or a json string
+     * @return the result string or {@code null} if the provided parameter is null
      */
-    RpcServer getRpcServer();
+    public static String parseResult(final String initialDataResponse, final boolean asText) {
+        if (initialDataResponse == null) {
+            return null;
+        }
+        try {
+            var jsonNode = ObjectMapperUtil.getInstance().getObjectMapper().readTree(initialDataResponse).get("result");
+            return asText ? jsonNode.asText() : jsonNode.toString();
+        } catch (JsonProcessingException ex) {
+            throw new AssertionError("Failed to parse result", ex);
+        }
+    }
 
 }

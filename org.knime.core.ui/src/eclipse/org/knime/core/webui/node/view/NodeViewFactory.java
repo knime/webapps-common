@@ -56,8 +56,8 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.wizard.page.WizardPageContribution;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.webui.data.text.TextInitialDataService;
-import org.knime.core.webui.data.text.TextReExecuteDataService;
+import org.knime.core.webui.data.ApplyDataService;
+import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.NodeWrapper;
 
 /**
@@ -87,7 +87,7 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
     @Override
     default Optional<String> validateViewValue(final NativeNodeContainer nnc, final String value) throws IOException {
         var ds =
-            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), TextReExecuteDataService.class);
+            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), ApplyDataService.class);
         if (ds.isPresent()) {
             return ds.get().validateData(value);
         }
@@ -100,7 +100,7 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
     @Override
     default void loadViewValue(final NativeNodeContainer nnc, final String value) throws IOException {
         var ds =
-            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), TextReExecuteDataService.class);
+            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), ApplyDataService.class);
         if (ds.isPresent()) {
             ds.get().applyData(value);
         }
@@ -111,7 +111,7 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
      */
     @Override
     default Optional<String> getInitialViewValue(final NativeNodeContainer nnc) {
-        return NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), TextInitialDataService.class)
-            .map(TextInitialDataService::getInitialData);
+        return NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), InitialDataService.class)
+            .map(InitialDataService::getInitialData);
     }
 }

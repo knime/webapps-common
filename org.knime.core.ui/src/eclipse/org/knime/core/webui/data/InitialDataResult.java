@@ -44,45 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Sep 14, 2021 (hornm): created
+ *   7 Mar 2022 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.data.rpc.json.impl;
-
-import org.knime.core.webui.data.rpc.RpcServer;
-import org.knime.core.webui.data.rpc.json.JsonRpcDataService;
+package org.knime.core.webui.data;
 
 /**
- * Implementation of the {@link JsonRpcDataService} using the {@link JsonRpcServer} or {@link JsonRpcSingleServer}.
- *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- *
- * @since 4.5
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class JsonRpcDataServiceImpl implements JsonRpcDataService {
+final class InitialDataResult {
 
-    private final RpcServer m_rpcServer;
+    private final Object m_result;
 
-    /**
-     * @param jsonRpcServer
-     */
-    public JsonRpcDataServiceImpl(final JsonRpcServer jsonRpcServer) {
-        m_rpcServer = jsonRpcServer;
+    private final String[] m_warningMessages;
+
+    InitialDataResult(final Object result, final String[] warningMessages) {
+        m_result = result;
+        m_warningMessages = warningMessages;
     }
 
-    /**
-     * @param <S>
-     * @param jsonRpcServer
-     */
-    public <S> JsonRpcDataServiceImpl(final JsonRpcSingleServer<S> jsonRpcServer) {
-        m_rpcServer = jsonRpcServer;
+    public Object getData() {
+        return m_result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RpcServer getRpcServer() {
-        return m_rpcServer;
+    public String[] getWarningMessages() {
+        return m_warningMessages;
     }
 
 }

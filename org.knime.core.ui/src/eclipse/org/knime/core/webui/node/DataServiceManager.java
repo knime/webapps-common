@@ -52,11 +52,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.text.TextApplyDataService;
-import org.knime.core.webui.data.text.TextDataService;
-import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 
 /**
  *
@@ -71,39 +68,39 @@ public interface DataServiceManager<N extends NodeWrapper> {
      *
      * @param <S> the data service type being returned
      * @param nodeWrapper node to get the data service for
-     * @param dataServiceClass A type (or sub-type) of {@link InitialDataService}, {@link DataService} or
+     * @param dataServiceClass A type (or sub-type) of {@link InitialDataService}, {@link RpcDataService} or
      *            {@link ApplyDataService}.
      * @return the data service instance or an empty optional if no data service is available
      */
     <S> Optional<S> getDataServiceOfType(N nodeWrapper, Class<S> dataServiceClass);
 
     /**
-     * Helper to call the {@link TextInitialDataService}.
+     * Helper to call the {@link InitialDataService}.
      *
      * @param nodeWrapper the node to call the data service for
      * @return the initial data
      * @throws IllegalStateException if there is not initial data service available
      */
-    String callTextInitialDataService(N nodeWrapper);
+    String callInitialDataService(N nodeWrapper);
 
     /**
-     * Helper to call the {@link TextDataService}.
+     * Helper to call the {@link RpcDataService}.
      *
      * @param nodeWrapper the node to call the data service for
      * @param request the data service request
      * @return the data service response
      * @throws IllegalStateException if there is no text data service
      */
-    String callTextDataService(N nodeWrapper, String request);
+    String callRpcDataService(N nodeWrapper, String request);
 
     /**
-     * Helper to call the {@link TextApplyDataService}.
+     * Helper to call the {@link ApplyDataService}.
      *
      * @param nodeWrapper the node to call the data service for
      * @param request the data service request representing the data to apply
      * @throws IOException if applying the data failed
      * @throws IllegalStateException if there is no text apply data service
      */
-    void callTextApplyDataService(N nodeWrapper, String request) throws IOException;
+    void callApplyDataService(N nodeWrapper, String request) throws IOException;
 
 }

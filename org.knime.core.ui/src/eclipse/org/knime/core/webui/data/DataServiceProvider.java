@@ -58,18 +58,18 @@ import java.util.Optional;
 public interface DataServiceProvider {
 
     /**
-     * @return optional service that provides data for initialization of the node view
+     * @return optional service that provides data for initialization of the node view, port view or node dialog.
      */
-    Optional<InitialDataService> createInitialDataService();
+    <D> Optional<InitialDataService<D>> createInitialDataService();
 
     /**
-     * @return optional service generally providing data to the node view
+     * @return optional service generally providing data to the node view, port view or node dialog.
      */
-    Optional<DataService> createDataService();
+    Optional<RpcDataService> createRpcDataService();
 
     /**
      * @return optional service to apply new data
      */
-    Optional<ApplyDataService> createApplyDataService();
+    <D> Optional<ApplyDataService<D>> createApplyDataService();
 
 }

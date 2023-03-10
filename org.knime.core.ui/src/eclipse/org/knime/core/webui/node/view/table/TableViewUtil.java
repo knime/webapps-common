@@ -58,11 +58,9 @@ import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
-import org.knime.core.webui.node.dialog.impl.DefaultInitialDataServiceImpl;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsSerializer;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
@@ -117,14 +115,12 @@ public final class TableViewUtil {
      * @param tableId
      * @return a new table view data service instance
      */
-    public static DataService createDataService(final TableViewDataService tableViewDataService, final String tableId) {
-        return new JsonRpcDataServiceImpl(new JsonRpcSingleServer<>(tableViewDataService)) {
-            @Override
-            public void cleanUp() {
-                tableViewDataService.clearCache();
-                TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-            }
-        };
+    public static RpcDataService createRpcDataService(final TableViewDataService tableViewDataService,
+        final String tableId) {
+        return RpcDataService.builder(tableViewDataService).onCleanup(() -> {
+            tableViewDataService.clearCache();
+            TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
+        }).build();
     }
 
     /**
@@ -167,15 +163,13 @@ public final class TableViewUtil {
      * @param tableId
      * @return the table view initial data service
      */
-    public static InitialDataService createInitialDataService(final Supplier<TableViewViewSettings> settingsSupplier,
-        final Supplier<BufferedDataTable> tableSupplier, final String tableId) {
-        return new DefaultInitialDataServiceImpl<TableViewInitialData>(
-            () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), tableId)) {
-            @Override
-            public void cleanUp() {
-                TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-            }
-        };
+    public static InitialDataService<TableViewInitialData> createInitialDataService(
+        final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
+        final String tableId) {
+        return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), tableSupplier.get(), tableId)) //
+            .onCleanUp(() -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId)) //
+            .serializer(new DefaultNodeSettingsSerializer<>()) //
+            .build();
     }
 
     /**

@@ -83,7 +83,7 @@ import org.knime.core.node.workflow.SubnodeContainerConfigurationStringProvider;
 import org.knime.core.node.workflow.WorkflowAnnotationID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
-import org.knime.core.webui.data.text.TextDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
@@ -138,7 +138,8 @@ public class NodeDialogManagerTest {
         assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc), nodeDialog.getPage()))
             .isEqualTo("dialog_" + nc.getID().toString().replace(":", "_"));
 
-        assertThat(NodeDialogManager.getInstance().callTextInitialDataService(NodeWrapper.of(nc))).isEqualTo("test settings");
+        assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
+            .isEqualTo("{\"result\":\"test settings\"}");
         assertThat(nodeDialog.getPage().isCompletelyStatic()).isFalse();
 
         hasDialog.set(false);
@@ -207,7 +208,7 @@ public class NodeDialogManagerTest {
 
             // The jsonforms dialog cannot be built from our test node, because it is no valid/known DialogNodeRepresentation,
             // So we just check for the error here.
-            var result = NodeDialogManager.getInstance().callTextInitialDataService(NodeWrapper.of(component));
+            var result = NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(component));
             assertThat(result).contains(
                 "Could not read dialog node org.knime.core.webui.node.dialog.TestConfigurationNodeFactory$TestConfigNodeModel");
         } finally {
@@ -256,9 +257,9 @@ public class NodeDialogManagerTest {
     }
 
     /**
-     * Tests {@link NodeDialogManager#callTextInitialDataService(NodeContainer)},
-     * {@link NodeDialogManager#callTextDataService(NodeContainer, String)} and
-     * {@link NodeDialogManager#callTextApplyDataService(NodeContainer, String)}
+     * Tests {@link NodeDialogManager#callInitialDataService(NodeContainer)},
+     * {@link NodeDialogManager#callRpcDataService(NodeContainer, String)} and
+     * {@link NodeDialogManager#callApplyDataService(NodeContainer, String)}
      *
      * @throws IOException
      * @throws InvalidSettingsException
@@ -266,7 +267,7 @@ public class NodeDialogManagerTest {
     @Test
     public void testCallDataServices() throws IOException, InvalidSettingsException {
         var page = Page.builder(() -> "test page content", "index.html").build();
-        Supplier<NodeDialog> nodeDialogSupplier = () -> createNodeDialog(page, new TextNodeSettingsService() { // NOSONAR
+        Supplier<NodeDialog> nodeDialogSupplier = () -> createNodeDialog(page, new NodeSettingsService() { // NOSONAR
 
             @Override
             public void toNodeSettings(final String s, final Map<SettingsType, NodeSettingsWO> settings) {
@@ -288,22 +289,19 @@ public class NodeDialogManagerTest {
                 //
             }
 
-        }, new TextDataService() {
-
-            @Override
-            public String handleRequest(final String request) {
-                return "general data service";
-            }
-        });
+        }, RpcDataService.builder(new TestService()).build());
 
         var nc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogSupplier);
         var nncWrapper = NodeWrapper.of(nc);
 
         var nodeDialogManager = NodeDialogManager.getInstance();
-        assertThat(nodeDialogManager.callTextInitialDataService(nncWrapper)).isEqualTo("the node settings");
-        assertThat(nodeDialogManager.callTextDataService(nncWrapper, "")).isEqualTo("general data service");
+        assertThat(nodeDialogManager.callInitialDataService(nncWrapper))
+            .isEqualTo("{\"result\":\"the node settings\"}");
+        assertThat(
+            nodeDialogManager.callRpcDataService(nncWrapper, RpcDataService.jsonRpcRequest("method", "test param")))
+                .contains("\"result\":\"test param\"");
         // apply data, i.e. settings
-        nodeDialogManager.callTextApplyDataService(nncWrapper, "key,node settings value");
+        nodeDialogManager.callApplyDataService(nncWrapper, "key,node settings value");
 
         // check node model settings
         var modelSettings = ((NodeDialogNodeModel)nc.getNode().getNodeModel()).getLoadNodeSettings();
@@ -319,7 +317,7 @@ public class NodeDialogManagerTest {
         assertThat(nc.getNodeSettings().getNodeSettings("view").getString("key")).isEqualTo("node settings value");
 
         // check error on apply settings
-        Assertions.assertThatThrownBy(() -> nodeDialogManager.callTextApplyDataService(nncWrapper, "ERROR,invalid"))
+        Assertions.assertThatThrownBy(() -> nodeDialogManager.callApplyDataService(nncWrapper, "ERROR,invalid"))
             .isInstanceOf(IOException.class).hasMessage("Invalid node settings: validation expected to fail");
     }
 
@@ -335,8 +333,8 @@ public class NodeDialogManagerTest {
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "index.html").build()), 1));
         metanode.addConnection(metanode.getID(), 0, nnc.getID(), 1);
 
-        assertThat(NodeDialogManager.getInstance().callTextInitialDataService(NodeWrapper.of(nnc)))
-            .isEqualTo("test settings");
+        assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nnc)))
+            .isEqualTo("{\"result\":\"test settings\"}");
     }
 
     private static NodeSettingsRO getNodeViewSettings(final NodeContainer nc) {
@@ -358,6 +356,14 @@ public class NodeDialogManagerTest {
     private static NativeNodeContainer createNodeWithNodeDialog(final WorkflowManager wfm,
         final Supplier<NodeDialog> nodeDialogCreator, final BooleanSupplier hasDialog) {
         return createAndAddNode(wfm, new NodeDialogNodeFactory(nodeDialogCreator, hasDialog));
+    }
+
+    public static class TestService {
+
+        public String method(final String param) {
+            return param;
+        }
+
     }
 
 }

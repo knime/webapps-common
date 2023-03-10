@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.knime.core.webui.data.InitialDataServiceTestUtil.parseResult;
 
 import java.awt.Container;
 import java.io.IOException;
@@ -74,7 +75,8 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.webui.data.DataService;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.LegacyFlowVariableNodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
@@ -84,6 +86,9 @@ import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.node.dialog.NodeDialogNodeModel;
 import org.knime.testing.node.dialog.NodeDialogNodeView;
 import org.knime.testing.util.WorkflowManagerUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests for {@link NodeDialog}.
@@ -108,7 +113,7 @@ public class NodeDialogTest {
         var nodeDialogManager = NodeDialogManager.getInstance();
 
         // make sure that the default settings are properly provided with the initial settings
-        var initalDefaultSettings = nodeDialogManager.callTextInitialDataService(nncWrapper);
+        var initalDefaultSettings = nodeDialogManager.callInitialDataService(nncWrapper);
         assertThat(initalDefaultSettings).contains("a default model setting");
         assertThat(initalDefaultSettings).contains("a default view setting");
 
@@ -118,8 +123,8 @@ public class NodeDialogTest {
         var viewSettings = new NodeSettings("view");
         modelSettings.addString("model_key1", "model_setting_value");
         viewSettings.addString("view_key1", "view_setting_value");
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
-        var initialSettings = nodeDialogManager.callTextInitialDataService(nncWrapper);
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        var initialSettings = parseResult(nodeDialogManager.callInitialDataService(nncWrapper), false);
         assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}");
         assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
     }
@@ -144,7 +149,7 @@ public class NodeDialogTest {
         viewSettings.addInt("view_key1", 1);
 
         var nodeDialogManager = NodeDialogManager.getInstance();
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         wfm.executeAllAndWaitUntilDone();
         assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
         wfm.save(wfm.getContext().getCurrentLocation(), new ExecutionMonitor(), false);
@@ -152,7 +157,7 @@ public class NodeDialogTest {
 
         // change view settings and apply -> node is not being reset
         viewSettings.addInt("view_key2", 2);
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
         var newSettings = new NodeSettings("node_settings");
         wfm.saveNodeSettings(nnc.getID(), newSettings);
@@ -161,7 +166,7 @@ public class NodeDialogTest {
 
         // change model settings and apply -> node is expected to be reset
         modelSettings.addInt("model_key2", 2);
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         assertThat(nnc.getNodeContainerState().isExecuted()).isFalse();
         wfm.saveNodeSettings(nnc.getID(), newSettings);
         assertThat(newSettings.getNodeSettings(SettingsType.MODEL.getConfigKey())).isEqualTo(modelSettings);
@@ -175,7 +180,7 @@ public class NodeDialogTest {
         wfm.executeAllAndWaitUntilDone();
         assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
         viewSettings.addInt("view_key2", 3);
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         assertThat(nnc.getNodeContainerState().isExecuted()).isFalse();
         wfm.saveNodeSettings(nnc.getID(), newSettings);
         assertThat(newSettings.getNodeSettings(SettingsType.VIEW.getConfigKey())).isEqualTo(viewSettings);
@@ -240,7 +245,7 @@ public class NodeDialogTest {
         var initialModelSettings = new NodeSettings("model");
         var initialViewSettings = new NodeSettings("view");
         var nodeDialogManager = NodeDialogManager.getInstance();
-        nodeDialogManager.callTextApplyDataService(nncWrapper,
+        nodeDialogManager.callApplyDataService(nncWrapper,
             settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, initialModelSettings, initialViewSettings,
             initialViewSettings);
@@ -253,11 +258,11 @@ public class NodeDialogTest {
         updatedModelSettings.addString("key", "updatedOnce");
         var updatedViewSettings = new NodeSettings("view");
         updatedViewSettings.addString("key", "updatedOnce");
-        nodeDialogManager.callTextApplyDataService(nncWrapper,
+        nodeDialogManager.callApplyDataService(nncWrapper,
             settingsToString(updatedModelSettings, updatedViewSettings));
         updatedModelSettings.addString("key", "updatedTwice");
         updatedViewSettings.addString("key", "updatedTwice");
-        nodeDialogManager.callTextApplyDataService(nncWrapper,
+        nodeDialogManager.callApplyDataService(nncWrapper,
             settingsToString(updatedModelSettings, updatedViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
             updatedViewSettings);
@@ -282,7 +287,7 @@ public class NodeDialogTest {
         wfm.loadNodeSettings(nnc.getID(), nodeSettings);
         nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
         nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
-        nodeDialogManager.callTextApplyDataService(nncWrapper,
+        nodeDialogManager.callApplyDataService(nncWrapper,
             settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
             updatedViewSettings);
@@ -312,13 +317,13 @@ public class NodeDialogTest {
         viewSettings.addString("view_key1", "view_setting_value");
 
         var nodeDialogManager = NodeDialogManager.getInstance();
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         var nodeSettings = new NodeSettings("node_settings");
         wfm.saveNodeSettings(nnc.getID(), nodeSettings);
 
         // apply node settings that are controlled by a flow variable -> the flow variable must not end up in the settings
         wfm.loadNodeSettings(nnc.getID(), nodeSettings);
-        var initialSettings = nodeDialogManager.callTextInitialDataService(nncWrapper);
+        var initialSettings = parseResult(nodeDialogManager.callInitialDataService(nncWrapper), false);
         assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}");
         assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
 
@@ -337,7 +342,7 @@ public class NodeDialogTest {
         nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
 
         // make sure that the flow variable value is part of the initial data
-        initialSettings = nodeDialogManager.callTextInitialDataService(nncWrapper);
+        initialSettings = parseResult(nodeDialogManager.callInitialDataService(nncWrapper), false);
         assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_variable_value\"}");
         assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_variable_value\"}");
 
@@ -345,7 +350,7 @@ public class NodeDialogTest {
         // (i.e. aren't 'persisted' with the node settings)
         viewSettings.addString("view_key1", "new_value_to_be_ignored_on_apply");
         modelSettings.addString("model_key1", "new_value_to_be_ignored_on_apply");
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         wfm.saveNodeSettings(nnc.getID(), nodeSettings);
         assertThat(nodeSettings.getNodeSettings("view").getString("view_key1")).isEqualTo("view_setting_value");
         assertThat(nodeSettings.getNodeSettings("model").getString("model_key1")).isEqualTo("model_setting_value");
@@ -354,14 +359,14 @@ public class NodeDialogTest {
     }
 
     /**
-     * Test overwriting and exposing settings with flow variables via the {@link TextVariableSettingsService}.
+     * Test overwriting and exposing settings with flow variables via the {@link VariableSettingsService}.
      *
      * @throws IOException
      * @throws InvalidSettingsException
      */
     @Test
     public void testSettingWithFlowVariables() throws IOException, InvalidSettingsException {
-        TextVariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
+        VariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
             try {
                 // First level settings
                 settings.get(SettingsType.MODEL).addUsedVariable("model_key1", "model_variable");
@@ -424,7 +429,7 @@ public class NodeDialogTest {
         );
 
         // Apply the settings using the TextApplyDataService
-        nodeDialogManager.callTextApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
 
         // Assert that the model settings get overwritten
         var loadedModelSettings = getNodeModelSettings(nnc);
@@ -462,7 +467,7 @@ public class NodeDialogTest {
      */
     @Test
     public void testFailingSettingWithFlowVariables() throws IOException {
-        TextVariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
+        VariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
             try {
                 settings.get(SettingsType.MODEL).addUsedVariable("key1", "var1");
             } catch (final InvalidSettingsException ex) { // NOSONAR
@@ -493,7 +498,7 @@ public class NodeDialogTest {
 
         // Setting with key "key1" not available
         assertThrows(Key1Exception.class, //
-            () -> nodeDialogManager.callTextApplyDataService(nncWrapper,
+            () -> nodeDialogManager.callApplyDataService(nncWrapper,
                 settingsToString(modelSettings, viewSettings)));
 
         modelSettings.addString("key1", "val1");
@@ -501,14 +506,14 @@ public class NodeDialogTest {
 
         // Child settings not available
         assertThrows(ChildKeyException.class, //
-            () -> nodeDialogManager.callTextApplyDataService(nncWrapper,
+            () -> nodeDialogManager.callApplyDataService(nncWrapper,
                 settingsToString(modelSettings, viewSettings)));
 
         modelSettings.addNodeSettings("child_settings");
 
         // Settings with key "key2" not available
         assertThrows(Key2Exception.class, //
-            () -> nodeDialogManager.callTextApplyDataService(nncWrapper,
+            () -> nodeDialogManager.callApplyDataService(nncWrapper,
                 settingsToString(modelSettings, viewSettings)));
     }
 
@@ -543,7 +548,7 @@ public class NodeDialogTest {
 
         var newViewSettings = new NodeSettings("new_view_settings");
         newViewSettings.addString("new view setting", "new view setting value");
-        NodeDialogManager.getInstance().callTextApplyDataService(NodeWrapper.of(nnc),
+        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(nnc),
             settingsToString(newViewSettings, newViewSettings));
         openLegacyFlowVariableDialogAndCheckViewSettings(nnc, "new view setting value");
     }
@@ -615,12 +620,12 @@ public class NodeDialogTest {
     }
 
     /**
-     * Helper to create a {@link TextNodeSettingsService}-instance for testing.
+     * Helper to create a {@link NodeSettingsService}-instance for testing.
      *
      * @return a new instance
      */
-    public static TextNodeSettingsService createTextSettingsDataService() {
-        return new TextNodeSettingsService() {
+    public static NodeSettingsService createTextSettingsDataService() {
+        return new NodeSettingsService() {
 
             @Override
             public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
@@ -647,19 +652,25 @@ public class NodeDialogTest {
         };
     }
 
-    private static final String SEP = "###################";
+    private static final ObjectMapper MAPPER = ObjectMapperUtil.getInstance().getObjectMapper();
 
     private static String settingsToString(final NodeSettingsRO modelSettings, final NodeSettingsRO viewSettings) {
-        return JSONConfig.toJSONString(modelSettings, WriterConfig.DEFAULT) + SEP
-            + JSONConfig.toJSONString(viewSettings, WriterConfig.DEFAULT);
+        var root = MAPPER.createObjectNode();
+        try {
+            root.set("model", MAPPER.readTree(JSONConfig.toJSONString(modelSettings, WriterConfig.DEFAULT)));
+            root.set("view", MAPPER.readTree(JSONConfig.toJSONString(viewSettings, WriterConfig.DEFAULT)));
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
+        return root.toString();
     }
 
     private static void stringToSettings(final String s, final NodeSettingsWO modelSettings,
         final NodeSettingsWO viewSettings) {
-        var splitString = s.split(SEP); // NOSONAR
         try {
-            JSONConfig.readJSON(modelSettings, new StringReader(splitString[0]));
-            JSONConfig.readJSON(viewSettings, new StringReader(splitString[1]));
+            var jsonNode = MAPPER.readTree(s);
+            JSONConfig.readJSON(modelSettings, new StringReader(jsonNode.get("model").toString()));
+            JSONConfig.readJSON(viewSettings, new StringReader(jsonNode.get("view").toString()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -673,7 +684,7 @@ public class NodeDialogTest {
      * @return a new dialog instance
      */
     public static NodeDialog createNodeDialog(final Page page) {
-        var settingsMapper = new TextNodeSettingsService() {
+        var settingsMapper = new NodeSettingsService() {
 
             @Override
             public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
@@ -704,8 +715,8 @@ public class NodeDialogTest {
      * @param dataService
      * @return a new dialog instance
      */
-    public static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
-        final DataService dataService) {
+    public static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
+        final RpcDataService dataService) {
         return createNodeDialog(page, settingsDataService, null, dataService);
     }
 
@@ -718,28 +729,28 @@ public class NodeDialogTest {
      * @param variableSettingsService
      * @return a new dialog instance
      */
-    public static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
-        final TextVariableSettingsService variableSettingsService, final DataService dataService) {
+    public static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
+        final VariableSettingsService variableSettingsService, final RpcDataService dataService) {
         return createNodeDialog(page, settingsDataService, variableSettingsService, dataService, null);
     }
 
-    static NodeDialog createNodeDialog(final Page page, final TextNodeSettingsService settingsDataService,
-        final TextVariableSettingsService variableSettingsService, final DataService dataService,
+    static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
+        final VariableSettingsService variableSettingsService, final RpcDataService dataService,
         final OnApplyNodeModifier onApplyModifier) {
         return new NodeDialog(onApplyModifier, SettingsType.MODEL, SettingsType.VIEW) {
 
             @Override
-            public Optional<DataService> createDataService() {
+            public Optional<RpcDataService> createRpcDataService() {
                 return Optional.ofNullable(dataService);
             }
 
             @Override
-            protected TextNodeSettingsService getNodeSettingsService() {
+            protected NodeSettingsService getNodeSettingsService() {
                 return settingsDataService;
             }
 
             @Override
-            protected Optional<TextVariableSettingsService> getVariableSettingsService() {
+            protected Optional<VariableSettingsService> getVariableSettingsService() {
                 return Optional.ofNullable(variableSettingsService);
             }
 

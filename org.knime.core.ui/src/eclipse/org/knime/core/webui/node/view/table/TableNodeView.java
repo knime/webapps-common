@@ -58,10 +58,11 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.view.NodeView;
+import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -114,7 +115,7 @@ public final class TableNodeView implements NodeView {
     }
 
     @Override
-    public Optional<InitialDataService> createInitialDataService() {
+    public Optional<InitialDataService<TableViewInitialData>> createInitialDataService() {
         if (m_settings == null) {
             m_settings = new TableViewViewSettings(m_tableSupplier.get().getSpec());
         }
@@ -122,13 +123,13 @@ public final class TableNodeView implements NodeView {
     }
 
     @Override
-    public Optional<DataService> createDataService() {
-        return Optional.of(TableViewUtil.createDataService(
+    public Optional<RpcDataService> createRpcDataService() {
+        return Optional.of(TableViewUtil.createRpcDataService(
             TableViewUtil.createTableViewDataService(m_tableSupplier, m_selectionSupplier, m_tableId), m_tableId));
     }
 
     @Override
-    public Optional<ApplyDataService> createApplyDataService() {
+    public Optional<ApplyDataService<?>> createApplyDataService() {
         return Optional.empty();
     }
 

@@ -48,11 +48,10 @@
  */
 package org.knime.gateway.api.entity;
 
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.webui.data.text.TextInitialDataService;
+import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager;
@@ -103,8 +102,8 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
         m_nodeId = new NodeIDEnt(nc.getID(), isComponentProject).toString();
 
         if (dataServiceManager != null
-            && dataServiceManager.getDataServiceOfType(nodeWrapper, TextInitialDataService.class).isPresent()) {
-            m_initialData = dataServiceManager.callTextInitialDataService(nodeWrapper);
+            && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
+            m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
         } else {
             m_initialData = null;
         }

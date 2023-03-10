@@ -53,8 +53,8 @@ import java.util.Optional;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.page.Page;
 
@@ -82,7 +82,7 @@ public class NodeDialogNodeView implements NodeView {
     }
 
     @Override
-    public Optional<DataService> createDataService() {
+    public Optional<RpcDataService> createRpcDataService() {
         return Optional.empty();
     }
 

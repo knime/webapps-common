@@ -46,21 +46,20 @@
  * History
  *   Sep 15, 2021 (hornm): created
  */
-package org.knime.core.webui.data.rpc.json;
+package org.knime.core.webui.data;
 
 import static com.googlecode.jsonrpc4j.ErrorResolver.JsonError.CUSTOM_SERVER_ERROR_UPPER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.knime.core.webui.data.rpc.json.JsonRpcDataService.jsonRpcRequest;
+import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.data.DataServiceException;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcDataServiceImpl;
-import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
@@ -71,11 +70,11 @@ import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
- * Test for {@link JsonRpcDataService}-implementations.
+ * Tests for the {@link JsonRpcDataService}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class JsonRpcDataServiceTest {
+class RpcDataServiceTest {
 
     /**
      * Tests {@link JsonRpcDataServiceImpl} when used in a {@link NodeView}.
@@ -83,15 +82,15 @@ class JsonRpcDataServiceTest {
      * @throws IOException
      */
     @Test
-    void testJsonRpcDataService() throws IOException {
+    void testRpcDataService() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
-        NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page,
-            null, new JsonRpcDataServiceImpl(new JsonRpcSingleServer<MyService>(new MyService())), null));
+        NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm,
+            m -> NodeViewTest.createNodeView(page, null, RpcDataService.builder(new MyService()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("myMethod");
-        String response = NodeViewManager.getInstance().callTextDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
         assertThat(response).isEqualTo("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"my service method result\"}\n");
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
@@ -109,15 +108,12 @@ class JsonRpcDataServiceTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
         NativeNodeContainer nnc =
-            NodeViewManagerTest.createNodeWithNodeView(wfm,
-                m -> NodeViewTest.createNodeView(page, null,
-                    new JsonRpcDataServiceImpl(
-                        new JsonRpcSingleServer<ServiceThrowingInternalError>(new ServiceThrowingInternalError())),
-                    null));
+            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, null,
+                RpcDataService.builder(new ServiceThrowingInternalError()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo");
-        String response = NodeViewManager.getInstance().callTextDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
         final var root = ObjectMapperUtil.getInstance().getObjectMapper().readTree(response);
         assertTrue(root.has("error"));
         final var error = root.get("error");
@@ -143,13 +139,12 @@ class JsonRpcDataServiceTest {
     void testJsonRpcDataServiceUserError() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
-        NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm,
-            m -> NodeViewTest.createNodeView(page, null, new JsonRpcDataServiceImpl(
-                new JsonRpcSingleServer<ServiceThrowingUserError>(new ServiceThrowingUserError())), null));
+        NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page,
+            null, RpcDataService.builder(new ServiceThrowingUserError()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo", "bar");
-        String response = NodeViewManager.getInstance().callTextDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
         final var root = ObjectMapperUtil.getInstance().getObjectMapper().readTree(response);
         assertTrue(root.has("error"));
         final var error = root.get("error");
