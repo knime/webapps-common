@@ -60,6 +60,8 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
@@ -80,7 +82,7 @@ public class DataServiceContextTest {
 
     @Test
     void testDataServiceContext() throws IOException, CanceledExecutionException {
-        var dataServiceContext = DataServiceContext.initAndGet(null);
+        var dataServiceContext = DataServiceContext.initAndGet((NativeNodeContainer)null);
         assertThat(DataServiceContext.get()).isNotNull();
         dataServiceContext.addWarningMessage("warning 1");
         dataServiceContext.addWarningMessage("warning 2");
@@ -154,17 +156,19 @@ public class DataServiceContextTest {
     }
 
     /**
-     * Helper to run logic with a {@link DataServiceContext} set.
+     * Helper to init the data service context for the current thread.
      *
-     * @param run
+     * @param execSupplier
      */
-    public static void runWithDataServiceContext(final Runnable run) {
-        DataServiceContext.initAndGet(null);
-        try {
-            run.run();
-        } finally {
-            DataServiceContext.remove();
-        }
+    public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier) {
+        DataServiceContext.initAndGet(execSupplier);
+    }
+
+    /**
+     * Helper to remove the data service context for the current thread.
+     */
+    public static void removeDataServiceContext() {
+        DataServiceContext.remove();
     }
 
 }

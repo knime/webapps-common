@@ -92,7 +92,7 @@ import org.knime.core.webui.node.view.table.data.render.DataValueTextRenderer;
  */
 public class TableViewDataServiceImpl implements TableViewDataService {
 
-    private final Supplier<BufferedDataTable> m_tableSupplier;
+    private final TableWithIndicesSupplier m_tableSupplier;
 
     private final TableCache m_sortedTableCache = new TableCache();
 
@@ -126,7 +126,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public TableViewDataServiceImpl(final Supplier<BufferedDataTable> tableSupplier, final String tableId,
         final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
         Objects.requireNonNull(tableSupplier, () -> "Table supplier must not be null.");
-        m_tableSupplier = tableSupplier;
+        m_tableSupplier = new TableWithIndicesSupplier(tableSupplier);
         m_tableId = tableId;
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
@@ -152,7 +152,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
         m_selectionSupplier = selectionSupplier;
         Objects.requireNonNull(tableSupplier, () -> "Table supplier must not be null.");
-        m_tableSupplier = tableSupplier;
+        m_tableSupplier = new TableWithIndicesSupplier(tableSupplier);
         m_tableId = tableId;
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
@@ -276,6 +276,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public void clearCache() {
         m_sortedTableCache.clear();
         m_filteredAndSortedTableCache.clear();
+        m_tableSupplier.clear();
     }
 
     private static String[] filterInvalids(final String[] columns, final DataTableSpec spec) {

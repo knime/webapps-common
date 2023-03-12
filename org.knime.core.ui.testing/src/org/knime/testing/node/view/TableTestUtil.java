@@ -189,7 +189,7 @@ public final class TableTestUtil {
          * @return this builder
          */
         public TableBuilder addRow(final Object... cells) {
-            addRowWithId(Integer.toString(runningRowId), cells);
+            addRowWithId("rowkey " + runningRowId, cells);
             runningRowId++;
             return this;
         }

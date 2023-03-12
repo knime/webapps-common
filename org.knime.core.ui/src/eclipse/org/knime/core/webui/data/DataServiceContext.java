@@ -50,6 +50,7 @@ package org.knime.core.webui.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -79,14 +80,19 @@ public final class DataServiceContext {
         return CONTEXTS.get();
     }
 
+
     static DataServiceContext initAndGet(final NodeContainer nc) {
+        if (nc instanceof NativeNodeContainer nnc) {
+            return initAndGet(() -> nnc.createExecutionContext());
+        } else {
+            return initAndGet((Supplier)null);
+        }
+    }
+
+    static DataServiceContext initAndGet(final Supplier<ExecutionContext> execSupplier) {
         var context = CONTEXTS.get();
         if (context == null) {
-            if (nc instanceof NativeNodeContainer nnc) {
-                context = new DataServiceContext(nnc);
-            } else {
-                context = new DataServiceContext();
-            }
+            context = new DataServiceContext(execSupplier == null ? null : execSupplier.get());
             CONTEXTS.set(context);
         }
         return context;
@@ -94,14 +100,10 @@ public final class DataServiceContext {
 
     private final List<String> m_warningMessages = new ArrayList<>();
 
-    private final NativeNodeContainer m_nnc;
+    private final ExecutionContext m_exec;
 
-    private DataServiceContext(final NativeNodeContainer nnc) {
-        m_nnc = nnc;
-    }
-
-    private DataServiceContext() {
-        this(null);
+    private DataServiceContext(final ExecutionContext exec) {
+        m_exec = exec;
     }
 
     /**
@@ -127,13 +129,13 @@ public final class DataServiceContext {
      * @param tableCreator logic that creates the table
      * @return the newly created table
      * @throws CanceledExecutionException
-     * @throws IllegalStateException if this data service context is not associated with a native node
+     * @throws IllegalStateException if this data service context is not associated with execution context
      */
     public BufferedDataTable createTable(final TableCreator tableCreator) throws CanceledExecutionException {
-        if (m_nnc == null) {
-            throw new IllegalStateException("Data service context not associated with a native node");
+        if (m_exec == null) {
+            throw new IllegalStateException("Data service context not associated with execution context");
         }
-        return tableCreator.createTable(m_nnc.createExecutionContext());
+        return tableCreator.createTable(m_exec);
     }
 
     /**

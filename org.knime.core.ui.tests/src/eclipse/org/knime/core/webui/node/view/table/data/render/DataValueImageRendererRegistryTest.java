@@ -50,12 +50,16 @@ package org.knime.core.webui.node.view.table.data.render;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
+import static org.knime.testing.node.view.TableTestUtil.getExec;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 
 /**
@@ -64,6 +68,16 @@ import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class DataValueImageRendererRegistryTest {
+
+    @BeforeEach
+    void initDataServiceContext() {
+        DataServiceContextTest.initDataServiceContext(() -> getExec());
+    }
+
+    @AfterEach
+    void removeDataServiceContext() {
+        DataServiceContextTest.removeDataServiceContext();
+    }
 
     /**
      * Tests the interplay of the {@link TableViewDataServiceImpl} and the {@link DataValueImageRendererRegistry}.

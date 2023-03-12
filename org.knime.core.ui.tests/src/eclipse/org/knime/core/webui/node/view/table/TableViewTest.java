@@ -57,6 +57,7 @@ import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
 import static org.knime.testing.node.view.TableTestUtil.createTableFromColumns;
 import static org.knime.testing.node.view.TableTestUtil.getDefaultTestSpec;
+import static org.knime.testing.node.view.TableTestUtil.getExec;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -70,9 +71,12 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
@@ -94,6 +98,7 @@ import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactor
 import org.knime.core.webui.page.Resource;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
+import org.knime.testing.node.view.TableTestUtil;
 import org.knime.testing.node.view.TableTestUtil.ObjectColumn;
 import org.knime.testing.node.view.WarningMessageAsserterUtil.DataServiceContextWarningMessagesAsserter;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -107,9 +112,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class TableViewTest {
 
+    @BeforeEach
+    void initDataServiceContext() {
+        DataServiceContextTest.initDataServiceContext(() -> getExec());
+    }
+
+    @AfterEach
+    void removeDataServiceContext() {
+        DataServiceContextTest.removeDataServiceContext();
+    }
+
     @Test
     void testDataServiceGetData() {
-        final var expectedResult = new String[][]{{"1", "1", "1", "1", "11", "pageId/images/tableId/2018748495.png", "0001",
+        final var expectedResult = new String[][]{{"2", "rowkey 1", "1", "1", "11", "pageId/images/tableId/2018748495.png", "0001",
             "true", "pageId/images/tableId/-1084641940.png"}};
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
         var rendererIds = new String[expectedResult[0].length];
@@ -264,36 +279,35 @@ class TableViewTest {
     void testDataServiceGetCachedSortedData() {
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(10));
         final var sortColumnIndex = 0;
+        var sortColumnIndexInResultTable = sortColumnIndex + 2; //  the first two columns are row index and row key
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
             5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
         IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
-            assertThat(tableSortedAscending[rowIndex][sortColumnIndex])
-                .isGreaterThanOrEqualTo(tableSortedAscending[rowIndex - 1][sortColumnIndex]);
+            assertThat(tableSortedAscending[rowIndex][sortColumnIndexInResultTable])
+                .isGreaterThanOrEqualTo(tableSortedAscending[rowIndex - 1][sortColumnIndexInResultTable]);
         });
         final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 5,
             5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
         IntStream.range(1, tableSortedDescending.length).forEach(rowIndex -> {
-            assertThat(tableSortedDescending[rowIndex][sortColumnIndex])
-                .isGreaterThanOrEqualTo(tableSortedDescending[rowIndex - 1][sortColumnIndex]);
+            assertThat(tableSortedDescending[rowIndex][sortColumnIndexInResultTable])
+                .isGreaterThanOrEqualTo(tableSortedDescending[rowIndex - 1][sortColumnIndexInResultTable]);
         });
     }
 
     @Test
     void testDataServiceSetsGetTableWithOneMissingColumn() {
-        DataServiceContextTest.runWithDataServiceContext(() -> {
-            final var warningMessageAsserter =
-                new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
-            final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-            final var rows = testTable.getTable(
-                Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
-                    .toArray(String[]::new),
-                0, 1, null, true, true, false).getRows();
-            assertThat(rows[0]).as("The output table has the correct amount of columns")
-                .hasSize(getDefaultTestSpec().getNumColumns() + 1);
-            assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
-                "Adds warning message for single missing column.");
-        });
+        final var warningMessageAsserter =
+            new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
+        final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
+        final var rows = testTable.getTable(
+            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
+                .toArray(String[]::new),
+            0, 1, null, true, true, false).getRows();
+        assertThat(rows[0]).as("The output table has the correct amount of columns")
+            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+        assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
+            "Adds warning message for single missing column.");
     }
 
     @Test
@@ -336,7 +350,7 @@ class TableViewTest {
         final var globalSearchTerm = "STRING1";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
         final var filterRowKeys = false;
-        final var selection = Set.of(new RowKey("0"));
+        final var selection = Set.of(new RowKey("rowkey 0"));
         final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
         dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
             globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false);
@@ -345,18 +359,16 @@ class TableViewTest {
 
     @Test
     void testDataServiceSetsGetTableWithMultipleMissingColumn() {
-        DataServiceContextTest.runWithDataServiceContext(() -> {
-            final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
-                "The selected columns foo, bar are not present in the table.");
-            final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-            final var rows = testTable.getTable(Stream
-                .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
-                .toArray(String[]::new), 0, 1, null, true, true, false).getRows();
-            assertThat(rows[0]).as("The output table has the correct amount of columns")
-                .hasSize(getDefaultTestSpec().getNumColumns() + 1);
-            assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
-                "Adds warning message for single missing column.");
-        });
+        final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
+            "The selected columns foo, bar are not present in the table.");
+        final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
+        final var rows = testTable.getTable(Stream
+            .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
+            .toArray(String[]::new), 0, 1, null, true, true, false).getRows();
+        assertThat(rows[0]).as("The output table has the correct amount of columns")
+            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+        assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
+            "Adds warning message for single missing column.");
     }
 
     private static BufferedDataTable createTestTableFiltering() {
@@ -495,6 +507,40 @@ class TableViewTest {
         assertThat(pageFormat.getAspectRatio().get()).isEqualTo(AspectRatio.RATIO_4BY3);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    @Test
+    void testDataServiceIndicesAreAppended() throws Exception {
+        final var stringColumnContent = new String[]{"A", "B"};
+        final var intColumnContent = new Integer[]{1, 3};
+        final var inputTable = TableTestUtil.createTableFromColumns( //
+            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
+            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
+        );
+
+        var dataService = createTableViewDataServiceInstance(() -> inputTable);
+        var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
+
+        assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"col1", "col2"});
+        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
+        assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
+    }
+
+    @Test
+    void testDataServiceIndexColumnAdjustsName() throws Exception {
+        final var stringColumnContent = new String[]{"A", "B"};
+        final var intColumnContent = new Integer[]{1, 3};
+        final var inputTable = TableTestUtil.createTableFromColumns( //
+            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
+            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
+        );
+
+        var dataService = createTableViewDataServiceInstance(() -> inputTable);
+        var table = dataService.getTable(new String[]{"<index>", "<index>(1)"}, 0, 2, null, false, false, false);
+
+        assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"<index>", "<index>(1)"});
+        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
+        assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
     }
 
     private static TableViewDataService
