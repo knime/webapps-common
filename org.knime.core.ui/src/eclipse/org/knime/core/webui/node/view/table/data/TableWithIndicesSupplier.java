@@ -87,11 +87,10 @@ class TableWithIndicesSupplier implements Supplier<BufferedDataTable> {
         if (m_originalTable != originalTable) {
             final var appendConfig = AppendConfig.rowIDsFromTable(1);
             final var indexColumnName = determineIndexColumnName(originalTable.getSpec());
+            var exec = DataServiceContext.get().getExecutionContext().orElseThrow();
             try {
-                m_tableWithIndices = DataServiceContext.get().createTable(exec -> {
-                    final var indices = createIndexColumn(originalTable.size(), indexColumnName, exec);
-                    return InternalTableAPI.append(exec, appendConfig, indices, originalTable);
-                });
+                final var indices = createIndexColumn(originalTable.size(), indexColumnName, exec);
+                m_tableWithIndices = InternalTableAPI.append(exec, appendConfig, indices, originalTable);
             } catch (CanceledExecutionException ex) { // NOSONAR
                 // can never happen
                 return null;

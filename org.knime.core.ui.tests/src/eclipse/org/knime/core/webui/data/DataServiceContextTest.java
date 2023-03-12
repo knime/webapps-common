@@ -49,7 +49,6 @@
 package org.knime.core.webui.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,7 +67,6 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeFactory;
-import org.knime.testing.node.view.TableTestUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -87,7 +85,7 @@ public class DataServiceContextTest {
         dataServiceContext.addWarningMessage("warning 1");
         dataServiceContext.addWarningMessage("warning 2");
         assertThat(dataServiceContext.getWarningMessages()).isEqualTo(new String[]{"warning 1", "warning 2"});
-        assertThatThrownBy(() -> dataServiceContext.createTable(null)).isInstanceOf(IllegalStateException.class);
+        assertThat(dataServiceContext.getExecutionContext()).isEmpty();
         DataServiceContext.remove();
         assertThat(DataServiceContext.get()).isNull();
 
@@ -98,11 +96,7 @@ public class DataServiceContextTest {
         // test data service initialized with a node
         var dataServiceContext2 = DataServiceContext.initAndGet(nnc);
         assertThat(DataServiceContext.get()).isNotNull();
-        var testTable = TableTestUtil.createDefaultTestTable(1).get();
-        var table = dataServiceContext2.createTable(exec -> {
-            return exec.createBufferedDataTable(testTable, exec);
-        });
-        assertThat(table).isSameAs(testTable);
+        assertThat(dataServiceContext2.getExecutionContext()).isPresent();
         DataServiceContext.remove();
         assertThat(DataServiceContext.get()).isNull();
 
@@ -147,12 +141,7 @@ public class DataServiceContextTest {
     private static void assertDataServiceContextAvailable() {
         var dataServiceContext = DataServiceContext.get();
         assertThat(dataServiceContext).isNotNull();
-        // ensure that this method can be called
-        try {
-            assertThat(dataServiceContext.createTable(exec -> null)).isNull();
-        } catch (CanceledExecutionException ex) {
-            throw new RuntimeException(ex);
-        }
+        assertThat(dataServiceContext.getExecutionContext()).isPresent();
     }
 
     /**

@@ -50,11 +50,14 @@ package org.knime.core.webui.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 
@@ -80,7 +83,6 @@ public final class DataServiceContext {
         return CONTEXTS.get();
     }
 
-
     static DataServiceContext initAndGet(final NodeContainer nc) {
         if (nc instanceof NativeNodeContainer nnc) {
             return initAndGet(() -> nnc.createExecutionContext());
@@ -92,7 +94,7 @@ public final class DataServiceContext {
     static DataServiceContext initAndGet(final Supplier<ExecutionContext> execSupplier) {
         var context = CONTEXTS.get();
         if (context == null) {
-            context = new DataServiceContext(execSupplier == null ? null : execSupplier.get());
+            context = new DataServiceContext(execSupplier);
             CONTEXTS.set(context);
         }
         return context;
@@ -100,10 +102,19 @@ public final class DataServiceContext {
 
     private final List<String> m_warningMessages = new ArrayList<>();
 
-    private final ExecutionContext m_exec;
+    private final LazyInitializer<ExecutionContext> m_exec;
 
-    private DataServiceContext(final ExecutionContext exec) {
-        m_exec = exec;
+    private DataServiceContext(final Supplier<ExecutionContext> exec) {
+        if (exec != null) {
+            m_exec = new LazyInitializer<ExecutionContext>() {
+                @Override
+                protected ExecutionContext initialize() throws ConcurrentException {
+                    return exec.get();
+                }
+            };
+        } else {
+            m_exec = null;
+        }
     }
 
     /**
@@ -123,19 +134,17 @@ public final class DataServiceContext {
     }
 
     /**
-     * Allows one to create a new {@link BufferedDataTable} using the supplied {@link ExecutionContext}. As a result,
-     * the table will be created within the context of the node the data service is associated with.
-     *
-     * @param tableCreator logic that creates the table
-     * @return the newly created table
-     * @throws CanceledExecutionException
-     * @throws IllegalStateException if this data service context is not associated with execution context
+     * @return the execution context, if available and no problem occurred while creating the execution context
      */
-    public BufferedDataTable createTable(final TableCreator tableCreator) throws CanceledExecutionException {
-        if (m_exec == null) {
-            throw new IllegalStateException("Data service context not associated with execution context");
+    public Optional<ExecutionContext> getExecutionContext() {
+        if (m_exec != null) {
+            try {
+                return Optional.of(m_exec.get());
+            } catch (ConcurrentException ex) {
+                NodeLogger.getLogger(this.getClass()).error("Problem creating execution context", ex);
+            }
         }
-        return tableCreator.createTable(m_exec);
+        return Optional.empty();
     }
 
     /**
@@ -145,11 +154,6 @@ public final class DataServiceContext {
         if (CONTEXTS.get() != null) {
             CONTEXTS.remove();
         }
-    }
-
-    @SuppressWarnings("javadoc")
-    public static interface TableCreator {
-        BufferedDataTable createTable(ExecutionContext exec) throws CanceledExecutionException;
     }
 
 }
