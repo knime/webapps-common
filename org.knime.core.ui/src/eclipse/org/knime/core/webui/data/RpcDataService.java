@@ -52,6 +52,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
@@ -73,6 +75,8 @@ public final class RpcDataService {
 
     private final Runnable m_cleanUp;
 
+    private final NodeContainer m_nc;
+
     private RpcDataService(final RpcDataServiceBuilder builder) {
         if (builder.m_handlers.size() == 1) {
             m_rpcServer = new JsonRpcSingleServer<>(builder.m_handlers.get(0));
@@ -80,6 +84,7 @@ public final class RpcDataService {
             throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
         }
         m_cleanUp = builder.m_cleanUp;
+        m_nc = NodeContext.getContext().getNodeContainer();
     }
 
     /**
@@ -88,11 +93,11 @@ public final class RpcDataService {
      */
     public String handleRpcRequest(final String request) {
         try {
-            DataServiceContext.getContext().clear();
+            DataServiceContext.initAndGet(m_nc);
             final var response = RpcServerManager.doRpc(m_rpcServer, request);
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
             // consequence of) clearing it
-            final var warningMessages = DataServiceContext.getContext().getWarningMessages();
+            final var warningMessages = DataServiceContext.get().getWarningMessages();
             if (warningMessages != null && warningMessages.length > 0) {
                 final var mapper = ObjectMapperUtil.getInstance().getObjectMapper();
                 final var root = (ObjectNode)mapper.readTree(response);
@@ -104,7 +109,7 @@ public final class RpcDataService {
         } catch (IOException ex) {
             throw new IllegalStateException("A problem occurred while making a rpc call.", ex);
         } finally {
-            DataServiceContext.getContext().clear();
+            DataServiceContext.remove();
         }
     }
 
@@ -147,7 +152,8 @@ public final class RpcDataService {
 
     /**
      * @param <S>
-     * @param handler the handler whose methods are called
+     * @param handler the handler whose methods are called. Whenever any of the methods are being called, a
+     *            {@link DataServiceContext} is available within the method.
      * @return a new builder instance
      */
     public static <S> RpcDataServiceBuilder builder(final S handler) {

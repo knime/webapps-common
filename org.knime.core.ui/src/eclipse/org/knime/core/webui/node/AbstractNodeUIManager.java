@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
@@ -182,7 +183,12 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
         InitialDataService<?> ds;
         if (!m_initialDataServices.containsKey(nodeWrapper)) {
-            ds = getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null);
+            NodeContext.pushContext(nodeWrapper.get());
+            try {
+                ds = getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null);
+            } finally {
+                NodeContext.removeLastContext();
+            }
             m_initialDataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> m_initialDataServices.remove(nodeWrapper))
                 .cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
@@ -208,7 +214,12 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
         RpcDataService ds;
         if (!m_dataServices.containsKey(nodeWrapper)) {
-            ds = getDataServiceProvider(nodeWrapper).createRpcDataService().orElse(null);
+            NodeContext.pushContext(nodeWrapper.get());
+            try {
+                ds = getDataServiceProvider(nodeWrapper).createRpcDataService().orElse(null);
+            } finally {
+                NodeContext.removeLastContext();
+            }
             m_dataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);

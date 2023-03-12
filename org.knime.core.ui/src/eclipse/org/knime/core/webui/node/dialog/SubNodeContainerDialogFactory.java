@@ -248,7 +248,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
                 } catch (Exception e) { // We want to catch everything here, or settings won't be saved!
                     final var msg = "Could not read dialog node " + dialogNode.toString();
                     LOGGER.error(msg, e);
-                    DataServiceContext.getContext().addWarningMessage(msg);
+                    DataServiceContext.get().addWarningMessage(msg);
                 }
             }
         }
@@ -267,7 +267,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
                 } catch (IOException | IllegalStateException e) {
                     final var msg = "Could not read dialog node " + dialogNode.toString();
                     LOGGER.error(msg, e);
-                    DataServiceContext.getContext().addWarningMessage(msg);
+                    DataServiceContext.get().addWarningMessage(msg);
                 }
             }
 

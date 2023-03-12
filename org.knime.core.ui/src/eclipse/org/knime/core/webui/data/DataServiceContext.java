@@ -51,25 +51,58 @@ package org.knime.core.webui.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
+
 /**
  * A {@link DataServiceContext} allows to report warning messages during a data service invocation or assembly of
  * initial data. These warning messages can then be obtained by the {@link RpcDataService} or {@link InitialDataService}
  * and passed to the frontend for display along a valid result.
  *
- * Marc Bux, KNIME GmbH, Berlin, Germany
+ * Furthermore, it allows one to created {@link BufferedDataTable BufferedDataTables} within the context of the
+ * underlying node.
+ *
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class DataServiceContext {
 
-    private static final ThreadLocal<DataServiceContext> CONTEXTS = ThreadLocal.withInitial(DataServiceContext::new);
+    private static final ThreadLocal<DataServiceContext> CONTEXTS = new ThreadLocal<>();
 
     /**
      * @return the {@link DataServiceContext} for the current thread., potentially creating a new one in the process
      */
-    public static DataServiceContext getContext() {
+    public static DataServiceContext get() {
         return CONTEXTS.get();
     }
 
+    static DataServiceContext initAndGet(final NodeContainer nc) {
+        var context = CONTEXTS.get();
+        if (context == null) {
+            if (nc instanceof NativeNodeContainer nnc) {
+                context = new DataServiceContext(nnc);
+            } else {
+                context = new DataServiceContext();
+            }
+            CONTEXTS.set(context);
+        }
+        return context;
+    }
+
     private final List<String> m_warningMessages = new ArrayList<>();
+
+    private final NativeNodeContainer m_nnc;
+
+    private DataServiceContext(final NativeNodeContainer nnc) {
+        m_nnc = nnc;
+    }
+
+    private DataServiceContext() {
+        this(null);
+    }
 
     /**
      * Adds another warning message to the list of warning messages.
@@ -88,11 +121,33 @@ public final class DataServiceContext {
     }
 
     /**
-     * Clears the current list of warning messages and resets the current threads context.
+     * Allows one to create a new {@link BufferedDataTable} using the supplied {@link ExecutionContext}. As a result,
+     * the table will be created within the context of the node the data service is associated with.
+     *
+     * @param tableCreator logic that creates the table
+     * @return the newly created table
+     * @throws CanceledExecutionException
+     * @throws IllegalStateException if this data service context is not associated with a native node
      */
-    public void clear() {
-        m_warningMessages.clear();
-        CONTEXTS.remove();
+    public BufferedDataTable createTable(final TableCreator tableCreator) throws CanceledExecutionException {
+        if (m_nnc == null) {
+            throw new IllegalStateException("Data service context not associated with a native node");
+        }
+        return tableCreator.createTable(m_nnc.createExecutionContext());
+    }
+
+    /**
+     * Removes the entire context for the current thread.
+     */
+    public static void remove() {
+        if (CONTEXTS.get() != null) {
+            CONTEXTS.remove();
+        }
+    }
+
+    @SuppressWarnings("javadoc")
+    public static interface TableCreator {
+        BufferedDataTable createTable(ExecutionContext exec) throws CanceledExecutionException;
     }
 
 }

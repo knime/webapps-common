@@ -81,6 +81,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeModel;
 import org.knime.core.node.workflow.virtual.VirtualNodeInput;
+import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.PageFormat.AspectRatio;
@@ -280,17 +281,19 @@ class TableViewTest {
 
     @Test
     void testDataServiceSetsGetTableWithOneMissingColumn() {
-        final var warningMessageAsserter =
-            new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
-        final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-        final var rows = testTable
-            .getTable(Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
-                .toArray(String[]::new), 0, 1, null, true, true, false)
-            .getRows();
-        assertThat(rows[0]).as("The output table has the correct amount of columns")
-            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
-        assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
-            "Adds warning message for single missing column.");
+        DataServiceContextTest.runWithDataServiceContext(() -> {
+            final var warningMessageAsserter =
+                new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
+            final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
+            final var rows = testTable.getTable(
+                Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
+                    .toArray(String[]::new),
+                0, 1, null, true, true, false).getRows();
+            assertThat(rows[0]).as("The output table has the correct amount of columns")
+                .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+            assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
+                "Adds warning message for single missing column.");
+        });
     }
 
     @Test
@@ -342,17 +345,18 @@ class TableViewTest {
 
     @Test
     void testDataServiceSetsGetTableWithMultipleMissingColumn() {
-        final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
-            "The selected columns foo, bar are not present in the table.");
-        final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-        final var rows = testTable.getTable(
-            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
-                .toArray(String[]::new),
-            0, 1, null, true, true, false).getRows();
-        assertThat(rows[0]).as("The output table has the correct amount of columns")
-            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
-        assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
-            "Adds warning message for single missing column.");
+        DataServiceContextTest.runWithDataServiceContext(() -> {
+            final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
+                "The selected columns foo, bar are not present in the table.");
+            final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
+            final var rows = testTable.getTable(Stream
+                .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
+                .toArray(String[]::new), 0, 1, null, true, true, false).getRows();
+            assertThat(rows[0]).as("The output table has the correct amount of columns")
+                .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+            assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
+                "Adds warning message for single missing column.");
+        });
     }
 
     private static BufferedDataTable createTestTableFiltering() {

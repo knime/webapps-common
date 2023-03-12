@@ -152,7 +152,7 @@ public class WarningMessageAsserterUtil {
         }
 
         private void setReceivedMessages() {
-            final var dataServiceContext = DataServiceContext.getContext();
+            final var dataServiceContext = DataServiceContext.get();
             Arrays.asList(dataServiceContext.getWarningMessages()).stream()
                 .forEach(m_warningMessageAsserter::receiveMessage);
         }

@@ -279,7 +279,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static String[] filterInvalids(final String[] columns, final DataTableSpec spec) {
-        final var dataServiceContext = DataServiceContext.getContext();
+        final var dataServiceContext = DataServiceContext.get();
 
         final var partition = Stream.of(columns).collect(Collectors.partitioningBy(spec::containsName));
 

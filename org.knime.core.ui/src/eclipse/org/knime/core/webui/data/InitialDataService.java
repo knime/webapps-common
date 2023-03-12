@@ -51,6 +51,8 @@ package org.knime.core.webui.data;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -75,6 +77,8 @@ public final class InitialDataService<D> {
 
     private Runnable m_cleanUp;
 
+    private final NodeContainer m_nc;
+
     /**
      * @param dataSupplier
      */
@@ -92,6 +96,7 @@ public final class InitialDataService<D> {
             m_serializer = builder.m_serializer;
         }
         m_cleanUp = builder.m_cleanUp;
+        m_nc = NodeContext.getContext().getNodeContainer();
     }
 
     /**
@@ -102,7 +107,7 @@ public final class InitialDataService<D> {
             final var root = m_mapper.createObjectNode();
             // Since the DataServiceContext is public API, warning messages could have been wrongfully added to it.
             // We clear the context here to make sure there are no "stale" warning messages.
-            DataServiceContext.getContext().clear();
+            DataServiceContext.initAndGet(m_nc);
             var dataString = m_serializer.serialize(m_dataSupplier.get());
             try { // NOSONAR
                 root.set("result", m_mapper.readTree(dataString));
@@ -112,7 +117,7 @@ public final class InitialDataService<D> {
             }
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
             // consequence of) clearing it
-            final var warningMessages = DataServiceContext.getContext().getWarningMessages();
+            final var warningMessages = DataServiceContext.get().getWarningMessages();
             if (warningMessages != null && warningMessages.length > 0) {
                 root.set("warningMessages", m_mapper.valueToTree(warningMessages));
             }
@@ -124,7 +129,7 @@ public final class InitialDataService<D> {
             return m_mapper.createObjectNode()
                 .set("internalError", m_mapper.valueToTree(new InitialDataInternalError(t))).toString();
         } finally {
-            DataServiceContext.getContext().clear();
+            DataServiceContext.remove();
         }
     }
 
@@ -143,7 +148,8 @@ public final class InitialDataService<D> {
 
     /**
      * @param <D>
-     * @param dataSupplier
+     * @param dataSupplier supplies the initial data. A {@link DataServiceContext} is available whenever the supplier is
+     *            being called.
      * @return the builder to create an {@link InitialDataService}-instance
      */
     public static <D> InitialDataServiceBuilder<D> builder(final Supplier<D> dataSupplier) {
