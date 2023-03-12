@@ -52,8 +52,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DataTable;
-import org.knime.core.data.container.ContainerTable;
+import org.knime.core.node.BufferedDataTable;
 
 /**
  * Helper class to cache a table and update the cache.
@@ -64,7 +63,7 @@ class TableCache {
 
     private Object[] m_previousKeyValues;
 
-    private ContainerTable m_cachedTable;
+    private BufferedDataTable m_cachedTable;
 
     private boolean m_wasUpdated = false;
 
@@ -76,7 +75,7 @@ class TableCache {
      * @param keyValues the cache's key values; i.e. if those change, the cached table will be updated/replaced;
      *            otherwise the originally cached table will be kept
      */
-    void conditionallyUpdateCachedTable(final Supplier<ContainerTable> tableSupplier, final boolean shallClearCache,
+    void conditionallyUpdateCachedTable(final Supplier<BufferedDataTable> tableSupplier, final boolean shallClearCache,
         final Object... keyValues) {
         if (shallClearCache) {
             m_wasUpdated = m_cachedTable != null;
@@ -103,13 +102,12 @@ class TableCache {
     /**
      * @return the cached table if there is any, otherwise an empty optional
      */
-    Optional<DataTable> getCachedTable() {
+    Optional<BufferedDataTable> getCachedTable() {
         return Optional.ofNullable(m_cachedTable);
     }
 
     void clear() {
         if (m_cachedTable != null) {
-            m_cachedTable.close();
             m_cachedTable = null;
             m_previousKeyValues = null;
         }

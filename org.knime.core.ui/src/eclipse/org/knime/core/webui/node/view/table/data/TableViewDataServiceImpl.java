@@ -69,13 +69,11 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.ContainerTable;
-import org.knime.core.data.container.DataContainer;
 import org.knime.core.data.container.filter.TableFilter;
-import org.knime.core.data.sort.DataTableSorter;
+import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
@@ -293,7 +291,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return partition.get(true).stream().toArray(String[]::new);
     }
 
-    private static ContainerTable sortTable(final BufferedDataTable table, final String sortColumn,
+    private static BufferedDataTable sortTable(final BufferedDataTable table, final String sortColumn,
         final boolean sortAscending) {
         final var dts = table.getSpec();
         final var sortColIndex = dts.findColumnIndex(sortColumn);
@@ -308,18 +306,18 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
         final Comparator<DataRow> comp = rc.build();
         try {
-            return (ContainerTable)new DataTableSorter(table, table.size(), comp).sort(new ExecutionMonitor());
+            var exec = DataServiceContext.get().getExecutionContext().orElseThrow();
+            return new BufferedDataTableSorter(table, comp).sort(exec);
         } catch (CanceledExecutionException e) {
             throw new DataServiceException("Table sorting has been cancelled", e);
         }
     }
 
-    private static ContainerTable filterTable(final DataTable table, final String[] columns,
+    private static BufferedDataTable filterTable(final DataTable table, final String[] columns,
         final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys) {
         final var spec = table.getDataTableSpec();
-
-        var resultContainer = new DataContainer(spec, true);
-
+        var exec = DataServiceContext.get().getExecutionContext().orElseThrow();
+        var resultContainer = exec.createDataContainer(spec);
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
@@ -328,9 +326,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 }
             }
         }
-
         resultContainer.close();
-        return (ContainerTable)resultContainer.getTable();
+        return resultContainer.getTable();
     }
 
     /**

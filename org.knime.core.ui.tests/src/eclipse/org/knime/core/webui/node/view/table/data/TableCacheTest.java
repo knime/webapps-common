@@ -51,8 +51,8 @@ package org.knime.core.webui.node.view.table.data;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.container.ContainerTable;
-import org.mockito.Mockito;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.testing.node.view.TableTestUtil;
 
 /**
  * Tests {@link TableCache}.
@@ -68,11 +68,11 @@ public class TableCacheTest {
         assertThat(tableCache.wasUpdated()).isFalse();
 
         var keyValueVariants = successivelyModifiedKeyValues();
-        var tablesToCache = new ContainerTable[keyValueVariants.length];
+        var tablesToCache = new BufferedDataTable[keyValueVariants.length];
 
         // make sure the cache is updated whenever a 'key-value' changes
         for (var i = 0; i < tablesToCache.length; i++) {
-            tablesToCache[i] = Mockito.mock(ContainerTable.class);
+            tablesToCache[i] = TableTestUtil.createDefaultTestTable(1).get();
             final var final_i = i;
             tableCache.conditionallyUpdateCachedTable(() -> tablesToCache[final_i], false, keyValueVariants[i]);
             assertThat(tableCache.getCachedTable().orElse(null) == tablesToCache[i]).isTrue();
