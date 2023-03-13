@@ -50,14 +50,10 @@ package org.knime.core.webui.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 
@@ -74,47 +70,37 @@ import org.knime.core.node.workflow.NodeContainer;
  */
 public final class DataServiceContext {
 
-    private static final ThreadLocal<DataServiceContext> CONTEXTS = new ThreadLocal<>();
+    private static final ThreadLocal<DataServiceContext> CONTEXT = new ThreadLocal<>();
 
     /**
      * @return the {@link DataServiceContext} for the current thread., potentially creating a new one in the process
      */
     public static DataServiceContext get() {
-        return CONTEXTS.get();
+        return CONTEXT.get();
     }
 
-    static DataServiceContext initAndGet(final NodeContainer nc) {
+    static void init(final NodeContainer nc) {
         if (nc instanceof NativeNodeContainer nnc) {
-            return initAndGet(() -> nnc.createExecutionContext());
+            init(nnc::createExecutionContext);
         } else {
-            return initAndGet((Supplier)null);
+            init((Supplier<ExecutionContext>)null);
         }
     }
 
-    static DataServiceContext initAndGet(final Supplier<ExecutionContext> execSupplier) {
-        var context = CONTEXTS.get();
-        if (context == null) {
-            context = new DataServiceContext(execSupplier);
-            CONTEXTS.set(context);
+    static void init(final Supplier<ExecutionContext> execSupplier) {
+        if (CONTEXT.get() == null) {
+            CONTEXT.set(new DataServiceContext(execSupplier));
         }
-        return context;
     }
 
     private final List<String> m_warningMessages = new ArrayList<>();
 
-    private final LazyInitializer<ExecutionContext> m_exec;
+    private final Supplier<ExecutionContext> m_execSupplier;
 
-    private DataServiceContext(final Supplier<ExecutionContext> exec) {
-        if (exec != null) {
-            m_exec = new LazyInitializer<ExecutionContext>() {
-                @Override
-                protected ExecutionContext initialize() throws ConcurrentException {
-                    return exec.get();
-                }
-            };
-        } else {
-            m_exec = null;
-        }
+    private ExecutionContext m_exec;
+
+    private DataServiceContext(final Supplier<ExecutionContext> execSupplier) {
+        m_execSupplier = execSupplier;
     }
 
     /**
@@ -122,7 +108,7 @@ public final class DataServiceContext {
      *
      * @param warningMessage a warning message
      */
-    public void addWarningMessage(final String warningMessage) {
+    public synchronized void addWarningMessage(final String warningMessage) {
         m_warningMessages.add(warningMessage);
     }
 
@@ -134,26 +120,25 @@ public final class DataServiceContext {
     }
 
     /**
-     * @return the execution context, if available and no problem occurred while creating the execution context
+     * @return the execution context
+     * @throws IllegalStateException if there is no execution context available
      */
-    public Optional<ExecutionContext> getExecutionContext() {
+    public synchronized ExecutionContext getExecutionContext() {
         if (m_exec != null) {
-            try {
-                return Optional.of(m_exec.get());
-            } catch (ConcurrentException ex) {
-                NodeLogger.getLogger(this.getClass()).error("Problem creating execution context", ex);
-            }
+            return m_exec;
         }
-        return Optional.empty();
+        if (m_execSupplier != null) {
+            m_exec = m_execSupplier.get();
+            return m_exec;
+        }
+        throw new IllegalStateException("No execution context available");
     }
 
     /**
      * Removes the entire context for the current thread.
      */
-    public static void remove() {
-        if (CONTEXTS.get() != null) {
-            CONTEXTS.remove();
-        }
+    static void remove() {
+        CONTEXT.remove();
     }
 
 }

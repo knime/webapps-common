@@ -301,11 +301,11 @@ class TableViewTest {
             new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
         final var rows = testTable.getTable(
-            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo"))
+            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo"))
                 .toArray(String[]::new),
             0, 1, null, true, true, false).getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")
-            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+            .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
             "Adds warning message for single missing column.");
     }
@@ -363,10 +363,10 @@ class TableViewTest {
             "The selected columns foo, bar are not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
         final var rows = testTable.getTable(Stream
-            .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream().skip(1), Stream.of("foo", "bar"))
+            .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo", "bar"))
             .toArray(String[]::new), 0, 1, null, true, true, false).getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")
-            .hasSize(getDefaultTestSpec().getNumColumns() + 1);
+            .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
             "Adds warning message for single missing column.");
     }
@@ -522,23 +522,6 @@ class TableViewTest {
         var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
 
         assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"col1", "col2"});
-        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
-        assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
-    }
-
-    @Test
-    void testDataServiceIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var dataService = createTableViewDataServiceInstance(() -> inputTable);
-        var table = dataService.getTable(new String[]{"<index>", "<index>(1)"}, 0, 2, null, false, false, false);
-
-        assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"<index>", "<index>(1)"});
         assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
         assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
     }

@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.CanceledExecutionException;
@@ -80,12 +81,14 @@ public class DataServiceContextTest {
 
     @Test
     void testDataServiceContext() throws IOException, CanceledExecutionException {
-        var dataServiceContext = DataServiceContext.initAndGet((NativeNodeContainer)null);
-        assertThat(DataServiceContext.get()).isNotNull();
+        DataServiceContext.init((NativeNodeContainer)null);
+        var dataServiceContext = DataServiceContext.get();
+        assertThat(dataServiceContext).isNotNull();
         dataServiceContext.addWarningMessage("warning 1");
         dataServiceContext.addWarningMessage("warning 2");
         assertThat(dataServiceContext.getWarningMessages()).isEqualTo(new String[]{"warning 1", "warning 2"});
-        assertThat(dataServiceContext.getExecutionContext()).isEmpty();
+        Assertions.assertThatThrownBy(() -> dataServiceContext.getExecutionContext())
+            .isInstanceOf(IllegalStateException.class);
         DataServiceContext.remove();
         assertThat(DataServiceContext.get()).isNull();
 
@@ -94,9 +97,10 @@ public class DataServiceContextTest {
         var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(m -> createNodeView()));
 
         // test data service initialized with a node
-        var dataServiceContext2 = DataServiceContext.initAndGet(nnc);
-        assertThat(DataServiceContext.get()).isNotNull();
-        assertThat(dataServiceContext2.getExecutionContext()).isPresent();
+        DataServiceContext.init(nnc);
+        var dataServiceContext2 = DataServiceContext.get();
+        assertThat(dataServiceContext2).isNotNull();
+        assertThat(dataServiceContext2.getExecutionContext()).isNotNull();
         DataServiceContext.remove();
         assertThat(DataServiceContext.get()).isNull();
 
@@ -141,7 +145,7 @@ public class DataServiceContextTest {
     private static void assertDataServiceContextAvailable() {
         var dataServiceContext = DataServiceContext.get();
         assertThat(dataServiceContext).isNotNull();
-        assertThat(dataServiceContext.getExecutionContext()).isPresent();
+        assertThat(dataServiceContext.getExecutionContext()).isNotNull();
     }
 
     /**
@@ -150,7 +154,7 @@ public class DataServiceContextTest {
      * @param execSupplier
      */
     public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier) {
-        DataServiceContext.initAndGet(execSupplier);
+        DataServiceContext.init(execSupplier);
     }
 
     /**

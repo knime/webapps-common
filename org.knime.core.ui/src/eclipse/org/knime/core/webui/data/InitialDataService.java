@@ -107,7 +107,7 @@ public final class InitialDataService<D> {
             final var root = m_mapper.createObjectNode();
             // Since the DataServiceContext is public API, warning messages could have been wrongfully added to it.
             // We clear the context here to make sure there are no "stale" warning messages.
-            DataServiceContext.initAndGet(m_nc);
+            DataServiceContext.init(m_nc);
             var dataString = m_serializer.serialize(m_dataSupplier.get());
             try { // NOSONAR
                 root.set("result", m_mapper.readTree(dataString));
@@ -201,6 +201,7 @@ public final class InitialDataService<D> {
     }
 
     @SuppressWarnings("javadoc")
+    @FunctionalInterface
     public interface Serializer<D> {
         String serialize(D obj) throws IOException;
     }

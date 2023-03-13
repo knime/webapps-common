@@ -184,11 +184,13 @@ public final class ApplyDataService<D> {
     }
 
     @SuppressWarnings("javadoc")
+    @FunctionalInterface
     public interface Deserializer<D> {
         D deserialize(String data) throws IOException;
     }
 
     @SuppressWarnings("javadoc")
+    @FunctionalInterface
     public interface Applier<D> {
         void apply(D data) throws IOException;
     }

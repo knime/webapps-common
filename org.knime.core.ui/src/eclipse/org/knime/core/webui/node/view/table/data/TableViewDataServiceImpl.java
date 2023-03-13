@@ -68,7 +68,6 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CloseableRowIterator;
-import org.knime.core.data.container.ContainerTable;
 import org.knime.core.data.container.filter.TableFilter;
 import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
@@ -230,7 +229,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
         updateRenderersMap(spec, displayedColumns, rendererIds);
 
-        final var tableSize = getTableSize(filteredAndSortedTable);
+        final var tableSize = filteredAndSortedTable.size();
         final var toIndex = Math.min(fromIndex + numRows, tableSize) - 1;
         final var size = (int)(toIndex - fromIndex + 1);
 
@@ -241,7 +240,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             filter.withToRowIndex(toIndex); // will throw exception when toIndex < fromIndex
             filter.withMaterializeColumnIndices(colIndices);
             rows = renderRows(displayedColumns, colIndices, rendererIds, size,
-                createRowIteratorSupplier(filteredAndSortedTable, filter.build()), m_rendererRegistry, m_renderersMap,
+                () -> filteredAndSortedTable.filter(filter.build()).iterator(), m_rendererRegistry, m_renderersMap,
                 m_tableId);
         } else {
             rows = new String[0][];
@@ -306,7 +305,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
         final Comparator<DataRow> comp = rc.build();
         try {
-            var exec = DataServiceContext.get().getExecutionContext().orElseThrow();
+            var exec = DataServiceContext.get().getExecutionContext();
             return new BufferedDataTableSorter(table, comp).sort(exec);
         } catch (CanceledExecutionException e) {
             throw new DataServiceException("Table sorting has been cancelled", e);
@@ -316,7 +315,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     private static BufferedDataTable filterTable(final DataTable table, final String[] columns,
         final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys) {
         final var spec = table.getDataTableSpec();
-        var exec = DataServiceContext.get().getExecutionContext().orElseThrow();
+        var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
             while (iterator.hasNext()) {
@@ -334,12 +333,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
      * @param table
      * @return the number of selected rows in the given table
      */
-    private static Long countSelectedRows(final DataTable table, final Set<RowKey> currentSelection) {
+    private static Long countSelectedRows(final BufferedDataTable table, final Set<RowKey> currentSelection) {
         if (currentSelection.isEmpty()) {
             return 0l;
         }
         var totalSelected = 0l;
-        try (final var iterator = createRowIteratorSupplier(table, createRowKeysFilter()).get()) {
+        try (final var iterator = table.filter(createRowKeysFilter()).iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
                 if (currentSelection.contains(row.getKey())) {
@@ -415,15 +414,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     private static boolean matchesGlobalSearchTerm(final String cellStringValue, final String globalSearchTerm) {
         return globalSearchTerm == null || globalSearchTerm.isEmpty()
             || cellStringValue.contains(globalSearchTerm.toLowerCase());
-    }
-
-    private static long getTableSize(final DataTable table) {
-        // TODO remove this and use execution context, if UIEXT-243 is implemented
-        if (table instanceof ContainerTable) {
-            return ((ContainerTable)table).size();
-        } else {
-            return ((BufferedDataTable)table).size();
-        }
     }
 
     private static String[][] renderRows(final String[] columns, final int[] colIndices, final String[] rendererIds,
@@ -536,27 +526,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         };
     }
 
-    // TODO remove this and use execution context, if UIEXT-243 is implemented
-    private static Supplier<CloseableRowIterator> createRowIteratorSupplier(final DataTable table,
-        final TableFilter filter) {
-        Supplier<CloseableRowIterator> rowIteratorSupplier;
-        if (table instanceof ContainerTable) {
-            rowIteratorSupplier = () -> ((ContainerTable)table).iteratorWithFilter(filter);
-        } else {
-            rowIteratorSupplier = () -> ((BufferedDataTable)table).filter(filter).iterator();
-        }
-        return rowIteratorSupplier;
-    }
-
     @Override
     public String[] getCurrentRowKeys() {
         final var filteredAndSortedTable =
             m_filteredAndSortedTableCache.getCachedTable().orElseGet(m_tableSupplier::get);
-        final var size = (int)getTableSize(filteredAndSortedTable);
+        final var size = (int)filteredAndSortedTable.size();
         final var rowKeys = new String[size];
         final var filter = new TableFilter.Builder();
         filter.withMaterializeColumnIndices(new int[0]);
-        try (final var iterator = createRowIteratorSupplier(filteredAndSortedTable, filter.build()).get()) {
+        try (final var iterator = filteredAndSortedTable.filter(filter.build()).iterator()) {
             IntStream.range(0, size).forEach(index -> {
                 final var row = iterator.next();
                 rowKeys[index] = row.getKey().toString();

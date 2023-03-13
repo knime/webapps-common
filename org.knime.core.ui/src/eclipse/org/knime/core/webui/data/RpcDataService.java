@@ -93,7 +93,7 @@ public final class RpcDataService {
      */
     public String handleRpcRequest(final String request) {
         try {
-            DataServiceContext.initAndGet(m_nc);
+            DataServiceContext.init(m_nc);
             final var response = RpcServerManager.doRpc(m_rpcServer, request);
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
             // consequence of) clearing it
