@@ -195,4 +195,21 @@ describe('DropdownInput.vue', () => {
         wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
         expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);
     });
+    
+    describe('update initial data', () => {
+        it('updates initial data on change', async () => {
+            const updatedValue = 'Universe_0_1 (updated value)';
+            const props = {
+                ...defaultProps,
+                dropdownValueToControlData: () => updatedValue
+            };
+            wrapper = await mountJsonFormsComponent(DropdownInput, props);
+            expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, updatedValue);
+        });
+
+        it('does not update initial data if they are current', async () => {
+            wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
+            expect(handleChangeSpy).not.toHaveBeenCalled();
+        });
+    });
 });

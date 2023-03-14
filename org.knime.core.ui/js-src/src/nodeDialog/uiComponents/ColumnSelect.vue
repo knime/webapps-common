@@ -11,15 +11,20 @@ export default {
     inheritAttrs: false,
     methods: {
         optionsGenerator(control) {
-            const oneOf = control.schema.properties.selected.oneOf;
+            const allColumns = this.getAllColumns(control);
             const additionalInformation = control.uischema.options;
-            return generatePossibleValues(oneOf, additionalInformation);
+            return generatePossibleValues(allColumns, additionalInformation);
         },
         toValue(data) {
             return data.selected;
         },
-        toData(value) {
-            return { selected: value };
+        toData(control, value) {
+            const allColumns = this.getAllColumns(control);
+            const compatibleTypes = allColumns.find(item => item.const === value)?.compatibleTypes;
+            return { selected: value, compatibleTypes };
+        },
+        getAllColumns(control) {
+            return control.schema.properties.selected.oneOf;
         }
     }
 };

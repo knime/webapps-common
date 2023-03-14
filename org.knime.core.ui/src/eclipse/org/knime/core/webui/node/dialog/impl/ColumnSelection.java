@@ -48,7 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -66,12 +70,25 @@ public final class ColumnSelection implements DialogComponentSettings {
     public String m_selected;
 
     /**
-     * Initialises the column selection with an initial array of columns which are manually selected
-     *
-     * @param initialSelected the initial manually selected non-null columns
+     * The collection of the names of all types with respect to which the current selected column is compatible
      */
-    public ColumnSelection(final String initialSelected) {
-        m_selected = initialSelected;
+    @Persist(hidden = true, optional = true)
+    public String[] m_compatibleTypes;
+
+    /**
+     * @param colSpec the spec of tht initially selected column
+     */
+    public ColumnSelection(final DataColumnSpec colSpec) {
+        this(colSpec.getName(), colSpec.getType());
+    }
+
+    /**
+     * @param name the name of the selected column
+     * @param type the type of the selected column
+     */
+    public ColumnSelection(final String name, final DataType type) {
+        m_selected = name;
+        m_compatibleTypes = getCompatibleTypes(type);
     }
 
     /**
@@ -95,5 +112,26 @@ public final class ColumnSelection implements DialogComponentSettings {
     @JsonIgnore
     public String getSelected() {
         return m_selected;
+    }
+
+    /**
+     * A method for generating the compatible types of the currently selected columns. The current compatible types
+     * could, e.g., be empty because they had not been persisted previously.
+     *
+     * @param spec to determine the type of the selected column from
+     */
+    public void updateCurrentCompatibleTypes(final DataTableSpec spec) {
+        m_compatibleTypes = getCompatibleTypes(spec.getColumnSpec(m_selected).getType());
+    }
+
+    /**
+     * @param type against which compatibility is checked
+     * @return A list of string representations of all the types the given one is compatible to
+     */
+    public static String[] getCompatibleTypes(final DataType type) {
+        if (type == null) {
+            return new String[0];
+        }
+        return type.getValueClasses().stream().map(Class::getName).toArray(String[]::new);
     }
 }

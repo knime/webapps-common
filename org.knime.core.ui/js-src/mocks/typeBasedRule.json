@@ -1,0 +1,205 @@
+{
+  "result": {
+    "name": "Type Based Rules Showcase",
+    "data": {
+      "view": {
+        "column": {
+          "selected": "Universe_1_0"
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "column": {
+              "type": "object",
+              "properties": {
+                "compatibleTypes": {
+                  "configKeys": [
+                    "compatibleTypes_Internals"
+                  ],
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "configKeys": [
+                      "compatibleTypes_Internals"
+                    ]
+                  }
+                },
+                "selected": {
+                  "oneOf": [
+                    {
+                      "const": "Universe_0_0",
+                      "title": "Universe_0_0",
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)",
+                      "compatibleTypes": [
+                        "org.knime.core.data.DoubleValue",
+                        "org.knime.core.data.DataValue",
+                        "org.knime.core.data.ComplexNumberValue",
+                        "org.knime.core.data.FuzzyNumberValue",
+                        "org.knime.core.data.FuzzyIntervalValue",
+                        "org.knime.core.data.BoundedValue"
+                      ]
+                    },
+                    {
+                      "const": "Universe_0_1",
+                      "title": "Universe_0_1",
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)",
+                      "compatibleTypes": [
+                        "org.knime.core.data.DoubleValue",
+                        "org.knime.core.data.DataValue",
+                        "org.knime.core.data.ComplexNumberValue",
+                        "org.knime.core.data.FuzzyNumberValue",
+                        "org.knime.core.data.FuzzyIntervalValue",
+                        "org.knime.core.data.BoundedValue"
+                      ]
+                    },
+                    {
+                      "const": "Universe_1_0",
+                      "title": "Universe_1_0",
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)",
+                      "compatibleTypes": [
+                        "org.knime.core.data.DoubleValue",
+                        "org.knime.core.data.DataValue",
+                        "org.knime.core.data.ComplexNumberValue",
+                        "org.knime.core.data.FuzzyNumberValue",
+                        "org.knime.core.data.FuzzyIntervalValue",
+                        "org.knime.core.data.BoundedValue"
+                      ]
+                    },
+                    {
+                      "const": "Universe_1_1",
+                      "title": "Universe_1_1",
+                      "columnType": "org.knime.core.data.DoubleValue",
+                      "columnTypeDisplayed": "Number (double)",
+                      "compatibleTypes": [
+                        "org.knime.core.data.DoubleValue",
+                        "org.knime.core.data.DataValue",
+                        "org.knime.core.data.ComplexNumberValue",
+                        "org.knime.core.data.FuzzyNumberValue",
+                        "org.knime.core.data.FuzzyIntervalValue",
+                        "org.knime.core.data.BoundedValue"
+                      ]
+                    },
+                    {
+                      "const": "Cluster Membership",
+                      "title": "Cluster Membership",
+                      "columnType": "org.knime.core.data.StringValue",
+                      "columnTypeDisplayed": "String",
+                      "compatibleTypes": [
+                        "org.knime.core.data.StringValue",
+                        "org.knime.core.data.DataValue",
+                        "org.knime.core.data.NominalValue"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "title": "Vertical dimension",
+              "description": "Defines the column that contains the values for y coordinates.",
+              "default": {
+                "m_selected": "Universe_0_1",
+                "m_compatibleTypes": [
+                  "org.knime.core.data.DoubleValue",
+                  "org.knime.core.data.DataValue",
+                  "org.knime.core.data.ComplexNumberValue",
+                  "org.knime.core.data.FuzzyNumberValue",
+                  "org.knime.core.data.FuzzyIntervalValue",
+                  "org.knime.core.data.BoundedValue"
+                ]
+              },
+              "configKeys": [
+                "yAxisColumn"
+              ]
+            }
+          }
+        }
+      },
+      "flowVariablesMap": {},
+      "hasNodeView": true,
+      "showAdvancedSettings": false
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Data",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/column",
+              "options": {
+                "showRowKeys": false,
+                "showNoneColumn": false
+              }
+            },
+            {
+              "type": "Section",
+              "label": "A DoubleValue-compatible column is selected",
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/column",
+                  "schema": {
+                    "properties": {
+                      "compatibleTypes": {
+                        "contains": {
+                          "const": "org.knime.core.data.DoubleValue"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Section",
+              "label": "A StringValue-compatible column is selected",
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/column",
+                  "schema": {
+                    "properties": {
+                      "compatibleTypes": {
+                        "contains": {
+                          "const": "org.knime.core.data.StringValue"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Section",
+              "label": "A DataValue-compatible column is selected",
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/column",
+                  "schema": {
+                    "properties": {
+                      "compatibleTypes": {
+                        "contains": {
+                          "const": "org.knime.core.data.DataValue"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    
+  }
+}

@@ -5,6 +5,7 @@ import { generatePossibleValues, getFlowVariablesMap, isModelSettingAndHasNodeVi
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -28,7 +29,7 @@ const DropdownInput = defineComponent({
         dropdownValueToControlData: {
             type: Function,
             required: false,
-            default: (value) => value
+            default: (control, value) => value
         }
 
     },
@@ -66,10 +67,21 @@ const DropdownInput = defineComponent({
             options = [];
         }
         this.options = options;
+        this.updateInitialData();
     },
     methods: {
+        updateInitialData() {
+            const initialData = this.control.data;
+            const updatedInitialData = this.dropdownValueToControlData(
+                this.control,
+                this.controlDataToDropdownValue(initialData)
+            );
+            if (!isDeepStrictEqual(initialData, updatedInitialData)) {
+                this.handleChange(this.control.path, updatedInitialData);
+            }
+        },
         onChange(value) {
-            this.handleChange(this.control.path, this.dropdownValueToControlData(value));
+            this.handleChange(this.control.path, this.dropdownValueToControlData(this.control, value));
             if (this.isModelSettingAndHasNodeView) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }

@@ -49,11 +49,15 @@ package org.knime.core.webui.node.dialog.impl;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_CONST;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITLE;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.victools.jsonschema.generator.SchemaGenerationContext;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfig;
 
@@ -102,15 +106,17 @@ final class ChoicesArrayNodeGenerator {
 
     private void addNonEmptyColumnChoices(final DataColumnSpec[] colChoices) {
         for (DataColumnSpec colChoice : colChoices) {
-            final var typeIdentifier = TypeColumnFilter.typeToString(colChoice.getType());
-            final var displayedType = colChoice.getType().getName();
             final var colName = colChoice.getName();
-            addChoiceWithTypeInformation(colName, colName, typeIdentifier, displayedType);
+            final var colType = colChoice.getType();
+            final var typeIdentifier = TypeColumnFilter.typeToString(colType);
+            final var displayedType = colType.getName();
+            final var compatibleTypes = Arrays.asList(ColumnSelection.getCompatibleTypes(colType));
+            addChoiceWithTypeInformation(colName, colName, typeIdentifier, displayedType, compatibleTypes);
         }
     }
 
     private void addEmptyColumnChoice() {
-        addChoiceWithTypeInformation("", "", "", "");
+        addChoiceWithTypeInformation("", "", "", "", List.of());
     }
 
     private void addStringsFromChoicesProvider(final ChoicesProvider choicesProvider) {
@@ -140,12 +146,12 @@ final class ChoicesArrayNodeGenerator {
     }
 
     private void addChoiceWithTypeInformation(final String id, final String text, final String type,
-        final String displayedType) {
+        final String displayedType, final List<String> compatibleTypes) {
         final var entry = getBaseEntry(id, text);
-        if (type != null) {
-            entry.put("columnType", type);
-            entry.put("columnTypeDisplayed", displayedType);
-        }
+        entry.put("columnType", type);
+        entry.put("columnTypeDisplayed", displayedType);
+        final var compatibleTypesArrayNode = entry.putArray("compatibleTypes");
+        compatibleTypes.stream().map(TextNode::new).forEach(compatibleTypesArrayNode::add);
         m_arrayNode.add(entry);
     }
 

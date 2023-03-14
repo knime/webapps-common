@@ -45,9 +45,11 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
@@ -62,13 +64,11 @@ class StringToColumnSelectionPersistorTest {
 
     private static final String ROOT_KEY = "Test";
 
-
     private static final class StringToColumnSelectionPersistorSettings implements DefaultNodeSettings {
 
         @Persist(customPersistor = StringToColumnSelectionPersistor.class)
         ColumnSelection m_foo;
     }
-
 
     @Test
     void testLoadLegacyString() throws InvalidSettingsException {
@@ -80,7 +80,7 @@ class StringToColumnSelectionPersistorTest {
         final var loaded = persistor.load(savedSettings);
 
         final var expected = new StringToColumnSelectionPersistorSettings();
-        expected.m_foo = new ColumnSelection(savedString);
+        expected.m_foo = new ColumnSelection(savedString, null);
         assertResults(expected, loaded);
     }
 
@@ -100,7 +100,7 @@ class StringToColumnSelectionPersistorTest {
         final var savedString = "bar";
 
         final var expected = new StringToColumnSelectionPersistorSettings();
-        expected.m_foo = new ColumnSelection(savedString);
+        expected.m_foo = new ColumnSelection(savedString, StringCell.TYPE);
 
         final var persistor = new FieldBasedNodeSettingsPersistor<>(StringToColumnSelectionPersistorSettings.class);
 
@@ -110,8 +110,13 @@ class StringToColumnSelectionPersistorTest {
         assertResults(expected, loaded);
     }
 
-    private static void assertResults(final StringToColumnSelectionPersistorSettings expected, final StringToColumnSelectionPersistorSettings loaded) {
-        assertEquals(expected.m_foo.m_selected, loaded.m_foo.m_selected, "The loaded settings are not as expected");
+    private static void assertResults(final StringToColumnSelectionPersistorSettings expected,
+        final StringToColumnSelectionPersistorSettings loaded) {
+        assertEquals(expected.m_foo.m_selected, loaded.m_foo.m_selected,
+            "The loaded selected value is not as expected");
+        assertArrayEquals(expected.m_foo.m_compatibleTypes, loaded.m_foo.m_compatibleTypes,
+            "The loaded compatible types are not as expected");
+
     }
 
 }

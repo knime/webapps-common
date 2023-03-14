@@ -18,7 +18,9 @@ vi.mock('@jsonforms/vue', async () => {
             layout: null,
             path: ''
         }),
-        useJsonFormsControl: vi.fn(),
+        useJsonFormsControl: vi.fn(() => ({
+            handleChange: vi.fn()
+        })),
         useJsonFormsLayout: vi.fn(),
         useJsonFormsArrayControl: vi.fn()
     };

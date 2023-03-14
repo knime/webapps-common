@@ -353,8 +353,8 @@ class JsonFormsSchemaUtilTest {
         public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
             DataTableSpec spec = context.getDataTableSpecs()[0];
             return Stream.of(included)//
-                    .map(spec::getColumnSpec)//
-                    .toArray(DataColumnSpec[]::new);
+                .map(spec::getColumnSpec)//
+                .toArray(DataColumnSpec[]::new);
         }
     }
 
@@ -368,31 +368,51 @@ class JsonFormsSchemaUtilTest {
         }
     }
 
-    private static class ColumnSelectionSettings{
+    private static String COMPATIBLE_TYPES_STRING_VALUE = " [" //
+        + "\"org.knime.core.data.StringValue\", " //
+        + "\"org.knime.core.data.DataValue\", " //
+        + "\"org.knime.core.data.NominalValue\"" //
+        + "]";
+
+    private static String COMPATIBLE_TYPES_DOUBLE_VALUE = "[" //
+        + "\"org.knime.core.data.DoubleValue\", " //
+        + "\"org.knime.core.data.DataValue\", " //
+        + "\"org.knime.core.data.ComplexNumberValue\", " //
+        + "\"org.knime.core.data.FuzzyNumberValue\", " //
+        + "\"org.knime.core.data.FuzzyIntervalValue\", " //
+        + "\"org.knime.core.data.BoundedValue\"]";
+
+    private static class ColumnSelectionSettings {
 
         private static DataTableSpec spec =
             new DataTableSpec(new DataColumnSpecCreator(ColumnChoices.included[0], DoubleCell.TYPE).createSpec(),
                 new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
                 new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
 
+        private static String COMPATIBLE_TYPES_SNAPSHOT = "{\"configKeys\":[\"compatibleTypes_Internals\"]," //
+            + "\"items\":{\"configKeys\":[\"compatibleTypes_Internals\"],\"type\":\"string\"}," //
+            + "\"type\":\"array\"}";
+
         private static String SNAPSHOT = "{" + //
             "\"testColumnSelection\":{"// +
             + "\"title\":\"column\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
-            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}]}"//
-            + "}}," //
+            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\","
+            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_DOUBLE_VALUE //
+            + "},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"," //
+            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_STRING_VALUE //
+            + "}]},"//
+            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_SNAPSHOT + "}}," //
             + "\"testColumnSelectionNoTypes\":{"// +
             + "\"title\":\"strings\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
-            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}"//
-            + "}}"
-            + "}";
+            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}," //
+            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_SNAPSHOT + "}}" + "}";
 
         @Schema(title = "column", choices = ColumnChoices.class)
         public ColumnSelection testColumnSelection;
-
 
         @Schema(title = "strings", choices = NonColumnChoices.class)
         public ColumnSelection testColumnSelectionNoTypes;
@@ -424,8 +444,12 @@ class JsonFormsSchemaUtilTest {
             + "\"title\":\"columns\","//
             + "\"type\":\"object\","//
             + "\"properties\":{" //
-            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\"},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"}],\"configKeys\":[\"selected_Internals\"]}"//
+            + COLUMN_FILTER_SNAPSHOT_IDENTICAL + "\"selected\":{\"anyOf\":["
+            + "{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\","
+            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_DOUBLE_VALUE //
+            + "},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\","
+            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_STRING_VALUE //
+            + "}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//
@@ -455,7 +479,8 @@ class JsonFormsSchemaUtilTest {
             + "\"type\":\"object\","//
             + "\"properties\":{" //
             + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\"}],\"configKeys\":[\"selected_Internals\"]}"//
+            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\","
+            + "\"compatibleTypes\": []" + "}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}," //
             + "\"testColumnFilterNoTypes\":{" //
             + "\"title\":\"otherSelection\","//

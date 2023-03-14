@@ -45,49 +45,63 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.StringCell;
+import org.knime.testing.node.view.TableTestUtil;
 
 /**
- * The data structure of a ColumnSelection dropdown changed from a strings to a more complex representation by a
- * {@link ColumnSelection}. For previous workflows to still execute (given that the setting is not overwritten by a flow
- * variable), we transform the stored string to the correct representation.
- *
  * @author Paul Bärnreuther
  */
-public final class StringToColumnSelectionPersistor extends NodeSettingsPersistorWithConfigKey<ColumnSelection> {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class ColumnSelectionTest {
 
-    private final FieldBasedNodeSettingsPersistor<ColumnSelection> m_persistor;
+    private static final DataTableSpec TABLE_SPEC = TableTestUtil.getDefaultTestSpec();
 
-    @SuppressWarnings("javadoc")
-    public StringToColumnSelectionPersistor(final Class<ColumnSelection> settingsClass) {
-        m_persistor = new FieldBasedNodeSettingsPersistor<>(settingsClass);
+    @Test
+    void testColumnSelectionInitializesSelected() {
+        final var selection = new ColumnSelection(TABLE_SPEC.getColumnSpec(0));
+        assertThat(selection.getSelected()).isEqualTo("int");
     }
 
-    @Override
-    public ColumnSelection load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        /**
-         * This is necessary for now to avoid getting a InvalidSettingsException when trying to load nodes which
-         *  did not have the setting annotated by this persistor previously.
-         *  TODO: Remove this, once we have optional custom persistors (UIEXT-805)
-         */
-        if (!settings.containsKey(getConfigKey())) {
-            return new ColumnSelection();
-        }
-
-        try {
-            final var fieldSettingsString = settings.getString(getConfigKey());
-            return new ColumnSelection(fieldSettingsString, null);
-        } catch (InvalidSettingsException ex) {
-            return m_persistor.load(settings.getNodeSettings(getConfigKey()));
-        }
+    @Test
+    void testColumnSelectionInitializesCompatibleTypes() {
+        final var colSpec = TABLE_SPEC.getColumnSpec(0);
+        final var selection = new ColumnSelection(colSpec);
+        assertThat(selection.m_compatibleTypes).hasSizeGreaterThan(1);
+        assertThat(selection.m_compatibleTypes[0]).isEqualTo(colSpec.getType().getPreferredValueClass().getName());
     }
 
-    @Override
-    public void save(final ColumnSelection obj, final NodeSettingsWO settings) {
-        m_persistor.save(obj, settings.addNodeSettings(getConfigKey()));
+    @Test
+    void testColumnSelectionUpdatesCompatibleTypes() {
+        final var selection = new ColumnSelection(TABLE_SPEC.getColumnSpec(0));
+        selection.m_compatibleTypes = new String[0];
+
+        selection.updateCurrentCompatibleTypes(TABLE_SPEC);
+
+        assertThat(selection.m_compatibleTypes).hasSizeGreaterThan(0);
     }
+
+    @Test
+    void testColumnSelectionCustomColumns() {
+        final var name = "Name";
+        final var type = StringCell.TYPE;
+        final var selection = new ColumnSelection(name, type);
+        assertThat(selection.m_selected).isEqualTo(name);
+        assertThat(selection.m_compatibleTypes).hasSizeGreaterThan(1);
+        assertThat(selection.m_compatibleTypes[0]).isEqualTo(type.getPreferredValueClass().getName());
+    }
+
+    @Test
+    void testColumnSelectionCustomColumnsNullDataType() {
+        final var name = "Name";
+        final DataType type = null;
+        final var selection = new ColumnSelection(name, type);
+        assertThat(selection.m_selected).isEqualTo(name);
+        assertThat(selection.m_compatibleTypes).isEmpty();
+    }
+
 }
