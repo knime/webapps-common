@@ -20,5 +20,5 @@ pipelines:
     '**':
       - step: *lint-test-build
   branches:
-    master:
+    '{master,vue2}':
       - step: *lint-test-build
