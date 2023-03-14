@@ -90,7 +90,6 @@ public class DataServiceContextTest {
         Assertions.assertThatThrownBy(() -> dataServiceContext.getExecutionContext())
             .isInstanceOf(IllegalStateException.class);
         DataServiceContext.remove();
-        assertThat(DataServiceContext.get()).isNull();
 
         // create properly set-up node with a view
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
@@ -102,7 +101,6 @@ public class DataServiceContextTest {
         assertThat(dataServiceContext2).isNotNull();
         assertThat(dataServiceContext2.getExecutionContext()).isNotNull();
         DataServiceContext.remove();
-        assertThat(DataServiceContext.get()).isNull();
 
         // verify that the data service context is available within the data services
         var initialData = NodeViewManager.getInstance().callInitialDataService(NodeWrapper.of(nnc));

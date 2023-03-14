@@ -185,6 +185,8 @@ public final class TableTestUtil {
          * Add another row to the table. Currently supported types include {@link DataCell DataCells}, {@link Integer},
          * {@link Long}, {@link Double}, {@link String}, {@link Boolean}, and null.
          *
+         * Note: the rowId will be prefixed with 'rowkey'.
+         *
          * @param cells the cells comprising the to-be-added row
          * @return this builder
          */
@@ -203,8 +205,8 @@ public final class TableTestUtil {
          * @return this builder
          */
         public TableBuilder addRowWithId(final String rowId, final Object... cells) {
-            m_container.addRowToTable(
-                new DefaultRow(new RowKey(rowId), Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
+            m_container.addRowToTable(new DefaultRow(new RowKey(rowId),
+                Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
             return this;
         }
 

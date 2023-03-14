@@ -76,8 +76,13 @@ public final class DataServiceContext {
      * @return the {@link DataServiceContext} for the current thread., potentially creating a new one in the process
      */
     public static DataServiceContext get() {
-        init((Supplier<ExecutionContext>)null);
-        return CONTEXT.get();
+        var context = CONTEXT.get();
+        if (context == null) {
+            init((Supplier<ExecutionContext>)null);
+            return CONTEXT.get();
+        } else {
+            return context;
+        }
     }
 
     static void init(final NodeContainer nc) {
@@ -89,9 +94,7 @@ public final class DataServiceContext {
     }
 
     static void init(final Supplier<ExecutionContext> execSupplier) {
-        if (CONTEXT.get() == null) {
-            CONTEXT.set(new DataServiceContext(execSupplier));
-        }
+        CONTEXT.set(new DataServiceContext(execSupplier));
     }
 
     private final List<String> m_warningMessages = new ArrayList<>();
@@ -118,6 +121,13 @@ public final class DataServiceContext {
      */
     public synchronized String[] getWarningMessages() {
         return m_warningMessages.toArray(new String[0]);
+    }
+
+    /**
+     * Removes all the previously set warning message.
+     */
+    public synchronized void clearWarningMessages() {
+        m_warningMessages.clear();
     }
 
     /**
