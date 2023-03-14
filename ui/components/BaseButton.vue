@@ -80,7 +80,7 @@ export default defineComponent({
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <Component
     :is="component"
-    v-bind="{ ...$attrs, ...dynamicProps }"
+    v-bind="dynamicProps"
     ref="button"
     @click="onClick"
   >

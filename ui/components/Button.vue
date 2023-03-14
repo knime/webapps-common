@@ -6,7 +6,6 @@ export default defineComponent({
   components: {
     BaseButton,
   },
-  inheritAttrs: false,
   props: {
     /**
      * @see {@link BaseButton.vue}
@@ -56,7 +55,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <BaseButton v-bind="$attrs" :class="classes">
+  <BaseButton :class="classes">
     <slot />
   </BaseButton>
 </template>
