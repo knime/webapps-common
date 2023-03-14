@@ -96,7 +96,11 @@ public final class InitialDataService<D> {
             m_serializer = builder.m_serializer;
         }
         m_cleanUp = builder.m_cleanUp;
-        m_nc = NodeContext.getContext().getNodeContainer();
+        if (NodeContext.getContext() != null) {
+            m_nc = NodeContext.getContext().getNodeContainer();
+        } else {
+            m_nc = null;
+        }
     }
 
     /**

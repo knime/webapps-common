@@ -76,6 +76,7 @@ public final class DataServiceContext {
      * @return the {@link DataServiceContext} for the current thread., potentially creating a new one in the process
      */
     public static DataServiceContext get() {
+        init((Supplier<ExecutionContext>)null);
         return CONTEXT.get();
     }
 
@@ -115,7 +116,7 @@ public final class DataServiceContext {
     /**
      * @return a list of warnings that occurred while invoking the data service
      */
-    public String[] getWarningMessages() {
+    public synchronized String[] getWarningMessages() {
         return m_warningMessages.toArray(new String[0]);
     }
 

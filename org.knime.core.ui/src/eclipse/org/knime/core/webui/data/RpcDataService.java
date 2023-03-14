@@ -84,7 +84,11 @@ public final class RpcDataService {
             throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
         }
         m_cleanUp = builder.m_cleanUp;
-        m_nc = NodeContext.getContext().getNodeContainer();
+        if (NodeContext.getContext() != null) {
+            m_nc = NodeContext.getContext().getNodeContainer();
+        } else {
+            m_nc = null;
+        }
     }
 
     /**
