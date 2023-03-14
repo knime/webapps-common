@@ -205,40 +205,20 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * @param context
      */
     protected TableViewViewSettings(final SettingsCreationContext context) {
-        setDisplayedColumns(getAllColumns(context.getDataTableSpecs()[0]));
+        this(context.getDataTableSpecs()[0]);
     }
 
     /**
      * @param spec
      */
     public TableViewViewSettings(final DataTableSpec spec) {
-        setDisplayedColumns(getNonIndexColumns(spec));
-    }
-
-    private void setDisplayedColumns(final String[] choices) {
-        m_displayedColumns = new ColumnFilter(choices);
+        m_displayedColumns = new ColumnFilter(spec.getColumnNames());
     }
 
     @SuppressWarnings("javadoc")
     @JsonIgnore //
     public String[] getDisplayedColumns(final DataTableSpec spec) {
-        final var choices = getNonIndexColumns(spec);
+        final var choices = spec.getColumnNames();
         return m_displayedColumns.getSelected(choices, spec);
     }
-
-    private static String[] getAllColumns(final DataTableSpec spec) {
-        if (spec == null) {
-            return new String[0];
-        }
-        return spec.stream().map(DataColumnSpec::getName).toArray(String[]::new);
-    }
-
-    //TODO: Revert this with UIEXT-803 when we move appending the indices to a later point in the lifecycle.
-    private static String[] getNonIndexColumns(final DataTableSpec spec) {
-        if (spec == null) {
-            return new String[0];
-        }
-        return spec.stream().skip(1).map(DataColumnSpec::getName).toArray(String[]::new);
-    }
-
 }
