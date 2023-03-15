@@ -176,7 +176,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         if (service != null) {
             return service.getInitialData();
         } else {
-            throw new IllegalStateException("No text initial data service available");
+            throw new IllegalStateException("No initial data service available");
         }
     }
 
@@ -207,7 +207,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         if (service != null) {
             return service.handleRpcRequest(request);
         } else {
-            throw new IllegalStateException("No text data service available");
+            throw new IllegalStateException("No rpc data service available");
         }
     }
 
@@ -240,7 +240,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     public final void callApplyDataService(final N nodeWrapper, final String request) throws IOException {
         var service = getApplyDataService(nodeWrapper).orElse(null);
         if (service == null) {
-            throw new IllegalStateException("No text apply data service available");
+            throw new IllegalStateException("No apply data service available");
         } else if (service.shallReExecute()) {
             service.reExecute(request);
         } else {
