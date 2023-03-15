@@ -131,13 +131,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
             return createNodeView(
                 Page.builder(() -> "foo", "index.html").addResourceFromString(() -> "bar", "resource.html").build(),
                 InitialDataService.builder(() -> m_initialData).build(),
-                RpcDataService.builder(new Runnable() {
-
-                    @Override
-                    public void run() {
-                    }
-
-                }).build(), createApplyDataService());
+                RpcDataService.builder(new RpcServiceHandler()).build(), createApplyDataService());
         };
         m_hasView = () -> true;
     }
@@ -260,6 +254,14 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
     @Override
     public boolean hasNodeView() {
         return m_hasView.getAsBoolean();
+    }
+
+    public static class RpcServiceHandler {
+
+        public String method(final String param) {
+            return "rpc method result with param: " + param;
+        }
+
     }
 
 }
