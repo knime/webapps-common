@@ -1,26 +1,17 @@
 <script setup lang="ts">
+import { toRefs } from '@vueuse/shared';
 import { ref } from 'vue';
 import useClickOutside from '../useClickOutside';
 
-const props = defineProps({
-    callback: {
-        type: Function,
-        required: true
-    },
-    active: {
-        type: Boolean,
-        required: false,
-        default: true
-    }
-});
-const active = ref(props.active);
+const props = withDefaults(defineProps<{
+ callback:(event: PointerEvent) => void
+ active?: boolean
+}>(), { active: true });
+
+const { active } = toRefs(props);
 const first = ref(null);
 const second = ref(null);
 useClickOutside({ targets: [first, second], callback: props.callback }, active);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const setActive = (newVal: boolean) => {
-    active.value = newVal;
-};
 </script>
 
 <template>

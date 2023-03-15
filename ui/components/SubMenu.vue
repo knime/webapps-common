@@ -1,13 +1,20 @@
-<script>
+<script lang="ts">
 import { ref, toRefs, computed, unref, watch } from 'vue';
 
 import FunctionButton from './FunctionButton.vue';
 import MenuItems from './MenuItems.vue';
-import useDropdownNavigation from '../util/useDropdownNavigation';
-import usePopper from '../util/usePopper';
-import useClickOutside from '../util/useClickOutside';
+import usePopper from '../composables/usePopper';
+import useClickOutside from '../composables/useClickOutside';
 
-const placementMap = {
+import type { MenuItem } from './MenuItemsBase.vue';
+import type { PropType } from 'vue';
+import type { Placement } from '@popperjs/core';
+
+const orientations = ['right', 'top', 'left'] as const;
+
+type Orientation = typeof orientations[number];
+
+const placementMap: Record<Orientation, Placement> = {
     right: 'bottom-end',
     top: 'top-end',
     left: 'bottom-start'
@@ -28,7 +35,7 @@ export default {
          * See MenuItems for more details.
          */
         items: {
-            type: Array,
+            type: Array as PropType<Array<MenuItem>>,
             required: true
         },
         /**
@@ -49,10 +56,10 @@ export default {
          * Alignment of the submenu with the menu button left or right. Defaults to 'right'.
          */
         orientation: {
-            type: String,
+            type: String as PropType<'right' | 'top' | 'left'>,
             default: 'right',
-            validator(orientation = 'right') {
-                return ['right', 'left', 'top'].includes(orientation);
+            validator(orientation: Orientation = 'right') {
+                return orientations.includes(orientation);
             }
         },
         /**
@@ -93,21 +100,10 @@ export default {
         const submenu = ref(null);
         const menuItems = ref(null);
         const menuWrapper = ref(null);
-
-        const getNextElement = (current, diff) => menuItems.value.getNextElementWithIndex(current, diff);
-
         const expanded = ref(false);
         const closeMenu = () => {
             expanded.value = false;
         };
-
-        const { currentMarkedIndex, resetNavigation } = useDropdownNavigation(
-            {
-                baseElement: submenu,
-                getNextElement,
-                close: closeMenu
-            }
-        );
 
         useClickOutside({ targets: [submenu, menuItems], callback: closeMenu }, expanded);
 
@@ -139,16 +135,20 @@ export default {
                 placement: placementMap[value]
             });
         });
-        
 
         return {
             menuItems,
             submenu,
             menuWrapper,
             expanded,
-            resetNavigation,
-            currentMarkedIndex,
-            updatePopper
+            updatePopper,
+            closeMenu
+        };
+    },
+    data() {
+        return {
+            // eslint-disable-next-line no-undefined
+            activeDescendant: undefined
         };
     },
     methods: {
@@ -162,12 +162,18 @@ export default {
                     this.expanded = false;
                 });
             }
-            this.resetNavigation();
+            this.getMenuItems().resetNavigation();
             this.updatePopper();
         },
-        onItemClick(event, item) {
+        onItemClick(event: Event, item: any) {
             this.$emit('item-click', event, item, this.id);
             this.toggleMenu();
+        },
+        onKeydown(event: KeyboardEvent) {
+            this.getMenuItems().onKeydown(event);
+        },
+        getMenuItems() {
+            return this.$refs.menuItems as any;
         }
     }
 };
@@ -177,6 +183,9 @@ export default {
   <div
     ref="submenu"
     :class="['submenu', { disabled }]"
+    :aria-owns="activeDescendant"
+    :aria-activedescendant="activeDescendant"
+    @keydown="onKeydown"
   >
     <FunctionButton
       ref="submenu-toggle"
@@ -189,7 +198,7 @@ export default {
       :active="expanded"
       @click="toggleMenu"
     >
-      <slot />
+      <slot :expanded="expanded" />
     </FunctionButton>
     <Teleport
       to="body"
@@ -203,13 +212,13 @@ export default {
         <MenuItems
           :id="id"
           ref="menuItems"
-          :marked-item-index="currentMarkedIndex"
-          no-focus
           :class="['menu-items', `orient-${orientation}`]"
           :items="items"
           :max-menu-width="maxMenuWidth"
-          aria-label="sub menu"
+          menu-aria-label="sub menu"
           @item-click="onItemClick"
+          @close="closeMenu"
+          @item-focused="activeDescendant = $event"
         />
       </div>
     </Teleport>
@@ -222,8 +231,7 @@ export default {
 }
 
 .menu-wrapper {
-  z-index: 1000;
-
+  z-index: var(--z-index-common-menu-items-expanded, 57);
 
   &.disabled {
     opacity: 0.5;

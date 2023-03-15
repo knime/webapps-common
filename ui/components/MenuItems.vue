@@ -1,405 +1,70 @@
-<script>
+<script setup lang="ts">
 /**
- * MenuItems component with keyboard navigation and (optional) hotkey text and icons
+ * MenuItems component with (optional) hotkey text and icons
  * Can be used to create a float-able menu or a sub menu or similar.
  * Position and visibility needs to be handled by the wrapper.
  *
+ * The elements of the menu are not focusable.
+ * Instead the component exposes a onKeydown method, which can be taken as a listener for keydown events on a focused
+ * element in a parent component. When doing so, the elements in the menu are maked via keyboard navigation.
+ * For accessibility, the focused outside element which listens to keydown events needs to have an aria-activedescendant
+ * label set to the id of the visually focused element and additionally an aria-owns label with the same id if the menu items are
+ * not DOM-descendants of this element (see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_focus_activedescendant)
+ * This id is emitted via the `@item-focused` event whenever the visually focused item changes. This emit also yields null whenever no element
+ * is visually focused.
+ *
+ * For some keydown events, a `@close` event is emitted.
+ *
  * A click or activation by keyboard (enter and space) emits `@item-click`.
- * If the data has a to attribute the used tag will be `nuxt-link` if it has a `href` attribute it will be a `a` tag
+ * If the data has a `to` attribute the used tag will be `nuxt-link` if it has a `href` attribute it will be a `a` tag
  * otherwise we use the generic `button` and leave the handling of the action to the wrapping component that reacts
  * to `item-click` and calls any action.
  *
- * Hovering or focusing an item emits `@item-active`.
- *
- * By default keyboard navigation wraps around top and bottom.
- * This can be disabled by calling preventDefault on the the events `@top-reached` and `@bottom-reached`
+ * Hovering an item emits `@item-hovered`.
  */
-export default {
-    props: {
-        /**
-         * Items to be listed in the menu.
-         * Each item has a `text`, optional `title`, optional `icon` and optional `to` / `href` properties,
-         * where `to` is for router-links and `href` for standard (e.g. external) links.
-         * Items can be disabled with the 'disabled' property.
-         * The optional title will be shown on menu items on hover
-         * The optional hotkeyText is shown aligned right besides the text if the prop 'showHotkeys' is true.
-         * The optional separator will add a separator below the item if it's not the last in the list.
-         * The optional sectionHeadline adds another styling to the item-font by reducing size and brightening color
-         * The optional selected visually emphasizes an item by inverting the color of the item
-         * @example
-          [{
-            text: Example
-            sectionHeadline: true
-          }, {
-            href: 'http://apple.com',
-            text: 'Apples',
-            icon: HelpIcon
-            hotkeyText: 'CTRL + H',
-            title: 'Tastier Apples'
-          }, {
-            href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-            text: 'Oranges',
-            icon: StarIcon,
-            disabled: true,
-            separator: true
-          }, {
-            to: '/testing-nuxt-link',
-            text: 'Ananas',
-            selected: true
-           }]
-         */
-        items: {
-            required: true,
-            type: Array
-        },
-        markedItemIndex: {
-            required: false,
-            type: Number,
-            default: -1
-        },
-        /**
-         * Aria Label
-         */
-        ariaLabel: {
-            type: String,
-            required: true
-        },
-        /**
-         * Identifier for click handler
-         */
-        id: {
-            default: '',
-            type: String
-        },
-        /**
-         * Maximum width in px of the menu
-         */
-        maxMenuWidth: {
-            type: Number,
-            default: null
-        },
-        noFocus: {
-            type: Boolean,
-            default: false
-        }
-    },
-    emits: ['top-reached', 'bottom-reached', 'item-click', 'item-active'],
-    computed: {
-        useMaxMenuWidth() {
-            return Boolean(this.maxMenuWidth);
-        }
-    },
-    methods: {
-        /**
-         * @returns {Array<Element>} - HTML Elements to use for focus and events.
-         */
-        getEnabledListItems() {
-            return this.getEnabledListItemsWithIndices().map(item => item.element);
-        },
-        getEnabledListItemsWithIndices() {
-            return this.$refs.listItem
-                .map((el, index) => ({ element: el.$el || el, index }))
-                .filter(x => !x.element.classList.contains('disabled'));
-        },
-        /**
-         * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
-         * of the list, this method will return the opposite end.
-         *
-         * @param {Number} changeInd - the positive or negative index shift for the next Element (usually 1 || -1).
-         * @returns {Element} - the next option Element in the list of items.
-         */
-        getNextElement(changeInd) {
-            const listItems = this.getEnabledListItems();
-            const currentInd = listItems.indexOf(document.activeElement);
-            return this.getNext({ changeInd, currentInd }, listItems);
-        },
-        getNextElementWithIndex(currentItemInd, changeInd) {
-            const listItems = this.getEnabledListItemsWithIndices();
-            const currentInd = listItems.map(item => item.index).indexOf(currentItemInd);
-            return this.getNext({ changeInd, currentInd }, listItems);
-        },
-        getNext({ currentInd, changeInd }, items) {
-            // lookup next item (if none is currently active, start at top or bottom)
-            let nextItem = items[currentInd + changeInd];
-            let cancelWrapAround = false;
-            if (typeof nextItem === 'undefined') {
-                if (changeInd < 0) {
-                    // if before first element, wrap around the list
-                    this.$emit('top-reached', { preventDefault: () => {
-                        cancelWrapAround = true;
-                    } });
-                    if (!cancelWrapAround) {
-                        nextItem = items[items.length - 1];
-                    }
-                } else {
-                    // if after last element, wrap around the list
-                    this.$emit('bottom-reached', { preventDefault: () => {
-                        cancelWrapAround = true;
-                    } });
-                    if (!cancelWrapAround) {
-                        nextItem = items[0];
-                    }
-                }
-            }
 
-            return nextItem;
-        },
-        // publicly accessed
-        onArrowUpKey() {
-            let nextElement = this.getNextElement(-1);
-            if (nextElement) {
-                nextElement.focus();
-            }
-        },
-        // publicly accessed
-        onArrowDownKey() {
-            let nextElement = this.getNextElement(1);
-            if (nextElement) {
-                nextElement.focus();
-            }
-        },
-        // publicly accessed
-        focusFirst() {
-            let listItems = this.getEnabledListItems();
-            let firstItem = listItems[0];
-            if (firstItem) {
-                firstItem.focus();
-            }
-        },
-        // publicly accessed
-        focusLast() {
-            let listItems = this.getEnabledListItems();
-            let lastItem = listItems[listItems.length - 1];
-            if (lastItem) {
-                lastItem.focus();
-            }
-        },
-        linkTagByType(item) {
-            if (item.to) {
-                return 'nuxt-link';
-            } else if (item.href) {
-                return 'a';
-            } else {
-                return 'button';
-            }
-        },
-        /**
-         * Items can behave as links (either nuxt or native <a>) or buttons.
-         * The MenuItems just emit the item-click event.
-         *
-         * @param {Object} event - browser event.
-         * @param {Object} item - submenu item which was clicked.
-         * @returns {undefined}
-         * @emits {item-click}
-         */
-        onItemClick(event, item) {
-            if (item.disabled || item.sectionHeadline) {
-                return;
-            }
+import useDropdownNavigation from '../composables/useDropdownNavigation';
+import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
+import MenuItemsBase from './MenuItemsBase.vue';
+import type { MenuItem } from './MenuItemsBase.vue';
+import { ref } from 'vue';
 
-            let isButton = !(item.href || item.to);
-            if (isButton) {
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-            } else if (event.type !== 'click' && event.code === 'Space') {
-                // ignore a "click" through pressing space on links
-                return;
-            } else if (event.type !== 'click') {
-                // Handle "Enter" on links. Nuxt-link with `to: { name: 'namedRoute' }` do not have an href property
-                // and will not automatically react to keyboard events. We must trigger the click to activate the nuxt
-                // event listener.
-                let newEvent = new Event('click');
-                event.target.dispatchEvent(newEvent);
-            }
-            this.$emit('item-click', event, item, this.id);
-        }
+const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered']);
+
+const props = defineProps<{items: MenuItem[], menuAriaLabel: string}>();
+
+const menuItemsBase: any = ref(null);
+
+const getNextElement = (current: number | null, direction: 1 | -1) => {
+    const listItems = menuItemsBase.value.getEnabledListItems();
+    let currentIndexInEnabled = listItems.map(({ index } : {index: number}) => index).indexOf(current);
+    if (currentIndexInEnabled === -1 && direction === -1) {
+        currentIndexInEnabled = 0;
     }
+    const nextIndex = getWrappedAroundIndex(currentIndexInEnabled + direction, listItems.length);
+    return listItems[nextIndex];
 };
+
+const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation(
+    {
+        getNextElement,
+        close: () => emit('close')
+    }
+);
+defineExpose({
+    onKeydown, resetNavigation
+});
 </script>
 
 <template>
-  <ul
-    :aria-label="ariaLabel"
-    role="menu"
-    tabindex="0"
-    @keydown.up.stop.prevent="onArrowUpKey"
-    @keydown.down.stop.prevent="onArrowDownKey"
-    @pointerleave="$emit('item-active', null, id)"
-    @focusout="$emit('item-active', null, id)"
-  >
-    <li
-      v-for="(item, index) in items"
-      :key="index"
-      :class="[{ separator: item.separator }]"
-      :style="{ 'max-width': useMaxMenuWidth ? `${maxMenuWidth}px` : null }"
-      :title="item.title"
-      @click="onItemClick($event, item)"
-      @keydown.enter="onItemClick($event, item)"
-      @keydown.space="onItemClick($event, item)"
-      @focusin="$emit('item-active', item.disabled || item.sectionHeadline ? null : item, id)"
-      @pointerenter="$emit('item-active', item.disabled || item.sectionHeadline ? null : item, id)"
-    >
-      <Component
-        :is="linkTagByType(item)"
-        ref="listItem"
-        :tabindex="item.disabled || noFocus ? null: '0'"
-        :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
-          disabled: item.disabled, selected: item.selected, marked: index === markedItemIndex }]"
-        :to="item.to || null"
-        :href="item.href || null"
-      >
-        <Component
-          :is="item.icon"
-          v-if="item.icon"
-          class="item-icon"
-        />
-        <div class="label">
-          <span :class="['text', { truncate: useMaxMenuWidth }]">
-            {{ item.text }}
-          </span>
-          <span
-            v-if="item.hotkeyText"
-            class="hotkey"
-          >{{ item.hotkeyText }}</span>
-        </div>
-      </Component>
-    </li>
-  </ul>
+  <MenuItemsBase
+    ref="menuItemsBase"
+    v-bind="$attrs"
+    :items="props.items"
+    :menu-aria-label="props.menuAriaLabel"
+    :focused-item-index="currentIndex"
+    @item-click="(event, item, id) => $emit('item-click', event, item, id)"
+    @item-hovered="(item, id) => $emit('item-hovered', item, id)"
+    @item-focused="(itemId) => $emit('item-focused', itemId)"
+  />
 </template>
-
-<style lang="postcss" scoped>
-ul {
-  margin: 5px 0;
-  padding: 0;
-  background-color: var(--knime-white);
-  color: var(--theme-dropdown-foreground-color);
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  font-family: var(--theme-text-medium-font-family);
-  text-align: left;
-  list-style-type: none;
-  z-index: var(--z-index-common-menu-items-expanded, 1);
-
-  &.expanded {
-    display: block;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  & li:not(:last-child).separator {
-    border-bottom: 1px solid var(--knime-porcelain);
-  }
-
-  & .list-item {
-    border: none;
-    background: none;
-    width: 100%;
-    padding: 6px 13px;
-
-    /* <button> does not inherit font-weight from ul in chrome */
-    font-weight: 500;
-    display: flex;
-    text-decoration: none;
-    white-space: nowrap;
-    color: var(--theme-text-normal-color);
-
-    &.clickable-item {
-      cursor: pointer;
-
-      &.disabled {
-        opacity: 0.5;
-        cursor: default;
-        pointer-events: none;
-      }
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color);
-        stroke-width: calc(32px / 18);
-        width: 18px;
-        height: 18px;
-        margin-right: 7px;
-      }
-
-      &.selected {
-        background-color: var(--theme-dropdown-foreground-color);
-        color: var(--theme-dropdown-background-color); /* background and foreground are switched on selection */
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-background-color);
-        }
-      }
-
-      & .label {
-        display: flex;
-        text-align: left;
-        width: 100%;
-
-        & .text {
-          flex-shrink: 1;
-          flex-basis: 100%;
-
-          &.truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        & .hotkey {
-          margin-left: 40px;
-        }
-      }
-
-      &.marked,
-      &:hover {
-        outline: none;
-        background-color: var(--theme-dropdown-background-color-hover);
-        color: var(--theme-dropdown-foreground-color-hover);
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-foreground-color-hover);
-
-          & .text {
-            stroke: var(--theme-dropdown-foreground-color-hover);
-          }
-        }
-      }
-
-      &:active,
-      &:focus {
-        outline: none;
-        background-color: var(--theme-dropdown-background-color-focus);
-        color: var(--theme-dropdown-foreground-color-focus);
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-foreground-color-focus);
-
-          & .text {
-            stroke: var(--theme-dropdown-foreground-color-focus);
-          }
-        }
-      }
-    }
-
-    &.section-headline {
-      color: var(--knime-stone);
-      padding-top: 13px;
-      pointer-events: none;
-      height: 30px;
-      font-size: 10px;
-      line-height: 15px;
-      display: flex;
-      align-items: center;
-
-      &:hover,
-      &:focus,
-      &:active {
-        outline: none;
-      }
-    }
-  }
-}
-</style>

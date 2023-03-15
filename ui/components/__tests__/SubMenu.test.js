@@ -5,17 +5,15 @@ import MenuItems from '../MenuItems.vue';
 import SubMenu from '../SubMenu.vue';
 import FunctionButton from '../FunctionButton.vue';
 import { ref, unref } from 'vue';
-import useDropdownNavigation from '../../util/useDropdownNavigation';
-import usePopper from '../../util/usePopper';
-import useClickOutside from '../../util/useClickOutside';
+import usePopper from '../../composables/usePopper';
+import useClickOutside from '../../composables/useClickOutside';
 
-const dropdownNavigation = { currentMarkedIndex: ref(1), resetNavigation: vi.fn() };
-vi.mock('../../util/useDropdownNavigation', () => ({ default: vi.fn(() => dropdownNavigation) }));
-
+const dropdownNavigation = { currentIndex: ref(1), resetNavigation: vi.fn(), onKeydown: vi.fn() };
+vi.mock('../../composables/useDropdownNavigation', () => ({ default: vi.fn(() => dropdownNavigation) }));
 
 const popper = { updatePopper: vi.fn(), popperInstance: { setOptions: vi.fn() } };
-vi.mock('../../util/usePopper', () => ({ default: vi.fn(() => popper) }));
-vi.mock('../../util/useClickOutside', () => ({ default: vi.fn() }));
+vi.mock('../../composables/usePopper', () => ({ default: vi.fn(() => popper) }));
+vi.mock('../../composables/useClickOutside', () => ({ default: vi.fn() }));
 
 describe('SubMenu.vue', () => {
     let props;
@@ -46,11 +44,37 @@ describe('SubMenu.vue', () => {
         expect(wrapper.findComponent(FunctionButton).attributes('title')).toBe('test button title');
     });
 
+    it('exposes expanded prop in slot', () => {
+        const wrapper = shallowMount(SubMenu, {
+            slots: {
+                default: '<template #default="{ expanded }"><div>{{ expanded }}</div></template>'
+            },
+            props
+        });
+        expect(wrapper.findComponent(FunctionButton).text()).toContain('false');
+    });
+
     it('opens and closes menu on click', async () => {
         const wrapper = mount(SubMenu, { props });
         expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
         await wrapper.find('.submenu-toggle').trigger('click');
         expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+        await wrapper.find('.submenu-toggle').trigger('click');
+        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+    });
+
+    it('closes menu on close event', async () => {
+        const wrapper = mount(SubMenu, { props });
+        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        await wrapper.find('.submenu-toggle').trigger('click');
+        expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+        await wrapper.findComponent(MenuItems).vm.$emit('close');
+        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+    });
+
+    it('does not toggle the menu if disabled', async () => {
+        props.disabled = true;
+        const wrapper = mount(SubMenu, { props });
         await wrapper.find('.submenu-toggle').trigger('click');
         expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
     });
@@ -87,42 +111,25 @@ describe('SubMenu.vue', () => {
 
         expect(unref(active)).toBe(false);
     });
-
-    describe('keyboard navigation', () => {
-        it('uses dropdown navigation', async () => {
-            useDropdownNavigation.reset();
-            const wrapper = mount(SubMenu, { props });
-            const { baseElement, close, getNextElement } = useDropdownNavigation.mock.calls[0][0];
-            
-            expect(unref(baseElement)).toStrictEqual(wrapper.find('.submenu').element);
     
-            await wrapper.find('.submenu-toggle').trigger('click');
-            expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
-            close();
-            await wrapper.vm.$nextTick();
-            expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
-    
-            const { index, element } = getNextElement(-1, 1);
-            expect(index).toBe(0);
-            expect(element).toBe(wrapper.findComponent(MenuItems).find('li').find('a').element);
-        });
+    it('calls keydown callback', () => {
+        const wrapper = mount(SubMenu, { props });
 
-        it('marks active element', () => {
-            const wrapper = mount(SubMenu, { props });
-            const currentMarkedIndex = dropdownNavigation.currentMarkedIndex.value;
-            const currentMarkedElement = wrapper.findComponent(MenuItems).findAll('li')[currentMarkedIndex].find('a');
-            expect(currentMarkedElement.classes().includes('marked')).toBeTruthy();
-        });
+        wrapper.find('.submenu').trigger('keydown');
 
-        it('resets navigation on toggle', async () => {
-            const wrapper = shallowMount(SubMenu, { props });
-            await wrapper.find('.submenu-toggle').trigger('click');
-            dropdownNavigation.resetNavigation.reset();
-            await wrapper.find('.submenu-toggle').trigger('click');
-            expect(dropdownNavigation.resetNavigation).toHaveBeenCalled();
-        });
+        expect(dropdownNavigation.onKeydown).toHaveBeenCalled();
     });
 
+    it('sets and removes aria-owns and aria-activedescendant on @item-focused', async () => {
+        const testId = 'testId';
+        const wrapper = mount(SubMenu, { props });
+        await wrapper.findComponent(MenuItems).vm.$emit('item-focused', testId);
+        expect(wrapper.find('.submenu').attributes('aria-owns')).toBe(testId);
+        expect(wrapper.find('.submenu').attributes('aria-activedescendant')).toBe(testId);
+        await wrapper.findComponent(MenuItems).vm.$emit('item-focused', null);
+        expect(wrapper.find('.submenu').attributes('aria-owns')).toBeUndefined();
+        expect(wrapper.find('.submenu').attributes('aria-activedescendant')).toBeUndefined();
+    });
 
     describe('popover', () => {
         it('uses popper navigation', () => {
@@ -168,7 +175,17 @@ describe('SubMenu.vue', () => {
         });
 
         it('updates popper on toggle', async () => {
-            const wrapper = shallowMount(SubMenu, { props });
+            const wrapper = shallowMount(SubMenu, { props,
+                global: {
+                    stubs: {
+                        MenuItems: {
+                            template: '<div/>',
+                            methods: {
+                                resetNavigation: vi.fn()
+                            }
+                        }
+                    }
+                } });
             popper.updatePopper.reset();
             await wrapper.find('.submenu-toggle').trigger('click');
             expect(popper.updatePopper).toHaveBeenCalled();

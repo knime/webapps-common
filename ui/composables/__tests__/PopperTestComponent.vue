@@ -10,8 +10,9 @@ const props = defineProps({
 });
 const toggleRef = ref(null);
 const popoverRef = ref(null);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const { updatePopper } = usePopper({ referenceEl: toggleRef, popperTarget: popoverRef }, props.options);
+defineExpose({ updatePopper });
 </script>
 
 <template>

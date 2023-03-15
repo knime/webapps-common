@@ -50,12 +50,12 @@ describe('useClickOutside', () => {
         it('reacts to change of active state', async () => {
             const wrapper = mount(ClickOutsideTestComponent, { props, attachTo: document.body });
             
-            await wrapper.vm.setActive(false);
+            await wrapper.setProps({ active: false });
 
             clickOnElementWithId(wrapper, '#buttonOutside');
             expect(props.callback).not.toHaveBeenCalled();
             
-            await wrapper.vm.setActive(true);
+            await wrapper.setProps({ active: true });
 
             clickOnElementWithId(wrapper, '#buttonOutside');
             expect(props.callback).toHaveBeenCalled();
