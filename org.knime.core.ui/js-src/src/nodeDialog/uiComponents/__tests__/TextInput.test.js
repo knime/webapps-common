@@ -6,11 +6,10 @@ import LabeledInput from '../LabeledInput.vue';
 import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 
 describe('TextInput.vue', () => {
-    let defaultProps, wrapper, onChangeSpy, handleChangeSpy;
+    let defaultProps, wrapper, onChangeSpy;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(TextInput.methods, 'onChange');
-        handleChangeSpy = TextInput.methods.handleChange = vi.fn();
     });
     
     beforeEach(async () => {
@@ -72,7 +71,7 @@ describe('TextInput.vue', () => {
         const changedTextInput = 'Shaken not stirred';
         localWrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedTextInput);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
@@ -100,7 +99,7 @@ describe('TextInput.vue', () => {
         const changedTextInput = 'Shaken not stirred';
         localWrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
     });
 
     it('sets correct initial value', () => {

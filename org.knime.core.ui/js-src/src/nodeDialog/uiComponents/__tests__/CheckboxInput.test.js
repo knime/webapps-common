@@ -12,11 +12,10 @@ import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-varia
 import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
 
 describe('CheckboxInput.vue', () => {
-    let wrapper, onChangeSpy, handleChangeSpy, defaultProps;
+    let wrapper, onChangeSpy, defaultProps;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(CheckboxInput.methods, 'onChange');
-        handleChangeSpy = CheckboxInput.methods.handleChange = vi.fn();
     });
     
     beforeEach(async () => {
@@ -83,7 +82,7 @@ describe('CheckboxInput.vue', () => {
         });
         await localWrapper.findComponent(Checkbox).vm.$emit('update:modelValue', true);
         expect(onChangeSpy).toHaveBeenCalledWith(true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, true);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, true);
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
@@ -110,7 +109,7 @@ describe('CheckboxInput.vue', () => {
         );
         await localWrapper.findComponent(Checkbox).vm.$emit('update:modelValue', true);
         expect(onChangeSpy).toHaveBeenCalledWith(true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, true);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, true);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
 

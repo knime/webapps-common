@@ -6,11 +6,10 @@ import LabeledInput from '../LabeledInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 
 describe('DropdownInput.vue', () => {
-    let wrapper, onChangeSpy, handleChangeSpy, defaultProps;
+    let wrapper, onChangeSpy, defaultProps;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(DropdownInput.methods, 'onChange');
-        handleChangeSpy = DropdownInput.methods.handleChange = vi.fn();
     });
     
     beforeEach(async () => {
@@ -92,7 +91,7 @@ describe('DropdownInput.vue', () => {
         const changedDropdownInput = 'Shaken not stirred';
         localWrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedDropdownInput);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
@@ -120,7 +119,7 @@ describe('DropdownInput.vue', () => {
         const changedDropdownInput = 'Shaken not stirred';
         localWrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedDropdownInput);
     });
 
     it('sets correct initial value', () => {
@@ -204,12 +203,12 @@ describe('DropdownInput.vue', () => {
                 dropdownValueToControlData: () => updatedValue
             };
             wrapper = await mountJsonFormsComponent(DropdownInput, props);
-            expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, updatedValue);
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, updatedValue);
         });
 
         it('does not update initial data if they are current', async () => {
             wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
-            expect(handleChangeSpy).not.toHaveBeenCalled();
+            expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
         });
     });
 });

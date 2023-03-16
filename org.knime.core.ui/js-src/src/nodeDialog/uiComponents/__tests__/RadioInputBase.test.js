@@ -11,11 +11,10 @@ import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-vari
 import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
 
 describe('RadioInputBase.vue', () => {
-    let defaultProps, wrapper, onChangeSpy, handleChangeSpy;
+    let defaultProps, wrapper, onChangeSpy;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(RadioInputBase.methods, 'onChange');
-        handleChangeSpy = RadioInputBase.methods.handleChange = vi.fn();
     });
 
     beforeEach(async () => {
@@ -120,7 +119,7 @@ describe('RadioInputBase.vue', () => {
         const changedRadioInputBase = 'Shaken not stirred';
         localWrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(onChangeSpy).toHaveBeenCalledWith(changedRadioInputBase);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
@@ -148,7 +147,7 @@ describe('RadioInputBase.vue', () => {
         const changedRadioInputBase = 'Shaken not stirred';
         await localWrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(handleChangeSpy).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
+        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
     });
 
     it('sets correct initial value', () => {
