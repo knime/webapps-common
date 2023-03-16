@@ -61,38 +61,21 @@ describe('ComboBox.vue', () => {
             const wrapper = doMount({}, { attachTo: document.body });
             const toggleSpy = vi.spyOn(wrapper.findComponent(Multiselect).vm, 'toggle');
             const updateFocusSpy = vi.spyOn(wrapper.findComponent(Multiselect).vm, 'updateFocusOptions');
-            await wrapper.find({ ref: 'searchInput' }).trigger('focus');
+            await wrapper.find('.search-input').trigger('focus');
             expect(toggleSpy).toHaveBeenCalled();
             expect(updateFocusSpy).toHaveBeenCalled();
-            expect(wrapper.vm.inputFocussed).toBeTruthy();
+            expect(wrapper.vm.inputOrOptionsFocussed).toBeTruthy();
         });
-
-        it('has the search input as focus element when there is no option selected', () => {
-            const wrapper = doMount();
-            const searchInput = wrapper.find('.search-input').wrapperElement;
-            expect(wrapper.vm.focusElements).toEqual([searchInput]);
-        });
-
-        it('has the search input/removeAllTags button as focus elements when there is at least one option selected',
-            async () => {
-                const wrapper = doMount({ initialSelectedIds: [] });
-                const searchInput = wrapper.find('.search-input').wrapperElement;
-                const removeAllTagsButton = wrapper.find('.remove-all-tags-button').wrapperElement;
-                expect(wrapper.vm.focusElements).toEqual([searchInput]);
-                wrapper.vm.updateSelectedIds(['test1']);
-                await wrapper.vm.$nextTick();
-                expect(wrapper.vm.focusElements).toEqual([searchInput, removeAllTagsButton]);
-            });
 
         it('clears the search when the focus is outside the ComboBox', async () => {
             const wrapper = doMount({}, { attachTo: document.body });
             await wrapper.find('.summary-input-wrapper').trigger('click');
             const input = wrapper.find({ ref: 'searchInput' });
             expect(input.wrapperElement).toBe(document.activeElement);
-            expect(wrapper.vm.inputFocussed).toBeTruthy();
+            expect(wrapper.vm.inputOrOptionsFocussed).toBeTruthy();
 
             wrapper.findComponent(Multiselect).vm.$emit('focusOutside');
-            expect(wrapper.vm.inputFocussed).toBeFalsy();
+            expect(wrapper.vm.inputOrOptionsFocussed).toBeFalsy();
             expect(wrapper.vm.searchValue).toBe('');
         });
 
@@ -115,13 +98,12 @@ describe('ComboBox.vue', () => {
             expect(updateSelectedIdsSpy).toHaveBeenCalledWith(['test3']);
         });
 
-        it('clears all selected values and focusses the input on click of removeAllTags button', async () => {
-            const wrapper = doMount({ initialSelectedIds: ['test2', 'test3'] });
-            const focusInputSpy = vi.spyOn(wrapper.vm, 'focusInput');
+        it('clears all selected values and focusses the listBox on click of removeAllTags button', async () => {
+            const wrapper = doMount({ initialSelectedIds: ['test2', 'test3'] }, { attachTo: document.body });
             const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, 'updateSelectedIds');
-            
             await wrapper.find('.remove-all-tags-button').trigger('click');
-            expect(focusInputSpy).toHaveBeenCalled();
+            const summaryWrapper = wrapper.find({ ref: 'listBox' });
+            expect(summaryWrapper.wrapperElement).toStrictEqual(document.activeElement);
             expect(updateSelectedIdsSpy).toHaveBeenCalledWith([]);
         });
     });
@@ -138,7 +120,7 @@ describe('ComboBox.vue', () => {
             const wrapper = doMount({}, { attachTo: document.body });
             await wrapper.find({ ref: 'searchInput' }).trigger('keydown.esc');
             const summaryWrapper = wrapper.find({ ref: 'listBox' });
-            expect(summaryWrapper.wrapperElement).toBe(document.activeElement);
+            expect(summaryWrapper.wrapperElement).toStrictEqual(document.activeElement);
         });
     });
 });

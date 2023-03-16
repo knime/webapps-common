@@ -59,6 +59,7 @@ export default {
                 ['foo', 'bar', 'baz'],
                 ['foo', 'bar', 'baz'],
                 ['foo', 'bar', 'baz'],
+                [],
                 []
             ],
             possibleValues: POSSIBLE_VALUES,
@@ -181,6 +182,22 @@ export default {
         </div>
         <div class="grid-item-3">
           selected ids: {{ selected[5] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-3">
+          close dropdown on selection
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[6]"
+            :possible-values="possibleValues"
+            close-dropdown-on-selection
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[6] }}
         </div>
       </div>
     </section>

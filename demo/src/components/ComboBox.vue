@@ -17,6 +17,7 @@ const codeExample = `<ComboBox
   :possible-values="values"
   :initialSelectedIds="selected"
   :size-visible-options="3"
+  close-dropdown-on-selection
   @update:selected-ids="selectedValues => selected = selectedValues"
 />`;
 
@@ -28,7 +29,7 @@ export default {
     data() {
         return {
             codeExample,
-            selected: [],
+            selected: [[], [], []],
             values: [{ id: 'foo', text: 'Foo' }, { id: 'bar', text: 'Bar' }, { id: 'baz', text: 'Baz' },
                 { id: 'lorem', text: 'Lorem' }, { id: 'ipsum', text: 'Ipsum' }, { id: 'dolor', text: 'dolor' }]
         };
@@ -54,16 +55,52 @@ export default {
         </div>
       </div>
       <div class="grid-container">
+        <div class="grid-item-3">
+          default
+        </div>
         <div class="grid-item-6">
           <ComboBox
             :possible-values="values"
-            :initial-selected-ids="selected"
-            :size-visible-options="3"
-            @update:selected-ids="selectedValues => selected = selectedValues"
+            :initial-selected-ids="selected[0]"
+            @update:selected-ids="selectedValues => selected[0] = selectedValues"
           />
         </div>
+        <div class="grid-item-3">
+          values: {{ selected[0] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-3">
+          max visible options: 3
+        </div>
         <div class="grid-item-6">
-          values: {{ selected }}
+          <ComboBox
+            :possible-values="values"
+            :initial-selected-ids="selected[1]"
+            :size-visible-options="3"
+            @update:selected-ids="selectedValues => selected[1] = selectedValues"
+          />
+        </div>
+        <div class="grid-item-3">
+          values: {{ selected[1] }}
+        </div>
+      </div>
+      <br>
+      <div class="grid-container">
+        <div class="grid-item-3">
+          close dropdown on selection
+        </div>
+        <div class="grid-item-6">
+          <ComboBox
+            :possible-values="values"
+            :initial-selected-ids="selected[2]"
+            close-dropdown-on-selection
+            @update:selected-ids="selectedValues => selected[2] = selectedValues"
+          />
+        </div>
+        <div class="grid-item-3">
+          values: {{ selected[2] }}
         </div>
       </div>
     </section>

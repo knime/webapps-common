@@ -96,18 +96,26 @@ export default {
             }
         },
         /**
-         * Focus elements of the parent that also should be used for focus with keyboard navigation
-         */
-        parentFocusElements: {
-            type: Array,
-            default: () => []
-        },
-        /**
          * The element of the parent to refocus when the options get and when using a custom listbox.
          */
         parentRefocusElementOnClose: {
             type: Object,
             default: () => ({})
+        },
+        /**
+         * Close the dropdown when a value was selected.
+         */
+        closeDropdownOnSelection: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * Callback that decides whether the document.activeElement is a focus element. In case it is a focus element,
+         * the options won't be closed.
+         */
+        useAsFocusElementCallback: {
+            type: Function,
+            default: null
         }
     },
     emits: ['update:modelValue', 'focusOutside'],
@@ -119,9 +127,6 @@ export default {
         };
     },
     computed: {
-        focusElements() {
-            return [...this.focusOptions, ...this.parentFocusElements];
-        },
         summary() {
             if (this.checkedValue.length === 0) {
                 return this.placeholder;
@@ -189,6 +194,9 @@ export default {
              * Fired when the selection changes.
              */
             this.$emit('update:modelValue', this.checkedValue);
+            if (this.closeDropdownOnSelection) {
+                this.closeOptions();
+            }
         },
         toggle() {
             this.collapsed = !this.collapsed;
@@ -202,7 +210,8 @@ export default {
         /**
          * Handle closing the options.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button/element should be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button / parentRefocusElement should be re-focused
+         * after closing.
          * @return {undefined}
          */
         closeOptions(refocusToggle = true) {
@@ -230,7 +239,8 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.focusElements.includes(document.activeElement)) {
+                if (!this.$refs.multiselect.contains(document.activeElement) ||
+                    (this.useAsFocusElementCallback && !this.useAsFocusElementCallback(document.activeElement))) {
                     this.closeOptions(false);
                     if (this.useCustomListBox) {
                         this.$emit('focusOutside');
@@ -266,6 +276,7 @@ export default {
 
 <template>
   <div
+    ref="multiselect"
     :class="['multiselect', { collapsed, invalid: !isValid }]"
     @keydown.esc.stop.prevent="closeOptions"
     @keydown.up.stop.prevent="onUp"
