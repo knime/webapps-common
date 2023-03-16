@@ -139,7 +139,7 @@ public class NodeViewManagerTest {
         assertThat(nodeView.getPage() == page).isTrue();
 
         Assertions.assertThatThrownBy(() -> NodeViewManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
-            .isInstanceOf(IllegalStateException.class).hasMessageContaining("No text initial data service available");
+            .isInstanceOf(IllegalStateException.class).hasMessageContaining("No initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
         assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc), nodeView.getPage()))
             .isEqualTo("view_" + nc.getID().toString().replace(":", "_"));
