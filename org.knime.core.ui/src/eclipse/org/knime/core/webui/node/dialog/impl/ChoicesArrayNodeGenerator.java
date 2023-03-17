@@ -50,6 +50,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_CONS
 import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_TITLE;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
@@ -116,7 +117,7 @@ final class ChoicesArrayNodeGenerator {
     }
 
     private void addEmptyColumnChoice() {
-        addChoiceWithTypeInformation("", "", "", "", List.of());
+        addChoiceWithTypeInformation("", "", "", "", Collections.emptyList());
     }
 
     private void addStringsFromChoicesProvider(final ChoicesProvider choicesProvider) {

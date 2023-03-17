@@ -76,16 +76,6 @@ class ColumnSelectionTest {
     }
 
     @Test
-    void testColumnSelectionUpdatesCompatibleTypes() {
-        final var selection = new ColumnSelection(TABLE_SPEC.getColumnSpec(0));
-        selection.m_compatibleTypes = new String[0];
-
-        selection.updateCurrentCompatibleTypes(TABLE_SPEC);
-
-        assertThat(selection.m_compatibleTypes).hasSizeGreaterThan(0);
-    }
-
-    @Test
     void testColumnSelectionCustomColumns() {
         final var name = "Name";
         final var type = StringCell.TYPE;

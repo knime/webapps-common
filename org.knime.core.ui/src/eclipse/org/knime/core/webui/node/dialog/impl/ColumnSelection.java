@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
@@ -76,7 +75,7 @@ public final class ColumnSelection implements DialogComponentSettings {
     public String[] m_compatibleTypes;
 
     /**
-     * @param colSpec the spec of tht initially selected column
+     * @param colSpec the spec of the initially selected column
      */
     public ColumnSelection(final DataColumnSpec colSpec) {
         this(colSpec.getName(), colSpec.getType());
@@ -112,16 +111,6 @@ public final class ColumnSelection implements DialogComponentSettings {
     @JsonIgnore
     public String getSelected() {
         return m_selected;
-    }
-
-    /**
-     * A method for generating the compatible types of the currently selected columns. The current compatible types
-     * could, e.g., be empty because they had not been persisted previously.
-     *
-     * @param spec to determine the type of the selected column from
-     */
-    public void updateCurrentCompatibleTypes(final DataTableSpec spec) {
-        m_compatibleTypes = getCompatibleTypes(spec.getColumnSpec(m_selected).getType());
     }
 
     /**
