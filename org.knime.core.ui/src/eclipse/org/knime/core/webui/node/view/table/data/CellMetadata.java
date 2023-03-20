@@ -44,58 +44,21 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Mar 16, 2023 (hornm): created
  */
 package org.knime.core.webui.node.view.table.data;
 
-import java.util.List;
-import java.util.Map;
-
 /**
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-public interface Table {
+public interface CellMetadata {
 
     /**
-     * @return the displayed columns which remain after missing columns are filtered out.
+     *
+     * @return the error message of the missing cell
      */
-    String[] getDisplayedColumns();
-
-    /**
-     * @return the content type per column (which depends on the selected renderer per column)
-     */
-    String[] getColumnContentTypes();
-
-    /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
-     */
-    String[] getColumnDataTypeIds();
-
-    /**
-     * @return the requested rows; can contain {@code null}s in case of missing values
-     */
-    String[][] getRows();
-
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
-
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
-
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
-
-    /**
-     * @return the metadata for cells in the requested rows
-     */
-    List<Map<String, CellMetadata>> getCellMetadata();
+    String getMissingCellErrorMessage();
 
 }

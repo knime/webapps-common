@@ -44,58 +44,71 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Mar 16, 2023 (hornm): created
  */
 package org.knime.core.webui.node.view.table.data;
 
-import java.util.List;
-import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.container.CloseableRowIterator;
 
 /**
+ *
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @param <T> the type of the visitor
  */
-public interface Table {
+public interface TableCellVisitor<T> {
 
     /**
-     * @return the displayed columns which remain after missing columns are filtered out.
+     * Offset of the column index, because the row key/index are also sent to the frontend when not requested
      */
-    String[] getDisplayedColumns();
+    int ROWKEY_ROWINDEX_OFFSET = 2;
 
     /**
-     * @return the content type per column (which depends on the selected renderer per column)
+     *
+     * @param colIndices the indices of the columns that are to be displayed
+     * @param numRows the number of rows to get
+     * @param rowIteratorSupplier the iterator that supplies the rows
+     * @param visitors the visitors for which to compute cell/row data
      */
-    String[] getColumnContentTypes();
+    static void iterateTable(final int[] colIndices, final int numRows,
+        final Supplier<CloseableRowIterator> rowIteratorSupplier, final TableCellVisitor<?>... visitors) {
+        try (final var iterator = rowIteratorSupplier.get()) {
+            IntStream.range(0, numRows).forEach(rowIndex -> {
+                final var row = iterator.next();
+                IntStream.range(0, colIndices.length).forEach(colIndex -> {
+                    var colIndexFiltered = colIndices[colIndex];
+                    var cell = row.getCell(colIndexFiltered);
+                    Stream.of(visitors).forEach(visitor -> visitor.visitCell(rowIndex, colIndex, cell));
+                });
+                Stream.of(visitors).forEach(visitor -> visitor.visitRow(rowIndex, row));
+            });
+        }
+    }
 
     /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
+     * @param rowIdx the index of the current row
+     * @param row the data of the current row
      */
-    String[] getColumnDataTypeIds();
+    void visitRow(final int rowIdx, final DataRow row);
 
     /**
-     * @return the requested rows; can contain {@code null}s in case of missing values
+     *
+     * @param rowIdx the index of the current row
+     * @param colIdx the index of the current column
+     * @param cell the data contained in the table at the current rowIdx and colIdx
      */
-    String[][] getRows();
+    void visitCell(int rowIdx, int colIdx, DataCell cell);
 
     /**
-     * @return the row count of the table in use
+     *
+     * @return the collected cell data
      */
-    long getRowCount();
-
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
-
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
-
-    /**
-     * @return the metadata for cells in the requested rows
-     */
-    List<Map<String, CellMetadata>> getCellMetadata();
-
+    T getResult();
 }

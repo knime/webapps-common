@@ -44,58 +44,79 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Mar 16, 2023 (hornm): created
  */
 package org.knime.core.webui.node.view.table.data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataRow;
+import org.knime.core.data.MissingCell;
+
 /**
+ *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
  */
-public interface Table {
+public class TableCellMetadataVisitor implements TableCellVisitor<List<Map<String, CellMetadata>>> {
+
+    private List<Map<String, CellMetadata>> m_metadata;
+
+    private boolean m_hasAtLeastOneEntry;
 
     /**
-     * @return the displayed columns which remain after missing columns are filtered out.
+     * @param numRows the number of rows to get
      */
-    String[] getDisplayedColumns();
+    public TableCellMetadataVisitor(final int numRows) {
+        m_metadata = new ArrayList<>(numRows);
+    }
 
     /**
-     * @return the content type per column (which depends on the selected renderer per column)
+     * {@inheritDoc}
      */
-    String[] getColumnContentTypes();
+    @Override
+    public void visitCell(final int rowIdx, final int colIdx, final DataCell cell) {
+        if (cell.isMissing()) {
+            final var missingCellErrorMsg = ((MissingCell)cell).getError();
+            if (missingCellErrorMsg != null) {
+                final var colIndex = String.valueOf(colIdx + ROWKEY_ROWINDEX_OFFSET);
+
+                if (m_metadata.size() == rowIdx) {
+                    final var rowMetadata = new HashMap<String, CellMetadata>();
+                    rowMetadata.put(colIndex, () -> missingCellErrorMsg);
+                    m_metadata.add(rowMetadata);
+                } else {
+                    final var rowMetadata = m_metadata.get(rowIdx);
+                    rowMetadata.put(colIndex, () -> missingCellErrorMsg);
+                    m_metadata.set(rowIdx, rowMetadata);
+                }
+            }
+        }
+    }
 
     /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
+     * {@inheritDoc}
      */
-    String[] getColumnDataTypeIds();
+    @Override
+    public List<Map<String, CellMetadata>> getResult() {
+        return m_hasAtLeastOneEntry ? m_metadata : new ArrayList<>(0);
+    }
 
     /**
-     * @return the requested rows; can contain {@code null}s in case of missing values
+     * {@inheritDoc}
      */
-    String[][] getRows();
-
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
-
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
-
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
-
-    /**
-     * @return the metadata for cells in the requested rows
-     */
-    List<Map<String, CellMetadata>> getCellMetadata();
+    @Override
+    public void visitRow(final int rowIdx, final DataRow row) {
+        final var addedMetadataForCurrentRow = m_metadata.size() - 1 == rowIdx;
+        if (addedMetadataForCurrentRow) {
+            m_hasAtLeastOneEntry = true;
+        } else {
+            m_metadata.add(null);
+        }
+    }
 
 }

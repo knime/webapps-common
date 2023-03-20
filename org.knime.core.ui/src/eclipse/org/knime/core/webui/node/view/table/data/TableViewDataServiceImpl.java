@@ -49,19 +49,19 @@
 package org.knime.core.webui.node.view.table.data;
 
 import java.lang.ref.Cleaner;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
@@ -76,11 +76,9 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.DataValueRenderer;
 import org.knime.core.webui.node.view.table.data.render.DataValueRendererFactory;
-import org.knime.core.webui.node.view.table.data.render.DataValueTextRenderer;
 
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
@@ -234,16 +232,30 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var size = (int)(toIndex - fromIndex + 1);
 
         final String[][] rows;
+        final List<Map<String, CellMetadata>> cellMetadata;
         if (size > 0) {
             final var filter = new TableFilter.Builder();
             filter.withFromRowIndex(fromIndex); // will throw exception when fromIndex < 0
             filter.withToRowIndex(toIndex); // will throw exception when toIndex < fromIndex
             filter.withMaterializeColumnIndices(colIndices);
-            rows = renderRows(displayedColumns, colIndices, rendererIds, size,
-                () -> filteredAndSortedTable.filter(filter.build()).iterator(), m_rendererRegistry, m_renderersMap,
-                m_tableId);
+
+            final var renderers = IntStream.range(0, colIndices.length)
+                .mapToObj(i -> m_renderersMap.get(Pair.create(columns[i], rendererIds[i])))
+                .toArray(DataValueRenderer[]::new);
+
+            final var cellRendererVisitor =
+                new TableCellRendererVisitor(size, colIndices.length, m_rendererRegistry, m_tableId, renderers);
+            final var cellMetadataVisitor = new TableCellMetadataVisitor(size);
+
+            TableCellVisitor.iterateTable(colIndices, size,
+                () -> filteredAndSortedTable.filter(filter.build()).iterator(), cellRendererVisitor,
+                cellMetadataVisitor);
+
+            rows = cellRendererVisitor.getResult();
+            cellMetadata = cellMetadataVisitor.getResult();
         } else {
             rows = new String[0][];
+            cellMetadata = new ArrayList<>(0);
         }
         final var tableSpec = bufferedDataTable.getDataTableSpec();
         final var contentTypes = getColumnContentTypes(displayedColumns, rendererIds, m_renderersMap);
@@ -252,7 +264,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
             : countSelectedRows(filteredAndSortedTable, currentSelection);
         return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, numDisplayedColumns,
-            totalSelected);
+            totalSelected, cellMetadata);
     }
 
     @Override
@@ -416,49 +428,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             || cellStringValue.contains(globalSearchTerm.toLowerCase());
     }
 
-    private static String[][] renderRows(final String[] columns, final int[] colIndices, final String[] rendererIds,
-        final int size, final Supplier<CloseableRowIterator> rowIteratorSupplier,
-        final DataValueImageRendererRegistry rendererRegistry,
-        final Map<Pair<String, String>, DataValueRenderer> renderersMap, final String tableId) {
-        var renderers = IntStream.range(0, columns.length)
-            .mapToObj(i -> renderersMap.get(Pair.create(columns[i], rendererIds[i]))).toArray(DataValueRenderer[]::new);
-        final var rows = new String[size][];
-        try (final var iterator = rowIteratorSupplier.get()) {
-            IntStream.range(0, size).forEach(index -> {
-                final var row = iterator.next();
-                rows[index] = renderRow(row, colIndices, renderers, (cell, renderer) -> cell.isMissing() ? null
-                    : renderCell(cell, renderer, rendererRegistry, tableId));
-            });
-        }
-        return rows;
-    }
-
-    private static String[] renderRow(final DataRow row, final int[] colIndices, final DataValueRenderer[] renderers,
-        final BiFunction<DataCell, DataValueRenderer, String> renderCell) {
-        final var rowIndex = row.getCell(0).toString();
-        final var rowKey = row.getKey().toString();
-        return Stream.concat(Stream.of(rowIndex, rowKey), //
-            IntStream.range(0, colIndices.length) //
-                .mapToObj(i -> {
-                    var cell = row.getCell(colIndices[i]);
-                    var renderer = renderers[i];
-                    return renderCell.apply(cell, renderer);
-                }))
-            .toArray(String[]::new);
-    }
-
-    private static String renderCell(final DataCell cell, final DataValueRenderer renderer,
-        final DataValueImageRendererRegistry rendererRegistry, final String tableId) {
-        if (renderer instanceof DataValueTextRenderer) {
-            return ((DataValueTextRenderer)renderer).renderText(cell);
-        } else if (renderer instanceof DataValueImageRenderer) {
-            return rendererRegistry.addRendererAndGetImgPath(tableId, cell, (DataValueImageRenderer)renderer);
-        } else {
-            throw new UnsupportedOperationException(
-                "Unsupported data value renderer: " + renderer.getClass().getName());
-        }
-    }
-
     private void updateRenderersMap(final DataTableSpec spec, final String[] columns, final String[] rendererIds) {
         for (var i = 0; i < columns.length; i++) {
             var key = Pair.create(columns[i], rendererIds[i]);
@@ -480,12 +449,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static Table createEmptyTable() {
-        return createTable(new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l);
+        return createTable(new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l, new ArrayList<>(0));
     }
 
+    @SuppressWarnings("java:S107") // accept the large number of parameters
     private static Table createTable(final String[] displayedColumns, final String[] contentTypes,
         final String[] columnDataTypeIds, final String[][] rows, final long rowCount, final long columnCount,
-        final Long totalSelected) {
+        final Long totalSelected, final List<Map<String, CellMetadata>> cellMetadata) {
         return new Table() {
 
             @Override
@@ -523,6 +493,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 return totalSelected;
             }
 
+            @Override
+            public List<Map<String, CellMetadata>> getCellMetadata() {
+                return cellMetadata;
+            }
         };
     }
 

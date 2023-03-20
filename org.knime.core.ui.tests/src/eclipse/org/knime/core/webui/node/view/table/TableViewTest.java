@@ -74,6 +74,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
@@ -125,8 +126,8 @@ class TableViewTest {
 
     @Test
     void testDataServiceGetData() {
-        final var expectedResult = new String[][]{{"2", "rowkey 1", "1", "1", "11", "pageId/images/tableId/2018748495.png", "0001",
-            "true", "pageId/images/tableId/-1084641940.png"}};
+        final var expectedResult = new String[][]{{"2", "rowkey 1", "1", "1", "11",
+            "pageId/images/tableId/2018748495.png", "0001", "true", "pageId/images/tableId/-1084641940.png", null}};
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
         var rendererIds = new String[expectedResult[0].length];
         rendererIds[3] = "org.knime.core.data.renderer.DoubleBarRenderer$Factory";
@@ -142,7 +143,7 @@ class TableViewTest {
 
         // check content types
         assertThat(table.getColumnContentTypes())
-            .isEqualTo(new String[]{"txt", "txt", "txt", "img_path", "txt", "txt", "img_path"});
+            .isEqualTo(new String[]{"txt", "txt", "txt", "img_path", "txt", "txt", "img_path", "txt"});
 
         // try out 'cell renderer'
         var cellImg = rendererRegistry.renderImage("tableId/-1084641940.png?w=1&h=2");
@@ -150,6 +151,10 @@ class TableViewTest {
         var cellImg2 = rendererRegistry.renderImage("tableId/2018748495.png?w=1&h=2");
         assertThat(new String(cellImg2, StandardCharsets.UTF_8)).startsWith("�PNG");
         assertThat(table.getRowCount()).isEqualTo(2);
+
+        var cellMetadata = table.getCellMetadata();
+        assertThat(cellMetadata.get(0).get("9").getMissingCellErrorMessage()).isEqualTo("Missing Value: 1");
+        assertThat(cellMetadata.size()).isEqualTo(1);
     }
 
     @Test
@@ -303,10 +308,10 @@ class TableViewTest {
         final var warningMessageAsserter =
             new DataServiceContextWarningMessagesAsserter("The selected column foo is not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-        final var rows = testTable.getTable(
-            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo"))
-                .toArray(String[]::new),
-            0, 1, null, true, true, false).getRows();
+        final var rows = testTable
+            .getTable(Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo"))
+                .toArray(String[]::new), 0, 1, null, true, true, false)
+            .getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")
             .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
@@ -317,7 +322,7 @@ class TableViewTest {
     void testDataServiceSetsGetTableColumnCount() {
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
         final var result = testTable.getTable(getDefaultTestSpec().getColumnNames(), 0, 1, null, true, true, false);
-        assertThat(result.getColumnCount()).isEqualTo(7);
+        assertThat(result.getColumnCount()).isEqualTo(8);
     }
 
     @Test
@@ -365,9 +370,10 @@ class TableViewTest {
         final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
             "The selected columns foo, bar are not present in the table.");
         final var testTable = createTableViewDataServiceInstance(createDefaultTestTable(1));
-        final var rows = testTable.getTable(Stream
-            .concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo", "bar"))
-            .toArray(String[]::new), 0, 1, null, true, true, false).getRows();
+        final var rows = testTable.getTable(
+            Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo", "bar"))
+                .toArray(String[]::new),
+            0, 1, null, true, true, false).getRows();
         assertThat(rows[0]).as("The output table has the correct amount of columns")
             .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
@@ -528,6 +534,29 @@ class TableViewTest {
         assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"col1", "col2"});
         assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
         assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
+    }
+
+    @Test
+    void testDataServiceGetCellMetadataForMultipleColumns() {
+        final var firstMissingColumnContent =
+            new MissingCell[]{new MissingCell("Missing Value(Row1_Col1)"), new MissingCell(null)};
+        final var secondMissingColumnContent =
+            new MissingCell[]{new MissingCell("Missing Value(Row1_Col2)"), new MissingCell("Missing Value(Row2_Col2)")};
+        final var inputTable = TableTestUtil.createTableFromColumns( //
+            new ObjectColumn("col1", StringCell.TYPE, firstMissingColumnContent), //
+            new ObjectColumn("col2", IntCell.TYPE, secondMissingColumnContent) //
+        );
+
+        final var dataService = createTableViewDataServiceInstance(() -> inputTable);
+        final var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
+
+        final var cellMetadata = table.getCellMetadata();
+        assertThat(cellMetadata).hasSize(2);
+        assertThat(cellMetadata.get(0)).hasSize(2);
+        assertThat(cellMetadata.get(0).get("2").getMissingCellErrorMessage()).isEqualTo("Missing Value(Row1_Col1)");
+        assertThat(cellMetadata.get(0).get("3").getMissingCellErrorMessage()).isEqualTo("Missing Value(Row1_Col2)");
+        assertThat(cellMetadata.get(1)).hasSize(1);
+        assertThat(cellMetadata.get(1).get("3").getMissingCellErrorMessage()).isEqualTo("Missing Value(Row2_Col2)");
     }
 
     private static TableViewDataService
