@@ -109,9 +109,9 @@ describe('Multiselect.vue', () => {
             expect(wrapper.vm.collapsed).toBe(false);
         });
 
-        it('hide options on esc', () => {
+        it('hides options on esc', () => {
             vi.useFakeTimers();
-            const wrapper = doMount();
+            const wrapper = doMount({ attachTo: document.body });
             let toggleFocusMock = vi.spyOn(wrapper.vm.$refs.toggle, 'focus');
             let button = wrapper.find('[role=button]');
             wrapper.vm.collapsed = false;
@@ -119,6 +119,7 @@ describe('Multiselect.vue', () => {
             vi.runAllTimers();
             expect(wrapper.vm.collapsed).toBe(true);
             expect(toggleFocusMock).toHaveBeenCalled();
+            expect(document.activeElement).toBe(wrapper.find({ ref: 'toggle' }).wrapperElement);
         });
 
         it('hide options when focus leaves the component when not using the custom list box', () => {

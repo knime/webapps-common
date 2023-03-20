@@ -67,7 +67,7 @@ describe('ComboBox.vue', () => {
             expect(wrapper.vm.inputFocussed).toBeTruthy();
         });
 
-        it('has the search input as focus element when there are less than 2 options selected', () => {
+        it('has the search input as focus element when there is no option selected', () => {
             const wrapper = doMount();
             const searchInput = wrapper.find('.search-input').wrapperElement;
             expect(wrapper.vm.focusElements).toEqual([searchInput]);
@@ -94,6 +94,16 @@ describe('ComboBox.vue', () => {
             wrapper.findComponent(Multiselect).vm.$emit('focusOutside');
             expect(wrapper.vm.inputFocussed).toBeFalsy();
             expect(wrapper.vm.searchValue).toBe('');
+        });
+
+        it('refocusses the listbox when pressing esc on the dropdown', async () => {
+            vi.useFakeTimers();
+            const wrapper = doMount({}, { attachTo: document.body });
+            wrapper.vm.focusInput();
+            wrapper.vm.onDown();
+            await wrapper.find('.multiselect').trigger('keydown.esc');
+            vi.runAllTimers();
+            expect(wrapper.find('.summary-input-icon-wrapper').wrapperElement).toBe(document.activeElement);
         });
     });
 

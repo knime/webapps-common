@@ -32,7 +32,7 @@ export default {
             default: () => []
         },
         /**
-         * Limit the number of visible options in the dropdown
+         * Limit the number of visible options in the dropdown.
          */
         sizeVisibleOptions: {
             type: Number,
@@ -49,11 +49,12 @@ export default {
             /*
              * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
              * When the input/removeAllTags-Button of this component is focussed then they shouldn't be closed either,
-             * which is why the need to be passed to the Multiselect component
+             * which is why they need to be passed to the Multiselect component.
              */
             focusElements: [],
             searchValue: '',
-            inputFocussed: false
+            inputFocussed: false,
+            refocusElement: null
         };
     },
     computed: {
@@ -84,6 +85,7 @@ export default {
     },
     mounted() {
         this.setFocusElements();
+        this.refocusElement = this.$refs.listBox;
     },
     methods: {
         focusInput() {
@@ -138,6 +140,7 @@ export default {
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-elements="focusElements"
+    :parent-refocus-element-on-close="refocusElement"
     @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >

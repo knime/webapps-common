@@ -101,6 +101,13 @@ export default {
         parentFocusElements: {
             type: Array,
             default: () => []
+        },
+        /**
+         * The element of the parent to refocus when the options get and when using a custom listbox.
+         */
+        parentRefocusElementOnClose: {
+            type: Object,
+            default: () => ({})
         }
     },
     emits: ['update:modelValue', 'focusOutside'],
@@ -139,6 +146,9 @@ export default {
             return this.useSpecificOptionsHeight
                 ? { 'max-height': `${this.sizeVisibleOptions * BOXES_HEIGHT + OPTIONS_WRAPPER_VERT_PAD}px` }
                 : {};
+        },
+        refocusElementOnClose() {
+            return this.useCustomListBox ? this.parentRefocusElementOnClose : this.$refs.toggle;
         }
     },
     watch: {
@@ -192,14 +202,14 @@ export default {
         /**
          * Handle closing the options.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button/element should be re-focused after closing.
          * @return {undefined}
          */
         closeOptions(refocusToggle = true) {
             this.collapsed = true;
             if (refocusToggle) {
                 setTimeout(() => {
-                    this.$refs.toggle?.focus();
+                    this.refocusElementOnClose.focus();
                 }, BLUR_TIMEOUT);
             }
         },
