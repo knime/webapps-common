@@ -78,6 +78,10 @@ describe('MenuItems.vue', () => {
                                     template: '<div/>'
                                 }
                             }
+                        },
+                        props: {
+                            items: [],
+                            menuAriaLabel: ''
                         }
                     });
                 getNextElement = useDropdownNavigation.mock.calls[0][0].getNextElement;

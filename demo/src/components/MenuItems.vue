@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { markRaw } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import MenuItems from 'webapps-common/ui/components/MenuItems.vue';
@@ -7,6 +7,7 @@ import StarIcon from 'webapps-common/ui/assets/img/icons/star.svg';
 import LeaveIcon from 'webapps-common/ui/assets/img/icons/leave.svg';
 import HeartIcon from 'webapps-common/ui/assets/img/icons/heart.svg';
 import code from 'webapps-common/ui/components/MenuItems.vue?raw';
+import type { MenuItem } from 'webapps-common/ui/components/MenuItemsBase.vue';
 
 const codeExampleStandalone = `<script>
 import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
@@ -72,7 +73,7 @@ export default {
 </template>
 `;
 
-const menuItemsData = [{
+const menuItemsData : MenuItem[] = [{
     href: 'http://apple.com',
     text: 'Apples',
     icon: markRaw(HelpIcon),
@@ -231,7 +232,7 @@ export default {
 
           <div class="menu-item-wrapper">
             <div class="menu-name">With keyboard navigation</div>
-            <button @keydown="$refs.menuItemsWithNavigation.onKeydown($event)">
+            <button @keydown="($refs.menuItemsWithNavigation as any).onKeydown($event)">
               Focus me to start navigating
             </button>
             <div class="card">

@@ -318,7 +318,7 @@ describe('MenuItemsBase.vue', () => {
         });
 
         it('emits @item-focused initially', () => {
-            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([expect.undefined]);
+            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null]);
         });
 
         it('emits @item-focused on focused item index change', async () => {

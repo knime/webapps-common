@@ -1,46 +1,23 @@
 <script lang="ts">
-import type { PropType } from 'vue';
+import type { PropType, FunctionalComponent, SVGAttributes } from 'vue';
 
-/**
- * @example
-[{
-  text: Example
-  sectionHeadline: true
-}, {
-  href: 'http://apple.com',
-  text: 'Apples',
-  icon: HelpIcon
-  hotkeyText: 'CTRL + H',
-  title: 'Tastier Apples'
-}, {
-  href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-  text: 'Oranges',
-  icon: StarIcon,
-  disabled: true,
-  separator: true
-}, {
-  to: '/testing-nuxt-link',
-  text: 'Ananas',
-  selected: true
-  }]
-*/
 export interface MenuItem {
   text: string;
-  icon?: any;
+  icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
-  // shown on menu items on hover
+  /* shown on menu items on hover */
   title?: string;
-  // for router-links
+  /* for router-links */
   to?: string;
-  // for standard (e.g. external) links
+  /* for standard (e.g. external) links */
   href?: string;
-  // adds another styling to the item-font by reducing size and brightening color
-  sectionHeadline?: boolean;
-  // visually emphasizes an item by inverting the color of the item
+  /* adds another styling to the item-font by reducing size and brightening color */
+ sectionHeadline?: boolean;
+  /* visually emphasizes an item by inverting the color of the item */
   selected?: boolean;
-  // show a separator below the item if it's not the last in the list.
+  /* show a separator below the item if it's not the last in the list */
   separator?: boolean;
-  // shown aligned right besides the text
+  /* shown aligned right besides the text */
   hotkeyText?: string;
 }
 
@@ -55,9 +32,6 @@ export default {
             type: Number as PropType<number|null>,
             default: null
         },
-        /**
-         * Aria Label
-         */
         menuAriaLabel: {
             type: String,
             required: true
@@ -93,7 +67,7 @@ export default {
             immediate: true,
             handler(i) {
                 // eslint-disable-next-line no-undefined
-                this.$emit('item-focused', i === null ? undefined : this.menuItemId(i));
+                this.$emit('item-focused', i === null ? null : this.menuItemId(i));
             }
         }
     },
@@ -116,15 +90,6 @@ export default {
         menuItemId(index: number) {
             return `menu-item-${this.id}-${index}`;
         },
-        /**
-         * Items can behave as links (either nuxt or native <a>) or buttons.
-         * The MenuItems just emit the item-click event.
-         *
-         * @param {Event} event - browser event.
-         * @param {Object} item - submenu item which was clicked.
-         * @returns {undefined}
-         * @emits {item-click}
-         */
         onItemClick(event: Event, item: MenuItem) {
             if (item.disabled || item.sectionHeadline) {
                 return;

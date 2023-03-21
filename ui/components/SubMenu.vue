@@ -149,7 +149,7 @@ export default {
         return {
             // eslint-disable-next-line no-undefined
             activeDescendant: undefined
-        };
+        } as {activeDescendant: string | undefined};
     },
     methods: {
         toggleMenu() {
@@ -174,6 +174,14 @@ export default {
         },
         getMenuItems() {
             return this.$refs.menuItems as any;
+        },
+        setActiveDescendant(id: string | null) {
+            if (id === null) {
+                // eslint-disable-next-line no-undefined
+                this.activeDescendant = undefined;
+            } else {
+                this.activeDescendant = id;
+            }
         }
     }
 };
@@ -218,7 +226,7 @@ export default {
           menu-aria-label="sub menu"
           @item-click="onItemClick"
           @close="closeMenu"
-          @item-focused="activeDescendant = $event"
+          @item-focused="setActiveDescendant"
         />
       </div>
     </Teleport>
