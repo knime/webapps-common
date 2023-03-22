@@ -75,7 +75,7 @@
                 },
                 {
                   "const": "MANUAL",
-                  "title": "Manual axis"
+                  "title": "Manual bounds"
                 }
               ],
               "title": "Value axis limits",

@@ -7,8 +7,10 @@
         "xAxisLabel": "Dimension",
         "yAxisLabel": "Value",
         "axisExtentMethod": "AUTO",
-        "yAxisManualMin": 0,
-        "yAxisManualMax": 100,
+        "manualMinMax": {
+          "min": 0,
+          "max": 100
+        },
         "showLegend": true,
         "allowImageDownload": true,
         "showTooltip": true,
@@ -72,12 +74,34 @@
                 {
                   "const": "COLUMN_DOMAIN",
                   "title": "Domain bounds"
+                },
+                {
+                  "const": "MANUAL",
+                  "title": "Manual bounds"
                 }
               ],
               "title": "Value axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework or the domain range should be used. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, used from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
             },
+            "manualMinMax": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number",
+                  "title": "Value axis min",
+                  "default": 0,
+                  "description": "Numerical value that sets the value axis minimum."
+                },
+                "max": {
+                  "type": "number",
+                  "title": "Value axis max",
+                  "default": 0,
+                  "description": "Numerical value that sets the value axis maximum."
+                }
+              }
+            },
+
             "enableAnimation": {
               "type": "boolean",
               "title": "Enable animation",
@@ -335,37 +359,6 @@
                 "width"
               ]
             },
-            "axisExtentMethod": {
-              "oneOf": [
-                {
-                  "const": "AUTO",
-                  "title": "Automatic"
-                },
-                {
-                  "const": "COLUMN_DOMAIN",
-                  "title": "Domain bounds"
-                },
-                {
-                  "const": "MANUAL",
-                  "title": "Manual axis"
-                }
-              ],
-              "title": "Value axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, used from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
-              "default": "AUTO"
-            },
-            "yAxisManualMin": {
-              "type": "number",
-              "title": "Vertical min",
-              "default": 0,
-              "description": "Numerical value that sets the vertical axis minimum."
-            },
-            "yAxisManualMax": {
-              "type": "number",
-              "title": "Vertical max",
-              "default": 0,
-              "description": "Numerical value that sets the vertical axis maximum."
-            },
             "enableAnimation": {
               "type": "boolean",
               "title": "Enable animation",
@@ -459,11 +452,11 @@
               "elements": [
                 {
                   "type": "Control",
-                  "scope": "#/properties/view/properties/yAxisManualMin"
+                  "scope": "#/properties/view/properties/manualMinMax/properties/min"
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/view/properties/yAxisManualMax"
+                  "scope": "#/properties/view/properties/manualMinMax/properties/max"
                 }
               ],
               "rule": {

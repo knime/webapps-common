@@ -309,6 +309,32 @@
             },
             {
               "type": "Control",
+              "scope": "#/properties/view/properties/adjustmentFactor",
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/bandwidthOption",
+                  "schema": {
+                    "const": "RULE"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/customBandwidth",
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/bandwidthOption",
+                  "schema": {
+                    "const": "FIXED"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Control",
               "scope": "#/properties/view/properties/axisExtentMethod",
               "options": {
                 "format": "radio",
@@ -339,60 +365,6 @@
                   "scope": "#/properties/view/properties/axisExtentMethod",
                   "schema": {
                     "const": "MANUAL"
-                  }
-                }
-              }
-            },
-            {
-              "type": "HorizontalLayout",
-              "options": {
-                "ratios": [
-                  1,
-                  2
-                ]
-              },
-              "elements": [
-                {
-                  "type": "Control",
-                  "scope": "#/properties/view/properties/yAxisManualMin"
-                },
-                {
-                  "type": "Control",
-                  "scope": "#/properties/view/properties/yAxisManualMax"
-                }
-              ],
-              "rule": {
-                "effect": "SHOW",
-                "condition": {
-                  "scope": "#/properties/view/properties/axisExtentMethod",
-                  "schema": {
-                    "const": "MANUAL"
-                  }
-                }
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/adjustmentFactor",
-              "rule": {
-                "effect": "SHOW",
-                "condition": {
-                  "scope": "#/properties/view/properties/bandwidthOption",
-                  "schema": {
-                    "const": "RULE"
-                  }
-                }
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/customBandwidth",
-              "rule": {
-                "effect": "SHOW",
-                "condition": {
-                  "scope": "#/properties/view/properties/bandwidthOption",
-                  "schema": {
-                    "const": "FIXED"
                   }
                 }
               }
