@@ -44,26 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 22, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl;
-
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+package org.knime.core.webui.node.dialog.ui.style;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsUiSchemaUtil {
+public final class ValueSwitchStyle implements EnumStyleProvider {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
+    @Override
+    public Object getStyleObject() {
+        return new Format("valueSwitch");
     }
 
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
-        return new JsonFormsUiSchemaGenerator(settings).build();
-    }
 }

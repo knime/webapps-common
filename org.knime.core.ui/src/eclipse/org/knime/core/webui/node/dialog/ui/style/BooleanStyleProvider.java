@@ -42,16 +42,20 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- * 
+ *
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui;
+
+package org.knime.core.webui.node.dialog.ui.style;
 
 /**
- * 
+ *
  * @author Paul Bärnreuther
  */
-public interface NotASetting {
-
+public non-sealed interface BooleanStyleProvider extends StyleProvider {
+    @Override
+    default boolean isApplicable(final Class<?> clazz) {
+        return clazz.equals(boolean.class);
+    }
 }

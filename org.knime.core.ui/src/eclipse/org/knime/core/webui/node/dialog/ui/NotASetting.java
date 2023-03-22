@@ -46,24 +46,17 @@
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl;
+package org.knime.core.webui.node.dialog.ui;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
+ * If a (possibly nested) field within a {@link DefaultNodeSettings} class is an instance of a class extending this
+ * interface, it will not be treated as a setting during the creation of the user interface and instead its nested
+ * fields are respected. This is useful for clustering several settings into one java object.
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsUiSchemaUtil {
+public interface NotASetting {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
-    }
-
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
-        return new JsonFormsUiSchemaGenerator(settings).build();
-    }
 }

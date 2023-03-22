@@ -46,29 +46,22 @@
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.style;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+package org.knime.core.webui.node.dialog.ui.style;
 
 /**
-*
-* @author Paul Bärnreuther
-*/
-public abstract class StyleSupplier {
-   /**
-    * @param clazz the class of the setting field
-    * @return whether the style supplier is applicable for the class
-    */
-   public abstract boolean isApplicable(Class<?> clazz);
-   /**
-    * @param options the object node to which styles should be added
-    *
-    */
-   public abstract void apply(ObjectNode options);
-   /**
-    * @return whether any applicable default styles should be overwritten by this style.
-    */
-   public boolean overwritesDefault() {
-       return true;
-   }
+ *
+ * @author Paul Bärnreuther
+ */
+public sealed interface StyleProvider permits BooleanStyleProvider, EnumStyleProvider {
+
+    /**
+     * @param clazz the class of the setting field
+     * @return whether the style supplier is applicable for the class
+     */
+    boolean isApplicable(Class<?> clazz);
+
+    /**
+     * @return an instance of a POJO representing the style
+     */
+    Object getStyleObject();
 }

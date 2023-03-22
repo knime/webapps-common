@@ -46,16 +46,31 @@
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.ui;
 
-package org.knime.core.webui.node.dialog.impl.ui.style;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  *
+ * Annotation to mark a class as a section which can contain several settings and other layout parts. See {@link Layout}
+ * on how to add settings to such a section.
+ *
  * @author Paul Bärnreuther
  */
-public abstract class BooleanStyleSupplier extends StyleSupplier {
-    @Override
-    public boolean isApplicable(final Class<?> clazz) {
-        return clazz.equals(boolean.class);
-    }
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Section {
+    /**
+     * @return the title of the section
+     */
+    String title() default "";
+
+    /**
+     * @return Whether the whole section is only shown when advanced settings are visible.
+     */
+    boolean advanced() default false;
 }

@@ -44,22 +44,59 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 22, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.style;
+package org.knime.core.webui.node.dialog.impl;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Arrays;
+import java.util.Map;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-@Retention(RUNTIME)
-@Target(FIELD)
 /**
  *
  * @author Paul Bärnreuther
  */
-public @interface Style {
-    Class<? extends StyleSupplier>[] styleSuppliers();
+final class LayoutNodesGenerator {
+
+    private ObjectMapper m_mapper;
+
+    private Map<Class<?>, ArrayNode> m_content;
+
+    /**
+     * @param mapper the object mapper used for the ui schema generation
+     * @param content the mapping between layout parts and their contained settings controls
+     */
+    public LayoutNodesGenerator(final ObjectMapper mapper, final Map<Class<?>, ArrayNode> content) {
+        m_mapper = mapper;
+        m_content = content;
+    }
+
+    public ObjectNode buildLayout(final Class<?> rootClass) {
+        final var root = m_mapper.createObjectNode();
+        final var rootElements = root.putArray("elements");
+        if (rootClass == null) {
+            final var rootContent = m_content.getOrDefault(null, m_mapper.createArrayNode());
+            rootElements.addAll(rootContent);
+        } else {
+            buildLayout(rootClass, rootElements);
+        }
+        return root;
+    }
+
+    private void buildLayout(final Class<?> parentClass, final ArrayNode parentNode) {
+        Arrays.asList(parentClass.getDeclaredClasses()).forEach(childClass -> {
+            final var childNode = addLayoutNode(parentNode, childClass);
+            buildLayout(childClass, childNode);
+        });
+
+    }
+
+    private ArrayNode addLayoutNode(final ArrayNode parent, final Class<?> layoutElement) {
+        final var layoutPart = LayoutPart.determineFromClassAnnotation(layoutElement);
+        final var contentForClass = m_content.getOrDefault(layoutElement, m_mapper.createArrayNode());
+        return layoutPart.create(parent.addObject(), layoutElement, contentForClass);
+    }
 }

@@ -44,26 +44,74 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 22, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import java.util.Map;
+import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.ui.Section;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsUiSchemaUtil {
+enum LayoutPart {
+        SECTION(LayoutPart::getSection), //
+        NONE(context -> {
+            throw new UiSchemaGenerationException(
+                String.format("Cannot create layout node from class %s", context.getClass()));
+        });
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
+    private Function<LayoutNodeCreationContext, ArrayNode> m_create;
+
+    LayoutPart(final Function<LayoutNodeCreationContext, ArrayNode> create) {
+        m_create = create;
     }
 
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
-        return new JsonFormsUiSchemaGenerator(settings).build();
+    static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Section.class)) {
+            return SECTION;
+        }
+        return NONE;
+    }
+
+    ArrayNode create(final ObjectNode root, final Class<?> layoutClass, final ArrayNode content) {
+        return m_create.apply(new LayoutNodeCreationContext(root, layoutClass)).addAll(content);
+    }
+
+    private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
+        final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
+        final var node = creationContext.getRoot();
+        final var label = sectionAnnotation.title();
+        node.put("label", label);
+        node.put("type", "Section");
+        if (sectionAnnotation.advanced()) {
+            node.putObject("options").put("isAdvanced", true);
+        }
+        return node.putArray("elements");
+    }
+
+    private class LayoutNodeCreationContext {
+
+        private final ObjectNode m_root;
+
+        private final Class<?> m_layoutClass;
+
+        public LayoutNodeCreationContext(final ObjectNode root, final Class<?> layoutClass) {
+            m_root = root;
+            m_layoutClass = layoutClass;
+        }
+
+        public ObjectNode getRoot() {
+            return m_root;
+        }
+
+        public Class<?> getLayoutClass() {
+            return m_layoutClass;
+        }
     }
 }

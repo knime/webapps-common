@@ -51,10 +51,10 @@ package org.knime.core.webui.node.dialog.impl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreationContext;
@@ -100,7 +100,8 @@ final class JsonFormsSettingsImpl implements JsonFormsSettings {
         m_context = context;
     }
 
-    JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings, final SettingsCreationContext context) {
+    JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings,
+        final SettingsCreationContext context) {
         m_modelSettings = settings.get(SettingsType.MODEL);
         m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
         m_viewSettings = settings.get(SettingsType.VIEW);
@@ -131,17 +132,27 @@ final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     @Override
     public final RawValue getUiSchema() {
-        final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass ;
+        final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass;
         try (final var inputStream = clazz.getResourceAsStream("uischema.json")) {
             if (inputStream == null) {
-                NodeLogger.getLogger(getClass()).warn("No uischema.json resource found.");
-                return null;
+                return generateUiSchema();
             }
             return new RawValue(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
         } catch (IOException ex) {
-            NodeLogger.getLogger(getClass()).warn("Error when parsing uischema.json.", ex);
-            return null;
+            throw new IllegalStateException("Error when parsing uischema.json.", ex);
         }
+
+    }
+
+    private RawValue generateUiSchema() {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        if (m_modelSettingsClass != null) {
+            settings.put("model", m_modelSettingsClass);
+        }
+        if (m_viewSettingsClass != null) {
+            settings.put("view", m_viewSettingsClass);
+        }
+        return new RawValue(JsonFormsUiSchemaUtil.buildUISchema(settings).toString());
     }
 
     @Override

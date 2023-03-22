@@ -46,22 +46,24 @@
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui;
+package org.knime.core.webui.node.dialog.impl;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-@Retention(RUNTIME)
-@Target(TYPE)
 /**
  *
  * @author Paul Bärnreuther
  */
-public @interface Section {
+public class UiSchemaGenerationException extends RuntimeException {
 
-    String title() default "";
-    boolean advanced() default false;
+    private static final long serialVersionUID = 1L;
+
+    @SuppressWarnings("javadoc")
+    public UiSchemaGenerationException(final String message) {
+        super(message);
+    }
+
+    @SuppressWarnings("javadoc")
+    public UiSchemaGenerationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
 }

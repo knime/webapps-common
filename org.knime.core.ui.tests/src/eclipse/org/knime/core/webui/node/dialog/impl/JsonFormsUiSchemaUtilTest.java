@@ -54,21 +54,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.impl.ui.Layout;
-import org.knime.core.webui.node.dialog.impl.ui.NotASetting;
-import org.knime.core.webui.node.dialog.impl.ui.Section;
-import org.knime.core.webui.node.dialog.impl.ui.UiSchemaGenerationException;
-import org.knime.core.webui.node.dialog.impl.ui.style.BooleanStyleSupplier;
-import org.knime.core.webui.node.dialog.impl.ui.style.Style;
+import org.knime.core.webui.node.dialog.ui.Layout;
+import org.knime.core.webui.node.dialog.ui.NotASetting;
+import org.knime.core.webui.node.dialog.ui.Section;
+import org.knime.core.webui.node.dialog.ui.style.BooleanStyleProvider;
+import org.knime.core.webui.node.dialog.ui.style.Format;
+import org.knime.core.webui.node.dialog.ui.style.Style;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  *
  * @author Paul Bärnreuther
  */
+
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
     interface TestSettingsLayout {
         @Section
@@ -83,13 +84,16 @@ class JsonFormsUiSchemaUtilTest {
         }
     }
 
-    class EmptySettings implements DefaultNodeSettings {
+    @Layout(TestSettingsLayout.class)
+    class DummySettings implements DefaultNodeSettings {
+        String m_foo;
     }
 
     @Test
     void testSection() throws JsonProcessingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, TestSettingsLayout.class);
+        settings.put("test", DummySettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("");
@@ -121,7 +125,7 @@ class JsonFormsUiSchemaUtilTest {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("model", TestLayoutModelSettings.class);
         settings.put("view", TestLayoutViewSettings.class);
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, TestSettingsLayout.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(2);
         //Section1
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
@@ -130,15 +134,12 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/view/properties/testViewSetting1");
         //Section2
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[1].elements[1].scope").isString()
+        assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
             .isEqualTo("#/properties/view/properties/testViewSetting2");
         //NestedSection
-        assertThatJson(response).inPath("$.elements[1].elements[0].elements").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.elements[1].elements[0].elements[0].scope").isString()
+        assertThatJson(response).inPath("$.elements[1].elements[1].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].elements[1].elements[0].scope").isString()
             .isEqualTo("#/properties/model/properties/nestedModelSetting");
-    }
-
-    interface SimpleLayout {
     }
 
     class ClusterOfSettings implements NotASetting {
@@ -165,7 +166,7 @@ class JsonFormsUiSchemaUtilTest {
     void testAddsControlsWithCorrectScope() throws JsonProcessingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", TestControlSettings.class);
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, SimpleLayout.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(4);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
             .isEqualTo("#/properties/test/properties/normalSetting");
@@ -204,7 +205,7 @@ class JsonFormsUiSchemaUtilTest {
     void testDefaultParent() throws JsonProcessingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", TestDefaultParentSettings.class);
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, TestDefaultParentLayout.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         //Default Section
         assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(3);
@@ -224,6 +225,69 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
+    static class TestLayoutWithinSettingsSettings implements DefaultNodeSettings {
+        @Section(title = "first")
+        static interface Section1 {
+        }
+
+        @Section(title = "second")
+        static interface Section2 {
+        }
+
+        @Layout(Section1.class)
+        String m_foo;
+
+        @Layout(Section2.class)
+        String m_bar;
+    }
+
+    @Test
+    void testLayoutWithinSettings() throws JsonMappingException {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestLayoutWithinSettingsSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("first");
+        assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/foo");
+
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("second");
+        assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/bar");
+    }
+
+    static class TestMultipleRootsOne implements DefaultNodeSettings {
+        @Section
+        static interface Section1 {
+        }
+
+        @Layout(Section1.class)
+        String m_foo;
+    }
+
+    static class TestMultipleRootsTwo implements DefaultNodeSettings {
+        @Section
+        static interface Section2 {
+        }
+
+        @Layout(Section2.class)
+        String m_bar;
+    }
+
+    @Test
+    void testThrowsIfMultipleLayoutRootsAreDetected() throws JsonMappingException {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("model", TestMultipleRootsOne.class);
+        settings.put("view", TestMultipleRootsTwo.class);
+        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
+    }
+
     class DefaultStylesSettings implements DefaultNodeSettings {
         String m_string;
 
@@ -234,77 +298,70 @@ class JsonFormsUiSchemaUtilTest {
     void testDefaultStyles() throws JsonMappingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", DefaultStylesSettings.class);
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, SimpleLayout.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
         assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("options");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("boolean");
-        assertThatJson(response).inPath("$.elements[1].options.checkbox").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
     }
 
-    public static class CustomBooleanStyle extends BooleanStyleSupplier {
+    public static class OverridingBooleanStyleProvider implements BooleanStyleProvider {
+
         @Override
-        public void apply(final ObjectNode options) {
-            options.put("custom", true);
+        public Object getStyleObject() {
+            return new Format("custom");
         }
     }
 
-    public static class AnotherBooleanStyle extends BooleanStyleSupplier {
-        @Override
-        public void apply(final ObjectNode options) {
-            options.put("another", true);
+    public static class ExtendingBooleanStyleProvider implements BooleanStyleProvider {
+
+        class OtherStyle {
+            boolean m_otherOption = true;
         }
+
+        @Override
+        public Object getStyleObject() {
+            return new OtherStyle();
+        }
+
     }
 
-    public static class CustomBooleanStyleWithoutOverride extends BooleanStyleSupplier {
-        @Override
-        public void apply(final ObjectNode options) {
-            options.put("custom", true);
-        }
-
-        @Override
-        public boolean overwritesDefault() {
-            return false;
-        }
-    }
-
-    @Layout(SimpleLayout.class)
     class StylesSettings implements DefaultNodeSettings {
         boolean m_bool;
 
-        @Style(styleSuppliers = {CustomBooleanStyle.class})
-        boolean m_customBool;
+        @Style({OverridingBooleanStyleProvider.class})
+        boolean m_overriding;
 
-        @Style(styleSuppliers = {CustomBooleanStyleWithoutOverride.class})
-        boolean m_customNoOverrideBool;
+        @Style({ExtendingBooleanStyleProvider.class})
+        boolean m_extending;
 
-        @Style(styleSuppliers = {CustomBooleanStyle.class, AnotherBooleanStyle.class})
-        boolean m_twoStylesBool;
+        @Style({OverridingBooleanStyleProvider.class, ExtendingBooleanStyleProvider.class})
+        boolean m_both;
     }
 
     @Test
     void testCustomStyles() throws JsonMappingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", StylesSettings.class);
-        final var response = JsonFormsUISchemaUtil.buildUISchema(settings, SimpleLayout.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
             .isEqualTo("#/properties/test/properties/bool");
-        assertThatJson(response).inPath("$.elements[0].options.checkbox").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("checkbox");
         assertThatJson(response).inPath("$.elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/customBool");
-        assertThatJson(response).inPath("$.elements[1].options").isObject().doesNotContainKey("checkbox");
-        assertThatJson(response).inPath("$.elements[1].options.custom").isBoolean().isTrue();
+            .isEqualTo("#/properties/test/properties/overriding");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("custom");
         assertThatJson(response).inPath("$.elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/customNoOverrideBool");
-        assertThatJson(response).inPath("$.elements[2].options.checkbox").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[2].options.custom").isBoolean().isTrue();
+            .isEqualTo("#/properties/test/properties/extending");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("checkbox");
+        assertThatJson(response).inPath("$.elements[2].options.otherOption").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[3].scope").isString()
-            .isEqualTo("#/properties/test/properties/twoStylesBool");
-        assertThatJson(response).inPath("$.elements[3].options.custom").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[3].options.another").isBoolean().isTrue();
+            .isEqualTo("#/properties/test/properties/both");
+        assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("custom");
+        assertThatJson(response).inPath("$.elements[3].options.otherOption").isBoolean().isTrue();
     }
 
     class NonApplicableStyleSettings implements DefaultNodeSettings {
-        @Style(styleSuppliers = {CustomBooleanStyle.class})
+        @Style({ExtendingBooleanStyleProvider.class})
         String m_prop;
     }
 
@@ -312,7 +369,59 @@ class JsonFormsUiSchemaUtilTest {
     void testThrowsIfCustomStyleIsNotApplicable() throws JsonMappingException {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", NonApplicableStyleSettings.class);
-        assertThrows(UiSchemaGenerationException.class,
-            () -> JsonFormsUISchemaUtil.buildUISchema(settings, SimpleLayout.class));
+        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
+
+    static class MergeNestedStylesSettings implements DefaultNodeSettings {
+
+        static class InnerClass {
+            String m_foo;
+
+            String m_bar;
+
+            public InnerClass(final String foo, final String bar) {
+                m_foo = foo;
+                m_bar = bar;
+            }
+        }
+
+        static class DeepStyleClass {
+            InnerClass m_merged;
+        }
+
+        static class FirstDeepStyleProvider implements BooleanStyleProvider {
+            @Override
+            public Object getStyleObject() {
+                final var styleObject = new DeepStyleClass();
+                styleObject.m_merged = new InnerClass("foo", null);
+                return styleObject;
+            }
+
+        }
+
+        static class SecondDeepStyleProvider implements BooleanStyleProvider {
+            @Override
+            public Object getStyleObject() {
+                final var styleObject = new DeepStyleClass();
+                styleObject.m_merged = new InnerClass(null, "bar");
+                return styleObject;
+            }
+
+        }
+
+        @Style({FirstDeepStyleProvider.class, SecondDeepStyleProvider.class})
+        boolean m_setting;
+    }
+
+    @Test
+    void testMergeNestedStyles() throws JsonMappingException {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", MergeNestedStylesSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        assertThatJson(response).inPath("$.elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/setting");
+        assertThatJson(response).inPath("$.elements[0].options.merged.foo").isString().isEqualTo("foo");
+        assertThatJson(response).inPath("$.elements[0].options.merged.bar").isString().isEqualTo("bar");
+    }
+
 }

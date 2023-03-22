@@ -44,26 +44,72 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 22, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.ui.Layout;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
+ *This utility class offers a method to find the root node of a set of layout parts as described {@link Layout here}.
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsUiSchemaUtil {
+final class LayoutRootFinderUtil {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
+    private LayoutRootFinderUtil() {
+        // Utility class
     }
 
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
-        return new JsonFormsUiSchemaGenerator(settings).build();
+    public static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes) {
+        return findRootNode(layoutNodes, new HashSet<>());
+    }
+
+    private static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes, final Set<Class<?>> rootNodes) {
+        if (layoutNodes.isEmpty()) {
+            return mergeRoots(rootNodes);
+        }
+        final var rootsAndOthers = separateRootNodes(layoutNodes);
+        rootNodes.addAll(rootsAndOthers.getFirst());
+        final Set<Class<?>> next =
+            rootsAndOthers.getSecond().stream().map(LayoutRootFinderUtil::getDirectNestParent).collect(Collectors.toSet());
+        return findRootNode(next, rootNodes);
+    }
+
+    private static Optional<Class<?>> mergeRoots(final Set<Class<?>> rootNodes) {
+        if (rootNodes.size() >= 2) {
+            throw new UiSchemaGenerationException("Multiple root layout nodes detected");
+        }
+        return rootNodes.stream().findFirst();
+    }
+
+    private static Pair<Set<Class<?>>, Set<Class<?>>> separateRootNodes(final Set<Class<?>> layoutNodes) {
+        final Set<Class<?>> rootNodes = new HashSet<>();
+        final Set<Class<?>> otherNodes = new HashSet<>();
+        layoutNodes.stream().filter(Objects::nonNull).forEach(clazz -> {
+            final var layoutType = LayoutPart.determineFromClassAnnotation(clazz);
+            if (layoutType == LayoutPart.NONE) {
+                rootNodes.add(clazz);
+            } else {
+                otherNodes.add(clazz);
+            }
+        });
+        return new Pair<>(rootNodes, otherNodes);
+    }
+
+    private static Class<?> getDirectNestParent(final Class<?> clazz) {
+        final var segments = Arrays.asList(clazz.getName().split("\\$"));
+        final var directNestParentName = String.join("$", segments.subList(0, segments.size() - 1));
+        return Arrays.asList(clazz.getNestMembers()).stream() //
+            .filter(member -> member.getName().equals(directNestParentName)) //
+            .findAny().orElseThrow();
     }
 }

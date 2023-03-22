@@ -46,19 +46,31 @@
  * History
  *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui;
+package org.knime.core.webui.node.dialog.ui.style;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 
 /**
+ * An annotation for setting the user interface style of a setting, i.e. a (possibly nested) field of a
+ * {@link DefaultNodeSettings}. The provided {@link StyleProvider} classes yield java objects which are (deeply) merged
+ * with any previous style objects starting with a default object determined from the type of the field. If one of the
+ * {@link StyleProvider} is not applicable for the annotated field, there will be an error at runtime.
  *
  * @author Paul Bärnreuther
  */
-public class UiSchemaGenerationException extends RuntimeException {
-
-    public UiSchemaGenerationException(final String message) {
-        super(message);
-    }
-    public UiSchemaGenerationException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface Style {
+    /**
+     *
+     * @return An array of {@link StyleProvider} which are applied in the given order after any default styles were
+     *         applied.
+     */
+    Class<? extends StyleProvider>[] value();
 }

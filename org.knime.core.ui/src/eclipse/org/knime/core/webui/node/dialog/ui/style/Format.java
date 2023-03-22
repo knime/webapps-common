@@ -44,19 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 22, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui;
+package org.knime.core.webui.node.dialog.ui.style;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-
-@Retention(RUNTIME)
 /**
+ * A POJO which is used within implementations of {@link StyleProvider} in order to define the format of a setting.
  *
  * @author Paul Bärnreuther
  */
-public @interface Layout {
-    Class<?> value();
+@SuppressWarnings("javadoc")
+public final class Format {
+    public static final String CHECKBOX = "checkbox";
+
+    public static final String VALUE_SWITCH = "valueSwitch";
+
+    final String m_format;
+
+    public Format(final String format) {
+        m_format = format;
+    }
+
 }
