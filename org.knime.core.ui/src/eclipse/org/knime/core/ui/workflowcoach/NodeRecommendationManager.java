@@ -309,10 +309,10 @@ public final class NodeRecommendationManager {
     private static void add(final Map<String, List<NodeRecommendation>> recommendation, final String key,
         final NodeInfo ni, final int count, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
         List<NodeRecommendation> p = recommendation.computeIfAbsent(key, k -> new ArrayList<>());
-        if (getNameFromRepository.apply(ni).isPresent()) {
-            var nodeName = getNameFromRepository.apply(ni).orElse(ni.getName());
+        getNameFromRepository.apply(ni).ifPresent(name -> {
+            var nodeName = name.isEmpty() ? ni.getName() : name;
             p.add(new NodeRecommendation(ni.getFactory(), nodeName, count));
-        }
+        });
     }
 
     /**
