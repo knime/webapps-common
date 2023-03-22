@@ -55,6 +55,8 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -80,22 +82,27 @@ import org.knime.testing.util.WorkflowManagerUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Kai Franze, KNIME GmbH
  */
-public class NodeRecommendationManagerTest {
+class NodeRecommendationManagerTest {
 
     private IUpdateListener m_updateListener;
 
     private final Predicate<NodeInfo> m_isSourceNode =
         ni -> ni.getFactory().equals("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");
 
-    private final Predicate<NodeInfo> m_existsInRepository =
-        ni -> ni.getFactory().startsWith("test_") || m_isSourceNode.test(ni);
+    private final Function<NodeInfo, Optional<String>> m_getNameFromRepository = ni -> {
+        if (ni.getFactory().startsWith("test_") || m_isSourceNode.test(ni)) {
+            var name = ni.getName().replace("(to_be_stripped)", "").strip(); // Test name replacement
+            return Optional.of(name);
+        }
+        return Optional.empty();
+    };
 
     /**
      * Setup recommendation manager
      */
     @BeforeEach
     public void setup() {
-        NodeRecommendationManager.getInstance().initialize(m_isSourceNode, m_existsInRepository);
+        NodeRecommendationManager.getInstance().initialize(m_isSourceNode, m_getNameFromRepository);
         m_updateListener = mock(IUpdateListener.class);
         NodeRecommendationManager.getInstance().addUpdateListener(m_updateListener);
         assertThat(NodeRecommendationManager.isEnabled()).as("Node recommendation manager not enabled").isTrue();
@@ -117,16 +124,17 @@ public class NodeRecommendationManagerTest {
      * @throws IOException
      */
     @Test
-    public void testGetNodeRecommendationForNativeNodeContainer() throws IOException {
+    void testGetNodeRecommendationForNativeNodeContainer() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new PortObjectInNodeFactory());
         var recommendations = getAndAssertNodeRecommendations(nnc);
 
-        assertThat(recommendations.size()).as("Expected exactly 2 recommendations").isEqualTo(2);
+        // Only receive 3 recommendations, even though 4 are available
+        assertThat(recommendations.size()).as("Expected exactly 3 recommendations").isEqualTo(3);
         assertThat(recommendations).as("Response is not a list").isInstanceOf(List.class);
         recommendations.forEach(nr -> {
             assertThat(nr).as("Item is not a node recommendation").isInstanceOf(NodeRecommendation.class);
-            assertThat(nr.getTotalFrequency()).as("Could not retrieve the total frequency").isGreaterThanOrEqualTo(0);
+            assertThat(nr.getTotalFrequency()).as("Could not retrieve the total frequency").isNotNegative();
             assertThat(nr.getNodeFactoryClassName()).as("Could not retrieve factory class name").isNotEmpty()
                 .isNotNull();
             assertThat(nr.getNodeName()).as("Node recommendation is not a <Test Row Filter> or <Test Row Splitter>")
@@ -148,7 +156,7 @@ public class NodeRecommendationManagerTest {
      * @throws IOException
      */
     @Test
-    public void testGetNodeRecommendationForNoneAndUpdateListener() throws IOException {
+    void testGetNodeRecommendationForNoneAndUpdateListener() throws IOException {
         var recommendations = getAndAssertNodeRecommendations(null);
 
         assertThat(recommendations.size()).as("Expected exactly 1 recommendation").isEqualTo(1);
@@ -197,14 +205,14 @@ public class NodeRecommendationManagerTest {
      * @throws IOException
      */
     @Test
-    public void testRemainingMethods() throws IOException {
+    void testRemainingMethods() throws IOException {
         // Cannot initialize again
-        assertThat(NodeRecommendationManager.getInstance().initialize(ni -> true, ni -> false))
+        assertThat(NodeRecommendationManager.getInstance().initialize(ni -> true, ni -> Optional.empty()))
             .as("This should be true since recommendations were loaded before").isTrue();
         verify(m_updateListener, times(0)).updated();
 
         // Will not load recommendations with incomplete predicates
-        assertThat(NodeRecommendationManager.getInstance().initialize(null, ni -> false))
+        assertThat(NodeRecommendationManager.getInstance().initialize(null, ni -> Optional.empty()))
             .as("This initialization should return false").isFalse();
         assertThat(NodeRecommendationManager.getInstance().initialize(ni -> true, null))
             .as("This initialization should return false").isFalse();
@@ -219,7 +227,7 @@ public class NodeRecommendationManagerTest {
 
         // Check number of loaded triple providers
         var numLoadedProviders = NodeRecommendationManager.getNumLoadedProviders();
-        assertThat(numLoadedProviders).as("Expected at least one node tripe provider loaded").isGreaterThanOrEqualTo(1);
+        assertThat(numLoadedProviders).as("Expected at least one node tripe provider loaded").isPositive();
 
         // Check triple providers
         var tripleProviders = NodeRecommendationManager.getNodeTripleProviders();

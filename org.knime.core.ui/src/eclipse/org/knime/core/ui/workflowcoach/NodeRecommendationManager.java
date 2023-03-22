@@ -57,8 +57,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -127,7 +129,7 @@ public final class NodeRecommendationManager {
 
     private Predicate<NodeInfo> m_isSourceNode;
 
-    private Predicate<NodeInfo> m_existsInRepository;
+    private Function<NodeInfo, Optional<String>> m_getNameFromRepository;
 
     static {
         // Adds preference change listener for community node triple provider
@@ -161,11 +163,11 @@ public final class NodeRecommendationManager {
      * Initialize the node recommendation manager by setting the predicates necessary to load node recommendations
      *
      * @param isSourceNode Checks whether a node is a source node
-     * @param existsInRepository Checks whether a node is present in the node repository
+     * @param getNameFromRepository Gets the node name from the node repository
      * @return True if {@code loadRecommendations()} recommendations were loaded, false otherwise
      */
-    public boolean initialize(final Predicate<NodeInfo> isSourceNode, final Predicate<NodeInfo> existsInRepository) {
-        if (isSourceNode == null || existsInRepository == null) {
+    public boolean initialize(final Predicate<NodeInfo> isSourceNode, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
+        if (isSourceNode == null || getNameFromRepository == null) {
             LOGGER.error("Cannot inintialize without both predicates");
             return false;
         }
@@ -175,10 +177,10 @@ public final class NodeRecommendationManager {
         } else {
             LOGGER.debug("No need to reset the `isSourceNode`");
         }
-        if (m_existsInRepository == null) {
-            m_existsInRepository = existsInRepository;
+        if (m_getNameFromRepository == null) {
+            m_getNameFromRepository = getNameFromRepository;
         } else {
-            LOGGER.debug("No need to reset the `existsInRepository`");
+            LOGGER.debug("No need to reset the `getNameFromRepository`");
         }
         // Initially load the recommendations
         try {
@@ -220,12 +222,12 @@ public final class NodeRecommendationManager {
      * @see #getNodeTripleProviders()
      */
     public void loadRecommendations() throws IOException {
-        if (m_isSourceNode == null || m_existsInRepository == null) {
+        if (m_isSourceNode == null || m_getNameFromRepository == null) {
             LOGGER.debug("Cannot load recommendations yet, since not all predicates are set");
             return;
         }
 
-        // read from multiple frequency sources
+        // Read from multiple frequency sources
         List<NodeTripleProvider> providers = getNodeTripleProviders();
         var recommendations = new ArrayList<Map<String, List<NodeRecommendation>>>(providers.size());
 
@@ -235,10 +237,9 @@ public final class NodeRecommendationManager {
                 Map<String, List<NodeRecommendation>> recommendationMap = new HashMap<>();
                 recommendations.add(recommendationMap);
 
-                provider.getNodeTriples().forEach(
-                    nf -> fillRecommendationsMap(recommendationMap, nf, m_isSourceNode, m_existsInRepository));
+                provider.getNodeTriples().forEach(nf -> fillRecommendationsMap(recommendationMap, nf, m_isSourceNode, m_getNameFromRepository));
 
-                // aggregate multiple occurring id's but apply a different aggregation method to source nodes
+                // Aggregate multiple occurring id's but apply a different aggregation method to source nodes
                 BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
                     (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 1);
                 BiConsumer<NodeRecommendation, NodeRecommendation> sumAggr =
@@ -251,7 +252,7 @@ public final class NodeRecommendationManager {
                     }
                 });
             }
-        } //end for
+        }
 
         if (!recommendations.isEmpty()) {
             cachedRecommendations = recommendations; // NOSONAR: This has to be static, but the enclosing method can't
@@ -263,36 +264,32 @@ public final class NodeRecommendationManager {
     }
 
     private static void fillRecommendationsMap(final Map<String, List<NodeRecommendation>> recommendationMap,
-        final NodeTriple nt, final Predicate<NodeInfo> isSourceNodePredicate,
-        final Predicate<NodeInfo> existsInRepositoryPredicate) {
-
+        final NodeTriple nt, final Predicate<NodeInfo> isSourceNode,
+        final Function<NodeInfo, Optional<String>> getNameFromRepository) {
         /* considering the successor only, i.e. for all entries where the predecessor and the node
          * itself is not present
          */
-        if (!nt.getNode().isPresent() && !nt.getPredecessor().isPresent()
-            && isSourceNodePredicate.test(nt.getSuccessor())) {
-            add(recommendationMap, SOURCE_NODES_KEY, nt.getSuccessor(), nt.getCount(), existsInRepositoryPredicate);
+        if (!nt.getNode().isPresent() && !nt.getPredecessor().isPresent() && isSourceNode.test(nt.getSuccessor())) {
+            add(recommendationMap, SOURCE_NODES_KEY, nt.getSuccessor(), nt.getCount(), getNameFromRepository);
         }
 
         /* considering the the node itself as successor, but only for those nodes that don't have a
          * predecessor -> source nodes, i.e. nodes without an input port
          */
-        if (!nt.getPredecessor().isPresent() && nt.getNode().isPresent()
-            && isSourceNodePredicate.test(nt.getNode().get())) { // NOSONAR: Presence is checked
-            add(recommendationMap, SOURCE_NODES_KEY, nt.getNode().get(), nt.getCount(), existsInRepositoryPredicate); // NOSONAR: Presence is checked
+        if (!nt.getPredecessor().isPresent()) {
+            nt.getNode().filter(isSourceNode).ifPresent( // Only add if it is a source node
+                node -> add(recommendationMap, SOURCE_NODES_KEY, node, nt.getCount(), getNameFromRepository));
         }
 
         /* without predecessor but with the node, if given */
-        if (nt.getNode().isPresent()) {
-            add(recommendationMap, getKey(nt.getNode().get()), nt.getSuccessor(), nt.getCount(), // NOSONAR: Presence is checked
-                existsInRepositoryPredicate); // NOSONAR: Presence is checked
-        }
+        nt.getNode().ifPresent( // Only add if node is present
+            node -> add(recommendationMap, getKey(node), nt.getSuccessor(), nt.getCount(), getNameFromRepository));
 
         /* considering predecessor, if given */
-        if (nt.getPredecessor().isPresent() && nt.getNode().isPresent()) {
-            add(recommendationMap, getKey(nt.getPredecessor().get()) + NODE_NAME_SEP + getKey(nt.getNode().get()), // NOSONAR: Presence is checked
-                nt.getSuccessor(), nt.getCount(), existsInRepositoryPredicate);
-        }
+        nt.getPredecessor().ifPresent( // Only continue if predecessor is present
+            predecessor -> nt.getNode().ifPresent( // Only add if node is present
+                node -> add(recommendationMap, getKey(predecessor) + NODE_NAME_SEP + getKey(node), nt.getSuccessor(),
+                    nt.getCount(), getNameFromRepository)));
     }
 
     /**
@@ -303,17 +300,18 @@ public final class NodeRecommendationManager {
      * @return <code>true</code> if an update is required before the ntp can be used, <code>false</code> otherwise
      */
     private static boolean updateRequired(final NodeTripleProvider ntp) {
-        return (ntp instanceof UpdatableNodeTripleProvider) && ((UpdatableNodeTripleProvider)ntp).updateRequired();
+        return (ntp instanceof UpdatableNodeTripleProvider untp) && untp.updateRequired();
     }
 
     /**
      * Adds a new node recommendation to the map.
      */
     private static void add(final Map<String, List<NodeRecommendation>> recommendation, final String key,
-        final NodeInfo ni, final int count, final Predicate<NodeInfo> existsInRepositoryPredicate) {
+        final NodeInfo ni, final int count, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
         List<NodeRecommendation> p = recommendation.computeIfAbsent(key, k -> new ArrayList<>());
-        if (existsInRepositoryPredicate.test(ni)) {
-            p.add(new NodeRecommendation(ni.getFactory(), ni.getName(), count));
+        if (getNameFromRepository.apply(ni).isPresent()) {
+            var nodeName = getNameFromRepository.apply(ni).orElse(ni.getName());
+            p.add(new NodeRecommendation(ni.getFactory(), nodeName, count));
         }
     }
 
@@ -429,9 +427,9 @@ public final class NodeRecommendationManager {
                 return set;
             }
             NodeContainerUI predecessor = wfm.getNodeContainer(cc.getSource());
-            if (predecessor instanceof NativeNodeContainerUI) {
+            if (predecessor instanceof NativeNodeContainerUI nncUI) {
                 var map = cachedRecommendations.get(idx);
-                var key = getKey((NativeNodeContainerUI)predecessor) + NODE_NAME_SEP + getKey(nnc[0]);
+                var key = getKey(nncUI) + NODE_NAME_SEP + getKey(nnc[0]);
                 if(map.containsKey(key)) {
                     set.addAll(map.get(key));
                 }
@@ -667,14 +665,16 @@ public final class NodeRecommendationManager {
      */
     public static List<NodeTripleProvider> getNodeTripleProviders() {
         if (nodeTripleProviders == null) {
-            nodeTripleProviders = getNodeTripleProviderFactories().stream().flatMap(f -> f.createProviders().stream())
-                .collect(Collectors.toList());
+            nodeTripleProviders = getNodeTripleProviderFactories().stream()//
+                .flatMap(f -> f.createProviders().stream())//
+                .toList();
         }
         return nodeTripleProviders;
     }
 
     /**
      * Joins the recommendations from multiple sources and removes duplications
+     *
      * @param recommendations The original recommendations
      * @return The joined list without recommendations
      */
@@ -684,11 +684,10 @@ public final class NodeRecommendationManager {
         for (var l : recommendations) {
             maxSize = Math.max(maxSize, l.size());
         }
-        var recommendationsJoined = NodeRecommendationManager.joinRecommendations(recommendations, maxSize);
+        var recommendationsJoined = joinRecommendations(recommendations, maxSize);
 
-        //remove duplicates from list
+        // Remove duplicates from list
         Set<String> duplicates = new HashSet<>();
-
         List<NodeRecommendation[]> recommendationsWithoutDups = new ArrayList<>(recommendationsJoined.size());
         for (var nrs : recommendationsJoined) {
             int idx = getNonNullIdx(nrs);
@@ -719,11 +718,11 @@ public final class NodeRecommendationManager {
         return IntStream.range(0, maxSize)//
             .mapToObj(rank -> joinRecommendationsForRank(recommendations, rank))//
             .flatMap(List::stream)//
-            .collect(Collectors.toList());
+            .toList();
     }
 
-    private static List<NodeRecommendation[]> joinRecommendationsForRank(final List<NodeRecommendation>[] recommendations,
-        final int rank) {
+    private static List<NodeRecommendation[]>
+        joinRecommendationsForRank(final List<NodeRecommendation>[] recommendations, final int rank) {
         List<NodeRecommendation[]> recommendationsForRank = new ArrayList<>();
         if (recommendations.length == 1) {
             recommendationsForRank.add(new NodeRecommendation[]{recommendations[0].get(rank)});

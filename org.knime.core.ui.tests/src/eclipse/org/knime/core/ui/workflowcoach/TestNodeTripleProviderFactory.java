@@ -167,9 +167,19 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
             var rowFilter = new NodeInfo(//
                 "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
                 "Test Row Filter");
+            var rowFilterStripped = new NodeInfo(//
+                "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
+                "Test Row Filter (to_be_stripped)"); // To test name replacement
+            var rowFilterNotStripped = new NodeInfo(//
+                "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
+                "Test Row Filter (not_to_be_stripped)"); // To test name replacement
             return Stream.of(//
                 new NodeTriple(null, portObjectIn, rowFilter), //
+                new NodeTriple(null, portObjectIn, rowFilterStripped), //
+                new NodeTriple(null, portObjectIn, rowFilterNotStripped), //
                 new NodeTriple(null, null, rowFilter), //
+                new NodeTriple(null, null, rowFilterStripped), //
+                new NodeTriple(null, null, rowFilterNotStripped), //
                 new NodeTriple(null, null, portObjectIn));
         }
 
