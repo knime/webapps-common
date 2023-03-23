@@ -166,7 +166,8 @@ public final class NodeRecommendationManager {
      * @param getNameFromRepository Gets the node name from the node repository
      * @return True if {@code loadRecommendations()} recommendations were loaded, false otherwise
      */
-    public boolean initialize(final Predicate<NodeInfo> isSourceNode, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
+    public boolean initialize(final Predicate<NodeInfo> isSourceNode,
+        final Function<NodeInfo, Optional<String>> getNameFromRepository) {
         if (isSourceNode == null || getNameFromRepository == null) {
             LOGGER.error("Cannot inintialize without both predicates");
             return false;
@@ -237,7 +238,8 @@ public final class NodeRecommendationManager {
                 Map<String, List<NodeRecommendation>> recommendationMap = new HashMap<>();
                 recommendations.add(recommendationMap);
 
-                provider.getNodeTriples().forEach(nf -> fillRecommendationsMap(recommendationMap, nf, m_isSourceNode, m_getNameFromRepository));
+                provider.getNodeTriples().forEach(
+                    nf -> fillRecommendationsMap(recommendationMap, nf, m_isSourceNode, m_getNameFromRepository));
 
                 // Aggregate multiple occurring id's but apply a different aggregation method to source nodes
                 BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
@@ -304,15 +306,13 @@ public final class NodeRecommendationManager {
     }
 
     /**
-     * Adds a new node recommendation to the map.
+     * Adds a new node recommendation to the map. This also updates node recommendations whose names have changed,
+     * avoiding duplicated appearances and NPEs.
      */
     private static void add(final Map<String, List<NodeRecommendation>> recommendation, final String key,
         final NodeInfo ni, final int count, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
         List<NodeRecommendation> p = recommendation.computeIfAbsent(key, k -> new ArrayList<>());
-        getNameFromRepository.apply(ni).ifPresent(name -> {
-            var nodeName = name.isEmpty() ? ni.getName() : name;
-            p.add(new NodeRecommendation(ni.getFactory(), nodeName, count));
-        });
+        getNameFromRepository.apply(ni).ifPresent(name -> p.add(new NodeRecommendation(ni.getFactory(), name, count)));
     }
 
     /**
