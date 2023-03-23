@@ -6,12 +6,9 @@
    <feature id="org.knime.features.core.ui.source">
       <category name="knime-core-ui"/>
    </feature>
-   <feature id="org.knime.features.core.ui.testing">
+   <bundle id="org.knime.core.ui.testing">
       <category name="knime-core-ui"/>
-   </feature>
-   <feature id="org.knime.features.core.ui.testing.source">
-      <category name="knime-core-ui"/>
-   </feature>
+   </bundle>
    <category-def name="knime-core-ui" label="Build artifacts from knime-core-ui">
       <description>
          Build artifacts from knime-core-ui
