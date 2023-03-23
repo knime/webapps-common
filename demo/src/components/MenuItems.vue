@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { markRaw } from 'vue';
 import CodeExample from './demo/CodeExample.vue';
 import MenuItems from 'webapps-common/ui/components/MenuItems.vue';
@@ -7,6 +7,7 @@ import StarIcon from 'webapps-common/ui/assets/img/icons/star.svg';
 import LeaveIcon from 'webapps-common/ui/assets/img/icons/leave.svg';
 import HeartIcon from 'webapps-common/ui/assets/img/icons/heart.svg';
 import code from 'webapps-common/ui/components/MenuItems.vue?raw';
+import type { MenuItem } from 'webapps-common/ui/components/MenuItemsBase.vue';
 
 const codeExampleStandalone = `<script>
 import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
@@ -66,13 +67,13 @@ export default {
     <MenuItems
       :items="items"
       id="the-id-of-my-menu"
-      aria-label="This is a menu displaying items"
+      menu-aria-label="This is a menu displaying items"
       @item-click="onItemClick"
     >
 </template>
 `;
 
-const menuItemsData = [{
+const menuItemsData : MenuItem[] = [{
     href: 'http://apple.com',
     text: 'Apples',
     icon: markRaw(HelpIcon),
@@ -170,7 +171,7 @@ export default {
               <MenuItems
                 id="NORMAL"
                 :items="menuItemsWithoutIcons"
-                aria-label="Menu items without icons"
+                menu-aria-label="Menu items without icons"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />
@@ -183,7 +184,7 @@ export default {
               <MenuItems
                 id="WITH_ICONS_AND_HOTKEYS"
                 :items="menuItemsData"
-                aria-label="Menu items with icons and hotkeys"
+                menu-aria-label="Menu items with icons and hotkeys"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />
@@ -196,7 +197,7 @@ export default {
               <MenuItems
                 id="WITH_SEPARATORS"
                 :items="menuItemsWithSeparator"
-                aria-label="Menu items with separators"
+                menu-aria-label="Menu items with separators"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />
@@ -209,7 +210,7 @@ export default {
               <MenuItems
                 id="WITH_SELECTED_ENTRIES"
                 :items="menuItemsWithSelectedEntries"
-                aria-label="Menu items with selected entries"
+                menu-aria-label="Menu items with selected entries"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />
@@ -222,7 +223,23 @@ export default {
               <MenuItems
                 id="WITH_SECTIONS"
                 :items="menuItemsWithSections"
-                aria-label="Menu items with sections"
+                menu-aria-label="Menu items with sections"
+                @item-click="onItemClick"
+                @item-active="onItemActive"
+              />
+            </div>
+          </div>
+
+          <div class="menu-item-wrapper">
+            <div class="menu-name">With keyboard navigation</div>
+            <button @keydown="($refs.menuItemsWithNavigation as any).onKeydown($event)">
+              Focus me to start navigating
+            </button>
+            <div class="card">
+              <MenuItems
+                ref="menuItemsWithNavigation"
+                :items="menuItemsData"
+                menu-aria-label="Menu items with sections"
                 @item-click="onItemClick"
                 @item-active="onItemActive"
               />

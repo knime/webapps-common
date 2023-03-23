@@ -21,6 +21,7 @@ const codeExample = `<Multiselect
   separator=" & "
   :summary-max-item-count="2"
   summary-name="users"
+  :size-visible-options="2"
 />`;
 
 const POSSIBLE_VALUES = [{
@@ -57,7 +58,8 @@ export default {
                 [],
                 ['foo', 'bar', 'baz'],
                 ['foo', 'bar', 'baz'],
-                ['foo', 'bar', 'baz']
+                ['foo', 'bar', 'baz'],
+                []
             ],
             possibleValues: POSSIBLE_VALUES,
             possibleValuesWithDisabled: POSSIBLE_VALUES_WITH_DISABLED
@@ -166,6 +168,21 @@ export default {
         </div>
       </div>
       <br>
+      <div class="grid-container">
+        <div class="grid-item-3">
+          maximum number of visible options (here: 2)
+        </div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[5]"
+            :possible-values="possibleValues"
+            :size-visible-options="2"
+          />
+        </div>
+        <div class="grid-item-3">
+          selected ids: {{ selected[5] }}
+        </div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

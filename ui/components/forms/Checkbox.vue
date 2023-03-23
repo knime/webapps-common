@@ -101,6 +101,7 @@ export default {
       min-width: 1em;
       text-overflow: ellipsis;
       white-space: nowrap;
+      max-width: 100%;
     }
 
     & + span::before { /* □ */
@@ -207,7 +208,6 @@ export default {
 
     & > span {
       min-height: var(--large-height);
-      max-width: 100%;
     }
 
     /* stylelint-disable no-descending-specificity */

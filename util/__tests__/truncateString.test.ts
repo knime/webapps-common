@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import truncateString from '../truncateString';
 
 describe('truncateString', () => {
-    let fixtures = [{
+    const fixtures = [{
         input: '',
         expected: ''
     }, {

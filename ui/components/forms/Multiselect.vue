@@ -3,6 +3,9 @@ import Checkbox from '../forms/Checkbox.vue';
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 
 const BLUR_TIMEOUT = 1;
+const BOXES_HEIGHT = 28.5; // 22.5px for the checkbox label and 2 * 3px for vertical padding of a single option
+// vertical padding, 5px for either top/bottom of the options wrapper and 3px either top/bottom of a single option
+const OPTIONS_WRAPPER_VERT_PAD = 8;
 
 export default {
     components: {
@@ -73,21 +76,51 @@ export default {
         summaryName: {
             type: String,
             default: null
+        },
+        /**
+         * Use a custom list box (slot: 'listBox') that replaces the standard Multiselect element containing the button
+         * to toggle the dropdown and the summary
+         */
+        useCustomListBox: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * Limit the number of visible options (more options are reachable by scrolling)
+         */
+        sizeVisibleOptions: {
+            type: Number,
+            default: 0,
+            validator(value) {
+                return value >= 0;
+            }
+        },
+        /**
+         * Focus elements of the parent that also should be used for focus with keyboard navigation
+         */
+        parentFocusElements: {
+            type: Array,
+            default: () => []
+        },
+        /**
+         * The element of the parent to refocus when the options get and when using a custom listbox.
+         */
+        parentRefocusElementOnClose: {
+            type: Object,
+            default: () => ({})
         }
     },
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'focusOutside'],
     data() {
         return {
             checkedValue: this.modelValue,
-            collapsed: true
+            collapsed: true,
+            focusOptions: []
         };
     },
     computed: {
-        /**
-         * @returns {Array<Element>} - HTML Elements to use for focus and events.
-         */
-        focusOptions() {
-            return this.$refs.option.map(el => el.$el && el.$el.firstChild);
+        focusElements() {
+            return [...this.focusOptions, ...this.parentFocusElements];
         },
         summary() {
             if (this.checkedValue.length === 0) {
@@ -102,6 +135,20 @@ export default {
                 .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
                 .map(({ text, selectedText = text }) => selectedText)
                 .join(this.separator);
+        },
+        showOptions() {
+            return !this.collapsed && this.possibleValues.length > 0;
+        },
+        useSpecificOptionsHeight() {
+            return this.sizeVisibleOptions > 0 && this.sizeVisibleOptions < this.possibleValues.length;
+        },
+        optionsHeight() {
+            return this.useSpecificOptionsHeight
+                ? { 'max-height': `${this.sizeVisibleOptions * BOXES_HEIGHT + OPTIONS_WRAPPER_VERT_PAD}px` }
+                : {};
+        },
+        refocusElementOnClose() {
+            return this.useCustomListBox ? this.parentRefocusElementOnClose : this.$refs.toggle;
         }
     },
     watch: {
@@ -111,6 +158,9 @@ export default {
             },
             deep: true
         }
+    },
+    mounted() {
+        this.updateFocusOptions();
     },
     methods: {
         /**
@@ -143,7 +193,7 @@ export default {
         toggle() {
             this.collapsed = !this.collapsed;
             setTimeout(() => {
-                this.$refs.toggle.focus();
+                this.$refs.toggle?.focus();
             }, BLUR_TIMEOUT);
         },
         isChecked(itemId) {
@@ -152,14 +202,14 @@ export default {
         /**
          * Handle closing the options.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button should be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button/element should be re-focused after closing.
          * @return {undefined}
          */
         closeOptions(refocusToggle = true) {
             this.collapsed = true;
             if (refocusToggle) {
                 setTimeout(() => {
-                    this.$refs.toggle.focus();
+                    this.refocusElementOnClose.focus();
                 }, BLUR_TIMEOUT);
             }
         },
@@ -180,8 +230,11 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.focusOptions.includes(document.activeElement)) {
+                if (!this.focusElements.includes(document.activeElement)) {
                     this.closeOptions(false);
+                    if (this.useCustomListBox) {
+                        this.$emit('focusOutside');
+                    }
                 }
             }, BLUR_TIMEOUT);
         },
@@ -193,6 +246,19 @@ export default {
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
+        },
+        /*
+         * Update focus options when possibleValues change to adapt keyboard navigation (e.g using ComboBox.vue)
+         * $refs are unordered, suggested solution is to use a data-index
+         * https://github.com/vuejs/vue/issues/4952#issuecomment-407550765
+         */
+        updateFocusOptions() {
+            if (this.$refs.option) {
+                this.focusOptions = this.$refs.option
+                    .sort((option1, option2) => parseInt(option1.$el.dataset.index, 10) -
+                    parseInt(option2.$el.dataset.index, 10))
+                    .map(el => el.$el && el.$el.firstChild);
+            }
         }
     }
 };
@@ -207,25 +273,33 @@ export default {
     @focusout.stop="onFocusOut"
     @mousedown="onMousedown"
   >
-    <div
-      ref="toggle"
-      role="button"
-      tabindex="0"
-      :class="{ placeholder: !checkedValue.length }"
-      @click="toggle"
-      @keydown.space.prevent="toggle"
-    >
-      {{ summary }}
+    <slot
+      v-if="useCustomListBox"
+      name="listBox"
+    />
+    <div v-else>
+      <div
+        ref="toggle"
+        role="button"
+        tabindex="0"
+        :class="{ placeholder: !checkedValue.length }"
+        @click="toggle"
+        @keydown.space.prevent="toggle"
+      >
+        {{ summary }}
+      </div>
+      <DropdownIcon class="icon" />
     </div>
-    <DropdownIcon class="icon" />
     <div
-      v-show="!collapsed"
+      v-show="showOptions"
       class="options"
+      :style="optionsHeight"
     >
       <Checkbox
-        v-for="item of possibleValues"
+        v-for="(item, index) of possibleValues"
         ref="option"
         :key="`multiselect-${item.id}`"
+        :data-index="index"
         :model-value="isChecked(item.id)"
         :disabled="item.disabled"
         class="boxes"
@@ -280,7 +354,7 @@ export default {
     border-color: var(--knime-masala);
   }
 
-  &.collapsed:hover {
+  &.collapsed:hover:not(:focus-within) {
     background: var(--theme-multiselect-background-color-hover);
   }
 
@@ -308,11 +382,11 @@ export default {
     margin-top: -1px;
     background: var(--theme-multiselect-background-color);
     box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
+    overflow-y: auto;
 
     & .boxes {
       display: block;
     }
   }
 }
-
 </style>
