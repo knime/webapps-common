@@ -77,6 +77,21 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 /**
  * Utility class mainly for creating json-forms data content from a {@link DefaultNodeSettings} POJO and vice-versa.
  *
+ * The following fields in a POJO are ignored:
+ * <ul>
+ * <li>Private fields without a getter method</li>
+ * <li> Fields annotated with @JsonIgnore </li>
+ * <li>Fields whose getters are annotated
+ * with. @JsonIgnore </li>
+ * <li>Fields with {@code null} value</li>
+ * </ul>
+ * The translation furthermore follows these rules (from POJO to JSON; the inverse rules in the other direction):
+ * <ul>
+ * <li>"m_"-prefixes are removed.</li>
+ * <li>Enums and BigDecimals are serialized as their string value.</li>
+ * <li>Nested fields are translated to a nested JSON structure.</li>
+ * </ul>
+ *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 final class JsonFormsDataUtil {

@@ -73,7 +73,20 @@ import com.github.victools.jsonschema.generator.SchemaKeyword;
 import com.github.victools.jsonschema.generator.SchemaVersion;
 
 /**
+ *
  * Utility class for creating schema content from a settings POJO class.
+ *
+ * The JSON Forms schema mimics the structure of the Json Forms data while providing the following information for the
+ * respective data entries:
+ * <ul>
+ * <li>type</li>
+ * <li>title</li>
+ * <li>description</li>
+ * <li>validity</li>
+ * </ul>
+ * The type is recognized automatically using the same mapper between POJO and json as in {@link JsonFormsDataUtil}.
+ *
+ * The other information can be controlled by using a {@link Schema @Schema} on the fields in the POJO class.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
