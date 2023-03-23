@@ -83,7 +83,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>NumberInput</h2>
           <p>
             Numeric input field with either type double or integer to set the step size. Spinner controls
             allow the user to increment the value with the mouse or keyboard. It acts as a form

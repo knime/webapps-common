@@ -30,7 +30,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>LinkList</h2>
         <p>
           A list of clickable links displayed with an arrow icon and text.
           On small screens there is one column of links. On larger screens there are two.

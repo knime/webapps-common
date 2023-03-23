@@ -13,7 +13,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Grid System</h2>
           <p>
             The grid system consists of 12 columns. You can use it by nesting a <code>&lt;section&gt;</code> and a
             <code>.grid-container</code> with up to twelve <code>.grid-item</code>s as shown below.

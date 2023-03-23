@@ -44,7 +44,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>OpenSourceCredits</h2>
           <p>
             A component for displaying software licenses for packages used in a project. Displays default text
             explaining the how the project uses open source components. It lists package names, license text and

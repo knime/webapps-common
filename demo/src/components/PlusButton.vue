@@ -51,7 +51,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>PlusButton</h2>
         <div class="wrapper">
           <PlusButton title="Plus button" />
           <div class="background">

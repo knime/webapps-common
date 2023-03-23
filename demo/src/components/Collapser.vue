@@ -33,7 +33,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Collapser</h2>
         <div class="grid-container demo">
           <Collapser
             class="grid-item-3 collapser"

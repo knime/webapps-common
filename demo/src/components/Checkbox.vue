@@ -35,7 +35,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Checkbox</h2>
           <p>
             A checkbox component. It acts as a form element, so it emits an <code>input</code> event when (de-)selected,
             and it has a <code>value</code>. The <code>label-size</code> property can be set to <code>large</code> for

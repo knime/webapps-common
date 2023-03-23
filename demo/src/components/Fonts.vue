@@ -3,7 +3,6 @@
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Fonts</h2>
           <p>
             We use <a href="https://fonts.google.com/specimen/Roboto">Roboto</a>
             and <a href="https://fonts.google.com/specimen/Roboto+Mono">Roboto Mono</a>.
@@ -40,6 +39,7 @@
 </template>
 
 <style scoped lang="postcss">
+
 .demo {
   background: var(--knime-porcelain);
 

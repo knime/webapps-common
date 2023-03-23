@@ -82,7 +82,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Modal</h2>
           <p>
             Offers multiple optional slots for content to show inside a
             <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.

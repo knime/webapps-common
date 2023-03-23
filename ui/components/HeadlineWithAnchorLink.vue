@@ -3,23 +3,45 @@
 import { useClipboard } from '@vueuse/core';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LinkIcon from 'webapps-common/ui/assets/img/icons/link.svg';
+import Tooltip from 'webapps-common/ui/components/Tooltip.vue';
+import CheckIcon from 'webapps-common/ui/assets/img/icons/circle-check.svg';
 
 
-const { copy } = useClipboard();
+const TooltipTime = 3000;
 
 export default {
 
     components: {
         LinkIcon,
-        FunctionButton
+        FunctionButton,
+        Tooltip
     },
+
     props: {
         /**
-         * the text to be shown -- to be changed
+         * the headline text to be displayed
          */
         title: {
             type: String,
             default: null
+        }
+    },
+    setup() {
+        const { copy, copied } = useClipboard();
+        return {
+            copy, copied
+        };
+    },
+
+    // data() {
+    //     return {
+    //         copied: false
+    //     };
+    // },
+
+    computed: {
+        tooltipText() {
+            return this.copied ? 'Link has been copied' : 'Copy link';
         }
     },
 
@@ -27,7 +49,7 @@ export default {
         copyToClipboard() {
             let path = window.location.href.split('?')[0];
             const source = `${path}?q=${this.title}`;
-            copy(source);
+            this.copy(source);
         }
     }
 };
@@ -36,36 +58,56 @@ export default {
 
 <template>
   <section>
-    <div class="grid-container header">
-      <h2>
-        {{ title }}
-
-
-        <FunctionButton
-          @click="copyToClipboard"
-        >
-          <LinkIcon />
-        </FunctionButton>
-      </h2>
+    <div class="grid-container ">
+      <div class="grid-item-12 header">
+        <h2>
+          {{ title }}
+          <FunctionButton
+            :class="{active:copied}"
+            @click="copyToClipboard"
+          >
+            <Tooltip
+              :text="tooltipText"
+            >
+              <LinkIcon />
+            </Tooltip>
+          </FunctionButton>
+        </h2>
+      </div>
     </div>
   </section>
 </template>
 
 <style lang="postcss" scoped>
 
-    h2{
+  h2{
         display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 23px;
     }
 
-    .function-button {
-        padding: 0 20px;
-        margin: 15px;
+    .function-button{
+        display: none;
+        padding: 0;
+        margin: 12px;
         align-items: center;
+    }
+
+    .header:hover{
+      & .function-button{
+        display: block;
+      }
     }
 
     .link-icon{
         padding: 0 20px;
         margin: 0 20 px;
     }
+
+    .tooltip >>> .text{
+      margin-top: -5px;
+  }
+
 
 </style>

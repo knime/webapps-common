@@ -46,7 +46,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>LoadingIcon</h2>
         <p>Animated loading icon</p>
         <LoadingIcon class="loading-icon" />
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>

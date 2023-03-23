@@ -35,7 +35,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Button</h2>
         <div class="wrapper">
           <Button>Button</Button>
           <Button with-border>Button with border</Button>

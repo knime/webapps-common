@@ -26,7 +26,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>{{ name }}</h2>
         <Description>
           <p>{{ description }}</p>
           <a :href="link">{{ link }}</a>

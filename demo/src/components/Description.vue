@@ -28,7 +28,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Description</h2>
           <p>The Description component provides styling for rich-text markup (see component code for details)…</p>
         </div>
       </div>

@@ -57,7 +57,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>TimePartInput</h2>
           <p>
             A number input field similar to the NumberInput component but for time units like hours, minutes, seconds
             and milliseconds. It acts as a form element, so it emits <code>input</code> events and it has

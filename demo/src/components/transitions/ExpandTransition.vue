@@ -35,7 +35,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>ExpandTransition</h2>
         <div class="grid-container demo">
           <Button
             compact

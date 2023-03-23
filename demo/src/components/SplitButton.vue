@@ -120,7 +120,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>SplitButton</h2>
         <p>
           A split button which combines a Button and SubMenu component. Both intentionally need to be added via the
           default slot to have full flexibility regarding their props and events.

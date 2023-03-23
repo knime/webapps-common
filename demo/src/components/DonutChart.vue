@@ -37,7 +37,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>DonutChart</h2>
           <p>
             Displays a donut chart.
 

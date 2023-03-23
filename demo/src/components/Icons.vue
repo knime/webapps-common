@@ -150,7 +150,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Icons</h2>
           <InputField
             v-model="iconFilterTerm"
             class="filter-icons-input"

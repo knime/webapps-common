@@ -155,7 +155,6 @@ export default {
     <section class="demo">
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>NodeFeatureList</h2>
           <p>
             A container component that summarizes properties of nodes or components.
             In particular their ports, dialog options and views.

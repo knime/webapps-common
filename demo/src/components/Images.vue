@@ -36,7 +36,6 @@ or e.g. inline as base64 in CSS:
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Images</h2>
         <ImagePreviews
           :images="images"
           width="200px"
