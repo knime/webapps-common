@@ -43,7 +43,7 @@
               "type": "number",
               "format": "double",
               "title": "Adjustment factor",
-              "description": "The kernel bandwidth computed by the rule of thumb is multiplied by this adjustment factor. Setting the adjustment factor is only possible if “Rule of thumb” is selected.",
+              "description": "The kernel bandwidth computed by the rule of thumb is multiplied by this adjustment factor. Setting the adjustment factor is only possible if the kernel bandwidth is selected as “Rule of thumb”.",
               "default": 1,
               "minimum": 0.01
             },
@@ -103,7 +103,7 @@
               "type": "number",
               "format": "double",
               "title": "Custom bandwidth",
-              "description": "Choose the bandwidth of the gaussian kernel. Setting the custom bandwidth is only possible if “Fixed” is selected.",
+              "description": "Choose the bandwidth of the gaussian kernel. Setting the custom bandwidth is only possible if the kernel bandwidth is selected as “Fixed”.",
               "default": 1,
               "minimum": 0
             },
