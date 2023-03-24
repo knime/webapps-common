@@ -1,22 +1,15 @@
 <script>
-
 import { useClipboard } from '@vueuse/core';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LinkIcon from 'webapps-common/ui/assets/img/icons/link.svg';
 import Tooltip from 'webapps-common/ui/components/Tooltip.vue';
-import CheckIcon from 'webapps-common/ui/assets/img/icons/circle-check.svg';
-
-
-const TooltipTime = 3000;
 
 export default {
-
     components: {
         LinkIcon,
         FunctionButton,
         Tooltip
     },
-
     props: {
         /**
          * the headline text to be displayed
@@ -32,19 +25,11 @@ export default {
             copy, copied
         };
     },
-
-    // data() {
-    //     return {
-    //         copied: false
-    //     };
-    // },
-
     computed: {
         tooltipText() {
             return this.copied ? 'Link has been copied' : 'Copy link';
         }
     },
-
     methods: {
         copyToClipboard() {
             let path = window.location.href.split('?')[0];
@@ -79,35 +64,32 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+h2 {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 23px;
+}
 
-  h2{
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 23px;
-    }
+ .function-button {
+   display: none;
+   padding: 0;
+   margin: 12px;
+   align-items: center;
+ }
 
-    .function-button{
-        display: none;
-        padding: 0;
-        margin: 12px;
-        align-items: center;
-    }
-
-    .header:hover{
-      & .function-button{
-        display: block;
-      }
-    }
-
-    .link-icon{
-        padding: 0 20px;
-        margin: 0 20 px;
-    }
-
-    .tooltip >>> .text{
-      margin-top: -5px;
+.header:hover {
+  & .function-button{
+    display: block;
   }
+}
 
+.link-icon {
+  padding: 0 20px;
+  margin: 0 20 px;
+}
 
+.tooltip >>> .text {
+  margin-top: -5px;
+}
 </style>
