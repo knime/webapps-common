@@ -1,8 +1,8 @@
 <script>
-import { defineAsyncComponent, h as createElement, ref } from 'vue';
+import { defineAsyncComponent, h as createElement } from 'vue';
 import './assets/index.css';
 
-import TabBar from 'webapps-common/ui/components/TabBar.vue';
+import TabBarComponent from 'webapps-common/ui/components/TabBar.vue';
 import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
 import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
 import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg';
@@ -46,7 +46,7 @@ const demoComponents = {
         SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
         SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
         Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
-        TabBarDemo: defineAsyncComponent(() => import('./components/TabBar.vue')),
+        TabBar: defineAsyncComponent(() => import('./components/TabBar.vue')),
         TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
         LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue')),
         DonutChart: defineAsyncComponent(() => import('./components/DonutChart.vue'))
@@ -114,7 +114,7 @@ const flattenComponents = (componentsByCategory) => {
 
 // Transform the components into a flat object
 const components = {
-    TabBar,
+    TabBarComponent,
     HeadlineWithAnchorLink,
     SearchInput,
     ...flattenComponents(demoComponents)
@@ -224,7 +224,7 @@ export default {
             </p>
 
             <div class="categories">
-              <TabBar
+              <TabBarComponent
                 v-model="activeTab"
                 :disabled="isSearchActive"
                 :possible-values="possibleTabValues"
