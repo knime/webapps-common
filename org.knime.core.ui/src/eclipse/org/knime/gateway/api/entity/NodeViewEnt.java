@@ -70,29 +70,32 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private List<String> m_initialSelection;
 
-    private boolean m_imageGeneration;
+    private String m_generatedImageActionId;
 
     /**
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
      *            not be called, if the node is not executed)
-     * @param imageGeneration whether the view is to be used for image generation
+     * @param generatedImageActionId if the view is to be used for image generation, it specified a unique action-id
+     *            used to communicate the image back to the java-side; {@code null} if this view is not used for image
+     *            generation
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final boolean imageGeneration) {
+        final String generatedImageActionId) {
         final var state = nnc.getNodeContainerState();
         if (state.isExecuted()
-            || (imageGeneration && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
+            || (generatedImageActionId != null && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
             try {
                 NodeViewManager.getInstance().updateNodeViewSettings(nnc);
-                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null, imageGeneration);
+                return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null,
+                    generatedImageActionId);
             } catch (InvalidSettingsException ex) {
                 NodeLogger.getLogger(NodeViewEnt.class).error("Failed to update node view settings", ex);
-                return new NodeViewEnt(nnc, null, null, ex.getMessage(), imageGeneration);
+                return new NodeViewEnt(nnc, null, null, ex.getMessage(), generatedImageActionId);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, null, imageGeneration);
+            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId);
         }
     }
 
@@ -103,7 +106,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      * @return a new instance
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection) {
-        return create(nnc, initialSelection, false);
+        return create(nnc, initialSelection, null);
     }
 
     /**
@@ -118,12 +121,12 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     private NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final NodeViewManager nodeViewManager, final String customErrorMessage, final boolean imageGeneration) {
+        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId) {
         super(NodeWrapper.of(nnc), nodeViewManager, nodeViewManager, PageType.VIEW);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
-        m_imageGeneration = imageGeneration;
+        m_generatedImageActionId = generatedImageActionId;
     }
 
     /**
@@ -141,14 +144,15 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     /**
-     * This flag denotes whether the view contained by the view entity is used for the purpose of image generation via
-     * an image output port. If true, it indicates that the node view may already be generated while the node is in
-     * executing state. It also indicates that support for any kind of interactivity is not needed.
+     * If the view represented by this view entity is used for the purpose of image generation via an image output port,
+     * then this action-id is used to uniquely communicate the image back to the java-side If given, it also indicates
+     * that the node view may already be generated while the node is in executing state. It also indicates that support
+     * for any kind of interactivity is not needed.
      *
-     * @return whether the view is used for image generation
+     * @return the action-id or {@code null} if view is not used for image generation
      */
-    public boolean isImageGeneration() {
-        return m_imageGeneration;
+    public String getGeneratedImageActionId() {
+        return m_generatedImageActionId;
     }
 
 }
