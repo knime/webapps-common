@@ -20,7 +20,7 @@ import { ResourceInfo } from './ResourceInfo';
  * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
  * @property {FlowVariableSettings} [flowVariableSettings]
  * @property {boolean} hasNodeView
- * @property {string} generatedImageActionId -optional action-id to communicate the generated image back to Java
+ * @property {string} generatedImageActionId - optional action-id to communicate the generated image back to Java
  * @template T
  */
 export type ExtensionConfig<T = any> = {
