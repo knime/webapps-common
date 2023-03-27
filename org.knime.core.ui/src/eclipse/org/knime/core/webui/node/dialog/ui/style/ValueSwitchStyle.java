@@ -52,7 +52,7 @@ package org.knime.core.webui.node.dialog.ui.style;
  *
  * @author Paul Bärnreuther
  */
-public final class ValueSwitchStyle implements EnumStyleProvider {
+public final class ValueSwitchStyle extends EnumStyleProvider {
 
     @Override
     public Object getStyleObject() {

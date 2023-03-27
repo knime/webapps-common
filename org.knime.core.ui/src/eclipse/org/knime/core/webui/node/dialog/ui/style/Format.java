@@ -49,17 +49,9 @@
 package org.knime.core.webui.node.dialog.ui.style;
 
 /**
- * A POJO which is used within implementations of {@link StyleProvider} in order to define the format of a setting.
+ * A record which is used within implementations of {@link StyleProvider} in order to define the format of a setting.
  *
  * @author Paul Bärnreuther
  */
-@SuppressWarnings("javadoc")
-final class Format {
-
-    final String m_format;
-
-    public Format(final String format) {
-        m_format = format;
-    }
-
+record Format(String format) {
 }

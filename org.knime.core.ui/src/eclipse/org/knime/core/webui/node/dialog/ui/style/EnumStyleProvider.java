@@ -52,10 +52,10 @@ package org.knime.core.webui.node.dialog.ui.style;
  *
  * @author Paul Bärnreuther
  */
-public non-sealed interface EnumStyleProvider extends StyleProvider {
+public abstract non-sealed class EnumStyleProvider implements StyleProvider {
 
     @Override
-    default boolean isApplicable(final Class<?> clazz) {
+    public final boolean isApplicable(final Class<?> clazz) {
         return clazz.isEnum();
     }
 }

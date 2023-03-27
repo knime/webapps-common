@@ -224,8 +224,6 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
-    //TODO: Fehler für Layout wenn field und class ein Layout setzen.
-
     static class TestLayoutWithinSettingsSettings implements DefaultNodeSettings {
         @Section(title = "first")
         static interface Section1 {
@@ -344,16 +342,14 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
     }
 
-    private static class CustomFormat {
-        @SuppressWarnings("unused")
-        String m_format = "custom";
-    }
 
     public static class OverridingBooleanStyleProvider extends BooleanStyleProvider {
 
+        record Format(String format) {}
+
         @Override
         public Object getStyleObject() {
-            return new CustomFormat();
+            return new Format("custom");
         }
     }
 
