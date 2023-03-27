@@ -49,9 +49,8 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.ui.style.CheckboxStyle;
@@ -69,18 +68,18 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-class UiSchemaOptionsGenerator {
+final class UiSchemaOptionsGenerator {
 
     private static List<Class<? extends StyleProvider>> defaultStyles =
         List.of(CheckboxStyle.class, ValueSwitchStyle.class);
 
-    private ObjectMapper m_mapper;
+    private final ObjectMapper m_mapper;
 
-    private PropertyWriter m_field;
+    private final PropertyWriter m_field;
 
-    private Class<?> m_fieldType;
+    private final Class<?> m_fieldType;
 
-    private String m_fieldName;
+    private final String m_fieldName;
 
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
         m_mapper = mapper;
@@ -120,21 +119,15 @@ class UiSchemaOptionsGenerator {
             .filter(style -> style.isApplicable(m_fieldType)).toList();
     }
 
-    private void checkForNonAppliccableStyles(final List<? extends StyleProvider> annotatedStyles) {
-        final var firstNonApplicableStyle =
-            annotatedStyles.stream().filter(style -> !style.isApplicable(m_fieldType)).findFirst();
-        if (!firstNonApplicableStyle.isEmpty()) {
-            throw new UiSchemaGenerationException(
-                String.format("The style %s is not applicable for setting field %s with type %s",
-                    firstNonApplicableStyle.get(), m_fieldName, m_fieldType));
-        }
-    }
-
     private List<? extends StyleProvider> getAnnotatedStyles() {
-        final var annotatedStylesClasses = Optional.ofNullable(m_field.getAnnotation(Style.class)).map(Style::value)
-            .map(Arrays::asList).orElse(Collections.emptyList());
-        final var annotatedStyles = annotatedStylesClasses.stream().map(JsonFormsDataUtil::createInstance).toList();
-        checkForNonAppliccableStyles(annotatedStyles);
-        return annotatedStyles;
+        var annotatedStyles = Stream.ofNullable(m_field.getAnnotation(Style.class)).map(Style::value)
+            .flatMap(Arrays::stream).map(JsonFormsDataUtil::createInstance)
+            .collect(Collectors.partitioningBy(style -> style.isApplicable(m_fieldType)));
+        annotatedStyles.get(false).stream().findAny().ifPresent(nonApplicableStyle -> {
+            throw new UiSchemaGenerationException(
+                String.format("The style %s is not applicable for setting field %s with type %s", nonApplicableStyle,
+                    m_fieldName, m_fieldType));
+        });
+        return annotatedStyles.get(true);
     }
 }

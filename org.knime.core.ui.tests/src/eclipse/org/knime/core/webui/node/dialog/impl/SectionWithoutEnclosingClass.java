@@ -44,19 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Mar 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui;
+package org.knime.core.webui.node.dialog.impl;
 
-import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.ui.Section;
 
 /**
- * If a (possibly nested) field within a {@link DefaultNodeSettings} class is an instance of a class extending this
- * interface, it will not be treated as a setting during the creation of the user interface and instead its nested
- * fields are respected. This is useful for clustering several settings into one java object.
  *
  * @author Paul Bärnreuther
  */
-public interface NotASetting {
+@Section
+public interface SectionWithoutEnclosingClass {
 
 }

@@ -62,7 +62,7 @@ import java.lang.annotation.Retention;
  * <ul>
  * <li>The annotation on a class is equivalent to the same annotation on all of its fields</li>
  * <li>Every additional annotation on a field overrides the class annotation for that field</li>
- * <li>For nested settings, a class annotation on the class of the field overrides its field annotation</li>
+ * <li>For nested settings, an error is thrown if there are annotations on the enclosing field and on its class</li>
  * </ul>
  * <h2>Layout parts</h2>
  * <p>

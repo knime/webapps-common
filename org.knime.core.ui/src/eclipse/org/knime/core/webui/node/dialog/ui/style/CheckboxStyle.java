@@ -52,11 +52,11 @@ package org.knime.core.webui.node.dialog.ui.style;
  *
  * @author Paul Bärnreuther
  */
-public final class CheckboxStyle implements BooleanStyleProvider {
+public final class CheckboxStyle extends BooleanStyleProvider {
 
     @Override
     public Object getStyleObject() {
-        return new Format(Format.CHECKBOX);
+        return new Format("checkbox");
     }
 
 }

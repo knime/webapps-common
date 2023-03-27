@@ -53,9 +53,9 @@ package org.knime.core.webui.node.dialog.ui.style;
  *
  * @author Paul Bärnreuther
  */
-public non-sealed interface BooleanStyleProvider extends StyleProvider {
+public abstract non-sealed class BooleanStyleProvider implements StyleProvider { //NOSONAR
     @Override
-    default boolean isApplicable(final Class<?> clazz) {
+    public final boolean isApplicable(final Class<?> clazz) {
         return clazz.equals(boolean.class);
     }
 }

@@ -54,10 +54,7 @@ package org.knime.core.webui.node.dialog.ui.style;
  * @author Paul Bärnreuther
  */
 @SuppressWarnings("javadoc")
-public final class Format {
-    public static final String CHECKBOX = "checkbox";
-
-    public static final String VALUE_SWITCH = "valueSwitch";
+final class Format {
 
     final String m_format;
 

@@ -55,14 +55,12 @@ import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.ui.Layout;
-import org.knime.core.webui.node.dialog.ui.NotASetting;
+import org.knime.core.webui.node.dialog.ui.LayoutGroup;
 import org.knime.core.webui.node.dialog.ui.Section;
 import org.knime.core.webui.node.dialog.ui.style.BooleanStyleProvider;
-import org.knime.core.webui.node.dialog.ui.style.Format;
 import org.knime.core.webui.node.dialog.ui.style.Style;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  *
@@ -94,14 +92,15 @@ class JsonFormsUiSchemaUtilTest {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", DummySettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("Test section title");
-        assertThatJson(response).inPath("$.elements[1].options.isAdvanced").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[1].elements[0].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[1].elements[0].label").isString().isEqualTo("Nested section title");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[2].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[2].label").isString().isEqualTo("Test section title");
+        assertThatJson(response).inPath("$.elements[2].options.isAdvanced").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[2].elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[2].elements[0].label").isString().isEqualTo("Nested section title");
     }
 
     class TestLayoutViewSettings implements DefaultNodeSettings {
@@ -142,7 +141,7 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/model/properties/nestedModelSetting");
     }
 
-    class ClusterOfSettings implements NotASetting {
+    class ClusterOfSettings implements LayoutGroup {
         String m_sub1;
 
         String m_sub2;
@@ -225,6 +224,8 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
+    //TODO: Fehler für Layout wenn field und class ein Layout setzen.
+
     static class TestLayoutWithinSettingsSettings implements DefaultNodeSettings {
         @Section(title = "first")
         static interface Section1 {
@@ -242,7 +243,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testLayoutWithinSettings() throws JsonMappingException {
+    void testLayoutWithinSettings() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", TestLayoutWithinSettingsSettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
@@ -260,6 +261,18 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
             .isEqualTo("#/properties/test/properties/bar");
+    }
+
+    static class NoRootForSectionSettings implements DefaultNodeSettings {
+        @Layout(SectionWithoutEnclosingClass.class)
+        String m_foo;
+    }
+
+    @Test
+    void testThrowsIfNoRootIsFoundForALayoutPart() {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", NoRootForSectionSettings.class);
+        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
     static class TestMultipleRootsOne implements DefaultNodeSettings {
@@ -281,7 +294,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testThrowsIfMultipleLayoutRootsAreDetected() throws JsonMappingException {
+    void testThrowsIfMultipleLayoutRootsAreDetected() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("model", TestMultipleRootsOne.class);
         settings.put("view", TestMultipleRootsTwo.class);
@@ -294,8 +307,34 @@ class JsonFormsUiSchemaUtilTest {
         boolean m_boolean;
     }
 
+    static class TestFieldWithTwoLayoutAnnotationsSettings implements DefaultNodeSettings {
+
+        @Section
+        interface Section1 {
+        }
+
+        @Section
+        interface Section2 {
+        }
+
+        @Layout(Section1.class)
+        class SettingsType implements LayoutGroup {
+
+        }
+
+        @Layout(Section2.class)
+        SettingsType m_settingWithTowAnnotations;
+    }
+
     @Test
-    void testDefaultStyles() throws JsonMappingException {
+    void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
+        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
+    }
+
+    @Test
+    void testDefaultStyles() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", DefaultStylesSettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
@@ -305,15 +344,20 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
     }
 
-    public static class OverridingBooleanStyleProvider implements BooleanStyleProvider {
+    private static class CustomFormat {
+        @SuppressWarnings("unused")
+        String m_format = "custom";
+    }
+
+    public static class OverridingBooleanStyleProvider extends BooleanStyleProvider {
 
         @Override
         public Object getStyleObject() {
-            return new Format("custom");
+            return new CustomFormat();
         }
     }
 
-    public static class ExtendingBooleanStyleProvider implements BooleanStyleProvider {
+    public static class ExtendingBooleanStyleProvider extends BooleanStyleProvider {
 
         class OtherStyle {
             boolean m_otherOption = true;
@@ -340,7 +384,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testCustomStyles() throws JsonMappingException {
+    void testCustomStyles() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", StylesSettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
@@ -366,7 +410,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testThrowsIfCustomStyleIsNotApplicable() throws JsonMappingException {
+    void testThrowsIfCustomStyleIsNotApplicable() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", NonApplicableStyleSettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
@@ -389,7 +433,7 @@ class JsonFormsUiSchemaUtilTest {
             InnerClass m_merged;
         }
 
-        static class FirstDeepStyleProvider implements BooleanStyleProvider {
+        static class FirstDeepStyleProvider extends BooleanStyleProvider {
             @Override
             public Object getStyleObject() {
                 final var styleObject = new DeepStyleClass();
@@ -399,7 +443,7 @@ class JsonFormsUiSchemaUtilTest {
 
         }
 
-        static class SecondDeepStyleProvider implements BooleanStyleProvider {
+        static class SecondDeepStyleProvider extends BooleanStyleProvider {
             @Override
             public Object getStyleObject() {
                 final var styleObject = new DeepStyleClass();
@@ -414,7 +458,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testMergeNestedStyles() throws JsonMappingException {
+    void testMergeNestedStyles() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", MergeNestedStylesSettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);

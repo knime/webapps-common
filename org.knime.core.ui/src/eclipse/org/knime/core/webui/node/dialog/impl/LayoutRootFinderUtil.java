@@ -48,18 +48,16 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.ui.Layout;
 
 /**
- *This utility class offers a method to find the root node of a set of layout parts as described {@link Layout here}.
+ * This utility class offers a method to find the root node of a set of layout parts as described {@link Layout here}.
  *
  * @author Paul Bärnreuther
  */
@@ -79,8 +77,16 @@ final class LayoutRootFinderUtil {
         }
         final var rootsAndOthers = separateRootNodes(layoutNodes);
         rootNodes.addAll(rootsAndOthers.getFirst());
-        final Set<Class<?>> next =
-            rootsAndOthers.getSecond().stream().map(LayoutRootFinderUtil::getDirectNestParent).collect(Collectors.toSet());
+
+        final Set<Class<?>> next = new HashSet<>();
+        for (var layoutPart : rootsAndOthers.getSecond()) {
+            final var enclosingClass = layoutPart.getEnclosingClass();
+            if (enclosingClass == null) {
+                throw new UiSchemaGenerationException(
+                    String.format("No enclosing class found for layout part %s", layoutPart));
+            }
+            next.add(enclosingClass);
+        }
         return findRootNode(next, rootNodes);
     }
 
@@ -103,13 +109,5 @@ final class LayoutRootFinderUtil {
             }
         });
         return new Pair<>(rootNodes, otherNodes);
-    }
-
-    private static Class<?> getDirectNestParent(final Class<?> clazz) {
-        final var segments = Arrays.asList(clazz.getName().split("\\$"));
-        final var directNestParentName = String.join("$", segments.subList(0, segments.size() - 1));
-        return Arrays.asList(clazz.getNestMembers()).stream() //
-            .filter(member -> member.getName().equals(directNestParentName)) //
-            .findAny().orElseThrow();
     }
 }

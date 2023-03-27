@@ -76,11 +76,8 @@ final class LayoutNodesGenerator {
 
     public ObjectNode buildLayout(final Class<?> rootClass) {
         final var root = m_mapper.createObjectNode();
-        final var rootElements = root.putArray("elements");
-        if (rootClass == null) {
-            final var rootContent = m_content.getOrDefault(null, m_mapper.createArrayNode());
-            rootElements.addAll(rootContent);
-        } else {
+        final var rootElements = addLayoutNode(root, rootClass);
+        if (rootClass != null) {
             buildLayout(rootClass, rootElements);
         }
         return root;
@@ -88,15 +85,15 @@ final class LayoutNodesGenerator {
 
     private void buildLayout(final Class<?> parentClass, final ArrayNode parentNode) {
         Arrays.asList(parentClass.getDeclaredClasses()).forEach(childClass -> {
-            final var childNode = addLayoutNode(parentNode, childClass);
+            final var childNode = addLayoutNode(parentNode.addObject(), childClass);
             buildLayout(childClass, childNode);
         });
 
     }
 
-    private ArrayNode addLayoutNode(final ArrayNode parent, final Class<?> layoutElement) {
+    private ArrayNode addLayoutNode(final ObjectNode root, final Class<?> layoutElement) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(layoutElement);
         final var contentForClass = m_content.getOrDefault(layoutElement, m_mapper.createArrayNode());
-        return layoutPart.create(parent.addObject(), layoutElement, contentForClass);
+        return layoutPart.create(root, layoutElement, contentForClass);
     }
 }

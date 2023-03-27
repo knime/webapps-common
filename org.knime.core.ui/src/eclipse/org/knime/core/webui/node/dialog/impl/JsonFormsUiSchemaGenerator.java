@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.ui.Layout;
-import org.knime.core.webui.node.dialog.ui.NotASetting;
+import org.knime.core.webui.node.dialog.ui.LayoutGroup;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -102,19 +102,35 @@ final class JsonFormsUiSchemaGenerator {
         settings.forEach((settingsKey, setting) -> {
             final var prefix = addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
-            addAllFields(setting, layoutObjectNodes, prefix, defaultLayout);
+            addAllFields(setting, layoutObjectNodes, prefix, defaultLayout, null);
         });
         return layoutObjectNodes;
     }
 
     private void addAllFields(final Class<?> clazz, final Map<Class<?>, ArrayNode> layoutArrayNodes,
-        final String parentScope, final Class<?> defaultLayout) {
-        final var classLayout = getClassLayout(clazz).orElse(defaultLayout);
+        final String parentScope, final Class<?> defaultLayout, final Class<?> enclosingFieldLayout) {
+        final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldLayout);
         final var properties = getSerializableProperties(clazz);
         properties.forEachRemaining(field -> {
-            final var fieldLayout = getFieldLayout(field).orElse(classLayout);
-            addField(layoutArrayNodes, parentScope, fieldLayout, field);
+            addField(layoutArrayNodes, parentScope, layout, field);
         });
+    }
+
+    private static Class<?> mergeLayouts(final Class<?> clazz, final Class<?> defaultLayout,
+        final Class<?> enclosingFieldLayout) {
+        final var classLayout = getClassLayout(clazz);
+        if (!classLayout.isEmpty()) {
+            if (enclosingFieldLayout != null) {
+                throw new UiSchemaGenerationException(String.format(
+                    "The layout annotations for class %s collides with a field layout annotation of an enclosing field.",
+                    clazz));
+            }
+            return classLayout.get();
+        } else if (enclosingFieldLayout != null) {
+            return enclosingFieldLayout;
+        } else {
+            return defaultLayout;
+        }
     }
 
     private static Optional<Class<?>> getClassLayout(final Class<?> settingsClass) {
@@ -137,13 +153,15 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     private void addField(final Map<Class<?>, ArrayNode> layoutArrayNodes, final String parentScope,
-        final Class<?> fieldLayout, final PropertyWriter field) {
+        final Class<?> defaultLayout, final PropertyWriter field) {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
-        if (NotASetting.class.isAssignableFrom(fieldType)) {
-            addAllFields(fieldType, layoutArrayNodes, scope, fieldLayout);
+        final var layoutByFieldAnnotation = getFieldLayout(field);
+        if (LayoutGroup.class.isAssignableFrom(fieldType)) {
+            addAllFields(fieldType, layoutArrayNodes, scope, defaultLayout, layoutByFieldAnnotation.orElse(null));
         } else {
-            final var target = layoutArrayNodes.computeIfAbsent(fieldLayout, k -> m_mapper.createArrayNode());
+            final var target = layoutArrayNodes.computeIfAbsent(layoutByFieldAnnotation.orElse(defaultLayout),
+                k -> m_mapper.createArrayNode());
             final var control = addControl(target, scope);
             final var optionsGenerator = new UiSchemaOptionsGenerator(m_mapper, field);
             optionsGenerator.applyStylesTo(control);
