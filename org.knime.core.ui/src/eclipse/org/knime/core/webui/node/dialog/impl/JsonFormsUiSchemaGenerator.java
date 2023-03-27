@@ -111,9 +111,7 @@ final class JsonFormsUiSchemaGenerator {
         final String parentScope, final Class<?> defaultLayout, final Class<?> enclosingFieldLayout) {
         final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldLayout);
         final var properties = getSerializableProperties(clazz);
-        properties.forEachRemaining(field -> {
-            addField(layoutArrayNodes, parentScope, layout, field);
-        });
+        properties.forEachRemaining(field -> addField(layoutArrayNodes, parentScope, layout, field));
     }
 
     private static Class<?> mergeLayouts(final Class<?> clazz, final Class<?> defaultLayout,
@@ -121,9 +119,9 @@ final class JsonFormsUiSchemaGenerator {
         final var classLayout = getClassLayout(clazz);
         if (!classLayout.isEmpty()) {
             if (enclosingFieldLayout != null) {
-                throw new UiSchemaGenerationException(String.format(
-                    "The layout annotations for class %s collides with a field layout annotation of an enclosing field.",
-                    clazz));
+                throw new UiSchemaGenerationException(
+                    String.format("The layout annotations for class %s collides with a field "
+                        + "layout annotation of an enclosing field.", clazz));
             }
             return classLayout.get();
         } else if (enclosingFieldLayout != null) {

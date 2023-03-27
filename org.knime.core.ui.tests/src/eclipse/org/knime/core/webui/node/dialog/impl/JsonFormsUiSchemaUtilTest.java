@@ -299,12 +299,6 @@ class JsonFormsUiSchemaUtilTest {
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
-    class DefaultStylesSettings implements DefaultNodeSettings {
-        String m_string;
-
-        boolean m_boolean;
-    }
-
     static class TestFieldWithTwoLayoutAnnotationsSettings implements DefaultNodeSettings {
 
         @Section
@@ -331,6 +325,18 @@ class JsonFormsUiSchemaUtilTest {
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
+    class DefaultStylesSettings implements DefaultNodeSettings {
+        String m_string;
+
+        boolean m_boolean;
+
+        enum MyEnum {
+                A, B, C
+        }
+
+        MyEnum m_enum;
+    }
+
     @Test
     void testDefaultStyles() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
@@ -340,12 +346,14 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("options");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("boolean");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("enum");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("valueSwitch");
     }
-
 
     public static class OverridingBooleanStyleProvider extends BooleanStyleProvider {
 
-        record Format(String format) {}
+        record Format(String format) {
+        }
 
         @Override
         public Object getStyleObject() {

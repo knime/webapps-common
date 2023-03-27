@@ -51,7 +51,9 @@ package org.knime.core.webui.node.dialog.impl;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.FIELD_NAME_SCHEMA;
+import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.FIELD_NAME_UI_SCHEMA;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -133,6 +135,12 @@ class DefaultNodeSettingsServiceTest {
         final var wrappedSchema = MAPPER.createObjectNode();
         wrappedSchema.put("type", "object").putObject("properties").set(SettingsType.VIEW.getConfigKey(), schema);
         assertThatJson(initialData.get(FIELD_NAME_SCHEMA)).isEqualTo(wrappedSchema);
+
+        // assert that returned ui schema is equal to json object created via JsonFormsUiSchemaUtil
+        final Map<String, Class<? extends DefaultNodeSettings>> testSettingsMap = new HashMap<>();
+        testSettingsMap.put(SettingsType.VIEW.getConfigKey(), TestSettings.class);
+        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap);
+        assertThatJson(initialData.get(FIELD_NAME_UI_SCHEMA)).isEqualTo(uiSchema);
     }
 
     @Test
