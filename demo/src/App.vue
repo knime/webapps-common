@@ -12,7 +12,7 @@ import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
 import HeadlineWithAnchorLink from 'webapps-common/ui/components/HeadlineWithAnchorLink.vue';
 
-import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
+import SearchInputComponent from 'webapps-common/ui/components/forms/SearchInput.vue';
 
 import NpmLink from './components/demo/NpmLink.vue';
 
@@ -60,7 +60,7 @@ const demoComponents = {
         Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
         InputField: defineAsyncComponent(() => import('./components/InputField.vue')),
         TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
-        SearchInputDemo: defineAsyncComponent(() => import('./components/SearchInput.vue')),
+        SearchInput: defineAsyncComponent(() => import('./components/SearchInput.vue')),
         NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
         Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
         Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
@@ -84,23 +84,20 @@ const demoComponents = {
         OpenSourceCredits: defineAsyncComponent(() => import('./components/OpenSourceCredits.vue'))
     },
     npm: {
-        knimeUiTable: {
+        'KNIME UI Table': {
             render() {
                 const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
-                const name = 'KNIME UI Table';
-                return createElement(NpmLink, { link, name });
+                return createElement(NpmLink, { link });
             }
         },
-        knimeEsLint: {
+        'KNIME ESLint config': {
             render() {
                 const link = 'https://www.npmjs.com/package/@knime/eslint-config';
-                const name = 'KNIME ESLint config';
-                return createElement(NpmLink, { link, name });
+                return createElement(NpmLink, { link });
             }
         }
     }
 };
-
 
 const flattenComponents = (componentsByCategory) => {
     let componentsFlattened = {};
@@ -116,7 +113,7 @@ const flattenComponents = (componentsByCategory) => {
 const components = {
     TabBarComponent,
     HeadlineWithAnchorLink,
-    SearchInput,
+    SearchInputComponent,
     ...flattenComponents(demoComponents)
 };
 
@@ -229,7 +226,7 @@ export default {
                 :disabled="isSearchActive"
                 :possible-values="possibleTabValues"
               />
-              <SearchInput
+              <SearchInputComponent
                 v-model.trim="searchQuery"
                 autofocus
                 placeholder="Filter by component name…"

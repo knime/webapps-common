@@ -74,7 +74,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>SearchInput</h2>
           <p>
             Single line string search input with search icon and clear button.
             It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
