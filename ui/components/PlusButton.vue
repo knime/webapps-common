@@ -63,14 +63,18 @@ export default defineComponent({
     box-shadow: 0 0 10px var(--knime-gray-dark-semi), 0 0 10px var(--knime-gray-dark-semi);
   }
 
-  & :deep(svg) {
-    width: 60px;
-    height: 60px;
-    stroke: var(--knime-dove-gray);
-    stroke-width: calc(32px / 60);
-    position: absolute;
-    margin: 0;
-    top: 0;
+  &.button {
+    display: flex;
+
+    & :deep(svg) {
+      width: 60px;
+      height: 60px;
+      stroke: var(--knime-dove-gray);
+      stroke-width: calc(32px / 60);
+      position: absolute;
+      margin: 0;
+      top: 0;
+    }
   }
 
   &.primary:hover {
