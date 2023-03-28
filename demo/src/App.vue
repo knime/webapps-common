@@ -303,6 +303,5 @@ section {
 }
 .component >>> .grid-container:first-of-type p:first-child {
   margin-top: 0;
-  background-color: aquamarine;
 }
 </style>
