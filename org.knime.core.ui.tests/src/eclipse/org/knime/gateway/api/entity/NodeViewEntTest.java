@@ -60,18 +60,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.property.ColorAttr;
+import org.knime.core.data.property.ColorModel;
+import org.knime.core.data.property.ColorModelNominal;
+import org.knime.core.data.property.ColorModelRange;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
@@ -81,6 +90,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeMessage;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
@@ -148,6 +158,7 @@ class NodeViewEntTest {
         assertThat(ent.getInitialData()).contains("view setting key");
         assertThat(ent.getGeneratedImageActionId()).isNull();
         assertThat(ent.getInitialSelection()).isNull();
+        assertThat(ent.getColorModel()).isNull();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
@@ -325,9 +336,8 @@ class NodeViewEntTest {
 
         @Override
         public Optional<InitialDataService<String>> createInitialDataService() {
-            return Optional.of(InitialDataService
-                .builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT))
-                .build());
+            return Optional.of(
+                InitialDataService.builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT)).build());
         }
 
         @Override
@@ -353,6 +363,88 @@ class NodeViewEntTest {
         @Override
         public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
             m_settings = settings;
+        }
+
+    }
+
+    private static Color green = new Color(0, 255, 0);
+
+    private static String greenHex = "#00FF00";
+
+    private static Color blue = new Color(0, 0, 255);
+
+    private static String blueHex = "#0000FF";
+
+    /**
+     * Tests that if the NodeView provides a {@link ColorModelRange}, a {@link ColorModelEnt} is created.
+     *
+     * @throws IOException
+     * @throws InvalidSettingsException
+     */
+    @Test
+    public void testNodeViewEntWithNumericColorModel() throws IOException, InvalidSettingsException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+
+        var minValue = 0d;
+        var maxValue = 1d;
+        var minColor = green;
+        var maxColor = blue;
+        var colorModel = new ColorModelRange(minValue, minColor, maxValue, maxColor);
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator;
+        var ent = createNodeViewEntWithColorModel(wfm, colorModel);
+        var colorModelEnt = ent.getColorModel();
+        assertThat(String.valueOf(colorModelEnt.getType())).isEqualTo("NUMERIC");
+        var numericModel = (NumericColorModelEnt)(colorModelEnt.getModel());
+        assertThat(numericModel.getMinValue()).isEqualTo(minValue);
+        assertThat(numericModel.getMaxValue()).isEqualTo(maxValue);
+        assertThat(numericModel.getMinColor()).isEqualTo(greenHex);
+        assertThat(numericModel.getMaxColor()).isEqualTo(blueHex);
+    }
+
+    /**
+     * Tests that if the NodeView provides a {@link ColorModelNominal}, a {@link ColorModelEnt} is created.
+     *
+     * @throws IOException
+     * @throws InvalidSettingsException
+     */
+    @Test
+    public void testNodeViewEntWithNominalColorModel() throws IOException, InvalidSettingsException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var cell1 = "Cluster_1";
+        var cell2 = "Cluster_2";
+        Map<DataCell, ColorAttr> colorMap = new HashMap<>();
+        colorMap.put(new StringCell(cell1), ColorAttr.getInstance(green));
+        colorMap.put(new StringCell(cell2), ColorAttr.getInstance(blue));
+        var colorModel = new ColorModelNominal(colorMap, new ColorAttr[0]);
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator;
+        var ent = createNodeViewEntWithColorModel(wfm, colorModel);
+        var colorModelEnt = ent.getColorModel();
+        assertThat(String.valueOf(colorModelEnt.getType())).isEqualTo("NOMINAL");
+        @SuppressWarnings("unchecked")
+        var nominalModel = (Map<String, String>)(colorModelEnt.getModel());
+        assertThat(nominalModel.get(cell1)).isEqualTo(greenHex);
+        assertThat(nominalModel.get(cell2)).isEqualTo(blueHex);
+    }
+
+    private NodeViewEnt createNodeViewEntWithColorModel(final WorkflowManager wfm, final ColorModel colorModel)
+        throws InvalidSettingsException {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeViewWithColorModel(colorModel);
+        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
+        initViewSettingsAndExecute(nnc);
+        return NodeViewEnt.create(nnc);
+    }
+
+    private class TestNodeViewWithColorModel extends TestNodeView {
+
+        private ColorModel m_colorModel;
+
+        public TestNodeViewWithColorModel(final ColorModel colorModel) {
+            m_colorModel = colorModel;
+        }
+
+        @Override
+        public Optional<ColorModel> getColorModel() {
+            return Optional.of(m_colorModel);
         }
 
     }

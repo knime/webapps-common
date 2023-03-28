@@ -72,6 +72,8 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private String m_generatedImageActionId;
 
+    private ColorModelEnt m_colorModelEnt;
+
     /**
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
@@ -127,6 +129,10 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
         m_generatedImageActionId = generatedImageActionId;
+        if (nodeViewManager != null) {
+            final var colorModel = nodeViewManager.getNodeView(nnc).getColorModel().orElse(null);
+            m_colorModelEnt = colorModel == null ? null : new ColorModelEnt(colorModel);
+        }
     }
 
     /**
@@ -153,6 +159,14 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public String getGeneratedImageActionId() {
         return m_generatedImageActionId;
+    }
+
+    /**
+     * @return the representation to the color model to be used by the frontend to translate numeric or nominal values
+     *         to hex colors. Can be null if no color model was provided.
+     */
+    public ColorModelEnt getColorModel() {
+        return m_colorModelEnt;
     }
 
 }

@@ -44,68 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 23, 2021 (hornm): created
+ *   Mar 29, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view;
+package org.knime.gateway.api.entity;
 
-import java.util.Optional;
-
-import org.knime.core.data.property.ColorModel;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.UIExtension;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.data.property.ColorModelRange;
 
 /**
- * Represents a view of a node.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
- *
- * @since 4.5
+ * @author Paul Bärnreuther
  */
-public interface NodeView extends UIExtension, DataServiceProvider {
+public final class NumericColorModelEnt {
+    private final double m_minValue;
 
-    /**
-     * Validates the given settings before loading it via {@link #loadValidatedSettingsFrom(NodeSettingsRO)}.
-     *
-     * @param settings settings to validate
-     * @throws InvalidSettingsException if the validation failed
-     */
-    void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException;
+    private final double m_maxValue;
 
-    /**
-     * Loads validated settings.
-     *
-     * @param settings settings to load
-     */
-    void loadValidatedSettingsFrom(NodeSettingsRO settings);
+    private final String m_minColor;
 
-    /**
-     * @return optional service to translate selection requests
-     *
-     * @since 4.6
-     */
-    default Optional<? extends SelectionTranslationService> createSelectionTranslationService() {
-        return Optional.empty();
+    private final String m_maxColor;
+
+    NumericColorModelEnt(final ColorModelRange colorModel) {
+        this.m_minValue = colorModel.getMinValue();
+        this.m_maxValue = colorModel.getMaxValue();
+        this.m_minColor = colorModel.getMinColorHex();
+        this.m_maxColor = colorModel.getMaxColorHex();
     }
 
-    /**
-     * The default page format is being used to determine the size of the page if it's being displayed together with
-     * other pages (aka composite view).
-     *
-     * @return the page format
-     */
-    default PageFormat getDefaultPageFormat() {
-        return PageFormat.DEFAULT;
+    public double getMinValue() {
+        return m_minValue;
     }
 
-    /**
-     * @return Optional color model to be provided to the frontend
-     */
-    default Optional<ColorModel> getColorModel() {
-        return Optional.empty();
+    public double getMaxValue() {
+        return m_maxValue;
     }
 
+    public String getMinColor() {
+        return m_minColor;
+    }
+
+    public String getMaxColor() {
+        return m_maxColor;
+    }
 }

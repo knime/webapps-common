@@ -44,68 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 23, 2021 (hornm): created
+ *   Mar 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view;
+package org.knime.gateway.api.entity;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.knime.core.data.property.ColorModel;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.UIExtension;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.data.property.ColorModelNominal;
+import org.knime.core.data.property.ColorModelRange;
 
 /**
- * Represents a view of a node.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
- *
- * @since 4.5
+ * @author Paul Bärnreuther
  */
-public interface NodeView extends UIExtension, DataServiceProvider {
+public final class ColorModelEnt {
 
-    /**
-     * Validates the given settings before loading it via {@link #loadValidatedSettingsFrom(NodeSettingsRO)}.
-     *
-     * @param settings settings to validate
-     * @throws InvalidSettingsException if the validation failed
-     */
-    void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException;
-
-    /**
-     * Loads validated settings.
-     *
-     * @param settings settings to load
-     */
-    void loadValidatedSettingsFrom(NodeSettingsRO settings);
-
-    /**
-     * @return optional service to translate selection requests
-     *
-     * @since 4.6
-     */
-    default Optional<? extends SelectionTranslationService> createSelectionTranslationService() {
-        return Optional.empty();
+    private enum Type {
+            NOMINAL, NUMERIC
     }
 
-    /**
-     * The default page format is being used to determine the size of the page if it's being displayed together with
-     * other pages (aka composite view).
-     *
-     * @return the page format
-     */
-    default PageFormat getDefaultPageFormat() {
-        return PageFormat.DEFAULT;
+    private final Type m_type;
+
+    private final Object m_model;
+
+    ColorModelEnt(final ColorModel colorModel) {
+        if (colorModel instanceof ColorModelNominal) {
+            m_type = Type.NOMINAL;
+            m_model = getNominalValueToColorMap((ColorModelNominal)colorModel);
+        } else {
+            m_type = Type.NUMERIC;
+            m_model = new NumericColorModelEnt((ColorModelRange)colorModel);
+        }
     }
 
-    /**
-     * @return Optional color model to be provided to the frontend
-     */
-    default Optional<ColorModel> getColorModel() {
-        return Optional.empty();
+    private static Map<String, String> getNominalValueToColorMap(final ColorModelNominal colorModel) {
+        final Map<String, String> nominalValueToColorMap = new HashMap<>();
+        for (var entry : colorModel.getColorToValueMap().entrySet()) {
+            final var color = entry.getKey();
+            final var values = entry.getValue();
+            values.forEach(value -> nominalValueToColorMap.put(value, color));
+        }
+        return nominalValueToColorMap;
     }
+
+    public Type getType() {
+        return m_type;
+    }
+
+    public Object getModel() {
+        return m_model;
+    }
+
 
 }
