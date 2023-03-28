@@ -68,7 +68,6 @@ h2 {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 23px;
 }
 
  .function-button {
@@ -92,4 +91,5 @@ h2 {
 .tooltip >>> .text {
   margin-top: -5px;
 }
+
 </style>

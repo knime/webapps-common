@@ -251,6 +251,7 @@ export default {
             />
             <component
               :is="name"
+              class="component"
             />
           </div>
         </div>
@@ -300,5 +301,8 @@ section {
     }
   }
 }
-
+.component >>> .grid-container:first-of-type p:first-child {
+  margin-top: 0;
+  background-color: aquamarine;
+}
 </style>
