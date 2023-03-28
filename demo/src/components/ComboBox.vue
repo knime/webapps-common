@@ -46,7 +46,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>ComboBox</h2>
           <p>
             A combobox component. It emits an <code>update</code> event when an option is (de-)selected and has a list
             of selected <code>values</code>.
