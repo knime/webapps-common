@@ -63,7 +63,7 @@ final class JsonFormsUiSchemaUtil {
         // utility class
     }
 
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
         return new JsonFormsUiSchemaGenerator(settings).build();
     }
 }

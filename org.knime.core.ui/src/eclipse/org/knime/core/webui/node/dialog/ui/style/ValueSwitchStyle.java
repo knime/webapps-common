@@ -49,6 +49,8 @@
 package org.knime.core.webui.node.dialog.ui.style;
 
 /**
+ * Adding this style to an enum setting with an {@link Style @Style}, the setting will represented as a value switch
+ * component in the dialog.
  *
  * @author Paul Bärnreuther
  */

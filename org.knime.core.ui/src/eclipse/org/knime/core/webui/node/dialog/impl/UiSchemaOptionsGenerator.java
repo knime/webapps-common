@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,6 +83,11 @@ final class UiSchemaOptionsGenerator {
 
     private final String m_fieldName;
 
+    /**
+     *
+     * @param mapper the object mapper used for the ui schema generation
+     * @param field the field for which options are to be added from  {@link Style} annotations
+     */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
         m_mapper = mapper;
         m_field = field;
@@ -88,24 +95,28 @@ final class UiSchemaOptionsGenerator {
         m_fieldName = field.getName();
     }
 
+    /**
+     * This method applies the styles of the given field to the given control as described in {@link Style}.
+     * @param control
+     */
     void applyStylesTo(final ObjectNode control) {
         final var applicableStyles = getApplicableStyles();
         if (applicableStyles.isEmpty()) {
             return;
         }
 
-        ObjectReader reader = m_mapper.readerForUpdating(new Object());
-        Object options = null;
+        ObjectReader reader;
+        Object options = new Object();
         for (var style : applicableStyles) {
+            reader = m_mapper.readerForUpdating(options);
             final var styleObject = style.getStyleObject();
             try {
                 options = reader.readValue(m_mapper.valueToTree(styleObject).toString());
             } catch (JsonProcessingException | IllegalArgumentException ex) {
                 throw new UiSchemaGenerationException("A problem occurred while applying styles", ex);
             }
-            reader = m_mapper.readerForUpdating(options);
         }
-        control.set("options", m_mapper.valueToTree(options));
+        control.set(OPTIONS_TAG, m_mapper.valueToTree(options));
     }
 
     private List<? extends StyleProvider> getApplicableStyles() {

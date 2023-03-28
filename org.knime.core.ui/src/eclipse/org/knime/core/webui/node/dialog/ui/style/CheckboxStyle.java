@@ -49,6 +49,8 @@
 package org.knime.core.webui.node.dialog.ui.style;
 
 /**
+ * Adding this style to a boolean setting with an {@link Style @Style}, the setting will be used to control a checkbox
+ * in the dialog.
  *
  * @author Paul Bärnreuther
  */

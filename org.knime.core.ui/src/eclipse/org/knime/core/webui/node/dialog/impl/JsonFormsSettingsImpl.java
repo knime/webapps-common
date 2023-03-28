@@ -68,8 +68,9 @@ import com.fasterxml.jackson.databind.util.RawValue;
  * <li>the schema content is created from the types, names, and annotations of the fields in model and view
  * {@link DefaultNodeSettings settings} (see {@link JsonFormsSchemaUtil})
  * <li>the data content is created from the values in these fields (see {@link JsonFormsDataUtil})
- * <li>the UI schema content is created either from a uischema.json file that resides in the same folder as the model and view
- * settings classes or, if no such file exists, it is generated from settings annotations (see {@link JsonFormsUiSchemaUtil})
+ * <li>the UI schema content is created either from a uischema.json file that resides in the same folder as the model
+ * and view settings classes or, if no such file exists, it is generated from settings annotations (see
+ * {@link JsonFormsUiSchemaUtil})
  * </ul>
  *
  *

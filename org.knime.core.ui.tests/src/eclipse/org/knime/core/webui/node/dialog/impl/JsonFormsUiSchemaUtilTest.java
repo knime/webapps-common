@@ -224,6 +224,36 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
+    interface TestNoLayoutAnnotationLayout {
+
+        @Section
+        interface Section1 {
+        }
+    }
+
+    class TestNoLayoutAnnotationSettings implements DefaultNodeSettings {
+
+        String m_rootSetting;
+
+        @Layout(TestNoLayoutAnnotationLayout.Section1.class)
+        String m_sectionSetting;
+
+    }
+
+    @Test
+    void testNoLayoutAnnotation() throws JsonProcessingException {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestNoLayoutAnnotationSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].scope").isString()
+        .isEqualTo("#/properties/test/properties/rootSetting");
+        //Section1
+        assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/sectionSetting");
+    }
+
     static class TestLayoutWithinSettingsSettings implements DefaultNodeSettings {
         @Section(title = "first")
         static interface Section1 {

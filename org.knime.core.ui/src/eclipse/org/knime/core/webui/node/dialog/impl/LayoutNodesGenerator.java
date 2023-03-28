@@ -61,24 +61,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class LayoutNodesGenerator {
 
-    private ObjectMapper m_mapper;
+    private final ObjectMapper m_mapper;
 
-    private Map<Class<?>, ArrayNode> m_content;
+    private final Map<Class<?>, ArrayNode> m_content;
+
+    private final Class<?> m_rootClass;
 
     /**
      * @param mapper the object mapper used for the ui schema generation
      * @param content the mapping between layout parts and their contained settings controls
+     * @param rootClass the root class of the layout. This can be null but only if no nested layout parts exist.
      */
-    public LayoutNodesGenerator(final ObjectMapper mapper, final Map<Class<?>, ArrayNode> content) {
+    LayoutNodesGenerator(final ObjectMapper mapper, final Map<Class<?>, ArrayNode> content, final Class<?> rootClass) {
         m_mapper = mapper;
         m_content = content;
+        m_rootClass = rootClass;
     }
 
-    public ObjectNode buildLayout(final Class<?> rootClass) {
+    ObjectNode build() {
         final var root = m_mapper.createObjectNode();
-        final var rootElements = addLayoutNode(root, rootClass);
-        if (rootClass != null) {
-            buildLayout(rootClass, rootElements);
+        final var rootElements = addLayoutNode(root, m_rootClass);
+        if (m_rootClass != null) {
+            buildLayout(m_rootClass, rootElements);
         }
         return root;
     }

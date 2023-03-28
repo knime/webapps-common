@@ -79,8 +79,9 @@ import java.lang.annotation.Retention;
  * parents until we reach a class which is not a layout part.
  * </p>
  * <p>
- * This class has to coincide throughout all @Layout annotations of all settings of the node dialog. Otherwise the order
- * of the targeted layout parts cannot be determined and the layout generation will fail.
+ * All layout parts referenced via @Layout annotations used throughout the settings of a single node dialog must share a
+ * common root. Otherwise the order of the targeted layout parts cannot be determined and the layout generation will
+ * fail.
  * </p>
  * <p>
  * The annotation may also target this root layout class for top level settings which are not contained in any layout

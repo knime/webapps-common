@@ -48,6 +48,12 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
+
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.ui.Section;
@@ -61,7 +67,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
-        NONE(context -> context.getRoot().putArray("elements"));
+        ROOT(context -> context.getRoot().putArray(ELEMENTS_TAG));
 
     private Function<LayoutNodeCreationContext, ArrayNode> m_create;
 
@@ -71,12 +77,12 @@ enum LayoutPart {
 
     static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
         if (clazz == null) {
-            return NONE;
+            return ROOT;
         }
         if (clazz.isAnnotationPresent(Section.class)) {
             return SECTION;
         }
-        return NONE;
+        return ROOT;
     }
 
     ArrayNode create(final ObjectNode root, final Class<?> layoutClass, final ArrayNode content) {
@@ -87,12 +93,12 @@ enum LayoutPart {
         final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
         final var node = creationContext.getRoot();
         final var label = sectionAnnotation.title();
-        node.put("label", label);
-        node.put("type", "Section");
+        node.put(LABEL_TAG, label);
+        node.put(TYPE_TAG, "Section");
         if (sectionAnnotation.advanced()) {
-            node.putObject("options").put("isAdvanced", true);
+            node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
         }
-        return node.putArray("elements");
+        return node.putArray(ELEMENTS_TAG);
     }
 
     private class LayoutNodeCreationContext {

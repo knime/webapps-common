@@ -56,6 +56,6 @@ package org.knime.core.webui.node.dialog.ui.style;
 public abstract non-sealed class BooleanStyleProvider implements StyleProvider { //NOSONAR
     @Override
     public final boolean isApplicable(final Class<?> clazz) {
-        return clazz.equals(boolean.class);
+        return clazz.equals(boolean.class) || clazz.equals(Boolean.class);
     }
 }

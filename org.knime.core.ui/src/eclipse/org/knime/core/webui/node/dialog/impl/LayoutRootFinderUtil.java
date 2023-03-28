@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.ui.Layout;
@@ -67,7 +68,12 @@ final class LayoutRootFinderUtil {
         // Utility class
     }
 
-    public static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes) {
+    /**
+     * This method finds the common root of all layout nodes (see also {@link Layout}).
+     * @param layoutNodes the set of layout nodes which should have a common root
+     * @return a non-null optional which is empty only if the set of layoutNodes contains at most {@link null}
+     */
+    static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes) {
         return findRootNode(layoutNodes, new HashSet<>());
     }
 
@@ -83,7 +89,7 @@ final class LayoutRootFinderUtil {
             final var enclosingClass = layoutPart.getEnclosingClass();
             if (enclosingClass == null) {
                 throw new UiSchemaGenerationException(
-                    String.format("No enclosing class found for layout part %s", layoutPart));
+                    String.format("No enclosing class found for layout part %s", layoutPart.getSimpleName()));
             }
             next.add(enclosingClass);
         }
@@ -98,16 +104,8 @@ final class LayoutRootFinderUtil {
     }
 
     private static Pair<Set<Class<?>>, Set<Class<?>>> separateRootNodes(final Set<Class<?>> layoutNodes) {
-        final Set<Class<?>> rootNodes = new HashSet<>();
-        final Set<Class<?>> otherNodes = new HashSet<>();
-        layoutNodes.stream().filter(Objects::nonNull).forEach(clazz -> {
-            final var layoutType = LayoutPart.determineFromClassAnnotation(clazz);
-            if (layoutType == LayoutPart.NONE) {
-                rootNodes.add(clazz);
-            } else {
-                otherNodes.add(clazz);
-            }
-        });
-        return new Pair<>(rootNodes, otherNodes);
+        final var partition = layoutNodes.stream().filter(Objects::nonNull).collect(
+            Collectors.partitioningBy(clazz -> LayoutPart.determineFromClassAnnotation(clazz) == LayoutPart.ROOT));
+        return new Pair<>(new HashSet<>(partition.get(true)), new HashSet<>(partition.get(false)));
     }
 }

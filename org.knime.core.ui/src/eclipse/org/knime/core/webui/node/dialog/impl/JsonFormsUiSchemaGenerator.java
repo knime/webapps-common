@@ -53,11 +53,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -77,77 +77,103 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  * @author Paul Bärnreuther
  */
 final class JsonFormsUiSchemaGenerator {
+
+    private static final String SCOPE_TAG = "scope";
+
+    static final String TYPE_TAG = "type";
+
+    static final String OPTIONS_TAG = "options";
+
+    static final String LABEL_TAG = "label";
+
+    static final String ELEMENTS_TAG = "elements";
+
+    static final String IS_ADVANCED_TAG = "isAdvanced";
+
     private final ObjectMapper m_mapper;
 
     private final SerializerProvider m_serializerProvider;
 
     private final Map<String, Class<? extends DefaultNodeSettings>> m_settings;
 
-    public JsonFormsUiSchemaGenerator(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    JsonFormsUiSchemaGenerator(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
         m_settings = settings;
         m_mapper = JsonFormsDataUtil.getMapper();
         m_serializerProvider = m_mapper.getSerializerProviderInstance();
     }
 
-    public ObjectNode build() {
-        final var layoutClassesToControls = getUiSchemaPerLayoutPart(m_settings);
-        final var rootClass = LayoutRootFinderUtil.findRootNode(layoutClassesToControls.keySet());
-        final var layoutGenerator = new LayoutNodesGenerator(m_mapper, layoutClassesToControls);
-        return layoutGenerator.buildLayout(rootClass.orElse(null));
+    ObjectNode build() {
+        final var contentAndRoot = resolveLayoutToContentAndRoot();
+        return new LayoutNodesGenerator(m_mapper, contentAndRoot.getFirst(), contentAndRoot.getSecond()).build();
     }
 
-    private Map<Class<?>, ArrayNode>
-        getUiSchemaPerLayoutPart(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
-        final Map<Class<?>, ArrayNode> layoutObjectNodes = new HashMap<>();
-        settings.forEach((settingsKey, setting) -> {
+    private Pair<Map<Class<?>, ArrayNode>, Class<?>> resolveLayoutToContentAndRoot() {
+        final var layoutClassesToControls = getLayoutPartToControls();
+        final var rootClass = LayoutRootFinderUtil.findRootNode(layoutClassesToControls.keySet()).orElse(null);
+        addContentWithoutLayoutToRoot(layoutClassesToControls, rootClass);
+        return new Pair<>(layoutClassesToControls, rootClass);
+    }
+
+    private static void addContentWithoutLayoutToRoot(final Map<Class<?>, ArrayNode> layoutClassesToControls,
+        final Class<?> rootClass) {
+        if (rootClass != null) {
+            final var controlsWithoutLayout = layoutClassesToControls.remove(null);
+            if (controlsWithoutLayout != null) {
+                final var rootContent = layoutClassesToControls.get(rootClass);
+                if (rootContent != null) {
+                    rootContent.addAll(controlsWithoutLayout);
+                } else {
+                    layoutClassesToControls.put(rootClass, controlsWithoutLayout);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return A mapping from classes annotated as certain layout parts (see {@link LayoutPart}) to the
+     *         settings/controls associated to them by {@link Layout} annotations. If a setting has no {@Link Layout}
+     *         annotation it is associated to {@code null}.
+     */
+    private Map<Class<?>, ArrayNode> getLayoutPartToControls() {
+        final Map<Class<?>, ArrayNode> layoutPartToControls = new HashMap<>();
+        m_settings.forEach((settingsKey, setting) -> {
             final var prefix = addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
-            addAllFields(setting, layoutObjectNodes, prefix, defaultLayout, null);
+            addAllFields(setting, layoutPartToControls, prefix, defaultLayout, false);
         });
-        return layoutObjectNodes;
+        return layoutPartToControls;
     }
 
     private void addAllFields(final Class<?> clazz, final Map<Class<?>, ArrayNode> layoutArrayNodes,
-        final String parentScope, final Class<?> defaultLayout, final Class<?> enclosingFieldLayout) {
-        final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldLayout);
+        final String parentScope, final Class<?> defaultLayout, final boolean enclosingFieldSetsLayout) {
+        final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldSetsLayout);
         final var properties = getSerializableProperties(clazz);
         properties.forEachRemaining(field -> addField(layoutArrayNodes, parentScope, layout, field));
     }
 
-    private static Class<?> mergeLayouts(final Class<?> clazz, final Class<?> defaultLayout,
-        final Class<?> enclosingFieldLayout) {
-        final var classLayout = getClassLayout(clazz);
-        if (!classLayout.isEmpty()) {
-            if (enclosingFieldLayout != null) {
-                throw new UiSchemaGenerationException(
-                    String.format("The layout annotations for class %s collides with a field "
-                        + "layout annotation of an enclosing field.", clazz));
-            }
-            return classLayout.get();
-        } else if (enclosingFieldLayout != null) {
-            return enclosingFieldLayout;
-        } else {
-            return defaultLayout;
+    private Iterator<PropertyWriter> getSerializableProperties(final Class<?> clazz) {
+        try {
+            final var settingsSerializer = m_serializerProvider.findValueSerializer(clazz);
+            return settingsSerializer.properties();
+        } catch (JsonMappingException ex) {
+            throw new UiSchemaGenerationException(
+                String.format("Error while obtaining serializer for class %s.", clazz.getSimpleName()), ex);
         }
+    }
+
+    private static Class<?> mergeLayouts(final Class<?> clazz, final Class<?> defaultLayout,
+        final boolean enclosingFieldSetsLayout) {
+        final var classLayout = getClassLayout(clazz);
+        if (classLayout.isPresent() && enclosingFieldSetsLayout) {
+            throw new UiSchemaGenerationException(String.format(
+                "The layout annotation for class %s collides with the layout annotation of the enclosing field.",
+                clazz.getSimpleName()));
+        }
+        return classLayout.orElse(defaultLayout);
     }
 
     private static Optional<Class<?>> getClassLayout(final Class<?> settingsClass) {
         return Optional.ofNullable(settingsClass.getAnnotation(Layout.class)).map(Layout::value);
-    }
-
-    private static Optional<Class<?>> getFieldLayout(final PropertyWriter field) {
-        return Optional.ofNullable(field.getAnnotation(Layout.class)).map(Layout::value);
-    }
-
-    private Iterator<PropertyWriter> getSerializableProperties(final Class<?> clazz) {
-        JsonSerializer<Object> settingsSerializer;
-        try {
-            settingsSerializer = m_serializerProvider.findValueSerializer(clazz);
-            return settingsSerializer.properties();
-        } catch (JsonMappingException ex) {
-            throw new UiSchemaGenerationException(
-                String.format("Error while obtaining serializer for class %s.", clazz), ex);
-        }
     }
 
     private void addField(final Map<Class<?>, ArrayNode> layoutArrayNodes, final String parentScope,
@@ -155,25 +181,26 @@ final class JsonFormsUiSchemaGenerator {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var layoutByFieldAnnotation = getFieldLayout(field);
+        final var fieldLayout = layoutByFieldAnnotation.orElse(defaultLayout);
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
-            addAllFields(fieldType, layoutArrayNodes, scope, defaultLayout, layoutByFieldAnnotation.orElse(null));
+            addAllFields(fieldType, layoutArrayNodes, scope, fieldLayout, layoutByFieldAnnotation.isPresent());
         } else {
-            final var target = layoutArrayNodes.computeIfAbsent(layoutByFieldAnnotation.orElse(defaultLayout),
-                k -> m_mapper.createArrayNode());
-            final var control = addControl(target, scope);
-            final var optionsGenerator = new UiSchemaOptionsGenerator(m_mapper, field);
-            optionsGenerator.applyStylesTo(control);
+            final var target = layoutArrayNodes.computeIfAbsent(fieldLayout, k -> m_mapper.createArrayNode());
+            addControl(target, scope, field);
         }
+    }
+
+    private static Optional<Class<?>> getFieldLayout(final PropertyWriter field) {
+        return Optional.ofNullable(field.getAnnotation(Layout.class)).map(Layout::value);
     }
 
     private static String addPropertyToPrefix(final String prefix, final String property) {
         return String.format("%s/properties/%s", prefix, property);
     }
 
-    private static ObjectNode addControl(final ArrayNode target, final String scope) {
-        final var control = target.addObject();
-        control.put("type", "Control");
-        control.put("scope", scope);
+    private ObjectNode addControl(final ArrayNode target, final String scope, final PropertyWriter field) {
+        final var control = target.addObject().put(TYPE_TAG, "Control").put(SCOPE_TAG, scope);
+        new UiSchemaOptionsGenerator(m_mapper, field).applyStylesTo(control);
         return control;
     }
 }
