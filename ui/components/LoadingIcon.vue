@@ -1,6 +1,6 @@
 <script>
 import ReloadIcon from '../../ui/assets/img/icons/reload.svg';
-import svgWithTitle from '../util/svgWithTitle.js';
+import svgWithTitle from '../util/svgWithTitle';
 
 export default {
     components: {

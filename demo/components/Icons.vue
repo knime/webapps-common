@@ -3,7 +3,7 @@ import ImagePreviews from './demo/ImagePreviews.vue';
 import CodeExample from './demo/CodeExample.vue';
 import ListNumbersIcon from '../../ui/assets/img/icons/list-numbers.svg';
 import FolderIcon from '../../ui/assets/img/icons/folder.svg';
-import svgWithTitle from '../../ui/util/svgWithTitle.js;
+import svgWithTitle from '../../ui/util/svgWithTitle';
 import InputField from '../../ui/components/forms/InputField.vue';
 
 const codeExample1 = `<script>
