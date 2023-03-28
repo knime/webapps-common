@@ -65,36 +65,24 @@
                 },
                 {
                   "const": "MANUAL",
-                  "title": "Manual bounds"
+                  "title": "Manual"
                 }
               ],
               "title": "Dimension axis limits",
-              "description": "Choose if the dimension axis range should be calculated automatically, be derived from the domain range or set manually. If “Automatic” is selected the axis ranges from (min - 3 * bw) to (max + 3 * bw) where min and max are the minimum and maximum values of the data and bw is the selected bandwidth. If you select “Domain bounds”, you might need to use a Domain calculator or Edit Numeric Domain node before this node.",
+              "description": "Choose if the dimension axis range should be calculated automatically, taken from the domain range or set manually. If “Automatic” is selected the axis ranges from (min - 3 * bw) to (max + 3 * bw) where min and max are the minimum and maximum values of the data and bw is the selected bandwidth. If you select “Domain bounds”, you might need to use a Domain calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
             },
             "xAxisManualMin": {
               "type": "number",
               "title": "Horizontal min",
               "default": 0,
-              "description": "Numerical value that sets the horizontal axis minimum."
+              "description": "Value that sets the horizontal axis minimum."
             },
             "xAxisManualMax": {
               "type": "number",
               "title": "Horizontal max",
               "default": 0,
-              "description": "Numerical value that sets the horizontal axis maximum."
-            },
-            "yAxisManualMin": {
-              "type": "number",
-              "title": "Vertical min",
-              "default": 0,
-              "description": "Numerical value that sets the vertical axis minimum."
-            },
-            "yAxisManualMax": {
-              "type": "number",
-              "title": "Vertical max",
-              "default": 0,
-              "description": "Numerical value that sets the vertical axis maximum."
+              "description": "Value that sets the horizontal axis maximum."
             },
             "bandwidthOption": {
               "oneOf": [

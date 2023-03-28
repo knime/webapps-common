@@ -75,11 +75,11 @@
                 },
                 {
                   "const": "MANUAL",
-                  "title": "Manual bounds"
+                  "title": "Manual"
                 }
               ],
               "title": "Value axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, used from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, taken from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO",
               "configKeys": [
                 "axisExtentMethod"
@@ -89,13 +89,13 @@
               "type": "number",
               "title": "Vertical min",
               "default": 0,
-              "description": "Numerical value that sets the vertical axis minimum."
+              "description": "Value that sets the vertical axis minimum."
             },
             "yAxisManualMax": {
               "type": "number",
               "title": "Vertical max",
               "default": 0,
-              "description": "Numerical value that sets the vertical axis maximum."
+              "description": "Value that sets the vertical axis maximum."
             },
             "dataPointMarkerSize": {
               "type": "integer",

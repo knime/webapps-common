@@ -64,36 +64,36 @@
                 },
                 {
                   "const": "MANUAL",
-                  "title": "Manual bounds"
+                  "title": "Manual"
                 }
               ],
               "title": "Axis limits",
-              "description": "Choose if the axis extents should be calculated by the charting framework, used from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
               "default": "AUTO"
             },
             "xAxisManualMin": {
               "type": "number",
               "title": "Horizontal min",
               "default": 0,
-              "description": "Numerical value that sets the horizontal axis minimum."
+              "description": "Value that sets the horizontal axis minimum."
             },
             "xAxisManualMax": {
               "type": "number",
               "title": "Horizontal max",
               "default": 0,
-              "description": "Numerical value that sets the horizontal axis maximum."
+              "description": "Value that sets the horizontal axis maximum."
             },
             "yAxisManualMin": {
               "type": "number",
               "title": "Vertical min",
               "default": 0,
-              "description": "Numerical value that sets the vertical axis minimum."
+              "description": "Value that sets the vertical axis minimum."
             },
             "yAxisManualMax": {
               "type": "number",
               "title": "Vertical max",
               "default": 0,
-              "description": "Numerical value that sets the vertical axis maximum."
+              "description": "Value that sets the vertical axis maximum."
             },
             "dataPointSize": {
               "type": "integer",

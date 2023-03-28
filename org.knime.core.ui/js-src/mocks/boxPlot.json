@@ -77,11 +77,11 @@
                 },
                 {
                   "const": "MANUAL",
-                  "title": "Manual bounds"
+                  "title": "Manual"
                 }
               ],
               "title": "Value axis limits",
-              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, used from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
+              "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, taken from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO"
             },
             "manualMinMax": {
@@ -91,13 +91,13 @@
                   "type": "number",
                   "title": "Value axis min",
                   "default": 0,
-                  "description": "Numerical value that sets the value axis minimum."
+                  "description": "Value that sets the axis minimum."
                 },
                 "max": {
                   "type": "number",
                   "title": "Value axis max",
                   "default": 0,
-                  "description": "Numerical value that sets the value axis maximum."
+                  "description": "Value that sets the axis maximum."
                 }
               }
             },
