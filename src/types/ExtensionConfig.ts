@@ -1,3 +1,4 @@
+import { ColorModel } from './ColorModel';
 import { ExtensionTypes } from './ExtensionTypes';
 import { FlowVariableSettings } from './FlowVariableSettings';
 import { NodeInfo } from './NodeInfo';
@@ -21,6 +22,8 @@ import { ResourceInfo } from './ResourceInfo';
  * @property {FlowVariableSettings} [flowVariableSettings]
  * @property {boolean} hasNodeView
  * @property {string} generatedImageActionId - optional action-id to communicate the generated image back to Java
+ * @property {Record<string, ColorModel>} colorModels - optional color model per column used to map data cell values
+ * (numeric xor nominal) of a column to hexadecimal color codes
  * @template T
  */
 export type ExtensionConfig<T = any> = {
@@ -35,4 +38,5 @@ export type ExtensionConfig<T = any> = {
     flowVariableSettings?: FlowVariableSettings;
     hasNodeView: boolean;
     generatedImageActionId?: string;
+    colorModels?: Record<string, ColorModel>;
 };

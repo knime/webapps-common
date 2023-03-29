@@ -4,7 +4,11 @@ export {
     IFrameKnimeService,
     IFrameKnimeServiceAdapter,
     SelectionService,
-    DialogService
+    DialogService,
+    ColorService,
+    NumericColorHandler,
+    NominalColorHandler,
+    ColorHandler
 } from './services';
 
 export * from './types';

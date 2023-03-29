@@ -21,6 +21,10 @@
         "coverage": "jest --coverage --runInBand",
         "coverage:watch": "npm run test:unit -- --coverage --watch"
     },
+    "dependencies": {
+        "@types/color-convert": "2.0.0",
+        "color-convert": "2.0.1"
+    },
     "devDependencies": {
         "@babel/cli": "7.15.7",
         "@babel/core": "7.15.5",
