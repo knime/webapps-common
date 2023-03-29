@@ -59,12 +59,18 @@ export default {
             selectedIds: this.initialSelectedIds,
             searchValue: '',
             inputOrOptionsFocussed: false,
+            /*
+             * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
+             * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
+             * it needs to be passed to the Multiselect component.
+             */
+            focusElement: null,
             refocusElement: null
         };
     },
     computed: {
         filteredValues() {
-            return this.possibleValues.filter(value => value.id.includes(this.searchValue));
+            return this.possibleValues.filter(value => value.text.includes(this.searchValue));
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -84,6 +90,7 @@ export default {
         }
     },
     mounted() {
+        this.focusElement = this.$refs.searchInput;
         this.refocusElement = this.$refs.listBox;
     },
     methods: {
@@ -93,7 +100,7 @@ export default {
         onDown() {
             this.$refs.combobox.onDown();
         },
-        onFocusListBoxOrOutside() {
+        onFocusOutside() {
             this.inputOrOptionsFocussed = false;
             this.searchValue = '';
         },
@@ -114,9 +121,6 @@ export default {
             this.selectedIds = selectedIds;
             this.$emit('update:selectedIds', this.selectedIds);
         },
-        useAsFocusElement(element) {
-            return !element.classList.contains('remove-tag-button');
-        },
         removeTag(idToRemove) {
             this.updateSelectedIds(this.selectedIds.filter(id => id !== idToRemove));
             this.$refs.combobox.closeOptions();
@@ -136,11 +140,11 @@ export default {
     :possible-values="filteredValues"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
+    :parent-focus-element="focusElement"
     :parent-refocus-element-on-close="refocusElement"
     :close-dropdown-on-selection="closeDropdownOnSelection"
     :is-valid="isValid"
-    :use-as-focus-element-callback="useAsFocusElement"
-    @focus-outside="onFocusListBoxOrOutside"
+    @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >
     <template #listBox>
@@ -149,7 +153,6 @@ export default {
         class="summary-input-icon-wrapper"
         tabindex="0"
         @keydown.enter.prevent.self="focusInput"
-        @focus="onFocusListBoxOrOutside"
       >
         <div
           :class="['summary-input-wrapper', {'with-icon-right': hasSelection}]"

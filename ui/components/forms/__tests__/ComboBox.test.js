@@ -65,6 +65,8 @@ describe('ComboBox.vue', () => {
             expect(toggleSpy).toHaveBeenCalled();
             expect(updateFocusSpy).toHaveBeenCalled();
             expect(wrapper.vm.inputOrOptionsFocussed).toBeTruthy();
+            expect(wrapper.findComponent(Multiselect).vm.showOptions).toBeTruthy();
+            expect(wrapper.findComponent(Multiselect).findAll('.boxes')).toHaveLength(3);
         });
 
         it('clears the search when the focus is outside the ComboBox', async () => {
@@ -87,6 +89,24 @@ describe('ComboBox.vue', () => {
             await wrapper.find('.multiselect').trigger('keydown.esc');
             vi.runAllTimers();
             expect(wrapper.find('.summary-input-icon-wrapper').wrapperElement).toBe(document.activeElement);
+        });
+
+        it('closes the dropdown when focussing a remove-tag-button', async () => {
+            const wrapper = doMount({ initialSelectedIds: ['test1'] }, { attachTo: document.body });
+            const closeOptionsSpy = vi.spyOn(wrapper.findComponent(Multiselect).vm, 'closeOptions');
+            await wrapper.find('.search-input').trigger('focus');
+            expect(wrapper.findComponent(Multiselect).vm.showOptions).toBeTruthy();
+            await wrapper.find('.remove-tag-button').trigger('click');
+            expect(wrapper.findComponent(Multiselect).vm.showOptions).toBeFalsy();
+            expect(closeOptionsSpy).toHaveBeenCalled();
+        });
+
+        it('closes the dropdown when focussing the remove-all-tags-button', async () => {
+            const wrapper = doMount({ initialSelectedIds: ['test1'] }, { attachTo: document.body });
+            const closeOptionsSpy = vi.spyOn(wrapper.findComponent(Multiselect).vm, 'closeOptions');
+            await wrapper.find('.search-input').trigger('focus');
+            await wrapper.find('.remove-all-tags-button').trigger('click');
+            expect(closeOptionsSpy).toHaveBeenCalled();
         });
     });
 

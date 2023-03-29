@@ -96,7 +96,14 @@ export default {
             }
         },
         /**
-         * The element of the parent to refocus when the options get and when using a custom listbox.
+         * Focus element of the parent for which the options don't get closed when it is focussed.
+         */
+        parentFocusElement: {
+            type: Object,
+            default: () => ({})
+        },
+        /**
+         * The element of the parent to refocus when the options get closed and using a custom listbox.
          */
         parentRefocusElementOnClose: {
             type: Object,
@@ -108,14 +115,6 @@ export default {
         closeDropdownOnSelection: {
             type: Boolean,
             default: false
-        },
-        /**
-         * Callback that decides whether the document.activeElement is a focus element. In case it is a focus element,
-         * the options won't be closed.
-         */
-        useAsFocusElementCallback: {
-            type: Function,
-            default: null
         }
     },
     emits: ['update:modelValue', 'focusOutside'],
@@ -127,6 +126,9 @@ export default {
         };
     },
     computed: {
+        focusElements() {
+            return [...this.focusOptions, this.parentFocusElement];
+        },
         summary() {
             if (this.checkedValue.length === 0) {
                 return this.placeholder;
@@ -239,8 +241,7 @@ export default {
          */
         onFocusOut() {
             setTimeout(() => {
-                if (!this.$refs.multiselect.contains(document.activeElement) ||
-                    (this.useAsFocusElementCallback && !this.useAsFocusElementCallback(document.activeElement))) {
+                if (!this.focusElements.includes(document.activeElement)) {
                     this.closeOptions(false);
                     if (this.useCustomListBox) {
                         this.$emit('focusOutside');
