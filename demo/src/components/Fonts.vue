@@ -46,6 +46,7 @@
   & .grid-item-12 {
     padding: 1em 0;
   }
+
     & p:first-child{
       padding-top: 16px;
     }
