@@ -6,7 +6,7 @@
 const modeDefinitions = [
     {
         id: 'search',
-        normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+        normalize(searchTerm, caseSensitiveSearch) {
             return caseSensitiveSearch ? searchTerm : searchTerm.toLowerCase();
         },
         test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
@@ -17,7 +17,7 @@ const modeDefinitions = [
     },
     {
         id: 'wildcard',
-        normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+        normalize(searchTerm, caseSensitiveSearch) {
         // Do a regex search, explicitly matching start and end of the search term.
         // All regex special character except from "* and ?" (wildcards) are escaped.
             if (searchTerm.length > 0) {
@@ -43,7 +43,7 @@ const modeDefinitions = [
     },
     {
         id: 'regex',
-        normalize(searchTerm, caseSensitiveSearch, inverseSearch) {
+        normalize(searchTerm, caseSensitiveSearch) {
             try {
                 const flags = caseSensitiveSearch ? '' : 'i';
                 return new RegExp(`^${searchTerm}$`, flags);

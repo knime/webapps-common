@@ -211,10 +211,6 @@ module.exports = {
         'template-curly-spacing': 'warn',
         'template-tag-spacing': 'error',
         'unicode-bom': 'error',
-        'valid-jsdoc': ['warn', {
-            requireReturnDescription: false,
-            requireParamDescription: false
-        }],
         'wrap-iife': ['error', 'inside', { functionPrototypeMethods: true }],
         yoda: ['error', 'never', { exceptRange: true }],
 
