@@ -10,7 +10,7 @@ import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
 import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
 import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
 import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
-import HeadlineWithAnchorLink from 'webapps-common/ui/components/HeadlineWithAnchorLink.vue';
+import HeadlineWithAnchorLink from './components/demo/HeadlineWithAnchorLink.vue';
 
 import SearchInputComponent from 'webapps-common/ui/components/forms/SearchInput.vue';
 
