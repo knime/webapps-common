@@ -50,6 +50,20 @@ package org.knime.core.webui.node.dialog.impl;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
@@ -68,6 +82,8 @@ import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
 import org.knime.core.webui.node.dialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.persistence.field.Persist;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -424,13 +440,13 @@ class JsonFormsSchemaUtilTest {
     }
 
     private static String COLUMN_FILTER_SNAPSHOT_IDENTICAL =
-        "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"m_manuallySelected\":[], \"m_manuallyDeselected\":[], \"m_includeUnknownColumns\":false}},"
+        "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"manuallySelected\":[], \"manuallyDeselected\":[], \"includeUnknownColumns\":false}},"
             + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
-            + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"m_pattern\":\"\",\"m_isCaseSensitive\":false,\"m_isInverted\":false}},"
+            + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"pattern\":\"\",\"isCaseSensitive\":false,\"isInverted\":false}},"
             + "\"typeFilter\":{\"type\":\"object\",\"properties\":{"
             + "\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}},"
             + "\"typeDisplays\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"text\":{\"type\":\"string\"}}}}"
-            + "},\"default\":{\"m_selectedTypes\":[],\"m_typeDisplays\":[]}},";
+            + "},\"default\":{\"selectedTypes\":[],\"typeDisplays\":[]}},";
 
     private static class ColumnFilterSetting {
 
@@ -561,12 +577,136 @@ class JsonFormsSchemaUtilTest {
         testSettingsWithoutContext(SettingWithCustomPersistor.class);
     }
 
+    private record MyStringWrapper(String m_test) {
+
+        @JsonCreator
+        MyStringWrapper(final String m_test) {
+            this.m_test = m_test;
+        }
+
+        @JsonValue
+        String toJSON() {
+            return m_test;
+        }
+
+    }
+
+    private static class SettingWithCustomType {
+
+        private static String SNAPSHOT = "{\"test\":{" //
+                + "\"type\":\"object\"," //
+                + "\"default\":\"42\"" //
+                + "}}";
+        @Schema
+        public MyStringWrapper m_test = new MyStringWrapper("42");
+    }
+
+    /**
+     * Tests behavior when providing a custom type via jackson annotations.
+     * @throws JsonProcessingException
+     */
+    @Test
+    void testOverrideType() throws JsonProcessingException {
+        testSettingsWithoutContext(SettingWithCustomType.class);
+    }
+
+    private static class SettingWithJavaTime {
+
+        private static String SNAPSHOT = "{"
+            + "\"duration\": {"
+            + "    \"default\": 42.0, \"format\": \"int32\", \"type\": \"integer\""
+            + "},"
+            + "\"year\": {"
+            + "    \"default\": \"2006\", \"format\": \"int32\", \"type\": \"integer\""
+            + "},"
+            + "\"instant\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"localDate\": {"
+            + "    \"default\": \"2006-07-28\", \"format\": \"date\", \"type\": \"string\""
+            + "},"
+            + "\"localDateTime\": {"
+            + "    \"default\": \"2006-07-28T10:30:00\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"localTime\": {"
+            + "    \"default\": \"10:30:00\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"offsetDateTime\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"offsetTime\": {"
+            + "    \"default\": \"10:30Z\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"zonedDateTime\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
+            + "},"
+            + "\"yearMonth\": {"
+            + "    \"default\": \"2006-07\", \"type\": \"string\""
+            + "},"
+            + "\"zoneId\": {"
+            + "    \"default\": \"Europe/Berlin\", \"type\": \"string\""
+            + "},"
+            + "\"zoneOffset\": {"
+            + "    \"default\": \"+02:00\", \"type\": \"string\""
+            + "},"
+            + "\"monthDay\": {"
+            + "    \"default\": \"--07-28\", \"type\": \"string\""
+            + "},"
+            + "\"period\": {"
+            + "    \"default\": \"P16Y7M1D\", \"type\": \"string\""
+            + "}"
+            + "}";
+
+        // integer
+        Duration m_duration = Duration.ofSeconds(42);
+        Year m_year = Year.of(2006);
+
+        // string w/ date/date-time format
+        LocalDate m_localDate = LocalDate.of(2006, 7, 28);
+        LocalTime m_localTime = LocalTime.of(10, 30);
+        LocalDateTime m_localDateTime = LocalDateTime.of(2006, 7, 28, 10, 30);
+        Instant m_instant = LocalDateTime.of(2006, 7, 28, 10, 30).toInstant(ZoneOffset.UTC);
+        OffsetDateTime m_offsetDateTime = LocalDateTime.of(2006, 7, 28, 10, 30).atOffset(ZoneOffset.UTC);
+        ZonedDateTime m_zonedDateTime = LocalDateTime.of(2006, 7, 28, 10, 30).atZone(ZoneOffset.UTC);
+        OffsetTime m_offsetTime = OffsetTime.of(LocalTime.of(10, 30), ZoneOffset.UTC);
+
+        // string w/o format
+        MonthDay m_monthDay = MonthDay.of(7, 28);
+        YearMonth m_yearMonth = YearMonth.of(2006, 7);
+        ZoneId m_zoneId = ZoneId.of("Europe/Berlin");
+        ZoneOffset m_zoneOffset = ZoneOffset.ofHours(2);
+        Period m_period = Period.between(LocalDate.of(2006, 7, 28), LocalDate.of(2023, 3, 1));
+    }
+
+    /**
+     * Tests serialization of built-in java.time types.
+     * @throws JsonProcessingException
+     */
+    @Test
+    void testBuiltInJavaTime() throws JsonProcessingException {
+        testSettingsWithoutContext(SettingWithJavaTime.class);
+    }
+
     private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)
-        throws JsonMappingException, JsonProcessingException {
+            throws JsonMappingException, JsonProcessingException {
+        assertJSONAgainstSnapshot(getProperties(settingsClass, specs), settingsClass);
+    }
+
+    private static void testSettingsWithoutContext(final Class<?> settingsClass)
+            throws JsonMappingException, JsonProcessingException {
+        assertJSONAgainstSnapshot(getPropertiesWithoutContext(settingsClass), settingsClass);
+    }
+
+    private static void assertJSONAgainstSnapshot(final JsonNode content, final Class<?> settingsClass)
+            throws JsonMappingException, JsonProcessingException {
+        final var actual = MAPPER.writeValueAsString(content);
         try {
-            assertThatJson(MAPPER.readTree(getProperties(settingsClass, specs).toString()))
-                .isEqualTo(MAPPER.readTree((String)settingsClass.getDeclaredField("SNAPSHOT").get(null)));
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            final var expected = (String)settingsClass.getDeclaredField("SNAPSHOT").get(null);
+            final var aTree = MAPPER.readTree(actual);
+            final var eTree = MAPPER.readTree(expected);
+            assertThatJson(aTree)
+                .isEqualTo(eTree);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException| SecurityException e) {
             Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
                 + " (most likely a problem of the test implementation itself)");
         }
@@ -575,17 +715,6 @@ class JsonFormsSchemaUtilTest {
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
         return JsonFormsSchemaUtil.buildSchema(clazz, DefaultNodeSettings.createSettingsCreationContext(specs))
             .get("properties");
-    }
-
-    private static void testSettingsWithoutContext(final Class<?> settingsClass)
-        throws JsonMappingException, JsonProcessingException {
-        try {
-            assertThatJson(MAPPER.readTree(getPropertiesWithoutContext(settingsClass).toString()))
-                .isEqualTo(MAPPER.readTree((String)settingsClass.getDeclaredField("SNAPSHOT").get(null)));
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
-                + " (most likely a problem of the test implementation itself)");
-        }
     }
 
     private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {

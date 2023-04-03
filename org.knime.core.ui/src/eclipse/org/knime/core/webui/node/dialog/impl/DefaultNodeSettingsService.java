@@ -127,7 +127,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         try {
             return mapper.writeValueAsString(root);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e); // not worse than root.toString before...
+            throw new IllegalStateException(
+                String.format("Exception when reading data from node settings: %s", e.getMessage()), e);
         }
     }
 

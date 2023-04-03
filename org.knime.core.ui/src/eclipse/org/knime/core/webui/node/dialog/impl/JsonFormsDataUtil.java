@@ -109,7 +109,15 @@ final class JsonFormsDataUtil {
         final var mapper = new ObjectMapper();
 
         mapper.registerModule(new Jdk8Module());
+
         mapper.registerModule(new JavaTimeModule());
+        // If this serialization feature would be _enabled_, and we would not write timestamps as int,
+        // this would lead to the date being written as an array in LocalDateSerializer.java
+        // which is displayed by the text input as `2023,3,3`.
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        // By default periods/durations are always serialized as (numeric) timestamps, see
+        // {@link SerializationFeature#WRITE_DURATIONS_AS_TIMESTAMPS}
+
         mapper.registerModule(createDialogModule());
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);

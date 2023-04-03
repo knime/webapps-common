@@ -1,0 +1,206 @@
+{
+  "result":
+  {
+    "name": "Support for classes from java.time (Date/Date&Time)",
+    "data":
+    {
+      "model":
+      {
+        "duration": 42.0,
+        "year": "2006",
+        "instant": "2006-07-28T10:30:00Z",
+        "localDate": "2006-07-28",
+        "localDateTime": "2006-07-28T10:30:00",
+        "localTime": "10:30:00",
+        "offsetDateTime": "2006-07-28T10:30:00Z",
+        "offsetTime": "10:30Z",
+        "zonedDateTime": "2006-07-28T10:30:00Z",
+        "yearMonth": "2006-07",
+        "zoneId": "Europe/Berlin",
+        "zoneOffset": "+02:00",
+        "monthDay": "--07-28",
+        "period": "P16Y7M1D"
+      }
+    },
+    "schema":
+    {
+      "type": "object",
+      "properties":
+      {
+        "model":
+        {
+          "type": "object",
+          "properties":
+          {
+            "duration":
+            {
+              "default": 42.0,
+              "format": "int32",
+              "type": "integer"
+            },
+            "year":
+            {
+              "default": "2006",
+              "format": "int32",
+              "type": "integer"
+            },
+            "instant":
+            {
+              "default": "2006-07-28T10:30:00Z",
+              "format": "date-time",
+              "type": "string"
+            },
+            "localDate":
+            {
+              "default": "2006-07-28",
+              "format": "date",
+              "type": "string"
+            },
+            "localDateTime":
+            {
+              "default": "2006-07-28T10:30:00",
+              "format": "date-time",
+              "type": "string"
+            },
+            "localTime":
+            {
+              "default": "10:30:00",
+              "format": "date-time",
+              "type": "string"
+            },
+            "offsetDateTime":
+            {
+              "default": "2006-07-28T10:30:00Z",
+              "format": "date-time",
+              "type": "string"
+            },
+            "offsetTime":
+            {
+              "default": "10:30Z",
+              "format": "date-time",
+              "type": "string"
+            },
+            "zonedDateTime":
+            {
+              "default": "2006-07-28T10:30:00Z",
+              "format": "date-time",
+              "type": "string"
+            },
+            "yearMonth":
+            {
+              "default": "2006-07",
+              "type": "string"
+            },
+            "zoneId":
+            {
+              "default": "Europe/Berlin",
+              "type": "string"
+            },
+            "zoneOffset":
+            {
+              "default": "+02:00",
+              "type": "string"
+            },
+            "monthDay":
+            {
+              "default": "--07-28",
+              "type": "string"
+            },
+            "period":
+            {
+              "default": "P16Y7M1D",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "flowVariablesMap":
+      {},
+      "hasNodeView": false,
+      "showAdvancedSettings": false
+    },
+    "ui_schema":
+    {
+      "elements":
+      [
+        {
+          "type": "Section",
+          "label": "As numeric",
+          "elements":
+          [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/duration"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/year"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "String with date/date-time format",
+          "elements":
+          [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/localDate"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/localTime"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/localDateTime"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/instant"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/offsetDateTime"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/zonedDateTime"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/offsetTime"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "String without format",
+          "elements":
+          [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/monthDay"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/yearMonth"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/zoneId"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/zoneOffset"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/period"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

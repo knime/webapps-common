@@ -49,8 +49,16 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.MonthDay;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -61,6 +69,7 @@ import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings.SettingsCreatio
 import org.knime.core.webui.node.dialog.impl.Schema.DoubleProvider;
 import org.knime.core.webui.node.dialog.persistence.field.ConfigKeyUtil;
 
+import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.victools.jsonschema.generator.FieldScope;
@@ -170,6 +179,8 @@ final class JsonFormsSchemaUtil {
     static synchronized ObjectNode buildSchema(final Class<?> settingsClass, final DefaultNodeSettings settings,
         final SettingsCreationContext context) {
         final var builder = new SchemaGeneratorConfigBuilder(JsonFormsDataUtil.getMapper(), VERSION, new OptionPreset(//
+            Option.ADDITIONAL_FIXED_TYPES,//
+            Option.EXTRA_OPEN_API_FORMAT_VALUES,//
             Option.FLATTENED_ENUMS, //
             Option.EXTRA_OPEN_API_FORMAT_VALUES, //
             Option.PUBLIC_NONSTATIC_FIELDS, //
@@ -232,6 +243,8 @@ final class JsonFormsSchemaUtil {
 
         builder.forFields().withInstanceAttributeOverride(JsonFormsSchemaUtil::addConfigKeys);
 
+        builder.forFields().withTargetTypeOverridesResolver(JsonFormsSchemaUtil::overrideClass);
+
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
@@ -256,5 +269,36 @@ final class JsonFormsSchemaUtil {
             Arrays.stream(configKeys).forEach(configKeysNode::add);
             node.set("configKeys", configKeysNode);
         }
+    }
+
+    private static List<ResolvedType> overrideClass(final FieldScope field) {
+        // override class regardless of @Schema annotation
+        if (field.isFakeContainerItemScope()) {
+            return Collections.emptyList();
+        }
+        return javaTimeToNumeric(field);
+    }
+
+    private static List<ResolvedType> javaTimeToNumeric(final FieldScope field) {
+        final var ctx = field.getContext();
+        final var fieldClass = field.getDeclaredType().getErasedType();
+        // Make java.time types that are not supported out-of-the-box by JSONForms map to supported fallback types
+        // explicitly, otherwise they get mapped to "object" and result in "No applicable renderer found".
+        if (Duration.class.equals(fieldClass) || Year.class.equals(fieldClass)) {
+            // Make `{... "type":"object"}` become `{... "format":"int32","type":"integer"}`,
+            // otherwise we get "No applicable renderer found", even if we overwrite the config for e.g. Duration
+            // on the mapper in the *DataUtil:
+            //  mapper.configOverride(Duration.class)
+            //    .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER)); // NOSONAR
+            return List.of(ctx.resolve(int.class));
+        }
+        if (MonthDay.class.equals(fieldClass)
+                || YearMonth.class.equals(fieldClass)
+                || ZoneOffset.class.equals(fieldClass)
+                || Period.class.equals(fieldClass)) {
+            // make `{... "type":"object"}` become `{... "type":"string"}`
+            return List.of(ctx.resolve(String.class));
+        }
+        return Collections.emptyList();
     }
 }
