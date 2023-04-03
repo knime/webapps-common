@@ -17,9 +17,19 @@ export type DropdownNavigationOptions = {
      */
     getNextElement(current: number | null, direction: -1 | 1): DropdownNavigationElement,
     /**
+     * callback for retreiving the first clickable item and an index.
+     * When provided, navigating to this item via the home key is possible
+     */
+    getFirstElement?(): DropdownNavigationElement,
+    /**
+     * callback for retreiving the last clickable item and an index.
+     * When provided, navigating to this item via the end key is possible
+     */
+    getLastElement?(): DropdownNavigationElement,
+    /**
      * method called when the dropdown is to be closed
      */
-    close(): void;
+    close(): void,
     /**
      * disables use of Space key to click on item
      */
@@ -43,6 +53,8 @@ type DropdownNavigationOutput = {
 
 export default ({
     getNextElement,
+    getFirstElement,
+    getLastElement,
     close,
     disableSpaceToClick
 }: DropdownNavigationOptions): DropdownNavigationOutput => {
@@ -60,10 +72,13 @@ export default ({
         currentElementClickHandler = noop;
     };
 
+    const setElement = (item: DropdownNavigationElement) => {
+        currentIndex.value = item.index;
+        currentElementClickHandler = item.onClick;
+    };
+
     const setNextElement = (step: -1 | 1) => {
-        const { onClick, index } = getNextElement(currentIndex.value, step);
-        currentIndex.value = index;
-        currentElementClickHandler = onClick;
+        setElement(getNextElement(currentIndex.value, step));
     };
 
     const onKeydown = (event: KeyboardEvent) => {
@@ -89,6 +104,16 @@ export default ({
                 }
                 break;
             }
+            case 'Home':
+                if (getFirstElement) {
+                    setElement(getFirstElement());
+                }
+                break;
+            case 'End':
+                if (getLastElement) {
+                    setElement(getLastElement());
+                }
+                break;
             case 'Escape':
             case 'Tab':
                 resetNavigation();
