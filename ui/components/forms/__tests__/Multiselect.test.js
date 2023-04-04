@@ -77,6 +77,16 @@ describe('Multiselect.vue', () => {
         expect(wrapper.emitted('update:modelValue')).toBeTruthy();
     });
 
+    it('closes the menu after selection when prop closeDropdownOnSelection is true', async () => {
+        const wrapper = doMount({}, { closeDropdownOnSelection: true });
+        const closeOptionsMock = vi.spyOn(wrapper.vm, 'closeOptions');
+        wrapper.vm.toggle();
+        expect(wrapper.vm.collapsed).toBeFalsy();
+        await wrapper.vm.onUpdateModelValue('test1', true);
+        expect(wrapper.vm.collapsed).toBeTruthy();
+        expect(closeOptionsMock).toHaveBeenCalledWith();
+    });
+
     it('toggles properly', () => {
         const wrapper = doMount();
         expect(wrapper.vm.collapsed).toBe(true);

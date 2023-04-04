@@ -96,18 +96,25 @@ export default {
             }
         },
         /**
-         * Focus elements of the parent that also should be used for focus with keyboard navigation
+         * Focus element of the parent for which the options don't get closed when it is focussed.
          */
-        parentFocusElements: {
-            type: Array,
-            default: () => []
+        parentFocusElement: {
+            type: Object,
+            default: () => ({})
         },
         /**
-         * The element of the parent to refocus when the options get and when using a custom listbox.
+         * The element of the parent to refocus when the options get closed and using a custom listbox.
          */
         parentRefocusElementOnClose: {
             type: Object,
             default: () => ({})
+        },
+        /**
+         * Close the dropdown when a value was selected.
+         */
+        closeDropdownOnSelection: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['update:modelValue', 'focusOutside'],
@@ -120,7 +127,7 @@ export default {
     },
     computed: {
         focusElements() {
-            return [...this.focusOptions, ...this.parentFocusElements];
+            return [...this.focusOptions, this.parentFocusElement];
         },
         summary() {
             if (this.checkedValue.length === 0) {
@@ -189,6 +196,9 @@ export default {
              * Fired when the selection changes.
              */
             this.$emit('update:modelValue', this.checkedValue);
+            if (this.closeDropdownOnSelection) {
+                this.closeOptions();
+            }
         },
         toggle() {
             this.collapsed = !this.collapsed;
@@ -202,7 +212,8 @@ export default {
         /**
          * Handle closing the options.
          *
-         * @param {Boolean} [refocusToggle = true] - if the toggle button/element should be re-focused after closing.
+         * @param {Boolean} [refocusToggle = true] - if the toggle button / parentRefocusElement should be re-focused
+         * after closing.
          * @return {undefined}
          */
         closeOptions(refocusToggle = true) {
@@ -266,6 +277,7 @@ export default {
 
 <template>
   <div
+    ref="multiselect"
     :class="['multiselect', { collapsed, invalid: !isValid }]"
     @keydown.esc.stop.prevent="closeOptions"
     @keydown.up.stop.prevent="onUp"

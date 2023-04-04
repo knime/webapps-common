@@ -40,32 +40,43 @@ export default {
             validator(value) {
                 return value >= 0;
             }
+        },
+        /**
+         * Close the dropdown when an entry was selected.
+         */
+        closeDropdownOnSelection: {
+            type: Boolean,
+            default: false
+        },
+        isValid: {
+            type: Boolean,
+            default: true
         }
     },
     emits: ['update:selectedIds'],
     data() {
         return {
             selectedIds: this.initialSelectedIds,
+            searchValue: '',
+            inputOrOptionsFocussed: false,
             /*
              * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
-             * When the input/removeAllTags-Button of this component is focussed then they shouldn't be closed either,
-             * which is why they need to be passed to the Multiselect component.
+             * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
+             * it needs to be passed to the Multiselect component.
              */
-            focusElements: [],
-            searchValue: '',
-            inputFocussed: false,
+            focusElement: null,
             refocusElement: null
         };
     },
     computed: {
         filteredValues() {
-            return this.possibleValues.filter(value => value.id.includes(this.searchValue));
+            return this.possibleValues.filter(value => value.text.includes(this.searchValue));
         },
         hasSelection() {
             return this.selectedValues.length > 0;
         },
         inputWidth() {
-            return this.inputFocussed && this.filteredValues.length > 0 ? {} : { width: '0%' };
+            return this.inputOrOptionsFocussed && this.filteredValues.length > 0 ? {} : { width: '0%' };
         },
         selectedValues() {
             return this.selectedIds.length === 0
@@ -78,55 +89,45 @@ export default {
                 : this.sizeVisibleOptions;
         }
     },
-    watch: {
-        hasSelection() {
-            this.setFocusElements();
-        }
-    },
     mounted() {
-        this.setFocusElements();
+        this.focusElement = this.$refs.searchInput;
         this.refocusElement = this.$refs.listBox;
     },
     methods: {
         focusInput() {
             this.$refs.searchInput.focus();
         },
-        onInputFocus() {
-            if (!this.inputFocussed) {
-                this.$refs.multiselect.toggle();
-            }
-            this.inputFocussed = true;
-            this.$refs.multiselect.updateFocusOptions();
+        onDown() {
+            this.$refs.combobox.onDown();
         },
         onFocusOutside() {
-            this.inputFocussed = false;
+            this.inputOrOptionsFocussed = false;
             this.searchValue = '';
         },
-        setFocusElements() {
-            this.focusElements = this.hasSelection
-                ? [this.$refs.searchInput,
-                    this.$refs.removeAllTags.$el && this.$refs.removeAllTags.$el.nextElementSibling]
-                : [this.$refs.searchInput];
+        onInput() {
+            this.$refs.combobox.updateFocusOptions();
+        },
+        onInputFocus() {
+            if (!this.inputOrOptionsFocussed) {
+                this.$refs.combobox.toggle();
+            }
+            this.inputOrOptionsFocussed = true;
+            this.$refs.combobox.updateFocusOptions();
+        },
+        onInputEscape() {
+            this.$refs.combobox.closeOptions();
         },
         updateSelectedIds(selectedIds) {
             this.selectedIds = selectedIds;
             this.$emit('update:selectedIds', this.selectedIds);
         },
-        onDown() {
-            this.$refs.multiselect.onDown();
-        },
         removeTag(idToRemove) {
             this.updateSelectedIds(this.selectedIds.filter(id => id !== idToRemove));
+            this.$refs.combobox.closeOptions();
         },
         removeAllTags() {
             this.updateSelectedIds([]);
-            this.focusInput();
-        },
-        onInput() {
-            this.$refs.multiselect.updateFocusOptions();
-        },
-        onInputEscape() {
-            this.$refs.listBox.focus();
+            this.$refs.combobox.closeOptions();
         }
     }
 };
@@ -134,13 +135,15 @@ export default {
 
 <template>
   <Multiselect
-    ref="multiselect"
+    ref="combobox"
     :model-value="selectedIds"
     :possible-values="filteredValues"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
-    :parent-focus-elements="focusElements"
+    :parent-focus-element="focusElement"
     :parent-refocus-element-on-close="refocusElement"
+    :close-dropdown-on-selection="closeDropdownOnSelection"
+    :is-valid="isValid"
     @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >
