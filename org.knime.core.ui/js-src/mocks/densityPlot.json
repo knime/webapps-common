@@ -43,7 +43,7 @@
               "type": "number",
               "format": "double",
               "title": "Adjustment factor",
-              "description": "The kernel bandwidth computed by the rule of thumb is multiplied by this adjustment factor. Setting the adjustment factor is only possible if the kernel bandwidth is selected as “Rule of thumb”.",
+              "description": "The kernel bandwidth computed by the rule of thumb is multiplied by this adjustment factor. Setting the adjustment factor is only possible if the kernel bandwidth is selected as “Rule of thumb”. The larger this value is the smoother the curve in the plot.",
               "default": 1,
               "minimum": 0.01
             },
@@ -96,14 +96,14 @@
                 }
               ],
               "title": "Kernel bandwidth",
-              "description": "The bandwidth of the gaussian kernel used for the density estimation can be configured here. If “Rule of thumb” is selected, the bandwidth is computed with Scott's rule of thumb (Scott, D. W. (1992). <i>Multivariate density estimation: theory, practice, and visualization.</i> John Wiley &amp; Sons.): bw = 1.06 * min(std, IQR/1.34) * n^(-1/5), where std is the sample standard deviation, IQR is the interquartile range and n is the number of observations (see also R's <a href =\"https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/bandwidth\">bw.nrd</a>). It is possible to set a fixed kernel.",
+              "description": "The bandwidth of the gaussian kernel used for the density estimation can be configured here. If “Rule of thumb” is selected, the bandwidth is computed with Scott's rule of thumb: bw = 1.06 * min(std, IQR/1.34) * n^(-1/5), where std is the sample standard deviation, IQR is the interquartile range and n is the number of observations (see R's <a href =\"https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/bandwidth\">bw.nrd</a>). Alternatively, it is possible to set a fixed kernel bandwidth.",
               "default": "RULE"
             },
             "customBandwidth": {
               "type": "number",
               "format": "double",
               "title": "Custom bandwidth",
-              "description": "Choose the bandwidth of the gaussian kernel. Setting the custom bandwidth is only possible if the kernel bandwidth is selected as “Fixed”.",
+              "description": "Choose the bandwidth of the gaussian kernel. Setting the custom bandwidth is only possible if the kernel bandwidth is selected as “Fixed”. The larger this value is the smoother the curve in the plot.",
               "default": 1,
               "minimum": 0
             },
