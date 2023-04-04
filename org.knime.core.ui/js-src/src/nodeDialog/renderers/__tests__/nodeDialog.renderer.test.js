@@ -18,9 +18,10 @@ const getElementsToTest = (elements) => elements.map(element => {
 describe('nodeDialog renderer', () => {
     it('renders test dialog elements', () => {
         const elementsToTest = getElementsToTest(dialogInitialData.ui_schema.elements);
-    
-        elementsToTest.forEach(element => {
-            const expectedRenderer = expectedRenderers.find(r => r.scope === element.scope);
+        
+        expectedRenderers.forEach((expectedRenderer) => {
+            const element = elementsToTest.find(el => expectedRenderer.scope === el.scope);
+            expect(element).toBeDefined();
             expect(determineRenderer(element, dialogInitialData.schema, renderers)).toBe(expectedRenderer.component);
         });
     });

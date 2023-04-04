@@ -4,7 +4,7 @@ import { priorityRanks } from '../constants';
 
 export const columnSelectTester = and(uiTypeIs('Control'), schemaMatches(
     (s) => s.hasOwnProperty('properties') &&
-     Object.values(s.properties).some(prop => prop.hasOwnProperty('oneOf'))
+    s.properties.hasOwnProperty('selected') && s.properties.selected.hasOwnProperty('oneOf')
 ));
 
 export const columnSelectRenderer = {

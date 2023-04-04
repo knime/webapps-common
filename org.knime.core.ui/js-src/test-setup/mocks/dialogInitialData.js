@@ -386,21 +386,18 @@ export const dialogInitialData = {
                     },
                     {
                         type: 'Control',
-                        scope: '#/properties/model/properties/frequencyColumns',
+                        scope: '#/properties/view/properties/frequencyColumns',
                         options: {
                             format: 'columnFilter',
                             allowEmptyInclude: true,
                             twinlistSize: 7,
                             twinlistLeftLabel: 'Excluded Columns',
                             twinlistRightLabel: 'Included Columns'
-                        },
-                        rule: {
-                            effect: 'DISABLE',
-                            condition: {
-                                scope: '#/properties/model/properties/aggregationMethod',
-                                schema: { oneOf: [{ const: ['COUNT'] }] }
-                            }
                         }
+                    },
+                    {
+                        type: 'Control',
+                        scope: '#/properties/view/properties/simpleTwinlist'
                     }
                 ]
             },
@@ -461,7 +458,7 @@ export const expectedRenderers = [
     { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleColumnSelect' },
     { scope: '#/properties/view/properties/xAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/yAxisLabel', component: 'TextInput' },
-    { scope: '#/properties/model/properties/frequencyColumns', component: 'TwinListInput' },
-    { scope: '#/properties/model/properties/simpleTwinlist', component: 'SimpleTwinListInput' },
+    { scope: '#/properties/view/properties/frequencyColumns', component: 'ColumnFilter' },
+    { scope: '#/properties/view/properties/simpleTwinlist', component: 'SimpleTwinListInput' },
     { scope: '#/properties/view/properties/referenceLines', component: 'ArrayLayout' }
 ];
