@@ -44,80 +44,13 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 22, 2023 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl;
-
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
-
-import java.util.function.Function;
-
-import org.knime.core.webui.node.dialog.ui.Section;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+package org.knime.core.webui.node.dialog.impl.ui.rule;
 
 /**
  *
  * @author Paul Bärnreuther
+ * @param oneOf holding several schema specifications. oneOf validates if one of its elements validates.
  */
-enum LayoutPart {
-        SECTION(LayoutPart::getSection), //
-        ROOT(context -> context.getRoot().putArray(ELEMENTS_TAG));
-
-    private Function<LayoutNodeCreationContext, ArrayNode> m_create;
-
-    LayoutPart(final Function<LayoutNodeCreationContext, ArrayNode> create) {
-        m_create = create;
-    }
-
-    static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
-        if (clazz == null) {
-            return ROOT;
-        }
-        if (clazz.isAnnotationPresent(Section.class)) {
-            return SECTION;
-        }
-        return ROOT;
-    }
-
-    ArrayNode create(final ObjectNode root, final Class<?> layoutClass) {
-        return m_create.apply(new LayoutNodeCreationContext(root, layoutClass));
-    }
-
-    private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
-        final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
-        final var node = creationContext.getRoot();
-        final var label = sectionAnnotation.title();
-        node.put(LABEL_TAG, label);
-        node.put(TYPE_TAG, "Section");
-        if (sectionAnnotation.advanced()) {
-            node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
-        }
-        return node.putArray(ELEMENTS_TAG);
-    }
-
-    private class LayoutNodeCreationContext {
-
-        private final ObjectNode m_root;
-
-        private final Class<?> m_layoutClass;
-
-        public LayoutNodeCreationContext(final ObjectNode root, final Class<?> layoutClass) {
-            m_root = root;
-            m_layoutClass = layoutClass;
-        }
-
-        public ObjectNode getRoot() {
-            return m_root;
-        }
-
-        public Class<?> getLayoutClass() {
-            return m_layoutClass;
-        }
-    }
-}
+public record OneOf(Object[] oneOf) {} //NOSONAR

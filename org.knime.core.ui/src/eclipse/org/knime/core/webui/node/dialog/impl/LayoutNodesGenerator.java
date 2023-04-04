@@ -48,8 +48,17 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SCOPE_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.JsonFormsControl;
+import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.impl.ui.rule.JsonFormsCondition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -63,19 +72,23 @@ final class LayoutNodesGenerator {
 
     private final ObjectMapper m_mapper;
 
-    private final Map<Class<?>, ArrayNode> m_content;
+    private final Map<Class<?>, List<JsonFormsControl>> m_content;
 
     private final Class<?> m_rootClass;
 
+    private Map<Class<?>, JsonFormsCondition> m_ruleSourcesMap;
+
     /**
      * @param mapper the object mapper used for the ui schema generation
-     * @param content the mapping between layout parts and their contained settings controls
+     * @param controls the mapping between layout parts and their contained settings controls
+     * @param ruleSourcesMap the mapping between ids of rule sources to their conditions.
      * @param rootClass the root class of the layout. This can be null but only if no nested layout parts exist.
      */
-    LayoutNodesGenerator(final ObjectMapper mapper, final Map<Class<?>, ArrayNode> content, final Class<?> rootClass) {
+    LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout) {
         m_mapper = mapper;
-        m_content = content;
-        m_rootClass = rootClass;
+        m_content = layout.controls();
+        m_ruleSourcesMap = layout.ruleSources();
+        m_rootClass = layout.root();
     }
 
     ObjectNode build() {
@@ -97,7 +110,16 @@ final class LayoutNodesGenerator {
 
     private ArrayNode addLayoutNode(final ObjectNode root, final Class<?> layoutElement) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(layoutElement);
-        final var contentForClass = m_content.getOrDefault(layoutElement, m_mapper.createArrayNode());
-        return layoutPart.create(root, layoutElement, contentForClass);
+        final var controls = m_content.getOrDefault(layoutElement, Collections.emptyList());
+        final var layoutNode = layoutPart.create(root, layoutElement);
+        controls.forEach(control -> addControlElement(layoutNode, control));
+        return layoutNode;
+    }
+
+    private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
+        final var control = root.addObject().put(TYPE_TAG, "Control").put(SCOPE_TAG, controlElement.scope());
+        final var field = controlElement.field();
+        new UiSchemaOptionsGenerator(m_mapper, field).applyStylesTo(control);
+        new UiSchemaRulesGenerator(m_mapper, field, m_ruleSourcesMap).applyRulesTo(control);
     }
 }

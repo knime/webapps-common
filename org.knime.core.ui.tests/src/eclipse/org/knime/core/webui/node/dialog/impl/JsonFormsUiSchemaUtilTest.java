@@ -66,7 +66,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  *
  * @author Paul Bärnreuther
  */
-
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
     interface TestSettingsLayout {

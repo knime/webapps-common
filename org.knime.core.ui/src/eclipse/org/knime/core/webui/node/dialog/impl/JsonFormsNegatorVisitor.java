@@ -44,80 +44,71 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 22, 2023 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.impl;
 
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
+import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.FIELD_NAME_SCHEMA;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.NOT_TAG;
 
-import java.util.function.Function;
+import java.util.List;
 
-import org.knime.core.webui.node.dialog.ui.Section;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Condition;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
+import org.knime.core.webui.node.dialog.impl.ui.rule.OperationVisitor;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- *
+ * A visitor used to resolve the "not" operation in the {@link JsonFormsOperationVisitor}
  * @author Paul Bärnreuther
  */
-enum LayoutPart {
-        SECTION(LayoutPart::getSection), //
-        ROOT(context -> context.getRoot().putArray(ELEMENTS_TAG));
+final class JsonFormsNegatorVisitor implements OperationVisitor<ObjectNode> {
 
-    private Function<LayoutNodeCreationContext, ArrayNode> m_create;
+    private final JsonFormsOperationVisitor m_operationVisitor;
 
-    LayoutPart(final Function<LayoutNodeCreationContext, ArrayNode> create) {
-        m_create = create;
+    private final ObjectMapper m_mapper;
+
+    /**
+     * @param operationVisitor
+     * @param mapper
+     */
+    public JsonFormsNegatorVisitor(final JsonFormsOperationVisitor operationVisitor, final ObjectMapper mapper) {
+        m_operationVisitor = operationVisitor;
+        m_mapper = mapper;
     }
 
-    static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
-        if (clazz == null) {
-            return ROOT;
-        }
-        if (clazz.isAnnotationPresent(Section.class)) {
-            return SECTION;
-        }
-        return ROOT;
+    @Override
+    public ObjectNode visit(final And and) {
+        final var resolvedOperation = new Or(reverseAll(and.getChildren()));
+        return resolvedOperation.accept(m_operationVisitor);
     }
 
-    ArrayNode create(final ObjectNode root, final Class<?> layoutClass) {
-        return m_create.apply(new LayoutNodeCreationContext(root, layoutClass));
+    @Override
+    public ObjectNode visit(final Or or) {
+        final var resolvedOperation = new And(reverseAll(or.getChildren()));
+        return resolvedOperation.accept(m_operationVisitor);
     }
 
-    private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
-        final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
-        final var node = creationContext.getRoot();
-        final var label = sectionAnnotation.title();
-        node.put(LABEL_TAG, label);
-        node.put(TYPE_TAG, "Section");
-        if (sectionAnnotation.advanced()) {
-            node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
-        }
-        return node.putArray(ELEMENTS_TAG);
+    private static Operation[] reverseAll(final List<Operation> operations) {
+        return operations.stream().map(Not::new).toArray(Operation[]::new);
     }
 
-    private class LayoutNodeCreationContext {
-
-        private final ObjectNode m_root;
-
-        private final Class<?> m_layoutClass;
-
-        public LayoutNodeCreationContext(final ObjectNode root, final Class<?> layoutClass) {
-            m_root = root;
-            m_layoutClass = layoutClass;
-        }
-
-        public ObjectNode getRoot() {
-            return m_root;
-        }
-
-        public Class<?> getLayoutClass() {
-            return m_layoutClass;
-        }
+    @Override
+    public ObjectNode visit(final Not not) {
+        return not.getChildOperation().accept(m_operationVisitor);
     }
+
+    @Override
+    public ObjectNode visit(final Condition condition) {
+        final var node = condition.accept(m_operationVisitor);
+        final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
+        node.replace(FIELD_NAME_SCHEMA, m_mapper.createObjectNode().set(NOT_TAG, positiveSchema));
+        return node;
+    }
+
 }

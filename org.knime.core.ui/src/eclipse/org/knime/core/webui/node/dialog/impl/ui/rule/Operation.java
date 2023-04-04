@@ -44,80 +44,76 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 22, 2023 (Paul Bärnreuther): created
+ *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.node.dialog.impl;
+package org.knime.core.webui.node.dialog.impl.ui.rule;
 
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
-import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
+import java.util.Arrays;
+import java.util.List;
 
-import java.util.function.Function;
-
-import org.knime.core.webui.node.dialog.ui.Section;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
+import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
 
 /**
+ * Either a {@link Condition} or a logical operation that is capable to combine multiple {@link Condition}s.
  *
- * @author Paul Bärnreuther
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-enum LayoutPart {
-        SECTION(LayoutPart::getSection), //
-        ROOT(context -> context.getRoot().putArray(ELEMENTS_TAG));
+@SuppressWarnings("javadoc")
+public sealed interface Operation permits And, Not, Or, Condition {
 
-    private Function<LayoutNodeCreationContext, ArrayNode> m_create;
+    non-sealed class And implements Operation {
+        private final Operation[] m_children;
 
-    LayoutPart(final Function<LayoutNodeCreationContext, ArrayNode> create) {
-        m_create = create;
-    }
-
-    static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
-        if (clazz == null) {
-            return ROOT;
-        }
-        if (clazz.isAnnotationPresent(Section.class)) {
-            return SECTION;
-        }
-        return ROOT;
-    }
-
-    ArrayNode create(final ObjectNode root, final Class<?> layoutClass) {
-        return m_create.apply(new LayoutNodeCreationContext(root, layoutClass));
-    }
-
-    private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
-        final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
-        final var node = creationContext.getRoot();
-        final var label = sectionAnnotation.title();
-        node.put(LABEL_TAG, label);
-        node.put(TYPE_TAG, "Section");
-        if (sectionAnnotation.advanced()) {
-            node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
-        }
-        return node.putArray(ELEMENTS_TAG);
-    }
-
-    private class LayoutNodeCreationContext {
-
-        private final ObjectNode m_root;
-
-        private final Class<?> m_layoutClass;
-
-        public LayoutNodeCreationContext(final ObjectNode root, final Class<?> layoutClass) {
-            m_root = root;
-            m_layoutClass = layoutClass;
+        public And(final Operation... children) {
+            m_children = children;
         }
 
-        public ObjectNode getRoot() {
-            return m_root;
+        public List<Operation> getChildren() {
+            return Arrays.asList(m_children);
         }
 
-        public Class<?> getLayoutClass() {
-            return m_layoutClass;
+        @Override
+        public <T> T accept(final OperationVisitor<T> visitor) {
+            return visitor.visit(this);
         }
     }
+
+    non-sealed class Or implements Operation {
+        private final Operation[] m_children;
+
+        public Or(final Operation... children) {
+            m_children = children;
+        }
+
+        public List<Operation> getChildren() {
+            return Arrays.asList(m_children);
+        }
+
+        @Override
+        public <T> T accept(final OperationVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    non-sealed class Not implements Operation {
+        private final Operation m_childOperation;
+
+        public Not(final Operation childOperation) {
+            m_childOperation = childOperation;
+        }
+
+        public Operation getChildOperation() {
+            return m_childOperation;
+        }
+
+        @Override
+        public <T> T accept(final OperationVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    <T> T accept(OperationVisitor<T> visitor);
+
 }

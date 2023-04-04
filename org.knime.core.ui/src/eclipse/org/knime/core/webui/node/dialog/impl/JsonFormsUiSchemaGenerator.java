@@ -48,19 +48,24 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsDataUtil.createInstance;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.impl.ui.rule.JsonFormsCondition;
+import org.knime.core.webui.node.dialog.impl.ui.rule.RuleSource;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
@@ -78,11 +83,21 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  */
 final class JsonFormsUiSchemaGenerator {
 
-    private static final String SCOPE_TAG = "scope";
+    static final String SCOPE_TAG = "scope";
 
     static final String TYPE_TAG = "type";
 
     static final String OPTIONS_TAG = "options";
+
+    static final String RULE_TAG = "rule";
+
+    static final String EFFECT_TAG = "effect";
+
+    static final String CONDITION_TAG = "condition";
+
+    static final String CONDITIONS_TAG = "conditions";
+
+    static final String NOT_TAG = "not";
 
     static final String LABEL_TAG = "label";
 
@@ -103,19 +118,25 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     ObjectNode build() {
-        final var contentAndRoot = resolveLayoutToContentAndRoot();
-        return new LayoutNodesGenerator(m_mapper, contentAndRoot.getFirst(), contentAndRoot.getSecond()).build();
+        final var layoutSkeleton = resolveLayoutToContentAndRoot();
+        return new LayoutNodesGenerator(m_mapper, layoutSkeleton).build();
     }
 
-    private Pair<Map<Class<?>, ArrayNode>, Class<?>> resolveLayoutToContentAndRoot() {
-        final var layoutClassesToControls = getLayoutPartToControls();
+    static record LayoutSkeleton(Class<?> root, Map<Class<?>, List<JsonFormsControl>> controls,
+        Map<Class<?>, JsonFormsCondition> ruleSources) {
+    }
+
+    private LayoutSkeleton resolveLayoutToContentAndRoot() {
+        final var controlsAndRuleSources = getLayoutPartToControls();
+        final var layoutClassesToControls = controlsAndRuleSources.getFirst();
+        final var ruleSources = controlsAndRuleSources.getSecond();
         final var rootClass = LayoutRootFinderUtil.findRootNode(layoutClassesToControls.keySet()).orElse(null);
         addContentWithoutLayoutToRoot(layoutClassesToControls, rootClass);
-        return new Pair<>(layoutClassesToControls, rootClass);
+        return new LayoutSkeleton(rootClass, layoutClassesToControls, ruleSources);
     }
 
-    private static void addContentWithoutLayoutToRoot(final Map<Class<?>, ArrayNode> layoutClassesToControls,
-        final Class<?> rootClass) {
+    private static void addContentWithoutLayoutToRoot(
+        final Map<Class<?>, List<JsonFormsControl>> layoutClassesToControls, final Class<?> rootClass) {
         if (rootClass != null) {
             final var controlsWithoutLayout = layoutClassesToControls.remove(null);
             if (controlsWithoutLayout != null) {
@@ -134,21 +155,23 @@ final class JsonFormsUiSchemaGenerator {
      *         settings/controls associated to them by {@link Layout} annotations. If a setting has no {@Link Layout}
      *         annotation it is associated to {@code null}.
      */
-    private Map<Class<?>, ArrayNode> getLayoutPartToControls() {
-        final Map<Class<?>, ArrayNode> layoutPartToControls = new HashMap<>();
+    private Pair<Map<Class<?>, List<JsonFormsControl>>, Map<Class<?>, JsonFormsCondition>> getLayoutPartToControls() {
+        final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
+        final Map<Class<?>, JsonFormsCondition> ruleSources = new HashMap<>();
         m_settings.forEach((settingsKey, setting) -> {
             final var prefix = addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
-            addAllFields(setting, layoutPartToControls, prefix, defaultLayout, false);
+            addAllFields(setting, layoutPartToControls, ruleSources, prefix, defaultLayout, false);
         });
-        return layoutPartToControls;
+        return new Pair<>(layoutPartToControls, ruleSources);
     }
 
-    private void addAllFields(final Class<?> clazz, final Map<Class<?>, ArrayNode> layoutArrayNodes,
-        final String parentScope, final Class<?> defaultLayout, final boolean enclosingFieldSetsLayout) {
+    private void addAllFields(final Class<?> clazz, final Map<Class<?>, List<JsonFormsControl>> layoutControls,
+        final Map<Class<?>, JsonFormsCondition> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final boolean enclosingFieldSetsLayout) {
         final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldSetsLayout);
         final var properties = getSerializableProperties(clazz);
-        properties.forEachRemaining(field -> addField(layoutArrayNodes, parentScope, layout, field));
+        properties.forEachRemaining(field -> addField(layoutControls, ruleSources, parentScope, layout, field));
     }
 
     private Iterator<PropertyWriter> getSerializableProperties(final Class<?> clazz) {
@@ -176,18 +199,35 @@ final class JsonFormsUiSchemaGenerator {
         return Optional.ofNullable(settingsClass.getAnnotation(Layout.class)).map(Layout::value);
     }
 
-    private void addField(final Map<Class<?>, ArrayNode> layoutArrayNodes, final String parentScope,
-        final Class<?> defaultLayout, final PropertyWriter field) {
+    static record JsonFormsControl(String scope, PropertyWriter field) {
+    }
+
+    private void addField(final Map<Class<?>, List<JsonFormsControl>> layoutControls,
+        final Map<Class<?>, JsonFormsCondition> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final PropertyWriter field) {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var layoutByFieldAnnotation = getFieldLayout(field);
         final var fieldLayout = layoutByFieldAnnotation.orElse(defaultLayout);
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
-            addAllFields(fieldType, layoutArrayNodes, scope, fieldLayout, layoutByFieldAnnotation.isPresent());
+            this.addAllFields(fieldType, layoutControls, ruleSources, scope, fieldLayout,
+                layoutByFieldAnnotation.isPresent());
         } else {
-            final var target = layoutArrayNodes.computeIfAbsent(fieldLayout, k -> m_mapper.createArrayNode());
-            addControl(target, scope, field);
+            layoutControls.compute(fieldLayout, (k, previous) -> {
+                final var newControls = previous == null ? new ArrayList<JsonFormsControl>() : previous;
+                newControls.add(new JsonFormsControl(scope, field));
+                return newControls;
+            });
+            getRuleSource(field).ifPresent(ruleSource -> {
+                final var schema = m_mapper.valueToTree(createInstance(ruleSource.condition()).schema());
+                final var scopedRuleSource = new JsonFormsCondition(scope, schema);
+                ruleSources.put(ruleSource.id(), scopedRuleSource);
+            });
         }
+    }
+
+    private static Optional<RuleSource> getRuleSource(final PropertyWriter field) {
+        return Optional.ofNullable(field.getAnnotation(RuleSource.class));
     }
 
     private static Optional<Class<?>> getFieldLayout(final PropertyWriter field) {
@@ -196,11 +236,5 @@ final class JsonFormsUiSchemaGenerator {
 
     private static String addPropertyToPrefix(final String prefix, final String property) {
         return String.format("%s/properties/%s", prefix, property);
-    }
-
-    private ObjectNode addControl(final ArrayNode target, final String scope, final PropertyWriter field) {
-        final var control = target.addObject().put(TYPE_TAG, "Control").put(SCOPE_TAG, scope);
-        new UiSchemaOptionsGenerator(m_mapper, field).applyStylesTo(control);
-        return control;
     }
 }
