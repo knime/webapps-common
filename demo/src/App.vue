@@ -16,7 +16,6 @@ import SearchInputComponent from 'webapps-common/ui/components/forms/SearchInput
 
 import NpmLink from './components/demo/NpmLink.vue';
 
-
 const demoComponents = {
     layout: {
         Fonts: defineAsyncComponent(() => import('./components/Fonts.vue')),
@@ -196,7 +195,6 @@ export default {
             this.searchQuery = this.$route.query.q.trim();
         }
     }
-
 };
 </script>
 
@@ -261,7 +259,6 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-
 .logo {
   height: 4vmin;
   margin: 2vmin 0;
@@ -302,7 +299,7 @@ section {
   }
 }
 
-.component >>> .grid-container:first-of-type p:first-child {
+.component:deep(.grid-container:first-of-type p:first-child) {
   margin-top: 0;
 }
 </style>

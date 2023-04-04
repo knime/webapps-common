@@ -88,7 +88,7 @@ h2 {
   margin: 0 20 px;
 }
 
-.tooltip >>> .text {
+.tooltip:deep(.text) {
   margin-top: -5px;
 }
 
