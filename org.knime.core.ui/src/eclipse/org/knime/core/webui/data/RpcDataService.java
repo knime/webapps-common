@@ -53,7 +53,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
@@ -84,11 +83,7 @@ public final class RpcDataService {
             throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
         }
         m_cleanUp = builder.m_cleanUp;
-        if (NodeContext.getContext() != null) {
-            m_nc = NodeContext.getContext().getNodeContainer();
-        } else {
-            m_nc = null;
-        }
+        m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
     /**

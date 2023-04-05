@@ -56,11 +56,12 @@ import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
+import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.page.Page;
@@ -83,30 +84,33 @@ public final class TableNodeView implements NodeView {
     /**
      * @param tableSupplier supplier of the table which this view visualizes
      * @param selectionSupplier supplier of currently selected rowKeys
+     * @param nc the node this node view belongs to; used to determine the table id (derived from the node id) and to a
+     *            {@link NodeCleanUpCallback} to free resources (caches) in case the node is, e.g., deleted
      */
-    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier) {
-        this(TableViewUtil.toTableId(NodeContext.getContext().getNodeContainer().getID()), tableSupplier,
-            selectionSupplier);
+    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final Supplier<Set<RowKey>> selectionSupplier,
+        final NodeContainer nc) {
+        this(TableViewUtil.toTableId(nc.getID()), tableSupplier, selectionSupplier, nc);
     }
 
     /**
      * @param tableSupplier supplier of the table which this view visualizes
+     * @param nc the node this node view belongs to; used to determine the table id (derived from the node id) and to a
+     *            {@link NodeCleanUpCallback} to free resources (caches) in case the node is, e.g., deleted
      */
-    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier) {
-        this(tableSupplier, null);
+    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc) {
+        this(tableSupplier, null, nc);
     }
 
-    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier) {
-        this(tableId, tableSupplier, null);
+    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc) {
+        this(tableId, tableSupplier, null, nc);
     }
 
     TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier) {
+        final Supplier<Set<RowKey>> selectionSupplier, final NodeContainer nc) {
         m_tableId = tableId;
         m_tableSupplier = tableSupplier;
         m_selectionSupplier = selectionSupplier;
-        TableViewUtil.registerRendererRegistryCleanup(tableId);
+        TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
     }
 
     @Override

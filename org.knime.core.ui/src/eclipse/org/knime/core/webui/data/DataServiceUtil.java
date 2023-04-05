@@ -44,28 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 18, 2022 (hornm): created
+ *   Mar 30, 2023 (hornm): created
  */
-package org.knime.core.webui.node.port;
+package org.knime.core.webui.data;
 
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.NodePort;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.webui.node.port.PortContext;
 
 /**
- * Pending API - needs to be integrated with {@link PortObject}/{@link PortType}.
+ * Internal data service utilities.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <T> the type of port object this port view works with
  */
-public interface PortViewFactory<T extends PortObject> {
+final class DataServiceUtil {
+
+    private DataServiceUtil() {
+        // utility
+    }
 
     /**
-     * Creates a new port view instance. It is guaranteed that a {@link PortContext} is available when the method is
-     * called.
+     * Tries to retrieve the node container from a {@link NodeContext} or a {@link PortContext} (if given respectively).
      *
-     * @param portObject the port object to create the port view for
-     * @return a new port view instance
+     * @return the node or {@code null} if there is no context given
      */
-    PortView createPortView(T portObject);
+    static NodeContainer getNodeContainerFromContext() {
+        if (NodeContext.getContext() != null) {
+            return NodeContext.getContext().getNodeContainer();
+        } else if (PortContext.getContext() != null) {
+            return getNodeContainerFromPort(PortContext.getContext().getNodePort());
+        } else {
+            return null;
+        }
+    }
+
+    private static NodeContainer getNodeContainerFromPort(final NodePort port) {
+        if (port instanceof NodeOutPort outPort) {
+            var nc = outPort.getConnectedNodeContainer();
+            if (nc instanceof SubNodeContainer snc) {
+                var connection =
+                    snc.getWorkflowManager().getIncomingConnectionFor(snc.getVirtualOutNodeID(), port.getPortIndex());
+                var srcNode = snc.getWorkflowManager().getNodeContainer(connection.getSource());
+                if (srcNode instanceof NativeNodeContainer) {
+                    return srcNode;
+                } else {
+                    return getNodeContainerFromPort(srcNode.getOutPort(connection.getSourcePort()));
+                }
+            } else {
+                return nc;
+            }
+        } else {
+            return null;
+        }
+    }
 
 }

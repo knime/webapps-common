@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeFactory;
@@ -183,12 +184,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
         InitialDataService<?> ds;
         if (!m_initialDataServices.containsKey(nodeWrapper)) {
-            NodeContext.pushContext(nodeWrapper.get());
-            try {
-                ds = getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null);
-            } finally {
-                NodeContext.removeLastContext();
-            }
+            ds = getWithContext(nodeWrapper,
+                () -> getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null));
             m_initialDataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> m_initialDataServices.remove(nodeWrapper))
                 .cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
@@ -214,12 +211,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
         RpcDataService ds;
         if (!m_dataServices.containsKey(nodeWrapper)) {
-            NodeContext.pushContext(nodeWrapper.get());
-            try {
-                ds = getDataServiceProvider(nodeWrapper).createRpcDataService().orElse(null);
-            } finally {
-                NodeContext.removeLastContext();
-            }
+            ds = getWithContext(nodeWrapper,
+                () -> getDataServiceProvider(nodeWrapper).createRpcDataService().orElse(null));
             m_dataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);
@@ -231,6 +224,25 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
             ds = m_dataServices.get(nodeWrapper);
         }
         return Optional.ofNullable(ds);
+    }
+
+    /**
+     * Calls a {@link Supplier} with a certain context (a {@link NodeContext} by default - but can be overwritten by
+     * sub-classes).
+     *
+     * @param <T>
+     *
+     * @param nodeWrapper
+     * @param supplier
+     * @return the result of the supplier
+     */
+    protected <T> T getWithContext(final N nodeWrapper, final Supplier<T> supplier) {
+        NodeContext.pushContext(nodeWrapper.get());
+        try {
+            return supplier.get();
+        } finally {
+            NodeContext.removeLastContext();
+        }
     }
 
     /**

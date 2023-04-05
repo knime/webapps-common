@@ -52,7 +52,6 @@ import java.io.IOException;
 import java.util.function.Supplier;
 
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -96,11 +95,7 @@ public final class InitialDataService<D> {
             m_serializer = builder.m_serializer;
         }
         m_cleanUp = builder.m_cleanUp;
-        if (NodeContext.getContext() != null) {
-            m_nc = NodeContext.getContext().getNodeContainer();
-        } else {
-            m_nc = null;
-        }
+        m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
     /**

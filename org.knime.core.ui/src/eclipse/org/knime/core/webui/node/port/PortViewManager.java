@@ -52,10 +52,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
 
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
 import org.knime.core.webui.node.NodePortWrapper;
@@ -161,7 +161,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
         PortViewFactory factory = portViewFactoryMap.get(portType); // NOSONAR
         if (factory != null) {
-            NodeContext.pushContext(nc);
+            PortContext.pushContext(outPort);
             try {
                 portView = factory.createPortView(outPort.getPortObject());
                 m_portViewMap.put(nodePortWrapper, portView);
@@ -169,7 +169,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
                     .cleanUpOnNodeStateChange(true).build();
                 return portView;
             } finally {
-                NodeContext.removeLastContext();
+                PortContext.removeLastContext();
             }
         } else {
             throw new NoSuchElementException("No port view available");
@@ -198,6 +198,19 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      */
     int getPortViewMapSize() {
         return m_portViewMap.size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected <T> T getWithContext(final NodePortWrapper nodeWrapper, final Supplier<T> supplier) {
+        PortContext.pushContext(nodeWrapper.get().getOutPort(nodeWrapper.getPortIdx()));
+        try {
+            return supplier.get();
+        } finally {
+            PortContext.removeLastContext();
+        }
     }
 
 }

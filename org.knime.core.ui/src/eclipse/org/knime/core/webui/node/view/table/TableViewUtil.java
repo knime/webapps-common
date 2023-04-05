@@ -56,7 +56,7 @@ import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
@@ -177,9 +177,9 @@ public final class TableViewUtil {
      * unique id with the global {@link DataValueImageRendererRegistry}.
      *
      * @param tableId a globally unique id to be able to uniquely identify the images belonging to the table used here
+     * @param nc the node where the clean-up callback is being registered
      */
-    public static void registerRendererRegistryCleanup(final String tableId) {
-        var nc = NodeContext.getContext().getNodeContainer();
+    public static void registerRendererRegistryCleanup(final String tableId, final NodeContainer nc) {
         NodeCleanUpCallback.builder(nc, () -> RENDERER_REGISTRY.clearImageDataCache(tableId)) //
             .cleanUpOnNodeStateChange(true) //
             .deactivateOnNodeStateChange(false).build();
