@@ -51,6 +51,7 @@ package org.knime.core.webui.data;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
@@ -125,8 +126,10 @@ public final class InitialDataService<D> {
             return m_mapper.createObjectNode().set("userError", m_mapper.valueToTree(new InitialDataUserError(e)))
                 .toString();
         } catch (Throwable t) { // NOSONAR
-            return m_mapper.createObjectNode()
+            var errorMessage = m_mapper.createObjectNode()
                 .set("internalError", m_mapper.valueToTree(new InitialDataInternalError(t))).toString();
+            NodeLogger.getLogger(getClass()).error(errorMessage);
+            return errorMessage;
         } finally {
             DataServiceContext.remove();
         }
