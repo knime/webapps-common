@@ -56,6 +56,7 @@ import java.util.LinkedHashMap;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
+import org.knime.core.webui.node.dialog.ui.OrderedLayout;
 import org.knime.core.webui.node.dialog.ui.Section;
 import org.knime.core.webui.node.dialog.ui.style.BooleanStyleProvider;
 import org.knime.core.webui.node.dialog.ui.style.Style;
@@ -100,6 +101,35 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[2].options.isAdvanced").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[2].elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[2].elements[0].label").isString().isEqualTo("Nested section title");
+    }
+
+    @OrderedLayout({TestOrderedLayout.Section2.class, TestOrderedLayout.Section1.class})
+    interface TestOrderedLayout {
+        @Section(title = "1")
+        interface Section1 {
+        }
+
+        @Section(title = "2")
+        interface Section2 {
+        }
+    }
+
+    @Layout(TestOrderedLayout.class)
+    class TestOrderedLayoutSettings implements DefaultNodeSettings {
+        String m_foo;
+    }
+
+    @Test
+    void testOrderedLayout() throws JsonProcessingException {
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestOrderedLayoutSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("2");
+        assertThatJson(response).inPath("$.elements[2].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[2].label").isString().isEqualTo("1");
     }
 
     class TestLayoutViewSettings implements DefaultNodeSettings {
@@ -246,7 +276,7 @@ class JsonFormsUiSchemaUtilTest {
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-        .isEqualTo("#/properties/test/properties/rootSetting");
+            .isEqualTo("#/properties/test/properties/rootSetting");
         //Section1
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()

@@ -55,10 +55,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.JsonFormsControl;
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LayoutSkeleton;
-import org.knime.core.webui.node.dialog.impl.ui.rule.JsonFormsCondition;
+import org.knime.core.webui.node.dialog.ui.OrderedLayout;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -101,7 +103,9 @@ final class LayoutNodesGenerator {
     }
 
     private void buildLayout(final Class<?> parentClass, final ArrayNode parentNode) {
-        Arrays.asList(parentClass.getDeclaredClasses()).forEach(childClass -> {
+        final var order = Optional.ofNullable(parentClass.getAnnotation(OrderedLayout.class));
+        final var nestedClasses = order.map(OrderedLayout::value).orElse(parentClass.getDeclaredClasses());
+        Arrays.asList(nestedClasses).forEach(childClass -> {
             final var childNode = addLayoutNode(parentNode.addObject(), childClass);
             buildLayout(childClass, childNode);
         });

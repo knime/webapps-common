@@ -46,25 +46,27 @@
  * History
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.rule;
 
-import java.util.Arrays;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public abstract class OneOfEnumCondition<E extends Enum<E>> implements Condition {
-
+public interface OperationVisitor<T> {
     /**
-     * @return
+     *
      */
-    protected abstract E[] oneOf();
+    T visit(And and);
 
-    @Override
-    public Object schema() {
-        final var consts = Arrays.stream(oneOf()).map(Enum::toString).map(Const::new).toArray();
-        return new OneOf(consts);
-    }
+    T visit(Or or);
+
+    T visit(Not not);
+
+    T visit(Condition condition);
+
 
 }

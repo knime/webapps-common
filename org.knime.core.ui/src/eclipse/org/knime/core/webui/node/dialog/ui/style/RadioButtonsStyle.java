@@ -44,13 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.style;
 
 /**
  *
  * @author Paul Bärnreuther
- * @param oneOf holding several schema specifications. oneOf validates if one of its elements validates.
  */
-public record OneOf(Object[] oneOf) {} //NOSONAR
+public final class RadioButtonsStyle extends EnumStyleProvider {
+
+    @Override
+    public Object getStyleObject() {
+        return new Format("radio");
+    }
+
+}

@@ -46,26 +46,11 @@
  * History
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * A schema specification holding a value. It validates if its value is matched exactly.
  *
  * @author Paul Bärnreuther
+ * @param oneOf holding several schema specifications. oneOf validates if one of its elements validates.
  */
-public class Const {
-
-    private final Object m_const;
-
-    /**
-     * @param input a value which is matched exactly
-     */
-    public Const(final Object input) {
-        this.m_const = input;
-    }
-
-    @SuppressWarnings("javadoc")
-    public Object getConst() {
-        return m_const;
-    }
-}
+public record OneOf(Object[] oneOf) {} //NOSONAR

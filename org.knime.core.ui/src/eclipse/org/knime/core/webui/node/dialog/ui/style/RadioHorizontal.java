@@ -44,23 +44,22 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
-
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
+package org.knime.core.webui.node.dialog.ui.style;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public class Xor extends Or {
+public final class RadioHorizontal extends EnumStyleProvider {
 
-    /**
-     * @param first
-     * @param second
-     */
-    public Xor(final Operation first, final Operation second) {
-        super(new And(first, new Not(second)), new And(new Not(first), second));
+    record Horizontal(String radioLayout) {
     }
+
+    @Override
+    public Object getStyleObject() {
+        return new Horizontal("horizontal");
+    }
+
 }

@@ -44,29 +44,66 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.rule;
 
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
+ * With this annotation a field can be disabled or hidden depending on the values of other fields which are annotated by
+ * {@link RuleSource} themselves.
  *
- * @author Paul Bärnreuther
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public interface OperationVisitor<T> {
+//TODO Revise name - candidates: UIEffect? Effect? Affect? UIControl? Show? UIOperation? ShowIf, HideIf, EnableIf, DisableIf?
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RuleTarget {
+
     /**
-     *
+     * This enum represents the effect that a rule has on a setting.
      */
-    T visit(And and);
+    public enum Effect {
+            /**
+             * Disable the setting per default and only enable it when the rule applies.
+             */
+            ENABLE, //
+            /**
+             * Disable the setting if the rule applies.
+             */
+            DISABLE, //
+            /**
+             * Hide the setting per default and only show it when the rule applies.
+             */
+            SHOW, //
+            /**
+             * Hide the setting if the rule applies.
+             */
+            HIDE
+    }
 
-    T visit(Or or);
+    /**
+     * @return the array of ids used in {@link RuleSource} annotations within the same settings context which should be
+     *         used as building blocks for the rule. These must contain exactly one element if no operation is porvided
+     *         or a number of elements fitting a suitable constructor of a given operation.
+     */
+    Class<?>[] sources();
 
-    T visit(Not not);
+    /**
+     * @return the effect that the rule has on the targeted setting
+     */
+    Effect effect();
 
-    T visit(Condition condition);
-
+    // TODO rename - combination, aggregation, operation?
+    /**
+     * Multiple rule sources can be combined using logical operations.
+     *
+     * @return the logical operation that should be applied to the sources. This class has to have a suitable
+     *         constructor for the given number of sources, i.e. either a constructor taking an array of classes
+     *         assignable from {@link Condition} as its sole parameter or a constructor having the given number of
+     *         parameters which are all assignable from {@link Condition}.
+     */
+    Class<? extends Operation> operation() default Operation.class;
 
 }

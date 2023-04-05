@@ -53,12 +53,12 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.N
 
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.impl.ui.rule.Condition;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
-import org.knime.core.webui.node.dialog.impl.ui.rule.OperationVisitor;
+import org.knime.core.webui.node.dialog.ui.rule.Condition;
+import org.knime.core.webui.node.dialog.ui.rule.Operation;
+import org.knime.core.webui.node.dialog.ui.rule.OperationVisitor;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

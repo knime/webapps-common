@@ -44,34 +44,12 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * This annotation is necessary to set up the conditions of a rule with a target specified by the {@link RuleTarget}. It
- * binds a condition to the annotated field and supplies an identifier which can be referenced by other annotations.
+ * Use {@link RuleSource} annotations to declare conditions and {@link RuleTarget} to linke these conditions to an
+ * effect.
  *
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface RuleSource {
-
-    /**
-     * @return an id which can be referenced by other annotations (in particular by {@link RuleTarget}.
-     */
-    Class<?> id();
-
-    /**
-     * @return a condition on the value of the annotated field.
-     */
-    Class<? extends Condition> condition();
-
-}
+package org.knime.core.webui.node.dialog.ui.rule;

@@ -44,76 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
+package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * Either a {@link Condition} or a logical operation that is capable to combine multiple {@link Condition}s.
  *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@SuppressWarnings("javadoc")
-public sealed interface Operation permits And, Not, Or, Condition {
+public final class TrueCondition implements Condition {
 
-    non-sealed class And implements Operation {
-        private final Operation[] m_children;
-
-        public And(final Operation... children) {
-            m_children = children;
-        }
-
-        public List<Operation> getChildren() {
-            return Arrays.asList(m_children);
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
+    @Override
+    public Object schema() {
+        return new Const(true);
     }
-
-    non-sealed class Or implements Operation {
-        private final Operation[] m_children;
-
-        public Or(final Operation... children) {
-            m_children = children;
-        }
-
-        public List<Operation> getChildren() {
-            return Arrays.asList(m_children);
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
-    }
-
-    non-sealed class Not implements Operation {
-        private final Operation m_childOperation;
-
-        public Not(final Operation childOperation) {
-            m_childOperation = childOperation;
-        }
-
-        public Operation getChildOperation() {
-            return m_childOperation;
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
-    }
-
-    <T> T accept(OperationVisitor<T> visitor);
 
 }

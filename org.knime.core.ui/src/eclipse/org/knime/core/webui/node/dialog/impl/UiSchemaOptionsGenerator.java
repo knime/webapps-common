@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.ui.style.CheckboxStyle;
+import org.knime.core.webui.node.dialog.ui.style.ColumnFilterStyle;
 import org.knime.core.webui.node.dialog.ui.style.Style;
 import org.knime.core.webui.node.dialog.ui.style.StyleProvider;
 import org.knime.core.webui.node.dialog.ui.style.ValueSwitchStyle;
@@ -73,7 +74,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 final class UiSchemaOptionsGenerator {
 
     private static List<Class<? extends StyleProvider>> defaultStyles =
-        List.of(CheckboxStyle.class, ValueSwitchStyle.class);
+        List.of(CheckboxStyle.class, ValueSwitchStyle.class, ColumnFilterStyle.class);
 
     private final ObjectMapper m_mapper;
 

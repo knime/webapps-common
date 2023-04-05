@@ -58,10 +58,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.impl.ui.rule.JsonFormsCondition;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleSource;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
+import org.knime.core.webui.node.dialog.ui.rule.RuleSource;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -208,7 +208,8 @@ final class JsonFormsUiSchemaGenerator {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var layoutByFieldAnnotation = getFieldLayout(field);
-        final var fieldLayout = layoutByFieldAnnotation.orElse(defaultLayout);
+        final var declaringClassLayout = getClassLayout(field.getMember().getDeclaringClass()).orElse(defaultLayout);
+        final var fieldLayout = layoutByFieldAnnotation.orElse(declaringClassLayout);
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
             this.addAllFields(fieldType, layoutControls, ruleSources, scope, fieldLayout,
                 layoutByFieldAnnotation.isPresent());
@@ -219,9 +220,11 @@ final class JsonFormsUiSchemaGenerator {
                 return newControls;
             });
             getRuleSource(field).ifPresent(ruleSource -> {
-                final var schema = m_mapper.valueToTree(createInstance(ruleSource.condition()).schema());
+                final var condition = ruleSource.condition();
+                final var schema = m_mapper.valueToTree(createInstance(condition).schema());
                 final var scopedRuleSource = new JsonFormsCondition(scope, schema);
-                ruleSources.put(ruleSource.id(), scopedRuleSource);
+                final var ruleSourceId = ruleSource.id();
+                ruleSources.put(ruleSourceId.equals(Class.class) ? condition : ruleSourceId, scopedRuleSource);
             });
         }
     }

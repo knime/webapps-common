@@ -44,57 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui;
+package org.knime.core.webui.node.dialog.ui.rule;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
 
 /**
- * An annotation for controlling which part of a layout a given field should be.
- *
- * <h2>Class annotation</h2>
- * <p>
- * The annotation can also target a class. This behaves as follows:
- * </p>
- * <ul>
- * <li>The annotation on a class is equivalent to the same annotation on all of its fields</li>
- * <li>Every additional annotation on a field overrides the class annotation for that field</li>
- * <li>For nested settings, an error is thrown if there are annotations on the enclosing field and on its class</li>
- * </ul>
- * <h2>Layout parts</h2>
- * <p>
- * The annotation may target any of the following classes representing layout parts:
- * </p>
- *
- * <ul>
- * <li>An interface annotated with {@link Section @Section}.</li>
- * </ul>
- * <h2>Root layout class</h2>
- *
- * <p>
- * For any of the above described layout parts, we can find its root layout class by going up the chain of its nest
- * parents until we reach a class which is not a layout part.
- * </p>
- * <p>
- * All layout parts referenced via @Layout annotations used throughout the settings of a single node dialog must share a
- * common root. Otherwise the order of the targeted layout parts cannot be determined and the layout generation will
- * fail.
- * </p>
- * <p>
- * The annotation may also target this root layout class for top level settings which are not contained in any layout
- * part. But since this is the default if no @Layout is present at all it only has to be used to override other
- * annotations (see "Class annotation" above).
- * </p>
  *
  * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Layout {
+public class Xor extends Or {
 
     /**
-     * @return the targeted layout part
+     * @param first
+     * @param second
      */
-    Class<?> value();
+    public Xor(final Operation first, final Operation second) {
+        super(new And(first, new Not(second)), new And(new Not(first), second));
+    }
 }

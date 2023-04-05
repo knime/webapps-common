@@ -54,15 +54,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.impl.ui.rule.FalseCondition;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation.Or;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleSource;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleTarget;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleTarget.Effect;
-import org.knime.core.webui.node.dialog.impl.ui.rule.TrueCondition;
+import org.knime.core.webui.node.dialog.ui.rule.FalseCondition;
+import org.knime.core.webui.node.dialog.ui.rule.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.ui.rule.Operation;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
+import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
+import org.knime.core.webui.node.dialog.ui.rule.RuleSource;
+import org.knime.core.webui.node.dialog.ui.rule.RuleTarget;
+import org.knime.core.webui.node.dialog.ui.rule.RuleTarget.Effect;
+import org.knime.core.webui.node.dialog.ui.rule.TrueCondition;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -97,6 +98,46 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
+    }
+
+    @Test
+    void testIdentifyByCondition() {
+
+        final class IdentifyByRuleTest implements DefaultNodeSettings {
+
+            enum OneTwoOrThree {
+                    ONE, TWO, THREE
+            }
+
+            static class OneOrTwo extends OneOfEnumCondition<OneTwoOrThree> {
+
+                @Override
+                protected OneTwoOrThree[] oneOf() {
+                    return new OneTwoOrThree[]{OneTwoOrThree.ONE, OneTwoOrThree.TWO};
+                }
+
+            }
+
+            @RuleSource(condition = OneOrTwo.class)
+            OneTwoOrThree m_someBoolean;
+
+            @RuleTarget(sources = OneOrTwo.class, effect = Effect.DISABLE)
+            boolean m_tagetSetting;
+
+        }
+
+        final var response = buildTestUiSchema(IdentifyByRuleTest.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[0].const").isString()
+            .isEqualTo("ONE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[1].const").isString()
+            .isEqualTo("TWO");
     }
 
     @Test

@@ -52,7 +52,7 @@ package org.knime.core.webui.node.dialog.ui.style;
  *
  * @author Paul Bärnreuther
  */
-public sealed interface StyleProvider permits BooleanStyleProvider, EnumStyleProvider {
+public sealed interface StyleProvider permits BooleanStyleProvider, EnumStyleProvider, ColumnFilterStyle {
 
     /**
      * @param clazz the class of the setting field

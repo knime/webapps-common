@@ -46,18 +46,13 @@
  * History
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.rule;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public final class FalseCondition implements Condition {
-
-
-    @Override
-    public Object schema() {
-        return new Const(false);
-    }
-
+public record JsonFormsCondition(String scope, JsonNode schema) implements Condition {
 }

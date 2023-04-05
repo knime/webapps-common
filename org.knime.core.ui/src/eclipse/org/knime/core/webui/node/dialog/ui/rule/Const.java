@@ -46,23 +46,26 @@
  * History
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.impl.ui.rule;
+package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * A condition which can be invoked on a setting using the {@link RuleSource} annotation.
+ * A schema specification holding a value. It validates if its value is matched exactly.
  *
  * @author Paul Bärnreuther
  */
-public non-sealed interface Condition extends Operation {
+public class Const {
+
+    private final Object m_const;
 
     /**
-     * @return the schema specification which will be validated against the value of a setting to which the condition is
-     *         applied.
+     * @param input a value which is matched exactly
      */
-    Object schema();
+    public Const(final Object input) {
+        this.m_const = input;
+    }
 
-    @Override
-    default <T> T accept(final OperationVisitor<T> visitor) {
-        return visitor.visit(this);
+    @SuppressWarnings("javadoc")
+    public Object getConst() {
+        return m_const;
     }
 }

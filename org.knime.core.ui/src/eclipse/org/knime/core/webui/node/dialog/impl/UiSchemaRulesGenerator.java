@@ -59,11 +59,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.knime.core.webui.node.dialog.impl.ui.rule.Condition;
-import org.knime.core.webui.node.dialog.impl.ui.rule.JsonFormsCondition;
-import org.knime.core.webui.node.dialog.impl.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleSource;
-import org.knime.core.webui.node.dialog.impl.ui.rule.RuleTarget;
+import org.knime.core.webui.node.dialog.ui.rule.Condition;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
+import org.knime.core.webui.node.dialog.ui.rule.Operation;
+import org.knime.core.webui.node.dialog.ui.rule.RuleSource;
+import org.knime.core.webui.node.dialog.ui.rule.RuleTarget;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
