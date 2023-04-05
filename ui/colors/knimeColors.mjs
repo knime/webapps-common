@@ -27,6 +27,7 @@ export const CoralLight = 'hsl(0, 91.5%, 86.1%)'; /* #fcbbbb */
 export const Cornflower = 'hsl(206, 69.7%, 38.8%)'; /* #1e6da8 */
 export const CornflowerDark = 'hsl(216, 64.9%, 29%)'; /* #1a417a */
 export const CornflowerLight = 'hsl(205, 71.9%, 74.9%)'; /* #91c6ed */
+export const CornflowerSemi = 'hsl(206, 74%, 90%)'; /* #d1e7f8 */
 export const Hibiscus = 'hsl(327, 82.3%, 71.2%)'; /* #f279bc */
 export const HibiscusDark = 'hsl(329, 71.4%, 52%)'; /* #dc2d87 */
 export const HibiscusLight = 'hsl(329, 72.3%, 87.3%)'; /* #f6c7df */
