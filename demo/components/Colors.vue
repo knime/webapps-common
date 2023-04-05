@@ -59,6 +59,7 @@ export default {
           <div style="--bg: var(--knime-aquamarine);">--knime-aquamarine</div>
           <div style="--bg: var(--knime-aquamarine-dark); --font: white;">--knime-aquamarine-dark</div>
           <div style="--bg: var(--knime-cornflower-light);">--knime-cornflower-light</div>
+          <div style="--bg: var(--knime-cornflower-semi);">--knime-cornflower-semi</div>
           <div style="--bg: var(--knime-cornflower); --font: white;">--knime-cornflower</div>
           <div style="--bg: var(--knime-cornflower-dark); --font: white;">--knime-cornflower-dark</div>
           <div style="--bg: var(--knime-lavender-light);">--knime-lavender-light</div>
