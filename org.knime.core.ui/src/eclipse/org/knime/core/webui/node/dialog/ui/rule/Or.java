@@ -44,29 +44,37 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.ui.rule;
-
-import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
 
 /**
  *
  * @author Paul Bärnreuther
+ * @param <U> the type of the {@link AtomicExpression} depending on the implementation
  */
-public interface OperationVisitor<T> {
+public non-sealed class Or<U extends AtomicExpression<U>> implements OperationExpression<U> {
+
+    private final Expression<U>[] m_children;
+
     /**
-     *
+     * @param children the expressions which are combined using an or operation
      */
-    T visit(And and);
+    @SuppressWarnings("unchecked")
+    public Or(final Expression<U>... children) {
+        m_children = children;
+    }
 
-    T visit(Or or);
+    /**
+     * @return the expressions which are combined using an or operation
+     */
+    public Expression<U>[] getChildren() {
+        return m_children;
+    }
 
-    T visit(Not not);
-
-    T visit(Condition condition);
-
+    @Override
+    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+        return visitor.visit(this);
+    }
 
 }

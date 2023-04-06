@@ -47,7 +47,7 @@
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
 /**
- * Use {@link RuleSource} annotations to declare conditions and {@link RuleTarget} to linke these conditions to an
+ * Use {@link Signal} annotations to declare conditions and {@link Effect} to linke these conditions to an
  * effect.
  *
  * @author Paul Bärnreuther

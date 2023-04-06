@@ -48,23 +48,24 @@
  */
 package org.knime.core.webui.node.dialog.ui.rule;
 
-import java.util.Arrays;
-
 /**
+ * Triggers if an enum has one of a specified subset of values.
  *
  * @author Paul Bärnreuther
  */
-public abstract class OneOfEnumCondition<E extends Enum<E>> implements Condition {
+public abstract non-sealed class OneOfEnumCondition<E extends Enum<E>> implements Condition {
 
     /**
      * @return the values of the enum for which the condition should apply
      */
-    protected abstract E[] oneOf();
+    public abstract E[] oneOf();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Object schema() {
-        final var consts = Arrays.stream(oneOf()).map(Enum::toString).map(Const::new).toArray();
-        return new OneOf(consts);
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
 }

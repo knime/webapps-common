@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.CONTROL_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SCOPE_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
 
@@ -60,7 +61,7 @@ import java.util.Optional;
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.JsonFormsControl;
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.ui.OrderedLayout;
-import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -78,7 +79,7 @@ final class LayoutNodesGenerator {
 
     private final Class<?> m_rootClass;
 
-    private Map<Class<?>, JsonFormsCondition> m_ruleSourcesMap;
+    private Map<Class<?>, JsonFormsExpression> m_ruleSourcesMap;
 
     /**
      * @param mapper the object mapper used for the ui schema generation
@@ -121,7 +122,7 @@ final class LayoutNodesGenerator {
     }
 
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
-        final var control = root.addObject().put(TYPE_TAG, "Control").put(SCOPE_TAG, controlElement.scope());
+        final var control = root.addObject().put(TYPE_TAG, CONTROL_TAG).put(SCOPE_TAG, controlElement.scope());
         final var field = controlElement.field();
         new UiSchemaOptionsGenerator(m_mapper, field).applyStylesTo(control);
         new UiSchemaRulesGenerator(m_mapper, field, m_ruleSourcesMap).applyRulesTo(control);

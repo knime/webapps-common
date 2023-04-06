@@ -51,61 +51,63 @@ package org.knime.core.webui.node.dialog.impl;
 import static org.knime.core.webui.node.dialog.impl.DefaultNodeSettingsService.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.NOT_TAG;
 
-import java.util.List;
+import java.util.Arrays;
 
-import org.knime.core.webui.node.dialog.ui.rule.Condition;
-import org.knime.core.webui.node.dialog.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.ui.rule.OperationVisitor;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
+import org.knime.core.webui.node.dialog.ui.rule.And;
+import org.knime.core.webui.node.dialog.ui.rule.Expression;
+import org.knime.core.webui.node.dialog.ui.rule.ExpressionVisitor;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.ui.rule.Not;
+import org.knime.core.webui.node.dialog.ui.rule.Or;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A visitor used to resolve the "not" operation in the {@link JsonFormsOperationVisitor}
+ * A visitor used to resolve the "not" operation in the {@link JsonFormsExpressionResolver}
+ *
  * @author Paul Bärnreuther
  */
-final class JsonFormsNegatorVisitor implements OperationVisitor<ObjectNode> {
+final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
-    private final JsonFormsOperationVisitor m_operationVisitor;
+    private final JsonFormsExpressionResolver m_operationVisitor;
 
     private final ObjectMapper m_mapper;
 
     /**
-     * @param operationVisitor
+     * @param expressionVisitor
      * @param mapper
      */
-    public JsonFormsNegatorVisitor(final JsonFormsOperationVisitor operationVisitor, final ObjectMapper mapper) {
-        m_operationVisitor = operationVisitor;
+    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor, final ObjectMapper mapper) {
+        m_operationVisitor = expressionVisitor;
         m_mapper = mapper;
     }
 
     @Override
-    public ObjectNode visit(final And and) {
-        final var resolvedOperation = new Or(reverseAll(and.getChildren()));
+    public ObjectNode visit(final And<JsonFormsExpression> and) {
+        final var resolvedOperation = new Or<JsonFormsExpression>(reverseAll(and.getChildren()));
         return resolvedOperation.accept(m_operationVisitor);
     }
 
     @Override
-    public ObjectNode visit(final Or or) {
-        final var resolvedOperation = new And(reverseAll(or.getChildren()));
+    public ObjectNode visit(final Or<JsonFormsExpression> or) {
+        final var resolvedOperation = new And<JsonFormsExpression>(reverseAll(or.getChildren()));
         return resolvedOperation.accept(m_operationVisitor);
     }
 
-    private static Operation[] reverseAll(final List<Operation> operations) {
-        return operations.stream().map(Not::new).toArray(Operation[]::new);
+    @SuppressWarnings("unchecked")
+    private static Expression<JsonFormsExpression>[] reverseAll(final Expression<JsonFormsExpression>[] expressions) {
+        return Arrays.asList(expressions).stream().map(Not<JsonFormsExpression>::new).toArray(Expression[]::new);
     }
 
     @Override
-    public ObjectNode visit(final Not not) {
+    public ObjectNode visit(final Not<JsonFormsExpression> not) {
         return not.getChildOperation().accept(m_operationVisitor);
     }
 
     @Override
-    public ObjectNode visit(final Condition condition) {
-        final var node = condition.accept(m_operationVisitor);
+    public ObjectNode visit(final JsonFormsExpression expression) {
+        final var node = expression.accept(m_operationVisitor);
         final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
         node.replace(FIELD_NAME_SCHEMA, m_mapper.createObjectNode().set(NOT_TAG, positiveSchema));
         return node;

@@ -54,15 +54,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.ui.rule.And;
+import org.knime.core.webui.node.dialog.ui.rule.Effect;
+import org.knime.core.webui.node.dialog.ui.rule.Effect.EffectType;
+import org.knime.core.webui.node.dialog.ui.rule.Expression;
 import org.knime.core.webui.node.dialog.ui.rule.FalseCondition;
+import org.knime.core.webui.node.dialog.ui.rule.Not;
 import org.knime.core.webui.node.dialog.ui.rule.OneOfEnumCondition;
-import org.knime.core.webui.node.dialog.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
-import org.knime.core.webui.node.dialog.ui.rule.RuleSource;
-import org.knime.core.webui.node.dialog.ui.rule.RuleTarget;
-import org.knime.core.webui.node.dialog.ui.rule.RuleTarget.Effect;
+import org.knime.core.webui.node.dialog.ui.rule.Or;
+import org.knime.core.webui.node.dialog.ui.rule.Signal;
 import org.knime.core.webui.node.dialog.ui.rule.TrueCondition;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -82,10 +82,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.DISABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
         }
@@ -112,16 +112,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             static class OneOrTwo extends OneOfEnumCondition<OneTwoOrThree> {
 
                 @Override
-                protected OneTwoOrThree[] oneOf() {
+                public OneTwoOrThree[] oneOf() {
                     return new OneTwoOrThree[]{OneTwoOrThree.ONE, OneTwoOrThree.TWO};
                 }
 
             }
 
-            @RuleSource(condition = OneOrTwo.class)
+            @Signal(condition = OneOrTwo.class)
             OneTwoOrThree m_someBoolean;
 
-            @RuleTarget(sources = OneOrTwo.class, effect = Effect.DISABLE)
+            @Effect(signals = OneOrTwo.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
         }
@@ -148,19 +148,19 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.DISABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_disable;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.ENABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE)
             boolean m_enable;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.HIDE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.HIDE)
             boolean m_hide;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.SHOW)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.SHOW)
             boolean m_show;
 
         }
@@ -179,16 +179,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
-            @RuleSource(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, effect = Effect.ENABLE,
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = And.class)
             boolean m_effect;
         }
@@ -216,16 +216,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
-            @RuleSource(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, effect = Effect.ENABLE,
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = Or.class)
             boolean m_effect;
         }
@@ -254,10 +254,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.ENABLE, operation = Not.class)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = Not.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotSettings.class);
@@ -272,7 +272,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     static final class NotAnd extends Not {
 
-        public NotAnd(final Operation first, final Operation second) {
+        public NotAnd(final Expression first, final Expression second) {
             super(new And(first, second));
         }
 
@@ -285,16 +285,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
-            @RuleSource(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, effect = Effect.ENABLE,
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = NotAnd.class)
             boolean m_effect;
         }
@@ -319,7 +319,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     static final class NotOr extends Not {
 
-        public NotOr(final Operation first, final Operation second) {
+        public NotOr(final Expression first, final Expression second) {
             super(new Or(first, second));
         }
 
@@ -332,16 +332,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
-            @RuleSource(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, effect = Effect.ENABLE,
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = NotOr.class)
             boolean m_effect;
         }
@@ -366,7 +366,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     static final class DoubleNegation extends Not {
 
-        public DoubleNegation(final Operation operation) {
+        public DoubleNegation(final Expression operation) {
             super(new Not(operation));
         }
 
@@ -379,10 +379,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.ENABLE, operation = DoubleNegation.class)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = DoubleNegation.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(DoubleNegationSettings.class);
@@ -398,7 +398,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     static final class OperationTakingOneCondition extends And {
 
         @SuppressWarnings("unused")
-        public OperationTakingOneCondition(final Operation operation) {
+        public OperationTakingOneCondition(final Expression operation) {
             super();
         }
 
@@ -407,7 +407,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     static final class OperationTakingTwoCondition extends And {
 
         @SuppressWarnings("unused")
-        public OperationTakingTwoCondition(final Operation operation1, final Operation operation2) {
+        public OperationTakingTwoCondition(final Expression operation1, final Expression operation2) {
             super();
         }
 
@@ -420,10 +420,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, effect = Effect.ENABLE,
+            @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE,
                 operation = OperationTakingOneCondition.class)
             boolean m_effect;
         }
@@ -432,10 +432,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = SomeBooleanIsTrue.class, effect = Effect.ENABLE,
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE,
                 operation = OperationTakingTwoCondition.class)
             boolean m_effect;
         }
@@ -444,10 +444,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, effect = Effect.ENABLE)
+            @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE)
             boolean m_effect;
         }
 
@@ -455,10 +455,10 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
-            @RuleSource(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            @RuleTarget(sources = {}, effect = Effect.ENABLE)
+            @Effect(signals = {}, type = EffectType.ENABLE)
             boolean m_effect;
         }
 

@@ -49,14 +49,18 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
+ * Triggers when a boolean is true.
  *
  * @author Paul Bärnreuther
  */
 public final class TrueCondition implements Condition {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Object schema() {
-        return new Const(true);
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
 }

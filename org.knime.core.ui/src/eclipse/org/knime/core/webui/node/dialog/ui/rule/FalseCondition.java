@@ -49,15 +49,18 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
+ * Triggers when a boolean is false.
  *
  * @author Paul Bärnreuther
  */
 public final class FalseCondition implements Condition {
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Object schema() {
-        return new Const(false);
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
 }

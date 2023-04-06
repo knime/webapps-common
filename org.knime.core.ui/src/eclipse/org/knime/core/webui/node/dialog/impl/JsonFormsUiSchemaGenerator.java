@@ -60,8 +60,8 @@ import java.util.Optional;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
-import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
-import org.knime.core.webui.node.dialog.ui.rule.RuleSource;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.ui.rule.Signal;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -105,6 +105,10 @@ final class JsonFormsUiSchemaGenerator {
 
     static final String IS_ADVANCED_TAG = "isAdvanced";
 
+    static final String CONTROL_TAG = "Control";
+
+    static final String SECTION_TAG = "Section";
+
     private final ObjectMapper m_mapper;
 
     private final SerializerProvider m_serializerProvider;
@@ -123,7 +127,7 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     static record LayoutSkeleton(Class<?> root, Map<Class<?>, List<JsonFormsControl>> controls,
-        Map<Class<?>, JsonFormsCondition> ruleSources) {
+        Map<Class<?>, JsonFormsExpression> ruleSources) {
     }
 
     private LayoutSkeleton resolveLayoutToContentAndRoot() {
@@ -155,9 +159,9 @@ final class JsonFormsUiSchemaGenerator {
      *         settings/controls associated to them by {@link Layout} annotations. If a setting has no {@Link Layout}
      *         annotation it is associated to {@code null}.
      */
-    private Pair<Map<Class<?>, List<JsonFormsControl>>, Map<Class<?>, JsonFormsCondition>> getLayoutPartToControls() {
+    private Pair<Map<Class<?>, List<JsonFormsControl>>, Map<Class<?>, JsonFormsExpression>> getLayoutPartToControls() {
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
-        final Map<Class<?>, JsonFormsCondition> ruleSources = new HashMap<>();
+        final Map<Class<?>, JsonFormsExpression> ruleSources = new HashMap<>();
         m_settings.forEach((settingsKey, setting) -> {
             final var prefix = addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
@@ -167,7 +171,7 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     private void addAllFields(final Class<?> clazz, final Map<Class<?>, List<JsonFormsControl>> layoutControls,
-        final Map<Class<?>, JsonFormsCondition> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final Map<Class<?>, JsonFormsExpression> ruleSources, final String parentScope, final Class<?> defaultLayout,
         final boolean enclosingFieldSetsLayout) {
         final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldSetsLayout);
         final var properties = getSerializableProperties(clazz);
@@ -203,7 +207,7 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     private void addField(final Map<Class<?>, List<JsonFormsControl>> layoutControls,
-        final Map<Class<?>, JsonFormsCondition> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final Map<Class<?>, JsonFormsExpression> ruleSources, final String parentScope, final Class<?> defaultLayout,
         final PropertyWriter field) {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
@@ -220,17 +224,17 @@ final class JsonFormsUiSchemaGenerator {
                 return newControls;
             });
             getRuleSource(field).ifPresent(ruleSource -> {
-                final var condition = ruleSource.condition();
-                final var schema = m_mapper.valueToTree(createInstance(condition).schema());
-                final var scopedRuleSource = new JsonFormsCondition(scope, schema);
+                final var conditionClass = ruleSource.condition();
+                final var condition = createInstance(conditionClass);
+                final var scopedRuleSource = new JsonFormsExpression(scope, condition);
                 final var ruleSourceId = ruleSource.id();
-                ruleSources.put(ruleSourceId.equals(Class.class) ? condition : ruleSourceId, scopedRuleSource);
+                ruleSources.put(ruleSourceId.equals(Class.class) ? conditionClass : ruleSourceId, scopedRuleSource);
             });
         }
     }
 
-    private static Optional<RuleSource> getRuleSource(final PropertyWriter field) {
-        return Optional.ofNullable(field.getAnnotation(RuleSource.class));
+    private static Optional<Signal> getRuleSource(final PropertyWriter field) {
+        return Optional.ofNullable(field.getAnnotation(Signal.class));
     }
 
     private static Optional<Class<?>> getFieldLayout(final PropertyWriter field) {

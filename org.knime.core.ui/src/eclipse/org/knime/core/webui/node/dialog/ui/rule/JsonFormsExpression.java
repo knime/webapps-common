@@ -49,20 +49,13 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * The excluding or operation.
- *
- *  Similar to this, any kind of logical operation can be build up from {@link OperationExpression}s.
- *
+ * The atomic expression that is used for json forms implementation
  * @author Paul Bärnreuther
  */
-public class Xor<U extends AtomicExpression<U>> extends Or<U> {
+public record JsonFormsExpression(String scope, Condition condition) implements AtomicExpression<JsonFormsExpression> {
 
-    /**
-     * @param first
-     * @param second
-     */
-    @SuppressWarnings("unchecked")
-    public Xor(final Expression<U> first, final Expression<U> second) {
-        super(new And<U>(first, new Not<U>(second)), new And<U>(new Not<U>(first), second));
+    @Override
+    public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
+        return visitor.visit(this);
     }
 }

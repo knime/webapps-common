@@ -52,6 +52,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.E
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SECTION_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
 
 import java.util.function.Function;
@@ -94,7 +95,7 @@ enum LayoutPart {
         final var node = creationContext.getRoot();
         final var label = sectionAnnotation.title();
         node.put(LABEL_TAG, label);
-        node.put(TYPE_TAG, "Section");
+        node.put(TYPE_TAG, SECTION_TAG);
         if (sectionAnnotation.advanced()) {
             node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
         }

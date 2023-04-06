@@ -44,25 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * The excluding or operation.
+ * An expression in terms of propositional logic. An expression can either be an {@link AtomicExpression} or one of the
+ * three {@link OperationExpression}s ({@link And}, {@link Or} or {@link Not}) defining how to combine multiple
+ * {@link AtomicExpression}s.
  *
- *  Similar to this, any kind of logical operation can be build up from {@link OperationExpression}s.
+ * Each implementation offers has its own {@link AtomicExpression}.
  *
- * @author Paul Bärnreuther
+ * Expressions are resolved via {@link ExpressionVisitor}s.
+ *
+ * @param <U> the type of atomic expressions used for this implementation
+ *
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class Xor<U extends AtomicExpression<U>> extends Or<U> {
+public sealed interface Expression<U extends AtomicExpression<U>> permits OperationExpression<U>, AtomicExpression<U> {
 
     /**
-     * @param first
-     * @param second
+     * @param <T> the type of the resolved value
+     * @param visitor an implementation dependent expression resolver
+     * @return a resolved value of the expression depending on the implementation.
      */
-    @SuppressWarnings("unchecked")
-    public Xor(final Expression<U> first, final Expression<U> second) {
-        super(new And<U>(first, new Not<U>(second)), new And<U>(new Not<U>(first), second));
-    }
+    <T> T accept(ExpressionVisitor<T, U> visitor);
+
 }

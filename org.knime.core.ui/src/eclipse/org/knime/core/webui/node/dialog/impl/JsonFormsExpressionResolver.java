@@ -53,43 +53,43 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.C
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SCOPE_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
 
-import java.util.List;
-
-import org.knime.core.webui.node.dialog.ui.rule.Condition;
-import org.knime.core.webui.node.dialog.ui.rule.JsonFormsCondition;
-import org.knime.core.webui.node.dialog.ui.rule.Operation;
-import org.knime.core.webui.node.dialog.ui.rule.OperationVisitor;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
+import org.knime.core.webui.node.dialog.ui.rule.And;
+import org.knime.core.webui.node.dialog.ui.rule.Expression;
+import org.knime.core.webui.node.dialog.ui.rule.ExpressionVisitor;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.ui.rule.Not;
+import org.knime.core.webui.node.dialog.ui.rule.Or;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A visitor used to resolve the logical operations implementing {@link Operation} and parse them to JsonForms syntax.
+ * A visitor used to resolve the logical operations implementing {@link Expression} and parse them to JsonForms syntax.
  *
  * @author Paul Bärnreuther
  */
-public class JsonFormsOperationVisitor implements OperationVisitor<ObjectNode> {
+public class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
     private final ObjectMapper m_mapper;
 
-    private final JsonFormsNegatorVisitor m_negator;
+    private final JsonFormsConditionResolver m_conditionVisitor;
+
+    private final JsonFormsExpressionNegator m_negator;
 
     /**
      * @param mapper
      */
-    public JsonFormsOperationVisitor(final ObjectMapper mapper) {
+    public JsonFormsExpressionResolver(final ObjectMapper mapper) {
         m_mapper = mapper;
-        m_negator = new JsonFormsNegatorVisitor(this, m_mapper);
+        m_conditionVisitor = new JsonFormsConditionResolver(m_mapper);
+        m_negator = new JsonFormsExpressionNegator(this, m_mapper);
     }
 
     /**
      * @example { "type": "AND", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final And and) {
+    public ObjectNode visit(final And<JsonFormsExpression> and) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TYPE_TAG, "AND");
         addAllConditions(conditionNode, and.getChildren());
@@ -100,23 +100,25 @@ public class JsonFormsOperationVisitor implements OperationVisitor<ObjectNode> {
      * @example { "type": "OR", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final Or or) {
+    public ObjectNode visit(final Or<JsonFormsExpression> or) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TYPE_TAG, "OR");
         addAllConditions(conditionNode, or.getChildren());
         return conditionNode;
     }
 
-    private void addAllConditions(final ObjectNode conditionNode, final List<Operation> operations) {
-        final var conditions = conditionNode.putArray(CONDITIONS_TAG);
-        operations.stream().map(op -> op.accept(this)).forEach(conditions::add);
+    private void addAllConditions(final ObjectNode expressionNode, final Expression<JsonFormsExpression>[] expressions) {
+        final var node = expressionNode.putArray(CONDITIONS_TAG);
+        for (var expression : expressions) {
+            node.add(expression.accept(this));
+        }
     }
 
     /**
      * The "not" operation is not resolved directly but instead applies another visitor to its child component.
      */
     @Override
-    public ObjectNode visit(final Not not) {
+    public ObjectNode visit(final Not<JsonFormsExpression> not) {
         return not.getChildOperation().accept(m_negator);
     }
 
@@ -124,20 +126,10 @@ public class JsonFormsOperationVisitor implements OperationVisitor<ObjectNode> {
      * @example { "scope": "path/to/rule/source/setting", "schema": { "const": true} }
      */
     @Override
-    public ObjectNode visit(final Condition condition) {
-        if (!(condition instanceof JsonFormsCondition)) {
-            throw new UiSchemaGenerationException(String.format(
-                "Trying to resolve a condition of type %s which is not possible. "
-                    + "This should not happen and is probably an implementation mistake",
-                condition.getClass().getSimpleName()));
-        }
-        return visit((JsonFormsCondition)condition);
-    }
-
-    private ObjectNode visit(final JsonFormsCondition condition) {
+    public ObjectNode visit(final JsonFormsExpression expression) {
         final var conditionNode = m_mapper.createObjectNode();
-        conditionNode.put(SCOPE_TAG, condition.scope());
-        conditionNode.set(FIELD_NAME_SCHEMA, m_mapper.valueToTree(condition.schema()));
+        conditionNode.put(SCOPE_TAG, expression.scope());
+        conditionNode.set(FIELD_NAME_SCHEMA, expression.condition().accept(m_conditionVisitor));
         return conditionNode;
     }
 }

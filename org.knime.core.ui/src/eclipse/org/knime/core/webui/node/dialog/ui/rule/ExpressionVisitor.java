@@ -49,20 +49,25 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * The excluding or operation.
- *
- *  Similar to this, any kind of logical operation can be build up from {@link OperationExpression}s.
+ * A visitor visiting all permitted implementations of {@link Expression} which is used to translate the expression to a
+ * implementation dependent format.
  *
  * @author Paul Bärnreuther
+ * @param <T> the type of the returned value on visiting a {@link Expression}
  */
-public class Xor<U extends AtomicExpression<U>> extends Or<U> {
+@SuppressWarnings("javadoc")
+public interface ExpressionVisitor<T, U extends AtomicExpression<U>> {
 
-    /**
-     * @param first
-     * @param second
-     */
-    @SuppressWarnings("unchecked")
-    public Xor(final Expression<U> first, final Expression<U> second) {
-        super(new And<U>(first, new Not<U>(second)), new And<U>(new Not<U>(first), second));
+    T visit(And<U> and);
+
+    T visit(Or<U> or);
+
+    T visit(Not<U> not);
+
+    T visit(U condition);
+
+    default T visit(final IdentityOperation<U> id) {
+        return id.expression().accept(this);
     }
+
 }

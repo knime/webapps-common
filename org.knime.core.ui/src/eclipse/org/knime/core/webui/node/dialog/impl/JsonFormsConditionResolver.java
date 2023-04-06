@@ -44,76 +44,54 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.rule;
+package org.knime.core.webui.node.dialog.impl;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_CONST;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsSchemaUtil.TAG_ONEOF;
 
-import org.knime.core.webui.node.dialog.ui.rule.Operation.And;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Not;
-import org.knime.core.webui.node.dialog.ui.rule.Operation.Or;
+import org.knime.core.webui.node.dialog.ui.rule.ConditionVisitor;
+import org.knime.core.webui.node.dialog.ui.rule.FalseCondition;
+import org.knime.core.webui.node.dialog.ui.rule.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.ui.rule.TrueCondition;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Either a {@link Condition} or a logical operation that is capable to combine multiple {@link Condition}s.
  *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@SuppressWarnings("javadoc")
-public sealed interface Operation permits And, Not, Or, Condition {
+public class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
-    non-sealed class And implements Operation {
-        private final Operation[] m_children;
+    private final ObjectMapper m_mapper;
 
-        public And(final Operation... children) {
-            m_children = children;
-        }
-
-        public List<Operation> getChildren() {
-            return Arrays.asList(m_children);
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
+    /**
+     * @param mapper
+     */
+    public JsonFormsConditionResolver(final ObjectMapper mapper) {
+        m_mapper = mapper;
     }
 
-    non-sealed class Or implements Operation {
-        private final Operation[] m_children;
-
-        public Or(final Operation... children) {
-            m_children = children;
+    @Override
+    public <E extends Enum<E>> ObjectNode visit(final OneOfEnumCondition<E> oneOfEnumCondition) {
+        final var node = m_mapper.createObjectNode();
+        final var oneOf = node.putArray(TAG_ONEOF);
+        for (var option : oneOfEnumCondition.oneOf()) {
+            oneOf.addObject().put(TAG_CONST, option.toString());
         }
-
-        public List<Operation> getChildren() {
-            return Arrays.asList(m_children);
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
+        return node;
     }
 
-    non-sealed class Not implements Operation {
-        private final Operation m_childOperation;
-
-        public Not(final Operation childOperation) {
-            m_childOperation = childOperation;
-        }
-
-        public Operation getChildOperation() {
-            return m_childOperation;
-        }
-
-        @Override
-        public <T> T accept(final OperationVisitor<T> visitor) {
-            return visitor.visit(this);
-        }
+    @Override
+    public ObjectNode visit(final TrueCondition trueCondition) {
+        return m_mapper.createObjectNode().put(TAG_CONST, true);
     }
 
-    <T> T accept(OperationVisitor<T> visitor);
+    @Override
+    public ObjectNode visit(final FalseCondition falseCondition) {
+        return m_mapper.createObjectNode().put(TAG_CONST, false);
+    }
 
 }

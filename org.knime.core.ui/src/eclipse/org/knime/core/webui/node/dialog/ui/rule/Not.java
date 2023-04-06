@@ -44,25 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * The excluding or operation.
- *
- *  Similar to this, any kind of logical operation can be build up from {@link OperationExpression}s.
  *
  * @author Paul Bärnreuther
  */
-public class Xor<U extends AtomicExpression<U>> extends Or<U> {
+public non-sealed class Not<U extends AtomicExpression<U>> implements OperationExpression<U> {
 
-    /**
-     * @param first
-     * @param second
-     */
-    @SuppressWarnings("unchecked")
-    public Xor(final Expression<U> first, final Expression<U> second) {
-        super(new And<U>(first, new Not<U>(second)), new And<U>(new Not<U>(first), second));
+    private final Expression<U> m_childOperation;
+
+    public Not(final Expression<U> childOperation) {
+        m_childOperation = childOperation;
     }
+
+    public Expression<U> getChildOperation() {
+        return m_childOperation;
+    }
+
+    @Override
+    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+        return visitor.visit(this);
+    }
+
 }

@@ -53,18 +53,17 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * With this annotation a field can be disabled or hidden depending on the values of other fields which are annotated by
- * {@link RuleSource} themselves.
+ * {@link Signal} themselves.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-//TODO Revise name - candidates: UIEffect? Effect? Affect? UIControl? Show? UIOperation? ShowIf, HideIf, EnableIf, DisableIf?
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RuleTarget {
+public @interface Effect {
 
     /**
      * This enum represents the effect that a rule has on a setting.
      */
-    public enum Effect {
+    public enum EffectType {
             /**
              * Disable the setting per default and only enable it when the rule applies.
              */
@@ -84,18 +83,19 @@ public @interface RuleTarget {
     }
 
     /**
-     * @return the array of ids used in {@link RuleSource} annotations within the same settings context which should be
-     *         used as building blocks for the rule. These must contain exactly one element if no operation is porvided
-     *         or a number of elements fitting a suitable constructor of a given operation.
+     * @return the array of ids used in {@link Signal} annotations within the same settings context which should be
+     *         used as building blocks for the rule. If a {@link Signal} does not define an id, it is also possible to
+     *         reference it by condition, but this should only be used when the condition is a custom and unique one in
+     *         the present settings context. There either has to be exactly one id if no operation is provided or the number of
+     *         ids has to fit a suitable constructor of the given operation.
      */
-    Class<?>[] sources();
+    Class<?>[] signals();
 
     /**
      * @return the effect that the rule has on the targeted setting
      */
-    Effect effect();
+    EffectType type();
 
-    // TODO rename - combination, aggregation, operation?
     /**
      * Multiple rule sources can be combined using logical operations.
      *
@@ -104,6 +104,7 @@ public @interface RuleTarget {
      *         assignable from {@link Condition} as its sole parameter or a constructor having the given number of
      *         parameters which are all assignable from {@link Condition}.
      */
-    Class<? extends Operation> operation() default Operation.class;
+    @SuppressWarnings("rawtypes")
+    Class<? extends OperationExpression> operation() default IdentityOperation.class;
 
 }

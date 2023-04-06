@@ -44,15 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.ui.rule;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 /**
+ * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
+ * implementation dependent format.
  *
  * @author Paul Bärnreuther
+ * @param <T> the type of the returned value on visiting a {@link Condition}
  */
-public record JsonFormsCondition(String scope, JsonNode schema) implements Condition {
+@SuppressWarnings("javadoc")
+public interface ConditionVisitor<T> {
+
+    <E extends Enum<E>> T visit(OneOfEnumCondition<E> oneOfEnumCondition);
+
+    T visit(TrueCondition trueCondition);
+
+    T visit(FalseCondition falseCondition);
+
 }

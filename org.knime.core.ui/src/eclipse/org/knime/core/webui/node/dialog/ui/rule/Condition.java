@@ -49,20 +49,17 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
- * A condition which can be invoked on a setting using the {@link RuleSource} annotation.
+ * A condition which can be invoked on a setting using the {@link Signal} annotation.
  *
  * @author Paul Bärnreuther
  */
-public non-sealed interface Condition extends Operation {
+public sealed interface Condition permits TrueCondition, FalseCondition, OneOfEnumCondition<?> {
 
-    /**
-     * @return the schema specification which will be validated against the value of a setting to which the condition is
-     *         applied.
+     /**
+     * @param <T> the returned type
+     * @param visitor
+     * @return a implementation dependent translation of the condition
      */
-    Object schema();
+    <T> T accept(final ConditionVisitor<T> visitor);
 
-    @Override
-    default <T> T accept(final OperationVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }
