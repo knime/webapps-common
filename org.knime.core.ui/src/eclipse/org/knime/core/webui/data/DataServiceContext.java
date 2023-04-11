@@ -54,8 +54,8 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SingleNodeContainer;
 
 /**
  * A {@link DataServiceContext} allows to report warning messages during a data service invocation or assembly of
@@ -86,8 +86,8 @@ public final class DataServiceContext {
     }
 
     static void init(final NodeContainer nc) {
-        if (nc instanceof NativeNodeContainer nnc) {
-            init(nnc::createExecutionContext);
+        if (nc instanceof SingleNodeContainer snc) {
+            init(snc::createExecutionContext);
         } else {
             init((Supplier<ExecutionContext>)null);
         }

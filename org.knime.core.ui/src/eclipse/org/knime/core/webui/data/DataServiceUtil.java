@@ -48,12 +48,10 @@
  */
 package org.knime.core.webui.data;
 
-import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.node.workflow.NodePort;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.port.PortContext;
 
 /**
@@ -84,22 +82,9 @@ final class DataServiceUtil {
 
     private static NodeContainer getNodeContainerFromPort(final NodePort port) {
         if (port instanceof NodeOutPort outPort) {
-            var nc = outPort.getConnectedNodeContainer();
-            if (nc instanceof SubNodeContainer snc) {
-                var connection =
-                    snc.getWorkflowManager().getIncomingConnectionFor(snc.getVirtualOutNodeID(), port.getPortIndex());
-                var srcNode = snc.getWorkflowManager().getNodeContainer(connection.getSource());
-                if (srcNode instanceof NativeNodeContainer) {
-                    return srcNode;
-                } else {
-                    return getNodeContainerFromPort(srcNode.getOutPort(connection.getSourcePort()));
-                }
-            } else {
-                return nc;
-            }
-        } else {
-            return null;
+            return (outPort).getConnectedNodeContainer();
         }
+        return null;
     }
 
 }
