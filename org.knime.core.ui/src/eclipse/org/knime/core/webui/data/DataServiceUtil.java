@@ -83,8 +83,9 @@ final class DataServiceUtil {
     private static NodeContainer getNodeContainerFromPort(final NodePort port) {
         if (port instanceof NodeOutPort outPort) {
             return (outPort).getConnectedNodeContainer();
+        } else {
+            throw new UnsupportedOperationException("Can't determine node for input port. Not implemented.");
         }
-        return null;
     }
 
 }
