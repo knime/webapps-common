@@ -61,7 +61,7 @@ import org.knime.core.webui.node.dialog.ui.rule.Condition;
 import org.knime.core.webui.node.dialog.ui.rule.Effect;
 import org.knime.core.webui.node.dialog.ui.rule.Expression;
 import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.ui.rule.OperationExpression;
+import org.knime.core.webui.node.dialog.ui.rule.Operator;
 import org.knime.core.webui.node.dialog.ui.rule.Signal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -117,7 +117,7 @@ final class UiSchemaRulesGenerator {
 
     @SuppressWarnings("unchecked")
     private static Expression<JsonFormsExpression> instantiateOperation(
-        @SuppressWarnings("rawtypes") final Class<? extends OperationExpression> operationClass,
+        @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
         final JsonFormsExpression[] expressions) {
         try {
             return instantiateWithSuitableConstructor(operationClass, expressions);
@@ -129,19 +129,19 @@ final class UiSchemaRulesGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private static OperationExpression<JsonFormsExpression> instantiateWithSuitableConstructor(
-        @SuppressWarnings("rawtypes") final Class<? extends OperationExpression> operationClass,
+    private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
+        @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
         final JsonFormsExpression[] expressions)
         throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final var constructors = operationClass.getDeclaredConstructors();
         final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);
         if (multiParameterConstructor != null) {
-            return (OperationExpression<JsonFormsExpression>)multiParameterConstructor.newInstance((Object[])expressions);
+            return (Operator<JsonFormsExpression>)multiParameterConstructor.newInstance((Object[])expressions);
         }
         final var arrayConstructor = getArrayConstructor(constructors);
         if (arrayConstructor != null) {
             final Object[] parameters = new Object[]{expressions};
-            return (OperationExpression<JsonFormsExpression>)arrayConstructor.newInstance(parameters);
+            return (Operator<JsonFormsExpression>)arrayConstructor.newInstance(parameters);
         }
         throw new UiSchemaGenerationException(
             String.format("No valid constructor found for operation %s with %s expressions",

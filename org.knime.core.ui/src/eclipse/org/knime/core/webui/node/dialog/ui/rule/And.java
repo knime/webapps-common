@@ -49,30 +49,33 @@
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
+ * A logical AND {@link Operator} that combines multiple child {@link Expression Expressions}.
+ *
+ * @param <E> the type of atomic expressions used for this implementation
  *
  * @author Paul Bärnreuther
  */
-public non-sealed class And<U extends AtomicExpression<U>> implements OperationExpression<U> {
+public non-sealed class And<E extends AtomicExpression<E>> implements Operator<E> {
 
-    private final Expression<U>[] m_children;
+    private final Expression<E>[] m_children;
 
     /**
-     * @param children the expressions that are combined using an  operation
+     * @param children the expressions that are combined using this AND operator
      */
-    @SuppressWarnings("unchecked")
-    public And(final Expression<U>... children) {
+    @SafeVarargs
+    public And(final Expression<E>... children) {
         m_children = children;
     }
 
     /**
      * @return the expressions that are combined using an  operation
      */
-    public Expression<U>[] getChildren() {
+    public Expression<E>[] getChildren() {
         return m_children;
     }
 
     @Override
-    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

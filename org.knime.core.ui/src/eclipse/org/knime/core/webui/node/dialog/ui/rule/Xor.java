@@ -51,18 +51,18 @@ package org.knime.core.webui.node.dialog.ui.rule;
 /**
  * The excluding or operation.
  *
- *  Similar to this, any kind of logical operation can be build up from {@link OperationExpression}s.
+ *  Similar to this, any kind of logical operation can be build up from {@link Operator}s.
  *
  * @author Paul Bärnreuther
  */
-public class Xor<U extends AtomicExpression<U>> extends Or<U> {
+public class Xor<E extends AtomicExpression<E>> extends Or<E> {
 
     /**
      * @param first
      * @param second
      */
     @SuppressWarnings("unchecked")
-    public Xor(final Expression<U> first, final Expression<U> second) {
-        super(new And<U>(first, new Not<U>(second)), new And<U>(new Not<U>(first), second));
+    public Xor(final Expression<E> first, final Expression<E> second) {
+        super(new And<E>(first, new Not<E>(second)), new And<E>(new Not<E>(first), second));
     }
 }

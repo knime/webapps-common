@@ -44,13 +44,15 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
+ * An expression defining how to logically combine other expressions.
  *
  * @author Paul Bärnreuther
- * @param oneOf holding several schema specifications. oneOf validates if one of its elements validates.
  */
-public record OneOf(Object[] oneOf) {} //NOSONAR
+public sealed interface Operator<E extends AtomicExpression<E>>
+    extends Expression<E>permits And<E>, Or<E>, Not<E>, IdentityOperation<E> {
+}

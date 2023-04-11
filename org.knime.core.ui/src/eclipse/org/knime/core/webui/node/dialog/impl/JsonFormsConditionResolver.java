@@ -63,7 +63,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-public class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
+class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     private final ObjectMapper m_mapper;
 

@@ -56,17 +56,17 @@ package org.knime.core.webui.node.dialog.ui.rule;
  * @param <T> the type of the returned value on visiting a {@link Expression}
  */
 @SuppressWarnings("javadoc")
-public interface ExpressionVisitor<T, U extends AtomicExpression<U>> {
+public interface ExpressionVisitor<T, E extends AtomicExpression<E>> {
 
-    T visit(And<U> and);
+    T visit(And<E> and);
 
-    T visit(Or<U> or);
+    T visit(Or<E> or);
 
-    T visit(Not<U> not);
+    T visit(Not<E> not);
 
-    T visit(U condition);
+    T visit(E condition);
 
-    default T visit(final IdentityOperation<U> id) {
+    default T visit(final IdentityOperation<E> id) {
         return id.expression().accept(this);
     }
 

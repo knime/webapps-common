@@ -52,20 +52,20 @@ package org.knime.core.webui.node.dialog.ui.rule;
  *
  * @author Paul Bärnreuther
  */
-public non-sealed class Not<U extends AtomicExpression<U>> implements OperationExpression<U> {
+public non-sealed class Not<E extends AtomicExpression<E>> implements Operator<E> {
 
-    private final Expression<U> m_childOperation;
+    private final Expression<E> m_childOperation;
 
-    public Not(final Expression<U> childOperation) {
+    public Not(final Expression<E> childOperation) {
         m_childOperation = childOperation;
     }
 
-    public Expression<U> getChildOperation() {
+    public Expression<E> getChildOperation() {
         return m_childOperation;
     }
 
     @Override
-    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

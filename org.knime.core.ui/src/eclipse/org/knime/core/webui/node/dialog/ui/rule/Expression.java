@@ -50,24 +50,24 @@ package org.knime.core.webui.node.dialog.ui.rule;
 
 /**
  * An expression in terms of propositional logic. An expression can either be an {@link AtomicExpression} or one of the
- * three {@link OperationExpression}s ({@link And}, {@link Or} or {@link Not}) defining how to combine multiple
+ * three {@link Operator}s ({@link And}, {@link Or} or {@link Not}) defining how to combine multiple
  * {@link AtomicExpression}s.
  *
  * Each implementation offers has its own {@link AtomicExpression}.
  *
  * Expressions are resolved via {@link ExpressionVisitor}s.
  *
- * @param <U> the type of atomic expressions used for this implementation
+ * @param <E> the type of atomic expressions used for this implementation
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public sealed interface Expression<U extends AtomicExpression<U>> permits OperationExpression<U>, AtomicExpression<U> {
+public sealed interface Expression<E extends AtomicExpression<E>> permits Operator<E>, AtomicExpression<E> {
 
     /**
      * @param <T> the type of the resolved value
      * @param visitor an implementation dependent expression resolver
      * @return a resolved value of the expression depending on the implementation.
      */
-    <T> T accept(ExpressionVisitor<T, U> visitor);
+    <T> T accept(ExpressionVisitor<T, E> visitor);
 
 }

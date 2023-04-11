@@ -51,29 +51,29 @@ package org.knime.core.webui.node.dialog.ui.rule;
 /**
  *
  * @author Paul Bärnreuther
- * @param <U> the type of the {@link AtomicExpression} depending on the implementation
+ * @param <E> the type of the {@link AtomicExpression} depending on the implementation
  */
-public non-sealed class Or<U extends AtomicExpression<U>> implements OperationExpression<U> {
+public non-sealed class Or<E extends AtomicExpression<E>> implements Operator<E> {
 
-    private final Expression<U>[] m_children;
+    private final Expression<E>[] m_children;
 
     /**
      * @param children the expressions which are combined using an or operation
      */
     @SuppressWarnings("unchecked")
-    public Or(final Expression<U>... children) {
+    public Or(final Expression<E>... children) {
         m_children = children;
     }
 
     /**
      * @return the expressions which are combined using an or operation
      */
-    public Expression<U>[] getChildren() {
+    public Expression<E>[] getChildren() {
         return m_children;
     }
 
     @Override
-    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

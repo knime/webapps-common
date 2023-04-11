@@ -51,7 +51,9 @@ package org.knime.core.webui.node.dialog.ui.rule;
 /**
  * An expression which can not be separated into smaller expressions using logical operations.
  *
+ * @param <E> the type of atomic expressions used for this implementation
+ *
  * @author Paul Bärnreuther
  */
-non-sealed interface AtomicExpression<U extends AtomicExpression<U>> extends Expression<U> {
+non-sealed interface AtomicExpression<E extends AtomicExpression<E>> extends Expression<E> {
 }

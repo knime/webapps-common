@@ -51,16 +51,16 @@ package org.knime.core.webui.node.dialog.ui.rule;
 /**
  *
  * @author Paul Bärnreuther
- * @param <U> the type of atomic expressions used within the current implementation
+ * @param <E> the type of atomic expressions used within the current implementation
  * @param expression
  */
-public record IdentityOperation<U extends AtomicExpression<U>>(Expression<U> expression) implements OperationExpression<U> {
+public record IdentityOperation<E extends AtomicExpression<E>>(Expression<E> expression) implements Operator<E> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T accept(final ExpressionVisitor<T, U> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

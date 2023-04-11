@@ -47,8 +47,8 @@
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
 /**
- * Use {@link Signal} annotations to declare conditions and {@link Effect} to linke these conditions to an
- * effect.
+ * Use {@link org.knime.core.webui.node.dialog.ui.rule.Signal} annotations to declare conditions and
+ * {@link org.knime.core.webui.node.dialog.ui.rule.Effect} to link these conditions to an effect.
  *
  * @author Paul Bärnreuther
  */

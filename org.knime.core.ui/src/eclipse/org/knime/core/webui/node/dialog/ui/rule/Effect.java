@@ -105,6 +105,6 @@ public @interface Effect {
      *         parameters which are all assignable from {@link Condition}.
      */
     @SuppressWarnings("rawtypes")
-    Class<? extends OperationExpression> operation() default IdentityOperation.class;
+    Class<? extends Operator> operation() default IdentityOperation.class;
 
 }

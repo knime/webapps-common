@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-public class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
     private final ObjectMapper m_mapper;
 
