@@ -1,9 +1,9 @@
 import { describe, expect, it, vi, beforeEach, type Mock } from 'vitest';
 import getWrappedAroundIndex from '../../util/getWrappedAroundIndex';
-import useDropdownNavigation, { type DropdownNavigationMethods } from '../useDropdownNavigation';
+import useDropdownNavigation, { type DropdownNavigationOptions } from '../useDropdownNavigation';
 
 describe('useDropdownNavigation', () => {
-    let props: DropdownNavigationMethods, clickSpy: Mock;
+    let props: DropdownNavigationOptions, clickSpy: Mock;
 
     beforeEach(() => {
         clickSpy = vi.fn();
@@ -21,7 +21,7 @@ describe('useDropdownNavigation', () => {
                     const outOfBoundsIndex = i + j;
                     index = getWrappedAroundIndex(outOfBoundsIndex, 10);
                 }
-                return { index, element: { click: () => clickSpy(index) } as any };
+                return { index, onClick: () => clickSpy(index) };
             }),
             close: vi.fn()
         };
@@ -84,19 +84,19 @@ describe('useDropdownNavigation', () => {
                 simulateEventCall(onKeydown, 'ArrowDown');
                 simulateEventCall(onKeydown, 'Enter');
                 expect(clickSpy).toHaveBeenCalledWith(0);
-                
+
                 simulateEventCall(onKeydown, 'ArrowDown');
                 simulateEventCall(onKeydown, 'Enter');
                 expect(clickSpy).toHaveBeenCalledWith(1);
             });
-    
+
             it('clicks on focused element on Space', () => {
                 const { onKeydown } = useDropdownNavigation(props);
 
                 simulateEventCall(onKeydown, 'ArrowDown');
                 simulateEventCall(onKeydown, 'Space');
                 expect(clickSpy).toHaveBeenCalledWith(0);
-                
+
                 simulateEventCall(onKeydown, 'ArrowDown');
                 simulateEventCall(onKeydown, 'Space');
                 expect(clickSpy).toHaveBeenCalledWith(1);

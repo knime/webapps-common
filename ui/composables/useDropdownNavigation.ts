@@ -8,40 +8,61 @@ const preventEvent = (event: Event) => {
 
 export type DropdownNavigationElement = {
     index: number,
-    element: HTMLElement
+    onClick: () => any;
 }
 
-export type DropdownNavigationMethods = {
-    // callback for retreiving the next clickable item and an index
+export type DropdownNavigationOptions = {
+    /**
+     * callback for retreiving the next clickable item and an index
+     */
     getNextElement(current: number | null, direction: -1 | 1): DropdownNavigationElement,
-    // method called when the dropdown is to be closed
-    close(): void
+    /**
+     * method called when the dropdown is to be closed
+     */
+    close(): void;
+    /**
+     * disables use of Space key to click on item
+     */
+    disableSpaceToClick?: boolean
 }
 
 type DropdownNavigationOutput = {
-    // current index of the current element. -1 if no element is selected
+    /**
+     * current index of the current element. -1 if no element is selected
+     */
     currentIndex: Ref<number|null>,
-    // unsets the current element and its index
+    /**
+     * unsets the current element and its index
+     */
     resetNavigation: () => void,
-    // callback to be triggered on keydown
+    /**
+     * callback to be triggered on keydown
+     */
     onKeydown: (event: KeyboardEvent) => void;
 }
 
-export default ({ getNextElement, close }: DropdownNavigationMethods): DropdownNavigationOutput => {
-    const currentIndex: Ref<number|null> = ref(null);
-    const currentElement: Ref<HTMLElement | null> = ref(null);
+export default ({
+    getNextElement,
+    close,
+    disableSpaceToClick
+}: DropdownNavigationOptions): DropdownNavigationOutput => {
+    const currentIndex: Ref<number | null> = ref(null);
+
+    const noop = () => {};
+    // defaults to no-op function
+    let currentElementClickHandler: DropdownNavigationElement['onClick'] = noop;
 
     const resetNavigation = () => {
         currentIndex.value = null;
-        currentElement.value = null;
+        currentElementClickHandler = noop;
     };
 
     const setNextElement = (step: -1 | 1) => {
-        const { element, index } = getNextElement(currentIndex.value, step);
+        const { onClick, index } = getNextElement(currentIndex.value, step);
         currentIndex.value = index;
-        currentElement.value = element;
+        currentElementClickHandler = onClick;
     };
-    
+
     const onKeydown = (event: KeyboardEvent) => {
         switch (event.code) {
             case 'ArrowDown':
@@ -53,12 +74,18 @@ export default ({ getNextElement, close }: DropdownNavigationMethods): DropdownN
                 setNextElement(-1);
                 break;
             case 'Enter':
-            case 'Space':
-                if (currentElement.value) {
+            case 'Space': {
+                const isEnter = event.code === 'Enter';
+                const isSpace = event.code === 'Space';
+                const hasCurrenIndex = currentIndex.value !== null;
+                const canClick = isEnter || (isSpace && !disableSpaceToClick);
+
+                if (hasCurrenIndex && canClick) {
                     preventEvent(event);
-                    currentElement.value.click();
+                    currentElementClickHandler();
                 }
                 break;
+            }
             case 'Escape':
             case 'Tab':
                 resetNavigation();
@@ -66,6 +93,6 @@ export default ({ getNextElement, close }: DropdownNavigationMethods): DropdownN
                 break;
         }
     };
-    
+
     return { onKeydown, currentIndex, resetNavigation };
 };
