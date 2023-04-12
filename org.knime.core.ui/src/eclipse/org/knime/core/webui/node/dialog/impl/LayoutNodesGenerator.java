@@ -49,18 +49,14 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.CONTROL_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SCOPE_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.JsonFormsControl;
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LayoutSkeleton;
-import org.knime.core.webui.node.dialog.ui.OrderedLayout;
 import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,9 +71,7 @@ final class LayoutNodesGenerator {
 
     private final ObjectMapper m_mapper;
 
-    private final Map<Class<?>, List<JsonFormsControl>> m_content;
-
-    private final Class<?> m_rootClass;
+    private final LayoutTreeNode m_rootLayoutTree;
 
     private Map<Class<?>, JsonFormsExpression> m_ruleSourcesMap;
 
@@ -89,36 +83,21 @@ final class LayoutNodesGenerator {
      */
     LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout) {
         m_mapper = mapper;
-        m_content = layout.controls();
         m_ruleSourcesMap = layout.ruleSources();
-        m_rootClass = layout.root();
+        m_rootLayoutTree = layout.layoutTreeRoot();
     }
 
     ObjectNode build() {
-        final var root = m_mapper.createObjectNode();
-        final var rootElements = addLayoutNode(root, m_rootClass);
-        if (m_rootClass != null) {
-            buildLayout(m_rootClass, rootElements);
-        }
-        return root;
+        final var rootNode = m_mapper.createObjectNode();
+        buildLayout(m_rootLayoutTree, rootNode.putArray(ELEMENTS_TAG));
+        return rootNode;
     }
 
-    private void buildLayout(final Class<?> parentClass, final ArrayNode parentNode) {
-        final var order = Optional.ofNullable(parentClass.getAnnotation(OrderedLayout.class));
-        final var nestedClasses = order.map(OrderedLayout::value).orElse(parentClass.getDeclaredClasses());
-        Arrays.asList(nestedClasses).forEach(childClass -> {
-            final var childNode = addLayoutNode(parentNode.addObject(), childClass);
-            buildLayout(childClass, childNode);
-        });
-
-    }
-
-    private ArrayNode addLayoutNode(final ObjectNode root, final Class<?> layoutElement) {
-        final var layoutPart = LayoutPart.determineFromClassAnnotation(layoutElement);
-        final var controls = m_content.getOrDefault(layoutElement, Collections.emptyList());
-        final var layoutNode = layoutPart.create(root, layoutElement);
-        controls.forEach(control -> addControlElement(layoutNode, control));
-        return layoutNode;
+    private void buildLayout(final LayoutTreeNode rootNode, final ArrayNode parentNode) {
+        final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
+        final var layoutNode = layoutPart.create(parentNode, rootNode.getValue());
+        rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
+        rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
 
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {

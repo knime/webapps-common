@@ -60,7 +60,6 @@ import java.util.function.Function;
 import org.knime.core.webui.node.dialog.ui.Section;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  *
@@ -68,7 +67,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
-        ROOT(context -> context.getRoot().putArray(ELEMENTS_TAG));
+        VIRTUAL_SECTION(LayoutNodeCreationContext::getParent);
 
     private Function<LayoutNodeCreationContext, ArrayNode> m_create;
 
@@ -78,21 +77,22 @@ enum LayoutPart {
 
     static LayoutPart determineFromClassAnnotation(final Class<?> clazz) {
         if (clazz == null) {
-            return ROOT;
+            return VIRTUAL_SECTION;
         }
         if (clazz.isAnnotationPresent(Section.class)) {
             return SECTION;
         }
-        return ROOT;
+        return VIRTUAL_SECTION;
     }
 
-    ArrayNode create(final ObjectNode root, final Class<?> layoutClass) {
-        return m_create.apply(new LayoutNodeCreationContext(root, layoutClass));
+    ArrayNode create(final ArrayNode parent, final Class<?> layoutClass) {
+        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass));
     }
 
     private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
         final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
-        final var node = creationContext.getRoot();
+        final var parent = creationContext.getParent();
+        final var node = parent.addObject();
         final var label = sectionAnnotation.title();
         node.put(LABEL_TAG, label);
         node.put(TYPE_TAG, SECTION_TAG);
@@ -104,17 +104,17 @@ enum LayoutPart {
 
     private class LayoutNodeCreationContext {
 
-        private final ObjectNode m_root;
+        private final ArrayNode m_parent;
 
         private final Class<?> m_layoutClass;
 
-        public LayoutNodeCreationContext(final ObjectNode root, final Class<?> layoutClass) {
-            m_root = root;
+        public LayoutNodeCreationContext(final ArrayNode parent, final Class<?> layoutClass) {
+            m_parent = parent;
             m_layoutClass = layoutClass;
         }
 
-        public ObjectNode getRoot() {
-            return m_root;
+        public ArrayNode getParent() {
+            return m_parent;
         }
 
         public Class<?> getLayoutClass() {

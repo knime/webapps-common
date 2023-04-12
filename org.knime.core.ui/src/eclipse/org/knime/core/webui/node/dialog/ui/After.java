@@ -44,68 +44,71 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 22, 2023 (Paul Bärnreuther): created
+ *   Apr 12, 2023 (benjamin): created
  */
-package org.knime.core.webui.node.dialog.impl;
+package org.knime.core.webui.node.dialog.ui;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.ui.Layout;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * This utility class offers a method to find the root node of a set of layout parts as described {@link Layout here}.
+ * An annotation for a layout part to ensure that the annotated element appears <b>after</b> the referenced layout part.
+ * <p>
+ * Example:
  *
+ * <pre>
+ * interface MyLayout {
+ *
+ *     &#64;Section(title = "Section 1")
+ *     &#64;After(Section2.class) // "Section 1" will be displayed after "Section 2"
+ *     interface Section1 {
+ *     }
+ *
+ *     &#64;Section(title = "Section 2")
+ *     interface Section2 {
+ *     }
+ * }
+ * </pre>
+ *
+ * This can also be used to target classes which do not have the same enclosing class and with that enables to combine
+ * two layouts. Note that in this case the enclosing class of the annotated interface will not be excluded from the
+ * layout.
+ *
+ * <p>
+ * Example:
+ *
+ * <pre>
+ * interface MyLayout {
+ *
+ *     &#64;Section(title = "My Section")
+ *     &#64;After(CommonLayout.CommonSection.class) // "My Section" will be displayed after "Common Section"
+ *     interface MySection {
+ *     }
+ * }
+ *
+ * interface CommonLayout {
+ *     &#64;Section(title = "Common Section")
+ *     interface CommonSection {
+ *     }
+ * }
+ * </pre>
+ * </p>
+ *
+ * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  * @author Paul Bärnreuther
+ * @see Before
  */
-final class LayoutRootFinderUtil {
-
-    private LayoutRootFinderUtil() {
-        // Utility class
-    }
+@Retention(RUNTIME)
+@Repeatable(AfterAllOf.class)
+@Target(TYPE)
+public @interface After {
 
     /**
-     * This method finds the common root of all layout nodes (see also {@link Layout}).
-     * @param layoutNodes the set of layout nodes which should have a common root
-     * @return a non-null optional which is empty only if the set of layoutNodes contains at most {@link null}
+     * @return the layout part that must be before the annotated layout part
      */
-    static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes) {
-        return findRootNode(layoutNodes, new HashSet<>());
-    }
-
-    private static Optional<Class<?>> findRootNode(final Set<Class<?>> layoutNodes, final Set<Class<?>> rootNodes) {
-        if (layoutNodes.isEmpty()) {
-            return mergeRoots(rootNodes);
-        }
-        final var rootsAndOthers = separateRootNodes(layoutNodes);
-        rootNodes.addAll(rootsAndOthers.getFirst());
-
-        final Set<Class<?>> next = new HashSet<>();
-        for (var layoutPart : rootsAndOthers.getSecond()) {
-            final var enclosingClass = layoutPart.getEnclosingClass();
-            if (enclosingClass == null) {
-                throw new UiSchemaGenerationException(
-                    String.format("No enclosing class found for layout part %s", layoutPart.getSimpleName()));
-            }
-            next.add(enclosingClass);
-        }
-        return findRootNode(next, rootNodes);
-    }
-
-    private static Optional<Class<?>> mergeRoots(final Set<Class<?>> rootNodes) {
-        if (rootNodes.size() >= 2) {
-            throw new UiSchemaGenerationException("Multiple root layout nodes detected");
-        }
-        return rootNodes.stream().findFirst();
-    }
-
-    private static Pair<Set<Class<?>>, Set<Class<?>>> separateRootNodes(final Set<Class<?>> layoutNodes) {
-        final var partition = layoutNodes.stream().filter(Objects::nonNull).collect(
-            Collectors.partitioningBy(clazz -> LayoutPart.determineFromClassAnnotation(clazz) == LayoutPart.ROOT));
-        return new Pair<>(new HashSet<>(partition.get(true)), new HashSet<>(partition.get(false)));
-    }
+    Class<?> value();
 }

@@ -56,7 +56,6 @@ import java.util.LinkedHashMap;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
-import org.knime.core.webui.node.dialog.ui.OrderedLayout;
 import org.knime.core.webui.node.dialog.ui.Section;
 import org.knime.core.webui.node.dialog.ui.style.BooleanStyleProvider;
 import org.knime.core.webui.node.dialog.ui.style.Style;
@@ -84,7 +83,12 @@ class JsonFormsUiSchemaUtilTest {
 
     @Layout(TestSettingsLayout.class)
     class DummySettings implements DefaultNodeSettings {
-        String m_foo;
+
+        @Layout(TestSettingsLayout.Section1.class)
+        String m_setting1;
+
+        @Layout(TestSettingsLayout.Section2.NestedSection.class)
+        String m_setting2;
     }
 
     @Test
@@ -92,44 +96,14 @@ class JsonFormsUiSchemaUtilTest {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", DummySettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
-        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
-        assertThatJson(response).inPath("$.elements[2].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[2].label").isString().isEqualTo("Test section title");
-        assertThatJson(response).inPath("$.elements[2].options.isAdvanced").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[2].elements[0].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[2].elements[0].label").isString().isEqualTo("Nested section title");
-    }
-
-    @OrderedLayout({TestOrderedLayout.Section2.class, TestOrderedLayout.Section1.class})
-    interface TestOrderedLayout {
-        @Section(title = "1")
-        interface Section1 {
-        }
-
-        @Section(title = "2")
-        interface Section2 {
-        }
-    }
-
-    @Layout(TestOrderedLayout.class)
-    class TestOrderedLayoutSettings implements DefaultNodeSettings {
-        String m_foo;
-    }
-
-    @Test
-    void testOrderedLayout() throws JsonProcessingException {
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", TestOrderedLayoutSettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
-        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
-        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("2");
-        assertThatJson(response).inPath("$.elements[2].type").isString().isEqualTo("Section");
-        assertThatJson(response).inPath("$.elements[2].label").isString().isEqualTo("1");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("Test section title");
+        assertThatJson(response).inPath("$.elements[1].options.isAdvanced").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[1].elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[1].elements[0].label").isString().isEqualTo("Nested section title");
     }
 
     class TestLayoutViewSettings implements DefaultNodeSettings {
@@ -326,10 +300,15 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Test
-    void testThrowsIfNoRootIsFoundForALayoutPart() {
+    void testSingleLayoutPartWithoutRoot() {
         final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("test", NoRootForSectionSettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
+        var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[0].elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/foo");
     }
 
     static class TestMultipleRootsOne implements DefaultNodeSettings {
@@ -342,11 +321,8 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     static class TestMultipleRootsTwo implements DefaultNodeSettings {
-        @Section
-        static interface Section2 {
-        }
 
-        @Layout(Section2.class)
+        @Layout(GeneralTestLayout.GeneralSection1.class)
         String m_bar;
     }
 
@@ -531,4 +507,67 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[0].options.merged.bar").isString().isEqualTo("bar");
     }
 
+    @Test
+    void testVirtualSections() throws JsonProcessingException {
+        interface TestVirtualSectionLayout {
+            @Section(title = "Section1")
+            interface Section1 {
+            }
+
+            interface Section2 { // A virtual section
+            }
+
+            @Section(title = "Section3")
+            interface Section3 {
+            }
+        }
+
+        class VirtualLayoutSettings implements DefaultNodeSettings {
+            @Layout(TestVirtualSectionLayout.Section1.class)
+            String m_setting1;
+
+            @Layout(TestVirtualSectionLayout.Section2.class)
+            String m_setting2;
+
+            @Layout(TestVirtualSectionLayout.Section3.class)
+            String m_setting3;
+        }
+
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", VirtualLayoutSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section1");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[2].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[2].label").isString().isEqualTo("Section3");
+    }
+
+    @Test
+    void testEmptySection() throws JsonProcessingException {
+        interface TestEmptySectionLayout {
+            @Section(title = "Section1")
+            interface Section1 {
+            }
+
+            @Section(title = "Section2")
+            interface Section2 {
+            }
+        }
+
+        class TestEmptySectionSettings implements DefaultNodeSettings {
+            @Layout(TestEmptySectionLayout.Section1.class)
+            String m_setting1;
+        }
+
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestEmptySectionSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
+        assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section1");
+    }
 }

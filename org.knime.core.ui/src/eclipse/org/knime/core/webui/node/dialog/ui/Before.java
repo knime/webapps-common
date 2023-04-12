@@ -44,28 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 5, 2023 (Paul Bärnreuther): created
+ *   Apr 12, 2023 (benjamin): created
  */
 package org.knime.core.webui.node.dialog.ui;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Since Class.getDeclaredClasses() does not yield nested classes in any determinable order,
- * this annotation can be used in order to clarify the order of layoutParts.
+ * An annotation for a layout part to ensure that the annotated element appears <b>before</b> the referenced layout
+ * part.
+ * <p>
+ * Example:
  *
- * TODO: UIEXT-842 Replace this with a more capable version of ordering layout parts
+ * <pre>
+ * interface MyLayout {
  *
+ *     &#64;Section(title = "Section 1")
+ *     interface Section1 {
+ *     }
+ *
+ *     &#64;Section(title = "Section 2")
+ *     &#64;Before(Section1.class) // "Section 2" will be displayed before "Section 1"
+ *     interface Section2 {
+ *     }
+ * }
+ * </pre>
+ * </p>
+ *
+ * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  * @author Paul Bärnreuther
+ * @see After
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface OrderedLayout {
+@Repeatable(BeforeAllOf.class)
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Before {
+
     /**
-     * @return an array listing layout parts
+     * @return the layout part that must be after the annotated layout part
      */
-    Class<?>[] value();
+    Class<?> value();
 }

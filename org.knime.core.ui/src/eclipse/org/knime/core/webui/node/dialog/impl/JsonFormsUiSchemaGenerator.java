@@ -126,32 +126,15 @@ final class JsonFormsUiSchemaGenerator {
         return new LayoutNodesGenerator(m_mapper, layoutSkeleton).build();
     }
 
-    static record LayoutSkeleton(Class<?> root, Map<Class<?>, List<JsonFormsControl>> controls,
-        Map<Class<?>, JsonFormsExpression> ruleSources) {
+    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> ruleSources) {
     }
 
     private LayoutSkeleton resolveLayoutToContentAndRoot() {
         final var controlsAndRuleSources = getLayoutPartToControls();
         final var layoutClassesToControls = controlsAndRuleSources.getFirst();
+        final var layoutTreeRoot = new LayoutTree(layoutClassesToControls).getRootNode();
         final var ruleSources = controlsAndRuleSources.getSecond();
-        final var rootClass = LayoutRootFinderUtil.findRootNode(layoutClassesToControls.keySet()).orElse(null);
-        addContentWithoutLayoutToRoot(layoutClassesToControls, rootClass);
-        return new LayoutSkeleton(rootClass, layoutClassesToControls, ruleSources);
-    }
-
-    private static void addContentWithoutLayoutToRoot(
-        final Map<Class<?>, List<JsonFormsControl>> layoutClassesToControls, final Class<?> rootClass) {
-        if (rootClass != null) {
-            final var controlsWithoutLayout = layoutClassesToControls.remove(null);
-            if (controlsWithoutLayout != null) {
-                final var rootContent = layoutClassesToControls.get(rootClass);
-                if (rootContent != null) {
-                    rootContent.addAll(controlsWithoutLayout);
-                } else {
-                    layoutClassesToControls.put(rootClass, controlsWithoutLayout);
-                }
-            }
-        }
+        return new LayoutSkeleton(layoutTreeRoot, ruleSources);
     }
 
     /**
