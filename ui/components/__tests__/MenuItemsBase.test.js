@@ -328,7 +328,7 @@ describe('MenuItemsBase.vue', () => {
             expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null, undefined]);
         });
 
-        it('emits @item-focused on focused item index change', async () => {
+        it('emits @item-focused on focused item index change and when items change', async () => {
             const focusedItemIndex = 2;
             await wrapper.setProps({ focusedItemIndex });
             const focusedItemId = 'menu-item-menu-2';
@@ -337,6 +337,16 @@ describe('MenuItemsBase.vue', () => {
                 { text: 'Third' }
             ]);
             expect(wrapper.find(`#${focusedItemId}.focused`).exists()).toBeTruthy();
+
+            const newItems = items.concat({ text: 'Fourth' });
+
+            await wrapper.setProps({ items: newItems });
+
+            // new emission, but same focused index
+            expect(wrapper.emitted('item-focused')[2]).toStrictEqual([
+                focusedItemId,
+                { text: 'Third' }
+            ]);
         });
 
         it('emits @item-hovered on enabled list items', () => {

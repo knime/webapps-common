@@ -48,8 +48,11 @@ export default ({
 }: DropdownNavigationOptions): DropdownNavigationOutput => {
     const currentIndex: Ref<number | null> = ref(null);
 
-    const noop = () => {};
-    // defaults to no-op function
+    const noop = () => {
+        // Empty function that doesn't do anything. Used as the default value
+        // to initialize or reset the `currentElementClickHandler`
+    };
+
     let currentElementClickHandler: DropdownNavigationElement['onClick'] = noop;
 
     const resetNavigation = () => {

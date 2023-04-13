@@ -102,6 +102,18 @@ describe('useDropdownNavigation', () => {
                 expect(clickSpy).toHaveBeenCalledWith(1);
             });
 
+            it('does not click on Space if the `disableSpaceToClick` option is set to true', () => {
+                const { onKeydown } = useDropdownNavigation({ ...props, disableSpaceToClick: true });
+
+                simulateEventCall(onKeydown, 'ArrowDown');
+                simulateEventCall(onKeydown, 'Space');
+                expect(clickSpy).not.toHaveBeenCalled();
+
+                // make sure enter still works
+                simulateEventCall(onKeydown, 'Enter');
+                expect(clickSpy).toHaveBeenCalledWith(0);
+            });
+
             it('does not trigger a click if no element is focused', () => {
                 const { onKeydown } = useDropdownNavigation(props);
 
