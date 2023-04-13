@@ -64,7 +64,6 @@ export default {
             skippedRemainingColumnsColumnMinWidth: 200,
             columnDataTypeIds: null,
             columnContentTypes: null,
-            bottomCellMetadata: null,
             // a counter which is used to ignore all requests which were not the last sent one
             lastUpdateHash: 0,
             wrapperResizeObserver: new ResizeObserver(() => {
@@ -496,40 +495,18 @@ export default {
             if (lazyLoad) {
                 const { newScopeStart, direction, bufferStart = 0, bufferEnd = bufferStart, numRows } = lazyLoad;
                 const topPreviousDataLength = this.table?.rows?.length || 0;
-
-                const bufferScopeTopRowData = this.getBufferScopeToCombinedTopRowData(
-                    bufferStart, bufferEnd, topPreviousDataLength
+                const rows = this.getCombinedTopRows(
+                    { topTable, bufferStart, bufferEnd, direction, topPreviousDataLength }
                 );
-                const bufferScopeBottomRowData = this.getBufferScopeToCombinedBottomRowData(bufferStart, bufferEnd);
-
-                const rows = this.combineWithPrevious({
-                    previousRows: this.table.rows, newRows: topTable?.rows, direction, ...bufferScopeTopRowData
-                });
                 if (typeof this.table.rows === 'undefined') {
                     this.table = { ...topTable, rows };
                 } else {
                     this.table.rows = rows;
                     this.table.rowCount = getFromTopOrBottom('rowCount');
                 }
-
-                this.bottomRows = this.combineWithPrevious({
-                    previousRows: this.bottomRows, newRows: bottomTable?.rows, direction, ...bufferScopeBottomRowData
-                });
-
-                this.table.cellMetadata = this.combineWithPrevious({
-                    previousRows: this.table.cellMetadata,
-                    newRows: topTable?.cellMetadata,
-                    direction,
-                    ...bufferScopeTopRowData
-                });
-
-                this.bottomCellMetadata = this.combineWithPrevious({
-                    previousRows: this.bottomCellMetadata,
-                    newRows: bottomTable?.cellMetadata,
-                    direction,
-                    ...bufferScopeBottomRowData
-                });
-
+                this.bottomRows = this.getCombinedBottomRows(
+                    { bottomTable, bufferStart, bufferEnd, direction }
+                );
                 this.currentScopeStartIndex = newScopeStart;
                 this.currentScopeEndIndex = Math.min(
                     newScopeStart + (bufferEnd - bufferStart) + numRows,
@@ -538,7 +515,6 @@ export default {
             } else {
                 this.table = topTable;
                 this.bottomRows = bottomTable ? bottomTable.rows : [];
-                this.bottomCellMetadata = bottomTable ? bottomTable.cellMetadata : [];
             }
             this.currentRowCount = this.table.rowCount;
             this.transformSelection();
@@ -625,25 +601,36 @@ export default {
         performRequest(method, options) {
             return this.jsonDataService.data({ method, options });
         },
-        getBufferScopeToCombinedTopRowData(bufferStart, bufferEnd, topPreviousDataLength) {
+        getCombinedTopRows({ topTable, bufferStart, bufferEnd, direction, topPreviousDataLength }) {
             const previousStartIndex = this.currentScopeStartIndex;
-            return {
-                bufferStart: Math.min(bufferStart - previousStartIndex, topPreviousDataLength),
-                bufferEnd: Math.min(bufferEnd - previousStartIndex, topPreviousDataLength)
-            };
+            const topBufferStart = Math.min(bufferStart - previousStartIndex, topPreviousDataLength);
+            const topBufferEnd = Math.min(bufferEnd - previousStartIndex, topPreviousDataLength);
+            return this.combineWithPrevious({
+                newRows: topTable?.rows,
+                bufferStart: topBufferStart,
+                bufferEnd: topBufferEnd,
+                direction
+            });
         },
-        getBufferScopeToCombinedBottomRowData(bufferStart, bufferEnd) {
+        getCombinedBottomRows({ bottomTable, bufferStart, bufferEnd, direction }) {
+            // plus 1 because of the additional "…" row
             const previousBottomStartIndex = Math.max(this.numRowsTop + 1, this.currentScopeStartIndex);
-            return {
-                bufferStart: Math.max(bufferStart - previousBottomStartIndex, 0),
-                bufferEnd: Math.max(bufferEnd - previousBottomStartIndex, 0)
-            };
+            const bottomBufferStart = Math.max(bufferStart - previousBottomStartIndex, 0);
+            const bottomBufferEnd = Math.max(bufferEnd - previousBottomStartIndex, 0);
+            return this.combineWithPrevious({
+                newRows: bottomTable?.rows,
+                bufferStart: bottomBufferStart,
+                bufferEnd: bottomBufferEnd,
+                direction,
+                bottom: true
+            });
         },
-        combineWithPrevious({ previousRows, newRows, bufferStart, bufferEnd, direction }) {
+        combineWithPrevious({ newRows, bufferStart, bufferEnd, direction, bottom = false }) {
             const rows = newRows || [];
             if (bufferStart === bufferEnd) {
                 return rows;
             }
+            const previousRows = bottom ? this.bottomRows : this.table.rows;
             const buffer = previousRows?.slice(bufferStart, bufferEnd) || [];
             if (direction > 0) {
                 return [...buffer, ...rows];
@@ -981,8 +968,6 @@ export default {
       :bottom-data="bottomRowData"
       :current-selection="[currentSelection]"
       :current-bottom-selection="currentBottomSelection"
-      :cell-metadata="table.cellMetadata"
-      :bottom-cell-metadata="bottomCellMetadata"
       :total-selected="totalSelected"
       :data-config="dataConfig"
       :table-config="tableConfig"

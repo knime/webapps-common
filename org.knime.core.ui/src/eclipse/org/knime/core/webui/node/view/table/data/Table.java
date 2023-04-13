@@ -48,9 +48,6 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -73,9 +70,10 @@ public interface Table {
     String[] getColumnDataTypeIds();
 
     /**
-     * @return the requested rows; can contain {@code null}s in case of missing values
+     * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
+     *         {@code Cell}s in case of missing values
      */
-    String[][] getRows();
+    Object[][] getRows();
 
     /**
      * @return the row count of the table in use
@@ -92,10 +90,5 @@ public interface Table {
      * @return the number of selected rows of the table in use
      */
     Long getTotalSelected();
-
-    /**
-     * @return the metadata for cells in the requested rows
-     */
-    List<Map<String, CellMetadata>> getCellMetadata();
 
 }

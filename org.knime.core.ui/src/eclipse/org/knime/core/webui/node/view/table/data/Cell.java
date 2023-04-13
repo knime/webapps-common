@@ -48,67 +48,17 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.container.CloseableRowIterator;
-
 /**
- *
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
- * @param <T> the type of the visitor
  */
-public interface TableCellVisitor<T> {
-
-    /**
-     * Offset of the column index, because the row key/index are also sent to the frontend when not requested
-     */
-    int ROWKEY_ROWINDEX_OFFSET = 2;
+public interface Cell {
 
     /**
      *
-     * @param colIndices the indices of the columns that are to be displayed
-     * @param numRows the number of rows to get
-     * @param rowIteratorSupplier the iterator that supplies the rows
-     * @param visitors the visitors for which to compute cell/row data
+     * @return the metadata of the cell
      */
-    static void iterateTable(final int[] colIndices, final int numRows,
-        final Supplier<CloseableRowIterator> rowIteratorSupplier, final TableCellVisitor<?>... visitors) {
-        try (final var iterator = rowIteratorSupplier.get()) {
-            IntStream.range(0, numRows).forEach(rowIndex -> {
-                final var row = iterator.next();
-                IntStream.range(0, colIndices.length).forEach(colIndex -> {
-                    var colIndexFiltered = colIndices[colIndex];
-                    var cell = row.getCell(colIndexFiltered);
-                    Stream.of(visitors).forEach(visitor -> visitor.visitCell(rowIndex, colIndex, cell));
-                });
-                Stream.of(visitors).forEach(visitor -> visitor.visitRow(rowIndex, row));
-            });
-        }
-    }
+    String getMetadata();
 
-    /**
-     * @param rowIdx the index of the current row
-     * @param row the data of the current row
-     */
-    void visitRow(final int rowIdx, final DataRow row);
-
-    /**
-     *
-     * @param rowIdx the index of the current row
-     * @param colIdx the index of the current column
-     * @param cell the data contained in the table at the current rowIdx and colIdx
-     */
-    void visitCell(int rowIdx, int colIdx, DataCell cell);
-
-    /**
-     *
-     * @return the collected cell data
-     */
-    T getResult();
 }

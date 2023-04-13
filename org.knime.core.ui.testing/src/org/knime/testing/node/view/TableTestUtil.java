@@ -73,7 +73,6 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.IntValue;
 import org.knime.core.data.LongValue;
-import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.BooleanCell;
@@ -206,8 +205,8 @@ public final class TableTestUtil {
          * @return this builder
          */
         public TableBuilder addRowWithId(final String rowId, final Object... cells) {
-            m_container.addRowToTable(
-                new DefaultRow(new RowKey(rowId), Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
+            m_container.addRowToTable(new DefaultRow(new RowKey(rowId),
+                Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
             return this;
         }
 
@@ -407,7 +406,6 @@ public final class TableTestUtil {
             .addColumn("bitvector", SparseBitVectorCell.TYPE)//
             .addColumn("boolean", BooleanCell.TYPE)//
             .addColumn("image", new PNGImageCellFactory().getDataType())//
-            .addColumn("missing", StringCell.TYPE)//
             .build();
     }
 
@@ -454,8 +452,7 @@ public final class TableTestUtil {
             new DoubleCell(i), //
             new SparseBitVectorCellFactory(Integer.toHexString(i)).createDataCell(), //
             i % 2 == 1 ? BooleanCell.TRUE : BooleanCell.FALSE, //
-            createPNGImageCell(rowIndexToRandomImageSeedMap.apply(i)), //
-            new MissingCell("Missing Value: " + i)}).forEach(builder::addRow);
+            createPNGImageCell(rowIndexToRandomImageSeedMap.apply(i))}).forEach(builder::addRow);
         return builder.build();
     }
 
@@ -489,7 +486,7 @@ public final class TableTestUtil {
      * @param seed the initial seed for the random number generator (for deterministic random images)
      * @return a {@link PNGImageCell} containing a small png image
      */
-    public static DataCell createPNGImageCell(final long seed) {
+    public static DataCell createPNGImageCell(final long seed)  {
         var img = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
         var rand = new Random(seed);
         for (var x = 0; x < img.getHeight(); x++) {

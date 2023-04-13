@@ -38,20 +38,16 @@ describe('TableView.vue', () => {
     beforeEach(() => {
         initialDataMock = {
             table: {
-                rows: [['1', 'row1', null, 'entry1col2', '1', 'view_x_y/datacell/hash1.png'],
+                rows: [['1', 'row1', { metadata: 'row1col2' }, 'entry1col2', '1', 'view_x_y/datacell/hash1.png'],
                     ['2', 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png'],
-                    ['3', 'row3', 'entry3col1', 'entry3col2', null, 'view_x_y/datacell/hash3.png'],
+                    ['3', 'row3', 'entry3col1', 'entry3col2', { metadata: 'row3col4' }, 'view_x_y/datacell/hash3.png'],
                     ['4', 'row4', 'entry4col1', 'entry4col2', '4', 'view_x_y/datacell/hash4.png']],
                 columnContentTypes: ['txt', 'txt', 'txt', 'img_path'],
                 columnDataTypeIds: ['datatype1', 'datatype1', 'datatype2', 'datatype3'],
                 rowCount,
                 columnCount,
                 displayedColumns: ['col1', 'col2', 'col3', 'col4'],
-                totalSelected: 0,
-                cellMetadata: [{ '2': { missingCellErrorMessage: 'Missing Value row1col2' } },
-                    {},
-                    { '4': { missingCellErrorMessage: 'Missing Value row3col4' } },
-                    {}]
+                totalSelected: 0
             },
             dataTypes: {
                 datatype1: {
@@ -98,10 +94,7 @@ describe('TableView.vue', () => {
         };
 
         // eslint-disable-next-line no-magic-numbers
-        dataRequestResult = { ...initialDataMock.table,
-            rows: initialDataMock.table.rows.slice(1, 3),
-            cellMetadata: initialDataMock.table.cellMetadata.slice(1, 3),
-            columnCount: 2 };
+        dataRequestResult = { ...initialDataMock.table, rows: initialDataMock.table.rows.slice(1, 3), columnCount: 2 };
         getTotalSelectedResult = 2;
         getCurrentRowKeysResult = ['row1', 'row3'];
         getData = vi.fn();
@@ -414,12 +407,11 @@ describe('TableView.vue', () => {
                     });
                 });
     
-                it('appends buffer from previously fetched row data', async () => {
+                it('appends buffer from previously fetched rows', async () => {
                     await wrapper.setData({
                         table: {
                             ...wrapper.vm.table,
-                            rows: [['previousRow1'], ['previousRow2'], ['previousRow3'], ['previousRow4']],
-                            cellMetadata: [{ '2': { testMsg: 'test row1col2' } }, {}, {}, {}]
+                            rows: [['previousRow1'], ['previousRow2'], ['previousRow3'], ['previousRow4']]
                         }
                     });
 
@@ -437,12 +429,6 @@ describe('TableView.vue', () => {
                         ['previousRow1'],
                         dataRequestResult.rows[0],
                         dataRequestResult.rows[1]
-                    ]);
-                    expect(wrapper.vm.table.cellMetadata.length).toBe(3);
-                    expect(wrapper.vm.table.cellMetadata).toStrictEqual([
-                        { '2': { testMsg: 'test row1col2' } },
-                        {},
-                        { '4': { missingCellErrorMessage: 'Missing Value row3col4' } }
                     ]);
                 });
 
@@ -576,16 +562,9 @@ describe('TableView.vue', () => {
                             await wrapper.setData({
                                 table: {
                                     ...wrapper.vm.table,
-                                    rows: [['previousRow1'], ['previousRow2'], ['previousRow3']],
-                                    cellMetadata: [
-                                        { '2': { testMsg: 'test prevRow1col2' } },
-                                        { '2': { testMsg: 'test prevRow2col2' } },
-                                        { '2': { testMsg: 'test prevRow3col2' } }
-                                    ]
+                                    rows: [['previousRow1'], ['previousRow2'], ['previousRow3']]
                                 },
                                 bottomRows: [['previousBottomRow1'], ['previousBottomRow2']],
-                                bottomCellMetadata: [{ '2': { testMsg: 'test prevBottomRow1col2' } },
-                                    { '2': { testMsg: 'test prevBottomRow2col2' } }],
                                 currentScopeStartIndex: 3996
                             });
 
@@ -607,30 +586,15 @@ describe('TableView.vue', () => {
                                 ['previousBottomRow2'],
                                 ...dataRequestResult.rows
                             ]);
-                            expect(wrapper.vm.table.cellMetadata).toStrictEqual(
-                                [{ '2': { testMsg: 'test prevRow2col2' } }, { '2': { testMsg: 'test prevRow3col2' } }]
-                            );
-                            expect(wrapper.vm.bottomCellMetadata).toStrictEqual([
-                                { '2': { testMsg: 'test prevBottomRow1col2' } },
-                                { '2': { testMsg: 'test prevBottomRow2col2' } },
-                                ...dataRequestResult.cellMetadata
-                            ]);
                         });
 
                         it('scrolling up at the intersection of top and bottom', async () => {
                             await wrapper.setData({
                                 table: {
                                     ...wrapper.vm.table,
-                                    rows: [['previousRow1'], ['previousRow2'], ['previousRow3']],
-                                    cellMetadata: [
-                                        { '2': { testMsg: 'test prevRow1col2' } },
-                                        { '2': { testMsg: 'test prevRow2col2' } },
-                                        { '2': { testMsg: 'test prevRow3col2' } }
-                                    ]
+                                    rows: [['previousRow1'], ['previousRow2'], ['previousRow3']]
                                 },
                                 bottomRows: [['previousBottomRow1'], ['previousBottomRow2']],
-                                bottomCellMetadata: [{ '2': { testMsg: 'test prevBottomRow1col2' } },
-                                    { '2': { testMsg: 'test prevBottomRow2col2' } }],
                                 currentScopeStartIndex: 3996
                             });
 
@@ -652,28 +616,15 @@ describe('TableView.vue', () => {
                             expect(wrapper.vm.bottomRows).toStrictEqual([
                                 ['previousBottomRow1']
                             ]);
-
-                            expect(wrapper.vm.table.cellMetadata).toStrictEqual([
-                                ...dataRequestResult.cellMetadata,
-                                { '2': { testMsg: 'test prevRow1col2' } },
-                                { '2': { testMsg: 'test prevRow2col2' } },
-                                { '2': { testMsg: 'test prevRow3col2' } }
-                            ]);
-                            expect(wrapper.vm.bottomCellMetadata).toStrictEqual([
-                                { '2': { testMsg: 'test prevBottomRow1col2' } }
-                            ]);
                         });
 
                         it('without previous top rows', async () => {
                             await wrapper.setData({
                                 table: {
                                     ...wrapper.vm.table,
-                                    rows: [],
-                                    cellMetadata: []
+                                    rows: []
                                 },
                                 bottomRows: [['previousBottomRow1'], ['previousBottomRow2']],
-                                bottomCellMetadata: [{ '2': { testMsg: 'test prevBottomRow1col2' } },
-                                    { '2': { testMsg: 'test prevBottomRow2col2' } }],
                                 currentScopeStartIndex: 4498
                             });
 
@@ -690,12 +641,6 @@ describe('TableView.vue', () => {
                             expect(wrapper.vm.bottomRows).toStrictEqual([
                                 ['previousBottomRow2'],
                                 ...dataRequestResult.rows
-                            ]);
-                            
-                            expect(wrapper.vm.table.cellMetadata).toStrictEqual([]);
-                            expect(wrapper.vm.bottomCellMetadata).toStrictEqual([
-                                { '2': { testMsg: 'test prevBottomRow2col2' } },
-                                ...dataRequestResult.cellMetadata
                             ]);
                         });
                     });

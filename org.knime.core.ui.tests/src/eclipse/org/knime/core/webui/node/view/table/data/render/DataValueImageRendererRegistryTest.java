@@ -98,7 +98,7 @@ public class DataValueImageRendererRegistryTest {
 
         // access the same image multiple times (within the same chunk/page of rows)
         table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
-        var imgPath = table.getRows()[3][2].replace(pathPrefix, "");
+        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
         var img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         img = imgReg.renderImage(imgPath);
@@ -109,7 +109,7 @@ public class DataValueImageRendererRegistryTest {
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         // request image from the new chunk
-        imgPath = table.getRows()[3][2].replace(pathPrefix, "");
+        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
 
@@ -118,7 +118,7 @@ public class DataValueImageRendererRegistryTest {
         // request image from the previous chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSize(0);
-        imgPath = table.getRows()[3][2].replace(pathPrefix, "");
+        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
         // request image from the new chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
@@ -142,21 +142,21 @@ public class DataValueImageRendererRegistryTest {
         var columns = new String[]{"double", "image"};
         for (var i = 0; i <= 1; i++) {
             var table = dataService.getTable(columns, i * 100l, 100, rendererIds, false, false, false);
-            Arrays.stream(table.getRows()).forEach(r -> imgPaths.add(r[1]));
+            Arrays.stream(table.getRows()).forEach(r -> imgPaths.add((String)r[1]));
             var stats = imgReg.getStatsPerTable(tableId);
             assertThat(stats.numImages()).isEqualTo((i + 1) * 100 * 2); // there are two images per row
             var batchSizes = new int[i + 1];
             Arrays.fill(batchSizes, 100 * 2);
             assertThat(stats.batchSizes()).isEqualTo(batchSizes);
-            imgReg.renderImage(table.getRows()[0][2].replace(pathPrefix, ""));
-            imgReg.renderImage(table.getRows()[50][2].replace(pathPrefix, ""));
+            imgReg.renderImage(((String)table.getRows()[0][2]).replace(pathPrefix, ""));
+            imgReg.renderImage(((String)table.getRows()[50][2]).replace(pathPrefix, ""));
             assertThat(stats.numRenderedImages()).isEqualTo(2 * (i + 1));
         }
         assertThat(imgReg.getStatsPerTable(tableId).batchSizes()).isEqualTo(new int[]{200, 200});
 
         // the image data cache has it's limit at 2 row batches -> if exceed, the oldest batch is removed
         var table = dataService.getTable(columns, 200, 80, rendererIds, false, false, false);
-        Arrays.stream(table.getRows()).forEach(r -> imgPaths.add(r[1]));
+        Arrays.stream((table.getRows())).forEach(r -> imgPaths.add((String)r[1]));
         var stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(360); // there are two images per row
         var batchSizes = new int[]{160, 200};
