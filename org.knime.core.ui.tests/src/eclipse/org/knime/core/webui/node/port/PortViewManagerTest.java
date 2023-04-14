@@ -71,7 +71,7 @@ import org.mockito.Mockito;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class PortViewManagerTest {
+class PortViewManagerTest {
 
     /**
      * Tests {@link PortViewManager#getPortView(NodePortWrapper)} and the proper caching and clean-up of the
@@ -81,16 +81,18 @@ public class PortViewManagerTest {
      *
      */
     @Test
-    public void testGetPortView() throws IOException {
+    void testGetPortView() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(0, 1));
         wfm.executeAllAndWaitUntilDone();
 
         var portViewFactory0 = mock(PortViewFactory.class);
-        Mockito.when(portViewFactory0.createPortView(nnc.getOutPort(0).getPortObject())).thenReturn(createPortView());
+        Mockito.when(portViewFactory0.createPortView(nnc.getOutPort(0).getPortObject()))
+            .thenAnswer(i -> createPortView());
 
         var portViewFactory1 = mock(PortViewFactory.class);
-        Mockito.when(portViewFactory1.createPortView(nnc.getOutPort(1).getPortObject())).thenReturn(createPortView());
+        Mockito.when(portViewFactory1.createPortView(nnc.getOutPort(1).getPortObject()))
+            .thenAnswer(i -> createPortView());
 
         var portViewManager = PortViewManager.getInstance();
         PortViewManager.registerPortViewFactory(FlowVariablePortObject.TYPE, portViewFactory0);
@@ -103,7 +105,7 @@ public class PortViewManagerTest {
         var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0));
         assertThat(portView).isNotNull();
         var portView2 = portViewManager.getPortView(NodePortWrapper.of(nnc, 0));
-        assertThat(portView == portView2).isTrue();
+        assertThat(portView).isSameAs(portView2);
 
         portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 1));
         assertThat(portView).isNotNull();
@@ -111,18 +113,19 @@ public class PortViewManagerTest {
         // check that the port view cache is cleared on node reset
         assertThat(portViewManager.getPortViewMapSize()).isEqualTo(2);
         wfm.resetAndConfigureAll();
-        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(0);
+        assertThat(portViewManager.getPortViewMapSize()).isZero();
 
         // check that the port view cache is cleared when the node is being removed
         portViewManager.getPortView(NodePortWrapper.of(nnc, 1));
         assertThat(portViewManager.getPortViewMapSize()).isEqualTo(1);
         wfm.removeNode(nnc.getID());
-        Awaitility.await().untilAsserted(() -> assertThat(portViewManager.getPortViewMapSize()).isEqualTo(0));
+        Awaitility.await().untilAsserted(() -> assertThat(portViewManager.getPortViewMapSize()).isZero());
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
     private static PortView createPortView() {
+        assertThat(PortContext.getContext().getNodePort()).isNotNull();
         return new PortView() {
 
             @Override
