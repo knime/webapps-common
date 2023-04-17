@@ -48,7 +48,13 @@
  */
 package org.knime.core.webui.node.port;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.WeakHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -98,9 +104,11 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
     /**
      * @param portType the port type to check
+     * @param viewIdx the index of the requested view
      * @param isSpec whether a spec view is requested
      * @return {@code true} iff the given port type has a view associated at this index and according to {@code isSpec}
      */
+    @SuppressWarnings("java:S2301") // Boolean param is reasonable since it's an API parameter
     public static boolean hasPortView(final PortType portType, final int viewIdx, final boolean isSpec) {
         return getGroup(portType, viewIdx).map(group -> isSpec ? group.specViewFactory() : group.viewFactory())
             .isPresent();
@@ -109,7 +117,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
     private static Optional<PortViewGroup> getGroup(final PortType portType, final int viewIdx) {
         try {
             return Optional.of(portViewGroupsMap.get(portType).get(viewIdx));
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {  // NOSONAR
             return Optional.empty();
         }
     }
@@ -122,10 +130,12 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      *         pair component is {@code null}.
      */
     public static List<Pair<String, String>> getPortViewLabels(final PortType portType) {
-        return portViewGroupsMap.get(portType).stream()
-            .map(group -> ImmutablePair.of(group.specViewLabel(), group.viewLabel())).collect(Collectors.toList());
+        return Optional.ofNullable(portViewGroupsMap.get(portType)) //
+                .orElse(Collections.emptyList()) //
+                .stream() //
+                .map(group -> ImmutablePair.of(group.specViewLabel(), group.viewLabel())) //
+                .collect(Collectors.toList());
     }
-
 
     private PortViewManager() {
         // singleton

@@ -83,7 +83,7 @@ import org.knime.core.webui.page.Resource;
  *
  * @param <N> the node wrapper this manager operates on
  */
-@SuppressWarnings("java:S1170")
+@SuppressWarnings({"java:S1170", "java:S3740", "rawtypes"})
 public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     implements DataServiceManager<N>, PageResourceManager<N> {
 

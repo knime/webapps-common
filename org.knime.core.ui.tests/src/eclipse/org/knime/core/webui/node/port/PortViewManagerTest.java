@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.port;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -90,17 +91,17 @@ class PortViewManagerTest {
         wfm.executeAllAndWaitUntilDone();
 
         // mock factories
-        var portViewFactory0 = mock(PortObjectViewFactory.class);
+        var portViewFactory0 = mock(PortViewFactory.class);
         Mockito.when(portViewFactory0.createPortView(nnc.getOutPort(0).getPortObject()))
             .thenAnswer(i -> createPortView());
-        var portViewFactory1 = mock(PortObjectViewFactory.class);
+        var portViewFactory1 = mock(PortViewFactory.class);
         Mockito.when(portViewFactory1.createPortView(nnc.getOutPort(1).getPortObject()))
             .thenAnswer(i -> createPortView());
-        var portViewFactory2 = mock(PortObjectViewFactory.class);
+        var portViewFactory2 = mock(PortViewFactory.class);
         Mockito.when(portViewFactory2.createPortView(nnc.getOutPort(1).getPortObject()))
             .thenAnswer(i -> createPortView());
         var portViewManager = PortViewManager.getInstance();
-        var portSpecViewFactory1 = mock(PortObjectSpecViewFactory.class);
+        var portSpecViewFactory1 = mock(PortSpecViewFactory.class);
         Mockito.when(portSpecViewFactory1.createPortView(nnc.getOutPort(1).getPortObjectSpec()))
             .thenAnswer(i -> createPortView());
 
@@ -141,8 +142,16 @@ class PortViewManagerTest {
         // get another port view at a port
         assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1, false))).isNotNull();
 
+        // check absurd port index
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0, false)));
+
+        // check absurd view index
+        assertThatExceptionOfType(Exception.class)
+            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE, false)));
+
         // check that the port view cache is cleared on node reset
-        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(2);
+        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(4);
         wfm.resetAndConfigureAll();
         assertThat(portViewManager.getPortViewMapSize()).isZero();
 

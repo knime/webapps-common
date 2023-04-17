@@ -54,18 +54,20 @@ import org.knime.core.node.workflow.NodeContainer;
 import com.google.common.base.Objects;
 
 /**
- * A {@link NodeWrapper} that wraps a node port (represented by a node and a port index).
+ * A {@link NodeWrapper} that identifies a port view on an instantiated node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public interface NodePortWrapper extends NodeWrapper {
 
     /**
      * Convenience method to create a {@link NodePortWrapper}-instance.
      *
-     * @param nc
-     * @param portIdx
-     * @param viewIdx
+     * @param nc The node under consideration
+     * @param portIdx The index of the port
+     * @param viewIdx The index of the port view
+     * @param isSpec Distinguishes between port object view and port object spec view.
      * @return a new instance
      */
     public static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx,
@@ -87,10 +89,12 @@ public interface NodePortWrapper extends NodeWrapper {
                 return portIdx;
             }
 
+            @Override
             public boolean isSpec() {
                 return isSpec;
             }
 
+            @Override
             public int getViewIdx() {
                 return viewIdx;
             }
@@ -107,12 +111,13 @@ public interface NodePortWrapper extends NodeWrapper {
                     return false;
                 }
                 var w = (NodePortWrapper)o;
-                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx();
+                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx() && isSpec == w.isSpec()
+                    && viewIdx == w.getViewIdx();
             }
 
             @Override
             public int hashCode() {
-                return new HashCodeBuilder().append(nc).append(portIdx).toHashCode();
+                return new HashCodeBuilder().append(nc).append(portIdx).append(viewIdx).append(isSpec).toHashCode();
             }
         };
     }
@@ -122,8 +127,14 @@ public interface NodePortWrapper extends NodeWrapper {
      */
     int getPortIdx();
 
+    /**
+     * @return the view index
+     */
     int getViewIdx();
 
+    /**
+     * @return whether a port object spec view is requested
+     */
     boolean isSpec();
 
 }

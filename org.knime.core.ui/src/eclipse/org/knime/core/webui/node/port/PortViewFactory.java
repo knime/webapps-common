@@ -57,7 +57,7 @@ import org.knime.core.node.port.PortType;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @param <T> the type of port object this port view works with
  */
-public interface PortObjectViewFactory<T extends PortObject> {
+public interface PortViewFactory<T extends PortObject> {
 
     /**
      * Creates a new port view instance. It is guaranteed that a {@link PortContext} is available when the method is

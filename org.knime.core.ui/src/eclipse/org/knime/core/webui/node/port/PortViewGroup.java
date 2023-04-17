@@ -57,53 +57,52 @@ import org.knime.core.node.port.PortObjectSpec;
  * @param specViewFactory A factory supplying the port object spec view instance
  * @param viewLabel The display label of the port object view
  * @param viewFactory A factory supplying the port object view
- * @param <T> The concrete type of the port object
- * @param <S> The concrete type of the port object spec
+ *
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("rawtypes")
-public record PortViewGroup(String specViewLabel, PortObjectSpecViewFactory specViewFactory, String viewLabel,
-    PortObjectViewFactory viewFactory) {
+@SuppressWarnings({"rawtypes", "java:S1124", "javadoc"})  // false positive, modifiers are indeed in right order
+public record PortViewGroup(String specViewLabel, PortSpecViewFactory specViewFactory, String viewLabel,
+                            PortViewFactory viewFactory) {
 
     public static PortViewGroupBuilder builder() {
         return new PortViewGroupBuilder();
     }
 
-    public static PortViewGroup of(PortObjectViewFactory viewFac) {
+    public static PortViewGroup of(PortViewFactory viewFac) {
         return new PortViewGroup(null, null, null, viewFac);
     }
 
     public static class PortViewGroupBuilder {
-        private String specViewLabel;
+        private String m_specViewLabel;
 
-        private PortObjectSpecViewFactory specViewFactory;
+        private PortSpecViewFactory m_specViewFactory;
 
-        private String dataViewLabel;
+        private String m_viewLabel;
 
-        private PortObjectViewFactory dataViewFactory;
+        private PortViewFactory m_viewFactory;
 
         public PortViewGroupBuilder setSpecViewLabel(String specViewLabel) {
-            this.specViewLabel = specViewLabel;
-            var x = new PortViewGroup(null, null, null, null);
+            this.m_specViewLabel = specViewLabel;
             return this;
         }
 
-        public PortViewGroupBuilder setSpecViewFactory(PortObjectSpecViewFactory specViewFactory) {
-            this.specViewFactory = specViewFactory;
+        public PortViewGroupBuilder setSpecViewFactory(PortSpecViewFactory specViewFactory) {
+            this.m_specViewFactory = specViewFactory;
             return this;
         }
 
         public PortViewGroupBuilder setViewLabel(String dataViewLabel) {
-            this.dataViewLabel = dataViewLabel;
+            this.m_viewLabel = dataViewLabel;
             return this;
         }
 
-        public PortViewGroupBuilder setViewFactory(PortObjectViewFactory dataViewFactory) {
-            this.dataViewFactory = dataViewFactory;
+        public PortViewGroupBuilder setViewFactory(PortViewFactory dataViewFactory) {
+            this.m_viewFactory = dataViewFactory;
             return this;
         }
 
         public PortViewGroup build() {
-            return new PortViewGroup(specViewLabel, specViewFactory, dataViewLabel, dataViewFactory);
+            return new PortViewGroup(m_specViewLabel, m_specViewFactory, m_viewLabel, m_viewFactory);
         }
     }
 }

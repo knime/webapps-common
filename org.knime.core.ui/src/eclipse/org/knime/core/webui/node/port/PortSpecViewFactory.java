@@ -47,16 +47,24 @@
 package org.knime.core.webui.node.port;
 
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 
 /**
  * Factory for views of {@link PortObjectSpec}s.
  * 
- * @apiNote Pending API.
+ * @apiNote Pending API. Needs to be integrated with {@link PortObjectSpec} / {@link PortType}
  *
  * @param <S> The concrete type of the {@link PortObjectSpec} instance.
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public interface PortObjectSpecViewFactory<S extends PortObjectSpec> {
+public interface PortSpecViewFactory<S extends PortObjectSpec> {
 
+    /**
+     * Creates a new port view instance. It is guaranteed that a {@link PortContext} is available when the method is
+     * called.
+     *
+     * @param portObjectSpec the port object spec to create the port view for
+     * @return a new port view instance
+     */
     PortView createPortView(S portObjectSpec);
 }
