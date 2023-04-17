@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,29 +43,66 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jul 18, 2022 (hornm): created
  */
 package org.knime.core.webui.node.port;
 
 import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortObjectSpec;
 
 /**
- * Pending API - needs to be integrated with {@link PortObject}/{@link PortType}.
+ * Ties together two port views: One based on the {@link PortObjectSpec} and one based on the corresponding
+ * {@link PortObject}.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <T> the type of port object this port view works with
+ * @param specViewLabel The display label of the port object spec view
+ * @param specViewFactory A factory supplying the port object spec view instance
+ * @param viewLabel The display label of the port object view
+ * @param viewFactory A factory supplying the port object view
+ * @param <T> The concrete type of the port object
+ * @param <S> The concrete type of the port object spec
  */
-public interface PortViewFactory<T extends PortObject> {
+public record PortViewGroup<T extends PortObject, S extends PortObjectSpec>(String specViewLabel,
+    PortObjectSpecViewFactory<S> specViewFactory, String viewLabel, PortObjectViewFactory<T> viewFactory) {
 
-    /**
-     * Creates a new port view instance. It is guaranteed that a {@link PortContext} is available when the method is
-     * called.
-     *
-     * @param portObject the port object to create the port view for
-     * @return a new port view instance
-     */
-    PortView createPortView(T portObject);
+    public static <P extends PortObject, Q extends PortObjectSpec> PortViewGroupBuilder<P, Q> builder() {
+        return new PortViewGroupBuilder<>();
+    }
 
+    public static <P extends PortObject> PortViewGroup<P, ?> of(PortObjectViewFactory<P> viewFac) {
+        return new PortViewGroup<>(null, null, null, viewFac);
+    }
+
+    public static class PortViewGroupBuilder<T extends PortObject, S extends PortObjectSpec> {
+        private String specViewLabel;
+
+        private PortObjectSpecViewFactory<S> specViewFactory;
+
+        private String dataViewLabel;
+
+        private PortObjectViewFactory<T> dataViewFactory;
+
+        public PortViewGroupBuilder<T, S> setSpecViewLabel(String specViewLabel) {
+            this.specViewLabel = specViewLabel;
+            var x = new PortViewGroup<>(null, null, null, null);
+            return this;
+        }
+
+        public PortViewGroupBuilder<T, S> setSpecViewFactory(PortObjectSpecViewFactory<S> specViewFactory) {
+            this.specViewFactory = specViewFactory;
+            return this;
+        }
+
+        public PortViewGroupBuilder<T, S> setViewLabel(String dataViewLabel) {
+            this.dataViewLabel = dataViewLabel;
+            return this;
+        }
+
+        public PortViewGroupBuilder<T, S> setViewFactory(PortObjectViewFactory<T> dataViewFactory) {
+            this.dataViewFactory = dataViewFactory;
+            return this;
+        }
+
+        public PortViewGroup<T, S> build() {
+            return new PortViewGroup<>(specViewLabel, specViewFactory, dataViewLabel, dataViewFactory);
+        }
+    }
 }

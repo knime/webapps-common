@@ -2,7 +2,7 @@
  * ------------------------------------------------------------------------
  *
  *  Copyright by KNIME AG, Zurich, Switzerland
- *  Website: http://www.knime.com; Email: contact@knime.com
+ *  Website: http://www.knime.org; Email: contact@knime.org
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -43,87 +43,20 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jul 18, 2022 (hornm): created
  */
-package org.knime.core.webui.node;
+package org.knime.core.webui.node.port;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.knime.core.node.workflow.NodeContainer;
-
-import com.google.common.base.Objects;
+import org.knime.core.node.port.PortObjectSpec;
 
 /**
- * A {@link NodeWrapper} that wraps a node port (represented by a node and a port index).
+ * Factory for views of {@link PortObjectSpec}s.
+ * 
+ * @apiNote Pending API.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @param <S> The concrete type of the {@link PortObjectSpec} instance.
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public interface NodePortWrapper extends NodeWrapper {
+public interface PortObjectSpecViewFactory<S extends PortObjectSpec> {
 
-    /**
-     * Convenience method to create a {@link NodePortWrapper}-instance.
-     *
-     * @param nc
-     * @param portIdx
-     * @param viewIdx
-     * @return a new instance
-     */
-    public static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx,
-        final Boolean isSpec) {
-        return new NodePortWrapper() { // NOSONAR
-
-            @Override
-            public NodeContainer get() {
-                return nc;
-            }
-
-            @Override
-            public String getNodeWrapperTypeId() {
-                return nc.getOutPort(portIdx).getPortType().getPortObjectClass().getName();
-            }
-
-            @Override
-            public int getPortIdx() {
-                return portIdx;
-            }
-
-            public boolean isSpec() {
-                return isSpec;
-            }
-
-            public int getViewIdx() {
-                return viewIdx;
-            }
-
-            @Override
-            public boolean equals(final Object o) {
-                if (this == o) {
-                    return true;
-                }
-                if (o == null) {
-                    return false;
-                }
-                if (getClass() != o.getClass()) {
-                    return false;
-                }
-                var w = (NodePortWrapper)o;
-                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx();
-            }
-
-            @Override
-            public int hashCode() {
-                return new HashCodeBuilder().append(nc).append(portIdx).toHashCode();
-            }
-        };
-    }
-
-    /**
-     * @return the port index
-     */
-    int getPortIdx();
-
-    int getViewIdx();
-
-    boolean isSpec();
-
+    PortView createPortView(S portObjectSpec);
 }

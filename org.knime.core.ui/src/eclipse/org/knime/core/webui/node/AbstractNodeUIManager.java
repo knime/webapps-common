@@ -164,12 +164,10 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      */
     @Override
     public final String callInitialDataService(final N nodeWrapper) {
-        var service = getInitialDataService(nodeWrapper).filter(InitialDataService.class::isInstance).orElse(null);
-        if (service != null) {
-            return service.getInitialData();
-        } else {
-            throw new IllegalStateException("No initial data service available");
-        }
+        return getInitialDataService(nodeWrapper) // 
+            .filter(InitialDataService.class::isInstance) // 
+            .orElseThrow(() -> new IllegalStateException("No initial data service available")) //
+            .getInitialData();
     }
 
     private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {

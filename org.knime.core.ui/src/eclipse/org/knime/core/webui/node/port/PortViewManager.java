@@ -48,13 +48,14 @@
  */
 package org.knime.core.webui.node.port;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.WeakHashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
@@ -66,28 +67,23 @@ import org.knime.core.webui.page.Page;
  * Manages (web-ui) port view instances and provides associated functionality.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper> {
 
     private static PortViewManager instance;
 
-    private static Map<PortType, PortViewFactory<?>> portViewFactoryMap = new HashMap<>();
-
+    private static final Map<PortType, List<PortViewGroup<?, ?>>> portViewGroupsMap = new HashMap<>();
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
     /**
-     * Allows one to register a {@link PortViewFactory} and consequently to associate a {@link PortView} with a certain
-     * {@link PortType}.
+     * Associate a {@link PortType} with one or several {@link PortViewGroup}s.
      *
-     * Pending API: most likely to be removed as soon as the port view API is integrated with the
-     * {@link PortObject}/{@link PortType} API.
-     *
-     * @param portType
-     * @param portViewFactory
+     * @param portType The given port type
+     * @param groups The groups to associate with this port type.
      */
-    public static void registerPortViewFactory(final PortType portType,
-        final PortViewFactory<? extends PortObject> portViewFactory) {
-        portViewFactoryMap.put(portType, portViewFactory);
+    public static void registerPortViews(final PortType portType, PortViewGroup<?, ?>... groups) {
+        portViewGroupsMap.put(portType, List.of(groups));
     }
 
     /**
@@ -104,11 +100,35 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
     /**
      * @param portType the port type to check
-     * @return {@code true} if the given port type provides a {@link PortView}; otherwise {@code false}
+     * @param isSpec whether a spec view is requested
+     * @return {@code true} iff the given port type has a view associated at this index and according to {@code isSpec}
      */
-    public static boolean hasPortView(final PortType portType) {
-        return portViewFactoryMap.containsKey(portType);
+    public static boolean hasPortView(final PortType portType, final int viewIdx, final boolean isSpec) {
+        return getGroup(portType, viewIdx).map(group -> isSpec ? group.specViewFactory() : group.viewFactory())
+            .isPresent();
     }
+
+    private static <T extends PortObject, S extends PortObjectSpec> Optional<PortViewGroup<T, S>>
+        getGroup(final PortType portType, final int viewIdx) {
+        try {
+            return Optional.of((PortViewGroup<T, S>)portViewGroupsMap.get(portType).get(viewIdx));
+        } catch (IndexOutOfBoundsException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Obtain display labels for all registered port views for a given port type.
+     *
+     * @param portType The port type to get the view labels for.
+     * @return A null-padded list containing pairs of spec view and port object view. If a view is not available, the
+     *         pair component is {@code null}.
+     */
+    public static List<Pair<String, String>> getPortViewLabels(final PortType portType) {
+        return portViewGroupsMap.get(portType).stream()
+            .map(group -> ImmutablePair.of(group.specViewLabel(), group.viewLabel())).collect(Collectors.toList());
+    }
+
 
     private PortViewManager() {
         // singleton
@@ -139,14 +159,20 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
     }
 
     /**
-     * Gets the {@link PortView} for the given combination of node container and port index. The port view will be
-     * either retrieved from a cache or newly created if it hasn't been accessed, yet.
+     * Obtain the {@link PortView} as identified by...
+     * <ul>
+     * <li>Node container</li>
+     * <li>Port index</li>
+     * <li>View index</li>
+     * <li>Whether spec or port object view is requested</li>
+     * </ul>
      *
-     * @param nodePortWrapper
+     * The port view will be either retrieved from a cache or newly created if it hasn't been accessed, yet.
+     *
+     * @param nodePortWrapper identifying the requested port view
      * @return a (new) port view instance
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     PortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
@@ -156,21 +182,26 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         var portIdx = nodePortWrapper.getPortIdx();
         var outPort = nc.getOutPort(portIdx);
         var portType = outPort.getPortType();
+        var viewIdx = nodePortWrapper.getViewIdx();
 
-        PortViewFactory factory = portViewFactoryMap.get(portType); // NOSONAR
-        if (factory != null) {
+        var group = getGroup(portType, viewIdx).orElseThrow();
+        try {
             PortContext.pushContext(outPort);
-            try {
-                portView = factory.createPortView(outPort.getPortObject());
-                m_portViewMap.put(nodePortWrapper, portView);
-                NodeCleanUpCallback.builder(nc, () -> m_portViewMap.remove(nodePortWrapper))
-                    .cleanUpOnNodeStateChange(true).build();
-                return portView;
-            } finally {
-                PortContext.removeLastContext();
+
+            PortView view;
+            if (nodePortWrapper.isSpec()) {
+                view = group.specViewFactory().createPortView(outPort.getPortObjectSpec());
+            } else {
+                view = group.viewFactory().createPortView(outPort.getPortObject());
             }
-        } else {
-            throw new NoSuchElementException("No port view available");
+
+            m_portViewMap.put(nodePortWrapper, view);
+
+            NodeCleanUpCallback.builder(nc, () -> m_portViewMap.remove(nodePortWrapper))
+                    .cleanUpOnNodeStateChange(true).build();
+            return view;
+        } finally {
+            PortContext.removeLastContext();
         }
     }
 
