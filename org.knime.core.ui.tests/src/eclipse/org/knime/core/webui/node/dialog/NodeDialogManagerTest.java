@@ -127,7 +127,7 @@ public class NodeDialogManagerTest {
      * Tests multiple {@link NodeDialogManager}-methods using a simple node dialog.
      */
     @Test
-    public void testSimpleNodeDialogNode() {
+    void testSimpleNodeDialogNode() {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var hasDialog = new AtomicBoolean(true);
         NativeNodeContainer nc = createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(page), hasDialog::get);
@@ -135,7 +135,7 @@ public class NodeDialogManagerTest {
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node expected to have a node dialog").isTrue();
         var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(nc);
         assertThat(nodeDialog.getPage() == page).isTrue();
-        assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc), nodeDialog.getPage()))
+        assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc)))
             .isEqualTo("dialog_" + nc.getID().toString().replace(":", "_"));
 
         assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
@@ -152,7 +152,7 @@ public class NodeDialogManagerTest {
      * @throws IOException
      */
     @Test
-    public void testSubNodeContainerDialog() throws IOException {
+    void testSubNodeContainerDialog() throws IOException {
         final var uiModeProperty = "org.knime.component.ui.mode";
         var componentUiMode = System.setProperty(uiModeProperty, "js");
         var bundleContext = FrameworkUtil.getBundle(this.getClass()) .getBundleContext();
@@ -203,7 +203,7 @@ public class NodeDialogManagerTest {
             var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(component);
             assertThat(nodeDialog.getPage().getRelativePath()).isEqualTo("NodeDialog.umd.js");
 
-            var pageId = NodeDialogManager.getInstance().getPageId(NodeWrapper.of(component), nodeDialog.getPage());
+            var pageId = NodeDialogManager.getInstance().getPageId(NodeWrapper.of(component));
             assertThat(pageId).isEqualTo("defaultdialog");
 
             // The jsonforms dialog cannot be built from our test node, because it is no valid/known DialogNodeRepresentation,
@@ -225,7 +225,7 @@ public class NodeDialogManagerTest {
      * Tests {@link NodeDialogManager#getPagePath(NodeWrapper)}.
      */
     @Test
-    public void testGetNodeDialogPageUrl() {
+    void testGetNodeDialogPageUrl() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
@@ -235,6 +235,7 @@ public class NodeDialogManagerTest {
         var nodeDialogManager = NodeDialogManager.getInstance();
         String path = nodeDialogManager.getPagePath(nnc);
         String path2 = nodeDialogManager.getPagePath(nnc2);
+        nodeDialogManager.clearCaches();
         String path3 = nodeDialogManager.getPagePath(nnc3);
         String path4 = nodeDialogManager.getPagePath(nnc3);
         assertThat(path).as("url of static pages not expected to change").isEqualTo(path2);
@@ -249,7 +250,7 @@ public class NodeDialogManagerTest {
      * view.
      */
     @Test
-    public void testNodeWithoutNodeDialog() {
+    void testNodeWithoutNodeDialog() {
         NativeNodeContainer nc = createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
         Assertions.assertThatThrownBy(() -> NodeDialogManager.getInstance().getNodeDialog(nc))
@@ -265,7 +266,7 @@ public class NodeDialogManagerTest {
      * @throws InvalidSettingsException
      */
     @Test
-    public void testCallDataServices() throws IOException, InvalidSettingsException {
+    void testCallDataServices() throws IOException, InvalidSettingsException {
         var page = Page.builder(() -> "test page content", "index.html").build();
         Supplier<NodeDialog> nodeDialogSupplier = () -> createNodeDialog(page, new NodeSettingsService() { // NOSONAR
 
@@ -326,7 +327,7 @@ public class NodeDialogManagerTest {
      * port (UIEXT-777).
      */
     @Test
-    public void callInitialDataServiceForNodeConnectedToMetanodeParent() {
+    void callInitialDataServiceForNodeConnectedToMetanodeParent() {
         var metanode = m_wfm.createAndAddSubWorkflow(new PortType[]{BufferedDataTable.TYPE},
             new PortType[]{BufferedDataTable.TYPE}, "Metanode");
         var nnc = createAndAddNode(metanode, new NodeDialogNodeFactory(

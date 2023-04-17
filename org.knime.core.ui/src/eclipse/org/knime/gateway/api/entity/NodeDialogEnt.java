@@ -51,9 +51,9 @@ package org.knime.gateway.api.entity;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.view.NodeViewManager;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Node dialog entity containing the info required by the UI (i.e. frontend) to be able to display a node dialog.

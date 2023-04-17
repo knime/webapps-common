@@ -63,10 +63,8 @@ import java.util.stream.Collectors;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataValue;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
-import org.knime.core.webui.page.PageUtil;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Allows one to (short-term) register {@link DataValueImageRenderer DataValueImageRenderers} together with their
@@ -75,7 +73,7 @@ import org.knime.core.webui.page.PageUtil.PageType;
  * Required because the {@link TableViewDataService} doesn't return the rendered images directly but just a relative
  * image path. The image is only rendered once the browser uses the provided path to render the image. And this class is
  * intended to serve as the interchange between the place where the image path is returned via
- * {@link #addRendererAndGetImgPath(String, DataCell, DataValueImageRenderer, long)} (while iterating the data table) and the
+ * {@link #addRendererAndGetImgPath(String, DataCell, DataValueImageRenderer)} (while iterating the data table) and the
  * place where the image is finally rendered {@link #renderImage(String)} (the data value is accessed again to finally
  * render it for real).
  *
@@ -105,10 +103,10 @@ public final class DataValueImageRendererRegistry {
 
     /**
      * @param pageIdSupplier the page id of the view (see, e.g.,
-     *            {@link PageUtil#getPageId(NativeNodeContainer, boolean, PageType)}). It's used to define the relative
-     *            path where image resources (output of the data value renderers) are available. Supplied lazily because
-     *            the page id is not available yet on construction time of renderer factory. Can be {@code null} if no
-     *            values are to be rendered into images.
+     *            {@link PageResourceManager#getPageId(org.knime.core.webui.node.NodeWrapper)}). It's used to define the
+     *            relative path where image resources (output of the data value renderers) are available. Supplied
+     *            lazily because the page id is not available yet on construction time of renderer factory. Can be
+     *            {@code null} if no values are to be rendered into images.
      */
     public DataValueImageRendererRegistry(final Supplier<String> pageIdSupplier) {
         m_pageIdSupplier = pageIdSupplier;

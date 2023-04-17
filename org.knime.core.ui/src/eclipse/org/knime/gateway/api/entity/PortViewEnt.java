@@ -50,8 +50,8 @@ package org.knime.gateway.api.entity;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.node.NodePortWrapper;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.port.PortViewManager;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Port view entity containing the info required by the UI (i.e. frontend) to be able to display a port view.

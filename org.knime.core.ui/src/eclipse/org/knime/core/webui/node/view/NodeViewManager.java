@@ -68,8 +68,6 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
-import org.knime.core.webui.page.PageUtil;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Manages (web-ui) node view instances and provides associated functionality.
@@ -226,7 +224,7 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
     void clearCaches() {
         m_nodeViewMap.clear();
         m_selectionServices.clear();
-        clearPageMap();
+        clearPageCache();
     }
 
     /**
@@ -250,7 +248,7 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
      * {@inheritDoc}
      */
     @Override
-    public Page getPage(final NodeWrapper nc) {
+    public Page createPage(final NodeWrapper nc) {
         return getNodeView(nc.get()).getPage();
     }
 
@@ -258,7 +256,7 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
      * {@inheritDoc}
      */
     @Override
-    protected PageType getPageType() {
+    public PageType getPageType() {
         return PageType.VIEW;
     }
 
@@ -266,17 +264,8 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
      * {@inheritDoc}
      */
     @Override
-    public String getPageId(final NodeWrapper nw, final Page p) {
-        return p.getPageIdForReusablePage()
-            .orElseGet(() -> PageUtil.getPageId(nw, p.isCompletelyStatic(), PageType.VIEW));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final int getPageMapSize() {
-        return super.getPageMapSize();
+    protected final int getPageCacheSize() {
+        return super.getPageCacheSize();
     }
 
 }

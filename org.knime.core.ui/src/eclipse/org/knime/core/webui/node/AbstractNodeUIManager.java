@@ -49,7 +49,6 @@
 package org.knime.core.webui.node;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
@@ -58,7 +57,6 @@ import java.util.regex.Pattern;
 
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataServiceProvider;
@@ -66,7 +64,6 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
-import org.knime.core.webui.page.PageUtil.PageType;
 import org.knime.core.webui.page.Resource;
 
 /**
@@ -93,9 +90,9 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
 
     private final Map<N, RpcDataService> m_dataServices = new WeakHashMap<>();
 
-    private final Map<N, ApplyDataService> m_applyDataServices = new WeakHashMap<>();
+    private final Map<N, ApplyDataService<?>> m_applyDataServices = new WeakHashMap<>();
 
-    private final Map<String, Page> m_pageMap = new HashMap<>();
+    private final PageCache<N> m_pageCache = new PageCache<>();
 
     private final String m_pageType = getPageType().toString();
 
@@ -115,13 +112,6 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      * @return the data service provide for the given node
      */
     protected abstract DataServiceProvider getDataServiceProvider(N nodeWrapper);
-
-    /**
-     * The type of pages the node ui manager implementation manages. E.g. whether these are view-pages or dialog-pages.
-     *
-     * @return the page type
-     */
-    protected abstract PageType getPageType();
 
     /**
      * @return whether to clean-up the page- and data-service-instances on node state change
@@ -274,19 +264,19 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     }
 
     /**
-     * Clears the page map.
+     * Clears the page cache.
      */
-    protected final void clearPageMap() {
-        m_pageMap.clear();
+    protected final void clearPageCache() {
+        m_pageCache.clear();
     }
 
     /**
      * For testing purposes only.
      *
-     * @return the page map size
+     * @return the page cache size
      */
-    protected int getPageMapSize() {
-        return m_pageMap.size();
+    protected int getPageCacheSize() {
+        return m_pageCache.size();
     }
 
 
@@ -328,11 +318,34 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      */
     @Override
     public final String getPagePath(final N nodeWrapper) {
-        var page = getPage(nodeWrapper);
-        var pageId = getPageId(nodeWrapper, page);
-        registerPage(nodeWrapper.get(), pageId, page);
+        var pageId = getPageId(nodeWrapper);
+        var page = m_pageCache.getPage(pageId);
         return pageId + "/" + page.getRelativePath();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final Page getPage(final N nodeWrapper) {
+        var pageId = getPageId(nodeWrapper);
+        return m_pageCache.getPage(pageId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getPageId(final N nodeWrapper) {
+        return m_pageCache.getOrCreatePageAndReturnPageId(nodeWrapper, getPageType(), this::createPage,
+            shouldCleanUpPageAndDataServicesOnNodeStateChange());
+    }
+
+    /**
+     * @param nodeWrapper
+     * @return a new page instance
+     */
+    protected abstract Page createPage(N nodeWrapper);
 
     /**
      * {@inheritDoc}
@@ -346,14 +359,6 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         }
     }
 
-    private void registerPage(final NodeContainer nc, final String pageId, final Page page) {
-        m_pageMap.computeIfAbsent(pageId, id -> {
-            NodeCleanUpCallback.builder(nc, () -> m_pageMap.remove(pageId))
-                .cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
-            return page;
-        });
-    }
-
     @Override
     public final Optional<Resource> getPageResource(final String resourceId) {
         var split = resourceId.indexOf("/");
@@ -362,7 +367,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         }
 
         var pageId = resourceId.substring(0, split);
-        var page = m_pageMap.get(pageId);
+        var page = m_pageCache.getPage(pageId);
         if (page == null) {
             return Optional.empty();
         }

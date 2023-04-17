@@ -60,8 +60,6 @@ import org.knime.core.webui.node.AbstractNodeUIManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
-import org.knime.core.webui.page.PageUtil;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Manages (web-ui) node dialog instances and provides associated functionality.
@@ -160,7 +158,7 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
      */
     void clearCaches() {
         m_nodeDialogMap.clear();
-        clearPageMap();
+        clearPageCache();
     }
 
     /**
@@ -175,25 +173,16 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
      * {@inheritDoc}
      */
     @Override
-    public Page getPage(final NodeWrapper nw) {
-        return getNodeDialog(nw.get()).getPage();
+    protected Page createPage(final NodeWrapper nodeWrapper) {
+        return getNodeDialog(nodeWrapper.get()).getPage();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected PageType getPageType() {
+    public PageType getPageType() {
         return PageType.DIALOG;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPageId(final NodeWrapper nw, final Page p) {
-        return p.getPageIdForReusablePage()
-            .orElseGet(() -> PageUtil.getPageId(nw, p.isCompletelyStatic(), PageType.DIALOG));
     }
 
 }

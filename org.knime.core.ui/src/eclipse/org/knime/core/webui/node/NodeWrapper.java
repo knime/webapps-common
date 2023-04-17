@@ -48,7 +48,9 @@
  */
 package org.knime.core.webui.node;
 
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
 
 /**
  * Wrapper for a node ({@link NodeContainer}). The only purpose is to be able to represent a node <i>and</i> optionally
@@ -58,7 +60,6 @@ import org.knime.core.node.workflow.NodeContainer;
  * Implementations must also implement the {@link #equals(Object)} and {@link #hashCode()} methods.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <N> the node type that is being wrapped
  */
 public interface NodeWrapper {
 
@@ -66,6 +67,12 @@ public interface NodeWrapper {
      * @return the wrapped node
      */
     NodeContainer get();
+
+    /**
+     * @return a id representing the type of the node wrapper (which is independent from the node wrapper-instance).
+     *         E.g. the node type (~'data generator') or the port type (~'table').
+     */
+    String getNodeWrapperTypeId();
 
     /**
      * Convenience method to create a {@link NodeWrapper}-instance.
@@ -79,6 +86,17 @@ public interface NodeWrapper {
             @Override
             public NodeContainer get() {
                 return nc;
+            }
+
+            @Override
+            public String getNodeWrapperTypeId() {
+                if (nc instanceof NativeNodeContainer nnc) {
+                    return nnc.getNode().getFactory().getClass().getName();
+                } else if (nc instanceof SubNodeContainer snc) {
+                    return snc.getClass().getName();
+                } else {
+                    throw new UnsupportedOperationException();
+                }
             }
 
             @Override

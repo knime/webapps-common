@@ -55,7 +55,7 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager;
-import org.knime.core.webui.page.PageUtil.PageType;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 
 /**
  * Super classes for node-ui-extension entities, e.g., node view and node dialog.
@@ -113,7 +113,7 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
             var debugUrl = pageResourceManager.getDebugUrl(nodeWrapper).orElse(null);
             var path = pageResourceManager.getPagePath(nodeWrapper);
             var page = pageResourceManager.getPage(nodeWrapper);
-            String id = pageResourceManager.getPageId(nodeWrapper, page);
+            String id = pageResourceManager.getPageId(nodeWrapper);
             m_resourceInfo = new ResourceInfoEnt(id, baseUrl, debugUrl, path, page.getContentType());
         } else {
             m_resourceInfo = null;

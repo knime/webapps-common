@@ -141,7 +141,7 @@ public class NodeViewManagerTest {
         Assertions.assertThatThrownBy(() -> NodeViewManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
             .isInstanceOf(IllegalStateException.class).hasMessageContaining("No initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
-        assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc), nodeView.getPage()))
+        assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc)))
             .isEqualTo("view_" + nc.getID().toString().replace(":", "_"));
 
         hasView.set(false);
@@ -219,6 +219,7 @@ public class NodeViewManagerTest {
         var nodeViewManager = NodeViewManager.getInstance();
         String path = nodeViewManager.getPagePath(nnc);
         String path2 = nodeViewManager.getPagePath(nnc2);
+        nodeViewManager.clearCaches();
         String path3 = nodeViewManager.getPagePath(nnc3);
         String path4 = nodeViewManager.getPagePath(nnc3);
         assertThat(path).as("path of static pages not expected to change").isEqualTo(path2);
@@ -248,29 +249,31 @@ public class NodeViewManagerTest {
 
         runOnExecutor(() -> { // NOSONAR
             String path = nodeViewManager.getPagePath(nnc);
-            assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
-            String path2 = nodeViewManager.getPagePath(nnc2);
-            assertThat(nodeViewManager.getPageMapSize()).isEqualTo(2);
+            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
             var resourcePrefix1 =
-                "view_" + ((NativeNodeContainer)nnc.get()).getNode().getFactory().getClass().getName();
-            var resourcePrefix2 = "view_" + nnc2.get().getID().toString().replace(":", "_");
+                    "view_" + ((NativeNodeContainer)nnc.get()).getNode().getFactory().getClass().getName();
             assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
-            assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
+            testGetNodeViewPageResource(resourcePrefix1);
 
-            testGetNodeViewPageResource(resourcePrefix1, resourcePrefix2);
+            nodeViewManager.clearCaches();
+
+            String path2 = nodeViewManager.getPagePath(nnc2);
+            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
+            var resourcePrefix2 = "view_" + nnc2.get().getID().toString().replace(":", "_");
+            assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
+            testGetNodeViewPageResource(resourcePrefix2);
         });
 
         m_wfm.removeNode(nnc.get().getID());
         // make sure that the pages are removed from the cache after the node has been deleted)
         Awaitility.await().pollInterval(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS)
-            .untilAsserted(() -> assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1));
+            .untilAsserted(() -> assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1));
     }
 
-    private static void testGetNodeViewPageResource(final String resourcePrefix1, final String resourcePrefix2) {
+    private static void testGetNodeViewPageResource(final String resourcePrefix) {
         var nodeViewManager = NodeViewManager.getInstance();
-        assertThat(nodeViewManager.getPageResource(resourcePrefix1 + "/page.html")).isPresent();
-        assertThat(nodeViewManager.getPageResource(resourcePrefix1 + "/resource.html")).isPresent();
-        assertThat(nodeViewManager.getPageResource(resourcePrefix2 + "/resource.html")).isPresent();
+        assertThat(nodeViewManager.getPageResource(resourcePrefix + "/page.html")).isPresent();
+        assertThat(nodeViewManager.getPageResource(resourcePrefix + "/resource.html")).isPresent();
         assertThat(nodeViewManager.getPageResource("/test")).isEmpty();
         assertThat(nodeViewManager.getPageResource("test")).isEmpty();
         assertThat(nodeViewManager.getPageResource("test/test")).isEmpty();
@@ -302,21 +305,21 @@ public class NodeViewManagerTest {
         // remove node
         nodeViewManager.getPagePath(nc);
         assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(1);
-        assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
         m_wfm.removeNode(nc.get().getID());
         untilAsserted(() -> {
             assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(0);
-            assertThat(nodeViewManager.getPageMapSize()).isEqualTo(0);
+            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(0);
         });
 
         // close workflow
         nodeViewManager.getPagePath(nc);
         assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(1);
-        assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
         m_wfm.getParent().removeProject(m_wfm.getID());
         untilAsserted(() -> {
             assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(0);
-            assertThat(nodeViewManager.getPageMapSize()).isEqualTo(0);
+            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(0);
         });
     }
 
@@ -331,15 +334,15 @@ public class NodeViewManagerTest {
 
         // remove node
         nodeViewManager.getPagePath(nc);
-        assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
         m_wfm.removeNode(nc.get().getID());
-        untilAsserted(() -> assertThat(nodeViewManager.getPageMapSize()).isEqualTo(0));
+        untilAsserted(() -> assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1));
 
         // close workflow
         nodeViewManager.getPagePath(nc);
-        assertThat(nodeViewManager.getPageMapSize()).isEqualTo(1);
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
         m_wfm.getParent().removeProject(m_wfm.getID());
-        untilAsserted(() -> assertThat(nodeViewManager.getPageMapSize()).isEqualTo(0));
+        untilAsserted(() -> assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1));
     }
 
     private static void untilAsserted(final ThrowingRunnable assertion) {

@@ -76,6 +76,11 @@ public interface NodePortWrapper extends NodeWrapper {
             }
 
             @Override
+            public String getNodeWrapperTypeId() {
+                return nc.getOutPort(portIdx).getPortType().getPortObjectClass().getName();
+            }
+
+            @Override
             public int getPortIdx() {
                 return portIdx;
             }

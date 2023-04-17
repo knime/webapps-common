@@ -61,8 +61,6 @@ import org.knime.core.webui.node.AbstractNodeUIManager;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
-import org.knime.core.webui.page.PageUtil;
-import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Manages (web-ui) port view instances and provides associated functionality.
@@ -120,7 +118,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * {@inheritDoc}
      */
     @Override
-    public Page getPage(final NodePortWrapper nodePortWrapper) {
+    public Page createPage(final NodePortWrapper nodePortWrapper) {
         return getPortView(nodePortWrapper).getPage();
     }
 
@@ -136,7 +134,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * {@inheritDoc}
      */
     @Override
-    protected PageType getPageType() {
+    public PageType getPageType() {
         return PageType.PORT;
     }
 
@@ -174,15 +172,6 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         } else {
             throw new NoSuchElementException("No port view available");
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPageId(final NodePortWrapper w, final Page p) {
-        return p.getPageIdForReusablePage()
-            .orElseGet(() -> PageUtil.getPageId(w, p.isCompletelyStatic(), PageType.PORT));
     }
 
     /**

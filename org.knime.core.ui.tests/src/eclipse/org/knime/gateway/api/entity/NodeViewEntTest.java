@@ -85,13 +85,10 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewTest;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
-import org.knime.core.webui.page.PageUtil;
-import org.knime.core.webui.page.PageUtil.PageType;
 import org.knime.core.webui.page.Resource;
 import org.knime.gateway.impl.service.events.SelectionEvent;
 import org.knime.gateway.impl.service.events.SelectionEventSource;
@@ -106,7 +103,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class NodeViewEntTest {
+class NodeViewEntTest {
 
     /**
      * Tests the creation of {@link NodeViewEnt} instances.
@@ -115,7 +112,7 @@ public class NodeViewEntTest {
      * @throws InvalidSettingsException
      */
     @Test
-    public void testNodeViewEnt() throws IOException, InvalidSettingsException {
+    void testNodeViewEnt() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         NativeNodeContainer nncWithoutNodeView =
@@ -155,7 +152,7 @@ public class NodeViewEntTest {
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.HTML.toString());
-        assertThat(resourceInfo.getId()).isEqualTo(PageUtil.getPageId(NodeWrapper.of(nnc), false, PageType.VIEW));
+        assertThat(resourceInfo.getId()).startsWith("view_");
         var nodeInfo = ent.getNodeInfo();
         assertThat(nodeInfo.getNodeName()).isEqualTo("NodeView");
         assertThat(nodeInfo.getNodeAnnotation()).isEqualTo("node annotation");
@@ -195,7 +192,7 @@ public class NodeViewEntTest {
      * @throws IOException
      */
     @Test
-    public void testCanExecuteNodeViewEnt() throws IOException {
+    void testCanExecuteNodeViewEnt() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         // node view node with one unconnected input

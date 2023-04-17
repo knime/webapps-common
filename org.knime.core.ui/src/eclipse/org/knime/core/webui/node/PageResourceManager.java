@@ -63,6 +63,30 @@ import org.knime.core.webui.page.Resource;
 public interface PageResourceManager<N extends NodeWrapper> {
 
     /**
+     * The page kinds, i.e. defines what a page is supposed to represent.
+     */
+    public enum PageType {
+            /**
+             * A node dialog.
+             */
+            DIALOG,
+            /**
+             * A node view
+             */
+            VIEW,
+            /**
+             * A port view.
+             */
+            PORT;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+
+    }
+
+    /**
      * @return a unique domain name used to identify page resources of this kind
      */
     String getDomainName();
@@ -76,12 +100,15 @@ public interface PageResourceManager<N extends NodeWrapper> {
     Page getPage(N nodeWrapper);
 
     /**
-     * @param nodeWrapper the node to get the id for
-     * @param page the page to get the id for
-     *
-     * @return the page for the given node and page
+     * @return the page type
      */
-    String getPageId(N nodeWrapper, Page page);
+    PageType getPageType();
+
+    /**
+     * @param nodeWrapper the node to get the id for
+     * @return the page type
+     */
+    String getPageId(N nodeWrapper);
 
     /**
      * The base url for the page and associated resources. It is usually only available if the AP is run as a desktop
