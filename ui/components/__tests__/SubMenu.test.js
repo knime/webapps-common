@@ -226,7 +226,7 @@ describe('SubMenu.vue', () => {
 
             const [event, callback] = wrapper.emitted('toggle')[0];
             expect(event).toBeTruthy();
-            expect(typeof callback).toBe('function'); // event object
+            expect(typeof callback).toBe('function');
             expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
             callback();
             await wrapper.vm.$nextTick();
