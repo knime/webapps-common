@@ -60,49 +60,50 @@ import org.knime.core.node.port.PortObjectSpec;
  * @param <T> The concrete type of the port object
  * @param <S> The concrete type of the port object spec
  */
-public record PortViewGroup<T extends PortObject, S extends PortObjectSpec>(String specViewLabel,
-    PortObjectSpecViewFactory<S> specViewFactory, String viewLabel, PortObjectViewFactory<T> viewFactory) {
+@SuppressWarnings("rawtypes")
+public record PortViewGroup(String specViewLabel, PortObjectSpecViewFactory specViewFactory, String viewLabel,
+    PortObjectViewFactory viewFactory) {
 
-    public static <P extends PortObject, Q extends PortObjectSpec> PortViewGroupBuilder<P, Q> builder() {
-        return new PortViewGroupBuilder<>();
+    public static PortViewGroupBuilder builder() {
+        return new PortViewGroupBuilder();
     }
 
-    public static <P extends PortObject> PortViewGroup<P, ?> of(PortObjectViewFactory<P> viewFac) {
-        return new PortViewGroup<>(null, null, null, viewFac);
+    public static PortViewGroup of(PortObjectViewFactory viewFac) {
+        return new PortViewGroup(null, null, null, viewFac);
     }
 
-    public static class PortViewGroupBuilder<T extends PortObject, S extends PortObjectSpec> {
+    public static class PortViewGroupBuilder {
         private String specViewLabel;
 
-        private PortObjectSpecViewFactory<S> specViewFactory;
+        private PortObjectSpecViewFactory specViewFactory;
 
         private String dataViewLabel;
 
-        private PortObjectViewFactory<T> dataViewFactory;
+        private PortObjectViewFactory dataViewFactory;
 
-        public PortViewGroupBuilder<T, S> setSpecViewLabel(String specViewLabel) {
+        public PortViewGroupBuilder setSpecViewLabel(String specViewLabel) {
             this.specViewLabel = specViewLabel;
-            var x = new PortViewGroup<>(null, null, null, null);
+            var x = new PortViewGroup(null, null, null, null);
             return this;
         }
 
-        public PortViewGroupBuilder<T, S> setSpecViewFactory(PortObjectSpecViewFactory<S> specViewFactory) {
+        public PortViewGroupBuilder setSpecViewFactory(PortObjectSpecViewFactory specViewFactory) {
             this.specViewFactory = specViewFactory;
             return this;
         }
 
-        public PortViewGroupBuilder<T, S> setViewLabel(String dataViewLabel) {
+        public PortViewGroupBuilder setViewLabel(String dataViewLabel) {
             this.dataViewLabel = dataViewLabel;
             return this;
         }
 
-        public PortViewGroupBuilder<T, S> setViewFactory(PortObjectViewFactory<T> dataViewFactory) {
+        public PortViewGroupBuilder setViewFactory(PortObjectViewFactory dataViewFactory) {
             this.dataViewFactory = dataViewFactory;
             return this;
         }
 
-        public PortViewGroup<T, S> build() {
-            return new PortViewGroup<>(specViewLabel, specViewFactory, dataViewLabel, dataViewFactory);
+        public PortViewGroup build() {
+            return new PortViewGroup(specViewLabel, specViewFactory, dataViewLabel, dataViewFactory);
         }
     }
 }

@@ -49,13 +49,11 @@
 package org.knime.core.webui.node.port;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.knime.core.node.port.PortObject;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
@@ -73,7 +71,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
     private static PortViewManager instance;
 
-    private static final Map<PortType, List<PortViewGroup<?, ?>>> portViewGroupsMap = new HashMap<>();
+    private static final Map<PortType, List<PortViewGroup>> portViewGroupsMap = new HashMap<>();
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
     /**
@@ -82,7 +80,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * @param portType The given port type
      * @param groups The groups to associate with this port type.
      */
-    public static void registerPortViews(final PortType portType, PortViewGroup<?, ?>... groups) {
+    public static void registerPortViews(final PortType portType, PortViewGroup... groups) {
         portViewGroupsMap.put(portType, List.of(groups));
     }
 
@@ -108,10 +106,9 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
             .isPresent();
     }
 
-    private static <T extends PortObject, S extends PortObjectSpec> Optional<PortViewGroup<T, S>>
-        getGroup(final PortType portType, final int viewIdx) {
+    private static Optional<PortViewGroup> getGroup(final PortType portType, final int viewIdx) {
         try {
-            return Optional.of((PortViewGroup<T, S>)portViewGroupsMap.get(portType).get(viewIdx));
+            return Optional.of(portViewGroupsMap.get(portType).get(viewIdx));
         } catch (IndexOutOfBoundsException e) {
             return Optional.empty();
         }
@@ -173,6 +170,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * @return a (new) port view instance
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
+    @SuppressWarnings("unchecked")
     PortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
