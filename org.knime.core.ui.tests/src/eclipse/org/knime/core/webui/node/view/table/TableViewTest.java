@@ -109,6 +109,7 @@ import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.core.webui.node.view.table.data.TableViewInitialDataImpl;
+import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactory;
 import org.knime.core.webui.page.Resource;
@@ -167,6 +168,8 @@ class TableViewTest {
         var cellImg2 = rendererRegistry.renderImage("tableId/2018748495.png?w=1&h=2");
         assertThat(new String(cellImg2, StandardCharsets.UTF_8)).startsWith("�PNG");
         assertThat(table.getRowCount()).isEqualTo(2);
+
+        assertThat(table.getFirstRowImageDimensions()).isEqualTo(Map.of("double", new ImageDimension(2, 2), "image", new ImageDimension(11, 11)));
     }
 
     @Test
@@ -479,8 +482,9 @@ class TableViewTest {
         });
         assertThat(tableSortedAscending.length).as("filters rows correctly").isEqualTo(1);
 
-        final var cachedTable = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5,
-            sortColumnName, true, globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+        final var cachedTable =
+            testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
+                globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
         assertThat(cachedTable).isDeepEqualTo(tableSortedAscending);
     }
 

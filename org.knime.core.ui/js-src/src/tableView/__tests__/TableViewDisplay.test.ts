@@ -2,7 +2,7 @@
 import type { VueWrapper } from '@vue/test-utils';
 import { describe, it, beforeEach, expect } from 'vitest';
 // @ts-ignore
-import { TableUI } from '@knime/knime-ui-table';
+import { TableUIWithAutoSizeCalculation } from '@knime/knime-ui-table';
 import type { TableViewDisplayProps } from '../types';
 import { getDefaultProps, shallowMountDisplay } from './utils/display';
 import specialColumns from '../utils/specialColumns';
@@ -15,15 +15,15 @@ describe('TableViewDisplay.vue', () => {
     });
 
     describe('tableUI props', () => {
-        const getTableUIProps = (wrapper: VueWrapper, propName: string) => {
-            const tableUI = wrapper.findComponent(TableUI);
-            const attributes = tableUI.vm.$props;
-            return attributes[propName];
+        const getTableUIAttributes = (wrapper: VueWrapper, attrKey: string, attrName: string) => {
+            const tableUI = wrapper.findComponent(TableUIWithAutoSizeCalculation);
+            const attributes = tableUI.vm[`$${attrKey}`];
+            return attributes[attrName];
         };
 
         describe('data', () => {
-            const getData = (wrapper: VueWrapper) => getTableUIProps(wrapper, 'data');
-            const getBottomData = (wrapper: VueWrapper) => getTableUIProps(wrapper, 'bottomData');
+            const getData = (wrapper: VueWrapper) => getTableUIAttributes(wrapper, 'props', 'data');
+            const getBottomData = (wrapper: VueWrapper) => getTableUIAttributes(wrapper, 'attrs', 'bottom-data');
 
 
             it('sets data', () => {
@@ -52,7 +52,7 @@ describe('TableViewDisplay.vue', () => {
         });
 
         describe('dataConfig', () => {
-            const getDataConfig = (wrapper: VueWrapper) => getTableUIProps(wrapper, 'dataConfig');
+            const getDataConfig = (wrapper: VueWrapper) => getTableUIAttributes(wrapper, 'props', 'dataConfig');
 
             it('sets dataConfig without special columns', () => {
                 const wrapper = shallowMountDisplay({ props });
@@ -63,7 +63,6 @@ describe('TableViewDisplay.vue', () => {
                         expect.objectContaining({ header: 'col2' }),
                         expect.objectContaining({ header: 'col3' })
                     ],
-                    columnIds: props.header.displayedColumns,
                     rowConfig: { enableResizing: false }
                 });
 
@@ -74,6 +73,7 @@ describe('TableViewDisplay.vue', () => {
                     header: 'col1',
                     isSortable: true,
                     key: 2,
+                    id: 'col1',
                     size: 100,
                     subHeader: undefined
                 });
@@ -95,8 +95,7 @@ describe('TableViewDisplay.vue', () => {
                         expect.objectContaining({ header: 'col2' }),
                         expect.objectContaining({ header: 'col3' }),
                         expect.objectContaining({ header: SKIPPED.name })
-                    ],
-                    columnIds: [INDEX.id, ROW_ID.id, ...props.header.displayedColumns, SKIPPED.id]
+                    ]
                 });
 
                 expect(dataConfig.columnConfigs[0]).toStrictEqual({
@@ -106,6 +105,7 @@ describe('TableViewDisplay.vue', () => {
                     header: INDEX.name,
                     isSortable: false,
                     key: 0,
+                    id: INDEX.id,
                     size: INDEX.defaultSize,
                     subHeader: undefined
                 });
@@ -117,6 +117,7 @@ describe('TableViewDisplay.vue', () => {
                     header: ROW_ID.name,
                     isSortable: true,
                     key: 1,
+                    id: ROW_ID.id,
                     size: ROW_ID.defaultSize,
                     subHeader: undefined
                 });
@@ -128,6 +129,7 @@ describe('TableViewDisplay.vue', () => {
                     header: SKIPPED.name,
                     isSortable: false,
                     key: 5,
+                    id: SKIPPED.id,
                     size: SKIPPED.defaultSize,
                     subHeader: undefined
                 });
@@ -147,6 +149,7 @@ describe('TableViewDisplay.vue', () => {
                         header: 'col2',
                         isSortable: true,
                         key: 3,
+                        id: 'col2',
                         size: 100,
                         subHeader: undefined
                     });
@@ -295,7 +298,7 @@ describe('TableViewDisplay.vue', () => {
         });
 
         describe('tableConfig', () => {
-            const getTableConfig = (wrapper: VueWrapper) => getTableUIProps(wrapper, 'tableConfig');
+            const getTableConfig = (wrapper: VueWrapper) => getTableUIAttributes(wrapper, 'props', 'tableConfig');
 
             it('sets basic tableConfig', () => {
                 const wrapper = shallowMountDisplay({ props });

@@ -87,6 +87,7 @@ describe('TableViewReport.vue', () => {
                 page: undefined,
                 selection: undefined,
                 sorting: undefined,
+                autoColumnSizesOptions: undefined,
                 settings: {
                     ...initialDataMock.settings,
                     publishSelection: false,

@@ -48,6 +48,10 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import java.util.Map;
+
+import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
+
 /**
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
@@ -95,5 +99,10 @@ public interface Table {
      * @return the number of selected rows of the table in use
      */
     Long getTotalSelected();
+
+    /**
+     * @return the column sizes of image columns
+     */
+    Map<String, ImageDimension> getFirstRowImageDimensions();
 
 }

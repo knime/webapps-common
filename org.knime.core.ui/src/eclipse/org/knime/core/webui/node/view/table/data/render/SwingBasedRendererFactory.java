@@ -198,6 +198,15 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ImageDimension getDimension(final DataValue value) {
+            final var dim = getRendererComponent(value, m_renderer).getPreferredSize();
+            return new ImageDimension((int)dim.getWidth(), (int)dim.getHeight());
+        }
+
         private static Component getRendererComponent(final DataValue val,
             final org.knime.core.data.renderer.DataValueRenderer renderer) {
             if (renderer instanceof AbstractPainterDataValueRenderer) {

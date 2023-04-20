@@ -79,7 +79,9 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
+import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer;
+import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.DataValueRenderer;
 import org.knime.core.webui.node.view.table.data.render.DataValueRendererFactory;
@@ -247,6 +249,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var tableSpec = bufferedDataTable.getDataTableSpec();
         final var contentTypes = getColumnContentTypes(displayedColumns, rendererIds, renderersMap);
         final var dataTypeIds = getColumnDataTypeIds(displayedColumns, tableSpec);
+        final var firstRowImageDimensions = getFirstRowImageDimensions(rows, contentTypes, displayedColumns);
         var currentSelection = getCurrentSelection();
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
             : countSelectedRows(filteredAndSortedTable, currentSelection);
@@ -293,6 +296,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public Long getTotalSelected() {
                 return totalSelected;
+            }
+
+            @Override
+            public Map<String, ImageDimension> getFirstRowImageDimensions() {
+                return firstRowImageDimensions;
             }
 
         };
@@ -489,7 +497,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         if (cell.isMissing()) {
             return createCellMetadata(cell, color);
         }
-        final var renderedValue =  renderCell(cell, renderer, rendererRegistry, tableId);
+        final var renderedValue = renderCell(cell, renderer, rendererRegistry, tableId);
         if (color != null) {
             return new Cell() {
 
@@ -581,6 +589,24 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             .toArray(String[]::new);
     }
 
+    private Map<String, ImageDimension> getFirstRowImageDimensions(final Object[][] rows,
+        final String[] contentTypes, final String[] displayedColumns) {
+        if (rows.length == 0) {
+            return new HashMap<>(0);
+        }
+        final var firstRowImageDimensions = new HashMap<String, ImageDimension>(rows[0].length);
+        IntStream.range(0, contentTypes.length).forEach(index -> {
+            if (contentTypes[index].equals(DataCellContentType.IMG_PATH.toString()) && (rows[0][index + 2] != null
+                || (rows[0][index + 2] instanceof Cell && ((Cell)rows[0][index + 2]).getValue() != null))) {
+                final var originalDims = m_rendererRegistry.getImageDimensions((String)rows[0][index + 2]);
+                if (originalDims != null) {
+                    firstRowImageDimensions.put(displayedColumns[index], originalDims);
+                }
+            }
+        });
+        return firstRowImageDimensions;
+    }
+
     private static Table createEmptyTable() {
         return new Table() {
 
@@ -622,6 +648,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public Long getTotalSelected() {
                 return 0l;
+            }
+
+            @Override
+            public Map<String, ImageDimension> getFirstRowImageDimensions() {
+                return new HashMap<>(0);
             }
 
         };

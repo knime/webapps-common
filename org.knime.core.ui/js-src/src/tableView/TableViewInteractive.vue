@@ -4,6 +4,7 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import TableViewDisplay from './TableViewDisplay.vue';
 import { createDefaultFilterConfig, arrayEquals } from '@/tableView/utils';
 import specialColumns from './utils/specialColumns';
+import { DEFAULT_IMAGE_ROW_HEIGHT } from '@/tableView/utils/getDataConfig';
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = '-1';
@@ -58,6 +59,7 @@ export default {
             currentAvailableWidth: 0,
             columnSizeOverrides: {},
             defaultColumnSizeOverride: null,
+            currentRowHeight: DEFAULT_IMAGE_ROW_HEIGHT,
             scopeSize: MIN_SCOPE_SIZE,
             bufferSize: MIN_BUFFER_SIZE,
             numRowsAbove: 0,
@@ -135,6 +137,32 @@ export default {
         },
         indicateRemainingColumnsSkipped() {
             return this.displayedColumns.length < this.columnCount;
+        },
+        useAutoColumnSizes() {
+            const autoSizeColumnsToContent = this.settings.autoSizeColumnsToContent;
+            return autoSizeColumnsToContent === 'FIT_CONTENT' || autoSizeColumnsToContent === 'FIT_CONTENT_AND_HEADER';
+        },
+        includeHeadersInAutoColumnSizes() {
+            return this.settings.autoSizeColumnsToContent === 'FIT_CONTENT_AND_HEADER';
+        },
+        fixedColumnSizes() {
+            const fixedColumnSizes = {};
+            // calculate the size of an img column by the ratio of the original img and the current row height
+            Object.entries(this.table.firstRowImageDimensions || []).forEach(
+                ([columnName, imageDimension]) => {
+                    fixedColumnSizes[columnName] = Math.floor(
+                        (imageDimension.widthInPx * this.currentRowHeight) / imageDimension.heightInPx
+                    );
+                }
+            );
+            return fixedColumnSizes;
+        },
+        autoColumnSizesOptions() {
+            return {
+                calculateForBody: this.useAutoColumnSizes,
+                calculateForHeader: this.includeHeadersInAutoColumnSizes,
+                fixedSizes: this.fixedColumnSizes
+            };
         }
     },
     async mounted() {
@@ -165,6 +193,9 @@ export default {
             this.selectionService.onInit(this.onSelectionChange, publishSelection, subscribeToSelection);
             this.dataLoaded = true;
             this.columnFiltersMap = this.getDefaultFilterConfigsMap(this.displayedColumns);
+            // wait one tick until tableUIForAutoSizeCalculation is mounted
+            await this.$nextTick();
+            this.triggerCalculationOfAutoColumnSizes();
         }
     },
     methods: {
@@ -336,6 +367,7 @@ export default {
                 } else {
                     this.table.rows = rows;
                     this.table.rowCount = getFromTopOrBottom('rowCount');
+                    this.table.firstRowImageDimensions = getFromTopOrBottom('firstRowImageDimensions');
                 }
                 this.bottomRows = this.getCombinedBottomRows(
                     { bottomTable, bufferStart, bufferEnd, direction }
@@ -353,6 +385,10 @@ export default {
             this.transformSelection();
             this.numRowsAbove = lazyLoad ? this.currentScopeStartIndex : 0;
             this.numRowsBelow = lazyLoad ? this.numRowsTotal - this.currentScopeEndIndex : 0;
+            // cannot be combined with condition on top because the data config needs to be up-to-date
+            if (updateDisplayedColumns) {
+                this.triggerCalculationOfAutoColumnSizes();
+            }
         },
         getTopAndBottomIndicesOnPagination(loadFromIndex, numRows) {
             const currentPageEnd = loadFromIndex + numRows;
@@ -484,7 +520,7 @@ export default {
                 return [...rows, ...buffer];
             }
         },
-        refreshTable(params) {
+        async refreshTable(params) {
             let { updateDisplayedColumns = false, resetPage = false, updateTotalSelected = false } = params || {};
             this.$refs.tableViewDisplay.refreshScroller();
             if (resetPage) {
@@ -492,18 +528,19 @@ export default {
                 this.currentIndex = 0;
             }
             if (this.useLazyLoading) {
-                this.initializeLazyLoading({ updateDisplayedColumns, updateTotalSelected });
+                await this.initializeLazyLoading({ updateDisplayedColumns, updateTotalSelected });
             } else {
-                this.updateData({ updateDisplayedColumns, updateTotalSelected });
+                await this.updateData({ updateDisplayedColumns, updateTotalSelected });
             }
         },
-        onPageChange(pageDirection) {
+        async onPageChange(pageDirection) {
             const { pageSize } = this.settings;
             this.currentPage += pageDirection;
             this.currentIndex += pageDirection * pageSize;
-            this.refreshTable();
+            await this.refreshTable();
+            this.triggerCalculationOfAutoColumnSizes();
         },
-        onViewSettingsChange(event) {
+        async onViewSettingsChange(event) {
             const newSettings = event.data.data.view;
             const enablePaginationChanged = newSettings.enablePagination !== this.settings.enablePagination;
             const displayedColumnsChanged =
@@ -513,6 +550,8 @@ export default {
             const pageSizeChanged = newSettings.pageSize !== this.settings.pageSize;
             const compactModeChangeInducesRefresh = this.useLazyLoading &&
                 (newSettings.compactMode !== this.settings.compactMode);
+            const autoSizeColumnsToContentChanged =
+                newSettings.autoSizeColumnsToContent !== this.settings.autoSizeColumnsToContent;
 
             this.settings = newSettings;
 
@@ -524,11 +563,18 @@ export default {
             }
             if (displayedColumnsChanged) {
                 this.refreshTable({ updateDisplayedColumns: true, updateTotalSelected: true });
-            } else if (compactModeChangeInducesRefresh || sortingParamsReseted) {
-                this.refreshTable();
+            } else if (compactModeChangeInducesRefresh || sortingParamsReseted || (autoSizeColumnsToContentChanged &&
+                this.useAutoColumnSizes)) {
+                await this.refreshTable();
             } else if (pageSizeChanged || enablePaginationChanged) {
-                this.refreshTable({ resetPage: true });
+                await this.refreshTable({ resetPage: true });
             }
+            // TODO: UIEXT-1111 Trigger calculation internally on prop change
+            if (showRowKeysChanged || showRowIndicesChanged || pageSizeChanged || autoSizeColumnsToContentChanged ||
+                    enablePaginationChanged) {
+                this.triggerCalculationOfAutoColumnSizes();
+            }
+
             this.selectionService.onSettingsChange(() => Array.from(this.currentSelectedRowKeys), this.clearSelection,
                 newSettings.publishSelection, newSettings.subscribeToSelection);
         },
@@ -609,7 +655,7 @@ export default {
             });
         },
         updateAvailableWidth(newAvailableWidth) {
-            if (this.currentAvailableWidth) {
+            if (this.currentAvailableWidth && !this.useAutoColumnSizes) {
                 // update all overridden column widths according to the relative change of the available width
                 const ratio = newAvailableWidth / this.currentAvailableWidth;
                 Object.keys(this.columnSizeOverrides).forEach(key => {
@@ -733,6 +779,21 @@ export default {
             return displayedColumns.map(
                 columnName => this.colNameSelectedRendererId[columnName] || null
             );
+        },
+        triggerCalculationOfAutoColumnSizes() {
+            this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
+        },
+        onAutoColumnSizesUpdate(newAutoColumnSizes) {
+            if (Reflect.ownKeys(newAutoColumnSizes).length === 0) {
+                this.columnSizeOverrides = {};
+            } else {
+                Reflect.ownKeys(newAutoColumnSizes).forEach((columnId) => {
+                    this.columnSizeOverrides[columnId] = newAutoColumnSizes[columnId];
+                });
+            }
+        },
+        onRowHeightUpdate(rowHeight) {
+            this.currentRowHeight = rowHeight;
         }
     }
 };
@@ -785,6 +846,7 @@ export default {
     :include-image-resources="false"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
+    :auto-column-sizes-options="autoColumnSizesOptions"
     @page-change="onPageChange"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"
@@ -797,6 +859,8 @@ export default {
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
     @update:available-width="updateAvailableWidth"
+    @auto-column-sizes-update="onAutoColumnSizesUpdate"
+    @row-height-update="onRowHeightUpdate"
   />
 </template>
 

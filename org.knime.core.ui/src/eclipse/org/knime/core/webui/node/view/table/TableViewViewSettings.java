@@ -62,7 +62,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Strin
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
@@ -173,6 +175,27 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Effect(signals = IsPaginationEnabled.class, type = EffectType.SHOW)
     public int m_pageSize = 10;
 
+    enum AUTO_SIZE_COLUMNS {
+            @Label("Fixed")
+            FIXED, //
+            @Label("Fit content")
+            FIT_CONTENT, //
+            @Label("Fit content and header")
+            FIT_CONTENT_AND_HEADER;
+    }
+
+    /**
+     * If the column widths should be calculated from the first rows
+     */
+    @Widget(title = "Columns sizing", description = "Fixed, the column sizing is fixed."
+        + " Fit content, the columns are sized according to the largest element in the column within the first 10"
+        + " rows or within the current page when the page size is smaller than 10."
+        + " Fit content and header, the content and the headers are considered for the size calculation of the columns.")
+    @Persist(optional = true)
+    @Layout(ViewSection.class)
+    @ValueSwitchWidget
+    public AUTO_SIZE_COLUMNS m_autoSizeColumnsToContent = AUTO_SIZE_COLUMNS.FIXED;
+
     /**
      * See annotation.
      */
@@ -238,20 +261,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Hidden
     @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
-
-    /**
-     * If the column widths should be calculated from the first rows
-     */
-    @Schema(title = "Size columns to content",
-        description = "When checked, the columns are sized according to the largest element in the column in the first 50 rows.")
-    public boolean m_autoSizeColumnsToContent = false;
-
-    /**
-     * If the column width calculation should include the headers
-     */
-    @Schema(title = "Include headers in size calculation",
-        description = "When checked, the headers are considered for the size calculation.")
-    public boolean m_includeHeaders = false;
 
     /**
      * Create a new {@link TableViewViewSettings} with default values

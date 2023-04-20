@@ -65,6 +65,7 @@ import org.knime.core.data.DataValue;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
+import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 
 /**
  * Allows one to (short-term) register {@link DataValueImageRenderer DataValueImageRenderers} together with their
@@ -135,6 +136,28 @@ public final class DataValueImageRendererRegistry {
             key);
     }
 
+    private static String[] extractTableIdAndImgKey(final String imgPath) {
+        var tableIdAndKey = imgPath.replace(".png", "").split("/");
+        return new String[] {tableIdAndKey[tableIdAndKey.length - 2], tableIdAndKey[tableIdAndKey.length - 1]};
+    }
+
+    private Image getImageByImgPath(final String imgPath) {
+        var tableIdAndKey = extractTableIdAndImgKey(imgPath);
+        var tableId = tableIdAndKey[0];
+        var key = tableIdAndKey[1];
+        var images = m_imagesPerTable.get(tableId);
+        if (images == null) {
+            LOGGER.debugWithFormat("There is no image data available anymore for table '%s'.", tableId);
+            return null;
+        }
+        var image = images.getImage(key);
+        if (image == null) {
+            LOGGER.debugWithFormat("There is no image '%s' available (anymore)", imgPath);
+            return null;
+        }
+        return image;
+    }
+
     /**
      * Renders the image for the given relative image path and removes the respective renderer (and data value) from the
      * registry.
@@ -154,20 +177,26 @@ public final class DataValueImageRendererRegistry {
             }
         }
 
-        var tableIdAndKey = split[0].replace(".png", "").split("/");
-        var tableId = tableIdAndKey[0];
-        var key = tableIdAndKey[1];
-        var images = m_imagesPerTable.get(tableId);
-        if (images == null) {
-            LOGGER.debugWithFormat("There is no image data available anymore for table '%s'.", tableId);
-            return new byte[0];
-        }
-        var image = images.getImage(key);
+        final var image = getImageByImgPath(split[0]);
         if (image == null) {
-            LOGGER.debugWithFormat("There is no image '%s' available (anymore)", split[0]);
             return new byte[0];
         }
         return image.getData(width, height);
+    }
+
+    /**
+     * Retrieves the image dimensions for the given image path
+     *
+     * @param imgPath the relative image path without height and width information (see
+     *            {@link #addRendererAndGetImgPath(String tableId, DataCell cell, DataValueImageRenderer renderer)})
+     * @return the image dimensions or null when the images cannot be accessed anymore
+     */
+    public ImageDimension getImageDimensions(final String imgPath) {
+        final var image = getImageByImgPath(imgPath);
+        if (image == null) {
+            return null;
+        }
+        return image.getDimensions();
     }
 
     /**
@@ -313,7 +342,6 @@ public final class DataValueImageRendererRegistry {
                         return (int)m_images.values().stream().filter(Image::isRendered).count();
                     }
 
-
                     @Override
                     public int numRenderImageCalls() {
                         return m_images.values().stream().mapToInt(Image::getNumRenderCalls).sum();
@@ -362,12 +390,16 @@ public final class DataValueImageRendererRegistry {
             return m_cell;
         }
 
+        ImageDimension getDimensions() {
+            return m_renderer.getDimension(m_cell);
+        }
+
         boolean isRendered() {
             return !m_dataCache.isEmpty();
         }
 
         int getNumRenderCalls() {
-            return m_numRenderCalls ;
+            return m_numRenderCalls;
         }
 
     }

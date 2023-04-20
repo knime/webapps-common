@@ -76,4 +76,13 @@ public interface DataValueImageRenderer extends DataValueRenderer {
      */
     String getId();
 
+    @SuppressWarnings("javadoc")
+    public record ImageDimension(int widthInPx, int heightInPx) {}
+
+    /**
+     * @param value the value from which the image is rendered
+     * @return the image dimensions
+     */
+    ImageDimension getDimension(DataValue value);
+
 }

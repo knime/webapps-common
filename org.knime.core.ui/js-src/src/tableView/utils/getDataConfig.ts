@@ -3,7 +3,7 @@ const isHtml = (contentType: string) => contentType === 'html';
 
 import specialColumns from './specialColumns';
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
-const DEFAULT_IMAGE_ROW_HEIGHT = 80;
+export const DEFAULT_IMAGE_ROW_HEIGHT = 80;
 
 export default ({
     settings,
@@ -51,6 +51,7 @@ export default ({
     };
         
     const createColumnConfig = ({
+        id,
         index,
         columnName,
         filterConfig,
@@ -60,6 +61,7 @@ export default ({
         columnTypeRenderers
     }:
     {
+        id: symbol | string,
         index: number,
         columnName: string,
         filterConfig?: any,
@@ -68,6 +70,9 @@ export default ({
         contentType?: any,
         columnTypeRenderers?: any
     }) => ({
+        // the id is used to keep track of added/removed columns in the TableUIForAutoSizeCalculation
+        id,
+        // the key is used to access the data in the TableUI
         key: index,
         header: columnName,
         subHeader: columnTypeName,
@@ -82,18 +87,17 @@ export default ({
     });
     
     const columnConfigs = [];
-    const columnIds = [];
     if (showRowIndices) {
         columnConfigs.push(createColumnConfig(
-            { index: 0, columnName: INDEX.name, isSortable: false }
+            { id: INDEX.id, index: 0, columnName: INDEX.name, isSortable: false }
         ));
-        columnIds.push(INDEX.id);
     }
     if (showRowKeys) {
-        columnConfigs.push(createColumnConfig(
-            { index: 1, columnName: ROW_ID.name, filterConfig: columnFiltersMap?.get(ROW_ID.id), isSortable: true }
-        ));
-        columnIds.push(ROW_ID.id);
+        columnConfigs.push(createColumnConfig({ id: ROW_ID.id,
+            index: 1,
+            columnName: ROW_ID.name,
+            filterConfig: columnFiltersMap?.get(ROW_ID.id),
+            isSortable: true }));
     }
     displayedColumns.forEach((columnName: string, index: number) => {
         const columnFormatterDescription = columnFormatterDescriptions?.[index];
@@ -101,6 +105,7 @@ export default ({
         // + 2: offset for the index and rowKey, because the first column
         // (index 0) always contains the indices and the second one the row keys
         const columnInformation = {
+            id: columnName,
             index: index + 2,
             columnName,
             filterConfig: columnFiltersMap?.get(columnName),
@@ -117,23 +122,21 @@ export default ({
             isSortable: true
         };
         columnConfigs.push(createColumnConfig(columnInformation));
-        columnIds.push(columnName);
     });
     if (indicateRemainingColumnsSkipped) {
         columnConfigs.push(createColumnConfig(
             {
+                id: SKIPPED_REMAINING_COLUMNS_COLUMN.id,
                 index: displayedColumns.length + 2,
                 columnName: SKIPPED_REMAINING_COLUMNS_COLUMN.name,
                 isSortable: false
             }
         ));
-        columnIds.push(SKIPPED_REMAINING_COLUMNS_COLUMN.id);
     }
 
     const specContainsImages = columnContentTypes?.some(contentType => isImage(contentType));
     return {
         columnConfigs,
-        columnIds,
         rowConfig: {
             ...specContainsImages && { rowHeight: DEFAULT_IMAGE_ROW_HEIGHT },
             compactMode,

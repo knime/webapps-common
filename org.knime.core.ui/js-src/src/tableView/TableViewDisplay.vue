@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, onMounted, ref, type Ref } from 'vue';
 // @ts-ignore
-import { TableUI } from '@knime/knime-ui-table';
+import { TableUIWithAutoSizeCalculation } from '@knime/knime-ui-table';
 import ImageRenderer from './ImageRenderer.vue';
 import HtmlRenderer from './HtmlRenderer.vue';
 import getDataConfig from './utils/getDataConfig';
@@ -24,7 +24,10 @@ const emit = defineEmits([
     'update-column-configs',
     'pending-image',
     'rendered-image',
-    'all-columns-resize'
+    'all-columns-resize',
+    'update:available-width',
+    'auto-column-sizes-update',
+    'row-height-update'
 ]);
 
 const props = defineProps<TableViewDisplayProps>();
@@ -79,6 +82,8 @@ const dataConfig = computed(() => {
     return conf;
 });
 
+const columnIds = computed(() => dataConfig.value.columnConfigs.map(columnConfig => columnConfig.id));
+
 const tableConfig = computed(() => getTableConfig({
     settings: props.settings,
     pageParams: props.page,
@@ -103,18 +108,23 @@ const rowData = computed(() => appendDotsIfColumnsSkipped(props.rows.top));
 const bottomRowData = computed(() => props.rows.bottom ? appendDotsIfColumnsSkipped(props.rows.bottom) : []);
 
 // map index to columnId. Used to transform params of emitted events
-const getColumnId = (colIndex: number) => dataConfig.value.columnIds[colIndex];
+const getColumnId = (colIndex: number) => columnIds.value[colIndex];
 
 // for slots
 const getContentType = (index: number) => props.header.columnContentTypes[index - 2];
 const columnResizeActive = useBoolean();
 
-const tableUI: Ref<null | TableUI> = ref(null);
+const tableUIWithAutoSizeCalculation: Ref<null | TableUIWithAutoSizeCalculation> = ref(null);
 
 defineExpose({
     refreshScroller: () => {
-        if (tableUI.value?.refreshScroller) {
-            tableUI.value.refreshScroller();
+        if (tableUIWithAutoSizeCalculation.value?.refreshScroller) {
+            tableUIWithAutoSizeCalculation.value.refreshScroller();
+        }
+    },
+    triggerCalculationOfAutoColumnSizes: () => {
+        if (tableUIWithAutoSizeCalculation.value?.triggerCalculationOfAutoColumnSizes) {
+            tableUIWithAutoSizeCalculation.value?.triggerCalculationOfAutoColumnSizes();
         }
     }
 });
@@ -132,9 +142,9 @@ defineExpose({
     >
       {{ settings.title }}
     </h4>
-    <TableUI
+    <TableUIWithAutoSizeCalculation
       v-if="rows.loaded && numberOfDisplayedColumns > 0"
-      ref="tableUI"
+      ref="tableUIWithAutoSizeCalculation"
       :data="[rowData]"
       :bottom-data="bottomRowData"
       :current-selection="[selection?.top]"
@@ -144,6 +154,7 @@ defineExpose({
       :table-config="tableConfig"
       :num-rows-above="rows.numRowsAbove"
       :num-rows-below="rows.numRowsBelow"
+      :auto-column-sizes-options="props.autoColumnSizesOptions"
       @page-change="(...args: any[]) => $emit('page-change', ...args)"
       @column-sort="(colIndex: number) => $emit('column-sort', colIndex, getColumnId(colIndex))"
       @row-select="(...args: any[]) => $emit('row-select', ...args)"
@@ -159,6 +170,9 @@ defineExpose({
       @update:available-width="(...args: any[]) => $emit('update:available-width', ...args)"
       @header-sub-menu-item-selection="
         (item: any, colIndex: number) => $emit('header-sub-menu-item-selection', item, getColumnId(colIndex))"
+      @auto-column-sizes-update="
+        (newAutoColumnSizes: Record<string | symbol, number>) => emit('auto-column-sizes-update', newAutoColumnSizes)"
+      @row-height-update="(newRowHeight: number) => $emit('row-height-update', newRowHeight)"
     >
       <template
         v-for="index in numberOfUsedColumns"
@@ -182,7 +196,7 @@ defineExpose({
           :content="cell"
         />
       </template>
-    </TableUI>
+    </TableUIWithAutoSizeCalculation>
     <div
       v-else-if="rows.loaded"
       class="no-columns"

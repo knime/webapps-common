@@ -5,6 +5,12 @@ export interface DataType {
     renderers: { name: string, id: string }[]
 }
 
+interface AutoColumnSizesOptions {
+    fixedSizes: Record<string | symbol, number>,
+    calculateForBody: boolean,
+    calculateForHeader: boolean
+}
+
 export interface TableViewDisplayProps {
     settings: any,
     rows: {
@@ -48,5 +54,6 @@ export interface TableViewDisplayProps {
     enableRowResizing: boolean,
     includeImageResources: boolean,
     knimeService: KnimeService,
-    forceHideTableSizes?: boolean
+    forceHideTableSizes?: boolean,
+    autoColumnSizesOptions: AutoColumnSizesOptions
 }

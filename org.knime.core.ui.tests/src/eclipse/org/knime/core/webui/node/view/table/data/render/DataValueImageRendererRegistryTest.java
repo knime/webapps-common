@@ -125,6 +125,39 @@ public class DataValueImageRendererRegistryTest {
 
     }
 
+    @Test
+    void testGetImageDimensions() {
+        var tableSupplier = createDefaultTestTable(15);
+
+        var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
+        var dataService =
+            new TableViewDataServiceImpl(tableSupplier, "test_table_id", new SwingBasedRendererFactory(), imgReg);
+        var pathPrefix = "uiext/test_page_id/images/";
+
+        // read dimensions of same image twice
+        var table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
+        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        var imgDims = imgReg.getImageDimensions(imgPath);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+
+        imgDims = imgReg.getImageDimensions(imgPath);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+
+        // clear image cache and access data from previous and new chunk
+        table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false);
+
+        imgDims = imgReg.getImageDimensions(imgPath);
+        assertThat(imgDims).isNull();
+
+        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        imgDims = imgReg.getImageDimensions(imgPath);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+
+    }
+
     /**
      * Makes sure that the image data cache keeps/clears the expected amount of image data.
      */
@@ -207,7 +240,6 @@ public class DataValueImageRendererRegistryTest {
 
     }
 
-
     /**
      * Test that images are cached with respect to dimension parameters.
      */
@@ -216,9 +248,8 @@ public class DataValueImageRendererRegistryTest {
         var tableSupplier = createDefaultTestTable(15);
 
         var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
-        var tableId =  "test_table_id";
-        var dataService =
-            new TableViewDataServiceImpl(tableSupplier,tableId, new SwingBasedRendererFactory(), imgReg);
+        var tableId = "test_table_id";
+        var dataService = new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
         var pathPrefix = "uiext/test_page_id/images/";
 
         var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
