@@ -139,7 +139,7 @@ export default {
             return this.displayedColumns.length < this.columnCount;
         },
         useAutoColumnSizes() {
-            const autoSizeColumnsToContent = this.settings.autoSizeColumnsToContent;
+            const { autoSizeColumnsToContent } = this.settings;
             return autoSizeColumnsToContent === 'FIT_CONTENT' || autoSizeColumnsToContent === 'FIT_CONTENT_AND_HEADER';
         },
         includeHeadersInAutoColumnSizes() {
@@ -193,9 +193,6 @@ export default {
             this.selectionService.onInit(this.onSelectionChange, publishSelection, subscribeToSelection);
             this.dataLoaded = true;
             this.columnFiltersMap = this.getDefaultFilterConfigsMap(this.displayedColumns);
-            // wait one tick until tableUIForAutoSizeCalculation is mounted
-            await this.$nextTick();
-            this.triggerCalculationOfAutoColumnSizes();
         }
     },
     methods: {
@@ -385,10 +382,6 @@ export default {
             this.transformSelection();
             this.numRowsAbove = lazyLoad ? this.currentScopeStartIndex : 0;
             this.numRowsBelow = lazyLoad ? this.numRowsTotal - this.currentScopeEndIndex : 0;
-            // cannot be combined with condition on top because the data config needs to be up-to-date
-            if (updateDisplayedColumns) {
-                this.triggerCalculationOfAutoColumnSizes();
-            }
         },
         getTopAndBottomIndicesOnPagination(loadFromIndex, numRows) {
             const currentPageEnd = loadFromIndex + numRows;
@@ -538,7 +531,7 @@ export default {
             this.currentPage += pageDirection;
             this.currentIndex += pageDirection * pageSize;
             await this.refreshTable();
-            this.triggerCalculationOfAutoColumnSizes();
+            this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
         },
         async onViewSettingsChange(event) {
             const newSettings = event.data.data.view;
@@ -568,11 +561,7 @@ export default {
                 await this.refreshTable();
             } else if (pageSizeChanged || enablePaginationChanged) {
                 await this.refreshTable({ resetPage: true });
-            }
-            // TODO: UIEXT-1111 Trigger calculation internally on prop change
-            if (showRowKeysChanged || showRowIndicesChanged || pageSizeChanged || autoSizeColumnsToContentChanged ||
-                    enablePaginationChanged) {
-                this.triggerCalculationOfAutoColumnSizes();
+                this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
             }
 
             this.selectionService.onSettingsChange(() => Array.from(this.currentSelectedRowKeys), this.clearSelection,
@@ -779,9 +768,6 @@ export default {
             return displayedColumns.map(
                 columnName => this.colNameSelectedRendererId[columnName] || null
             );
-        },
-        triggerCalculationOfAutoColumnSizes() {
-            this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
         },
         onAutoColumnSizesUpdate(newAutoColumnSizes) {
             if (Reflect.ownKeys(newAutoColumnSizes).length === 0) {

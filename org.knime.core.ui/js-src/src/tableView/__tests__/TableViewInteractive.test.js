@@ -9,7 +9,6 @@ import TableViewDisplay from '../TableViewDisplay.vue';
 import flushPromises from 'flush-promises';
 import { constants as tableUIConstants, TableUIWithAutoSizeCalculation } from '@knime/knime-ui-table';
 import specialColumns from '../utils/specialColumns';
-import TableViewInteractive from '../TableViewInteractive.vue';
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
@@ -1892,12 +1891,6 @@ describe('TableViewInteractive.vue', () => {
     });
 
     describe('calculation of fit content column sizes', () => {
-        let triggerAutoSizeCalcSpy;
-
-        beforeEach(() => {
-            triggerAutoSizeCalcSpy = vi.spyOn(TableViewInteractive.methods, 'triggerCalculationOfAutoColumnSizes');
-        });
-
         it('updates the current rowHeight when the TableUIWithAutoSizeCalculation emits rowHeightUpdate', async () => {
             const wrapper = await shallowMountInteractive(context);
             expect(wrapper.vm.currentRowHeight).toBe(80);
@@ -1906,28 +1899,17 @@ describe('TableViewInteractive.vue', () => {
             expect(wrapper.vm.currentRowHeight).toBe(120);
         });
 
-        it('doesn"t call the method to trigger the calculation of the auto sizes on mounted when auto size is disabled',
-            async () => {
-                const wrapper = await shallowMountInteractive(context);
-                expect(wrapper.vm.autoColumnSizesOptions).toStrictEqual({
-                    calculateForBody: false,
-                    calculateForHeader: false,
-                    fixedSizes: {}
-                });
-                expect(triggerAutoSizeCalcSpy).toHaveBeenCalled();
-                expect(wrapper.vm.$refs).toStrictEqual({ tableViewDisplay: expect.any(Object) });
-            });
-
-        it('sets the correct parameters on mounted when option to auto size to content is activated', async () => {
+        it('sets the correct autoColumnSizesOptions', async () => {
             initialDataMock.settings.autoSizeColumnsToContent = 'FIT_CONTENT';
             const wrapper = await shallowMountInteractive(context);
-            expect(wrapper.vm.autoColumnSizesOptions).toStrictEqual({
-                calculateForBody: true,
-                calculateForHeader: false,
-                fixedSizes: {}
-            });
-            expect(triggerAutoSizeCalcSpy).toHaveBeenCalled();
             expect(wrapper.vm.$refs).toStrictEqual({ tableViewDisplay: expect.any(Object) });
+            expect(wrapper.vm.autoColumnSizesOptions).toStrictEqual({ calculateForBody: true,
+                calculateForHeader: false,
+                fixedSizes: {} });
+            changeViewSetting(wrapper, 'autoSizeColumnsToContent', 'FIT_CONTENT_AND_HEADER');
+            expect(wrapper.vm.autoColumnSizesOptions).toStrictEqual({ calculateForBody: true,
+                calculateForHeader: true,
+                fixedSizes: {} });
         });
 
         it.each([
@@ -1943,27 +1925,6 @@ describe('TableViewInteractive.vue', () => {
                 changeCallback(wrapper);
                 await flushPromises();
                 expect(tableUIWithAutoSizeCalc.vm.triggerCalculationOfAutoColumnSizes).toHaveBeenCalledTimes(1);
-                expect(wrapper.vm.$refs).toStrictEqual({ tableViewDisplay: expect.any(Object) });
-            });
-
-        it.each([
-            ['showRowKeys', true, false],
-            ['showRowIndices', true, false],
-            ['displayedColumns', { selected: ['col1', 'col2', 'col3', 'col4'] }, { selected: ['col1'] }]
-        ])('sets the correct parameters when adding %s and triggers the recalculation of auto sizes',
-            async (settingsKey, valueAddColumn, valueRemoveColumn) => {
-                initialDataMock.settings.autoSizeColumnsToContent = 'FIT_CONTENT';
-                initialDataMock.settings.displayedColumns = { selected: ['col1', 'col2'] };
-                const wrapper = await shallowMountInteractive(context);
-                const tableUIWithAutoSizeCalc = findTableUIWithAutoSizeCalculation(wrapper);
-                tableUIWithAutoSizeCalc.vm.triggerCalculationOfAutoColumnSizes = vi.fn();
-
-                changeViewSetting(wrapper, settingsKey, valueAddColumn);
-                await flushPromises();
-
-                changeViewSetting(wrapper, settingsKey, valueRemoveColumn);
-                await flushPromises();
-                expect(tableUIWithAutoSizeCalc.vm.triggerCalculationOfAutoColumnSizes).toHaveBeenCalledTimes(2);
                 expect(wrapper.vm.$refs).toStrictEqual({ tableViewDisplay: expect.any(Object) });
             });
 
