@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.persistence.field;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -197,6 +198,22 @@ class FieldBasedNodeSettingsPersistorTest {
             arraySettings.m_bar[i] = element;
         }
         testSaveLoad(arraySettings);
+    }
+
+    @Test
+    void testArraySettingsWithInvalidKeys() throws InvalidSettingsException {
+        var persistor = new FieldBasedNodeSettingsPersistor<>(ArraySettings.class);
+        var saved = new NodeSettings(ROOT_KEY);
+        saved.addNodeSettings("bar").addBoolean("null_Internal", true);
+        var loaded = persistor.load(saved);
+        assertArrayEquals(new ElementSettings[0], loaded.m_bar);
+    }
+
+    @Test
+    void testSaveNullArraySettings() throws InvalidSettingsException {
+        var persistor = new FieldBasedNodeSettingsPersistor<>(ArraySettings.class);
+        var root = new NodeSettings(ROOT_KEY);
+        assertThrows(NullPointerException.class, () -> persistor.save(null, root));
     }
 
     private interface TestNodeSettings extends DefaultNodeSettings {

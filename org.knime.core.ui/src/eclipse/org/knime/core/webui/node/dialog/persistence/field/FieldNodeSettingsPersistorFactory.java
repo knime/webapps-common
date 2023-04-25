@@ -247,7 +247,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         @Override
         public S[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
             var arraySettings = settings.getNodeSettings(m_configKey);
-            int size = arraySettings.keySet().size();
+            int size = arraySettings.keySet().stream().filter(s -> s.matches("^\\d+$")).toList().size();
             ensureEnoughPersistors(size);
             @SuppressWarnings("unchecked")
             var values = (S[])Array.newInstance(m_elementType, size);
@@ -265,6 +265,10 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
         @Override
         public void save(final S[] array, final NodeSettingsWO settings) {
+            if (array == null) {
+                throw new NullPointerException(String.format("Array field %s cannot be saved as it is null. "
+                    + "Empty array fields should be represented by an empty array instead.", m_configKey));
+            }
             ensureEnoughPersistors(array.length);
             var arraySettings = settings.addNodeSettings(m_configKey);
             for (int i = 0; i < array.length; i++) {//NOSONAR
