@@ -57,6 +57,7 @@ export default {
     data() {
         return {
             selectedIds: this.initialSelectedIds,
+            allPossibleValues: this.possibleValues,
             searchValue: '',
             inputOrOptionsFocussed: false,
             /*
@@ -70,7 +71,7 @@ export default {
     },
     computed: {
         filteredValues() {
-            return this.possibleValues.filter(value => value.text.includes(this.searchValue));
+            return this.allPossibleValues.filter(value => value.text.includes(this.searchValue));
         },
         hasSelection() {
             return this.selectedValues.length > 0;
@@ -81,7 +82,7 @@ export default {
         selectedValues() {
             return this.selectedIds.length === 0
                 ? []
-                : this.possibleValues.filter(ele => this.selectedIds.includes(ele.id));
+                : this.allPossibleValues.filter(ele => this.selectedIds.includes(ele.id));
         },
         maxSizeVisibleOptions() {
             return this.filteredValues.length < this.sizeVisibleOptions
@@ -99,6 +100,12 @@ export default {
         },
         onDown() {
             this.$refs.combobox.onDown();
+        },
+        onEnter() {
+          const newId = 'new' + Date.now();
+          this.allPossibleValues = [...this.allPossibleValues, {id: newId, text: this.searchValue}];
+          this.updateSelectedIds([...this.selectedIds, newId]);
+          this.searchValue = '';
         },
         onFocusOutside() {
             this.inputOrOptionsFocussed = false;
@@ -180,6 +187,7 @@ export default {
             :style="inputWidth"
             @focus="onInputFocus"
             @input="onInput"
+            @keydown.enter.prevent="onEnter"
             @keydown.down.stop.prevent="onDown"
             @keydown.esc.stop.prevent="onInputEscape"
           >
