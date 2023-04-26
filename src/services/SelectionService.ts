@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src/services';
-import { Notification, NodeServices, SelectionModes, EventTypes } from 'src/types';
+import { Event, NodeServices, SelectionModes, EventTypes } from 'src/types';
 import { KnimeService } from './KnimeService';
 
 /**
@@ -14,7 +14,7 @@ export class SelectionService<T = any> {
     private currentSubscribeToSelection: boolean;
 
     /**
-     * @param {KnimeService} knimeService - instance should be provided to use notifications.
+     * @param {KnimeService} knimeService - instance should be provided to use events.
      */
     constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
         this.knimeService = knimeService;
@@ -84,24 +84,24 @@ export class SelectionService<T = any> {
      * @returns {void}
      */
     addOnSelectionChangeCallback(callback: (any) => void): void {
-        const wrappedCallback = (notification: Notification): void => {
-            const { nodeId, selection, mode } = notification.params[0] || {};
+        const wrappedCallback = (event: Event): void => {
+            const { nodeId, selection, mode } = event.payload || {};
             if (this.knimeService.extensionConfig.nodeId === nodeId) {
                 callback({ selection, mode });
             }
         };
         this.callbackMap.set(callback, wrappedCallback);
-        this.knimeService.addNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
+        this.knimeService.addEventCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 
     /**
      * Removes previously added callback.
-     * @param {function} callback - that needs to be removed from notifications.
+     * @param {function} callback - that needs to be removed from events.
      * @returns {void}
      */
     removeOnSelectionChangeCallback(callback: (any) => void): void {
-        const wrappedCallback = this.callbackMap.get(callback) as (notification: Notification) => void;
-        this.knimeService.removeNotificationCallback(EventTypes.SelectionEvent, wrappedCallback);
+        const wrappedCallback = this.callbackMap.get(callback) as (event: Event) => void;
+        this.knimeService.removeEventCallback(EventTypes.SelectionEvent, wrappedCallback);
     }
 
     /**

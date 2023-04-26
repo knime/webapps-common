@@ -1,6 +1,6 @@
 export * from './AlertTypes';
 export * from './ExtensionConfig';
-export * from './Notification';
+export * from './Event';
 export * from './NodeServices';
 export * from './NodeInfo';
 export * from './ServiceRequests';

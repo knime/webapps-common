@@ -71,15 +71,15 @@ describe('KnimeService', () => {
         });
     });
 
-    describe('pushNotification', () => {
+    describe('pushEvent', () => {
         it('Handles error if extension config not provided', async () => {
             const knimeService = new KnimeService(null, null, jest.fn());
             const sendErrorMock = jest.spyOn(knimeService, 'sendError');
-            const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
+            const response = await knimeService.pushEvent({ agent: '007', eventType: EventTypes.DataEvent });
             expect(response).toStrictEqual({});
             expect(sendErrorMock).toHaveBeenCalledWith({
                 code: undefined,
-                message: 'Cannot push notification without extension config',
+                message: 'Cannot push event without extension config',
                 nodeId: 'MISSING',
                 nodeInfo: {},
                 subtitle: 'Missing extension config',
@@ -87,29 +87,29 @@ describe('KnimeService', () => {
             });
         });
 
-        it('Handles error if push notification not provided', async () => {
+        it('Handles error if push event not provided', async () => {
             const knimeService = new KnimeService(extensionConfig);
             const sendErrorMock = jest.spyOn(knimeService, 'sendError');
 
-            const response = await knimeService.pushNotification({ agent: '007', method: EventTypes.DataEvent });
+            const response = await knimeService.pushEvent({ agent: '007', eventType: EventTypes.DataEvent });
             expect(response).toStrictEqual({});
             expect(sendErrorMock).toHaveBeenCalledWith({
                 code: undefined,
-                message: 'Push notification is not available',
+                message: 'Push event is not available',
                 nodeId: extensionConfig.nodeId,
                 nodeInfo: extensionConfig.nodeInfo,
-                subtitle: 'Push notification failed',
+                subtitle: 'Push event failed',
                 type: 'error'
             });
         });
 
-        it('Pushes notifications successfully', () => {
+        it('Pushes event successfully', () => {
             const callableMock = jest.fn();
-            const pushNotificationMock = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
-            const testEvent = { agent: '007', method: EventTypes.DataEvent };
-            knimeService.pushNotification(testEvent);
-            expect(pushNotificationMock).toHaveBeenCalledWith({
+            const pushEventMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callableMock, pushEventMock);
+            const testEvent = { agent: '007', eventType: EventTypes.DataEvent };
+            knimeService.pushEvent(testEvent);
+            expect(pushEventMock).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
                 ...testEvent
             });
@@ -121,67 +121,67 @@ describe('KnimeService', () => {
             jest.clearAllMocks();
         });
 
-        it('Adds event callback with addNotificationCallback', () => {
+        it('Adds event callback with addEventCallback', () => {
             const knime = new KnimeService();
 
             const callback = () => {};
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
+            knime.addEventCallback(EventTypes.SelectionEvent, callback);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.SelectionEvent)[0]).toEqual(callback);
+            expect(knime.eventCallbacksMap.get(EventTypes.SelectionEvent)[0]).toEqual(callback);
         });
 
-        it('Removes notification callback with removeNotificationCallback', () => {
+        it('Removes event callback with removeEventCallback', () => {
             const knime = new KnimeService();
 
             const callback = () => {};
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
-            knime.removeNotificationCallback(EventTypes.SelectionEvent, callback);
+            knime.addEventCallback(EventTypes.SelectionEvent, callback);
+            knime.removeEventCallback(EventTypes.SelectionEvent, callback);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.SelectionEvent).length === 0);
+            expect(knime.eventCallbacksMap.get(EventTypes.SelectionEvent).length === 0);
         });
 
-        it('Resets notification callbacks by type with resetNotificationCallbacksByType', () => {
+        it('Resets event callbacks by type with resetEventCallbacksByType', () => {
             const knime = new KnimeService();
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, () => {});
-            expect(knime.notificationCallbacksMap.get(EventTypes.SelectionEvent).length === 1);
-            knime.resetNotificationCallbacksByType(EventTypes.SelectionEvent);
+            knime.addEventCallback(EventTypes.SelectionEvent, () => {});
+            expect(knime.eventCallbacksMap.get(EventTypes.SelectionEvent).length === 1);
+            knime.resetEventCallbacksByType(EventTypes.SelectionEvent);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.SelectionEvent).length === 0);
+            expect(knime.eventCallbacksMap.get(EventTypes.SelectionEvent).length === 0);
         });
 
-        it('Resets all notification callbacks with resetNotificationCallbacks', () => {
+        it('Resets all event callbacks with resetEventCallbacks', () => {
             const knime = new KnimeService();
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, () => {});
-            expect(knime.notificationCallbacksMap.size === 1);
-            knime.resetNotificationCallbacks();
+            knime.addEventCallback(EventTypes.SelectionEvent, () => {});
+            expect(knime.eventCallbacksMap.size === 1);
+            knime.resetEventCallbacks();
 
-            expect(knime.notificationCallbacksMap.size === 0);
+            expect(knime.eventCallbacksMap.size === 0);
         });
 
-        it('Calls notification callback when a notification with correct type was received', () => {
+        it('Calls event callback when an event with correct type was received', () => {
             const knime = new KnimeService();
             const callback = jest.fn();
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
-            knime.onServiceNotification({
-                method: EventTypes.SelectionEvent
+            knime.addEventCallback(EventTypes.SelectionEvent, callback);
+            knime.onServiceEvent({
+                eventType: EventTypes.SelectionEvent
             } as any);
 
             expect(callback).toHaveBeenCalledWith({
-                method: EventTypes.SelectionEvent
+                eventType: EventTypes.SelectionEvent
             });
         });
 
-        it(`Doesn't call notification callback when a notification with different type was received`, () => {
+        it(`Doesn't call event callback when an event with different type was received`, () => {
             const knime = new KnimeService();
             const callback = jest.fn();
 
-            knime.addNotificationCallback(EventTypes.SelectionEvent, callback);
-            knime.onServiceNotification({
+            knime.addEventCallback(EventTypes.SelectionEvent, callback);
+            knime.onServiceEvent({
                 method: invalidEvent
             } as any);
 
@@ -221,11 +221,11 @@ describe('KnimeService', () => {
         });
 
         it('sends errors', () => {
-            const pushNotificationMock = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushNotificationMock);
+            const pushEventMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushEventMock);
             const alert = knimeService.createAlert(mockError);
             knimeService.sendError(alert);
-            expect(pushNotificationMock).toHaveBeenCalledWith({
+            expect(pushEventMock).toHaveBeenCalledWith({
                 alert,
                 callerId: '123.knime workflow.root:10.view',
                 type: 'alert'
@@ -233,22 +233,22 @@ describe('KnimeService', () => {
         });
 
         it('sends warnings', () => {
-            const pushNotificationMock = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushNotificationMock);
+            const pushEventMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, jest.fn(), pushEventMock);
             const alert = knimeService.createAlert(mockError);
             knimeService.sendWarning(alert);
-            expect(pushNotificationMock).toHaveBeenCalledWith({
+            expect(pushEventMock).toHaveBeenCalledWith({
                 alert,
                 callerId: '123.knime workflow.root:10.view',
                 type: 'alert'
             });
         });
 
-        it('Pushes backend errors via notification', async () => {
+        it('Pushes backend errors via event', async () => {
             const callableMock = jest.fn()
                 .mockReturnValue(Promise.resolve(new Promise(res => res({ error: mockError }))));
-            const pushNotificationMock = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callableMock, pushNotificationMock);
+            const pushEventMock = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callableMock, pushEventMock);
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const testResult = await knimeService.callService([NodeServices.CALL_NODE_DATA_SERVICE,
                 DataServiceTypes.INITIAL_DATA, '']);

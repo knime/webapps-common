@@ -1,5 +1,5 @@
 import { IFrameKnimeService } from 'src';
-import { Notification, NodeServices, DataServiceType, DataServiceTypes, EventTypes } from 'src/types';
+import { Event, NodeServices, DataServiceType, DataServiceTypes, EventTypes } from 'src/types';
 import { AlertTypes } from 'src/types/AlertTypes';
 import { createJsonRpcRequest } from 'src/utils';
 import { KnimeService } from './KnimeService';
@@ -117,20 +117,20 @@ export class JsonDataService<T = any> {
     /**
      * Adds callback that will be triggered when data changes.
      * @param {Function} callback - called on data change.
-     * @param {Notification} response - the data update event object.
+     * @param {Event} response - the data update event object.
      * @returns {void}
      */
-    addOnDataChangeCallback(callback: (notification: Notification) => void) {
-        this.knimeService.addNotificationCallback(EventTypes.DataEvent, callback);
+    addOnDataChangeCallback(callback: (event: Event) => void) {
+        this.knimeService.addEventCallback(EventTypes.DataEvent, callback);
     }
 
     /**
-     * Publish a data update notification to other UIExtensions registered in the current page.
+     * Publish a data update event to other UIExtensions registered in the current page.
      * @param {any} data - the data to send.
      * @returns {void}
      */
     publishData(data: any) {
-        this.knimeService.pushNotification({
+        this.knimeService.pushEvent({
             event: { data, method: EventTypes.DataEvent }
         });
     }

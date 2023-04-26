@@ -10,9 +10,9 @@ describe('JsonDataService', () => {
 
     const getKnimeService = (extensionConfig = defaultExtensionConfig) => {
         const callServiceSpy = jest.fn(() => Promise.resolve(JSON.stringify(extensionConfig?.initialData)));
-        const pushNotificationSpy = jest.fn();
-        const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
-        return { knimeService, callServiceSpy, pushNotificationSpy };
+        const pushEventSpy = jest.fn();
+        const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushEventSpy);
+        return { knimeService, callServiceSpy, pushEventSpy };
     };
 
     describe('initialization', () => {
@@ -38,8 +38,8 @@ describe('JsonDataService', () => {
             const callServiceSpy = jest.fn().mockResolvedValue({
                 result: JSON.stringify(extensionConfig.initialData)
             });
-            const pushNotificationSpy = jest.fn();
-            const knimeService = new KnimeService(localExtensionConfig, callServiceSpy, pushNotificationSpy);
+            const pushEventSpy = jest.fn();
+            const knimeService = new KnimeService(localExtensionConfig, callServiceSpy, pushEventSpy);
             const jsonDataService = new JsonDataService(knimeService);
             const response = await jsonDataService.initialData();
             expect(response).toStrictEqual(JSON.stringify(extensionConfig.initialData));
@@ -87,8 +87,8 @@ describe('JsonDataService', () => {
 
         it('accepts empty string response from data request', async () => {
             const callServiceSpy = jest.fn().mockResolvedValue({ result: { result: '' } });
-            const pushNotificationSpy = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
+            const pushEventSpy = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushEventSpy);
             const jsonDataService = new JsonDataService(knimeService);
             const response = await jsonDataService.data();
             expect(response).toEqual('');
@@ -158,7 +158,7 @@ describe('JsonDataService', () => {
             expect(registerDataGetterSpy).toHaveBeenCalled();
         });
 
-        it('adds callback to notification with addOnDataChangeCallback', () => {
+        it('adds callback to event with addOnDataChangeCallback', () => {
             const knime = new KnimeService(extensionConfig);
             const jsonDataService = new JsonDataService(knime);
 
@@ -166,15 +166,15 @@ describe('JsonDataService', () => {
 
             jsonDataService.addOnDataChangeCallback(mockDataChangeCallback);
 
-            expect(knime.notificationCallbacksMap.get(EventTypes.DataEvent)[0]).toEqual(mockDataChangeCallback);
+            expect(knime.eventCallbacksMap.get(EventTypes.DataEvent)[0]).toEqual(mockDataChangeCallback);
         });
 
         it('publishes events via the knimeService', () => {
-            const { knimeService, pushNotificationSpy } = getKnimeService();
+            const { knimeService, pushEventSpy } = getKnimeService();
             const jsonDataService = new JsonDataService(knimeService);
             const testEvent = { agent: '007' };
             jsonDataService.publishData(testEvent);
-            expect(pushNotificationSpy).toHaveBeenCalledWith({
+            expect(pushEventSpy).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
                 event: { data: testEvent, method: EventTypes.DataEvent }
             });
@@ -254,8 +254,8 @@ describe('JsonDataService', () => {
                 }
             };
             const callServiceSpy = jest.fn().mockResolvedValue({ result: { error: expectedError } });
-            const pushNotificationSpy = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
+            const pushEventSpy = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushEventSpy);
             const jsonDataService = new JsonDataService(knimeService);
             const sendErrorSpy = jest.spyOn(knimeService, 'sendError');
             const response = await jsonDataService.data();
@@ -276,8 +276,8 @@ describe('JsonDataService', () => {
                 warningMessages: ['Warn', 'ing']
             };
             const callServiceSpy = jest.fn().mockResolvedValue({ result: data });
-            const pushNotificationSpy = jest.fn();
-            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
+            const pushEventSpy = jest.fn();
+            const knimeService = new KnimeService(extensionConfig, callServiceSpy, pushEventSpy);
             const jsonDataService = new JsonDataService(knimeService);
             const sendWarningSpy = jest.spyOn(knimeService, 'sendWarning');
             const response = await jsonDataService.data();
@@ -298,8 +298,8 @@ describe('JsonDataService', () => {
 
         beforeAll(() => {
             const callServiceSpy = jest.fn();
-            const pushNotificationSpy = jest.fn();
-            knimeService = new KnimeService(extensionConfig, callServiceSpy, pushNotificationSpy);
+            const pushEventSpy = jest.fn();
+            knimeService = new KnimeService(extensionConfig, callServiceSpy, pushEventSpy);
             jsonDataService = new JsonDataService(knimeService) as any;
             sendWarningSpy = jest.spyOn(knimeService, 'sendWarning');
             sendErrorSpy = jest.spyOn(knimeService, 'sendError');

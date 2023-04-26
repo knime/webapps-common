@@ -54,13 +54,13 @@ describe('IFrameKnimeService', () => {
     });
 
     describe('postMessage communication', () => {
-        let knimeService, onInitSpy, onCallServiceResponseSpy, onServiceNotificationSpy;
+        let knimeService, onInitSpy, onCallServiceResponseSpy, onServiceEventSpy;
 
         beforeEach(() => {
             knimeService = new IFrameKnimeService();
             onInitSpy = jest.spyOn(knimeService, 'onInit');
             onCallServiceResponseSpy = jest.spyOn(knimeService, 'onCallServiceResponse');
-            onServiceNotificationSpy = jest.spyOn(knimeService, 'onServiceNotification');
+            onServiceEventSpy = jest.spyOn(knimeService, 'onServiceEvent');
         });
 
         it('onMessageFromParent does nothing if called with unsupported prefix', () => {
@@ -83,27 +83,26 @@ describe('IFrameKnimeService', () => {
             expect(onCallServiceResponseSpy).not.toHaveBeenCalled();
         });
 
-        it('calls KnimeService onJsonRpcNotification on received :jsonrpcNotification event', () => {
-            const notification = {
-                jsonrpc: '2.0.',
-                method: NodeServices.CALL_NODE_SELECTION_SERVICE,
-                params: [{
+        it('calls KnimeService onServiceEvent on received :serviceEvent event', () => {
+            const event = {
+                eventType: NodeServices.CALL_NODE_SELECTION_SERVICE,
+                payload: {
                     projectId: '001',
                     workflowId: '001',
                     nodeId: '0',
                     mode: SelectionModes.ADD,
                     keys: ['Row1', 'Row2']
-                }]
+                }
             };
 
             (knimeService as any).onMessageFromParent({ /* eslint-disable-line no-extra-parens */
                 data: {
-                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
-                    payload: { data: notification }
+                    type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceEvent`,
+                    payload: { data: event }
                 }
             } as MessageEvent);
 
-            expect(onServiceNotificationSpy).toBeCalledWith({ data: notification });
+            expect(onServiceEventSpy).toBeCalledWith({ data: event });
         });
 
         it('onMessageFromParent handles async post requests with differing IDs', () => {

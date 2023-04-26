@@ -51,7 +51,7 @@ describe('SelectionService', () => {
             ]);
         });
 
-        it('Adds callback to notification with addOnSelectionChangeCallback', () => {
+        it('Adds callback to event with addOnSelectionChangeCallback', () => {
             const knime = new KnimeService();
             const selectionService = new SelectionService(knime);
 
@@ -59,7 +59,7 @@ describe('SelectionService', () => {
 
             selectionService.addOnSelectionChangeCallback(callback);
 
-            expect(knime.notificationCallbacksMap.get('SelectionEvent')[0])
+            expect(knime.eventCallbacksMap.get('SelectionEvent')[0])
                 .toEqual((selectionService as any).callbackMap.get(callback));
         });
 
@@ -82,7 +82,7 @@ describe('SelectionService', () => {
             expect(callback).not.toHaveBeenCalledWith(testPayload);
         });
 
-        it('Removes jsonrpcNotification callback with removeOnSelectionChangeCallback', () => {
+        it('Removes event callback with removeOnSelectionChangeCallback', () => {
             const knime = new KnimeService();
             const selectionService = new SelectionService(knime);
 
@@ -91,7 +91,7 @@ describe('SelectionService', () => {
             selectionService.addOnSelectionChangeCallback(callback);
             selectionService.removeOnSelectionChangeCallback(callback);
 
-            expect(knime.notificationCallbacksMap.get('SelectionEvent')).toEqual([]);
+            expect(knime.eventCallbacksMap.get('SelectionEvent')).toEqual([]);
         });
     });
 

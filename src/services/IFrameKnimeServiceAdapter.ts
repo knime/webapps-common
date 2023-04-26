@@ -1,5 +1,5 @@
 import { UI_EXT_POST_MESSAGE_PREFIX } from 'src/constants';
-import { ExtensionConfig, Notification } from 'src/types';
+import { ExtensionConfig, Event } from 'src/types';
 import { CallableService } from 'src/types/CallableService';
 import { KnimeService } from './KnimeService';
 
@@ -19,8 +19,8 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
     private imageGeneratedCallback: (image: string) => void;
 
     constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
-        pushNotification: CallableService = null) {
-        super(extensionConfig, callableService, pushNotification);
+        pushEvent: CallableService = null) {
+        super(extensionConfig, callableService, pushEvent);
         this.boundOnMessageFromIFrame = this.onMessageFromIFrame.bind(this);
         window.addEventListener('message', this.boundOnMessageFromIFrame);
     }
@@ -78,10 +78,10 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
                     this.postMessage({ payload: { response, requestId }, messageType: 'callServiceResponse' });
                 }
                 break;
-            case `notification`:
+            case `event`:
                 {
-                    const { payload: { notification } } = data;
-                    this.pushNotification(notification);
+                    const { payload: { event } } = data;
+                    this.pushEvent(event);
                 }
                 break;
             case `imageGenerated`:
@@ -105,9 +105,9 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         this.imageGeneratedCallback = callback;
     }
 
-    onServiceNotification(notification: Notification | string) {
-        const payload = typeof notification === 'string' ? JSON.parse(notification) : notification;
-        this.postMessage({ payload, messageType: 'serviceNotification' });
+    onServiceEvent(event: Event | string) {
+        const payload = typeof event === 'string' ? JSON.parse(event) : event;
+        this.postMessage({ payload, messageType: 'serviceEvent' });
     }
 
     /**

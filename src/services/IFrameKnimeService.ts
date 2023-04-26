@@ -36,7 +36,7 @@ export class IFrameKnimeService extends KnimeService {
 
         this.callableService = this.executeServiceCall;
 
-        this.callablePushNotification = IFrameKnimeService.iframePushNotification;
+        this.callablePushEvent = IFrameKnimeService.iframePushEvent;
 
         this.boundOnMessageFromParent = this.onMessageFromParent.bind(this);
         window.addEventListener('message', this.boundOnMessageFromParent);
@@ -75,8 +75,8 @@ export class IFrameKnimeService extends KnimeService {
                 this.onCallServiceResponse(data);
                 break;
 
-            case `serviceNotification`:
-                this.onServiceNotification(data.payload);
+            case `serviceEvent`:
+                this.onServiceEvent(data.payload);
                 break;
 
             default:
@@ -146,8 +146,8 @@ export class IFrameKnimeService extends KnimeService {
         window.parent.postMessage({ type: `${UI_EXT_POST_MESSAGE_PREFIX}:${messageType}`, payload }, '*');
     }
 
-    private static iframePushNotification(notification: Notification) {
-        IFrameKnimeService.postMessage({ payload: { notification }, messageType: 'notification' });
+    private static iframePushEvent(event: Event) {
+        IFrameKnimeService.postMessage({ payload: { event }, messageType: 'event' });
         return Promise.resolve();
     }
 

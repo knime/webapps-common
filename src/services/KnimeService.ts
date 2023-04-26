@@ -1,4 +1,4 @@
-import { ExtensionConfig, Notification, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo }
+import { ExtensionConfig, Event, EventTypes, CallableService, ServiceParameters, CallServiceResponse, NodeInfo }
     from 'src/types';
 import { Alert } from 'src/types/Alert';
 import { AlertTypes } from 'src/types/AlertTypes';
@@ -18,32 +18,32 @@ export class KnimeService<T = any> {
     extensionConfig: ExtensionConfig<T>;
 
     protected callableService: CallableService;
-    protected callablePushNotification: CallableService;
+    protected callablePushEvent: CallableService;
 
     private dataGetter: () => any;
 
-    notificationCallbacksMap: Map<string, ((notification: Notification) => void)[]>;
+    eventCallbacksMap: Map<string, ((event: Event) => void)[]>;
 
     /**
      * @param {ExtensionConfig} extensionConfig - the extension configuration for the associated UI Extension.
      * @param {CallableService} callableService - the environment-specific "call service" API method.
-     * @param {CallableService} pushNotification - the environment-specific "push notification" API method.
+     * @param {CallableService} pushEvent - the environment-specific "push event" API method.
      */
     constructor(extensionConfig: ExtensionConfig = null, callableService: CallableService = null,
-        pushNotification: CallableService = null) {
+        pushEvent: CallableService = null) {
         /**
          *
          */
         this.extensionConfig = extensionConfig;
 
         this.callableService = callableService;
-        this.callablePushNotification = pushNotification;
+        this.callablePushEvent = pushEvent;
 
         /**
-         * Stores registered callbacks for notifications called via backend implementation.
+         * Stores registered callbacks for events called via backend implementation.
          * Should be only used by internal service methods.
          */
-        this.notificationCallbacksMap = new Map();
+        this.eventCallbacksMap = new Map();
     }
 
     /**
@@ -121,99 +121,99 @@ export class KnimeService<T = any> {
     }
 
     /**
-     * To be called by the parent application to sent a notification to all services. Calls registered callbacks by
-     * notification type.
-     * @param {Notification} notification - notification object, which is provided by backend implementation.
+     * To be called by the parent application to sent an event to all services. Calls registered callbacks by
+     * event type.
+     * @param {Event} event - event object, which is provided by backend implementation.
      * @returns {void}
      */
-    onServiceNotification(notification: Notification) {
-        const callbacks = this.notificationCallbacksMap.get(notification.method) || [];
+    onServiceEvent(event: Event) {
+        const callbacks = this.eventCallbacksMap.get(event.eventType) || [];
 
         callbacks.forEach((callback) => {
-            callback(notification);
+            callback(event);
         });
     }
 
     /**
-     * Registers callback that will be triggered on received notification.
-     * @param {EventTypes} notificationType - notification type that callback should be registered for.
-     * @param {function} callback - callback that should be called on received notification, will be called with {Notification} param
+     * Registers callback that will be triggered on received events.
+     * @param {EventTypes} eventType - event type that callback should be registered for.
+     * @param {function} callback - callback that should be called on received events, will be called with {Event} param
      * @returns {void}
      */
-    addNotificationCallback(
-        notificationType: EventTypes,
-        callback: (notification: Notification) => void
+    addEventCallback(
+        eventType: EventTypes,
+        callback: (event: Event) => void
     ) {
-        this.notificationCallbacksMap.set(notificationType, [
-            ...this.notificationCallbacksMap.get(notificationType) || [],
+        this.eventCallbacksMap.set(eventType, [
+            ...this.eventCallbacksMap.get(eventType) || [],
             callback
         ]);
     }
 
     /**
-     * Unregisters previously registered callback for notifications.
-     * @param {EventTypes} notificationType - notification type that matches registered callback notification type.
+     * Unregisters previously registered callback for events.
+     * @param {EventTypes} eventType - event type that matches registered callback event type.
      * @param {function} callback - previously registered callback.
      * @returns {void}
      */
-    removeNotificationCallback(
-        notificationType: EventTypes,
-        callback: (notification: Notification) => void
+    removeEventCallback(
+        eventType: EventTypes,
+        callback: (event: Event) => void
     ) {
-        this.notificationCallbacksMap.set(
-            notificationType,
-            (this.notificationCallbacksMap.get(notificationType) || []).filter(
+        this.eventCallbacksMap.set(
+            eventType,
+            (this.eventCallbacksMap.get(eventType) || []).filter(
                 (cb) => cb !== callback
             )
         );
     }
 
     /**
-     * Unregisters all previously registered notification callbacks of provided notification type.
-     * @param {string} notificationType - notification type that matches registered callbacks notification type.
+     * Unregisters all previously registered event callbacks of provided event type.
+     * @param {string} eventType - event type that matches registered callbacks event type.
      * @returns {void}
      */
-    resetNotificationCallbacksByType(notificationType: string) {
-        this.notificationCallbacksMap.set(notificationType, []);
+    resetEventCallbacksByType(eventType: string) {
+        this.eventCallbacksMap.set(eventType, []);
     }
 
     /**
-     * Unregisters all previously registered notification callbacks of all notifications types.
+     * Unregisters all previously registered event callbacks of all event types.
      * @returns {void}
      */
-    resetNotificationCallbacks() {
-        this.notificationCallbacksMap.clear();
+    resetEventCallbacks() {
+        this.eventCallbacksMap.clear();
     }
 
     /**
-     * Public push notification wrapper with error handling. This broadcasts an event or notifications
+     * Public push event wrapper with error handling. This broadcasts an event or event
      * via the callable function provided during instantiation.
      *
-     * @param {Notification} notification - the notification payload.
+     * @param {Event} event - the event payload.
      * @returns {any} - the result of the callable function.
      */
-    pushNotification(notification: Notification) {
+    pushEvent(event: Event) {
         if (!this.extensionConfig) {
             const error = this.createAlert({
                 subtitle: 'Missing extension config',
-                message: 'Cannot push notification without extension config'
+                message: 'Cannot push event without extension config'
             });
             this.sendError(error);
             return Promise.resolve({});
         }
 
-        if (!this.callablePushNotification) {
+        if (!this.callablePushEvent) {
             const error = this.createAlert({
-                subtitle: 'Push notification failed',
-                message: 'Push notification is not available'
+                subtitle: 'Push event failed',
+                message: 'Push event is not available'
             });
             this.sendError(error);
             return Promise.resolve({});
         }
 
-        return this.callablePushNotification({
+        return this.callablePushEvent({
             callerId: this.serviceId,
-            ...notification
+            ...event
         });
     }
 
@@ -224,8 +224,8 @@ export class KnimeService<T = any> {
      * @returns {void}
      */
     sendError(alert: Alert) {
-        if (this.callablePushNotification) {
-            this.callablePushNotification({
+        if (this.callablePushEvent) {
+            this.callablePushEvent({
                 callerId: this.serviceId,
                 alert,
                 type: 'alert'
@@ -243,8 +243,8 @@ export class KnimeService<T = any> {
      * @returns {void}
      */
     sendWarning(alert: Alert) {
-        if (this.callablePushNotification) {
-            this.callablePushNotification({
+        if (this.callablePushEvent) {
+            this.callablePushEvent({
                 callerId: this.serviceId,
                 alert,
                 type: 'alert'

@@ -11,17 +11,17 @@ const sleep = async (timeout = 15) => {
 const buildIFrameKnimeServiceAdapter = () => {
     const callServiceSpy = jest.fn().mockImplementation(() => Promise.resolve({ result: JSON.stringify([1, 1, 2]) }));
     const childSpy = jest.fn();
-    const pushNotificationSpy = jest.fn();
+    const pushEventSpy = jest.fn();
     const mockChildFrame = {
         postMessage: childSpy
     } as unknown as Window;
     const iFrameKnimeServiceAdapter = new IFrameKnimeServiceAdapter(extensionConfig, callServiceSpy,
-        pushNotificationSpy);
+        pushEventSpy);
     iFrameKnimeServiceAdapter.setIFrameWindow(mockChildFrame);
 
     jest.spyOn(iFrameKnimeServiceAdapter as any, 'checkMessageSource').mockImplementation(() => false);
 
-    return { iFrameKnimeServiceAdapter, childSpy, callServiceSpy, pushNotificationSpy };
+    return { iFrameKnimeServiceAdapter, childSpy, callServiceSpy, pushEventSpy };
 };
 
 describe('IFrameKnimeServiceAdapter', () => {
@@ -63,30 +63,30 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('posts serviceNotification event when onServiceNotification is triggered', async () => {
+        it('posts serviceEvent event when onServiceEvent is triggered', async () => {
             const { iFrameKnimeServiceAdapter, childSpy } = buildIFrameKnimeServiceAdapter();
 
-            const notification = {
-                payload: {
+            const event = {
+                blub: {
                     requestId: 1,
                     method: ''
                 },
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceEvent`
             };
             const expectedMessage = {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceNotification`,
-                payload: notification
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:serviceEvent`,
+                payload: event
             };
 
-            // test serialized notification (server-side origin)
-            iFrameKnimeServiceAdapter.onServiceNotification(JSON.stringify(notification));
+            // test serialized event (server-side origin)
+            iFrameKnimeServiceAdapter.onServiceEvent(JSON.stringify(event));
             await sleep();
             expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
             jest.clearAllMocks();
 
-            // test object notification (client-side origin)
-            iFrameKnimeServiceAdapter.onServiceNotification(notification);
+            // test object event (client-side origin)
+            iFrameKnimeServiceAdapter.onServiceEvent(event);
             await sleep();
             expect(childSpy).toBeCalledWith(expectedMessage, '*');
 
@@ -116,18 +116,18 @@ describe('IFrameKnimeServiceAdapter', () => {
             iFrameKnimeServiceAdapter.destroy();
         });
 
-        it('pushes notifications', async () => {
-            const { iFrameKnimeServiceAdapter, pushNotificationSpy } = buildIFrameKnimeServiceAdapter();
-            const notification = { message: 'Something went wrong' };
+        it('pushes events', async () => {
+            const { iFrameKnimeServiceAdapter, pushEventSpy } = buildIFrameKnimeServiceAdapter();
+            const event = { message: 'Something went wrong' };
             const message = {
-                type: `${UI_EXT_POST_MESSAGE_PREFIX}:notification`,
-                payload: { notification }
+                type: `${UI_EXT_POST_MESSAGE_PREFIX}:event`,
+                payload: { event }
             };
             window.postMessage(message, '*');
 
             await sleep();
-            expect(pushNotificationSpy).toHaveBeenCalledWith({
-                ...notification, callerId: '123.knime workflow.root:10.view'
+            expect(pushEventSpy).toHaveBeenCalledWith({
+                ...event, callerId: '123.knime workflow.root:10.view'
             });
             iFrameKnimeServiceAdapter.destroy();
         });
