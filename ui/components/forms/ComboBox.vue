@@ -97,11 +97,11 @@ export default {
             return { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` };
         },
         searchResults() {
-          const hasExactSearchMatch = this.allPossibleItems.some(
-            item => item.text.toLowerCase() === this.searchValue.toLowerCase()
-          );
+            const hasExactSearchMatch = this.allPossibleItems.some(
+                item => item.text.toLowerCase() === this.searchValue.toLowerCase()
+            );
           
-          if (this.addingNewAllowed && !hasExactSearchMatch && this.searchValue.trim()) {
+            if (this.addingNewAllowed && !hasExactSearchMatch && this.searchValue.trim()) {
                 // add a preview for a non existing items
                 const results = [...this.filteredItems];
                 results.unshift(this.draftItem);
@@ -118,7 +118,7 @@ export default {
         selectedItems() {
             return this.selectedIds.length === 0
                 ? []
-                : this.allPossibleItems.filter(ele => this.selectedIds.includes(ele.id));
+                : this.selectedIds.map(id => this.allPossibleItems.find(item => item.id === id));
         },
         maxSizeVisibleOptions() {
             return this.searchResults.length < this.sizeVisibleOptions
