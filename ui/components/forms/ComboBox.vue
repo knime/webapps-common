@@ -2,7 +2,9 @@
 import Multiselect from './Multiselect.vue';
 import FunctionButton from '../FunctionButton.vue';
 import CloseIcon from '../../assets/img/icons/close.svg';
-import { kebabCase } from 'lodash';
+import { kebabCase, uniq } from 'lodash';
+
+const DRAFT_ITEM_ID = 'draft';
 
 export default {
     components: {
@@ -52,6 +54,13 @@ export default {
         isValid: {
             type: Boolean,
             default: true
+        },
+        /**
+         * Allow adding and selecting new tags, not just possible values
+         */
+        addingNewAllowed: {
+            type: Boolean,
+            default: true
         }
     },
     emits: ['update:selectedIds'],
@@ -72,13 +81,35 @@ export default {
     },
     computed: {
         filteredItems() {
-            return this.allPossibleItems.filter(value => value.text.includes(this.searchValue));
+            const filteredItems = this.allPossibleItems.filter(
+                value => value.text.toLowerCase().includes(this.searchValue.toLowerCase())
+            );
+            if (this.searchValue) {
+                // only show not selected items when typing
+                return filteredItems.filter(item => !this.selectedIds.includes(item.id));
+            }
+            return filteredItems;
+        },
+        draftItem() {
+            if (!this.addingNewAllowed) {
+                return null;
+            }
+            return { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` };
+        },
+        searchResults() {
+            if (this.addingNewAllowed && this.filteredItems.length === 0 && this.searchValue.trim()) {
+                // add a preview for a non existing items
+                const results = [...this.filteredItems];
+                results.push(this.draftItem);
+                return results;
+            }
+            return this.filteredItems;
         },
         hasSelection() {
             return this.selectedItems.length > 0;
         },
         inputWidth() {
-            return this.inputOrOptionsFocussed && this.filteredItems.length > 0 ? {} : { width: '0%' };
+            return this.inputOrOptionsFocussed && this.searchResults.length > 0 ? {} : { width: '0%' };
         },
         selectedItems() {
             return this.selectedIds.length === 0
@@ -86,8 +117,8 @@ export default {
                 : this.allPossibleItems.filter(ele => this.selectedIds.includes(ele.id));
         },
         maxSizeVisibleOptions() {
-            return this.filteredItems.length < this.sizeVisibleOptions
-                ? this.filteredItems.length
+            return this.searchResults.length < this.sizeVisibleOptions
+                ? this.searchResults.length
                 : this.sizeVisibleOptions;
         }
     },
@@ -103,15 +134,7 @@ export default {
             this.$refs.combobox.onDown();
         },
         onEnter() {
-            const inputId = kebabCase(this.searchValue);
-            if (this.selectedIds.some(id => id === inputId)) {
-                return;
-            }
-            if (!this.allPossibleItems.some(item => inputId === item.id)) {
-                this.allPossibleItems = [...this.allPossibleItems, { id: inputId, text: this.searchValue.trim() }];
-            }
-            this.updateSelectedIds([...this.selectedIds, inputId]);
-            this.searchValue = '';
+            this.updateSelectedIds([...this.selectedIds, this.draftItem.id]);
         },
         onBackspace() {
             if (!this.searchValue) {
@@ -137,7 +160,17 @@ export default {
             this.$refs.combobox.closeOptions();
         },
         updateSelectedIds(selectedIds) {
-            this.selectedIds = selectedIds;
+            this.selectedIds = uniq(selectedIds.map(id => {
+                if (id !== DRAFT_ITEM_ID) {
+                    return id;
+                }
+                const newId = kebabCase(this.searchValue);
+                if (!this.allPossibleItems.some(item => item.id === newId)) {
+                    this.allPossibleItems.unshift({ id: newId, text: this.searchValue.trim() });
+                }
+                return newId;
+            }));
+            
             this.$emit('update:selectedIds', this.selectedIds);
             this.searchValue = '';
         },
@@ -157,7 +190,7 @@ export default {
   <Multiselect
     ref="combobox"
     :model-value="selectedIds"
-    :possible-values="filteredItems"
+    :possible-values="searchResults"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-element="focusElement"
