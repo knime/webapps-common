@@ -4,7 +4,7 @@ import FunctionButton from '../FunctionButton.vue';
 import CloseIcon from '../../assets/img/icons/close.svg';
 import { kebabCase, uniq } from 'lodash';
 
-const DRAFT_ITEM_ID = 'draft';
+const DRAFT_ITEM_ID = 'draft-id-combobox-preview-item';
 
 export default {
     components: {
@@ -97,10 +97,14 @@ export default {
             return { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` };
         },
         searchResults() {
-            if (this.addingNewAllowed && this.filteredItems.length === 0 && this.searchValue.trim()) {
+          const hasExactSearchMatch = this.allPossibleItems.some(
+            item => item.text.toLowerCase() === this.searchValue.toLowerCase()
+          );
+          
+          if (this.addingNewAllowed && !hasExactSearchMatch && this.searchValue.trim()) {
                 // add a preview for a non existing items
                 const results = [...this.filteredItems];
-                results.push(this.draftItem);
+                results.unshift(this.draftItem);
                 return results;
             }
             return this.filteredItems;
@@ -159,17 +163,24 @@ export default {
         onInputEscape() {
             this.$refs.combobox.closeOptions();
         },
+        draftToItem() {
+            if (!this.searchValue.trim()) {
+                return null;
+            }
+            const newId = kebabCase(this.searchValue);
+            if (!this.allPossibleItems.some(item => item.id === newId)) {
+                this.allPossibleItems.push({ id: newId, text: this.searchValue.trim() });
+            }
+            return newId;
+        },
         updateSelectedIds(selectedIds) {
-            this.selectedIds = uniq(selectedIds.map(id => {
-                if (id !== DRAFT_ITEM_ID) {
-                    return id;
+            const replaceDraftArray = selectedIds.map(id => {
+                if (id === DRAFT_ITEM_ID) {
+                    return this.draftToItem();
                 }
-                const newId = kebabCase(this.searchValue);
-                if (!this.allPossibleItems.some(item => item.id === newId)) {
-                    this.allPossibleItems.unshift({ id: newId, text: this.searchValue.trim() });
-                }
-                return newId;
-            }));
+                return id;
+            });
+            this.selectedIds = uniq(replaceDraftArray).filter(item => item);
             
             this.$emit('update:selectedIds', this.selectedIds);
             this.searchValue = '';
