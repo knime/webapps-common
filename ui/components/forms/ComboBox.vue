@@ -2,6 +2,7 @@
 import Multiselect from './Multiselect.vue';
 import FunctionButton from '../FunctionButton.vue';
 import CloseIcon from '../../assets/img/icons/close.svg';
+import { kebabCase } from 'lodash';
 
 export default {
     components: {
@@ -57,7 +58,7 @@ export default {
     data() {
         return {
             selectedIds: this.initialSelectedIds,
-            allPossibleValues: this.possibleValues,
+            allPossibleItems: this.possibleValues,
             searchValue: '',
             inputOrOptionsFocussed: false,
             /*
@@ -70,23 +71,23 @@ export default {
         };
     },
     computed: {
-        filteredValues() {
-            return this.allPossibleValues.filter(value => value.text.includes(this.searchValue));
+        filteredItems() {
+            return this.allPossibleItems.filter(value => value.text.includes(this.searchValue));
         },
         hasSelection() {
-            return this.selectedValues.length > 0;
+            return this.selectedItems.length > 0;
         },
         inputWidth() {
-            return this.inputOrOptionsFocussed && this.filteredValues.length > 0 ? {} : { width: '0%' };
+            return this.inputOrOptionsFocussed && this.filteredItems.length > 0 ? {} : { width: '0%' };
         },
-        selectedValues() {
+        selectedItems() {
             return this.selectedIds.length === 0
                 ? []
-                : this.allPossibleValues.filter(ele => this.selectedIds.includes(ele.id));
+                : this.allPossibleItems.filter(ele => this.selectedIds.includes(ele.id));
         },
         maxSizeVisibleOptions() {
-            return this.filteredValues.length < this.sizeVisibleOptions
-                ? this.filteredValues.length
+            return this.filteredItems.length < this.sizeVisibleOptions
+                ? this.filteredItems.length
                 : this.sizeVisibleOptions;
         }
     },
@@ -102,10 +103,21 @@ export default {
             this.$refs.combobox.onDown();
         },
         onEnter() {
-          const newId = 'new' + Date.now();
-          this.allPossibleValues = [...this.allPossibleValues, {id: newId, text: this.searchValue}];
-          this.updateSelectedIds([...this.selectedIds, newId]);
-          this.searchValue = '';
+            const inputId = kebabCase(this.searchValue);
+            if (this.selectedIds.some(id => id === inputId)) {
+                return;
+            }
+            if (!this.allPossibleItems.some(item => inputId === item.id)) {
+                this.allPossibleItems = [...this.allPossibleItems, { id: inputId, text: this.searchValue.trim() }];
+            }
+            this.updateSelectedIds([...this.selectedIds, inputId]);
+            this.searchValue = '';
+        },
+        onBackspace() {
+            if (!this.searchValue) {
+                this.selectedIds.pop();
+            }
+            // else regular backspace behavior
         },
         onFocusOutside() {
             this.inputOrOptionsFocussed = false;
@@ -127,6 +139,7 @@ export default {
         updateSelectedIds(selectedIds) {
             this.selectedIds = selectedIds;
             this.$emit('update:selectedIds', this.selectedIds);
+            this.searchValue = '';
         },
         removeTag(idToRemove) {
             this.updateSelectedIds(this.selectedIds.filter(id => id !== idToRemove));
@@ -144,7 +157,7 @@ export default {
   <Multiselect
     ref="combobox"
     :model-value="selectedIds"
-    :possible-values="filteredValues"
+    :possible-values="filteredItems"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-element="focusElement"
@@ -166,7 +179,7 @@ export default {
           @click.stop="focusInput"
         >
           <div
-            v-for="item, index in selectedValues"
+            v-for="item, index in selectedItems"
             :key="`item.id${index}`"
             class="tag"
             :title="item.text"
@@ -188,6 +201,7 @@ export default {
             @focus="onInputFocus"
             @input="onInput"
             @keydown.enter.prevent="onEnter"
+            @keydown.backspace="onBackspace"
             @keydown.down.stop.prevent="onDown"
             @keydown.esc.stop.prevent="onInputEscape"
           >
