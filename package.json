@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@popperjs/core": "2.5.4",
+    "@vueuse/core": "9.13.0",
     "date-fns": "2.29.3",
     "date-fns-tz": "2.0.0",
     "filesize": "6.1.0"

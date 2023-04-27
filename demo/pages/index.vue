@@ -49,6 +49,7 @@ import TabBarDemo from '../components/TabBar.vue';
 import TagList from '../components/TagList.vue';
 import TextArea from '../components/TextArea.vue';
 import TimePartInput from '../components/TimePartInut.vue';
+import Toast from '../components/Toast.vue';
 import ToggleSwitch from '../components/ToggleSwitch.vue';
 import Tooltip from '../components/Tooltip.vue';
 import Twinlist from '../components/Twinlist.vue';
@@ -103,6 +104,9 @@ const demoComponents = {
     messages: {
         Message,
         Messages
+    },
+    toasts: {
+        Toast
     },
     forms: {
         Label,
@@ -217,6 +221,10 @@ export default {
             }, {
                 value: 'messages',
                 label: 'Messages',
+                icon: TooltipIcon
+            }, {
+                value: 'toasts',
+                label: 'Toasts',
                 icon: TooltipIcon
             }, {
                 value: 'misc',
