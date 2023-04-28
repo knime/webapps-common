@@ -49,17 +49,20 @@ describe('MenuItems.vue', () => {
             useDropdownNavigation.reset();
             const wrapper = shallowMount(MenuItems, { props: { items: [], menuAriaLabel: '' } });
             const { close } = useDropdownNavigation.mock.calls[0][0];
-                        
+
             close();
             expect(wrapper.emitted('close')[0]).toBeDefined();
         });
 
         describe('getNextElement', () => {
-            const first = { index: 2, element: 'Apple' };
-            const second = { index: 4, element: 'Ananas' };
-            const third = { index: 10, element: 'Banana' };
+            const first = { index: 2, element: 'Apple', onClick: vi.fn() };
+            const second = { index: 4, element: 'Ananas', onClick: vi.fn() };
+            const third = { index: 10, element: 'Banana', onClick: vi.fn() };
 
             let getNextElement;
+            const scrollToMock = vi.fn();
+
+            const getItem = (item) => ({ index: item.index, onClick: item.onClick });
 
             beforeEach(() => {
                 useDropdownNavigation.reset();
@@ -73,7 +76,8 @@ describe('MenuItems.vue', () => {
                                             first,
                                             second,
                                             third
-                                        ]
+                                        ],
+                                        scrollTo: scrollToMock
                                     },
                                     template: '<div/>'
                                 }
@@ -88,25 +92,30 @@ describe('MenuItems.vue', () => {
             });
 
             it('yields the first element on downward navigation if there is no previous selection', () => {
-                expect(getNextElement(-1, 1)).toBe(first);
-                expect(getNextElement(0, 1)).toBe(first);
+                expect(getNextElement(-1, 1)).toEqual(getItem(first));
+                expect(getNextElement(0, 1)).toEqual(getItem(first));
             });
 
             it('yields next element on downwards navigation and wraps around', () => {
-                expect(getNextElement(first.index, 1)).toBe(second);
-                expect(getNextElement(second.index, 1)).toBe(third);
-                expect(getNextElement(third.index, 1)).toBe(first);
+                expect(getNextElement(first.index, 1)).toEqual(getItem(second));
+                expect(getNextElement(second.index, 1)).toEqual(getItem(third));
+                expect(getNextElement(third.index, 1)).toEqual(getItem(first));
             });
 
             it('yields the last element on upwards navigation if there is no previous selection', () => {
-                expect(getNextElement(-1, -1)).toBe(third);
-                expect(getNextElement(0, -1)).toBe(third);
+                expect(getNextElement(-1, -1)).toEqual(getItem(third));
+                expect(getNextElement(0, -1)).toEqual(getItem(third));
             });
 
             it('yields next element on upwards navigation and wraps around', () => {
-                expect(getNextElement(third.index, -1)).toBe(second);
-                expect(getNextElement(second.index, -1)).toBe(first);
-                expect(getNextElement(first.index, -1)).toBe(third);
+                expect(getNextElement(third.index, -1)).toEqual(getItem(second));
+                expect(getNextElement(second.index, -1)).toEqual(getItem(first));
+                expect(getNextElement(first.index, -1)).toEqual(getItem(third));
+            });
+
+            it('calls scrollTo', () => {
+                getNextElement(third.index, -1);
+                expect(scrollToMock).toHaveBeenCalledWith(third.element);
             });
         });
     });

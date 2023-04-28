@@ -21,6 +21,13 @@ export interface MenuItem {
   hotkeyText?: string;
 }
 
+type ElementTemplateRef = HTMLElement | { $el: HTMLElement }
+
+// eslint-disable-next-line func-style
+function isNativeHTMLElement(element: ElementTemplateRef): element is HTMLElement {
+    return !('$el' in element);
+}
+
 export default {
     props: {
         items: {
@@ -65,17 +72,49 @@ export default {
     watch: {
         focusedItemIndex: {
             immediate: true,
-            handler(index) {
-                this.$emit('item-focused', index === null ? null : this.menuItemId(index));
+            handler() {
+                this.emitItemFocused();
+            }
+        },
+        items: {
+            deep: true,
+            handler() {
+                this.emitItemFocused();
             }
         }
     },
-    expose: ['getEnabledListItems'],
+    expose: ['getEnabledListItems', 'scrollTo'],
     methods: {
         getEnabledListItems() {
-            const listItems = this.$refs.listItem as (Element & {$el: undefined}|{$el: Element})[];
-            return listItems.map((el, index) => ({ element: el.$el || el, index }))
+            const listItems = this.$refs.listItem as Array<HTMLLIElement>;
+
+            return listItems
+                .map((element, index) => {
+                    const firstChild = element.firstChild as ElementTemplateRef;
+
+                    return {
+                        element,
+                        index,
+                        onClick: isNativeHTMLElement(firstChild)
+                            ? () => firstChild.click()
+                            : () => firstChild.$el.click()
+                    };
+                })
                 .filter(({ index }) => this.enabledItemsIndices.includes(index));
+        },
+        scrollTo(element: HTMLLIElement) {
+            const listContainer = this.$refs.listContainer as HTMLUListElement;
+
+            if (listContainer && listContainer.scrollHeight > listContainer.clientHeight) {
+                const scrollBottom = listContainer.clientHeight + listContainer.scrollTop;
+                const elementBottom = element.offsetTop + element.offsetHeight;
+
+                if (elementBottom > scrollBottom) {
+                    listContainer.scrollTop = elementBottom - listContainer.clientHeight;
+                } else if (element.offsetTop < listContainer.scrollTop) {
+                    listContainer.scrollTop = element.offsetTop;
+                }
+            }
         },
         linkTagByType(item: MenuItem) {
             if (item.to) {
@@ -101,6 +140,15 @@ export default {
                 event.stopImmediatePropagation();
             }
             this.$emit('item-click', event, item, this.id);
+        },
+        emitItemFocused() {
+            const index = this.focusedItemIndex;
+
+            this.$emit(
+                'item-focused',
+                this.focusedItemIndex === null ? null : this.menuItemId(this.focusedItemIndex),
+                this.items[index === null ? -1 : index]
+            );
         }
     }
 };
@@ -108,6 +156,7 @@ export default {
 
 <template>
   <ul
+    ref="listContainer"
     :aria-label="menuAriaLabel"
     role="menu"
     tabindex="0"
@@ -116,6 +165,7 @@ export default {
     <li
       v-for="(item, index) in items"
       :key="index"
+      ref="listItem"
       :class="[{ separator: item.separator }]"
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"
       :title="item.title"
@@ -125,7 +175,6 @@ export default {
       <Component
         :is="linkTagByType(item)"
         :id="menuItemId(index)"
-        ref="listItem"
         tabindex="-1"
         :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
           disabled: item.disabled, selected: item.selected, focused: index === focusedItemIndex }]"
@@ -164,6 +213,9 @@ ul {
   text-align: left;
   list-style-type: none;
   z-index: var(--z-index-common-menu-items-expanded, 1);
+
+  /* Determine offsetTop of child elements correctly when using the scrollTo method */
+  position: relative;
 
   &.expanded {
     display: block;

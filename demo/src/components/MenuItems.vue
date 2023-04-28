@@ -172,7 +172,7 @@ export default {
                 :items="menuItemsWithoutIcons"
                 menu-aria-label="Menu items without icons"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default {
                 :items="menuItemsData"
                 menu-aria-label="Menu items with icons and hotkeys"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
@@ -198,7 +198,7 @@ export default {
                 :items="menuItemsWithSeparator"
                 menu-aria-label="Menu items with separators"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
@@ -211,7 +211,7 @@ export default {
                 :items="menuItemsWithSelectedEntries"
                 menu-aria-label="Menu items with selected entries"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
@@ -224,13 +224,13 @@ export default {
                 :items="menuItemsWithSections"
                 menu-aria-label="Menu items with sections"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With keyboard navigation</div>
+            <div class="menu-name">With keyboard navigation and scrollable content</div>
             <button @keydown="($refs.menuItemsWithNavigation as any).onKeydown($event)">
               Focus me to start navigating
             </button>
@@ -238,9 +238,10 @@ export default {
               <MenuItems
                 ref="menuItemsWithNavigation"
                 :items="menuItemsData"
+                class="menu-items-with-navigation"
                 menu-aria-label="Menu items with sections"
                 @item-click="onItemClick"
-                @item-active="onItemActive"
+                @item-hovered="onItemActive"
               />
             </div>
           </div>
@@ -273,6 +274,11 @@ h4 {
   display: flex;
   flex-direction: column;
   box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
+}
+
+.menu-items-with-navigation {
+  max-height: 80px;
+  overflow-y: auto;
 }
 
 .menu-items {

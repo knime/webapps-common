@@ -137,7 +137,7 @@ describe('NodeFeatureList.vue', () => {
         expect(wrapper.vm.possibleTabValues.find(cfg => cfg.value === 'node-dialog-options').disabled).toBe(true);
     });
 
-    it('enables views tab if there are views', () => {
+    it('enables options tab if there are options', () => {
         const wrapper = shallowMount(NodeFeatureList, {
             props: {
                 options: [{

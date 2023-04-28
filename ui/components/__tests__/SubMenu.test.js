@@ -28,7 +28,7 @@ describe('SubMenu.vue', () => {
         };
     });
 
-   
+
     it('renders the menu toggle', () => {
         const wrapper = shallowMount(SubMenu, {
             slots: {
@@ -99,10 +99,10 @@ describe('SubMenu.vue', () => {
         useClickOutside.reset();
         const wrapper = mount(SubMenu, { props });
         const [{ targets, callback }, active] = useClickOutside.mock.calls[0];
-            
+
         expect(unref(targets[0])).toStrictEqual(wrapper.find('.submenu').element);
         expect(unref(targets[1]).$el).toStrictEqual(wrapper.findComponent(MenuItems).element);
-    
+
         await wrapper.find('.submenu-toggle').trigger('click');
         expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
         callback();
@@ -111,7 +111,7 @@ describe('SubMenu.vue', () => {
 
         expect(unref(active)).toBe(false);
     });
-    
+
     it('calls keydown callback', () => {
         const wrapper = mount(SubMenu, { props });
 
@@ -137,10 +137,10 @@ describe('SubMenu.vue', () => {
             props.teleportToBody = false; // necessary in order to find the popperTarget in the dom more easily
             const wrapper = mount(SubMenu, { props });
             const [{ popperTarget, referenceEl }, options] = usePopper.mock.calls[0];
-            
+
             expect(unref(referenceEl)).toStrictEqual(wrapper.find('.submenu').element);
             expect(unref(popperTarget)).toStrictEqual(wrapper.find('.menu-wrapper').element);
-    
+
             expect(unref(options)).toStrictEqual({
                 modifiers: [
                     {
@@ -210,21 +210,23 @@ describe('SubMenu.vue', () => {
             await wrapper.setProps({ teleportToBody: false });
             expect(wrapper.find('li').exists()).toBeTruthy();
         });
-    
+
         it('emits toggle event with calback to collapse the menu on click', async () => {
             const items = [
                 { href: 'https://www.google.com/slash', text: 'Google Slash', randomProp: 'test' },
                 { href: 'https://www.link.me.in', text: 'Linked Thing', anotherProp: 'foo' }
             ];
             const id = 'testfoobar543';
-    
+
             const wrapper = mount(SubMenu, {
                 props: { items, id }
             });
             // assumes MenuItems use <li>
             await wrapper.find('.submenu-toggle').trigger('click');
-            let callback = wrapper.emitted('toggle')[0][0];
-            expect(typeof callback).toBe('function'); // event object
+
+            const [event, callback] = wrapper.emitted('toggle')[0];
+            expect(event).toBeTruthy();
+            expect(typeof callback).toBe('function');
             expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
             callback();
             await wrapper.vm.$nextTick();

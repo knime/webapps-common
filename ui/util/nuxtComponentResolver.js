@@ -1,3 +1,4 @@
+/* eslint-disable vue/one-component-per-file */
 import { h, defineComponent, getCurrentInstance } from 'vue';
 
 const getAppInstance = () => {

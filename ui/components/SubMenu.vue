@@ -152,22 +152,25 @@ export default {
         } as {activeDescendant: string | undefined};
     },
     methods: {
-        toggleMenu() {
+        toggleMenu(event: Event) {
             if (this.disabled) {
                 return;
             }
             this.expanded = !this.expanded;
-            if (this.teleportToBody && this.expanded) {
-                this.$emit('toggle', () => {
-                    this.expanded = false;
-                });
-            }
+
+            const toggleCallback = this.expanded
+                // eslint-disable-next-line brace-style
+                ? () => { this.expanded = false; }
+                : () => {};
+
+            this.$emit('toggle', event, toggleCallback);
+
             this.getMenuItems().resetNavigation();
             this.updatePopper();
         },
         onItemClick(event: Event, item: any) {
             this.$emit('item-click', event, item, this.id);
-            this.toggleMenu();
+            this.toggleMenu(event);
         },
         onKeydown(event: KeyboardEvent) {
             this.getMenuItems().onKeydown(event);

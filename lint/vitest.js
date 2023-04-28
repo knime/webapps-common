@@ -19,7 +19,7 @@ module.exports = {
                 'vitest/no-conditional-tests': 'warn',
                 'vitest/no-focused-tests': 'error',
                 'vitest/no-identical-title': 'error',
-                'vitest/no-skipped-tests': 'warn',
+                'vitest/no-disabled-tests': 'warn',
                 'vitest/prefer-lowercase-title': [
                     'error',
                     {

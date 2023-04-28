@@ -23,37 +23,51 @@
  * Hovering an item emits `@item-hovered`.
  */
 
+import { ref, type Ref } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
 import MenuItemsBase from './MenuItemsBase.vue';
 import type { MenuItem } from './MenuItemsBase.vue';
-import { ref } from 'vue';
+
+type Props = {
+    items: MenuItem[];
+    menuAriaLabel: string;
+    disableSpaceToClick?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { disableSpaceToClick: false });
 
 const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered']);
-
-const props = defineProps<{items: MenuItem[], menuAriaLabel: string}>();
-
-const menuItemsBase: any = ref(null);
+const menuItemsBase: Ref<InstanceType<typeof MenuItemsBase> | null> = ref(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
+    if (!menuItemsBase.value) {
+        return { onClick: () => {}, index: -1 };
+    }
+
     const listItems = menuItemsBase.value.getEnabledListItems();
-    let currentIndexInEnabled = listItems.map(({ index } : {index: number}) => index).indexOf(current);
+    let currentIndexInEnabled = listItems
+        .map<number | null>(({ index }) => index)
+        .indexOf(current);
+
     if (currentIndexInEnabled === -1 && direction === -1) {
         currentIndexInEnabled = 0;
     }
     const nextIndex = getWrappedAroundIndex(currentIndexInEnabled + direction, listItems.length);
-    return listItems[nextIndex];
+
+    const { element, index, onClick } = listItems[nextIndex];
+    menuItemsBase.value.scrollTo(element);
+
+    return { index, onClick };
 };
 
-const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation(
-    {
-        getNextElement,
-        close: () => emit('close')
-    }
-);
-defineExpose({
-    onKeydown, resetNavigation
+const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
+    disableSpaceToClick: props.disableSpaceToClick,
+    getNextElement,
+    close: () => emit('close')
 });
+
+defineExpose({ onKeydown, resetNavigation });
 </script>
 
 <template>
@@ -65,6 +79,6 @@ defineExpose({
     :focused-item-index="currentIndex"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
     @item-hovered="(item, id) => $emit('item-hovered', item, id)"
-    @item-focused="(itemId) => $emit('item-focused', itemId)"
+    @item-focused="(...args) => $emit('item-focused', ...args)"
   />
 </template>

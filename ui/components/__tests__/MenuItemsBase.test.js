@@ -153,20 +153,26 @@ describe('MenuItemsBase.vue', () => {
             text: 'Ananas',
             hotkeyText: 'F9'
         }];
+
         const wrapper = shallowMount(MenuItemsBase, {
             props: {
                 menuAriaLabel: 'label',
                 items
             }
         });
+
         const firstResult = {
-            element: wrapper.find('li > *').element,
+            element: wrapper.find('li').element,
+            onClick: expect.any(Function),
             index: 0
         };
+
         const secondResult = {
-            element: wrapper.findAll('li')[2].find('*').element,
+            element: wrapper.findAll('li')[2].element,
+            onClick: expect.any(Function),
             index: 2
         };
+
         expect(wrapper.vm.getEnabledListItems()).toStrictEqual([
             firstResult, secondResult
         ]);
@@ -318,15 +324,29 @@ describe('MenuItemsBase.vue', () => {
         });
 
         it('emits @item-focused initially', () => {
-            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null]);
+            // eslint-disable-next-line no-undefined
+            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null, undefined]);
         });
 
-        it('emits @item-focused on focused item index change', async () => {
+        it('emits @item-focused on focused item index change and when items change', async () => {
             const focusedItemIndex = 2;
             await wrapper.setProps({ focusedItemIndex });
             const focusedItemId = 'menu-item-menu-2';
-            expect(wrapper.emitted('item-focused')[1]).toStrictEqual([focusedItemId]);
+            expect(wrapper.emitted('item-focused')[1]).toStrictEqual([
+                focusedItemId,
+                { text: 'Third' }
+            ]);
             expect(wrapper.find(`#${focusedItemId}.focused`).exists()).toBeTruthy();
+
+            const newItems = items.concat({ text: 'Fourth' });
+
+            await wrapper.setProps({ items: newItems });
+
+            // new emission, but same focused index
+            expect(wrapper.emitted('item-focused')[2]).toStrictEqual([
+                focusedItemId,
+                { text: 'Third' }
+            ]);
         });
 
         it('emits @item-hovered on enabled list items', () => {
