@@ -113,7 +113,8 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class NodeViewEntTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+public class NodeViewEntTest {
 
     /**
      * Tests the creation of {@link NodeViewEnt} instances.
@@ -122,6 +123,7 @@ class NodeViewEntTest {
      * @throws InvalidSettingsException
      */
     @Test
+    @SuppressWarnings("java:S5961") // Allow too big number of assertions
     void testNodeViewEnt() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
@@ -158,7 +160,7 @@ class NodeViewEntTest {
         assertThat(ent.getInitialData()).contains("view setting key");
         assertThat(ent.getGeneratedImageActionId()).isNull();
         assertThat(ent.getInitialSelection()).isNull();
-        assertThat(ent.getColorModel()).isNull();
+        assertThat(ent.getColorModels()).isEmpty();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
@@ -302,7 +304,7 @@ class NodeViewEntTest {
      * @throws IOException
      */
     @Test
-    public void testNodeViewEntWithSelectionEventSource() throws IOException {
+    void testNodeViewEntWithSelectionEventSource() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         Function<NodeViewNodeModel, NodeView> nodeViewCreator =
@@ -376,59 +378,52 @@ class NodeViewEntTest {
     private static String blueHex = "#0000FF";
 
     /**
-     * Tests that if the NodeView provides a {@link ColorModelRange}, a {@link ColorModelEnt} is created.
+     * Tests that if the NodeView provides color models, {@link ColorModelEnt} are created.
      *
      * @throws IOException
      * @throws InvalidSettingsException
      */
     @Test
-    public void testNodeViewEntWithNumericColorModel() throws IOException, InvalidSettingsException {
+    void testNodeViewEntWithNumericColorModel() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         var minValue = 0d;
         var maxValue = 1d;
         var minColor = green;
         var maxColor = blue;
-        var colorModel = new ColorModelRange(minValue, minColor, maxValue, maxColor);
+        var numericColorModel = new ColorModelRange(minValue, minColor, maxValue, maxColor);
+
+        var cell1 = "Cluster_1";
+        var cell2 = "Cluster_2";
+        Map<DataCell, ColorAttr> nominalColorModel = new HashMap<>();
+        nominalColorModel.put(new StringCell(cell1), ColorAttr.getInstance(green));
+        nominalColorModel.put(new StringCell(cell2), ColorAttr.getInstance(blue));
+
+        var numericColorColumnName = "numericColumn";
+        var nominalColorColumnName = "nominalColumn";
+        final Map<String, ColorModel> colorModels = new HashMap<>();
+        colorModels.put(numericColorColumnName, numericColorModel);
+        colorModels.put(nominalColorColumnName, new ColorModelNominal(nominalColorModel, new ColorAttr[0]));
+
         Function<NodeViewNodeModel, NodeView> nodeViewCreator;
-        var ent = createNodeViewEntWithColorModel(wfm, colorModel);
-        var colorModelEnt = ent.getColorModel();
-        assertThat(String.valueOf(colorModelEnt.getType())).isEqualTo("NUMERIC");
-        var numericModel = (NumericColorModelEnt)(colorModelEnt.getModel());
+        var ent = createNodeViewEntWithColorModels(wfm, colorModels);
+        var colorModelsEnt = ent.getColorModels();
+        assertThat(String.valueOf(colorModelsEnt.get(numericColorColumnName).getType())).isEqualTo("NUMERIC");
+        assertThat(String.valueOf(colorModelsEnt.get(nominalColorColumnName).getType())).isEqualTo("NOMINAL");
+
+        var numericModel = (NumericColorModelEnt)(colorModelsEnt.get(numericColorColumnName).getModel());
         assertThat(numericModel.getMinValue()).isEqualTo(minValue);
         assertThat(numericModel.getMaxValue()).isEqualTo(maxValue);
         assertThat(numericModel.getMinColor()).isEqualTo(greenHex);
         assertThat(numericModel.getMaxColor()).isEqualTo(blueHex);
-    }
-
-    /**
-     * Tests that if the NodeView provides a {@link ColorModelNominal}, a {@link ColorModelEnt} is created.
-     *
-     * @throws IOException
-     * @throws InvalidSettingsException
-     */
-    @Test
-    public void testNodeViewEntWithNominalColorModel() throws IOException, InvalidSettingsException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var cell1 = "Cluster_1";
-        var cell2 = "Cluster_2";
-        Map<DataCell, ColorAttr> colorMap = new HashMap<>();
-        colorMap.put(new StringCell(cell1), ColorAttr.getInstance(green));
-        colorMap.put(new StringCell(cell2), ColorAttr.getInstance(blue));
-        var colorModel = new ColorModelNominal(colorMap, new ColorAttr[0]);
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator;
-        var ent = createNodeViewEntWithColorModel(wfm, colorModel);
-        var colorModelEnt = ent.getColorModel();
-        assertThat(String.valueOf(colorModelEnt.getType())).isEqualTo("NOMINAL");
         @SuppressWarnings("unchecked")
-        var nominalModel = (Map<String, String>)(colorModelEnt.getModel());
-        assertThat(nominalModel.get(cell1)).isEqualTo(greenHex);
-        assertThat(nominalModel.get(cell2)).isEqualTo(blueHex);
+        var nominalModel = (Map<String, String>)(colorModelsEnt.get(nominalColorColumnName).getModel());
+        assertThat(nominalModel).containsEntry(cell1, greenHex).containsEntry(cell2, blueHex);
     }
 
-    private NodeViewEnt createNodeViewEntWithColorModel(final WorkflowManager wfm, final ColorModel colorModel)
-        throws InvalidSettingsException {
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeViewWithColorModel(colorModel);
+    private NodeViewEnt createNodeViewEntWithColorModels(final WorkflowManager wfm,
+        final Map<String, ColorModel> colorModels) throws InvalidSettingsException {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeViewWithColorModel(colorModels);
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
         initViewSettingsAndExecute(nnc);
         return NodeViewEnt.create(nnc);
@@ -436,15 +431,15 @@ class NodeViewEntTest {
 
     private class TestNodeViewWithColorModel extends TestNodeView {
 
-        private ColorModel m_colorModel;
+        private Map<String, ColorModel> m_colorModels;
 
-        public TestNodeViewWithColorModel(final ColorModel colorModel) {
-            m_colorModel = colorModel;
+        public TestNodeViewWithColorModel(final Map<String, ColorModel> colorModels) {
+            m_colorModels = colorModels;
         }
 
         @Override
-        public Optional<ColorModel> getColorModel() {
-            return Optional.of(m_colorModel);
+        public Map<String, ColorModel> getColorModelMap() {
+            return m_colorModels;
         }
 
     }

@@ -56,6 +56,8 @@ import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
 
 /**
+ * A representation of a {@link ColorModel} which is used by the frontend to handle colors. For a nominal color column,
+ * we provide a map from string values to colors. For numeric columns, we provide a {@link NumericColorModelEnt}.
  *
  * @author Paul Bärnreuther
  */
@@ -96,6 +98,5 @@ public final class ColorModelEnt {
     public Object getModel() {
         return m_model;
     }
-
 
 }

@@ -51,6 +51,9 @@ package org.knime.gateway.api.entity;
 import org.knime.core.data.property.ColorModelRange;
 
 /**
+ * A POJO representation of a {@link ColorModelRange} which is serialized and provided to the frontend in order to
+ * access colors by numeric values using an interpolation in the frontend which mimics the interpolation process given
+ * in {@link ColorModelRange}.
  *
  * @author Paul Bärnreuther
  */

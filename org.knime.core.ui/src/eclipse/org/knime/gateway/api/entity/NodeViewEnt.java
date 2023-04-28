@@ -49,7 +49,10 @@
 package org.knime.gateway.api.entity;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -72,7 +75,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private String m_generatedImageActionId;
 
-    private ColorModelEnt m_colorModelEnt;
+    private Map<String, ColorModelEnt> m_colorModelsEnt;
 
     /**
      * @param nnc the Native node container to create the node view entity for
@@ -130,8 +133,10 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
         m_generatedImageActionId = generatedImageActionId;
         if (nodeViewManager != null) {
-            final var colorModel = nodeViewManager.getNodeView(nnc).getColorModel().orElse(null);
-            m_colorModelEnt = colorModel == null ? null : new ColorModelEnt(colorModel);
+            final var colorModels = nodeViewManager.getNodeView(nnc).getColorModelMap();
+            m_colorModelsEnt = colorModels.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, e -> new ColorModelEnt(e.getValue())));
+
         }
     }
 
@@ -165,8 +170,8 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      * @return the representation to the color model to be used by the frontend to translate numeric or nominal values
      *         to hex colors. Can be null if no color model was provided.
      */
-    public ColorModelEnt getColorModel() {
-        return m_colorModelEnt;
+    public Map<String, ColorModelEnt> getColorModels() {
+        return m_colorModelsEnt;
     }
 
 }

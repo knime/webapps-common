@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.view;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.data.property.ColorModel;
@@ -102,10 +104,10 @@ public interface NodeView extends UIExtension, DataServiceProvider {
     }
 
     /**
-     * @return Optional color model to be provided to the frontend
+     * @return color models to be provided to the frontend
      */
-    default Optional<ColorModel> getColorModel() {
-        return Optional.empty();
+    default Map<String, ColorModel> getColorModelMap() {
+        return Collections.emptyMap();
     }
 
 }
