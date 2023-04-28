@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
@@ -320,7 +321,9 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     public final String getPagePath(final N nodeWrapper) {
         var pageId = getPageId(nodeWrapper);
         var page = m_pageCache.getPage(pageId);
-        return pageId + "/" + page.getRelativePath();
+        var pagePathPrefix = page.getPageIdForReusablePage().isPresent() ? PageResourceManager.getPagePathPrefix(null)
+            : PageResourceManager.getPagePathPrefix(getPageType());
+        return pagePathPrefix + "/" + pageId + "/" + page.getRelativePath();
     }
 
     /**
@@ -337,7 +340,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      */
     @Override
     public String getPageId(final N nodeWrapper) {
-        return m_pageCache.getOrCreatePageAndReturnPageId(nodeWrapper, getPageType(), this::createPage,
+        return m_pageCache.getOrCreatePageAndReturnPageId(nodeWrapper, this::createPage,
             shouldCleanUpPageAndDataServicesOnNodeStateChange());
     }
 
@@ -361,23 +364,40 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
 
     @Override
     public final Optional<Resource> getPageResource(final String resourceId) {
-        var split = resourceId.indexOf("/");
-        if (split <= 0) {
+        var pageIdAndRelativeResourcePath = extractPageIdAndRelativeResourcePath(resourceId);
+        if (pageIdAndRelativeResourcePath == null) {
             return Optional.empty();
         }
 
-        var pageId = resourceId.substring(0, split);
-        var page = m_pageCache.getPage(pageId);
+        var page = m_pageCache.getPage(pageIdAndRelativeResourcePath.getFirst());
         if (page == null) {
             return Optional.empty();
         }
 
-        var relPath = resourceId.substring(split + 1, resourceId.length());
+        var relPath = pageIdAndRelativeResourcePath.getSecond();
         if (page.getRelativePath().equals(relPath)) {
             return Optional.of(page);
         } else {
             return page.getResource(relPath);
         }
+    }
+
+    /**
+     * Extracts the page-id and the relative resource path from a path which is constructed via
+     * {@link #getPagePath(NodeWrapper)}.
+     *
+     * @param path the path to extract it from
+     * @return a pair of page-id and path or {@code null}
+     */
+    private Pair<String, String> extractPageIdAndRelativeResourcePath(final String path) {
+        var split = path.split("/", 3);
+        if (split.length != 3) {
+            return null;
+        }
+        assert split[0].equals("uiext-" + getPageType().toString()) || split[0].equals("uiext");
+        var pageId = split[1];
+        var relPath = split[2];
+        return Pair.create(pageId, relPath);
     }
 
     /**

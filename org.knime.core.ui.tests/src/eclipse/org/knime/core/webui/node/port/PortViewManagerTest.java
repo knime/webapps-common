@@ -99,7 +99,7 @@ class PortViewManagerTest {
         PortViewManager.registerPortViewFactory(BufferedDataTable.TYPE, portViewFactory1);
         assertThat(portViewManager.getBaseUrl().orElse(null)).isEqualTo("http://org.knime.core.ui.port/");
         var npw = NodePortWrapper.of(nnc, 0);
-        assertThat(portViewManager.getPagePath(npw)).isEqualTo("port_view_page_name/page.js");
+        assertThat(portViewManager.getPagePath(npw)).isEqualTo("uiext/port_view_page_name/page.js");
         assertThat(portViewManager.getPageId(npw)).isEqualTo("port_view_page_name");
 
         var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0));

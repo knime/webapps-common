@@ -49,14 +49,16 @@
 package org.knime.core.webui.node;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -69,82 +71,78 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 class PageCacheTest {
 
+    private WorkflowManager m_wfm;
+
+    private NativeNodeContainer m_nnc;
+
+    @BeforeEach
+    void createWorkflowWithNode() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(0, 0));
+        m_wfm.executeAllAndWaitUntilDone();
+    }
+
+    @AfterEach
+    void disposeWorkflow() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+    }
+
     @Test
     void testGetPageIdAndPage() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(0, 0));
-        wfm.executeAllAndWaitUntilDone();
-        try {
-            var pageCache = new PageCache<NodeWrapper>();
+        var pageCache = new PageCache<NodeWrapper>();
 
-            assertThat(pageCache.getPage("random_id")).isNull();
+        assertThat(pageCache.getPage("random_id")).isNull();
 
-            var nodeWrapperMock = mock(NodeWrapper.class);
-            when(nodeWrapperMock.getNodeWrapperTypeId()).thenReturn("nodeWrapperTypeId");
-            when(nodeWrapperMock.get()).thenReturn(nnc);
+        var nodeWrapperMock = mock(NodeWrapper.class);
+        when(nodeWrapperMock.getNodeWrapperTypeId()).thenReturn("nodeWrapperTypeId");
+        when(nodeWrapperMock.get()).thenReturn(m_nnc);
 
-            /* non-static page checks */
+        /* non-static page checks */
 
-            var nonStaticPage = Page.builder(() -> "test", "page.html").build();
-            var nonStaticPageId =
-                pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.DIALOG, nw -> nonStaticPage, true);
-            assertThat(pageCache.getPage(nonStaticPageId)).isSameAs(nonStaticPage);
-            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.DIALOG,
-                nw -> Page.builder(() -> "test2", "page2.html").build(), true);
-            assertThat(pageCache.getPage(nonStaticPageId)).as("original non-static page is still in cache")
-                .isSameAs(nonStaticPage);
-            assertThat(nonStaticPageId).isEqualTo("dialog_" + nnc.getID().toString().replace(":", "_"));
+        var nonStaticPage = Page.builder(() -> "test", "page.html").build();
+        var nonStaticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> nonStaticPage, true);
+        assertThat(pageCache.getPage(nonStaticPageId)).isSameAs(nonStaticPage);
+        pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock,
+            nw -> Page.builder(() -> "test2", "page2.html").build(), true);
+        assertThat(pageCache.getPage(nonStaticPageId)).as("original non-static page is still in cache")
+            .isSameAs(nonStaticPage);
+        assertThat(nonStaticPageId).isEqualTo(m_nnc.getID().toString().replace(":", "_"));
 
-            wfm.resetAndConfigureAll();
-            assertThat(pageCache.getPage(nonStaticPageId)).as("non-static page removed from cache after node reset")
-                .isNull();
+        m_wfm.resetAndConfigureAll();
+        assertThat(pageCache.getPage(nonStaticPageId)).as("non-static page removed from cache after node reset")
+            .isNull();
 
-            var ex = assertThrows(UnsupportedOperationException.class, () -> pageCache
-                .getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.PORT, nw -> nonStaticPage, true));
-            assertThat(ex.getMessage()).isEqualTo("'non-reusable' port page ids aren't supported, yet");
+        /* static page checks */
 
-            /* static page checks */
+        pageCache.clear();
+        var staticPageBuilder = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.js");
+        var staticPage = staticPageBuilder.build();
+        var staticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> staticPage, true);
+        assertThat(staticPageId).isEqualTo("nodeWrapperTypeId");
+        assertThat(pageCache.getPage(staticPageId)).isSameAs(staticPage);
+        pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> staticPageBuilder.build(), true);
+        assertThat(pageCache.getPage(staticPageId)).as("original static page is still in cache").isSameAs(staticPage);
+        m_wfm.executeAllAndWaitUntilDone();
+        m_wfm.resetAndConfigureAll();
+        assertThat(pageCache.getPage(staticPageId)).as("node state change does not remove static page from cache")
+            .isSameAs(staticPage);
 
-            pageCache.clear();
-            var staticPageBuilder = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.js");
-            var staticPage = staticPageBuilder.build();
-            var staticPageId =
-                pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.VIEW, nw -> staticPage, true);
-            assertThat(staticPageId).isEqualTo("view_nodeWrapperTypeId");
-            assertThat(pageCache.getPage(staticPageId)).isSameAs(staticPage);
-            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.VIEW, nw -> staticPageBuilder.build(),
-                true);
-            assertThat(pageCache.getPage(staticPageId)).as("original static page is still in cache")
-                .isSameAs(staticPage);
-            wfm.executeAllAndWaitUntilDone();
-            wfm.resetAndConfigureAll();
-            assertThat(pageCache.getPage(staticPageId)).as("node state change does not remove static page from cache")
-                .isSameAs(staticPage);
+        /* reusable static page checks */
 
-            var ex2 = assertThrows(UnsupportedOperationException.class, () -> pageCache
-                .getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.PORT, nw -> staticPage, true));
-            assertThat(ex2.getMessage()).isEqualTo("'non-reusable' port page ids aren't supported, yet");
-
-            /* reusable static page checks */
-
-            pageCache.clear();
-            var reusableStaticPage = staticPageBuilder.markAsReusable("reusable_page_id").build();
-            var reusableStaticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.PORT,
-                nw -> reusableStaticPage, true);
-            assertThat(reusableStaticPageId).isEqualTo("reusable_page_id");
-            assertThat(pageCache.getPage(reusableStaticPageId)).isSameAs(reusableStaticPage);
-            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, PageType.VIEW,
-                nw -> staticPageBuilder.markAsReusable("reusable_page_id").build(), true);
-            assertThat(pageCache.getPage(reusableStaticPageId)).as("original reusable static page is still in cache")
-                .isSameAs(reusableStaticPage);
-            wfm.executeAllAndWaitUntilDone();
-            wfm.resetAndConfigureAll();
-            assertThat(pageCache.getPage(reusableStaticPageId))
-                .as("node state change does not remove reusable static page from cache").isSameAs(reusableStaticPage);
-        } finally {
-            WorkflowManagerUtil.disposeWorkflow(wfm);
-        }
-
+        pageCache.clear();
+        var reusableStaticPage = staticPageBuilder.markAsReusable("reusable_page_id").build();
+        var reusableStaticPageId =
+            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> reusableStaticPage, true);
+        assertThat(reusableStaticPageId).isEqualTo("reusable_page_id");
+        assertThat(pageCache.getPage(reusableStaticPageId)).isSameAs(reusableStaticPage);
+        pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock,
+            nw -> staticPageBuilder.markAsReusable("reusable_page_id").build(), true);
+        assertThat(pageCache.getPage(reusableStaticPageId)).as("original reusable static page is still in cache")
+            .isSameAs(reusableStaticPage);
+        m_wfm.executeAllAndWaitUntilDone();
+        m_wfm.resetAndConfigureAll();
+        assertThat(pageCache.getPage(reusableStaticPageId))
+            .as("node state change does not remove reusable static page from cache").isSameAs(reusableStaticPage);
     }
 
 }

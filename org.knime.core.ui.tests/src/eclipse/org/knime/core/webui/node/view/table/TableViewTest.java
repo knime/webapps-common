@@ -127,8 +127,9 @@ class TableViewTest {
 
     @Test
     void testDataServiceGetData() {
-        final var expectedResult = new Object[][]{{"2", "rowkey 1", "1", "1", "11",
-            "pageId/images/tableId/2018748495.png", "0001", "true", "pageId/images/tableId/-1084641940.png"}};
+        final var expectedResult =
+            new String[][]{{"2", "rowkey 1", "1", "1", "11", "uiext/pageId/images/tableId/2018748495.png", "0001",
+                "true", "uiext/pageId/images/tableId/-1084641940.png"}};
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
         var rendererIds = new String[expectedResult[0].length];
         rendererIds[3] = "org.knime.core.data.renderer.DoubleBarRenderer$Factory";

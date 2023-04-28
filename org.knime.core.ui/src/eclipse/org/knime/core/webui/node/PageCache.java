@@ -65,7 +65,7 @@ import org.knime.core.webui.page.Page;
  */
 final class PageCache<N extends NodeWrapper> {
 
-    private enum PageIdType {
+    enum PageIdType {
             /**
              * A page-id for a non-static page ({@link Page#isCompletelyStatic()} is {@code false})
              */
@@ -82,34 +82,24 @@ final class PageCache<N extends NodeWrapper> {
             STATIC_REUSABLE;
 
         /**
-         * Determines the page-id pased on this page-id-type.
+         * Determines the page-id based on this page-id-type.
          *
          * @param nw
          * @param pageType
          * @param reusablePageId
          * @return the page-id
          */
-        String determinePageId(final NodeWrapper nw, final PageType pageType, final String reusablePageId) {
+        String determinePageId(final NodeWrapper nw, final String reusablePageId) {
             return switch (this) {
                 case STATIC_REUSABLE -> reusablePageId;
-                case STATIC -> determineStaticPageId(nw, pageType);
-                case NON_STATIC -> determineNonStaticPageId(nw, pageType);
+                case STATIC -> nw.getNodeWrapperTypeId();
+                case NON_STATIC -> determineNonStaticPageId(nw);
             };
         }
 
-        private static String determineStaticPageId(final NodeWrapper nw, final PageType pageType) {
-            return combineIdWithPageType(nw.getNodeWrapperTypeId(), pageType);
-        }
-
-        private static String determineNonStaticPageId(final NodeWrapper nw, final PageType pageType) {
+        private static String determineNonStaticPageId(final NodeWrapper nw) {
             var nnc = (NativeNodeContainer)nw.get();
-            var nodeId = nnc.getID().toString().replace(":", "_");
-            // TODO also include something that represents the 'execution state' of the node
-            return combineIdWithPageType(nodeId, pageType);
-        }
-
-        private static String combineIdWithPageType(final String id, final PageType pageType) {
-            return pageType.toString() + "_" + id;
+            return nnc.getID().toString().replace(":", "_");
         }
 
     }
@@ -125,47 +115,43 @@ final class PageCache<N extends NodeWrapper> {
      * page can then be retrieved via {@link #getPage(String)}.
      *
      * @param nodeWrapper
-     * @param pageType
      * @param pageCreator used to create a new page in case when the page is not in the cache, yet
      * @param cleanUpPageOnNodeStateChange
      * @return the page-id
      */
-    String getOrCreatePageAndReturnPageId(final N nodeWrapper, final PageType pageType,
-        final Function<N, Page> pageCreator, final boolean cleanUpPageOnNodeStateChange) {
-        var pageId = getPageIdForNodeWrapper(nodeWrapper, pageType);
+    String getOrCreatePageAndReturnPageId(final N nodeWrapper, final Function<N, Page> pageCreator,
+        final boolean cleanUpPageOnNodeStateChange) {
+        var pageId = getPageIdForNodeWrapper(nodeWrapper);
         if (pageId == null || getPage(pageId) == null) {
-            pageId = createPageAndDeterminePageId(nodeWrapper, pageType, pageCreator, cleanUpPageOnNodeStateChange);
+            pageId = createPageAndDeterminePageId(nodeWrapper, pageCreator, cleanUpPageOnNodeStateChange);
         }
         return pageId;
     }
 
-    private String getPageIdForNodeWrapper(final N nodeWrapper, final PageType pageType) {
+    private String getPageIdForNodeWrapper(final N nodeWrapper) {
         var nodeWrapperTypeId = nodeWrapper.getNodeWrapperTypeId();
         var pageIdType = m_nodeWrapperTypeToPageIdTypeMap.get(nodeWrapperTypeId);
         if (pageIdType == null) {
             return null;
         }
-        return pageIdType.determinePageId(nodeWrapper, pageType,
-            m_nodeWrapperTypeToReusablePageIdMap.get(nodeWrapperTypeId));
+        return pageIdType.determinePageId(nodeWrapper, m_nodeWrapperTypeToReusablePageIdMap.get(nodeWrapperTypeId));
     }
 
-    private String createPageAndDeterminePageId(final N nodeWrapper, final PageType pageType,
-        final Function<N, Page> pageCreator, final boolean cleanUpPageOnNodeStateChange) {
+    private String createPageAndDeterminePageId(final N nodeWrapper, final Function<N, Page> pageCreator,
+        final boolean cleanUpPageOnNodeStateChange) {
         var page = pageCreator.apply(nodeWrapper);
         var reusablePageId = page.getPageIdForReusablePage().orElse(null);
         var isStatic = page.isCompletelyStatic();
         final PageIdType pageIdType;
         if (reusablePageId != null) {
             pageIdType = PageIdType.STATIC_REUSABLE;
-        } else if (pageType == PageType.PORT) {
-            throw new UnsupportedOperationException("'non-reusable' port page ids aren't supported, yet");
         } else {
             pageIdType = isStatic ? PageIdType.STATIC : PageIdType.NON_STATIC;
         }
 
         var nodeWrapperTypeId = nodeWrapper.getNodeWrapperTypeId();
         m_nodeWrapperTypeToPageIdTypeMap.put(nodeWrapperTypeId, pageIdType);
-        var pageId = pageIdType.determinePageId(nodeWrapper, pageType, reusablePageId);
+        var pageId = pageIdType.determinePageId(nodeWrapper, reusablePageId);
         m_pageIdToPageMap.put(pageId, page);
         if (pageIdType == PageIdType.STATIC_REUSABLE) {
             m_nodeWrapperTypeToReusablePageIdMap.put(nodeWrapperTypeId, pageId);

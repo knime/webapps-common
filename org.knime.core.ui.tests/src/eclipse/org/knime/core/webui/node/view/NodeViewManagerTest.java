@@ -133,6 +133,7 @@ public class NodeViewManagerTest {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var hasView = new AtomicBoolean(true);
         NativeNodeContainer nc = createNodeWithNodeView(m_wfm, m -> createNodeView(page), hasView::get);
+        m_wfm.executeAllAndWaitUntilDone();
 
         assertThat(NodeViewManager.hasNodeView(nc)).as("node expected to have a node view").isTrue();
         var nodeView = NodeViewManager.getInstance().getNodeView(nc);
@@ -142,7 +143,7 @@ public class NodeViewManagerTest {
             .isInstanceOf(IllegalStateException.class).hasMessageContaining("No initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
         assertThat(NodeViewManager.getInstance().getPageId(NodeWrapper.of(nc)))
-            .isEqualTo("view_" + nc.getID().toString().replace(":", "_"));
+            .isEqualTo(nc.getID().toString().replace(":", "_"));
 
         hasView.set(false);
         assertThat(NodeViewManager.hasNodeView(nc)).as("node not expected to have a node view").isFalse();
@@ -216,6 +217,7 @@ public class NodeViewManagerTest {
         var nnc = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(staticPage)));
         var nnc2 = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(staticPage)));
         var nnc3 = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(dynamicPage)));
+        m_wfm.executeAllAndWaitUntilDone();
         var nodeViewManager = NodeViewManager.getInstance();
         String path = nodeViewManager.getPagePath(nnc);
         String path2 = nodeViewManager.getPagePath(nnc2);
@@ -224,8 +226,10 @@ public class NodeViewManagerTest {
         String path4 = nodeViewManager.getPagePath(nnc3);
         assertThat(path).as("path of static pages not expected to change").isEqualTo(path2);
         assertThat(path).as("path of dynamic pages expected to change between node instances").isNotEqualTo(path4);
-        assertThat(path3).as("path of dynamic pages not expected for same node instance (without node state change)")
+        assertThat(path3)
+            .as("path of dynamic pages not expected to change for same node instance (without node state change)")
             .isEqualTo(path4);
+        assertThat(path).isEqualTo("uiext-view/org.knime.testing.node.view.NodeViewNodeFactory/page.html");
         String baseUrl = nodeViewManager.getBaseUrl().orElse(null);
         assertThat(baseUrl).isEqualTo("http://org.knime.core.ui.view/");
 
@@ -240,31 +244,31 @@ public class NodeViewManagerTest {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
-        var nnc = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(staticPage)));
-        var nnc2 = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(dynamicPage)));
+        var nnc = createNodeWithNodeView(m_wfm, m -> createNodeView(staticPage));
+        var nnc2 = createNodeWithNodeView(m_wfm, m -> createNodeView(dynamicPage));
+        m_wfm.executeAllAndWaitUntilDone();
 
         var nodeViewManager = NodeViewManager.getInstance();
-        assertThat(nodeViewManager.getPagePath(nnc))
-            .isEqualTo("view_org.knime.testing.node.view.NodeViewNodeFactory/page.html");
+        assertThat(nodeViewManager.getPagePath(NodeWrapper.of(nnc)))
+            .isEqualTo("uiext-view/org.knime.testing.node.view.NodeViewNodeFactory/page.html");
 
         runOnExecutor(() -> { // NOSONAR
-            String path = nodeViewManager.getPagePath(nnc);
+            String path = nodeViewManager.getPagePath(NodeWrapper.of(nnc));
             assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix1 =
-                    "view_" + ((NativeNodeContainer)nnc.get()).getNode().getFactory().getClass().getName();
+            var resourcePrefix1 = "uiext-view/" + nnc.getNode().getFactory().getClass().getName();
             assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
             testGetNodeViewPageResource(resourcePrefix1);
 
             nodeViewManager.clearCaches();
 
-            String path2 = nodeViewManager.getPagePath(nnc2);
+            String path2 = nodeViewManager.getPagePath(NodeWrapper.of(nnc2));
             assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix2 = "view_" + nnc2.get().getID().toString().replace(":", "_");
+            var resourcePrefix2 = "uiext-view/" + nnc2.getID().toString().replace(":", "_");
             assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
             testGetNodeViewPageResource(resourcePrefix2);
         });
 
-        m_wfm.removeNode(nnc.get().getID());
+        m_wfm.removeNode(nnc.getID());
         // make sure that the pages are removed from the cache after the node has been deleted)
         Awaitility.await().pollInterval(1, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1));

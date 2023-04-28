@@ -128,7 +128,12 @@ public final class DataValueImageRendererRegistry {
             throw new IllegalStateException("'startNewBatchOfTableRows' needs to be called at least once before");
         }
         var key = images.addImage(cell, renderer);
-        return String.format("%s/%s/%s/%s.png", m_pageIdSupplier.get(), RENDERED_CELL_IMAGES_PATH_PREFIX, tableId, key);
+        return String.format("%s/%s/%s/%s/%s.png", //
+            PageResourceManager.getPagePathPrefix(null), //
+            m_pageIdSupplier.get(), //
+            RENDERED_CELL_IMAGES_PATH_PREFIX, //
+            tableId, //
+            key);
     }
 
     /**

@@ -136,7 +136,7 @@ public class NodeDialogManagerTest {
         var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(nc);
         assertThat(nodeDialog.getPage() == page).isTrue();
         assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc)))
-            .isEqualTo("dialog_" + nc.getID().toString().replace(":", "_"));
+            .isEqualTo(nc.getID().toString().replace(":", "_"));
 
         assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
             .isEqualTo("{\"result\":\"test settings\"}");
@@ -225,7 +225,7 @@ public class NodeDialogManagerTest {
      * Tests {@link NodeDialogManager#getPagePath(NodeWrapper)}.
      */
     @Test
-    void testGetNodeDialogPageUrl() {
+    void testGetNodeDialogPagePath() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
@@ -242,6 +242,7 @@ public class NodeDialogManagerTest {
         assertThat(path).as("url of dynamic pages expected to change between node instances").isNotEqualTo(path3);
         assertThat(path3).as("url of dynamic pages not expected for same node instance (without node state change)")
             .isEqualTo(path4);
+        assertThat(path).isEqualTo("uiext-dialog/org.knime.testing.node.dialog.NodeDialogNodeFactory/page.html");
     }
 
     /**

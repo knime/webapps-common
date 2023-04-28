@@ -89,7 +89,7 @@ public class DataValueImageRendererRegistryTest {
         var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
         var dataService =
             new TableViewDataServiceImpl(tableSupplier, "test_table_id", new SwingBasedRendererFactory(), imgReg);
-        var pathPrefix = "test_page_id/images/";
+        var pathPrefix = "uiext/test_page_id/images/";
 
         // test pre-condition: make sure that all images in the table have unique ids
         var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
@@ -134,7 +134,7 @@ public class DataValueImageRendererRegistryTest {
         var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
         var tableId = "test_table_id";
         var dataService = new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
-        var pathPrefix = "test_page_id/images/";
+        var pathPrefix = "uiext/test_page_id/images/";
 
         var imgPaths = new HashSet<String>();
 

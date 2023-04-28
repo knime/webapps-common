@@ -63,6 +63,21 @@ import org.knime.core.webui.page.Resource;
 public interface PageResourceManager<N extends NodeWrapper> {
 
     /**
+     * Returns a page path prefix for the path returned by {@link #getPagePath(NodeWrapper)}. The page path prefix helps
+     * to separate pages of different page types (e.g. view or dialog) - such that page-ids (see
+     * {@link #getPageId(NodeWrapper)}) only need to be unique within a page type.
+     *
+     * @param type the page type to get the prefix for. Can be {@code null} in case of a re-usable page (see
+     *            {@link Page#getPageIdForReusablePage()}) - in that case the same page-path is supposed to be valid for
+     *            all the different page-types
+     *
+     * @return the path prefix
+     */
+    static String getPagePathPrefix(final PageType type) {
+        return type == null ? "uiext" : ("uiext-" + type);
+    }
+
+    /**
      * The page kinds, i.e. defines what a page is supposed to represent.
      */
     public enum PageType {

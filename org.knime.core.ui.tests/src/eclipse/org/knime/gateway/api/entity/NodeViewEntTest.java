@@ -152,7 +152,7 @@ class NodeViewEntTest {
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
         assertThat(resourceInfo.getType()).isEqualTo(Resource.ContentType.HTML.toString());
-        assertThat(resourceInfo.getId()).startsWith("view_");
+        assertThat(resourceInfo.getId()).isNotNull();
         var nodeInfo = ent.getNodeInfo();
         assertThat(nodeInfo.getNodeName()).isEqualTo("NodeView");
         assertThat(nodeInfo.getNodeAnnotation()).isEqualTo("node annotation");
