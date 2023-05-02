@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.PagePathSegments;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
@@ -258,6 +259,54 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
     @Override
     public PageType getPageType() {
         return PageType.VIEW;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PagePathSegments getPagePathSegments(final NodeWrapper nodeWrapper) {
+        var segments = super.getPagePathSegments(nodeWrapper);
+        var page = getPage(segments.pageId());
+        if (page.isCompletelyStatic()) {
+            return segments;
+        } else {
+            // Why is a pageContentId needed for non-static node view pages?
+            // Every time the content of a page changes, the page itself (and the associated resources) need to
+            // be provided at a new page-path to make sure it gets updated in the browser (and is not taken from the
+            // browser cache).
+            // And since the page-content of a non-static view-page (i.e. a backend-rendered (java, python, etc.))
+            // can change every time a node is re-executed (because a node-view uses a NodeModel as its underlying 'data'
+            // - see org.knime.core.webui.node.view.NodeViewFactory.createNodeView(NodeModel)) a page-content-id
+            // needs to be included in the page path which reflects the 'node execution cycle'.
+            var pageContentId = Integer.toString(getIdForNodeExecutionCycle((NativeNodeContainer)nodeWrapper.get()));
+            return new PagePathSegments(segments.pathPrefix(), segments.pageId(), pageContentId,
+                segments.relativePagePath());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected PagePathSegments decomposePagePath(final String path) {
+        var segments = super.decomposePagePath(path);
+        if (segments == null) {
+            return null;
+        }
+        var page = getPage(segments.pageId());
+        var relPath = segments.relativePagePath();
+
+        // conditionally remove page-content-id from path
+        if (!page.isCompletelyStatic()) {
+            relPath = relPath.substring(relPath.indexOf("/") + 1, relPath.length());
+        }
+
+        return new PagePathSegments(segments.pathPrefix(), segments.pageId(), null, relPath);
+    }
+
+    static int getIdForNodeExecutionCycle(final NativeNodeContainer nnc) {
+        return System.identityHashCode(nnc.getNodeAndBundleInformation());
     }
 
     /**

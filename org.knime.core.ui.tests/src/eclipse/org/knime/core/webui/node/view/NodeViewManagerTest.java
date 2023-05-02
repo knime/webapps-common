@@ -263,7 +263,8 @@ public class NodeViewManagerTest {
 
             String path2 = nodeViewManager.getPagePath(NodeWrapper.of(nnc2));
             assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix2 = "uiext-view/" + nnc2.getID().toString().replace(":", "_");
+            var resourcePrefix2 = "uiext-view/" + nnc2.getID().toString().replace(":", "_") + "/"
+                + System.identityHashCode(nnc2.getNodeAndBundleInformation());
             assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
             testGetNodeViewPageResource(resourcePrefix2);
         });
@@ -404,6 +405,23 @@ public class NodeViewManagerTest {
             () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Set.of(new RowKey("bar"))))
                 .isInstanceOf(IOException.class).hasMessage("[bar]");
 
+    }
+
+    /**
+     * Tests {@link PageIdType#getIdForNodeExecutionCycle(NativeNodeContainer)}.
+     */
+    @Test
+    void testGetIdForNodeExecutionCycle() {
+        var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(0, 0));
+        m_wfm.executeAllAndWaitUntilDone();
+
+        // make sure that the 'node execution cycle id' changes with every re-execution
+        assertThat(nnc.getNodeContainerState().isExecuted()).isTrue();
+        var idForNodeExecutionCycle = NodeViewManager.getIdForNodeExecutionCycle(nnc);
+        assertThat(NodeViewManager.getIdForNodeExecutionCycle(nnc)).isEqualTo(idForNodeExecutionCycle);
+        m_wfm.resetAndConfigureAll();
+        m_wfm.executeAllAndWaitUntilDone();
+        assertThat(NodeViewManager.getIdForNodeExecutionCycle(nnc)).isNotEqualTo(idForNodeExecutionCycle);
     }
 
     /**

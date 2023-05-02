@@ -145,7 +145,8 @@ public interface PageResourceManager<N extends NodeWrapper> {
     Optional<String> getDebugUrl(N nodeWrapper);
 
     /**
-     * Provides the relative path for a page.
+     * Provides the relative path for a page. A page path is assembled of various path-segments, see
+     * {@link PagePathSegments}.
      *
      * @param nodeWrapper the node which provides the page
      * @return the relative page path

@@ -319,11 +319,30 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      */
     @Override
     public final String getPagePath(final N nodeWrapper) {
+        return composePagePath(getPagePathSegments(nodeWrapper));
+    }
+
+    /**
+     * Determines the {@link PagePathSegments} for the given node-wrapper.
+     *
+     * @param nodeWrapper
+     * @return the segments
+     */
+    protected PagePathSegments getPagePathSegments(final N nodeWrapper) {
         var pageId = getPageId(nodeWrapper);
         var page = m_pageCache.getPage(pageId);
         var pagePathPrefix = page.getPageIdForReusablePage().isPresent() ? PageResourceManager.getPagePathPrefix(null)
             : PageResourceManager.getPagePathPrefix(getPageType());
-        return pagePathPrefix + "/" + pageId + "/" + page.getRelativePath();
+        return new PagePathSegments(pagePathPrefix, pageId, null, page.getRelativePath());
+    }
+
+    private static String composePagePath(final PagePathSegments segments) {
+        if (segments.pageContentId() == null) {
+            return String.format("%s/%s/%s", segments.pathPrefix(), segments.pageId(), segments.relativePagePath());
+        } else {
+            return String.format("%s/%s/%s/%s", segments.pathPrefix(), segments.pageId(), segments.pageContentId(),
+                segments.relativePagePath());
+        }
     }
 
     /**
@@ -332,6 +351,14 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     @Override
     public final Page getPage(final N nodeWrapper) {
         var pageId = getPageId(nodeWrapper);
+        return getPage(pageId);
+    }
+
+    /**
+     * @param pageId
+     * @return the page for the given page-id or {@code null} if there is none
+     */
+    protected final Page getPage(final String pageId) {
         return m_pageCache.getPage(pageId);
     }
 
@@ -364,12 +391,12 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
 
     @Override
     public final Optional<Resource> getPageResource(final String resourceId) {
-        var pageIdAndRelativeResourcePath = extractPageIdAndRelativeResourcePath(resourceId);
+        var pageIdAndRelativeResourcePath = getPageAndRelativeResourcePath(resourceId);
         if (pageIdAndRelativeResourcePath == null) {
             return Optional.empty();
         }
 
-        var page = m_pageCache.getPage(pageIdAndRelativeResourcePath.getFirst());
+        var page = pageIdAndRelativeResourcePath.getFirst();
         if (page == null) {
             return Optional.empty();
         }
@@ -383,21 +410,35 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     }
 
     /**
-     * Extracts the page-id and the relative resource path from a path which is constructed via
+     * Extracts the page and the relative resource path from a path which is constructed via
      * {@link #getPagePath(NodeWrapper)}.
      *
      * @param path the path to extract it from
-     * @return a pair of page-id and path or {@code null}
+     * @return a pair of page and path or {@code null}
      */
-    private Pair<String, String> extractPageIdAndRelativeResourcePath(final String path) {
+    private Pair<Page, String> getPageAndRelativeResourcePath(final String path) {
+        var segments = decomposePagePath(path);
+        if (segments == null) {
+            return null;
+        }
+        assert segments.pathPrefix().startsWith("uiext-" + getPageType().toString())
+            || segments.pathPrefix().equals("uiext");
+        var page = m_pageCache.getPage(segments.pageId());
+        return page == null ? null : Pair.create(page, segments.relativePagePath());
+    }
+
+    /**
+     * Decomposes a string-path into its {@link PagePathSegments}.
+     *
+     * @param path
+     * @return the segments or {@code null} if the path couldn't be decomposed
+     */
+    protected PagePathSegments decomposePagePath(final String path) {
         var split = path.split("/", 3);
         if (split.length != 3) {
             return null;
         }
-        assert split[0].equals("uiext-" + getPageType().toString()) || split[0].equals("uiext");
-        var pageId = split[1];
-        var relPath = split[2];
-        return Pair.create(pageId, relPath);
+        return new PagePathSegments(split[0], split[1], null, split[2]);
     }
 
     /**
