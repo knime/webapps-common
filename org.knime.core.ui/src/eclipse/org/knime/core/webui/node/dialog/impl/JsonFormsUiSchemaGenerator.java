@@ -109,6 +109,8 @@ final class JsonFormsUiSchemaGenerator {
 
     static final String SECTION_TAG = "Section";
 
+    static final String HORIZONTAL_LAYOUT_TAG = "HorizontalLayout";
+
     private final ObjectMapper m_mapper;
 
     private final SerializerProvider m_serializerProvider;

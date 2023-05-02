@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.impl;
 
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.HORIZONTAL_LAYOUT_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
@@ -57,6 +58,7 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.T
 
 import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
 import org.knime.core.webui.node.dialog.ui.Section;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -67,6 +69,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
+        HORIZONTAL_LAYOUT(LayoutPart::getHorizontalLayout), //
         VIRTUAL_SECTION(LayoutNodeCreationContext::getParent);
 
     private Function<LayoutNodeCreationContext, ArrayNode> m_create;
@@ -81,6 +84,9 @@ enum LayoutPart {
         }
         if (clazz.isAnnotationPresent(Section.class)) {
             return SECTION;
+        }
+        if (clazz.isAnnotationPresent(HorizontalLayout.class)) {
+            return HORIZONTAL_LAYOUT;
         }
         return VIRTUAL_SECTION;
     }
@@ -99,6 +105,13 @@ enum LayoutPart {
         if (sectionAnnotation.advanced()) {
             node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
         }
+        return node.putArray(ELEMENTS_TAG);
+    }
+
+    private static ArrayNode getHorizontalLayout(final LayoutNodeCreationContext creationContext) {
+        final var parent = creationContext.getParent();
+        final var node = parent.addObject();
+        node.put(TYPE_TAG, HORIZONTAL_LAYOUT_TAG);
         return node.putArray(ELEMENTS_TAG);
     }
 

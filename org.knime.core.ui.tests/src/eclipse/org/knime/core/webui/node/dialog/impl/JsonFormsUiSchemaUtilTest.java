@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
 import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.LayoutGroup;
 import org.knime.core.webui.node.dialog.ui.Section;
@@ -569,5 +570,34 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section1");
+    }
+
+    @Test
+    void testHorizontalLayout() {
+        interface TestHorizontalLayout {
+
+            @HorizontalLayout
+            interface HorizontalGroup {
+            }
+        }
+
+        class TestHorizontalLayoutSettings implements DefaultNodeSettings {
+            @Layout(TestHorizontalLayout.HorizontalGroup.class)
+            String m_setting1;
+
+            @Layout(TestHorizontalLayout.HorizontalGroup.class)
+            String m_setting2;
+        }
+
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        settings.put("test", TestHorizontalLayoutSettings.class);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+
+        System.out.println(response.toPrettyString());
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
+        assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/setting1");
+        assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
+            .isEqualTo("#/properties/test/properties/setting2");
     }
 }
