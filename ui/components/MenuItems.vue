@@ -5,8 +5,8 @@
  * Position and visibility needs to be handled by the wrapper.
  *
  * The elements of the menu are not focusable.
- * Instead the component exposes a onKeydown method, which can be taken as a listener for keydown events on a focused
- * element in a parent component. When doing so, the elements in the menu are maked via keyboard navigation.
+ * Instead, the component exposes a onKeydown method, which can be taken as a listener for keydown events on a focused
+ * element in a parent component. When doing so, the elements in the menu are marked via keyboard navigation.
  * For accessibility, the focused outside element which listens to keydown events needs to have an aria-activedescendant
  * label set to the id of the visually focused element and additionally an aria-owns label with the same id if the menu items are
  * not DOM-descendants of this element (see https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#kbd_focus_activedescendant)

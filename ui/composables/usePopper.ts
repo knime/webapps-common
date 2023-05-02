@@ -10,16 +10,19 @@ import type { Instance, Options } from '@popperjs/core';
 export type PopperTargets = {
     // the element to create a popover from
     popperTarget: Ref<HTMLElement | null>,
-    // the element to which the popover is positioned
-    referenceEl: Ref<HTMLElement | null>
+    // the element (or its id) to which the popover is positioned
+    referenceEl: Ref<HTMLElement | string | null>
 }
 
 export default ({ popperTarget, referenceEl }: PopperTargets, options: Ref<Options> | Options) => {
     const popperInstance: Ref<Instance | null> = ref(null);
-        
+
     const activatePopper = () => {
         if (referenceEl.value !== null && popperTarget.value !== null) {
-            popperInstance.value = createPopper(referenceEl.value, popperTarget.value, unref(options)) as Instance;
+            const reference = typeof referenceEl.value === 'string'
+                ? document.getElementById(referenceEl.value)
+                : referenceEl.value;
+            popperInstance.value = createPopper(reference, popperTarget.value, unref(options)) as Instance;
         }
     };
     onMounted(activatePopper);
