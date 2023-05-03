@@ -224,6 +224,8 @@ export default {
     role="menu"
     tabindex="-1"
     @pointerleave="$emit('item-hovered', null, id)"
+    @keydown.right="openSubmenuItemIndex = focusedItemIndex"
+    @keydown.left="openSubmenuItemIndex = -1"
   >
     <li
       v-for="(item, index) in items"
