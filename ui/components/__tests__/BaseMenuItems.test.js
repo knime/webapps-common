@@ -2,9 +2,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { shallowMount, RouterLinkStub } from '@vue/test-utils';
 
-import MenuItemsBase from '../MenuItemsBase.vue';
+import MenuItemsBase from '../BaseMenuItems.vue';
 
-describe('MenuItemsBase.vue', () => {
+describe('BaseMenuItems.vue', () => {
     it('renders the items', () => {
         const items = [
             { href: 'https://www.google.com/slash', text: 'Google Slash' },

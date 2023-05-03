@@ -26,8 +26,11 @@
 import { ref, type Ref } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
-import MenuItemsBase from './MenuItemsBase.vue';
-import type { MenuItem } from './MenuItemsBase.vue';
+import MenuItemsBase from './BaseMenuItems.vue';
+import type { MenuItem } from './BaseMenuItems.vue';
+
+/* re-export MenuItem type */
+export type { MenuItem };
 
 type Props = {
     items: MenuItem[];

@@ -4,7 +4,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 
 import MenuItems from '../MenuItems.vue';
 
-import MenuItemsBase from '../MenuItemsBase.vue';
+import MenuItemsBase from '../BaseMenuItems.vue';
 
 const dropdownNavigation = { currentIndex: ref(1), resetNavigation: vi.fn(), onKeydown: vi.fn() };
 vi.mock('../../composables/useDropdownNavigation', () => ({ default: vi.fn(() => dropdownNavigation) }));

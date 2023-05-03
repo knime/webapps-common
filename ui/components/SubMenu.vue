@@ -6,7 +6,7 @@ import MenuItems from './MenuItems.vue';
 import usePopper from '../composables/usePopper';
 import useClickOutside from '../composables/useClickOutside';
 
-import type { MenuItem } from './MenuItemsBase.vue';
+import type { MenuItem } from './MenuItems.vue';
 import type { PropType } from 'vue';
 import type { Placement } from '@popperjs/core';
 
