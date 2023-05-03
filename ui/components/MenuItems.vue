@@ -32,10 +32,16 @@ import type { MenuItem } from './MenuItemsBase.vue';
 type Props = {
     items: MenuItem[];
     menuAriaLabel: string;
-    disableSpaceToClick?: boolean
+    disableSpaceToClick?: boolean,
+
+    /** handles the keyboard nav (register to onKeydown) on its own, useful if you don't require the focus elsewhere */
+    registerKeydown?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), { disableSpaceToClick: false });
+const props = withDefaults(defineProps<Props>(), {
+    disableSpaceToClick: false,
+    registerKeydown: false
+});
 
 const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered']);
 const menuItemsBase: Ref<InstanceType<typeof MenuItemsBase> | null> = ref(null);
@@ -77,6 +83,7 @@ defineExpose({ onKeydown, resetNavigation });
     :items="props.items"
     :menu-aria-label="props.menuAriaLabel"
     :focused-item-index="currentIndex"
+    @keydown="props.registerKeydown && onKeydown($event)"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
     @item-hovered="(item, id) => $emit('item-hovered', item, id)"
     @item-focused="(...args) => $emit('item-focused', ...args)"
