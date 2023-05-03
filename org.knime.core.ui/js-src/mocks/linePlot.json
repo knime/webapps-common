@@ -485,12 +485,6 @@
             },
             {
               "type": "HorizontalLayout",
-              "options": {
-                "ratios": [
-                  1,
-                  2
-                ]
-              },
               "elements": [
                 {
                   "type": "Control",

@@ -406,12 +406,6 @@
             },
             {
               "type": "HorizontalLayout",
-              "options": {
-                "ratios": [
-                  1,
-                  2
-                ]
-              },
               "elements": [
                 {
                   "type": "Control",
@@ -434,12 +428,6 @@
             },
             {
               "type": "HorizontalLayout",
-              "options": {
-                "ratios": [
-                  1,
-                  2
-                ]
-              },
               "elements": [
                 {
                   "type": "Control",
