@@ -81,7 +81,6 @@ export default {
         const listContainer = ref(null);
 
         onBeforeUpdate(() => {
-            console.log('onBeforeUpdate', props.id, listItems.value);
             listItems.value = [];
         });
 
@@ -241,6 +240,7 @@ export default {
       <Component
         :is="linkTagByType(item)"
         :id="menuItemId(index)"
+        :ref="`listItemComponent--${index}`"
         tabindex="-1"
         :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
           disabled: item.disabled, selected: item.selected, focused: index === focusedItemIndex }]"
@@ -272,7 +272,7 @@ export default {
               :menu-aria-label="`${item.text} sub menu`"
               :items="item.children"
               :max-menu-width="maxMenuWidth"
-              :position-relative-to-element="menuItemId(index)"
+              :position-relative-to-element="$refs[`listItemComponent--${index}`][0]"
               @item-click="(...args) => $emit('item-click', ...args)"
               @item-hovered="(...args) => $emit('item-hovered', ...args)"
               @item-focused="(...args) => $emit('item-focused', ...args)"
