@@ -1,6 +1,15 @@
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
 let count = 0;
-export default {
+
+export type BaseRadioButtonItem = {
+    id: string;
+    text: string;
+    disabled?: boolean;
+}
+
+export default defineComponent({
     props: {
         id: {
             type: String,
@@ -18,19 +27,8 @@ export default {
             default: false,
             type: Boolean
         },
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property
-         * @example
-         * [{
-         *   id: 'pdf',
-         *   text: 'PDF'
-         * }, {
-         *   id: 'XLS',
-         *   text: 'Excel',
-         * }]
-         */
         possibleValues: {
-            type: Array,
+            type: Array as PropType<Array<BaseRadioButtonItem>>,
             default: () => [],
             validator(values) {
                 if (!Array.isArray(values)) {
@@ -41,6 +39,9 @@ export default {
         }
     },
     emits: ['update:modelValue'],
+    data() {
+        return { count: 0 };
+    },
     computed: {
         inputName() {
             return this.name ? this.name : `wc-radio-${this.count}`;
@@ -51,18 +52,17 @@ export default {
         this.count = count;
     },
     methods: {
-        onInput($event) {
+        onInput($event: Event) {
+            // eslint-disable-next-line no-extra-parens
+            let value = ($event.target as HTMLInputElement).value;
+
             /**
              * Fired when the radio button value changes.
-             *
-             * @event input
-             * @type {String}
              */
-            let value = $event.target.value;
             this.$emit('update:modelValue', value);
         }
     }
-};
+});
 </script>
 
 <template>
@@ -79,7 +79,7 @@ export default {
         :checked="(modelValue === item.id)"
         :value="item.id"
         :name="inputName"
-        :disabled="disabled"
+        :disabled="disabled || item.disabled"
         type="radio"
         @change="onInput"
       >
