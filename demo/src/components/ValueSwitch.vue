@@ -1,48 +1,48 @@
-<script>
-import CodeExample from './demo/CodeExample.vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
 import code from 'webapps-common/ui/components/forms/ValueSwitch.vue?raw';
 
+import CodeExample from './demo/CodeExample.vue';
+
 const codeExample = `<ValueSwitch
   v-model="selected"
-  :possible-values="[{
-    id: 'eur',
-    text: 'EUR'
-  }, {
-    id: 'usd',
-    text: 'USD'
-  }]"
+  :possible-values="[
+    { id: 'eur', text: 'EUR' },
+    { id: 'usd', text: 'USD' },
+    { id: 'cad', text: 'CAD' }
+  ]"
 />
 <ValueSwitch
   v-model="selected"
-  :possible-values="[{
-    id: 'foo',
-    text: 'Foo'
-  }, {
-    id: 'barbaz',
-    text: 'Barbaz'
-  }, {
-    id: 'qux',
-    text: 'Qux'
-  }]"
+  variant="compact"
+  :possible-values="[
+    { id: 'eur', text: 'EUR' },
+    { id: 'usd', text: 'USD' },
+    { id: 'cad', text: 'CAD' }
+  ]"
 />
 <ValueSwitch
   v-model="selected"
   disabled
-  :possible-values="[{
-    id: 'foo',
-    text: 'Foo'
-  }, {
-    id: 'barbaz',
-    text: 'Barbaz'
-  }, {
-    id: 'qux',
-    text: 'Qux'
-  }]"
+  :possible-values="[
+    { id: 'eur', text: 'EUR' },
+    { id: 'usd', text: 'USD' },
+    { id: 'cad', text: 'CAD' }
+  ]"
+/>
+<ValueSwitch
+  v-model="selected"
+  :possible-values="[
+    { id: 'eur', text: 'EUR' },
+    { id: 'usd', text: 'USD', disabled: true },
+    { id: 'cad', text: 'CAD' }
+  ]"
 />
 `;
 
-export default {
+export default defineComponent({
     components: {
         ValueSwitch,
         CodeExample
@@ -50,16 +50,29 @@ export default {
     data() {
         return {
             codeExample,
-            selected: 'eur',
-            selectedLarge: 'foobar'
+
+            selectedCurrency: 'eur',
+            currencies: [
+                { id: 'eur', text: 'EUR' },
+                { id: 'usd', text: 'USD' },
+                { id: 'cad', text: 'CAD' }
+            ]
         };
     },
     computed: {
         code() {
             return code;
+        },
+
+        withDisabledItem() {
+            return this.currencies.map(
+                currency => currency.id === 'usd'
+                    ? { ...currency, disabled: true }
+                    : currency
+            );
         }
     }
-};
+});
 </script>
 
 <template>
@@ -74,60 +87,47 @@ export default {
           </p>
         </div>
       </div>
+
       <div class="grid-container">
         <div class="grid-item-4">
+          Normal mode
           <ValueSwitch
-            v-model="selected"
-            :possible-values="[{
-              id: 'eur',
-              text: 'EUR'
-            }, {
-              id: 'usd',
-              text: 'USD'
-            }]"
+            v-model="selectedCurrency"
+            :possible-values="currencies"
           />
         </div>
         <div class="grid-item-4">
-          selected id: {{ selected }}
+          Compact mode
+          <ValueSwitch
+            v-model="selectedCurrency"
+            variant="compact"
+            :possible-values="currencies"
+          />
+        </div>
+        <div class="grid-item-4">
+          selected id: {{ selectedCurrency }}
         </div>
       </div>
+
       <div class="grid-container">
         <div class="grid-item-4">
+          Completely disabled
           <ValueSwitch
-            v-model="selectedLarge"
-            :possible-values="[{
-              id: 'baz',
-              text: 'Baz'
-            }, {
-              id: 'foobar',
-              text: 'Foobar'
-            }, {
-              id: 'qux',
-              text: 'Qux'
-            }]"
+            v-model="selectedCurrency"
+            :possible-values="currencies"
           />
         </div>
         <div class="grid-item-4">
+          With single disabled option
           <ValueSwitch
-            v-model="selectedLarge"
-            disabled
-            :possible-values="[{
-              id: 'baz',
-              text: 'Baz'
-            }, {
-              id: 'foobar',
-              text: 'Foobar'
-            }, {
-              id: 'qux',
-              text: 'Qux'
-            }]"
+            v-model="selectedCurrency"
+            :possible-values="withDisabledItem"
           />
         </div>
-        <div class="grid-item-4">
-          selected id: {{ selectedLarge }}
-        </div>
+        <div class="grid-item-4" />
       </div>
     </section>
+
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
@@ -138,3 +138,15 @@ export default {
     </section>
   </div>
 </template>
+
+<style lang="postcss">
+.grid-container {
+  padding-bottom: 15px;
+}
+
+.grid-item-4 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+</style>

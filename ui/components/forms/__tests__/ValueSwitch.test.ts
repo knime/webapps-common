@@ -1,27 +1,20 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import ValueSwitch from '../ValueSwitch.vue';
 import BaseRadioButtons from '../BaseRadioButtons.vue';
 
 describe('ValueSwitch.vue', () => {
-    let possibleValues;
+    const possibleValues = new Array(3)
+        .fill(0)
+        .map((_, index) => ({
+            id: `test${index + 1}`,
+            text: `Text ${index + 1}`,
+            disabled: false
+        }));
 
-    beforeEach(() => {
-        possibleValues = [{
-            id: 'test1',
-            text: 'Text 1'
-        }, {
-            id: 'test2',
-            text: 'Text 2'
-        }, {
-            id: 'test3',
-            text: 'Text 3'
-        }];
-    });
-    
     it('renders and passes props to BaseRadioButtons', () => {
-        let modelValue = 'test3';
+        const modelValue = 'test3';
         const wrapper = mount(ValueSwitch, {
             props: {
                 possibleValues,
@@ -34,5 +27,20 @@ describe('ValueSwitch.vue', () => {
         const baseComponent = wrapper.findComponent(BaseRadioButtons);
         expect(baseComponent.props('possibleValues')).toStrictEqual(possibleValues);
         expect(baseComponent.props('modelValue')).toBe(modelValue);
+    });
+
+    it('applies variant class', async () => {
+        const wrapper = mount(ValueSwitch, {
+            props: {
+                possibleValues,
+                variant: 'normal'
+            }
+        });
+
+        expect(wrapper.classes()).toContain('normal');
+
+        await wrapper.setProps({ variant: 'compact' });
+
+        expect(wrapper.classes()).toContain('compact');
     });
 });

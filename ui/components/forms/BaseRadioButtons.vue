@@ -39,16 +39,15 @@ export default defineComponent({
         }
     },
     emits: ['update:modelValue'],
-    data() {
-        return { count: 0 };
-    },
     computed: {
         inputName() {
+            // @ts-expect-error
             return this.name ? this.name : `wc-radio-${this.count}`;
         }
     },
     beforeCreate() {
         count += 1;
+        // @ts-expect-error
         this.count = count;
     },
     methods: {

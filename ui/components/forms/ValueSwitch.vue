@@ -85,19 +85,24 @@ export default defineComponent({
     font-weight: 300;
     font-size: 13px;
     line-height: 20px;
-
     height: calc(var(--wrapper-height) * 1px);
   }
 
   &.disabled {
     opacity: 0.5;
   }
+
   &.normal {
     --wrapper-height: 30;
   }
 
   &.compact {
     --wrapper-height: 20;
+  }
+
+  & :deep(input[disabled]) + span {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   & :deep(input) {
@@ -113,11 +118,6 @@ export default defineComponent({
       color: var(--theme-value-switch-background-color);
       pointer-events: none;
     }
-  }
-
-  & :deep(input[disabled]) + span {
-    opacity: 0.5;
-    pointer-events: none;
   }
 }
 

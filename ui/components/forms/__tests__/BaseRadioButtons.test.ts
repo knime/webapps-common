@@ -1,29 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 
 import BaseRadioButtons from '../BaseRadioButtons.vue';
 
 describe('BaseRadioButtons.vue', () => {
-    let possibleValues;
-
-    beforeEach(() => {
-        possibleValues = [{
-            id: 'test1',
-            text: 'Text 1'
-        }, {
-            id: 'test2',
-            text: 'Text 2'
-        }, {
-            id: 'test3',
-            text: 'Text 3'
-        }, {
-            id: 'test4',
-            text: 'Text 4'
-        }, {
-            id: 'test5',
-            text: 'Text 5'
-        }];
-    });
+    const possibleValues = new Array(5)
+        .fill(0)
+        .map((_, index) => ({
+            id: `test${index + 1}`,
+            text: `Text ${index + 1}`,
+            disabled: false
+        }));
 
     it('renders', () => {
         const wrapper = mount(BaseRadioButtons, {
@@ -34,7 +21,7 @@ describe('BaseRadioButtons.vue', () => {
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
 
-        let labels = wrapper.findAll('label');
+        const labels = wrapper.findAll('label');
         expect(labels.length).toBe(possibleValues.length);
         possibleValues.forEach((value, i) => {
             expect(labels[i].text()).toContain(value.text);
@@ -42,7 +29,7 @@ describe('BaseRadioButtons.vue', () => {
     });
 
     it('renders a name value', () => {
-        let value = 'test3';
+        const value = 'test3';
         let wrapper = mount(BaseRadioButtons, {
             props: {
                 possibleValues,
@@ -68,12 +55,12 @@ describe('BaseRadioButtons.vue', () => {
     });
 
     it('renders unique name attributes', () => {
-        let wrapper1 = mount(BaseRadioButtons, {
+        const wrapper1 = mount(BaseRadioButtons, {
             props: {
                 possibleValues
             }
         });
-        let wrapper2 = mount(BaseRadioButtons, {
+        const wrapper2 = mount(BaseRadioButtons, {
             props: {
                 possibleValues
             }
@@ -84,7 +71,7 @@ describe('BaseRadioButtons.vue', () => {
     });
 
     it('renders selected value', () => {
-        let modelValue = 'test3';
+        const modelValue = 'test3';
         const wrapper = mount(BaseRadioButtons, {
             props: {
                 possibleValues,
@@ -92,13 +79,11 @@ describe('BaseRadioButtons.vue', () => {
             }
         });
 
-        let radioInputs = wrapper.findAll('input[type=radio]');
+        const radioInputs = wrapper.findAll('input[type=radio]');
         possibleValues.forEach((option, i) => {
-            if (option.id === modelValue) {
-                expect(radioInputs[i].element.checked).toBeTruthy();
-            } else {
-                expect(radioInputs[i].element.checked).not.toBeTruthy();
-            }
+            const expectedCheckedValue = option.id === modelValue;
+            // eslint-disable-next-line no-extra-parens
+            expect((radioInputs[i].element as HTMLInputElement).checked).toBe(expectedCheckedValue);
         });
     });
 
@@ -108,22 +93,26 @@ describe('BaseRadioButtons.vue', () => {
                 possibleValues
             }
         });
-        let newValue = 'test2';
-        let input = wrapper.find(`input[value=${newValue}]`);
-        input.setChecked(true);
-        expect(wrapper.emitted('update:modelValue')[0][0]).toEqual(newValue);
+        const newValue = 'test2';
+        const input = wrapper.find(`input[value=${newValue}]`);
+        input.setValue(newValue);
+        expect(wrapper.emitted('update:modelValue')![0][0]).toEqual(newValue);
     });
 
     it('validates possibleValues', () => {
+        const validator = BaseRadioButtons.props.possibleValues.validator;
+        expect(validator('str')).toBe(false);
+        expect(validator(possibleValues)).toBe(true);
+    });
+
+    it('disables individual items', () => {
         const wrapper = mount(BaseRadioButtons, {
             props: {
-                possibleValues
+                possibleValues: possibleValues.concat({ id: 'test6', text: 'Text 6', disabled: true })
             }
         });
-        const propPossibleValues = wrapper.vm.$options.props.possibleValues;
-        expect(propPossibleValues.required).toBeFalsy();
-        expect(propPossibleValues.type).toBe(Array);
-        expect(propPossibleValues.validator && propPossibleValues.validator('str')).toBeFalsy();
-        expect(propPossibleValues.validator && propPossibleValues.validator(possibleValues)).toBeTruthy();
+
+        const input = wrapper.find(`input[value=test6]`);
+        expect(input.attributes('disabled')).toBeDefined();
     });
 });
