@@ -23,7 +23,7 @@
  * Hovering an item emits `@item-hovered`.
  */
 
-import { onMounted, ref, type Ref } from 'vue';
+import { nextTick, ref, type Ref } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
 import BaseMenuItems from './BaseMenuItems.vue';
@@ -49,23 +49,9 @@ const props = withDefaults(defineProps<Props>(), {
     focusOnMount: false
 });
 
-const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered']);
+const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered', 'close-submenu']);
 const menuItemsBase: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
-
-const setOpenSubmenuIndex = (index: Number) => {
-    const item = props.items.at(index);
-    if (item && !item.disabled && item.children?.length) {
-        openSubmenuItemIndex.value = index;
-    } else {
-        openSubmenuItemIndex.value = -1;
-    }
-};
-
-const onItemHovered = ({ item, id, index }) => {
-    setOpenSubmenuIndex(index);
-    emit('item-hovered', item, id);
-};
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
     if (!menuItemsBase.value) {
@@ -91,13 +77,59 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
     return { index, onClick };
 };
 
-const { currentIndex, onKeydown, resetNavigation } = useDropdownNavigation({
+const { currentIndex, onKeydown: onDropdownNavigationKeydown, resetNavigation } = useDropdownNavigation({
     disableSpaceToClick: props.disableSpaceToClick,
     getNextElement,
     close: () => emit('close')
 });
 
-defineExpose({ onKeydown, resetNavigation });
+const focusIndex = (index: number = 0) => {
+    currentIndex.value = index;
+};
+
+const setOpenSubmenuIndex = (index: number) => {
+    const item = props.items.at(index);
+
+    if (item && !item.disabled && item.children?.length) {
+        openSubmenuItemIndex.value = index;
+    } else {
+        openSubmenuItemIndex.value = -1;
+    }
+};
+
+const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
+    switch(event.code) {
+        case 'ArrowLeft':
+            emit('close-submenu');
+            break;
+        case 'ArrowRight':
+            setOpenSubmenuIndex(currentIndex.value || 0);
+            nextTick(() => { subMenu.value?.focusIndex() });
+            break;
+    }
+    onDropdownNavigationKeydown(event);
+};
+
+const onItemHovered = ({ item, id, index }) => {
+    // do nothing if no item gets hovered (so the submenu will stay open on mouse move in blank space)
+    if (item !== null) {
+        setOpenSubmenuIndex(index);
+    }
+    emit('item-hovered', item, id);
+};
+
+const subMenu = ref<HTMLElement|null>(null);
+const onKeydown = (event) => {
+    if (openSubmenuItemIndex.value !== -1) {
+        // pass the keydown event down the next child sub menu (see defineExpose)
+        subMenu.value?.onKeydown(event);
+    } else {
+        // handle the keydown event in this instance
+        onKeydownWithOpenCloseSubMenu(event);
+    }
+}
+
+defineExpose({ onKeydown, resetNavigation, focusIndex });
 </script>
 
 <template>
@@ -111,8 +143,6 @@ defineExpose({ onKeydown, resetNavigation });
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
     @item-hovered="(item, id, index) => onItemHovered({ item, id, index })"
     @item-focused="(...args) => $emit('item-focused', ...args)"
-    @keydown.right="setOpenSubmenuIndex(currentIndex)"
-    @keydown.left="setOpenSubmenuIndex(-1)"
   >
     <template #item="{ item, menuId, menuItemId, index, maxMenuWidth, focusedItemIndex }">
       <BaseMenuItem
@@ -130,6 +160,7 @@ defineExpose({ onKeydown, resetNavigation });
             <ArrowNextIcon class="icon" />
             <MenuItems
               v-if="openSubmenuItemIndex === index"
+              ref="subMenu"
               :id="`${menuId}__${item.name}`"
               class="menu-items-level"
               :menu-aria-label="`${item.text} sub menu`"
@@ -137,6 +168,7 @@ defineExpose({ onKeydown, resetNavigation });
               :max-menu-width="maxMenuWidth"
               :position-relative-to-element="itemElement"
               register-keydown
+              @close-submenu="openSubmenuItemIndex = -1"
               @item-click="(...args) => $emit('item-click', ...args)"
               @item-hovered="(...args) => $emit('item-hovered', ...args)"
               @item-focused="(...args) => $emit('item-focused', ...args)"

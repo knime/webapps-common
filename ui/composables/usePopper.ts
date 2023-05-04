@@ -11,7 +11,7 @@ export type PopperTargets = {
     // the element to create a popover from
     popperTarget: Ref<HTMLElement | null>,
     // the element (or its id) to which the popover is positioned
-    referenceEl: Ref<HTMLElement | string | null>
+    referenceEl: Ref<HTMLElement | null>
 }
 
 export default ({ popperTarget, referenceEl }: PopperTargets, options: Ref<Options> | Options) => {
@@ -19,10 +19,7 @@ export default ({ popperTarget, referenceEl }: PopperTargets, options: Ref<Optio
 
     const activatePopper = () => {
         if (referenceEl.value !== null && popperTarget.value !== null) {
-            const reference = typeof referenceEl.value === 'string'
-                ? document.getElementById(referenceEl.value)
-                : referenceEl.value;
-            popperInstance.value = createPopper(reference, popperTarget.value, unref(options)) as Instance;
+            popperInstance.value = createPopper(referenceEl.value, popperTarget.value, unref(options)) as Instance;
         }
     };
     onMounted(activatePopper);

@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { PropType, FunctionalComponent, SVGAttributes } from 'vue';
 import arrowNextIcon from 'webapps-common/ui/assets/img/icons/arrow-next.svg';
-import {onBeforeUpdate, ref, toRefs} from 'vue';
+import { onBeforeUpdate, ref, toRef } from 'vue';
 import usePopper from '../composables/usePopper';
 import { uniqueId } from 'lodash';
 import BaseMenuItem from "./BaseMenuItem.vue";
@@ -78,8 +78,8 @@ export default {
     setup(props) {
         // use composition api refs to be able to sync the index between props.items and the refs to the HTMLElement
         const listItems = ref([]);
-        const { positionRelativeToElement } = toRefs(props);
-        const listContainer = ref(null);
+        const positionRelativeToElement = toRef<HTMLElement|null>(props, 'positionRelativeToElement');
+        const listContainer = ref<HTMLElement|null>(null);
 
         onBeforeUpdate(() => {
             listItems.value = [];
