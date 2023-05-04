@@ -593,7 +593,6 @@ class JsonFormsUiSchemaUtilTest {
         settings.put("test", TestHorizontalLayoutSettings.class);
         final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
 
-        System.out.println(response.toPrettyString());
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
             .isEqualTo("#/properties/test/properties/setting1");
