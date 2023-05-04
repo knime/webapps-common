@@ -115,9 +115,9 @@ final class JsonFormsUiSchemaGenerator {
 
     private final SerializerProvider m_serializerProvider;
 
-    private final Map<String, Class<? extends DefaultNodeSettings>> m_settings;
+    private final Map<String, Class<?>> m_settings;
 
-    JsonFormsUiSchemaGenerator(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    JsonFormsUiSchemaGenerator(final Map<String, Class<?>> settings) {
         m_settings = settings;
         m_mapper = JsonFormsDataUtil.getMapper();
         m_serializerProvider = m_mapper.getSerializerProviderInstance();

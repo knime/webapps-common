@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.impl;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.ui.After;
@@ -100,9 +100,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section2");
@@ -154,9 +152,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting4;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section4");
@@ -202,9 +198,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section2");
@@ -250,9 +244,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting5;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("GeneralSection3");
@@ -315,9 +307,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements").isArray().hasSize(6);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("GeneralSection3");
@@ -356,8 +346,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -384,8 +373,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -421,8 +409,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -455,9 +442,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -489,9 +474,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -525,9 +508,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section2");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
@@ -566,9 +547,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section3");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
@@ -604,9 +583,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("Section3");
@@ -636,9 +613,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("GeneralSection3");
@@ -680,9 +655,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("GeneralSection2");
@@ -727,8 +700,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
     }
 
@@ -767,9 +739,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_otherGeneralSetting;
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(settings);
+        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", DummySettings.class));
         assertThatJson(response).inPath("$.elements").isArray().hasSize(4);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("GeneralSection1");
@@ -790,8 +760,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
 
         }
 
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
-        settings.put("test", DummySettings.class);
+        final Map<String, Class<?>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtil.buildUISchema(settings));
 
     }
