@@ -1,10 +1,8 @@
 <script lang="ts">
 import type { PropType, FunctionalComponent, SVGAttributes } from 'vue';
-import arrowNextIcon from 'webapps-common/ui/assets/img/icons/arrow-next.svg';
 import { onBeforeUpdate, ref, toRef } from 'vue';
 import usePopper from '../composables/usePopper';
 import { uniqueId } from 'lodash';
-import BaseMenuItem from "./BaseMenuItem.vue";
 
 export interface MenuItem {
   text: string;
@@ -36,10 +34,6 @@ function isNativeHTMLElement(element: ElementTemplateRef): element is HTMLElemen
 }
 
 export default {
-    components: {
-        BaseMenuItem,
-        arrowNextIcon
-    },
     props: {
         items: {
             type: Array as PropType<Array<MenuItem>>,

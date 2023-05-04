@@ -28,8 +28,8 @@ import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
 import BaseMenuItems from './BaseMenuItems.vue';
 import type { MenuItem } from './BaseMenuItems.vue';
-import BaseMenuItem from "./BaseMenuItem.vue";
-import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
+import BaseMenuItem from './BaseMenuItem.vue';
+import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
 
 /* re-export MenuItem type */
 export type { MenuItem };
@@ -52,12 +52,14 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered', 'close-submenu']);
 const menuItemsBase: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
+const subMenu = ref<HTMLElement|null>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
     if (!menuItemsBase.value) {
         return {
             onClick: () => {
-            }, index: -1
+            },
+            index: -1
         };
     }
 
@@ -98,13 +100,15 @@ const setOpenSubmenuIndex = (index: number) => {
 };
 
 const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
-    switch(event.code) {
+    switch (event.code) {
         case 'ArrowLeft':
             emit('close-submenu');
             break;
         case 'ArrowRight':
             setOpenSubmenuIndex(currentIndex.value || 0);
-            nextTick(() => { subMenu.value?.focusIndex() });
+            nextTick(() => {
+                subMenu.value?.focusIndex();
+            });
             break;
     }
     onDropdownNavigationKeydown(event);
@@ -118,16 +122,16 @@ const onItemHovered = ({ item, id, index }) => {
     emit('item-hovered', item, id);
 };
 
-const subMenu = ref<HTMLElement|null>(null);
 const onKeydown = (event) => {
-    if (openSubmenuItemIndex.value !== -1) {
+    // is a submenu open
+    if (openSubmenuItemIndex.value === -1) {
+        // handle the keydown event in this instance because no submenu is open
+        onKeydownWithOpenCloseSubMenu(event);
+    } else {
         // pass the keydown event down the next child sub menu (see defineExpose)
         subMenu.value?.onKeydown(event);
-    } else {
-        // handle the keydown event in this instance
-        onKeydownWithOpenCloseSubMenu(event);
     }
-}
+};
 
 defineExpose({ onKeydown, resetNavigation, focusIndex });
 </script>
@@ -152,7 +156,7 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
         :use-max-menu-width="Boolean(maxMenuWidth)"
         :has-focus="index === focusedItemIndex"
       >
-        <template #submenu="{ item, index, itemElement }">
+        <template #submenu="{ itemElement }">
           <span
             v-if="item.children && item.children.length"
             class="sub-menu-indicator"
@@ -160,8 +164,8 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
             <ArrowNextIcon class="icon" />
             <MenuItems
               v-if="openSubmenuItemIndex === index"
-              ref="subMenu"
               :id="`${menuId}__${item.name}`"
+              ref="subMenu"
               class="menu-items-level"
               :menu-aria-label="`${item.text} sub menu`"
               :items="item.children"

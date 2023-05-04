@@ -10,7 +10,7 @@ import type { Instance, Options } from '@popperjs/core';
 export type PopperTargets = {
     // the element to create a popover from
     popperTarget: Ref<HTMLElement | null>,
-    // the element (or its id) to which the popover is positioned
+    // the element to which the popover is positioned
     referenceEl: Ref<HTMLElement | null>
 }
 

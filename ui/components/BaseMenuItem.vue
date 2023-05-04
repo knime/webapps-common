@@ -18,8 +18,7 @@ const linkTagByType = (item: MenuItem) => {
     }
 };
 
-const props = defineProps<Props>();
-
+defineProps<Props>();
 </script>
 
 <template>
@@ -28,7 +27,7 @@ const props = defineProps<Props>();
     ref="listItemComponent"
     tabindex="-1"
     :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
-          disabled: item.disabled, selected: item.selected, focused: hasFocus }]"
+      disabled: item.disabled, selected: item.selected, focused: hasFocus }]"
     :to="item.to || null"
     :href="item.href || null"
   >
@@ -45,7 +44,10 @@ const props = defineProps<Props>();
         v-if="item.hotkeyText"
         class="hotkey"
       >{{ item.hotkeyText }}</span>
-      <slot name="submenu" :item="item" :index="index" :itemElement="$refs.listItemComponent" />
+      <slot
+        name="submenu"
+        :item-element="$refs.listItemComponent"
+      />
     </div>
   </Component>
 </template>
