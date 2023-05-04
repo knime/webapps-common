@@ -56,7 +56,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.BufferedDataTable;
@@ -100,63 +99,51 @@ class PortViewManagerTest {
         var portViewFactory2 = mock(PortViewFactory.class);
         Mockito.when(portViewFactory2.createPortView(nnc.getOutPort(1).getPortObject()))
             .thenAnswer(i -> createPortView());
-        var portViewManager = PortViewManager.getInstance();
         var portSpecViewFactory1 = mock(PortSpecViewFactory.class);
         Mockito.when(portSpecViewFactory1.createPortView(nnc.getOutPort(1).getPortObjectSpec()))
             .thenAnswer(i -> createPortView());
 
-        PortViewManager.registerPortViews(FlowVariablePortObject.TYPE, PortViewGroup.of(portViewFactory0));
+        var portViewManager = PortViewManager.getInstance();
 
-        // register port views with given labels
-        var fac1specViewLabel = "Baz";
-        var fac1viewLabel = "Foo";
-        var fac2viewLabel = "Bar";
+        // register port views
+        PortViewManager.registerPortViews(FlowVariablePortObject.TYPE,
+            List.of(new PortViewManager.PortViewDescriptor("Qux", portViewFactory0)), List.of(0), List.of(0));
         PortViewManager.registerPortViews(BufferedDataTable.TYPE,
-            // a group with views for both PortObject and PortObjectSpec
-            PortViewGroup.builder().setSpecViewLabel(fac1specViewLabel).setSpecViewFactory(portSpecViewFactory1)
-                .setViewLabel(fac1viewLabel).setViewFactory(portViewFactory1).build(),
-            // a group with only a view for the PortObject
-            PortViewGroup.builder().setViewLabel(fac2viewLabel).setViewFactory(portViewFactory2).build());
-
-        // check labels of registered port views
-        assertThat(PortViewManager.getPortViewLabels(BufferedDataTable.TYPE))
-            .usingRecursiveFieldByFieldElementComparator()
-            .isEqualTo(List.of(Pair.of(fac1specViewLabel, fac1viewLabel), Pair.of(null, fac2viewLabel)));
+            List.of(new PortViewManager.PortViewDescriptor("Foo", portSpecViewFactory1),
+                new PortViewManager.PortViewDescriptor("Bar", portViewFactory1),
+                new PortViewManager.PortViewDescriptor("Baz", portViewFactory2)),
+            List.of(0, 2), List.of(1, 2));
 
         // page properties
         assertThat(portViewManager.getBaseUrl().orElse(null)).isEqualTo("http://org.knime.core.ui.port/");
-        var npw = NodePortWrapper.of(nnc, 0, 0, false);
+        var npw = NodePortWrapper.of(nnc, 0, 0);
         assertThat(portViewManager.getPagePath(npw)).isEqualTo("uiext/port_view_page_name/page.js");
         assertThat(portViewManager.getPageId(npw)).isEqualTo("port_view_page_name");
 
         // assert that view instance is reused
-        var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0, 0, false));
+        var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0, 0));
         assertThat(portView).isNotNull();
-        var portView2 = portViewManager.getPortView(NodePortWrapper.of(nnc, 0, 0, false));
+        var portView2 = portViewManager.getPortView(NodePortWrapper.of(nnc, 0, 0));
         assertThat(portView).isSameAs(portView2);
 
         // get a port view at another port
-        assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 0, false))).isNotNull();
-        // get a spec view
-        assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 0, true))).isNotNull();
-        // get another port view at a port
-        assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1, false))).isNotNull();
+        assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1))).isNotNull();
 
         // check absurd port index
         assertThatExceptionOfType(Exception.class)
-                .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0, false)));
+            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0)));
 
         // check absurd view index
         assertThatExceptionOfType(Exception.class)
-            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE, false)));
+            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE)));
 
         // check that the port view cache is cleared on node reset
-        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(4);
+        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(2);
         wfm.resetAndConfigureAll();
         assertThat(portViewManager.getPortViewMapSize()).isZero();
 
         // check that the port view cache is cleared when the node is being removed
-        portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 0, false));
+        portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 0));
         assertThat(portViewManager.getPortViewMapSize()).isEqualTo(1);
         wfm.removeNode(nnc.getID());
         Awaitility.await().untilAsserted(() -> assertThat(portViewManager.getPortViewMapSize()).isZero());

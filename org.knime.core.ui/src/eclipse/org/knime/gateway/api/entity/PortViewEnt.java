@@ -64,10 +64,9 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
      * @param nc the node the port to display the port view for belongs to
      * @param portIdx the port index of the port to display a view for
      * @param viewIdx The index of the view group
-     * @param isSpec Whether a port object view or a spec view is requested
      */
-    public PortViewEnt(final NodeContainer nc, final int portIdx, final int viewIdx, final boolean isSpec) {
-        super(NodePortWrapper.of(nc, portIdx, viewIdx, isSpec), PortViewManager.getInstance(),
+    public PortViewEnt(final NodeContainer nc, final int portIdx, final int viewIdx) {
+        super(NodePortWrapper.of(nc, portIdx, viewIdx), PortViewManager.getInstance(),
             PortViewManager.getInstance(),
             PageType.PORT);
     }

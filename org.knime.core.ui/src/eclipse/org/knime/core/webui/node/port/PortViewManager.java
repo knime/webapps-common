@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.port;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +55,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
@@ -77,17 +73,23 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
     private static PortViewManager instance;
 
-    private static final Map<PortType, List<PortViewGroup>> portViewGroupsMap = new HashMap<>();
+    private static final Map<PortType, PortViews> m_portViews = new HashMap<>();
+
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
     /**
-     * Associate a {@link PortType} with one or several {@link PortViewGroup}s.
+     * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
      *
-     * @param portType The given port type
-     * @param groups The groups to associate with this port type.
+     * @param portType The given port type.
+     * @param viewDescriptors The views to associate with this port type.
+     * @param configuredIndices Indices into {@code viewDescriptors} of views that are to be displayed when the node is
+     *            in "configured" state.
+     * @param executedIndices Indices into {@code viewDescriptors} of views that are to be displayed when the node is in
+     *            "executed" state.
      */
-    public static void registerPortViews(final PortType portType, PortViewGroup... groups) {
-        portViewGroupsMap.put(portType, List.of(groups));
+    public static void registerPortViews(final PortType portType, final List<PortViewDescriptor> viewDescriptors,
+        final List<Integer> configuredIndices, final List<Integer> executedIndices) {
+        m_portViews.put(portType, new PortViews(viewDescriptors, configuredIndices, executedIndices));
     }
 
     /**
@@ -103,38 +105,29 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
     }
 
     /**
-     * @param portType the port type to check
-     * @param viewIdx the index of the requested view
-     * @param isSpec whether a spec view is requested
-     * @return {@code true} iff the given port type has a view associated at this index and according to {@code isSpec}
+     * @param portType
+     * @param viewIdx
+     * @return the {@link PortViewDescriptor} for the given port type and view-index or an empty optional if there isn't
+     *         any
      */
-    @SuppressWarnings("java:S2301") // Boolean param is reasonable since it's an API parameter
-    public static boolean hasPortView(final PortType portType, final int viewIdx, final boolean isSpec) {
-        return getGroup(portType, viewIdx).map(group -> isSpec ? group.specViewFactory() : group.viewFactory())
-            .isPresent();
-    }
-
-    private static Optional<PortViewGroup> getGroup(final PortType portType, final int viewIdx) {
-        try {
-            return Optional.of(portViewGroupsMap.get(portType).get(viewIdx));
-        } catch (IndexOutOfBoundsException e) {  // NOSONAR
-            return Optional.empty();
-        }
+    public static Optional<PortViewDescriptor> getPortViewDescriptor(final PortType portType, final int viewIdx) {
+        return Optional.of(m_portViews.get(portType)).map(views -> {
+            try {
+                return views.viewDescriptors().get(viewIdx);
+            } catch (IndexOutOfBoundsException e) { // NOSONAR
+                return null;
+            }
+        });
     }
 
     /**
-     * Obtain display labels for all registered port views for a given port type.
+     * Obtain views associated to a given port type.
      *
-     * @param portType The port type to get the view labels for.
-     * @return A null-padded list containing pairs of spec view and port object view. If a view is not available, the
-     *         pair component is {@code null}.
+     * @param portType The port type.
+     * @return A {@link PortViews} instance, or {@code null} if none available.
      */
-    public static List<Pair<String, String>> getPortViewLabels(final PortType portType) {
-        return Optional.ofNullable(portViewGroupsMap.get(portType)) //
-                .orElse(Collections.emptyList()) //
-                .stream() //
-                .map(group -> ImmutablePair.of(group.specViewLabel(), group.viewLabel())) //
-                .collect(Collectors.toList());
+    public static PortViews getPortViews(final PortType portType) {
+        return m_portViews.get(portType);
     }
 
     private PortViewManager() {
@@ -171,7 +164,6 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * <li>Node container</li>
      * <li>Port index</li>
      * <li>View index</li>
-     * <li>Whether spec or port object view is requested</li>
      * </ul>
      *
      * The port view will be either retrieved from a cache or newly created if it hasn't been accessed, yet.
@@ -180,7 +172,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * @return a (new) port view instance
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     PortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
@@ -192,15 +184,17 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         var portType = outPort.getPortType();
         var viewIdx = nodePortWrapper.getViewIdx();
 
-        var group = getGroup(portType, viewIdx).orElseThrow();
+        var viewDescriptor = getPortViewDescriptor(portType, viewIdx).orElseThrow();
         try {
             PortContext.pushContext(outPort);
 
             PortView view;
-            if (nodePortWrapper.isSpec()) {
-                view = group.specViewFactory().createPortView(outPort.getPortObjectSpec());
+            if (viewDescriptor.viewFactory() instanceof PortSpecViewFactory factory) {
+                view = factory.createPortView(outPort.getPortObjectSpec());
+            } else if (viewDescriptor.viewFactory() instanceof PortViewFactory factory) {
+                view = factory.createPortView(outPort.getPortObject());
             } else {
-                view = group.viewFactory().createPortView(outPort.getPortObject());
+                throw new NoSuchElementException("Port view factory is of unexpected type");
             }
 
             m_portViewMap.put(nodePortWrapper, view);
@@ -239,6 +233,29 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         } finally {
             PortContext.removeLastContext();
         }
+    }
+
+    /**
+     * Describes the views associated with some {@link PortType}.
+     *
+     * @param viewDescriptors Individual views associated with this {@link PortType}.
+     * @param configuredIndices Views that are available when the node is in "configured" state. Indices into
+     *            {@code viewDescriptors}.
+     * @param executedIndices Views that are available when the node is in "executed" state. Indices into
+     *            {@code viewDescriptors}.
+     */
+    public record PortViews(List<PortViewDescriptor> viewDescriptors, List<Integer> configuredIndices,
+        List<Integer> executedIndices) {
+        //
+    }
+
+    /**
+     * @param label the view display label
+     * @param viewFactory the factory to create the view (either {@link PortSpecViewFactory} or
+     *            {@link PortViewFactory}).
+     */
+    public record PortViewDescriptor(String label, Object viewFactory) {
+        //
     }
 
 }

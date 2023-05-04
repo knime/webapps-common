@@ -67,11 +67,9 @@ public interface NodePortWrapper extends NodeWrapper {
      * @param nc The node under consideration
      * @param portIdx The index of the port
      * @param viewIdx The index of the port view
-     * @param isSpec Distinguishes between port object view and port object spec view.
      * @return a new instance
      */
-    public static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx,
-        final Boolean isSpec) {
+    public static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx) {
         return new NodePortWrapper() { // NOSONAR
 
             @Override
@@ -87,11 +85,6 @@ public interface NodePortWrapper extends NodeWrapper {
             @Override
             public int getPortIdx() {
                 return portIdx;
-            }
-
-            @Override
-            public boolean isSpec() {
-                return isSpec;
             }
 
             @Override
@@ -111,13 +104,13 @@ public interface NodePortWrapper extends NodeWrapper {
                     return false;
                 }
                 var w = (NodePortWrapper)o;
-                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx() && isSpec == w.isSpec()
+                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx()
                     && viewIdx == w.getViewIdx();
             }
 
             @Override
             public int hashCode() {
-                return new HashCodeBuilder().append(nc).append(portIdx).append(viewIdx).append(isSpec).toHashCode();
+                return new HashCodeBuilder().append(nc).append(portIdx).append(viewIdx).toHashCode();
             }
         };
     }
@@ -131,10 +124,4 @@ public interface NodePortWrapper extends NodeWrapper {
      * @return the view index
      */
     int getViewIdx();
-
-    /**
-     * @return whether a port object spec view is requested
-     */
-    boolean isSpec();
-
 }

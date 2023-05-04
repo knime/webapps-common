@@ -61,6 +61,7 @@ import org.knime.core.node.port.PortObjectSpec;
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings({"rawtypes", "java:S1124", "javadoc"})  // false positive, modifiers are indeed in right order
+// TODO remove
 public record PortViewGroup(String specViewLabel, PortSpecViewFactory specViewFactory, String viewLabel,
                             PortViewFactory viewFactory) {
 
