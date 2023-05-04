@@ -50,6 +50,7 @@ package org.knime.core.webui.node.view;
 
 import java.util.Optional;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
@@ -60,7 +61,7 @@ import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeModel;
 
 /**
- * Helper methods and tests for {@link NodeView NodeViews}.
+ * Helper methods and tests for {@link NodeView NodeViews} and {@link TableView TableViews}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -83,14 +84,45 @@ public final class NodeViewTest {
     @SuppressWarnings("javadoc")
     public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
         final RpcDataService dataService, final ApplyDataService<?> applyDataService) {
-        return createNodeView(page, initDataService, dataService, applyDataService, null);
+        return new NodeView() { // NOSONAR
+
+            @Override
+            public Optional<InitialDataService<?>> createInitialDataService() {
+                return Optional.ofNullable(initDataService);
+            }
+
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.ofNullable(dataService);
+            }
+
+            @Override
+            public Optional<ApplyDataService<?>> createApplyDataService() {
+                return Optional.ofNullable(applyDataService);
+            }
+
+            @Override
+            public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                //
+            }
+
+            @Override
+            public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                //
+            }
+
+            @Override
+            public Page getPage() {
+                return page;
+            }
+        };
     }
 
     @SuppressWarnings("javadoc")
-    public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
+    public static NodeView createTableView(final Page page, final InitialDataService<?> initDataService,
         final RpcDataService dataService, final ApplyDataService<?> applyDataService,
         final SelectionTranslationService selectionTranslationService) {
-        return new NodeView() { // NOSONAR
+        return new NodeTableView() { // NOSONAR
 
             @Override
             public Optional<InitialDataService<?>> createInitialDataService() {
@@ -126,7 +158,13 @@ public final class NodeViewTest {
             public Page getPage() {
                 return page;
             }
+
+            @Override
+            public DataTableSpec getSpec() {
+                return new DataTableSpec();
+            }
         };
+
     }
 
 }

@@ -74,10 +74,13 @@ import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.ColorAttr;
+import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
@@ -97,6 +100,7 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewTest;
+import org.knime.core.webui.node.view.TableView;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
 import org.knime.core.webui.page.Resource;
@@ -160,7 +164,7 @@ class NodeViewEntTest {
         assertThat(ent.getInitialData()).contains("view setting key");
         assertThat(ent.getGeneratedImageActionId()).isNull();
         assertThat(ent.getInitialSelection()).isNull();
-        assertThat(ent.getColorModels()).isEmpty();
+        assertThat(ent.getColorModels()).isNull();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
@@ -308,7 +312,7 @@ class NodeViewEntTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> NodeViewTest.createNodeView(Page.builder(() -> "blub", "index.html").build());
+            m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
         wfm.executeAllAndWaitUntilDone();
 
@@ -423,23 +427,30 @@ class NodeViewEntTest {
 
     private NodeViewEnt createNodeViewEntWithColorModels(final WorkflowManager wfm,
         final Map<String, ColorModel> colorModels) throws InvalidSettingsException {
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeViewWithColorModel(colorModels);
+
+        final DataColumnSpec[] dataColumnSpecs = colorModels.entrySet().stream().map(e -> {
+            final var creator = new DataColumnSpecCreator(e.getKey(), StringCell.TYPE);
+            creator.setColorHandler(new ColorHandler(e.getValue()));
+            return creator.createSpec();
+        }).toArray(DataColumnSpec[]::new);
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
+            m -> new TestNodeViewWithColorModel(new DataTableSpec(dataColumnSpecs));
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
         initViewSettingsAndExecute(nnc);
         return NodeViewEnt.create(nnc);
     }
 
-    private class TestNodeViewWithColorModel extends TestNodeView {
+    private class TestNodeViewWithColorModel extends TestNodeView implements TableView {
 
-        private Map<String, ColorModel> m_colorModels;
+        private DataTableSpec m_spec;
 
-        public TestNodeViewWithColorModel(final Map<String, ColorModel> colorModels) {
-            m_colorModels = colorModels;
+        public TestNodeViewWithColorModel(final DataTableSpec spec) {
+            m_spec = spec;
         }
 
         @Override
-        public Map<String, ColorModel> getColorModelMap() {
-            return m_colorModels;
+        public DataTableSpec getSpec() {
+            return m_spec;
         }
 
     }

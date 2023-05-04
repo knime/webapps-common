@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
@@ -62,6 +63,7 @@ import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.impl.DefaultNodeSettings;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
 import org.knime.core.webui.page.Page;
@@ -71,7 +73,7 @@ import org.knime.core.webui.page.Page;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public final class TableNodeView implements NodeView {
+public final class TableNodeView implements NodeTableView {
 
     private final String m_tableId;
 
@@ -149,6 +151,14 @@ public final class TableNodeView implements NodeView {
         } catch (InvalidSettingsException ex) {
             throw new IllegalStateException("The settings should have been validated first.", ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataTableSpec getSpec() {
+        return m_tableSupplier.get().getSpec();
     }
 
 }

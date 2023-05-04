@@ -60,17 +60,29 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.property.hilite.HiLiteHandler;
 import org.knime.core.node.property.hilite.KeyEvent;
+import org.knime.core.webui.data.ApplyDataService;
+import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.NodeTableView;
+import org.knime.core.webui.node.view.NodeView;
+import org.knime.core.webui.page.Page;
 import org.knime.gateway.impl.service.events.NodeViewStateEvent;
 import org.knime.gateway.impl.service.events.SelectionEvent;
 import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.testing.node.view.NodeViewNodeFactory;
+import org.knime.testing.node.view.NodeViewNodeModel;
 import org.knime.testing.util.WorkflowManagerUtil;
 import org.mockito.Mockito;
 
@@ -90,8 +102,50 @@ public class NodeViewEntUtilTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateNodeViewEntAndSetUpEventSources() throws IOException {
+
+        Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
+            return new NodeTableView() { // NOSONAR
+
+                @Override
+                public Page getPage() {
+                    return Page.builder(() -> "foo", "index.html").build();
+                }
+
+                @Override
+                public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                    //
+                }
+
+                @Override
+                public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                    //
+                }
+
+                @Override
+                public Optional<InitialDataService<String>> createInitialDataService() {
+                    return Optional.of(InitialDataService.builder(() -> "the initial data").build());
+                }
+
+                @Override
+                public Optional<RpcDataService> createRpcDataService() {
+                    return Optional.empty();
+                }
+
+                @Override
+                public Optional<ApplyDataService<String>> createApplyDataService() {
+                    return Optional.empty();
+                }
+
+                @Override
+                public DataTableSpec getSpec() {
+                    return new DataTableSpec();
+                }
+
+            };
+        };
+
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(0, 0));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(viewCreator));
         var hlh = nnc.getNodeModel().getInHiLiteHandler(0);
         wfm.executeAllAndWaitUntilDone();
 

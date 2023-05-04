@@ -74,6 +74,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
@@ -88,6 +89,7 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
@@ -119,10 +121,51 @@ public class SelectionEventSourceTest {
 
     private HiLiteHandler m_hlh;
 
+    Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
+        return new NodeTableView() { // NOSONAR
+
+            @Override
+            public Page getPage() {
+                return Page.builder(() -> "foo", "bar").build();
+            }
+
+            @Override
+            public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                //
+            }
+
+            @Override
+            public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                //
+            }
+
+            @Override
+            public <D> Optional<InitialDataService<D>> createInitialDataService() {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.empty();
+            }
+
+            @Override
+            public <D> Optional<ApplyDataService<D>> createApplyDataService() {
+                return Optional.empty();
+            }
+
+            @Override
+            public DataTableSpec getSpec() {
+                return new DataTableSpec();
+            }
+
+        };
+    };
+
     @BeforeEach
     public void setup() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory());
+        m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(viewCreator));
         m_hlh = m_nnc.getNodeModel().getInHiLiteHandler(0);
     }
 
@@ -230,7 +273,8 @@ public class SelectionEventSourceTest {
         final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
         registerSelectionEventSource(consumerMock, nnc);
 
-        nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)), false);
+        nnc.getNodeModel().getInHiLiteHandler(0).fireUnHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)),
+            false);
 
         verify(consumerMock, times(0)).accept(eq("SelectionEvent"), any());
     }
@@ -238,7 +282,7 @@ public class SelectionEventSourceTest {
     @Test
     public void testSelectionEventWithError() {
         Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
-            return new NodeView() { // NOSONAR
+            return new NodeTableView() { // NOSONAR
 
                 @Override
                 public Optional<SelectionTranslationService> createSelectionTranslationService() {
@@ -286,6 +330,11 @@ public class SelectionEventSourceTest {
                     return Page.builder(() -> "foo", "bar").build();
                 }
 
+                @Override
+                public DataTableSpec getSpec() {
+                    return new DataTableSpec();
+                }
+
             };
         };
         var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(viewCreator));
@@ -296,8 +345,8 @@ public class SelectionEventSourceTest {
 
         nnc.getNodeModel().getInHiLiteHandler(0).fireHiLiteEvent(new KeyEvent(stringListToRowKeySet(ROWKEYS_1)), false);
 
-        verify(consumerMock, times(1)).accept(eq("SelectionEvent"), argThat(se -> se.getSelection() == null
-            && se.getMode() == SelectionEventMode.ADD && se.getError().equals("foo")));
+        verify(consumerMock, times(1)).accept(eq("SelectionEvent"), argThat(
+            se -> se.getSelection() == null && se.getMode() == SelectionEventMode.ADD && se.getError().equals("foo")));
     }
 
     private static class TestHiLiteListener implements HiLiteListener {
@@ -339,7 +388,6 @@ public class SelectionEventSourceTest {
     private static Set<RowKey> stringListToRowKeySet(final List<String> keys) {
         return keys.stream().map(RowKey::new).collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
 
     public static SelectionEventSource
         createSelectionEventSource(final BiConsumer<String, SelectionEvent> selectionEventConsumer) {

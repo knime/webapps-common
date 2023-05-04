@@ -174,8 +174,18 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
     }
 
     private Optional<SelectionTranslationService> getSelectionTranslationService(final NodeContainer nc) {
-        return Optional.ofNullable(m_selectionServices.computeIfAbsent(nc,
-            k -> getNodeView(nc).createSelectionTranslationService().orElse(null)));
+        return Optional.ofNullable(
+            m_selectionServices.computeIfAbsent(nc, k -> createSelectionTranslationService(nc).orElse(null)));
+    }
+
+    private Optional<? extends SelectionTranslationService> createSelectionTranslationService(final NodeContainer nc) {
+        final var nodeView = getNodeView(nc);
+        if (nodeView instanceof TableView) {
+            return ((TableView)nodeView).createSelectionTranslationService();
+        } else {
+            throw new IllegalArgumentException(
+                "Trying to call a selection translation service of a node view which is not a table view.");
+        }
     }
 
     /**

@@ -51,6 +51,7 @@ package org.knime.core.webui.node.view;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.knime.core.webui.node.view.NodeViewTest.createNodeView;
+import static org.knime.core.webui.node.view.NodeViewTest.createTableView;
 import static org.knime.core.webui.page.PageTest.BUNDLE_ID;
 import static org.knime.testing.util.WorkflowManagerUtil.createAndAddNode;
 
@@ -385,7 +386,7 @@ public class NodeViewManagerTest {
     @Test
     public void testCallSelectionTranslationService() {
         var page = Page.builder(() -> "test page content", "index.html").build();
-        var nodeView = createNodeView(page, null, null, null, new SelectionTranslationService() {
+        var nodeView = createTableView(page, null, null, null, new SelectionTranslationService() {
             @Override
             public Set<RowKey> toRowKeys(final List<String> selection) throws IOException {
                 throw new IOException(selection.toString());
@@ -404,6 +405,25 @@ public class NodeViewManagerTest {
         assertThatThrownBy(
             () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Set.of(new RowKey("bar"))))
                 .isInstanceOf(IOException.class).hasMessage("[bar]");
+
+    }
+
+    /**
+     * Tests {@link NodeViewManager#callSelectionTranslationService(NodeContainer, Set)} and
+     * {@link NodeViewManager#callSelectionTranslationService(NodeContainer, List)}.
+     */
+    @Test
+    public void testCallSelectionTranslationServiceThrowsIfNotATableView() {
+        var page = Page.builder(() -> "test page content", "index.html").build();
+        var nodeView = createNodeView(page);
+        var nc = NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView);
+
+        assertThatThrownBy(
+            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Collections.singletonList("foo")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(
+            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Set.of(new RowKey("bar"))))
+                .isInstanceOf(IllegalArgumentException.class);
 
     }
 

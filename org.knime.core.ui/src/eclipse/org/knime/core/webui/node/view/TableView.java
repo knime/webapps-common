@@ -44,49 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 23, 2021 (hornm): created
+ *   May 4, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.view;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.UIExtension;
-import org.knime.core.webui.data.DataServiceProvider;
+import java.util.Optional;
+
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.webui.node.port.PortView;
+import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 
 /**
- * Represents a view of a node.
+ * Represents a view of a table. Note that there is the {@link NodeTableView} annotation which pairs this annotation
+ * with a {@link NodeView}. Another use case would be the {@link PortView} of a table input port.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
- *
- * @since 4.5
+ * @author Paul Bärnreuther
  */
-public interface NodeView extends UIExtension, DataServiceProvider {
-
+public interface TableView {
     /**
-     * Validates the given settings before loading it via {@link #loadValidatedSettingsFrom(NodeSettingsRO)}.
+     * @return optional service to translate selection requests
      *
-     * @param settings settings to validate
-     * @throws InvalidSettingsException if the validation failed
+     * @since 4.6
      */
-    void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException;
-
-    /**
-     * Loads validated settings.
-     *
-     * @param settings settings to load
-     */
-    void loadValidatedSettingsFrom(NodeSettingsRO settings);
-
-    /**
-     * The default page format is being used to determine the size of the page if it's being displayed together with
-     * other pages (aka composite view).
-     *
-     * @return the page format
-     */
-    default PageFormat getDefaultPageFormat() {
-        return PageFormat.DEFAULT;
+    default Optional<? extends SelectionTranslationService> createSelectionTranslationService() {
+        return Optional.empty();
     }
 
-
+    /**
+     * @return the spec of the table
+     */
+    DataTableSpec getSpec();
 }

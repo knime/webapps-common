@@ -50,10 +50,11 @@ package org.knime.gateway.api.entity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
@@ -61,6 +62,8 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.view.TableView;
+import org.knime.core.webui.page.PageUtil.PageType;
 
 /**
  * Node view entity containing the info required by the UI (i.e. frontend) to be able display a node view.
@@ -133,11 +136,22 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
         m_generatedImageActionId = generatedImageActionId;
         if (nodeViewManager != null) {
-            final var colorModels = nodeViewManager.getNodeView(nnc).getColorModelMap();
-            m_colorModelsEnt = colorModels.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, e -> new ColorModelEnt(e.getValue())));
+            final var nodeView = nodeViewManager.getNodeView(nnc);
+            if (nodeView instanceof TableView) {
+                final var spec = ((TableView)nodeView).getSpec();
+                m_colorModelsEnt = getColorHandlerColumns(spec);
+            }
 
         }
+    }
+
+    /**
+     *
+     * @return a map from the name of a column to its attached color model
+     */
+    private static Map<String, ColorModelEnt> getColorHandlerColumns(final DataTableSpec spec) {
+        return spec.stream().filter(colSpec -> colSpec.getColorHandler() != null).collect(Collectors
+            .toMap(DataColumnSpec::getName, (col) -> new ColorModelEnt(col.getColorHandler().getColorModel())));
     }
 
     /**
