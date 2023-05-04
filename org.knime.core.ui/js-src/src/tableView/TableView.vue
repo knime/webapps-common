@@ -128,7 +128,7 @@ export default {
             const { enableSortingByHeader, enableGlobalSearch, enableColumnSearch,
                 publishSelection, subscribeToSelection, pageSize, enablePagination } = this.settings;
             return {
-                subMenuItems: false,
+                subMenuItems: [],
                 showSelection: publishSelection || subscribeToSelection,
                 showColumnFilters: enableColumnSearch,
                 pageConfig: {
