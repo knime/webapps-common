@@ -176,7 +176,7 @@ describe('JsonDataService', () => {
             jsonDataService.publishData(testEvent);
             expect(pushEventSpy).toHaveBeenCalledWith({
                 callerId: '123.knime workflow.root:10.view',
-                event: { data: testEvent, method: EventTypes.DataEvent }
+                event: { data: testEvent, eventType: EventTypes.DataEvent }
             });
         });
     });

@@ -182,11 +182,11 @@ describe('KnimeService', () => {
 
             knime.addEventCallback(EventTypes.SelectionEvent, callback);
             knime.onServiceEvent({
-                method: invalidEvent
+                eventType: invalidEvent
             } as any);
 
             expect(callback).not.toHaveBeenCalledWith({
-                method: invalidEvent
+                eventType: invalidEvent
             });
         });
     });
