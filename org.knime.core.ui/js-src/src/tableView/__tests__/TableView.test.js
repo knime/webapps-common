@@ -232,7 +232,7 @@ describe('TableView.vue', () => {
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
             expect(totalSelected).toBe(0);
             expect(tableConfig).toMatchObject({
-                subMenuItems: false,
+                subMenuItems: [],
                 pageConfig: {
                     currentSize: 4,
                     tableSize: 4,
@@ -1282,7 +1282,7 @@ describe('TableView.vue', () => {
             });
             const { tableConfig } = wrapper.vm.$refs.tableUI.$props;
             expect(tableConfig).toMatchObject({
-                subMenuItems: false,
+                subMenuItems: [],
                 pageConfig: {
                     currentSize: rowCount,
                     tableSize: rowCount,
