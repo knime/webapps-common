@@ -2,6 +2,7 @@ module.exports = {
     extends: ['@nuxt/eslint-config', './vue3', 'prettier'],
     globals: {
         createError: true,
+        defineNuxtConfig: true,
         defineNuxtPlugin: true,
         defineNuxtRouteMiddleware: true,
         markRaw: true,
