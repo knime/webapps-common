@@ -32,14 +32,13 @@ describe('ValueSwitch.vue', () => {
     it('applies variant class', async () => {
         const wrapper = mount(ValueSwitch, {
             props: {
-                possibleValues,
-                variant: 'normal'
+                possibleValues
             }
         });
 
         expect(wrapper.classes()).toContain('normal');
 
-        await wrapper.setProps({ variant: 'compact' });
+        await wrapper.setProps({ compact: true });
 
         expect(wrapper.classes()).toContain('compact');
     });

@@ -6,9 +6,6 @@ import BaseRadioButtons, { type BaseRadioButtonItem } from './BaseRadioButtons.v
 // also, if we want to add custom properties to the ValueSwitch's type, we can do so here
 export type ValueSwitchItem = BaseRadioButtonItem;
 
-const VARIANTS = ['normal', 'compact'] as const;
-type Variant = typeof VARIANTS[number];
-
 export default defineComponent({
     components: {
         BaseRadioButtons
@@ -34,11 +31,9 @@ export default defineComponent({
             type: Array as PropType<Array<ValueSwitchItem>>,
             default: () => []
         },
-        variant: {
-            type: String as PropType<Variant>,
-            default: 'normal',
-            // @ts-expect-error
-            validator: (value: string) => VARIANTS.includes(value)
+        compact: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['update:modelValue']
@@ -56,8 +51,8 @@ export default defineComponent({
     class="value-switch"
     :class="{
       disabled,
-      compact: variant === 'compact',
-      normal: variant === 'normal'
+      compact: compact,
+      normal: !compact
     }"
     @update:model-value="$emit('update:modelValue', $event)"
   />
