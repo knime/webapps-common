@@ -27,7 +27,7 @@ describe('NodeDialog.vue', () => {
                         extensionConfig: {},
                         callService: vi.fn().mockResolvedValue({}),
                         registerDataGetter: vi.fn(),
-                        addNotificationCallback: vi.fn()
+                        addEventCallback: vi.fn()
                     })
                 },
                 mocks: {

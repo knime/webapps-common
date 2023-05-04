@@ -70,7 +70,7 @@ export default {
                 },
                 extensionType: 'dialog'
             };
-            return new KnimeService(extensionConfig, this.callService, this.pushNotification);
+            return new KnimeService(extensionConfig, this.callService, this.pushEvent);
         },
         onDialogSelect(e) {
             let dialogIdx = e.target.selectedOptions[0].index - 1;
@@ -81,8 +81,8 @@ export default {
             console.log('KnimeService called service with request:', request);
             return Promise.resolve('');
         },
-        pushNotification(notification) {
-            console.log('Push notification was called:', notification);
+        pushEvent(event) {
+            console.log('Push event was called:', event);
         },
         applySettings() {
             let message = 'Current dialog does not have an apply data method.';
