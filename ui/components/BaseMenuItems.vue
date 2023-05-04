@@ -4,6 +4,7 @@ import arrowNextIcon from 'webapps-common/ui/assets/img/icons/arrow-next.svg';
 import {onBeforeUpdate, ref, toRefs} from 'vue';
 import usePopper from '../composables/usePopper';
 import { uniqueId } from 'lodash';
+import BaseMenuItem from "./BaseMenuItem.vue";
 
 export interface MenuItem {
   text: string;
@@ -35,8 +36,8 @@ function isNativeHTMLElement(element: ElementTemplateRef): element is HTMLElemen
 }
 
 export default {
-    name: 'BaseMenuItems',
     components: {
+        BaseMenuItem,
         arrowNextIcon
     },
     props: {
@@ -69,7 +70,7 @@ export default {
             default: null
         },
         positionRelativeToElement: {
-            type: [String, HTMLElement] as PropType<string|null|HTMLElement>,
+            type: HTMLElement as PropType<HTMLElement|null>,
             default: null
         }
     },
@@ -104,11 +105,6 @@ export default {
         return {
             listContainer,
             listItems
-        };
-    },
-    data() {
-        return {
-            openSubmenuItemIndex: -1
         };
     },
     computed: {
@@ -168,29 +164,11 @@ export default {
                 }
             }
         },
-        linkTagByType(item: MenuItem) {
-            if (item.to) {
-                return 'nuxt-link';
-            } else if (item.href) {
-                return 'a';
-            } else {
-                return 'button';
-            }
-        },
         menuItemId(index: number) {
             return `menu-item-${this.id}-${index}`;
         },
-        updateOpenSubmenuIndex(event, item: MenuItem, index: Number) {
-            if (!item.disabled && item.children?.length) {
-                this.openSubmenuItemIndex = index;
-            }
-        },
         onPointerEnter(event: Event, item: MenuItem, index: Number) {
-            this.updateOpenSubmenuIndex(event, item, index);
-            this.$emit('item-hovered', item.disabled || item.sectionHeadline ? null : item, this.id);
-        },
-        onPointerLeave() {
-            this.openSubmenuItemIndex = -1;
+            this.$emit('item-hovered', item.disabled || item.sectionHeadline ? null : item, this.id, index);
         },
         onItemClick(event: Event, item: MenuItem, id?: string) {
             if (item.disabled || item.sectionHeadline || item.children?.length) {
@@ -221,11 +199,10 @@ export default {
   <ul
     ref="listContainer"
     :aria-label="menuAriaLabel"
+    class="base-menu-item"
     role="menu"
     tabindex="-1"
     @pointerleave="$emit('item-hovered', null, id)"
-    @keydown.right="openSubmenuItemIndex = focusedItemIndex"
-    @keydown.left="openSubmenuItemIndex = -1"
   >
     <li
       v-for="(item, index) in items"
@@ -237,57 +214,22 @@ export default {
       :title="item.title"
       @click="onItemClick($event, item, id)"
       @pointerenter="onPointerEnter($event, item, index)"
-      @pointerleave="onPointerLeave"
     >
-      <Component
-        :is="linkTagByType(item)"
-        :id="menuItemId(index)"
-        :ref="`listItemComponent--${index}`"
-        tabindex="-1"
-        :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
-          disabled: item.disabled, selected: item.selected, focused: index === focusedItemIndex }]"
-        :to="item.to || null"
-        :href="item.href || null"
-      >
-        <Component
-          :is="item.icon"
-          v-if="item.icon"
-          class="item-icon"
-        />
-        <div class="label">
-          <span :class="['text', { truncate: useMaxMenuWidth }]">
-            {{ item.text }}
-          </span>
-          <span
-            v-if="item.hotkeyText"
-            class="hotkey"
-          >{{ item.hotkeyText }}</span>
-          <span
-            v-if="item.children && item.children.length"
-            class="sub-menu-indicator"
-          >
-            <arrowNextIcon class="icon" />
-            <BaseMenuItems
-              v-if="openSubmenuItemIndex === index"
-              :id="`${id}__${item.name}`"
-              class="menu-items-level"
-              :menu-aria-label="`${item.text} sub menu`"
-              :items="item.children"
-              :max-menu-width="maxMenuWidth"
-              :position-relative-to-element="$refs[`listItemComponent--${index}`][0]"
-              @item-click="(...args) => $emit('item-click', ...args)"
-              @item-hovered="(...args) => $emit('item-hovered', ...args)"
-              @item-focused="(...args) => $emit('item-focused', ...args)"
-            />
-          </span>
-        </div>
-      </Component>
+      <slot
+        name="item"
+        :item="item"
+        :index="index"
+        :menu-id="id"
+        :menu-item-id="menuItemId"
+        :max-menu-width="maxMenuWidth"
+        :focused-item-index="focusedItemIndex"
+      />
     </li>
   </ul>
 </template>
 
 <style lang="postcss" scoped>
-ul {
+.base-menu-item {
   margin: 5px 0;
   padding: 0;
   background-color: var(--knime-white);
@@ -313,122 +255,6 @@ ul {
 
   & li:not(:last-child).separator {
     border-bottom: 1px solid var(--knime-porcelain);
-  }
-
-  & .list-item {
-    border: none;
-    background: none;
-    width: 100%;
-    padding: 6px 13px;
-
-    & .sub-menu-indicator {
-      & .icon {
-        width: 11px;
-        height: 11px;
-        stroke-width: calc(32px / 11);
-        pointer-events: none;
-        stroke: var(--theme-dropdown-foreground-color);
-      }
-    }
-
-    /* <button> does not inherit font-weight from ul in chrome */
-    font-weight: 500;
-    display: flex;
-    text-decoration: none;
-    white-space: nowrap;
-    color: var(--theme-text-normal-color);
-
-    &.clickable-item {
-      cursor: pointer;
-
-      &.disabled {
-        opacity: 0.5;
-        cursor: default;
-        pointer-events: none;
-      }
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color);
-        stroke-width: calc(32px / 18);
-        width: 18px;
-        height: 18px;
-        margin-right: 7px;
-      }
-
-      &.selected {
-        background-color: var(--theme-dropdown-foreground-color);
-        color: var(--theme-dropdown-background-color); /* background and foreground are switched on selection */
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-background-color);
-        }
-      }
-
-      & .label {
-        display: flex;
-        text-align: left;
-        width: 100%;
-
-        & .text {
-          flex-shrink: 1;
-          flex-basis: 100%;
-
-          &.truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        & .hotkey {
-          margin-left: 40px;
-        }
-      }
-
-      &:hover {
-        outline: none;
-        background-color: var(--theme-dropdown-background-color-hover);
-        color: var(--theme-dropdown-foreground-color-hover);
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-foreground-color-hover);
-
-          & .text {
-            stroke: var(--theme-dropdown-foreground-color-hover);
-          }
-        }
-      }
-
-      &.focused {
-        outline: none;
-        background-color: var(--theme-dropdown-background-color-focus);
-        color: var(--theme-dropdown-foreground-color-focus);
-
-        & .item-icon {
-          stroke: var(--theme-dropdown-foreground-color-focus);
-
-          & .text {
-            stroke: var(--theme-dropdown-foreground-color-focus);
-          }
-        }
-      }
-    }
-
-    &.section-headline {
-      color: var(--knime-stone);
-      padding-top: 13px;
-      pointer-events: none;
-      height: 30px;
-      font-size: 10px;
-      line-height: 15px;
-      display: flex;
-      align-items: center;
-
-      &:hover,
-      &:focus,
-      &:active {
-        outline: none;
-      }
-    }
   }
 }
 </style>

@@ -23,11 +23,13 @@
  * Hovering an item emits `@item-hovered`.
  */
 
-import { ref, type Ref } from 'vue';
+import { onMounted, ref, type Ref } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
-import MenuItemsBase from './BaseMenuItems.vue';
+import BaseMenuItems from './BaseMenuItems.vue';
 import type { MenuItem } from './BaseMenuItems.vue';
+import BaseMenuItem from "./BaseMenuItem.vue";
+import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
 
 /* re-export MenuItem type */
 export type { MenuItem };
@@ -43,15 +45,34 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
     disableSpaceToClick: false,
-    registerKeydown: false
+    registerKeydown: false,
+    focusOnMount: false
 });
 
 const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered']);
-const menuItemsBase: Ref<InstanceType<typeof MenuItemsBase> | null> = ref(null);
+const menuItemsBase: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
+const openSubmenuItemIndex = ref(-1);
+
+const setOpenSubmenuIndex = (index: Number) => {
+    const item = props.items.at(index);
+    if (item && !item.disabled && item.children?.length) {
+        openSubmenuItemIndex.value = index;
+    } else {
+        openSubmenuItemIndex.value = -1;
+    }
+};
+
+const onItemHovered = ({ item, id, index }) => {
+    setOpenSubmenuIndex(index);
+    emit('item-hovered', item, id);
+};
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
     if (!menuItemsBase.value) {
-        return { onClick: () => {}, index: -1 };
+        return {
+            onClick: () => {
+            }, index: -1
+        };
     }
 
     const listItems = menuItemsBase.value.getEnabledListItems();
@@ -80,7 +101,7 @@ defineExpose({ onKeydown, resetNavigation });
 </script>
 
 <template>
-  <MenuItemsBase
+  <BaseMenuItems
     ref="menuItemsBase"
     v-bind="$attrs"
     :items="props.items"
@@ -88,7 +109,53 @@ defineExpose({ onKeydown, resetNavigation });
     :focused-item-index="currentIndex"
     @keydown="props.registerKeydown && onKeydown($event)"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
-    @item-hovered="(item, id) => $emit('item-hovered', item, id)"
+    @item-hovered="(item, id, index) => onItemHovered({ item, id, index })"
     @item-focused="(...args) => $emit('item-focused', ...args)"
-  />
+    @keydown.right="setOpenSubmenuIndex(currentIndex)"
+    @keydown.left="setOpenSubmenuIndex(-1)"
+  >
+    <template #item="{ item, menuId, menuItemId, index, maxMenuWidth, focusedItemIndex }">
+      <BaseMenuItem
+        :id="menuItemId(index)"
+        :item="item"
+        :index="index"
+        :use-max-menu-width="Boolean(maxMenuWidth)"
+        :has-focus="index === focusedItemIndex"
+      >
+        <template #submenu="{ item, index, itemElement }">
+          <span
+            v-if="item.children && item.children.length"
+            class="sub-menu-indicator"
+          >
+            <ArrowNextIcon class="icon" />
+            <MenuItems
+              v-if="openSubmenuItemIndex === index"
+              :id="`${menuId}__${item.name}`"
+              class="menu-items-level"
+              :menu-aria-label="`${item.text} sub menu`"
+              :items="item.children"
+              :max-menu-width="maxMenuWidth"
+              :position-relative-to-element="itemElement"
+              register-keydown
+              @item-click="(...args) => $emit('item-click', ...args)"
+              @item-hovered="(...args) => $emit('item-hovered', ...args)"
+              @item-focused="(...args) => $emit('item-focused', ...args)"
+            />
+          </span>
+        </template>
+      </BaseMenuItem>
+    </template>
+  </BaseMenuItems>
 </template>
+
+<style>
+.sub-menu-indicator {
+  & .icon {
+    width: 11px;
+    height: 11px;
+    stroke-width: calc(32px / 11);
+    pointer-events: none;
+    stroke: var(--theme-dropdown-foreground-color);
+  }
+}
+</style>
