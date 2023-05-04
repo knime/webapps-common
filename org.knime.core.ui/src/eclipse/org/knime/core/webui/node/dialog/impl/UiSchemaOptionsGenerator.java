@@ -48,13 +48,21 @@
  */
 package org.knime.core.webui.node.dialog.impl;
 
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ARRAY_LAYOUT_ADD_BUTTON_TEXT_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ARRAY_LAYOUT_DETAIL_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ARRAY_LAYOUT_ELEMENT_TITLE_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.ELEMENTS_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.ui.style.CheckboxStyle;
 import org.knime.core.webui.node.dialog.ui.style.ColumnFilterStyle;
 import org.knime.core.webui.node.dialog.ui.style.Style;
@@ -62,6 +70,7 @@ import org.knime.core.webui.node.dialog.ui.style.StyleProvider;
 import org.knime.core.webui.node.dialog.ui.style.ValueSwitchStyle;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -87,7 +96,7 @@ final class UiSchemaOptionsGenerator {
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
-     * @param field the field for which options are to be added from  {@link Style} annotations
+     * @param field the field for which options are to be added from {@link Style} annotations
      */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
         m_mapper = mapper;
@@ -98,9 +107,16 @@ final class UiSchemaOptionsGenerator {
 
     /**
      * This method applies the styles of the given field to the given control as described in {@link Style}.
+     *
      * @param control
      */
     void applyStylesTo(final ObjectNode control) {
+        // Handle arrays and collections
+        var type = m_field.getType();
+        if ((type.isArrayType() || type.isCollectionLikeType()) && isObject(type.getContentType())) {
+            applyArrayLayoutOptions(control, type.getContentType().getRawClass());
+        }
+
         final var applicableStyles = getApplicableStyles();
         if (applicableStyles.isEmpty()) {
             return;
@@ -118,6 +134,26 @@ final class UiSchemaOptionsGenerator {
             }
         }
         control.set(OPTIONS_TAG, m_mapper.valueToTree(options));
+    }
+
+    private void applyArrayLayoutOptions(final ObjectNode control, final Class<?> componentType) {
+        var options = control.putObject(OPTIONS_TAG);
+
+        Map<String, Class<?>> arraySettings = new HashMap<>();
+        arraySettings.put(null, componentType);
+        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings).get(ELEMENTS_TAG);
+        options.set(ARRAY_LAYOUT_DETAIL_TAG, details);
+
+        Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class)).ifPresent(arrayWidget -> {
+            var addButtonText = arrayWidget.addButtonText();
+            if (!addButtonText.isEmpty()) {
+                options.put(ARRAY_LAYOUT_ADD_BUTTON_TEXT_TAG, addButtonText);
+            }
+            var elementTitle = arrayWidget.elementTitle();
+            if (!elementTitle.isEmpty()) {
+                options.put(ARRAY_LAYOUT_ELEMENT_TITLE_TAG, elementTitle);
+            }
+        });
     }
 
     private List<? extends StyleProvider> getApplicableStyles() {
@@ -141,5 +177,14 @@ final class UiSchemaOptionsGenerator {
                     m_fieldName, m_fieldType));
         });
         return annotatedStyles.get(true);
+    }
+
+    /** @return true if the type is from an POJO and not a primitive, String, Boxed type, or enum */
+    private static boolean isObject(final JavaType contentType) {
+        var boxedTypes = List.of(String.class, Double.class, Short.class, Boolean.class, Float.class, Integer.class,
+            Long.class, Character.class);
+
+        return !contentType.isPrimitive() && !contentType.isEnumType()
+            && boxedTypes.stream().allMatch(type -> !type.equals(contentType.getRawClass()));
     }
 }

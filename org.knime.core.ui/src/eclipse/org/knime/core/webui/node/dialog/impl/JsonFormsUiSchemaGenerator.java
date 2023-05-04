@@ -111,6 +111,12 @@ final class JsonFormsUiSchemaGenerator {
 
     static final String HORIZONTAL_LAYOUT_TAG = "HorizontalLayout";
 
+    static final String ARRAY_LAYOUT_DETAIL_TAG = "detail";
+
+    static final String ARRAY_LAYOUT_ADD_BUTTON_TEXT_TAG = "addButtonText";
+
+    static final String ARRAY_LAYOUT_ELEMENT_TITLE_TAG = "arrayElementTitle";
+
     private final ObjectMapper m_mapper;
 
     private final SerializerProvider m_serializerProvider;

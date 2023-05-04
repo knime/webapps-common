@@ -65,13 +65,14 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
  * declare the dialog's settings and widgets in a compact manner.
  *
- * The implementations must follow the following conventions:
+ * <p>The implementations must follow the following conventions:
  * <ol>
  * <li>It must provide an empty constructor and optionally a constructor that receives a
  * {@link SettingsCreationContext}.
@@ -87,8 +88,11 @@ import org.knime.core.webui.node.dialog.persistence.NodeSettingsPersistorFactory
  * </ul>
  * </ol>
  *
- * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
+ * <p>All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
  * annotated with {@link Schema} to supply additional information (e.g. description, domain info, ...).
+ *
+ * <p>For arrays or collections of POJOs the annotation {@link ArrayWidget @ArrayWidget} can be used to configure text of
+ * the add button and the title of the elements.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -252,11 +256,11 @@ public interface DefaultNodeSettings extends PersistableSettings {
         castAndSaveSettings(settingsClass, settingsObject, settings);
     }
 
-    @SuppressWarnings("unchecked")// we check that the cast is save
+    @SuppressWarnings("unchecked") // we check that the cast is save
     private static <S extends DefaultNodeSettings> void castAndSaveSettings(final Class<S> settingsClass,
         final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
         CheckUtils.checkArgument(settingsClass.isInstance(settingsObject),
-                "The provided settingsObject is not an instance of the provided settingsClass.");
+            "The provided settingsObject is not an instance of the provided settingsClass.");
         NodeSettingsPersistorFactory.getPersistor(settingsClass).save((S)settingsObject, settings);
 
     }
