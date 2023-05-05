@@ -111,6 +111,37 @@
               "title": "Title",
               "description": "The title of the graph shown above the generated image. If left blank, no title will be shown.",
               "default": "Histogram"
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                },
+                {
+                  "const": "MANUAL",
+                  "title": "Manual"
+                }
+              ],
+              "title": "Frequency axis limits",
+              "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "default": "AUTO"
+            },
+            "frequencyAxisManualMin": {
+              "type": "number",
+              "title": "Frequency min",
+              "default": 0,
+              "description": "Numerical value that sets the frequency axis minimum."
+            },
+            "frequencyAxisManualMax": {
+              "type": "number",
+              "title": "Frequency max",
+              "default": 0,
+              "description": "Numerical value that sets the frequency axis maximum."
             }
           }
         },
@@ -468,6 +499,36 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/title"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/frequencyAxisManualMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/frequencyAxisManualMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "MANUAL"
+                  }
+                }
+              }
             },
             {
               "type": "Control",

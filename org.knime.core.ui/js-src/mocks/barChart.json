@@ -155,7 +155,7 @@
                   "title": "Manual"
                 }
               ],
-              "title": "Axis limits",
+              "title": "Frequency axis limits",
               "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
               "default": "AUTO"
             },
