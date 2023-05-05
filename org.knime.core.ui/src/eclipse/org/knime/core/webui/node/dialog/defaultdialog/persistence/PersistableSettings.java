@@ -44,10 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 22, 2023 (Paul Bärnreuther): created
+ *   Jan 19, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.persistence;
+
 /**
- * @see {@link org.knime.core.webui.node.dialog.ui.style.Style @Style} annotation
- * @author Paul Bärnreuther
+ * The implementations must follow the following conventions:
+ * <ol>
+ * <li>It must provide an empty constructor.
+ * <li>Fields must be of any of the following supported types:
+ * <ul>
+ * <li>boolean, int, long, double, float, String, char, or byte
+ * <li>POJOs, arrays or Collections holding other supported types
+ * </ul>
+ * </ol>
+ *
+ * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-package org.knime.core.webui.node.dialog.ui.style;
+public interface PersistableSettings {
+
+}

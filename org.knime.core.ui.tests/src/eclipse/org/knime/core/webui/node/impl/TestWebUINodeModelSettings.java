@@ -49,14 +49,14 @@
 package org.knime.core.webui.node.impl;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 public final class TestWebUINodeModelSettings implements DefaultNodeSettings {
 
-    @Schema(title = "Some Model Setting", description = "Some Description")
+    @Widget(title = "Some Model Setting", description = "Some Description")
     int m_someModelSetting;
 
 }

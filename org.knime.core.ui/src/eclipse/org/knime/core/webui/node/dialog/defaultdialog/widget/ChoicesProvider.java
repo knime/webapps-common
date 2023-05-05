@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 
 /**

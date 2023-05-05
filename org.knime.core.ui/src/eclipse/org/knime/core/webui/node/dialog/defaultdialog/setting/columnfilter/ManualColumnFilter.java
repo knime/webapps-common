@@ -59,36 +59,36 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSet
  *
  * @author Paul Bärnreuther
  */
-public class ManualColumnFilter implements DialogComponentSettings {
+class ManualColumnFilter implements DialogComponentSettings {
 
     /**
      * the manually selected columns in case of m_mode = "MANUAL"
      */
-    public String[] m_manuallySelected; //NOSONAR
+    String[] m_manuallySelected; //NOSONAR
 
     /**
      * the (last) deselected columns. It is necessary to store these in order to know which colums of a new input
      * {@link DataTableSpec} are unknown.
      */
-    public String[] m_manuallyDeselected; //NOSONAR
+    String[] m_manuallyDeselected; //NOSONAR
 
     /**
      * A column is unknown if it is was not present in the last executed input table. If this setting is true, these
      * columns will be selected/included when the selected columns are updated after a reconfiguration of the input
      * table.
      */
-    public boolean m_includeUnknownColumns; //NOSONAR
+    boolean m_includeUnknownColumns; //NOSONAR
 
     /**
      * @param initialSelected the initially manually selected columns
      */
-    public ManualColumnFilter(final String[] initialSelected) {
+    ManualColumnFilter(final String[] initialSelected) {
         m_manuallySelected = initialSelected;
         m_manuallyDeselected = new String[0];
     }
 
     @SuppressWarnings("javadoc")
-    public ManualColumnFilter() {
+    ManualColumnFilter() {
     }
 
     /**
@@ -100,7 +100,7 @@ public class ManualColumnFilter implements DialogComponentSettings {
      * @param choices for selected values from which previously unknown ones are either selected or deselected.
      * @return the manually selected columns plus the new previously unknown ones if these are included.
      */
-    public String[] getUpdatedManuallySelected(final String[] choices) {
+    String[] getUpdatedManuallySelected(final String[] choices) {
         final var result = new LinkedHashSet<>(Arrays.asList(m_manuallySelected));
         if (m_includeUnknownColumns) {
             final var unknownValues = new HashSet<>(Arrays.asList(choices));

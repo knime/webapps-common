@@ -60,7 +60,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Settin
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.victools.jsonschema.generator.CustomPropertyDefinition;
@@ -84,7 +85,7 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         m_settings = settings;
     }
 
-    private Schema m_lastSchemaWithColumns;
+    private ChoicesWidget m_lastChoicesWidgetWithColumns;
 
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
@@ -92,17 +93,17 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         ArrayNode arrayNode = null;
         final var type = field.getType();
         final var erasedType = type.getErasedType();
-        final var schema = field.getAnnotation(Schema.class);
+        final var choicesWidget = field.getAnnotation(ChoicesWidget.class);
 
-        if (hasChoices(schema, field)) {
+        if (hasChoices(choicesWidget, field)) {
             if (type.canCreateSubtype(ColumnFilter.class) || type.canCreateSubtype(ColumnSelection.class)) {
-                m_lastSchemaWithColumns = schema;
+                m_lastChoicesWidgetWithColumns = choicesWidget;
             } else {
-                arrayNode = determineChoiceValues(schemaContext, schema.choices());
+                arrayNode = determineChoiceValues(schemaContext, choicesWidget.choices());
             }
         }
-        if (usesCachedChoices(schema)) {
-            arrayNode = determineChoiceValues(schemaContext, m_lastSchemaWithColumns.choices());
+        if (usesCachedChoices(choicesWidget)) {
+            arrayNode = determineChoiceValues(schemaContext, m_lastChoicesWidgetWithColumns.choices());
         }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
             arrayNode = determineEnumValues(schemaContext, erasedType);
@@ -117,12 +118,12 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         return new CustomPropertyDefinition(outerObjectNode);
     }
 
-    private static boolean hasChoices(final Schema schema, final FieldScope field) {
-        return schema != null && !schema.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope();
+    private static boolean hasChoices(final ChoicesWidget choicesWidget, final FieldScope field) {
+        return choicesWidget != null && !choicesWidget.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope();
     }
 
-    private boolean usesCachedChoices(final Schema schema) {
-        return schema != null && schema.takeChoicesFromParent() && m_lastSchemaWithColumns != null;
+    private boolean usesCachedChoices(final ChoicesWidget choicesWidget) {
+        return choicesWidget != null && choicesWidget.takeChoicesFromParent() && m_lastChoicesWidgetWithColumns != null;
     }
 
     private ArrayNode determineChoiceValues(final SchemaGenerationContext schemaContext,
@@ -147,8 +148,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         String title = null;
         try {
             final var field = erasedType.getField(name);
-            if (field.isAnnotationPresent(Schema.class)) {
-                final var schema = field.getAnnotation(Schema.class);
+            if (field.isAnnotationPresent(Widget.class)) {
+                final var schema = field.getAnnotation(Widget.class);
                 if (schema.title().length() > 0) {
                     title = schema.title();
                 }
@@ -161,8 +162,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private static String determineEnumTagType(final FieldScope field) {
-        final var schema = field.getAnnotationConsideringFieldAndGetter(Schema.class);
-        if (schema != null && schema.multiple()) {
+        final var choicesWidget = field.getAnnotationConsideringFieldAndGetter(ChoicesWidget.class);
+        if (choicesWidget != null && choicesWidget.multiple()) {
             return TAG_ANYOF;
         } else {
             return TAG_ONEOF;

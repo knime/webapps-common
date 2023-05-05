@@ -46,7 +46,7 @@
  * History
  *   Jan 13, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -62,12 +62,6 @@ import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnTypeDisplay;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ManualColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;
 
 /**
  * {@link NodeSettingsPersistor} for {@link ColumnFilter} that persists it in a way compatible to
@@ -129,7 +123,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
      */
     private static final String TYPELIST = "typelist";
 
-    static ColumnFilter load(final NodeSettingsRO nodeSettings, final String configKey)
+    @SuppressWarnings("javadoc")
+    public static ColumnFilter load(final NodeSettingsRO nodeSettings, final String configKey)
         throws InvalidSettingsException {
         var columnFilterSettings = nodeSettings.getNodeSettings(configKey);
         var columnFilter = new ColumnFilter();
@@ -216,7 +211,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         return selectedTypes.toArray(String[]::new);
     }
 
-    static void save(ColumnFilter columnFilter, final NodeSettingsWO settings, final String configKey) {
+    @SuppressWarnings("javadoc")
+    public static void save(ColumnFilter columnFilter, final NodeSettingsWO settings, final String configKey) {
         if (columnFilter == null) {
             LOGGER.coding(createFilterNullError(configKey));
             columnFilter = new ColumnFilter();

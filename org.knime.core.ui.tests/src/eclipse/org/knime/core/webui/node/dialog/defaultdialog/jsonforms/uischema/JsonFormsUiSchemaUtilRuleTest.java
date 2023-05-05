@@ -50,8 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Map;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -67,8 +66,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  *

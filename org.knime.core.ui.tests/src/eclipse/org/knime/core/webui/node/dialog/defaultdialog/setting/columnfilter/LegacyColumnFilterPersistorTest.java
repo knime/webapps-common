@@ -46,7 +46,7 @@
  * History
  *   Jan 20, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,9 +58,9 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.PatternFilterConfiguration;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.LegacyColumnFilterPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.LegacyColumnFilterPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ManualColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;

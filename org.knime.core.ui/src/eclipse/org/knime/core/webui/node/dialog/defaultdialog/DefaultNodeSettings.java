@@ -66,10 +66,10 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
@@ -92,7 +92,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
  * </ol>
  *
  * <p>All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
- * annotated with {@link Schema} to supply additional information (e.g. description, domain info, ...).
+ * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
+ * annotations} to supply additional information (e.g. description, domain info, ...).
  *
  * <p>For arrays or collections of POJOs the annotation {@link ArrayWidget @ArrayWidget} can be used to configure text of
  * the add button and the title of the elements.

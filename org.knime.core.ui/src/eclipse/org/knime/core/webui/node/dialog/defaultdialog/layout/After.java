@@ -101,6 +101,7 @@ import java.lang.annotation.Target;
  * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  * @author Paul Bärnreuther
  * @see Before
+ * @see Inside
  */
 @Retention(RUNTIME)
 @Repeatable(AfterAllOf.class)

@@ -67,8 +67,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.PersistableSettings;
 
 /**
  * Creates persistors for fields of a {@link PersistableSettings} class.

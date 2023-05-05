@@ -51,13 +51,12 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 import java.util.Objects;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -73,7 +72,7 @@ public class ColumnFilter implements DialogComponentSettings {
     /**
      * The setting representing the selected columns
      */
-    @Schema(takeChoicesFromParent = true, multiple = true)
+    @ChoicesWidget(takeChoicesFromParent = true, multiple = true)
     @Persist(hidden = true)
     public String[] m_selected;
 
@@ -107,6 +106,13 @@ public class ColumnFilter implements DialogComponentSettings {
         m_manualFilter = new ManualColumnFilter(Objects.requireNonNull(initialSelected));
         m_patternFilter = new PatternColumnFilter();
         m_typeFilter = new TypeColumnFilter();
+    }
+
+    /**
+     * Exclude the unknown columns while in manual mode
+     */
+    public void excludeUnknownColumn() {
+        m_manualFilter.m_includeUnknownColumns = false;
     }
 
     /**

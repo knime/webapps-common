@@ -50,11 +50,10 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -68,7 +67,7 @@ public final class ColumnSelection implements DialogComponentSettings {
     /**
      * The selected column
      */
-    @Schema(takeChoicesFromParent = true)
+    @ChoicesWidget(takeChoicesFromParent = true)
     public String m_selected;
 
     /**

@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   May 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.style;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -54,23 +54,36 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
 /**
- * An annotation for setting the user interface style of a setting, i.e. a (possibly nested) field of a
- * {@link DefaultNodeSettings}. The provided {@link StyleProvider} classes yield java objects which are (deeply) merged
- * with any previous style objects starting with a default object determined from the type of the field. If one of the
- * {@link StyleProvider} is not applicable for the annotated field, there will be an error at runtime.
+ * A widget supplied with an array of possible values, which are the choices for a selection.
  *
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface Style {
+public @interface ChoicesWidget {
+
     /**
-     *
-     * @return An array of {@link StyleProvider} which are applied in the given order after any default styles were
-     *         applied.
+     * @return the provider for the list of possible values. Use a {@link ColumnChoicesProvider} to supply additional
+     *         information like the type of a column alongside its name to the frontend. TODO UIEXT-907 use a separate
+     *         annotation instead for column choices.
      */
-    Class<? extends StyleProvider>[] value();
+    Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
+
+    /**
+     * TODO UIEXT-907 remove this.
+     *
+     * @return true if a parent contains the annotation for the choices of this field. This is only used internally for
+     *         the {@link ColumnFilter} and {@link ColumnSelection}.
+     */
+    boolean takeChoicesFromParent() default false;
+
+    /**
+     * @return true for a multiple choice selection/enum, false for a single choice selection/enum.
+     */
+    boolean multiple() default false;
+
 }

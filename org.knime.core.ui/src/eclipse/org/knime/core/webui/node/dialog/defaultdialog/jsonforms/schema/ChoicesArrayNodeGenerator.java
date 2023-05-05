@@ -55,7 +55,6 @@ import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -114,7 +113,7 @@ final class ChoicesArrayNodeGenerator {
         for (DataColumnSpec colChoice : colChoices) {
             final var colName = colChoice.getName();
             final var colType = colChoice.getType();
-            final var typeIdentifier = TypeColumnFilter.typeToString(colType);
+            final var typeIdentifier = colType.getPreferredValueClass().getName();
             final var displayedType = colType.getName();
             final var compatibleTypes = Arrays.asList(ColumnSelection.getCompatibleTypes(colType));
             addChoiceWithTypeInformation(colName, colName, typeIdentifier, displayedType, compatibleTypes);

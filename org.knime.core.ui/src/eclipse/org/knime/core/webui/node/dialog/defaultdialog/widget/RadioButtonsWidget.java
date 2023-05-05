@@ -42,22 +42,31 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   May 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark a class as a horizontal layout. All settings that are added to this layout are oriented
- * horizontally. See {@link Layout} on how to add settings to such a horizontal layout.
+ * Annotate an {@link Enum} setting with this in order to display them as radio buttons instead of the default (value
+ * switch).
  *
- * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
-@Target(TYPE)
-public @interface HorizontalLayout {
+@Target(FIELD)
+public @interface RadioButtonsWidget {
+
+    /**
+     * @return whether the radio buttons should be next to each other (with line break)
+     */
+    boolean horizontal() default false;
+
 }

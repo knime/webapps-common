@@ -64,29 +64,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class PatternColumnFilter implements DialogComponentSettings {
+class PatternColumnFilter implements DialogComponentSettings {
 
     /**
      * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
      */
-    public String m_pattern; //NOSONAR
+    String m_pattern; //NOSONAR
 
     private Pair<Pattern, String> m_compiledPattern;
 
     /**
      * whether m_pattern is case sensitive
      */
-    public boolean m_isCaseSensitive; //NOSONAR
+    boolean m_isCaseSensitive; //NOSONAR
 
     /**
      * whether the pattern determines the excluded columns or the included ones
      */
-    public boolean m_isInverted; //NOSONAR
+    boolean m_isInverted; //NOSONAR
 
     /**
      * Initialise to empty pattern matching anything
      */
-    public PatternColumnFilter() {
+    PatternColumnFilter() {
         m_isCaseSensitive = false;
         m_isInverted = false;
         m_pattern = "";
@@ -98,7 +98,7 @@ public class PatternColumnFilter implements DialogComponentSettings {
      * @return the array of currently selected columns with respect to the mode
      */
     @JsonIgnore
-    public String[] getSelected(final ColumnFilterMode mode, final String[] choices) {
+    String[] getSelected(final ColumnFilterMode mode, final String[] choices) {
         final Predicate<String> predicate;
         final var casedPattern = m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase(Locale.getDefault());
         switch (mode) {

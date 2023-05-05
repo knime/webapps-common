@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting;
 
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+
 /**
  * Settings belonging to a dialog component.
  *

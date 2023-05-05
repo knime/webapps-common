@@ -48,39 +48,28 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
+import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
+import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collection;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
-import org.knime.core.webui.node.dialog.ui.style.CheckboxStyle;
-import org.knime.core.webui.node.dialog.ui.style.ColumnFilterStyle;
-import org.knime.core.webui.node.dialog.ui.style.Style;
-import org.knime.core.webui.node.dialog.ui.style.StyleProvider;
-import org.knime.core.webui.node.dialog.ui.style.ValueSwitchStyle;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
+
 /**
  *
  * @author Paul Bärnreuther
  */
 final class UiSchemaOptionsGenerator {
-
-    private static List<Class<? extends StyleProvider>> defaultStyles =
-        List.of(CheckboxStyle.class, ValueSwitchStyle.class, ColumnFilterStyle.class);
 
     private final ObjectMapper m_mapper;
 
@@ -107,30 +96,54 @@ final class UiSchemaOptionsGenerator {
      *
      * @param control
      */
-    void applyStylesTo(final ObjectNode control) {
+    void addOptionsTo(final ObjectNode control) {
+
+        final var defaultWidgets = getApplicableDefaults(m_fieldType);
+        final var annotatedWidgets = getAnnotatedWidgets();
+        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty()) {
+            return;
+        }
+        final var options = control.putObject(TAG_OPTIONS);
+        defaultWidgets.forEach(defaultWidget -> {
+            switch (defaultWidget.type()) {
+                case CHECKBOX:
+                    options.put(TAG_FORMAT, Format.CHECKBOX);
+                    break;
+                case COLUMN_FILTER:
+                    options.put(TAG_FORMAT, Format.COLUMN_FILTER);
+                    break;
+                case VALUE_SWITCH:
+                    options.put(TAG_FORMAT, Format.VALUE_SWITCH);
+                    break;
+            }
+        });
+
+        if (annotatedWidgets.contains(RadioButtonsWidget.class)) {
+            final var radioButtons = m_field.getAnnotation(RadioButtonsWidget.class);
+            options.put(TAG_FORMAT, Format.RADIO);
+            if (radioButtons.horizontal()) {
+                options.put("radioLayout", "horizontal");
+            }
+        }
+
         // Handle arrays and collections
         var type = m_field.getType();
         if ((type.isArrayType() || type.isCollectionLikeType()) && isObject(type.getContentType())) {
             applyArrayLayoutOptions(control, type.getContentType().getRawClass());
         }
+    }
 
-        final var applicableStyles = getApplicableStyles();
-        if (applicableStyles.isEmpty()) {
-            return;
+    private Collection<?> getAnnotatedWidgets() {
+        final var partitionedWidgetAnnotations = partitionWidgetAnnotationsByApplicability(
+            (widgetAnnotation) -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldType);
+
+        if (!partitionedWidgetAnnotations.get(false).isEmpty()) {
+            throw new UiSchemaGenerationException(
+                String.format("The annotation %s is not applicable for setting field %s with type %s",
+                    partitionedWidgetAnnotations.get(false).get(0), m_fieldName, m_fieldType));
         }
 
-        ObjectReader reader;
-        Object options = new Object();
-        for (var style : applicableStyles) {
-            reader = m_mapper.readerForUpdating(options);
-            final var styleObject = style.getStyleObject();
-            try {
-                options = reader.readValue(m_mapper.valueToTree(styleObject).toString());
-            } catch (JsonProcessingException | IllegalArgumentException ex) {
-                throw new UiSchemaGenerationException("A problem occurred while applying styles", ex);
-            }
-        }
-        control.set(TAG_OPTIONS, m_mapper.valueToTree(options));
+        return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
     private void applyArrayLayoutOptions(final ObjectNode control, final Class<?> componentType) {
@@ -151,29 +164,6 @@ final class UiSchemaOptionsGenerator {
                 options.put(ARRAY_LAYOUT_ELEMENT_TITLE_TAG, elementTitle);
             }
         });
-    }
-
-    private List<? extends StyleProvider> getApplicableStyles() {
-        final var annotatedStyles = getAnnotatedStyles();
-        final var applicableDefaultStyles = getApplicableDefaultStyles();
-        return Stream.concat(applicableDefaultStyles.stream(), annotatedStyles.stream()).toList();
-    }
-
-    private List<? extends StyleProvider> getApplicableDefaultStyles() {
-        return defaultStyles.stream().map(InstantiationUtil::createInstance)
-            .filter(style -> style.isApplicable(m_fieldType)).toList();
-    }
-
-    private List<? extends StyleProvider> getAnnotatedStyles() {
-        var annotatedStyles = Stream.ofNullable(m_field.getAnnotation(Style.class)).map(Style::value)
-            .flatMap(Arrays::stream).map(InstantiationUtil::createInstance)
-            .collect(Collectors.partitioningBy(style -> style.isApplicable(m_fieldType)));
-        annotatedStyles.get(false).stream().findAny().ifPresent(nonApplicableStyle -> {
-            throw new UiSchemaGenerationException(
-                String.format("The style %s is not applicable for setting field %s with type %s", nonApplicableStyle,
-                    m_fieldName, m_fieldType));
-        });
-        return annotatedStyles.get(true);
     }
 
     /** @return true if the type is from an POJO and not a primitive, String, Boxed type, or enum */

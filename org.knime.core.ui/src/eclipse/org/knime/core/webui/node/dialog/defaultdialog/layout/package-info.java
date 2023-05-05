@@ -50,7 +50,6 @@
  * The interfaces and annotations within this package can be used to configure the user interface of a node dialog.
  * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout.Layout @Layout} annotation
  * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup}
- * @see {@link org.knime.core.webui.node.dialog.ui.style}
  *
  * @author Paul Bärnreuther
  */

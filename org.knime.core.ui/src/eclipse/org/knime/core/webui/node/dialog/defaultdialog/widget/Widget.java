@@ -53,27 +53,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-
 /**
- * An annotation for indicating controlling the schema of a given field.
+ * An annotation for indicating controlling the common widget metadata of a given field.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Schema {
-
-    /**
-     * @return the provider for the list of possible values (for multiple choice fields only)
-     */
-    Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
-
-    /**
-     * @return true if a parent contains the annotation for the choices of this field
-     */
-    boolean takeChoicesFromParent() default false;
+public @interface Widget {
 
     /**
      * @return the title / label of the field
@@ -84,69 +71,5 @@ public @interface Schema {
      * @return the description of the field (for tooltips or node descriptions)
      */
     String description() default "";
-
-    /**
-     * @return true for a multiple choice selection/enum, false for a single choice selection/enum
-     */
-    boolean multiple() default false;
-
-    /**
-     * Use {@link #minProvider()} if the minimum value depends on the context of the node.
-     *
-     * @return an optional minimum value for a numeric field
-     */
-    double min() default Double.NaN;
-
-    /**
-     * Takes precedence over {@link #min()} if provided.
-     * No minimum is set if the DoubleProvider returns {@code Double.NaN}.
-     *
-     * @return an optional DoubleProvider that provides the min value given the current context of the node
-     */
-    Class<? extends DoubleProvider> minProvider() default DoubleProvider.class;
-
-    /**
-     * Use {@link #maxProvider()} if the maximum value depends on the context of the node.
-     *
-     * @return an optional maximum value for a numeric field
-     */
-    double max() default Double.NaN;
-
-    /**
-     * Takes precedence over {@link #max()} if provided.
-     * No maximum is set if the DoubleProvider returns {@code Double.NaN}.
-     *
-     * @return an optional DoubleProvider that provides the max value given the current context of the node
-     */
-    Class<? extends DoubleProvider> maxProvider() default DoubleProvider.class;
-
-    /**
-     * @return an optional minimum length for a nominal field
-     */
-    int minLength() default -1;
-
-    /**
-     * @return an optional maximum length for a nominal field
-     */
-    int maxLength() default -1;
-
-    /**
-     * @return an optional regular expression pattern for a nominal field
-     */
-    String pattern() default "";
-
-    /**
-     * Provides a double value given the context of the node.
-     *
-     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
-     */
-    interface DoubleProvider {
-
-        /**
-         * @param context of the node
-         * @return the double value
-         */
-        double getValue(final SettingsCreationContext context);
-    }
 
 }

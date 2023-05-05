@@ -61,6 +61,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.LegacyColumnFilterPersistor;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;

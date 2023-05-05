@@ -57,17 +57,13 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.ui.style.BooleanStyleProvider;
-import org.knime.core.webui.node.dialog.ui.style.Style;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-
 
 /**
  *
@@ -78,6 +74,10 @@ class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
         return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper());
+    }
+
+    static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
+        return buildUiSchema(Map.of("test", settingsClass));
     }
 
     interface TestSettingsLayout {
@@ -357,147 +357,6 @@ class JsonFormsUiSchemaUtilTest {
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
         final Map<String, Class<?>> settings = Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
-    }
-
-    class DefaultStylesSettings implements DefaultNodeSettings {
-        String m_string;
-
-        boolean m_boolean;
-
-        enum MyEnum {
-                A, B, C
-        }
-
-        MyEnum m_enum;
-    }
-
-    @Test
-    void testDefaultStyles() {
-        final var response = buildUiSchema(Map.of("test", DefaultStylesSettings.class));
-        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
-        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("options");
-        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("boolean");
-        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
-        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("enum");
-        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("valueSwitch");
-    }
-
-    public static class OverridingBooleanStyleProvider extends BooleanStyleProvider {
-
-        record Format(String format) {
-        }
-
-        @Override
-        public Object getStyleObject() {
-            return new Format("custom");
-        }
-    }
-
-    public static class ExtendingBooleanStyleProvider extends BooleanStyleProvider {
-
-        class OtherStyle {
-            boolean m_otherOption = true;
-        }
-
-        @Override
-        public Object getStyleObject() {
-            return new OtherStyle();
-        }
-
-    }
-
-    class StylesSettings implements DefaultNodeSettings {
-        boolean m_bool;
-
-        @Style({OverridingBooleanStyleProvider.class})
-        boolean m_overriding;
-
-        @Style({ExtendingBooleanStyleProvider.class})
-        boolean m_extending;
-
-        @Style({OverridingBooleanStyleProvider.class, ExtendingBooleanStyleProvider.class})
-        boolean m_both;
-    }
-
-    @Test
-    void testCustomStyles() {
-        final var response = buildUiSchema(Map.of("test", StylesSettings.class));
-        assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/bool");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("checkbox");
-        assertThatJson(response).inPath("$.elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/overriding");
-        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("custom");
-        assertThatJson(response).inPath("$.elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/extending");
-        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("checkbox");
-        assertThatJson(response).inPath("$.elements[2].options.otherOption").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[3].scope").isString()
-            .isEqualTo("#/properties/test/properties/both");
-        assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("custom");
-        assertThatJson(response).inPath("$.elements[3].options.otherOption").isBoolean().isTrue();
-    }
-
-    class NonApplicableStyleSettings implements DefaultNodeSettings {
-        @Style({ExtendingBooleanStyleProvider.class})
-        String m_prop;
-    }
-
-    @Test
-    void testThrowsIfCustomStyleIsNotApplicable() {
-        final Map<String, Class<?>> settings = Map.of("test", NonApplicableStyleSettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
-    }
-
-    static class MergeNestedStylesSettings implements DefaultNodeSettings {
-
-        static class InnerClass {
-            String m_foo;
-
-            String m_bar;
-
-            public InnerClass(final String foo, final String bar) {
-                m_foo = foo;
-                m_bar = bar;
-            }
-        }
-
-        static class DeepStyleClass {
-            InnerClass m_merged;
-        }
-
-        static class FirstDeepStyleProvider extends BooleanStyleProvider {
-            @Override
-            public Object getStyleObject() {
-                final var styleObject = new DeepStyleClass();
-                styleObject.m_merged = new InnerClass("foo", null);
-                return styleObject;
-            }
-
-        }
-
-        static class SecondDeepStyleProvider extends BooleanStyleProvider {
-            @Override
-            public Object getStyleObject() {
-                final var styleObject = new DeepStyleClass();
-                styleObject.m_merged = new InnerClass(null, "bar");
-                return styleObject;
-            }
-
-        }
-
-        @Style({FirstDeepStyleProvider.class, SecondDeepStyleProvider.class})
-        boolean m_setting;
-    }
-
-    @Test
-    void testMergeNestedStyles() {
-        final Map<String, Class<?>> settings = Map.of("test", MergeNestedStylesSettings.class);
-        final var response = buildUiSchema(settings);
-        assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/setting");
-        assertThatJson(response).inPath("$.elements[0].options.merged.foo").isString().isEqualTo("foo");
-        assertThatJson(response).inPath("$.elements[0].options.merged.bar").isString().isEqualTo("bar");
     }
 
     @Test

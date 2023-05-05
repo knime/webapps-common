@@ -54,6 +54,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_TYPE;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_HORIZONTAL_LAYOUT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_SECTION;
 
 import java.util.Map;
@@ -119,10 +120,9 @@ enum LayoutPart {
     private static ArrayNode getHorizontalLayout(final LayoutNodeCreationContext creationContext) {
         final var parent = creationContext.parent();
         final var node = parent.addObject();
-        node.put(TYPE_TAG, HORIZONTAL_LAYOUT_TAG);
-        node.putObject(RULE_TAG);
+        node.put(TAG_TYPE, TYPE_HORIZONTAL_LAYOUT);
         applyRules(node, creationContext);
-        return node.putArray(ELEMENTS_TAG);
+        return node.putArray(TAG_ELEMENTS);
     }
 
     private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {

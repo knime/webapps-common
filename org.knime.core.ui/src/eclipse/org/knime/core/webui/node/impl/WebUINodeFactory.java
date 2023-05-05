@@ -72,7 +72,7 @@ import org.knime.core.webui.node.dialog.NodeDialogFactory;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -293,10 +293,10 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
     private static final void createOptions(final Field[] fields, final Element tab, final DocumentBuilder docBuilder,
         final Document doc) {
         for (var field : fields) {
-            if (field.isAnnotationPresent(Schema.class)) {
+            if (field.isAnnotationPresent(Widget.class)) {
                 var option = doc.createElement("option");
-                final var title = field.getAnnotationsByType(Schema.class)[0].title();
-                final var description = field.getAnnotationsByType(Schema.class)[0].description();
+                final var title = field.getAnnotationsByType(Widget.class)[0].title();
+                final var description = field.getAnnotationsByType(Widget.class)[0].description();
                 option.setAttribute("name", title);
                 option.appendChild(parseDocumentFragment(description, docBuilder, doc));
                 tab.appendChild(option);

@@ -138,6 +138,26 @@ public class JsonFormsConsts {
         public static final String TAG_OPTIONS = "options";
 
         /**
+         * Format for an ui element in the ui-schema
+         */
+        public static final String TAG_FORMAT = "format";
+
+        /**
+         * Several formats which are written to the options of the ui-schema of an ui element
+         *
+         * @author Paul Bärnreuther
+         */
+        public class Format {
+            public static final String CHECKBOX = "checkbox";
+
+            public static final String VALUE_SWITCH = "valueSwitch";
+
+            public static final String COLUMN_FILTER = "columnFilter";
+
+            public static final String RADIO = "radio";
+        }
+
+        /**
          * Rules to show/hide/enable/disable an ui element in the ui-schema
          */
         public static final String TAG_RULE = "rule";
@@ -186,5 +206,10 @@ public class JsonFormsConsts {
          * The type of a section
          */
         public static final String TYPE_SECTION = "Section";
+
+        /**
+         * The type of a horizontal layout part
+         */
+        public static final String TYPE_HORIZONTAL_LAYOUT = "HorizontalLayout";
     }
 }

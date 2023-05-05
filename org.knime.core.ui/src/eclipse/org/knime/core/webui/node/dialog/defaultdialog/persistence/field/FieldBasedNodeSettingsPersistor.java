@@ -55,8 +55,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.PersistableSettings;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be

@@ -42,23 +42,22 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.style;
+package org.knime.core.webui.node.dialog.defaultdialog.layout;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * Adding this style to a boolean setting with an {@link Style @Style}, the setting will be used to control a checkbox
- * in the dialog.
+ * Annotation to mark a class as a horizontal layout. All settings that are added to this layout are oriented
+ * horizontally. See {@link Layout} on how to add settings to such a horizontal layout.
  *
- * @author Paul Bärnreuther
+ * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  */
-public final class CheckboxStyle extends BooleanStyleProvider {
-
-    @Override
-    public Object getStyleObject() {
-        return new Format("checkbox");
-    }
-
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface HorizontalLayout {
 }

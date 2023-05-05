@@ -60,7 +60,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * Contains unit tests for the {@link ConfigKeyUtil}.
@@ -89,26 +89,26 @@ class ConfigKeyUtilTest {
 
     private static class Settings {
 
-        @Schema
+        @Widget
         int setting0;
 
-        @Schema
+        @Widget
         int m_setting1;
 
         @Persist
-        @Schema
+        @Widget
         int setting2;
 
         @Persist(configKey = "foo")
-        @Schema
+        @Widget
         int setting3;
 
         @Persist(hidden = true)
-        @Schema
+        @Widget
         int setting4;
 
         @Persist(customPersistor = CustomPersistor.class)
-        @Schema
+        @Widget
         int setting5;
     }
 

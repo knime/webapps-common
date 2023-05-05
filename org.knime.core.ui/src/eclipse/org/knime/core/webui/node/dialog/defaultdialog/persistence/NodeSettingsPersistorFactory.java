@@ -53,7 +53,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.PersistableSettings;
 
 /**
  * Creates and caches NodeSettingsPersistors for DefaultNodeSettings.

@@ -44,19 +44,36 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 5, 2023 (Paul Bärnreuther): created
+ *   May 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.style;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * Annotate a {@link String} setting with this in order to provide validation instructions.
  *
  * @author Paul Bärnreuther
  */
-public final class RadioButtonsStyle extends EnumStyleProvider {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface TextInputWidget {
+    /**
+     * @return an optional minimum length for a nominal field
+     */
+    int minLength() default -1;
 
-    @Override
-    public Object getStyleObject() {
-        return new Format("radio");
-    }
+    /**
+     * @return an optional maximum length for a nominal field
+     */
+    int maxLength() default -1;
 
+    /**
+     * @return an optional regular expression pattern for a nominal field
+     */
+    String pattern() default "";
 }

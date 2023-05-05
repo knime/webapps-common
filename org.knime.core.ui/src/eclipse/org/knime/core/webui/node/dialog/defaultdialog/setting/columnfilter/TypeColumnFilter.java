@@ -71,24 +71,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class TypeColumnFilter implements DialogComponentSettings {
+class TypeColumnFilter implements DialogComponentSettings {
 
     /**
      * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
      */
-    public String[] m_selectedTypes; //NOSONAR
+    String[] m_selectedTypes; //NOSONAR
 
     /**
      * Additional information necessary to display the types in the dialog. This has to be persisted in order to display
      * previously selected types stored in {@link #m_selectedTypes} which are not present in the table anymore.
      */
     @Persist(customPersistor = ColumnTypeDisplaysPersistor.class)
-    public ColumnTypeDisplay[] m_typeDisplays = new ColumnTypeDisplay[0]; //NOSONAR
+    ColumnTypeDisplay[] m_typeDisplays = new ColumnTypeDisplay[0]; //NOSONAR
 
     /**
      * Filter with no selected Types
      */
-    public TypeColumnFilter() {
+    TypeColumnFilter() {
         m_selectedTypes = new String[0];
     }
 
@@ -98,7 +98,7 @@ public class TypeColumnFilter implements DialogComponentSettings {
      * @return the array of currently selected columns with respect to the mode
      */
     @JsonIgnore
-    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
+    String[] getSelected(final String[] choices, final DataTableSpec spec) {
         final var types = getTypes(choices, spec);
         var selectedTypes = Set.of(m_selectedTypes);
         return IntStream.range(0, types.length)//
@@ -120,7 +120,7 @@ public class TypeColumnFilter implements DialogComponentSettings {
      * @param type the {@link DataType} of a column
      * @return the string representation of the data type
      */
-    public static String typeToString(final DataType type) {
+    static String typeToString(final DataType type) {
         return type.getPreferredValueClass().getName();
     }
 

@@ -7,17 +7,19 @@
  * <li><b>Applying data from the frontend</b>: Text &rarr; Node settings</li>
  * <li><b>Saving data</b>: Node settings &rarr; {@link NodeSettingsRO}</li>
  * </ul>
- * Hereby the Node settings are combined of {@link DefaultNodeSettings} classes for Model- and View-Settings of the
- * node.
+ * Hereby the Node settings are combined of classes for Model- and View-Settings of the node.
  *
  * <h2>Persistence</h2>
  *
- * By which rules the NodeSettings should be loaded and saved is specified by certain persistors associated to them (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence})
+ * <p>By which rules the NodeSettings should be loaded and saved is specified by certain persistors associated to them (see
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence})</p>
  *
  * <h2>Default Implementation: JsonForms</h2>
  *
- * The default implementation of the above specifications is using <a href="https://jsonforms.io/">JsonForms</a> as text
- * medium (see {@link org.knime.core.webui.node.dialog.impl})
+ * <p>The default implementation of the above specifications is using <a href="https://jsonforms.io/">JsonForms</a> as text
+ * medium (see {@link org.knime.core.webui.node.defaultdialog.jsonforms})</p>
+ *
+ *
+ * @see {@link {@link org.knime.core.webui.node.defaultdialog Default implementation}
  */
 package org.knime.core.webui.node.dialog;

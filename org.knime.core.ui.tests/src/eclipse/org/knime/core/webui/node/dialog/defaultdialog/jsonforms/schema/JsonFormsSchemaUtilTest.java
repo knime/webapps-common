@@ -85,9 +85,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema.DoubleProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -120,7 +122,7 @@ class JsonFormsSchemaUtilTest {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"title\":\"some title\",\"default\":0}}";
 
-        @Schema(title = "some title")
+        @Widget(title = "some title")
         int test;
     }
 
@@ -133,7 +135,7 @@ class JsonFormsSchemaUtilTest {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"some description\"}}";
 
-        @Schema(description = "some description")
+        @Widget(description = "some description")
         int test;
     }
 
@@ -150,7 +152,7 @@ class JsonFormsSchemaUtilTest {
 
         enum TestEnum {
                 SOME_CHOICE, //
-                @Schema(title = "second choice")
+                @Widget(title = "second choice")
                 SOME_OTHER_CHOICE
         }
 
@@ -174,7 +176,7 @@ class JsonFormsSchemaUtilTest {
             "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
-        @Schema(choices = TestChoices.class)
+        @ChoicesWidget(choices = TestChoices.class)
         public String test;
     }
 
@@ -189,7 +191,7 @@ class JsonFormsSchemaUtilTest {
             "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
             "]}}";
 
-        @Schema(choices = TestChoices.class, multiple = true)
+        @ChoicesWidget(choices = TestChoices.class, multiple = true)
         public String[] test;
     }
 
@@ -207,16 +209,16 @@ class JsonFormsSchemaUtilTest {
             + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0,\"minimum\":-0.5,\"maximum\":1.5}"//
             + "}";
 
-        @Schema(min = 0)
+        @NumberInputWidget(min = 0)
         public int testMin;
 
-        @Schema(max = 100)
+        @NumberInputWidget(max = 100)
         public int testMax;
 
-        @Schema(min = 0, max = 1000)
+        @NumberInputWidget(min = 0, max = 1000)
         public int testBoth;
 
-        @Schema(min = -0.5, max = 1.5)
+        @NumberInputWidget(min = -0.5, max = 1.5)
         public double testDouble;
     }
 
@@ -234,19 +236,19 @@ class JsonFormsSchemaUtilTest {
             + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0,\"minimum\":42,\"maximum\":42}"//
             + "}";
 
-        @Schema(minProvider = TestProvider.class)
+        @NumberInputWidget(minProvider = TestProvider.class)
         int testMin;
 
-        @Schema(maxProvider = TestProvider.class)
+        @NumberInputWidget(maxProvider = TestProvider.class)
         int testMax;
 
-        @Schema(min = 0, minProvider = TestProvider.class, max = 1000, maxProvider = TestProvider.class)
+        @NumberInputWidget(min = 0, minProvider = TestProvider.class, max = 1000, maxProvider = TestProvider.class)
         int testBoth;
 
-        @Schema(minProvider = TestProvider.class, maxProvider = TestProvider.class)
+        @NumberInputWidget(minProvider = TestProvider.class, maxProvider = TestProvider.class)
         double testDouble;
 
-        private static final class TestProvider implements DoubleProvider {
+        private static final class TestProvider implements NumberInputWidget.DoubleProvider {
 
             @Override
             public double getValue(final SettingsCreationContext context) {
@@ -269,16 +271,16 @@ class JsonFormsSchemaUtilTest {
             + "\"testAll\":{\"type\":\"string\",\"minLength\":0,\"maxLength\":100,\"pattern\":\"a.*\"}"//
             + "}";
 
-        @Schema(minLength = 0)
+        @TextInputWidget(minLength = 0)
         public String testMinLength;
 
-        @Schema(maxLength = 100)
+        @TextInputWidget(maxLength = 100)
         public String testMaxLength;
 
-        @Schema(pattern = "a.*")
+        @TextInputWidget(pattern = "a.*")
         public String testPattern;
 
-        @Schema(minLength = 0, maxLength = 100, pattern = "a.*")
+        @TextInputWidget(minLength = 0, maxLength = 100, pattern = "a.*")
         public String testAll;
     }
 
@@ -294,7 +296,7 @@ class JsonFormsSchemaUtilTest {
             + "\"items\":{\"type\":\"integer\",\"format\":\"int32\"}"//
             + "}}";
 
-        @Schema(title = "foo")
+        @Widget(title = "foo")
         public int[] testIntArray;
     }
 
@@ -434,10 +436,12 @@ class JsonFormsSchemaUtilTest {
             + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}," //
             + "\"compatibleTypes\":" + COMPATIBLE_TYPES_SNAPSHOT + "}}" + "}";
 
-        @Schema(title = "column", choices = ColumnChoices.class)
+        @Widget(title = "column")
+        @ChoicesWidget(choices = ColumnChoices.class)
         public ColumnSelection testColumnSelection;
 
-        @Schema(title = "strings", choices = NonColumnChoices.class)
+        @Widget(title = "strings")
+        @ChoicesWidget(choices = NonColumnChoices.class)
         public ColumnSelection testColumnSelectionNoTypes;
     }
 
@@ -482,10 +486,12 @@ class JsonFormsSchemaUtilTest {
             + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}],\"configKeys\":[\"selected_Internals\"]}"//
             + "}}}";
 
-        @Schema(title = "columns", choices = ColumnChoices.class)
+        @Widget(title = "columns")
+        @ChoicesWidget(choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = NonColumnChoices.class)
+        @Widget(title = "otherSelection")
+        @ChoicesWidget(choices = NonColumnChoices.class)
         public ColumnFilter testColumnFilterNoTypes;
     }
 
@@ -514,10 +520,12 @@ class JsonFormsSchemaUtilTest {
             + "}}" //
             + "}";
 
-        @Schema(title = "columns", choices = ColumnChoices.class)
+        @Widget(title = "columns")
+        @ChoicesWidget(choices = ColumnChoices.class)
         public ColumnFilter testColumnFilter;
 
-        @Schema(title = "otherSelection", choices = NonColumnChoices.class)
+        @Widget(title = "otherSelection")
+        @ChoicesWidget(choices = NonColumnChoices.class)
         public ColumnFilter testColumnFilterNoTypes;
     }
 
@@ -537,7 +545,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Persist(configKey = "my_config_key")
-        @Schema(title = "my_title")
+        @Widget(title = "my_title")
         public int test;
     }
 
@@ -575,7 +583,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Persist(customPersistor = CustomPersistor.class)
-        @Schema(title = "my_title")
+        @Widget(title = "my_title")
         public int test;
     }
 
@@ -601,15 +609,17 @@ class JsonFormsSchemaUtilTest {
     private static class SettingWithCustomType {
 
         private static String SNAPSHOT = "{\"test\":{" //
-                + "\"type\":\"object\"," //
-                + "\"default\":\"42\"" //
-                + "}}";
-        @Schema
+            + "\"type\":\"object\"," //
+            + "\"default\":\"42\"" //
+            + "}}";
+
+        @Widget
         public MyStringWrapper m_test = new MyStringWrapper("42");
     }
 
     /**
      * Tests behavior when providing a custom type via jackson annotations.
+     *
      * @throws JsonProcessingException
      */
     @Test
@@ -619,74 +629,60 @@ class JsonFormsSchemaUtilTest {
 
     private static class SettingWithJavaTime {
 
-        private static String SNAPSHOT = "{"
-            + "\"duration\": {"
-            + "    \"default\": 42.0, \"format\": \"int32\", \"type\": \"integer\""
-            + "},"
-            + "\"year\": {"
-            + "    \"default\": \"2006\", \"format\": \"int32\", \"type\": \"integer\""
-            + "},"
-            + "\"instant\": {"
-            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"localDate\": {"
-            + "    \"default\": \"2006-07-28\", \"format\": \"date\", \"type\": \"string\""
-            + "},"
+        private static String SNAPSHOT = "{" + "\"duration\": {"
+            + "    \"default\": 42.0, \"format\": \"int32\", \"type\": \"integer\"" + "}," + "\"year\": {"
+            + "    \"default\": \"2006\", \"format\": \"int32\", \"type\": \"integer\"" + "}," + "\"instant\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\"" + "},"
+            + "\"localDate\": {" + "    \"default\": \"2006-07-28\", \"format\": \"date\", \"type\": \"string\"" + "},"
             + "\"localDateTime\": {"
-            + "    \"default\": \"2006-07-28T10:30:00\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"localTime\": {"
-            + "    \"default\": \"10:30:00\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"offsetDateTime\": {"
-            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"offsetTime\": {"
-            + "    \"default\": \"10:30Z\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"zonedDateTime\": {"
-            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\""
-            + "},"
-            + "\"yearMonth\": {"
-            + "    \"default\": \"2006-07\", \"type\": \"string\""
-            + "},"
-            + "\"zoneId\": {"
-            + "    \"default\": \"Europe/Berlin\", \"type\": \"string\""
-            + "},"
-            + "\"zoneOffset\": {"
-            + "    \"default\": \"+02:00\", \"type\": \"string\""
-            + "},"
-            + "\"monthDay\": {"
-            + "    \"default\": \"--07-28\", \"type\": \"string\""
-            + "},"
-            + "\"period\": {"
-            + "    \"default\": \"P16Y7M1D\", \"type\": \"string\""
-            + "}"
-            + "}";
+            + "    \"default\": \"2006-07-28T10:30:00\", \"format\": \"date-time\", \"type\": \"string\"" + "},"
+            + "\"localTime\": {" + "    \"default\": \"10:30:00\", \"format\": \"date-time\", \"type\": \"string\""
+            + "}," + "\"offsetDateTime\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\"" + "},"
+            + "\"offsetTime\": {" + "    \"default\": \"10:30Z\", \"format\": \"date-time\", \"type\": \"string\""
+            + "}," + "\"zonedDateTime\": {"
+            + "    \"default\": \"2006-07-28T10:30:00Z\", \"format\": \"date-time\", \"type\": \"string\"" + "},"
+            + "\"yearMonth\": {" + "    \"default\": \"2006-07\", \"type\": \"string\"" + "}," + "\"zoneId\": {"
+            + "    \"default\": \"Europe/Berlin\", \"type\": \"string\"" + "}," + "\"zoneOffset\": {"
+            + "    \"default\": \"+02:00\", \"type\": \"string\"" + "}," + "\"monthDay\": {"
+            + "    \"default\": \"--07-28\", \"type\": \"string\"" + "}," + "\"period\": {"
+            + "    \"default\": \"P16Y7M1D\", \"type\": \"string\"" + "}" + "}";
 
         // integer
         Duration m_duration = Duration.ofSeconds(42);
+
         Year m_year = Year.of(2006);
 
         // string w/ date/date-time format
         LocalDate m_localDate = LocalDate.of(2006, 7, 28);
+
         LocalTime m_localTime = LocalTime.of(10, 30);
+
         LocalDateTime m_localDateTime = LocalDateTime.of(2006, 7, 28, 10, 30);
+
         Instant m_instant = LocalDateTime.of(2006, 7, 28, 10, 30).toInstant(ZoneOffset.UTC);
+
         OffsetDateTime m_offsetDateTime = LocalDateTime.of(2006, 7, 28, 10, 30).atOffset(ZoneOffset.UTC);
+
         ZonedDateTime m_zonedDateTime = LocalDateTime.of(2006, 7, 28, 10, 30).atZone(ZoneOffset.UTC);
+
         OffsetTime m_offsetTime = OffsetTime.of(LocalTime.of(10, 30), ZoneOffset.UTC);
 
         // string w/o format
         MonthDay m_monthDay = MonthDay.of(7, 28);
+
         YearMonth m_yearMonth = YearMonth.of(2006, 7);
+
         ZoneId m_zoneId = ZoneId.of("Europe/Berlin");
+
         ZoneOffset m_zoneOffset = ZoneOffset.ofHours(2);
+
         Period m_period = Period.between(LocalDate.of(2006, 7, 28), LocalDate.of(2023, 3, 1));
     }
 
     /**
      * Tests serialization of built-in java.time types.
+     *
      * @throws JsonProcessingException
      */
     @Test
@@ -695,33 +691,32 @@ class JsonFormsSchemaUtilTest {
     }
 
     private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)
-            throws JsonMappingException, JsonProcessingException {
+        throws JsonMappingException, JsonProcessingException {
         assertJSONAgainstSnapshot(getProperties(settingsClass, specs), settingsClass);
     }
 
     private static void testSettingsWithoutContext(final Class<?> settingsClass)
-            throws JsonMappingException, JsonProcessingException {
+        throws JsonMappingException, JsonProcessingException {
         assertJSONAgainstSnapshot(getPropertiesWithoutContext(settingsClass), settingsClass);
     }
 
     private static void assertJSONAgainstSnapshot(final JsonNode content, final Class<?> settingsClass)
-            throws JsonMappingException, JsonProcessingException {
+        throws JsonMappingException, JsonProcessingException {
         final var actual = MAPPER.writeValueAsString(content);
         try {
             final var expected = (String)settingsClass.getDeclaredField("SNAPSHOT").get(null);
             final var aTree = MAPPER.readTree(actual);
             final var eTree = MAPPER.readTree(expected);
-            assertThatJson(aTree)
-                .isEqualTo(eTree);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException| SecurityException e) {
+            assertThatJson(aTree).isEqualTo(eTree);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
                 + " (most likely a problem of the test implementation itself)");
         }
     }
 
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
-        return JsonFormsSchemaUtil.buildSchema(clazz,  null, DefaultNodeSettings.createSettingsCreationContext(specs), JsonFormsDataUtil.getMapper())
-            .get("properties");
+        return JsonFormsSchemaUtil.buildSchema(clazz, null, DefaultNodeSettings.createSettingsCreationContext(specs),
+            JsonFormsDataUtil.getMapper()).get("properties");
     }
 
     private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {

@@ -44,22 +44,14 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 5, 2023 (Paul Bärnreuther): created
+ *   May 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.style;
-
 /**
+ * This subpackage is used to ensure that the behavior of widget annotations and field type dependent defaults is
+ * consistent across implementations.
+ *
+ * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil}
  *
  * @author Paul Bärnreuther
  */
-public final class RadioHorizontal extends EnumStyleProvider {
-
-    record Horizontal(String radioLayout) {
-    }
-
-    @Override
-    public Object getStyleObject() {
-        return new Horizontal("horizontal");
-    }
-
-}
+package org.knime.core.webui.node.dialog.defaultdialog.widget.util;

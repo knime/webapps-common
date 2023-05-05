@@ -44,34 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 9, 2023 (Paul Bärnreuther): created
+ *   May 5, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.ui.style;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 
 /**
+ * Annotate a number setting with this in order to provide validation instructions.
  *
  * @author Paul Bärnreuther
- * TODO UIEXT-877 remove this again and istead make it part of a widget annotation
  */
-public final class IncludeNoneColumn implements StyleProvider {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface NumberInputWidget {
 
     /**
-     * {@inheritDoc}
+     * Use {@link #minProvider()} if the minimum value depends on the context of the node.
+     *
+     * @return an optional minimum value for a numeric field
      */
-    @Override
-    public boolean isApplicable(final Class<?> clazz) {
-        return true;
-    }
-
-
-    record IncludeNoneColumnStyle(Boolean showNoneColumn) {}
+    double min() default Double.NaN;
 
     /**
-     * {@inheritDoc}
+     * Takes precedence over {@link #min()} if provided. No minimum is set if the DoubleProvider returns
+     * {@code Double.NaN}.
+     *
+     * @return an optional DoubleProvider that provides the min value given the current context of the node
      */
-    @Override
-    public Object getStyleObject() {
-        return new IncludeNoneColumnStyle(true);
+    Class<? extends DoubleProvider> minProvider() default DoubleProvider.class;
+
+    /**
+     * Use {@link #maxProvider()} if the maximum value depends on the context of the node.
+     *
+     * @return an optional maximum value for a numeric field
+     */
+    double max() default Double.NaN;
+
+    /**
+     * Takes precedence over {@link #max()} if provided. No maximum is set if the DoubleProvider returns
+     * {@code Double.NaN}.
+     *
+     * @return an optional DoubleProvider that provides the max value given the current context of the node
+     */
+    Class<? extends DoubleProvider> maxProvider() default DoubleProvider.class;
+
+    /**
+     * Provides a double value given the context of the node.
+     *
+     * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+     */
+    interface DoubleProvider {
+
+        /**
+         * @param context of the node
+         * @return the double value
+         */
+        double getValue(final SettingsCreationContext context);
     }
 
 }

@@ -59,6 +59,7 @@ import java.util.Optional;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -74,8 +75,9 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * The UiSchema generation follows these steps:
  * <ol type="1">
- * <li>Resolve all {@link Layout} annotations to map layout parts to controls</li>
- * <li>Find the root of all layout parts {@link LayoutRootFinderUtil}</li>
+ * <li>Collect all {@link Layout} and {@link Signal} annotations</li>
+ * <li>Use order annotations (see e.g. {@link After}) and class hierarchies to determine a tree structure (see
+ * {@link LayoutTree})</li>
  * <li>Generate the layout parts starting from the root and add the mapped controls (see
  * {@link LayoutNodesGenerator})</li>
  * </ol>
@@ -97,18 +99,18 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     ObjectNode build() {
-        final var layoutSkeleton = resolveLayoutToContentAndRoot();
+        final var layoutSkeleton = resolveLayout();
         return new LayoutNodesGenerator(m_mapper, layoutSkeleton).build();
     }
 
     static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals) {
     }
 
-    private LayoutSkeleton resolveLayoutToContentAndRoot() {
-        final var controlsAndsignals = getLayoutPartToControls();
-        final var layoutClassesToControls = controlsAndsignals.getFirst();
+    private LayoutSkeleton resolveLayout() {
+        final var controlsAndSignals = getLayoutPartToControls();
+        final var layoutClassesToControls = controlsAndSignals.getFirst();
         final var layoutTreeRoot = new LayoutTree(layoutClassesToControls).getRootNode();
-        final var signals = controlsAndsignals.getSecond();
+        final var signals = controlsAndSignals.getSecond();
         return new LayoutSkeleton(layoutTreeRoot, signals);
     }
 
@@ -184,9 +186,9 @@ final class JsonFormsUiSchemaGenerator {
             getSignal(field).ifPresent(signal -> {
                 final var conditionClass = signal.condition();
                 final var condition = createInstance(conditionClass);
-                final var scopedsignal = new JsonFormsExpression(scope, condition);
+                final var scopedSignal = new JsonFormsExpression(scope, condition);
                 final var signalId = signal.id();
-                signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedsignal);
+                signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedSignal);
             });
         }
     }

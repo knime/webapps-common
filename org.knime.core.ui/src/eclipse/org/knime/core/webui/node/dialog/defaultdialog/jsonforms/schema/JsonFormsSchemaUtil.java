@@ -75,8 +75,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Settin
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Schema.DoubleProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -103,7 +105,8 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
  * </ul>
  * The type is recognized automatically using the same mapper between POJO and json as in {@link JsonFormsDataUtil}.
  *
- * The other information can be controlled by using a {@link Schema @Schema} on the fields in the POJO class.
+ * The other information can be controlled by using the {@link Widget @Widget} annotation and other field specific widget
+ * annotations (e.g. {@link NumberInputWidget}) on the fields in the POJO class.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -112,8 +115,6 @@ public final class JsonFormsSchemaUtil {
     private static final Set<Class<?>> PROHIBITED_TYPES =
         Stream.of(Boolean.class, Integer.class, Long.class, short.class, Short.class, Double.class, Float.class)
             .collect(Collectors.toCollection(HashSet::new));
-
-
 
     private JsonFormsSchemaUtil() {
         // utility class
@@ -171,44 +172,44 @@ public final class JsonFormsSchemaUtil {
         builder.forFields().withDefaultResolver(new DefaultResolver(context));
 
         builder.forFields()
-            .withTitleResolver(field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))
-                .map(Schema::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
+            .withTitleResolver(field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class))
+                .map(Widget::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
 
         builder.forFields()
             .withDescriptionResolver(field -> Optional
-                .ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class)).map(Schema::description)
+                .ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class)).map(Widget::description)
                 .filter(d -> !field.isFakeContainerItemScope() && !d.isEmpty()).orElse(null));
 
         builder.forFields().withNumberInclusiveMinimumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-                .filter(schema -> !field.isFakeContainerItemScope())//
-                .map(schema -> resolveDouble(context, schema.minProvider(), schema.min()))//
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
+                .filter(numberInput -> !field.isFakeContainerItemScope())//
+                .map(numberInput -> resolveDouble(context, numberInput.minProvider(), numberInput.min()))//
                 .orElse(null));
 
         builder.forFields().withNumberInclusiveMaximumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-                .filter(schema -> !field.isFakeContainerItemScope())//
-                .map(schema -> resolveDouble(context, schema.maxProvider(), schema.max()))//
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
+                .filter(numberInput -> !field.isFakeContainerItemScope())//
+                .map(numberInput -> resolveDouble(context, numberInput.maxProvider(), numberInput.max()))//
                 .orElse(null));
 
         builder.forFields().withStringMinLengthResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-                .filter(schema -> !field.isFakeContainerItemScope())//
-                .map(schema -> schema.minLength())//
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+                .filter(textInput -> !field.isFakeContainerItemScope())//
+                .map(textInput -> textInput.minLength())//
                 .filter(length -> length >= 0)//
                 .orElse(null));
 
         builder.forFields().withStringMaxLengthResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-                .filter(schema -> !field.isFakeContainerItemScope())//
-                .map(schema -> schema.maxLength())//
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+                .filter(textInput -> !field.isFakeContainerItemScope())//
+                .map(textInput -> textInput.maxLength())//
                 .filter(length -> length >= 0)//
                 .orElse(null));
 
         builder.forFields().withStringPatternResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Schema.class))//
-                .filter(schema -> !field.isFakeContainerItemScope())//
-                .map(schema -> schema.pattern())//
+            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+                .filter(textInput -> !field.isFakeContainerItemScope())//
+                .map(textInput -> textInput.pattern())//
                 .filter(pattern -> !pattern.isEmpty())//
                 .orElse(null));
 
