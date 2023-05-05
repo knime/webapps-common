@@ -134,6 +134,37 @@
               "type": "string",
               "title": "Vertical axis label",
               "description": "The label used for the frequency axis. If left blank, no label will be shown."
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                },
+                {
+                  "const": "MANUAL",
+                  "title": "Manual"
+                }
+              ],
+              "title": "Axis limits",
+              "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "default": "AUTO"
+            },
+            "verticalAxisManualMin": {
+              "type": "number",
+              "title": "Vertical min",
+              "default": 0,
+              "description": "Value that sets the vertical axis minimum."
+            },
+            "verticalAxisManualMax": {
+              "type": "number",
+              "title": "Vertical max",
+              "default": 0,
+              "description": "Value that sets the vertical axis maximum."
             }
           }
         },
@@ -432,6 +463,36 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/title"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/verticalAxisManualMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/verticalAxisManualMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "MANUAL"
+                  }
+                }
+              }
             },
             {
               "type": "Control",
