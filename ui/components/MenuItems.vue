@@ -31,28 +31,30 @@ import type { MenuItem } from './BaseMenuItems.vue';
 import BaseMenuItem from './BaseMenuItem.vue';
 import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
 
-/* re-export MenuItem type */
-export type { MenuItem };
-
 type Props = {
     items: MenuItem[];
     menuAriaLabel: string;
     disableSpaceToClick?: boolean,
-
-    /** handles the keyboard nav (register to onKeydown) on its own, useful if you don't require the focus elsewhere */
     registerKeydown?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
     disableSpaceToClick: false,
-    registerKeydown: false,
-    focusOnMount: false
+    registerKeydown: false
 });
 
-const emit = defineEmits(['close', 'item-click', 'item-focused', 'item-hovered', 'close-submenu']);
+interface Emits {
+    (e: 'close'): void
+    (e: 'item-click', event: MouseEvent, item: MenuItem, id: string): void
+    (e: 'item-focused', item: MenuItem|null, id: string|null): void
+    (e: 'item-hovered', item: MenuItem|null, id: string, index: number): void
+    (e: 'close-submenu'): void
+}
+
+const emit = defineEmits<Emits>();
 const menuItemsBase: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
-const subMenu = ref<HTMLElement|null>(null);
+const subMenu = ref<any>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
     if (!menuItemsBase.value) {
@@ -91,12 +93,9 @@ const focusIndex = (index: number = 0) => {
 
 const setOpenSubmenuIndex = (index: number) => {
     const item = props.items.at(index);
+    const isEnabledSubmenuItem = item && !item.disabled && item.children?.length;
 
-    if (item && !item.disabled && item.children?.length) {
-        openSubmenuItemIndex.value = index;
-    } else {
-        openSubmenuItemIndex.value = -1;
-    }
+    openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
 };
 
 const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
@@ -114,26 +113,28 @@ const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
     onDropdownNavigationKeydown(event);
 };
 
-const onItemHovered = ({ item, id, index }) => {
-    // do nothing if no item gets hovered (so the submenu will stay open on mouse move in blank space)
+const onItemHovered = (item: MenuItem, id: string, index: number) => {
     if (item !== null) {
         setOpenSubmenuIndex(index);
     }
-    emit('item-hovered', item, id);
+    emit('item-hovered', item, id, index);
 };
 
-const onKeydown = (event) => {
-    // is a submenu open
-    if (openSubmenuItemIndex.value === -1) {
-        // handle the keydown event in this instance because no submenu is open
+const onKeydown = (event: KeyboardEvent) => {
+    const isSubmenuOpen = openSubmenuItemIndex.value === -1;
+    if (isSubmenuOpen) {
         onKeydownWithOpenCloseSubMenu(event);
     } else {
-        // pass the keydown event down the next child sub menu (see defineExpose)
         subMenu.value?.onKeydown(event);
     }
 };
 
 defineExpose({ onKeydown, resetNavigation, focusIndex });
+</script>
+
+<script lang="ts">
+/* re-export MenuItem type */
+export type { MenuItem } from './BaseMenuItems.vue';
 </script>
 
 <template>
@@ -145,7 +146,7 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
     :focused-item-index="currentIndex"
     @keydown="props.registerKeydown && onKeydown($event)"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
-    @item-hovered="(item, id, index) => onItemHovered({ item, id, index })"
+    @item-hovered="(item, id, index) => onItemHovered(item, id, index)"
     @item-focused="(...args) => $emit('item-focused', ...args)"
   >
     <template #item="{ item, menuId, menuItemId, index, maxMenuWidth, focusedItemIndex }">
@@ -164,7 +165,7 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
             <ArrowNextIcon class="icon" />
             <MenuItems
               v-if="openSubmenuItemIndex === index"
-              :id="`${menuId}__${item.name}`"
+              :id="`${menuId}__sub${index}`"
               ref="subMenu"
               class="menu-items-level"
               :menu-aria-label="`${item.text} sub menu`"

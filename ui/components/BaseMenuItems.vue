@@ -72,7 +72,7 @@ export default {
     setup(props) {
         // use composition api refs to be able to sync the index between props.items and the refs to the HTMLElement
         const listItems = ref([]);
-        const positionRelativeToElement = toRef<HTMLElement|null>(props, 'positionRelativeToElement');
+        const positionRelativeToElement = toRef(props, 'positionRelativeToElement');
         const listContainer = ref<HTMLElement|null>(null);
 
         onBeforeUpdate(() => {

@@ -26,8 +26,15 @@ defineProps<Props>();
     :is="linkTagByType(item)"
     ref="listItemComponent"
     tabindex="-1"
-    :class="['list-item', item.sectionHeadline ? 'section-headline' : 'clickable-item', {
-      disabled: item.disabled, selected: item.selected, focused: hasFocus }]"
+    :class="[
+      'list-item',
+      item.sectionHeadline ? 'section-headline' : 'clickable-item',
+      {
+        disabled: item.disabled,
+        selected: item.selected,
+        focused: hasFocus
+      }
+    ]"
     :to="item.to || null"
     :href="item.href || null"
   >
