@@ -73,7 +73,7 @@ import org.knime.core.util.ui.converter.JsonFormsDialogBuilder;
 import org.knime.core.util.ui.converter.UiComponentConverterRegistry;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.dialog.impl.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.page.Page;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

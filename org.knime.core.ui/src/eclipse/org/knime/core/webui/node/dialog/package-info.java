@@ -13,7 +13,7 @@
  * <h2>Persistence</h2>
  *
  * By which rules the NodeSettings should be loaded and saved is specified by certain persistors associated to them (see
- * {@link org.knime.core.webui.node.dialog.persistence})
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence})
  *
  * <h2>Default Implementation: JsonForms</h2>
  *

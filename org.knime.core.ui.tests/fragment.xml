@@ -10,7 +10,7 @@
       </node>
       <node
             deprecated="false"
-            factory-class="org.knime.core.webui.node.dialog.impl.TestWebUINodeFactory"
+            factory-class="org.knime.core.webui.node.impl.TestWebUINodeFactory"
             hidden="true">
       </node>
    </extension>

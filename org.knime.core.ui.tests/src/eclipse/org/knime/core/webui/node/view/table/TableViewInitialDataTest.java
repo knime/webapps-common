@@ -65,7 +65,7 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.image.png.PNGImageCellFactory;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.webui.node.dialog.impl.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.testing.node.view.TableTestUtil;

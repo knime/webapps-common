@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.ui.style;
 
-import org.knime.core.webui.node.dialog.impl.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 
 /**
  *
