@@ -17,4 +17,16 @@ describe('Tooltip', () => {
         expect(wrapper.find('.special').text()).toBe('sometext');
         expect(wrapper.text()).toContain('My text');
     });
+
+    it('doesnt rooltip render when no text given', () => {
+        const wrapper = mount(Tooltip, {
+            props: {
+                text: ''
+            },
+            slots: {
+                default: '<strong class="special">sometext</strong>'
+            }
+        });
+        expect(wrapper.find('span').exists()).toBe(false);
+    })
 });

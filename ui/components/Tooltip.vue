@@ -12,7 +12,7 @@ export default {
 <template>
   <div class="tooltip">
     <slot />
-    <span class="text">{{ text }}</span>
+    <span class="text" v-if="text">{{ text }}</span>
   </div>
 </template>
 
