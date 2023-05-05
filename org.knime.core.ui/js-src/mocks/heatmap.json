@@ -102,6 +102,49 @@
               "title": "Vertical axis label",
               "description": "The label for the vertical axis. If left blank, no label will be shown.",
               "default": ""
+            },
+            "axisExtentMethod": {
+              "oneOf": [
+                {
+                  "const": "AUTO",
+                  "title": "Automatic"
+                },
+                {
+                  "const": "COLUMN_DOMAIN",
+                  "title": "Domain bounds"
+                },
+                {
+                  "const": "MANUAL",
+                  "title": "Manual"
+                }
+              ],
+              "title": "Axis limits",
+              "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "default": "AUTO"
+            },
+            "horizontalAxisManualMin": {
+              "type": "number",
+              "title": "Horizontal min",
+              "default": 0,
+              "description": "Value that sets the horizontal axis minimum."
+            },
+            "horizontalAxisManualMax": {
+              "type": "number",
+              "title": "Horizontal max",
+              "default": 0,
+              "description": "Value that sets the horizontal axis maximum."
+            },
+            "verticalAxisManualMin": {
+              "type": "number",
+              "title": "Vertical min",
+              "default": 0,
+              "description": "Value that sets the vertical axis minimum."
+            },
+            "verticalAxisManualMax": {
+              "type": "number",
+              "title": "Vertical max",
+              "default": 0,
+              "description": "Value that sets the vertical axis maximum."
             }
           }
         },
@@ -292,6 +335,58 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/title"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/axisExtentMethod",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/horizontalAxisManualMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/horizontalAxisManualMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "MANUAL"
+                  }
+                }
+              }
+            },
+            {
+              "type": "HorizontalLayout",
+              "elements": [
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/verticalAxisManualMin"
+                },
+                {
+                  "type": "Control",
+                  "scope": "#/properties/view/properties/verticalAxisManualMax"
+                }
+              ],
+              "rule": {
+                "effect": "SHOW",
+                "condition": {
+                  "scope": "#/properties/view/properties/axisExtentMethod",
+                  "schema": {
+                    "const": "MANUAL"
+                  }
+                }
+              }
             },
             {
               "type": "Control",
