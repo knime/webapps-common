@@ -30,10 +30,11 @@ export default ({ popperTarget, referenceEl }: PopperTargets, options: Ref<Optio
     };
     onUnmounted(destroyPopper);
 
-
     const updatePopper = () => {
         if (popperInstance.value) {
-            popperInstance.value.update();
+            popperInstance.value.update().catch((reason) => {
+                throw Error(`Unable to update popper instance; ${reason}`);
+            });
         }
     };
 

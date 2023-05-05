@@ -6,7 +6,7 @@ import PopperTestComponent from './PopperTestComponent.vue';
 
 const createPopperResult = {
     destroy: vi.fn(),
-    update: vi.fn()
+    update: vi.fn().mockResolvedValue()
 };
 
 vi.mock('@popperjs/core/dist/esm', () => ({
