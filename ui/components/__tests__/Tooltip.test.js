@@ -28,5 +28,5 @@ describe('Tooltip', () => {
             }
         });
         expect(wrapper.find('span').exists()).toBe(false);
-    })
+    });
 });
