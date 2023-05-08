@@ -54,6 +54,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.awaitility.Awaitility;
@@ -130,11 +131,11 @@ class PortViewManagerTest {
         assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1))).isNotNull();
 
         // check absurd port index
-        assertThatExceptionOfType(Exception.class)
+        assertThatExceptionOfType(NoSuchElementException.class)
             .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0)));
 
         // check absurd view index
-        assertThatExceptionOfType(Exception.class)
+        assertThatExceptionOfType(NoSuchElementException.class)
             .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE)));
 
         // check that the port view cache is cleared on node reset

@@ -180,6 +180,9 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         }
         var nc = nodePortWrapper.get();
         var portIdx = nodePortWrapper.getPortIdx();
+        if (portIdx < 0 || portIdx >= nc.getNrOutPorts()) {
+            throw new NoSuchElementException("No port at index " + portIdx);
+        }
         var outPort = nc.getOutPort(portIdx);
         var portType = outPort.getPortType();
         var viewIdx = nodePortWrapper.getViewIdx();
