@@ -1,5 +1,4 @@
-<script setup lang="ts">
-/**
+<script setup lang="ts">/**
  * MenuItems component with (optional) hotkey text and icons
  * Can be used to create a float-able menu or a sub menu or similar.
  * Position and visibility needs to be handled by the wrapper.
@@ -22,14 +21,34 @@
  *
  * Hovering an item emits `@item-hovered`.
  */
-
-import { nextTick, ref, type Ref } from 'vue';
+import { type FunctionalComponent, nextTick, ref, type Ref, type SVGAttributes } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
 import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
 import BaseMenuItems from './BaseMenuItems.vue';
-import type { MenuItem } from './BaseMenuItems.vue';
 import BaseMenuItem from './BaseMenuItem.vue';
 import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
+
+export interface MenuItem {
+  text: string;
+  icon?: FunctionalComponent<SVGAttributes>;
+  disabled?: boolean;
+  /** shown on menu items on hover */
+  title?: string;
+  /** for router-links */
+  to?: string;
+  /** for standard (e.g. external) links */
+  href?: string;
+  /** adds another styling to the item-font by reducing size and brightening color */
+  sectionHeadline?: boolean;
+  /** visually emphasizes an item by inverting the color of the item */
+  selected?: boolean;
+  /** show a separator below the item if it's not the last in the list */
+  separator?: boolean;
+  /** shown aligned right besides the text */
+  hotkeyText?: string;
+  /** sub menu */
+  children?: Array<MenuItem>
+}
 
 type Props = {
     items: MenuItem[];
@@ -45,9 +64,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 interface Emits {
     (e: 'close'): void
-    (e: 'item-click', event: MouseEvent, item: MenuItem, id: string): void
-    (e: 'item-focused', item: MenuItem|null, id: string|null): void
-    (e: 'item-hovered', item: MenuItem|null, id: string, index: number): void
+    (e: 'item-click', event: MouseEvent, item: MenuItem, menuId: string): void
+    (e: 'item-focused', itemId: string|null, item: MenuItem|null): void
+    (e: 'item-hovered', item: MenuItem|null, menuId: string, index: number): void
     (e: 'close-submenu'): void
 }
 
@@ -92,7 +111,7 @@ const focusIndex = (index: number = 0) => {
 };
 
 const setOpenSubmenuIndex = (index: number) => {
-    const item = props.items.at(index);
+    const item = props.items[index];
     const isEnabledSubmenuItem = item && !item.disabled && item.children?.length;
 
     openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
@@ -130,11 +149,6 @@ const onKeydown = (event: KeyboardEvent) => {
 };
 
 defineExpose({ onKeydown, resetNavigation, focusIndex });
-</script>
-
-<script lang="ts">
-/* re-export MenuItem type */
-export type { MenuItem } from './BaseMenuItems.vue';
 </script>
 
 <template>

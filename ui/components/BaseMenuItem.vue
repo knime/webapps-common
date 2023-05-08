@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MenuItem } from './BaseMenuItems.vue';
+import type { MenuItem } from './MenuItems.vue';
 
 type Props = {
     item: MenuItem;

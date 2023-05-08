@@ -1,31 +1,10 @@
 <script lang="ts">
-import type { PropType, FunctionalComponent, SVGAttributes } from 'vue';
+import type { PropType } from 'vue';
 import { onBeforeUpdate, ref, toRef } from 'vue';
 import usePopper from '../composables/usePopper';
 import { uniqueId } from 'lodash';
 import BaseMenuItem from './BaseMenuItem.vue';
-
-export interface MenuItem {
-  text: string;
-  icon?: FunctionalComponent<SVGAttributes>;
-  disabled?: boolean;
-  /** shown on menu items on hover */
-  title?: string;
-  /** for router-links */
-  to?: string;
-  /** for standard (e.g. external) links */
-  href?: string;
-  /** adds another styling to the item-font by reducing size and brightening color */
-  sectionHeadline?: boolean;
-  /** visually emphasizes an item by inverting the color of the item */
-  selected?: boolean;
-  /** show a separator below the item if it's not the last in the list */
-  separator?: boolean;
-  /** shown aligned right besides the text */
-  hotkeyText?: string;
-  /** sub menu */
-  children?: Array<MenuItem>
-}
+import type { MenuItem } from './MenuItems.vue';
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement }
 
