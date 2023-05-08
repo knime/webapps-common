@@ -69,7 +69,7 @@ public interface NodePortWrapper extends NodeWrapper {
      * @param viewIdx The index of the port view
      * @return a new instance
      */
-    public static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx) {
+    static NodePortWrapper of(final NodeContainer nc, final int portIdx, final Integer viewIdx) {
         return new NodePortWrapper() { // NOSONAR
 
             @Override
