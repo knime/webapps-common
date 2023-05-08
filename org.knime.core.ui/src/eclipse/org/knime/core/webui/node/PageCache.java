@@ -65,6 +65,12 @@ import org.knime.core.webui.page.Page;
  */
 final class PageCache<N extends NodeWrapper> {
 
+    /**
+     * The page-id-type. It specifies how the actual page-id is determined (see
+     * {@link #determinePageId(NodeWrapper, String)}).
+     *
+     * See also {@link PageResourceManager#getPagePath(NodeWrapper)}.
+     */
     enum PageIdType {
             /**
              * A page-id for a non-static page ({@link Page#isCompletelyStatic()} is {@code false})
