@@ -148,7 +148,7 @@ final class JsonFormsUiSchemaGenerator {
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
         final Map<Class<?>, JsonFormsExpression> ruleSources = new HashMap<>();
         m_settings.forEach((settingsKey, setting) -> {
-            final var prefix = addPropertyToPrefix("#", settingsKey);
+            final var prefix = settingsKey == null ? "#" : addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
             addAllFields(setting, layoutPartToControls, ruleSources, prefix, defaultLayout, false);
         });
