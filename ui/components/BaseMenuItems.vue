@@ -3,6 +3,7 @@ import type { PropType, FunctionalComponent, SVGAttributes } from 'vue';
 import { onBeforeUpdate, ref, toRef } from 'vue';
 import usePopper from '../composables/usePopper';
 import { uniqueId } from 'lodash';
+import BaseMenuItem from './BaseMenuItem.vue';
 
 export interface MenuItem {
   text: string;
@@ -34,6 +35,7 @@ function isNativeHTMLElement(element: ElementTemplateRef): element is HTMLElemen
 }
 
 export default {
+    components: { BaseMenuItem },
     props: {
         items: {
             type: Array as PropType<Array<MenuItem>>,
@@ -217,7 +219,15 @@ export default {
         :menu-item-id="menuItemId"
         :max-menu-width="maxMenuWidth"
         :focused-item-index="focusedItemIndex"
-      />
+      >
+        <BaseMenuItem
+          :id="menuItemId(index)"
+          :item="item"
+          :index="index"
+          :use-max-menu-width="Boolean(maxMenuWidth)"
+          :has-focus="index === focusedItemIndex"
+        />
+      </slot>
     </li>
   </ul>
 </template>

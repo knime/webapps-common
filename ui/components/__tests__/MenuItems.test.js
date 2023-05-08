@@ -4,7 +4,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 
 import MenuItems from '../MenuItems.vue';
 
-import MenuItemsBase from '../BaseMenuItems.vue';
+import BaseMenuItems from '../BaseMenuItems.vue';
 
 const dropdownNavigation = { currentIndex: ref(1), resetNavigation: vi.fn(), onKeydown: vi.fn() };
 vi.mock('../../composables/useDropdownNavigation', () => ({ default: vi.fn(() => dropdownNavigation) }));
@@ -14,27 +14,27 @@ describe('MenuItems.vue', () => {
     it('passes down all props', () => {
         const myProp = 'test property';
         const wrapper = shallowMount(MenuItems, { props: { myProp, items: [], menuAriaLabel: '' } });
-        expect(wrapper.findComponent(MenuItemsBase).vm.$attrs.myProp).toBe(myProp);
+        expect(wrapper.findComponent(BaseMenuItems).vm.$attrs.myProp).toBe(myProp);
     });
 
     it('passes up item-click event', () => {
         const myProp = 'test property';
         const wrapper = shallowMount(MenuItems, { props: { myProp, items: [], menuAriaLabel: '' } });
-        wrapper.findComponent(MenuItemsBase).vm.$emit('item-click', 'event', 'item', 'id');
+        wrapper.findComponent(BaseMenuItems).vm.$emit('item-click', 'event', 'item', 'id');
         expect(wrapper.emitted('item-click')[0]).toStrictEqual(['event', 'item', 'id']);
     });
 
     it('passes up item-hovered event', () => {
         const myProp = 'test property';
         const wrapper = shallowMount(MenuItems, { props: { myProp, items: [], menuAriaLabel: '' } });
-        wrapper.findComponent(MenuItemsBase).vm.$emit('item-hovered', 'item', 'id');
-        expect(wrapper.emitted('item-hovered')[0]).toStrictEqual(['item', 'id']);
+        wrapper.findComponent(BaseMenuItems).vm.$emit('item-hovered', 'item', 'id', -1);
+        expect(wrapper.emitted('item-hovered')[0]).toStrictEqual(['item', 'id', -1]);
     });
 
     it('passes up item-focused event', () => {
         const myProp = 'test property';
         const wrapper = shallowMount(MenuItems, { props: { myProp, items: [], menuAriaLabel: '' } });
-        wrapper.findComponent(MenuItemsBase).vm.$emit('item-focused', 'id');
+        wrapper.findComponent(BaseMenuItems).vm.$emit('item-focused', 'id');
         expect(wrapper.emitted('item-focused')[0]).toStrictEqual(['id']);
     });
 
@@ -42,7 +42,7 @@ describe('MenuItems.vue', () => {
         it('marks active element', () => {
             const wrapper = shallowMount(MenuItems, { props: { items: [], menuAriaLabel: '' } });
             const currentfocusedIndex = dropdownNavigation.currentIndex.value;
-            expect(wrapper.findComponent(MenuItemsBase).vm.focusedItemIndex).toBe(currentfocusedIndex);
+            expect(wrapper.findComponent(BaseMenuItems).vm.focusedItemIndex).toBe(currentfocusedIndex);
         });
 
         it('uses close function which emits @close', () => {
@@ -70,7 +70,7 @@ describe('MenuItems.vue', () => {
                     {
                         global: {
                             stubs: {
-                                MenuItemsBase: {
+                                BaseMenuItems: {
                                     methods: {
                                         getEnabledListItems: () => [
                                             first,
@@ -133,7 +133,7 @@ describe('MenuItems.vue', () => {
         });
 
         it('exposes onKeydown', () => {
-            parentWrapper.vm.$refs.menu.onKeydown();
+            parentWrapper.vm.$refs.menu.onKeydown({ code: 5 });
             expect(dropdownNavigation.onKeydown).toHaveBeenCalled();
         });
 

@@ -52,12 +52,12 @@ interface Emits {
 }
 
 const emit = defineEmits<Emits>();
-const menuItemsBase: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
+const baseMenuItems: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
 const openSubmenuItemIndex = ref(-1);
-const subMenu = ref<any>(null);
+const subLevelItems = ref<any>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
-    if (!menuItemsBase.value) {
+    if (!baseMenuItems.value) {
         return {
             onClick: () => {
             },
@@ -65,7 +65,7 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
         };
     }
 
-    const listItems = menuItemsBase.value.getEnabledListItems();
+    const listItems = baseMenuItems.value.getEnabledListItems();
     let currentIndexInEnabled = listItems
         .map<number | null>(({ index }) => index)
         .indexOf(current);
@@ -76,7 +76,7 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
     const nextIndex = getWrappedAroundIndex(currentIndexInEnabled + direction, listItems.length);
 
     const { element, index, onClick } = listItems[nextIndex];
-    menuItemsBase.value.scrollTo(element);
+    baseMenuItems.value.scrollTo(element);
 
     return { index, onClick };
 };
@@ -106,7 +106,7 @@ const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
         case 'ArrowRight':
             setOpenSubmenuIndex(currentIndex.value || 0);
             nextTick(() => {
-                subMenu.value?.focusIndex();
+                subLevelItems.value?.focusIndex();
             });
             break;
     }
@@ -125,7 +125,7 @@ const onKeydown = (event: KeyboardEvent) => {
     if (isSubmenuOpen) {
         onKeydownWithOpenCloseSubMenu(event);
     } else {
-        subMenu.value?.onKeydown(event);
+        subLevelItems.value?.onKeydown(event);
     }
 };
 
@@ -139,7 +139,7 @@ export type { MenuItem } from './BaseMenuItems.vue';
 
 <template>
   <BaseMenuItems
-    ref="menuItemsBase"
+    ref="baseMenuItems"
     v-bind="$attrs"
     :items="props.items"
     :menu-aria-label="props.menuAriaLabel"
@@ -166,7 +166,7 @@ export type { MenuItem } from './BaseMenuItems.vue';
             <MenuItems
               v-if="openSubmenuItemIndex === index"
               :id="`${menuId}__sub${index}`"
-              ref="subMenu"
+              ref="subLevelItems"
               class="menu-items-level"
               :menu-aria-label="`${item.text} sub menu`"
               :items="item.children"

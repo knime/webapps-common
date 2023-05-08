@@ -1,8 +1,8 @@
 /* eslint-disable max-nested-callbacks */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { shallowMount, RouterLinkStub } from '@vue/test-utils';
+import { mount, RouterLinkStub } from '@vue/test-utils';
 
-import MenuItemsBase from '../BaseMenuItems.vue';
+import BaseMenuItems from '../BaseMenuItems.vue';
 
 describe('BaseMenuItems.vue', () => {
     it('renders the items', () => {
@@ -11,14 +11,15 @@ describe('BaseMenuItems.vue', () => {
             { href: 'https://www.linkedin.com', text: 'Linked' },
             { to: '/relative/route', text: 'Everything is relative' }
         ];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const NuxtLink = RouterLinkStub;
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
             },
             global: {
                 stubs: {
-                    NuxtLink: RouterLinkStub
+                    NuxtLink
                 }
             }
         });
@@ -32,7 +33,7 @@ describe('BaseMenuItems.vue', () => {
         // Test links
         expect(wrapper.find(`li:nth-child(1) a`).attributes('href')).toBe(items[0].href);
         expect(wrapper.find(`li:nth-child(2) a`).attributes('href')).toBe(items[1].href);
-        expect(wrapper.findComponent(`li:nth-child(3) a`).props('to')).toBe(items[2].to);
+        expect(wrapper.findComponent(NuxtLink).props('to')).toBe(items[2].to);
     });
 
     it('renders with disabled items', () => {
@@ -50,7 +51,7 @@ describe('BaseMenuItems.vue', () => {
             text: 'Ananas',
             hotkeyText: 'F9'
         }];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
@@ -75,7 +76,7 @@ describe('BaseMenuItems.vue', () => {
             hotkeyText: 'F9',
             separator: true
         }];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
@@ -103,7 +104,7 @@ describe('BaseMenuItems.vue', () => {
             text: 'Ananas',
             hotkeyText: 'F9'
         }];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
@@ -128,7 +129,7 @@ describe('BaseMenuItems.vue', () => {
             text: 'Ananas',
             hotkeyText: 'F9'
         }];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
@@ -154,7 +155,7 @@ describe('BaseMenuItems.vue', () => {
             hotkeyText: 'F9'
         }];
 
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items
@@ -184,7 +185,7 @@ describe('BaseMenuItems.vue', () => {
             { href: 'https://www.google.com/slash', text: 'Google Slash', hotkeyText: 'ctrl + 1' },
             { href: 'https://www.link.me.in', text: 'Linked Thing', hotkeyText: 'ctrl +' }
         ];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items,
@@ -202,7 +203,7 @@ describe('BaseMenuItems.vue', () => {
             { href: 'https://www.google.com/slash', text: 'Google Slash' },
             { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items,
@@ -220,7 +221,7 @@ describe('BaseMenuItems.vue', () => {
             { href: 'https://www.google.com/slash', text: 'Google Slash', title: 'This is an example title' },
             { href: 'https://www.link.me.in', text: 'Linked Thing' }
         ];
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 menuAriaLabel: 'label',
                 items,
@@ -243,7 +244,7 @@ describe('BaseMenuItems.vue', () => {
         const id = 'testfoobar543';
 
         beforeEach(() => {
-            wrapper = shallowMount(MenuItemsBase, {
+            wrapper = mount(BaseMenuItems, {
                 props: {
                     menuAriaLabel: id,
                     items,
@@ -287,7 +288,7 @@ describe('BaseMenuItems.vue', () => {
 
     it('marks current focused item', () => {
         const focusedItemIndex = 1;
-        const wrapper = shallowMount(MenuItemsBase, {
+        const wrapper = mount(BaseMenuItems, {
             props: {
                 focusedItemIndex,
                 menuAriaLabel: 'label',
@@ -313,7 +314,7 @@ describe('BaseMenuItems.vue', () => {
                 { text: 'Third' }
             ];
 
-            wrapper = shallowMount(MenuItemsBase, {
+            wrapper = mount(BaseMenuItems, {
                 props: {
                     menuAriaLabel: 'label',
                     items,
@@ -324,8 +325,7 @@ describe('BaseMenuItems.vue', () => {
         });
 
         it('emits @item-focused initially', () => {
-            // eslint-disable-next-line no-undefined
-            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null, undefined]);
+            expect(wrapper.emitted('item-focused')[0]).toStrictEqual([null, null]);
         });
 
         it('emits @item-focused on focused item index change and when items change', async () => {
@@ -354,7 +354,7 @@ describe('BaseMenuItems.vue', () => {
 
             // enabled element
             listElements[0].trigger('pointerenter');
-            expect(wrapper.emitted('item-hovered')[0]).toStrictEqual([items[0], 'menu']);
+            expect(wrapper.emitted('item-hovered')[0]).toStrictEqual([items[0], 'menu', 0]);
         });
 
         it('emits empty @item-hovered on disabled list items', () => {
@@ -362,11 +362,11 @@ describe('BaseMenuItems.vue', () => {
 
             // disabled element
             listElements[1].trigger('pointerenter');
-            expect(wrapper.emitted('item-hovered')[0]).toStrictEqual([null, 'menu']);
+            expect(wrapper.emitted('item-hovered')[0]).toStrictEqual([null, 'menu', 1]);
         });
 
         it('emits empty @item-hovered on the menu', () => {
-            let menu = wrapper.findComponent(MenuItemsBase).find('ul');
+            let menu = wrapper.findComponent(BaseMenuItems).find('ul');
 
             menu.trigger('pointerleave');
             expect(wrapper.emitted('item-hovered')[0]).toStrictEqual([null, 'menu']);
