@@ -129,7 +129,7 @@ export default ArrayLayout;
         @click="addDefaultItem"
       >
         <PlusIcon />
-        {{ control.uischema.options.addButtonText }}
+        {{ control.uischema.options.addButtonText || "New" }}
       </Button>
     </div>
   </DialogComponentWrapper>
