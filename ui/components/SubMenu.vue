@@ -156,6 +156,7 @@ export default {
             if (this.disabled) {
                 return;
             }
+
             this.expanded = !this.expanded;
 
             const toggleCallback = this.expanded
@@ -165,7 +166,6 @@ export default {
 
             this.$emit('toggle', event, toggleCallback);
 
-            this.getMenuItems().resetNavigation();
             this.updatePopper();
         },
         onItemClick(event: Event, item: any) {
@@ -173,7 +173,7 @@ export default {
             this.toggleMenu(event);
         },
         onKeydown(event: KeyboardEvent) {
-            this.getMenuItems().onKeydown(event);
+            this.getMenuItems()?.onKeydown(event);
         },
         getMenuItems() {
             return this.$refs.menuItems as any;
@@ -221,12 +221,13 @@ export default {
         :class="['menu-wrapper', { disabled } ]"
       >
         <MenuItems
+          v-if="expanded"
           :id="id"
           ref="menuItems"
           :class="['menu-items', `orient-${orientation}`]"
           :items="items"
           :max-menu-width="maxMenuWidth"
-          menu-aria-label="sub menu"
+          menu-aria-label="dropdown menu"
           @item-click="onItemClick"
           @close="closeMenu"
           @item-focused="setActiveDescendant"
@@ -237,7 +238,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.menu-items {
+.menu-items, :deep(.menu-items-sub-level) {
   box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
 }
 

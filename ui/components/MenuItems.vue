@@ -20,6 +20,11 @@
  * to `item-click` and calls any action.
  *
  * Hovering an item emits `@item-hovered`.
+ *
+ * There is support for sub menus with the `children` key in items. The sublevel menus are recursive and create
+ * another MenuItems instance. The keyboard navigation is delegated to the submenu and open/close is handled.
+ * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus (e. g. box-shadow).
+ *
  */
 import { type FunctionalComponent, nextTick, ref, type Ref, type SVGAttributes } from 'vue';
 import useDropdownNavigation from '../composables/useDropdownNavigation';
@@ -117,16 +122,15 @@ const setOpenSubmenuIndex = (index: number) => {
     openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
 };
 
-const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
+const onKeydownWithOpenCloseSubMenu = async (event: KeyboardEvent) => {
     switch (event.code) {
         case 'ArrowLeft':
             emit('close-submenu');
             break;
         case 'ArrowRight':
             setOpenSubmenuIndex(currentIndex.value || 0);
-            nextTick(() => {
-                subLevelItems.value?.focusIndex();
-            });
+            await nextTick();
+            subLevelItems.value?.focusIndex();
             break;
     }
     onDropdownNavigationKeydown(event);
@@ -181,7 +185,7 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
               v-if="openSubmenuItemIndex === index"
               :id="`${menuId}__sub${index}`"
               ref="subLevelItems"
-              class="menu-items-level"
+              class="menu-items-sub-level"
               :menu-aria-label="`${item.text} sub menu`"
               :items="item.children"
               :max-menu-width="maxMenuWidth"

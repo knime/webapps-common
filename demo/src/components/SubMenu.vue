@@ -109,7 +109,17 @@ const subMenuItems = [{
     icon: markRaw(LeaveIcon)
 }, {
     text: 'Item without href/to',
-    icon: markRaw(HelpIcon)
+    icon: markRaw(HelpIcon),
+    children: [
+        {
+            text: 'I am part of a submenu',
+            icon: StarIcon
+        },
+        {
+            text: 'Woohooo',
+            href: 'https://example.com/woohoo'
+        }
+    ]
 }];
 
 export default {

@@ -128,6 +128,32 @@ export default {
                 return hasSeparator ? { ...item, separator: true } : item;
             });
         },
+        menuItemsWithChildren() {
+            return menuItemsData.slice().concat({
+                text: 'Sub menu',
+                icon: markRaw(LeaveIcon),
+                children: [
+                    {
+                        text: 'I am part of a submenu',
+                        href: 'https://example.com/woohoo',
+                        icon: markRaw(StarIcon)
+                    },
+                    {
+                        text: 'Another Level',
+                        children: [
+                            {
+                                text: 'Star me',
+                                icon: markRaw(StarIcon)
+                            },
+                            {
+                                text: 'We need more submenus',
+                                href: 'https://example.com/woohoo'
+                            }
+                        ]
+                    }
+                ]
+            });
+        },
         menuItemsWithSelectedEntries() {
             return menuItemsData.map((item, index) => {
                 // eslint-disable-next-line no-magic-numbers
@@ -179,20 +205,7 @@ export default {
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With icons and hotkeys</div>
-            <div class="card">
-              <MenuItems
-                id="WITH_ICONS_AND_HOTKEYS"
-                :items="menuItemsData"
-                menu-aria-label="Menu items with icons and hotkeys"
-                @item-click="onItemClick"
-                @item-hovered="onItemActive"
-              />
-            </div>
-          </div>
-
-          <div class="menu-item-wrapper">
-            <div class="menu-name">With separators</div>
+            <div class="menu-name">With icons, <br>hotkeys and separators</div>
             <div class="card">
               <MenuItems
                 id="WITH_SEPARATORS"
@@ -231,7 +244,7 @@ export default {
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With keyboard navigation and scrollable content</div>
+            <div class="menu-name">With keyboard navigation<br> and scrollable content</div>
             <button @keydown="($refs.menuItemsWithNavigation as any).onKeydown($event)">
               Focus me to start navigating
             </button>
@@ -247,13 +260,27 @@ export default {
             </div>
           </div>
 
-          <div class="hover-preview">
-            <div class="hover-title">
-              {{ hoveredItem ? 'Hovered value is:' : 'Hover over an item' }}
+          <div class="menu-item-wrapper">
+            <div class="menu-name">With submenu (children)</div>
+            <div class="card">
+              <MenuItems
+                id="WITH_CHILDREN"
+                :items="menuItemsWithChildren"
+                menu-aria-label="Menu items with children"
+                @item-click="onItemClick"
+                @item-hovered="onItemActive"
+              />
             </div>
-            <pre class="hover-content">{{ hoveredItem }}</pre>
           </div>
         </div>
+
+        <div class="hover-preview">
+          <div class="hover-title">
+            {{ hoveredItem ? 'Hovered value is:' : 'Hover over an item' }}
+          </div>
+          <pre class="hover-content">{{ hoveredItem }}</pre>
+        </div>
+
         <CodeExample summary="Show usage example">{{ codeExampleStandalone }}</CodeExample>
         <CodeExample summary="Show MenuItems.vue source code">{{ code }}</CodeExample>
       </div>
@@ -271,6 +298,10 @@ h4 {
   text-align: center;
 }
 
+:deep(.menu-items-sub-level) {
+  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
+}
+
 .card {
   display: flex;
   flex-direction: column;
@@ -282,35 +313,34 @@ h4 {
   overflow-y: auto;
 }
 
+& .hover-preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-self: self-start;
+  padding: 10px;
+
+  & .hover-title {
+    padding-bottom: 10px;
+    text-align: left;
+  }
+
+  & .hover-content {
+    font-size: 12px;
+    overflow: auto;
+    height: 150px;
+    max-width: fit-content;
+  }
+}
+
 .menu-items {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
 
-  & .hover-preview,
   & .menu-item-wrapper {
     flex-direction: column;
-  }
-
-  & .hover-preview {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-self: self-start;
-    padding: 10px;
-
-    & .hover-title {
-      padding-bottom: 10px;
-      text-align: center;
-    }
-
-    & .hover-content {
-      font-size: 12px;
-      overflow: auto;
-      max-width: 360px;
-      height: 150px;
-    }
   }
 
   & > * {
