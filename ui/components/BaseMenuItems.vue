@@ -142,7 +142,7 @@ export default {
         menuItemId(index: number) {
             return `menu-item-${this.id}-${index}`;
         },
-        onPointerEnter(event: Event, item: MenuItem, index: Number) {
+        onPointerEnter(event: Event, item: MenuItem, index: number) {
             this.$emit('item-hovered', item.disabled || item.sectionHeadline ? null : item, this.id, index);
         },
         onItemClick(event: Event, item: MenuItem, id?: string) {

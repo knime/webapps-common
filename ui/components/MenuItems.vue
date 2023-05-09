@@ -128,7 +128,7 @@ const onKeydownWithOpenCloseSubMenu = async (event: KeyboardEvent) => {
             emit('close-submenu');
             break;
         case 'ArrowRight':
-            setOpenSubmenuIndex(currentIndex.value || 0);
+            setOpenSubmenuIndex(currentIndex.value ?? 0);
             await nextTick();
             subLevelItems.value?.focusIndex();
             break;
