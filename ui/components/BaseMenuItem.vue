@@ -61,6 +61,7 @@ defineProps<Props>();
 
 <style lang="postcss">
 .list-item {
+  --icon-size: 18;
   border: none;
   background: none;
   width: 100%;
@@ -84,9 +85,9 @@ defineProps<Props>();
 
     & .item-icon {
       stroke: var(--theme-dropdown-foreground-color);
-      stroke-width: calc(32px / 18);
-      width: 18px;
-      height: 18px;
+      stroke-width: calc(32px / var(--icon-size));
+      width: calc(var(--icon-size) * 1px);
+      height: calc(var(--icon-size) * 1px);
       margin-right: 7px;
     }
 
@@ -103,6 +104,8 @@ defineProps<Props>();
       display: flex;
       text-align: left;
       width: 100%;
+      height: calc(var(--icon-size) * 1px);
+      align-items: center;
 
       & .text {
         flex-shrink: 1;
