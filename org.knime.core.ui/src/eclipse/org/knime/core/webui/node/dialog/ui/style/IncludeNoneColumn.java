@@ -44,25 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   May 9, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.ui.style;
 
 /**
  *
  * @author Paul Bärnreuther
+ * TODO UIEXT-877 remove this again and istead make it part of a widget annotation
  */
-public sealed interface StyleProvider
-    permits BooleanStyleProvider, EnumStyleProvider, ColumnFilterStyle, IncludeNoneColumn {
+public final class IncludeNoneColumn implements StyleProvider {
 
     /**
-     * @param clazz the class of the setting field
-     * @return whether the style supplier is applicable for the class
+     * {@inheritDoc}
      */
-    boolean isApplicable(Class<?> clazz);
+    @Override
+    public boolean isApplicable(final Class<?> clazz) {
+        return true;
+    }
+
+
+    record IncludeNoneColumnStyle(Boolean showNoneColumn) {}
 
     /**
-     * @return an instance of a POJO representing the style
+     * {@inheritDoc}
      */
-    Object getStyleObject();
+    @Override
+    public Object getStyleObject() {
+        return new IncludeNoneColumnStyle(true);
+    }
+
 }

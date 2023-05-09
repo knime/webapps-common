@@ -114,7 +114,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
-public class NodeViewEntTest {
+class NodeViewEntTest {
 
     /**
      * Tests the creation of {@link NodeViewEnt} instances.
