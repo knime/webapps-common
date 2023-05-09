@@ -56,31 +56,33 @@ describe('SubMenu.vue', () => {
 
     it('opens and closes menu on click', async () => {
         const wrapper = mount(SubMenu, { props });
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
         await wrapper.find('.submenu-toggle').trigger('click');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
         await wrapper.find('.submenu-toggle').trigger('click');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
     });
 
     it('closes menu on close event', async () => {
         const wrapper = mount(SubMenu, { props });
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
         await wrapper.find('.submenu-toggle').trigger('click');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
         await wrapper.findComponent(MenuItems).vm.$emit('close');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
     });
 
     it('does not toggle the menu if disabled', async () => {
         props.disabled = true;
         const wrapper = mount(SubMenu, { props });
         await wrapper.find('.submenu-toggle').trigger('click');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
     });
 
     it('emits item-click', async () => {
         const wrapper = mount(SubMenu, { props });
+        await wrapper.find('.submenu-toggle').trigger('click');
+
         // assumes MenuItems use <li>
         await wrapper.findComponent(MenuItems).findAll('li')[0].trigger('click');
         let event = wrapper.emitted('item-click')[0];
@@ -88,6 +90,7 @@ describe('SubMenu.vue', () => {
         expect(event[1]).toEqual(props.items[0]);
         expect(event[2]).toEqual(props.id);
 
+        await wrapper.find('.submenu-toggle').trigger('click');
         await wrapper.findComponent(MenuItems).findAll('li')[1].trigger('click');
         event = wrapper.emitted('item-click')[1];
         expect(typeof event[0]).toBe('object'); // event object
@@ -98,22 +101,23 @@ describe('SubMenu.vue', () => {
     it('uses click outside', async () => {
         useClickOutside.reset();
         const wrapper = mount(SubMenu, { props });
+        await wrapper.find('.submenu-toggle').trigger('click'); // open
         const [{ targets, callback }, active] = useClickOutside.mock.calls[0];
 
         expect(unref(targets[0])).toStrictEqual(wrapper.find('.submenu').element);
         expect(unref(targets[1]).$el).toStrictEqual(wrapper.findComponent(MenuItems).element);
 
-        await wrapper.find('.submenu-toggle').trigger('click');
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
         callback();
         await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+        expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
 
         expect(unref(active)).toBe(false);
     });
 
-    it('calls keydown callback', () => {
+    it('calls keydown callback', async () => {
         const wrapper = mount(SubMenu, { props });
+        await wrapper.find('.submenu-toggle').trigger('click'); // open
 
         wrapper.find('.submenu').trigger('keydown');
 
@@ -123,6 +127,8 @@ describe('SubMenu.vue', () => {
     it('sets and removes aria-owns and aria-activedescendant on @item-focused', async () => {
         const testId = 'testId';
         const wrapper = mount(SubMenu, { props });
+        await wrapper.find('.submenu-toggle').trigger('click'); // open
+
         await wrapper.findComponent(MenuItems).vm.$emit('item-focused', testId);
         expect(wrapper.find('.submenu').attributes('aria-owns')).toBe(testId);
         expect(wrapper.find('.submenu').attributes('aria-activedescendant')).toBe(testId);
@@ -203,6 +209,8 @@ describe('SubMenu.vue', () => {
             const wrapper = mount(SubMenu, {
                 props: { items, id }
             });
+            await wrapper.find('.submenu-toggle').trigger('click'); // open
+
             // assumes MenuItems use <li>
             // teleport is enabled by default, so the li cannot be found as it is telported
             expect(wrapper.find('li').exists()).toBeFalsy();
@@ -227,10 +235,10 @@ describe('SubMenu.vue', () => {
             const [event, callback] = wrapper.emitted('toggle')[0];
             expect(event).toBeTruthy();
             expect(typeof callback).toBe('function');
-            expect(wrapper.findComponent(MenuItems).isVisible()).toBeTruthy();
+            expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
             callback();
             await wrapper.vm.$nextTick();
-            expect(wrapper.findComponent(MenuItems).isVisible()).toBeFalsy();
+            expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
         });
     });
 });
