@@ -53,15 +53,21 @@ import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.H
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.IS_ADVANCED_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LABEL_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.OPTIONS_TAG;
+import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.RULE_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.SECTION_TAG;
 import static org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.TYPE_TAG;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
 import org.knime.core.webui.node.dialog.ui.Section;
+import org.knime.core.webui.node.dialog.ui.rule.Effect;
+import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  *
@@ -70,7 +76,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
         HORIZONTAL_LAYOUT(LayoutPart::getHorizontalLayout), //
-        VIRTUAL_SECTION(LayoutNodeCreationContext::getParent);
+        VIRTUAL_SECTION(LayoutNodeCreationContext::parent);
 
     private Function<LayoutNodeCreationContext, ArrayNode> m_create;
 
@@ -91,13 +97,15 @@ enum LayoutPart {
         return VIRTUAL_SECTION;
     }
 
-    ArrayNode create(final ArrayNode parent, final Class<?> layoutClass) {
-        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass));
+    ArrayNode create(final ArrayNode parent, final Class<?> layoutClass, final ObjectMapper mapper,
+        final Map<Class<?>, JsonFormsExpression> signals) {
+        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, mapper, signals));
     }
 
     private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
-        final var sectionAnnotation = creationContext.getLayoutClass().getAnnotation(Section.class);
-        final var parent = creationContext.getParent();
+        final var layoutClass = creationContext.layoutClass();
+        final var sectionAnnotation = layoutClass.getAnnotation(Section.class);
+        final var parent = creationContext.parent();
         final var node = parent.addObject();
         final var label = sectionAnnotation.title();
         node.put(LABEL_TAG, label);
@@ -105,33 +113,25 @@ enum LayoutPart {
         if (sectionAnnotation.advanced()) {
             node.putObject(OPTIONS_TAG).put(IS_ADVANCED_TAG, true);
         }
+        applyRules(node, creationContext);
         return node.putArray(ELEMENTS_TAG);
     }
 
     private static ArrayNode getHorizontalLayout(final LayoutNodeCreationContext creationContext) {
-        final var parent = creationContext.getParent();
+        final var parent = creationContext.parent();
         final var node = parent.addObject();
         node.put(TYPE_TAG, HORIZONTAL_LAYOUT_TAG);
+        node.putObject(RULE_TAG);
+        applyRules(node, creationContext);
         return node.putArray(ELEMENTS_TAG);
     }
 
-    private class LayoutNodeCreationContext {
+    private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {
+        new UiSchemaRulesGenerator(creationContext.mapper(), creationContext.layoutClass.getAnnotation(Effect.class),
+            creationContext.signals()).applyRulesTo(node);
+    }
 
-        private final ArrayNode m_parent;
-
-        private final Class<?> m_layoutClass;
-
-        public LayoutNodeCreationContext(final ArrayNode parent, final Class<?> layoutClass) {
-            m_parent = parent;
-            m_layoutClass = layoutClass;
-        }
-
-        public ArrayNode getParent() {
-            return m_parent;
-        }
-
-        public Class<?> getLayoutClass() {
-            return m_layoutClass;
-        }
+    private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass, ObjectMapper mapper,
+        Map<Class<?>, JsonFormsExpression> signals) {
     }
 }

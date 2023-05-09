@@ -57,6 +57,7 @@ import java.util.Map;
 
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.JsonFormsControl;
 import org.knime.core.webui.node.dialog.impl.JsonFormsUiSchemaGenerator.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.ui.rule.Effect;
 import org.knime.core.webui.node.dialog.ui.rule.JsonFormsExpression;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +74,7 @@ final class LayoutNodesGenerator {
 
     private final LayoutTreeNode m_rootLayoutTree;
 
-    private Map<Class<?>, JsonFormsExpression> m_ruleSourcesMap;
+    private Map<Class<?>, JsonFormsExpression> m_signals;
 
     /**
      * @param mapper the object mapper used for the ui schema generation
@@ -83,7 +84,7 @@ final class LayoutNodesGenerator {
      */
     LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout) {
         m_mapper = mapper;
-        m_ruleSourcesMap = layout.ruleSources();
+        m_signals = layout.signals();
         m_rootLayoutTree = layout.layoutTreeRoot();
     }
 
@@ -95,7 +96,7 @@ final class LayoutNodesGenerator {
 
     private void buildLayout(final LayoutTreeNode rootNode, final ArrayNode parentNode) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
-        final var layoutNode = layoutPart.create(parentNode, rootNode.getValue());
+        final var layoutNode = layoutPart.create(parentNode, rootNode.getValue(), m_mapper, m_signals);
         rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
@@ -104,6 +105,6 @@ final class LayoutNodesGenerator {
         final var control = root.addObject().put(TYPE_TAG, CONTROL_TAG).put(SCOPE_TAG, controlElement.scope());
         final var field = controlElement.field();
         new UiSchemaOptionsGenerator(m_mapper, field).applyStylesTo(control);
-        new UiSchemaRulesGenerator(m_mapper, field, m_ruleSourcesMap).applyRulesTo(control);
+        new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

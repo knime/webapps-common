@@ -66,7 +66,6 @@ import org.knime.core.webui.node.dialog.ui.rule.Signal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  *
@@ -76,24 +75,24 @@ final class UiSchemaRulesGenerator {
 
     private final ObjectMapper m_mapper;
 
-    private final Map<Class<?>, JsonFormsExpression> m_ruleSourcesMap;
+    private final Map<Class<?>, JsonFormsExpression> m_signalsMap;
 
-    private final Effect m_ruleTarget;
+    private final Effect m_effect;
 
     private JsonFormsExpressionResolver m_visitor;
 
     /**
      * @param mapper a object mapper used to resolve the schema objects in any used {@link Condition}
      * @param field a field for which the effect of a rule is to be determined
-     * @param ruleSourcesMap the map of all rule sources in the settings context at hand. It maps the ids of
+     * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of
      *            {@link Signal} annotations to a construct holding the respective condition and the scope of the
      *            associated field.
      */
-    UiSchemaRulesGenerator(final ObjectMapper mapper, final PropertyWriter field,
-        final Map<Class<?>, JsonFormsExpression> ruleSourcesMap) {
+    UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
+        final Map<Class<?>, JsonFormsExpression> signalsMap) {
         m_mapper = mapper;
-        m_ruleTarget = field.getAnnotation(Effect.class);
-        m_ruleSourcesMap = ruleSourcesMap;
+        m_effect = effect;
+        m_signalsMap = signalsMap;
         m_visitor = new JsonFormsExpressionResolver(m_mapper);
     }
 
@@ -105,13 +104,13 @@ final class UiSchemaRulesGenerator {
      * @param control the object node to which the rule should be applied
      */
     public void applyRulesTo(final ObjectNode control) {
-        if (m_ruleTarget == null) {
+        if (m_effect == null) {
             return;
         }
-        final var rule = control.putObject(RULE_TAG).put(EFFECT_TAG, String.valueOf(m_ruleTarget.type()));
-        final var sources = Arrays.asList(m_ruleTarget.signals()).stream().map(m_ruleSourcesMap::get)
+        final var rule = control.putObject(RULE_TAG).put(EFFECT_TAG, String.valueOf(m_effect.type()));
+        final var sources = Arrays.asList(m_effect.signals()).stream().map(m_signalsMap::get)
             .toArray(JsonFormsExpression[]::new);
-        final var operationClass = m_ruleTarget.operation();
+        final var operationClass = m_effect.operation();
         rule.set(CONDITION_TAG, instantiateOperation(operationClass, sources).accept(m_visitor));
     }
 

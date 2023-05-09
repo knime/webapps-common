@@ -134,15 +134,15 @@ final class JsonFormsUiSchemaGenerator {
         return new LayoutNodesGenerator(m_mapper, layoutSkeleton).build();
     }
 
-    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> ruleSources) {
+    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals) {
     }
 
     private LayoutSkeleton resolveLayoutToContentAndRoot() {
-        final var controlsAndRuleSources = getLayoutPartToControls();
-        final var layoutClassesToControls = controlsAndRuleSources.getFirst();
+        final var controlsAndsignals = getLayoutPartToControls();
+        final var layoutClassesToControls = controlsAndsignals.getFirst();
         final var layoutTreeRoot = new LayoutTree(layoutClassesToControls).getRootNode();
-        final var ruleSources = controlsAndRuleSources.getSecond();
-        return new LayoutSkeleton(layoutTreeRoot, ruleSources);
+        final var signals = controlsAndsignals.getSecond();
+        return new LayoutSkeleton(layoutTreeRoot, signals);
     }
 
     /**
@@ -152,21 +152,21 @@ final class JsonFormsUiSchemaGenerator {
      */
     private Pair<Map<Class<?>, List<JsonFormsControl>>, Map<Class<?>, JsonFormsExpression>> getLayoutPartToControls() {
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
-        final Map<Class<?>, JsonFormsExpression> ruleSources = new HashMap<>();
+        final Map<Class<?>, JsonFormsExpression> signals = new HashMap<>();
         m_settings.forEach((settingsKey, setting) -> {
             final var prefix = settingsKey == null ? "#" : addPropertyToPrefix("#", settingsKey);
             final Class<?> defaultLayout = null;
-            addAllFields(setting, layoutPartToControls, ruleSources, prefix, defaultLayout, false);
+            addAllFields(setting, layoutPartToControls, signals, prefix, defaultLayout, false);
         });
-        return new Pair<>(layoutPartToControls, ruleSources);
+        return new Pair<>(layoutPartToControls, signals);
     }
 
     private void addAllFields(final Class<?> clazz, final Map<Class<?>, List<JsonFormsControl>> layoutControls,
-        final Map<Class<?>, JsonFormsExpression> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final Map<Class<?>, JsonFormsExpression> signals, final String parentScope, final Class<?> defaultLayout,
         final boolean enclosingFieldSetsLayout) {
         final var layout = mergeLayouts(clazz, defaultLayout, enclosingFieldSetsLayout);
         final var properties = getSerializableProperties(clazz);
-        properties.forEachRemaining(field -> addField(layoutControls, ruleSources, parentScope, layout, field));
+        properties.forEachRemaining(field -> addField(layoutControls, signals, parentScope, layout, field));
     }
 
     private Iterator<PropertyWriter> getSerializableProperties(final Class<?> clazz) {
@@ -198,7 +198,7 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     private void addField(final Map<Class<?>, List<JsonFormsControl>> layoutControls,
-        final Map<Class<?>, JsonFormsExpression> ruleSources, final String parentScope, final Class<?> defaultLayout,
+        final Map<Class<?>, JsonFormsExpression> signals, final String parentScope, final Class<?> defaultLayout,
         final PropertyWriter field) {
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
@@ -206,7 +206,7 @@ final class JsonFormsUiSchemaGenerator {
         final var declaringClassLayout = getClassLayout(field.getMember().getDeclaringClass()).orElse(defaultLayout);
         final var fieldLayout = layoutByFieldAnnotation.orElse(declaringClassLayout);
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
-            this.addAllFields(fieldType, layoutControls, ruleSources, scope, fieldLayout,
+            this.addAllFields(fieldType, layoutControls, signals, scope, fieldLayout,
                 layoutByFieldAnnotation.isPresent());
         } else {
             layoutControls.compute(fieldLayout, (k, previous) -> {
@@ -214,17 +214,17 @@ final class JsonFormsUiSchemaGenerator {
                 newControls.add(new JsonFormsControl(scope, field));
                 return newControls;
             });
-            getRuleSource(field).ifPresent(ruleSource -> {
-                final var conditionClass = ruleSource.condition();
+            getSignal(field).ifPresent(signal -> {
+                final var conditionClass = signal.condition();
                 final var condition = createInstance(conditionClass);
-                final var scopedRuleSource = new JsonFormsExpression(scope, condition);
-                final var ruleSourceId = ruleSource.id();
-                ruleSources.put(ruleSourceId.equals(Class.class) ? conditionClass : ruleSourceId, scopedRuleSource);
+                final var scopedsignal = new JsonFormsExpression(scope, condition);
+                final var signalId = signal.id();
+                signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedsignal);
             });
         }
     }
 
-    private static Optional<Signal> getRuleSource(final PropertyWriter field) {
+    private static Optional<Signal> getSignal(final PropertyWriter field) {
         return Optional.ofNullable(field.getAnnotation(Signal.class));
     }
 

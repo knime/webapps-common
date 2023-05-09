@@ -51,9 +51,12 @@ package org.knime.core.webui.node.dialog.ui.rule;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
+import org.knime.core.webui.node.dialog.ui.Section;
+
 /**
- * With this annotation a field can be disabled or hidden depending on the values of other fields which are annotated by
- * {@link Signal} themselves.
+ * With this annotation a field or a whole layout part (i.e. {@link Section} or {@link HorizontalLayout}) can be disabled or
+ * hidden depending on the values of other fields which are annotated by {@link Signal} themselves.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -83,11 +86,11 @@ public @interface Effect {
     }
 
     /**
-     * @return the array of ids used in {@link Signal} annotations within the same settings context which should be
-     *         used as building blocks for the rule. If a {@link Signal} does not define an id, it is also possible to
+     * @return the array of ids used in {@link Signal} annotations within the same settings context which should be used
+     *         as building blocks for the rule. If a {@link Signal} does not define an id, it is also possible to
      *         reference it by condition, but this should only be used when the condition is a custom and unique one in
-     *         the present settings context. There either has to be exactly one id if no operation is provided or the number of
-     *         ids has to fit a suitable constructor of the given operation.
+     *         the present settings context. There either has to be exactly one id if no operation is provided or the
+     *         number of ids has to fit a suitable constructor of the given operation.
      */
     Class<?>[] signals();
 

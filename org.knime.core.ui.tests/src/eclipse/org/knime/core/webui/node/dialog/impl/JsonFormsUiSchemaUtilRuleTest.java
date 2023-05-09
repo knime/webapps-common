@@ -54,6 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
+import org.knime.core.webui.node.dialog.ui.Layout;
 import org.knime.core.webui.node.dialog.ui.rule.And;
 import org.knime.core.webui.node.dialog.ui.rule.Effect;
 import org.knime.core.webui.node.dialog.ui.rule.Effect.EffectType;
@@ -469,6 +471,40 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThrows(UiSchemaGenerationException.class,
             () -> buildTestUiSchema(MultipleConditionsWithoutOperationSettings.class));
         assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(NoConditionsSettings.class));
+    }
+
+    final class LayoutWithEffect {
+        @HorizontalLayout()
+        @Effect(signals = EffectOnLayoutPartSettings.SomeBooleanIsTrue.class, type = EffectType.DISABLE)
+        interface OptionalHorizontalLayout {
+        }
+
+    }
+
+    final class EffectOnLayoutPartSettings implements DefaultNodeSettings {
+
+        interface SomeBooleanIsTrue {
+        }
+
+        @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+        @Layout(LayoutWithEffect.class)
+        boolean m_someBoolean;
+
+        @Layout(LayoutWithEffect.OptionalHorizontalLayout.class)
+        boolean m_tagetSetting;
+    }
+
+    @Test
+    void testEffectOnLayoutPart() {
+
+        final var response = buildTestUiSchema(EffectOnLayoutPartSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("HorizontalLayout");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
     }
 
     private static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
