@@ -53,13 +53,14 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 
 /**
+ * The sub-settings of the column filter which hold the information for filtering manually.
  *
  * @author Paul Bärnreuther
  */
-class ManualColumnFilter implements DialogComponentSettings {
+class ManualColumnFilter implements PersistableSettings {
 
     /**
      * the manually selected columns in case of m_mode = "MANUAL"

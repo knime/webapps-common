@@ -56,7 +56,7 @@ import com.github.victools.jsonschema.generator.SchemaVersion;
  * @author Paul Bärnreuther
  */
 @SuppressWarnings("javadoc")
-public class JsonFormsConsts {
+public final class JsonFormsConsts {
 
     /**
      * The version of the designated jsonforms schema object
@@ -74,7 +74,7 @@ public class JsonFormsConsts {
      *
      * @author Paul Bärnreuther
      */
-    public static class Schema {
+    public static final class Schema {
 
         private Schema() {
             // Utility
@@ -126,7 +126,7 @@ public class JsonFormsConsts {
      *
      * @author Paul Bärnreuther
      */
-    public static class UiSchema {
+    public static final class UiSchema {
 
         private UiSchema() {
             // Utility
@@ -157,7 +157,7 @@ public class JsonFormsConsts {
          *
          * @author Paul Bärnreuther
          */
-        public static class Format {
+        public static final class Format {
 
             private Format() {
                 // Utility

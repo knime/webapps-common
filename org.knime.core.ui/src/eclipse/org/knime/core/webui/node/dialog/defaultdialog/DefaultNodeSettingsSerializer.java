@@ -50,16 +50,19 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import java.io.IOException;
 
+import org.knime.core.webui.data.InitialDataService.InitialDataServiceBuilder;
 import org.knime.core.webui.data.InitialDataService.Serializer;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * TODO
+ * Serializes POJOs into strings using the same object mapper as is used for
+ * {@link DefaultNodeSettings}-implementations. Mainly useful in case node settings are supposed to be passed as data
+ * through data-services to the frontend. I.e. to be used in {@link InitialDataServiceBuilder#serializer(Serializer)}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @param <D>
+ * @param <D> the default node settings type
  */
 public class DefaultNodeSettingsSerializer<D> implements Serializer<D> {
 

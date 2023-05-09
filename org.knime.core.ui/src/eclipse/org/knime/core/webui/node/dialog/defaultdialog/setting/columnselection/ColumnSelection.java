@@ -50,8 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -61,7 +61,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public final class ColumnSelection implements DialogComponentSettings {
+public final class ColumnSelection implements PersistableSettings {
 
     /**
      * The selected column

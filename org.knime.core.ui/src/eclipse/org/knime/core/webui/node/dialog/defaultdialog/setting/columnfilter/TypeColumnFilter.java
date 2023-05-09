@@ -61,17 +61,18 @@ import org.knime.core.data.DataType;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * The sub-settings of the column filter which hold the information for filtering by column type.
  *
  * @author Paul Bärnreuther
  */
-class TypeColumnFilter implements DialogComponentSettings {
+class TypeColumnFilter implements PersistableSettings {
 
     /**
      * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
@@ -123,7 +124,6 @@ class TypeColumnFilter implements DialogComponentSettings {
     static String typeToString(final DataType type) {
         return type.getPreferredValueClass().getName();
     }
-
 
     private static final class ColumnTypeDisplaysPersistor implements FieldNodeSettingsPersistor<ColumnTypeDisplay[]> {
 

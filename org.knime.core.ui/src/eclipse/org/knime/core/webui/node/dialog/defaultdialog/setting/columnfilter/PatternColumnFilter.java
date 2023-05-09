@@ -56,15 +56,16 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * The sub-settings of the column filter which hold the information for filtering by regex or wildcard pattern.
  *
  * @author Paul Bärnreuther
  */
-class PatternColumnFilter implements DialogComponentSettings {
+class PatternColumnFilter implements PersistableSettings {
 
     /**
      * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"

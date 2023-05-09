@@ -67,7 +67,13 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
@@ -94,9 +100,29 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * <p>All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
  * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
  * annotations} to supply additional information (e.g. description, domain info, ...).
+ * 
+ * These fields are resolved as follows if no overriding annotation is given instead:
+ *  <ul>
+ *  <li>boolean settings are resolved to a checkbox widget
+ *  <li>String settings are resolved to text inputs widget
+ *  <li>double, int or float settings are resolved to a number input widget
+ *  <li>Enums are resolved to a value switch widget
+ *  <li>Arrays or collections of settings which are serialized to an object are resolved to an array widget
+ *  </ul>
+ *  
+ *  In addition, there are annotation which van be used to further specify or override these defaults.
+ *  <ul>
+ *  <li>Using the {@link Widget} one can set parameters common to all widgets.
+ *  <li>The {@link ChoicesWidget} annotation is applicable to String, String[], {@link ColumnSelection},
+ *  {@link ColumnFilter}. Strings and ColumnSelections will result in a drop-down widget while String[] or ColumnFilter
+ *  are resolved to a twin-list widget
+ *  <li>The above mentioned number inputs can be enhanced by using {@link NumberInputWidget}
+ *  <li>The above mentioned text input can be enhances by using {@link TextInputWidget}
+ *  <li>Using {@link RadioButtonsWidget} one can override the default for enums to show a radio buttons widget instead.
+ *  <li> For arrays or collections of POJOs the annotation {@link ArrayWidget @ArrayWidget} can be used to configure text of
+ *  the add button and the title of the elements.
+ *  </ul>
  *
- * <p>For arrays or collections of POJOs the annotation {@link ArrayWidget @ArrayWidget} can be used to configure text of
- * the add button and the title of the elements.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany

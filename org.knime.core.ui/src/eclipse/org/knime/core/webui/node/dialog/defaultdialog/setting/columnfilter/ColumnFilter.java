@@ -52,8 +52,8 @@ import java.util.Objects;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -66,7 +66,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-public class ColumnFilter implements DialogComponentSettings {
+public class ColumnFilter implements PersistableSettings {
 
 
     /**
