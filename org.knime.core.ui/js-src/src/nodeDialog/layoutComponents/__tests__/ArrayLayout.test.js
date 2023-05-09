@@ -143,6 +143,24 @@ describe('ArrayLayout.vue', () => {
             .toStrictEqual(expectedDefaultValue);
     });
 
+    it('renders an add button', () => {
+        const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
+        wrapper = mountJsonFormsComponent(ArrayLayout, props);
+        const addButton = wrapper.find('.array > button');
+        expect(addButton.text()).toBe('New');
+        addButton.element.click();
+        expect(addItemSpy).toHaveBeenCalled();
+    });
+
+
+    it('sets add button text', () => {
+        const customAddButtonText = 'My add button text';
+        props.control.uischema.options.addButtonText = customAddButtonText;
+        wrapper = mountJsonFormsComponent(ArrayLayout, props);
+        const addButton = wrapper.find('.array > button');
+        expect(addButton.text()).toBe(customAddButtonText);
+    });
+
     it('adds default item', async () => {
         const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
         wrapper = await mountJsonFormsComponent(ArrayLayout, props);
