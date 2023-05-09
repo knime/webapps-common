@@ -206,11 +206,12 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
 <style>
 .sub-menu-indicator {
   & .icon {
-    width: 11px;
-    height: 11px;
-    stroke-width: calc(32px / 11);
+    width: 12px;
+    height: 12px;
+    stroke-width: calc(32px / 12);
     pointer-events: none;
     stroke: var(--theme-dropdown-foreground-color);
+    vertical-align: middle;
   }
 }
 </style>
