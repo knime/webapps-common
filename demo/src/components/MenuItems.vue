@@ -140,10 +140,11 @@ export default {
                     },
                     {
                         text: 'Another Level',
+                        icon: markRaw(LeaveIcon),
                         children: [
                             {
-                                text: 'Star me',
-                                icon: markRaw(StarIcon)
+                                text: 'Something…',
+                                href: 'https://example.com/another-thing'
                             },
                             {
                                 text: 'We need more submenus',
