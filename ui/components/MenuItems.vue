@@ -136,7 +136,7 @@ const onKeydownWithOpenCloseSubMenu = async (event: KeyboardEvent) => {
     onDropdownNavigationKeydown(event);
 };
 
-const onItemHovered = (item: MenuItem, id: string, index: number) => {
+const onItemHovered = (item: MenuItem|null, id: string, index: number) => {
     if (item !== null) {
         setOpenSubmenuIndex(index);
     }
@@ -144,11 +144,11 @@ const onItemHovered = (item: MenuItem, id: string, index: number) => {
 };
 
 const onKeydown = (event: KeyboardEvent) => {
-    const isSubmenuOpen = openSubmenuItemIndex.value === -1;
+    const isSubmenuOpen = openSubmenuItemIndex.value !== -1;
     if (isSubmenuOpen) {
-        onKeydownWithOpenCloseSubMenu(event);
-    } else {
         subLevelItems.value?.onKeydown(event);
+    } else {
+        onKeydownWithOpenCloseSubMenu(event);
     }
 };
 
