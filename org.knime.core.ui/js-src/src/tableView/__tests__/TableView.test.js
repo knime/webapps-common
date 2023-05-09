@@ -1112,7 +1112,7 @@ describe('TableView.vue', () => {
                 {
                     filterConfig: {
                         is: '',
-                        value: ''
+                        modelValue: ''
                     },
                     hasSlotContent: false,
                     header: '(skipped remaining columns)',

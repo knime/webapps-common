@@ -213,10 +213,10 @@ export default {
                 if (index === 0) {
                     return;
                 }
-                if (typeof filter.value === 'string') {
-                    columnFilterValues.push([filter.value]);
+                if (typeof filter.modelValue === 'string') {
+                    columnFilterValues.push([filter.modelValue]);
                 } else {
-                    columnFilterValues.push(filter.value);
+                    columnFilterValues.push(filter.modelValue);
                 }
             });
             return columnFilterValues;
@@ -751,7 +751,7 @@ export default {
             this.refreshTable({ resetPage: true, updateTotalSelected: true });
         },
         onColumnFilter(colInd, value) {
-            this.columnFilters[this.columnIndexMap.get(colInd)].value = value;
+            this.columnFilters[this.columnIndexMap.get(colInd)].modelValue = value;
             this.refreshTable({ resetPage: true, updateTotalSelected: true });
         },
         onClearFilter() {
@@ -883,7 +883,7 @@ export default {
             const filterConfigs = [
                 {
                     is: '',
-                    value: ''
+                    modelValue: ''
                 },
                 createDefaultFilterConfig(false, null)
             ];
@@ -892,7 +892,7 @@ export default {
                 const domainValuesMapped = domainValues ? domainValues.map(val => ({ id: val, text: val })) : null;
                 filterConfigs.push(createDefaultFilterConfig(domainValues, domainValuesMapped));
             });
-            filterConfigs.push({ is: '', value: '' });
+            filterConfigs.push({ is: '', modelValue: '' });
             return filterConfigs;
         },
         // only call the method when (displayedColumns XOR showRowKeys XOR showRowKeys) changed and a sorting is active
