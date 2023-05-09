@@ -68,16 +68,13 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
 /**
  * Tests for the {@link FieldBasedNodeSettingsPersistor}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // We allow assertions without messages
 class FieldBasedNodeSettingsPersistorTest {
 
     private static final String ROOT_KEY = "Test";
@@ -217,7 +214,7 @@ class FieldBasedNodeSettingsPersistorTest {
     void testSaveNullArraySettings() throws InvalidSettingsException {
         var persistor = new FieldBasedNodeSettingsPersistor<>(ArraySettings.class);
         var root = new NodeSettings(ROOT_KEY);
-        assertThrows(NullPointerException.class, () -> persistor.save(null, root));
+        assertThrows(IllegalStateException.class, () -> persistor.save(null, root));
     }
 
     private interface TestNodeSettings extends DefaultNodeSettings {

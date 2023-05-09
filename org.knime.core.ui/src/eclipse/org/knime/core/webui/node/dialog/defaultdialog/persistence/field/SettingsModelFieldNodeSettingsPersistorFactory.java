@@ -92,7 +92,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
      * @throws IllegalArgumentException if there is no persistor available for the fieldType-settingsModelType
      *             combination
      */
-    public static final <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
+    public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final String configKey) {
         if (fieldType.isEnum() && settingsModelType.equals(SettingsModelString.class)) {
             return createEnumPersistor(fieldType, configKey);
@@ -136,7 +136,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         private final FieldSaver<?> m_saver;
 
-        private <T> SettingsModelFieldPersistor(final Class<T> fieldType,
+        <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
             m_fieldType = fieldType;

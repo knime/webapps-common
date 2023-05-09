@@ -71,8 +71,6 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  */
 final class UiSchemaOptionsGenerator {
 
-    private final ObjectMapper m_mapper;
-
     private final PropertyWriter m_field;
 
     private final Class<?> m_fieldType;
@@ -84,8 +82,7 @@ final class UiSchemaOptionsGenerator {
      * @param mapper the object mapper used for the ui schema generation
      * @param field the field for which options are to be added from {@link Style} annotations
      */
-    UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
-        m_mapper = mapper;
+    UiSchemaOptionsGenerator(final PropertyWriter field) {
         m_field = field;
         m_fieldType = field.getType().getRawClass();
         m_fieldName = field.getName();
@@ -104,7 +101,7 @@ final class UiSchemaOptionsGenerator {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
-        defaultWidgets.forEach(defaultWidget -> {
+        for (var defaultWidget : defaultWidgets) {
             switch (defaultWidget.type()) {
                 case CHECKBOX:
                     options.put(TAG_FORMAT, Format.CHECKBOX);
@@ -116,7 +113,7 @@ final class UiSchemaOptionsGenerator {
                     options.put(TAG_FORMAT, Format.VALUE_SWITCH);
                     break;
             }
-        });
+        }
 
         if (annotatedWidgets.contains(RadioButtonsWidget.class)) {
             final var radioButtons = m_field.getAnnotation(RadioButtonsWidget.class);
@@ -135,7 +132,7 @@ final class UiSchemaOptionsGenerator {
 
     private Collection<?> getAnnotatedWidgets() {
         final var partitionedWidgetAnnotations = partitionWidgetAnnotationsByApplicability(
-            (widgetAnnotation) -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldType);
+            widgetAnnotation -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldType);
 
         if (!partitionedWidgetAnnotations.get(false).isEmpty()) {
             throw new UiSchemaGenerationException(

@@ -710,13 +710,14 @@ class JsonFormsSchemaUtilTest {
             assertThatJson(aTree).isEqualTo(eTree);
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
             Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
-                + " (most likely a problem of the test implementation itself)");
+                + " (most likely a problem of the test implementation itself)"); // NOSONAR
         }
     }
 
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
-        return JsonFormsSchemaUtil.buildSchema(clazz, null, DefaultNodeSettings.createSettingsCreationContext(specs),
-            JsonFormsDataUtil.getMapper()).get("properties");
+        return JsonFormsSchemaUtil
+            .buildSchema(clazz, DefaultNodeSettings.createSettingsCreationContext(specs), JsonFormsDataUtil.getMapper())
+            .get("properties");
     }
 
     private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {

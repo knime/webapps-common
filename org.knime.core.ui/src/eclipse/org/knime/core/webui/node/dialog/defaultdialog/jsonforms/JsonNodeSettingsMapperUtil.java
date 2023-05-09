@@ -532,7 +532,8 @@ public final class JsonNodeSettingsMapperUtil {
         private static void checkNotNull(final JsonNode node, final ObjectNode schemaNode) {
             if (node == null || node.isNull()) {
                 throw new IllegalArgumentException(
-                    String.format("Null node encountered where %s node was expected.", schemaNode.get(TAG_TYPE).asText()));
+                    String.format(
+                        "Null node encountered where %s node was expected.", schemaNode.get(TAG_TYPE).asText()));
             }
         }
 

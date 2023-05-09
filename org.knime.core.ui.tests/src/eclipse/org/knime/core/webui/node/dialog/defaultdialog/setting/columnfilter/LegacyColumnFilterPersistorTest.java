@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.StringValue;
@@ -58,12 +59,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.PatternFilterConfiguration;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.LegacyColumnFilterPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ManualColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;
 
 /**
  * Unit tests for the {@link LegacyColumnFilterPersistor}.
@@ -84,8 +79,8 @@ final class LegacyColumnFilterPersistorTest {
     void testManualSelection() throws InvalidSettingsException {
         var columnFilter = new ColumnFilter(new String[]{"foo", "bar"});
         var manualFilter = columnFilter.m_manualFilter;
-        manualFilter.m_manuallySelected = new String[] {"foo"};
-        manualFilter.m_manuallyDeselected = new String[] {"bar"};
+        manualFilter.m_manuallySelected = new String[]{"foo"};
+        manualFilter.m_manuallyDeselected = new String[]{"bar"};
         manualFilter.m_includeUnknownColumns = true;
         testPersistence(columnFilter);
     }
@@ -178,7 +173,7 @@ final class LegacyColumnFilterPersistorTest {
         throws InvalidSettingsException {
         var typeListSettings = settings.getNodeSettings("typelist");
         for (var type : typeFilter.m_selectedTypes) {
-            assertEquals(true, typeListSettings.getBoolean(type),
+            assertTrue(typeListSettings.getBoolean(type),
                 String.format("The selected type %s was not selected in settings", type));
         }
     }

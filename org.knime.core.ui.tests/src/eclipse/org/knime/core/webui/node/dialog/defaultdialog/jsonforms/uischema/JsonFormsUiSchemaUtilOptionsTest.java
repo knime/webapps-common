@@ -65,7 +65,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
  *
  * @author Paul Bärnreuther
  */
-public class JsonFormsUiSchemaUtilOptionsTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class JsonFormsUiSchemaUtilOptionsTest {
 
     @Test
     void testDefaultFormats() {

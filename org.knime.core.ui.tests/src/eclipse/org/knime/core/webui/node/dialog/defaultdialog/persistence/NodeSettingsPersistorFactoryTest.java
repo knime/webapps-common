@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Objects;
@@ -61,9 +61,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
@@ -71,7 +68,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBas
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class NodeSettingsPersistorFactoryTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class NodeSettingsPersistorFactoryTest {
 
     @Test
     void testDefaultPersistance() throws InvalidSettingsException {
@@ -114,7 +112,7 @@ public class NodeSettingsPersistorFactoryTest {
         var nodeSettings = new NodeSettings("test");
         persistor.save(settings, nodeSettings);
         var loaded = persistor.load(nodeSettings);
-        assertFalse(loaded == settings);
+        assertNotSame(loaded, settings);
         assertEquals(settings, loaded);
     }
 

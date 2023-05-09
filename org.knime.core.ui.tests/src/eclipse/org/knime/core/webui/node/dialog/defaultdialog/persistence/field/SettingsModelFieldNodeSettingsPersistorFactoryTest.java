@@ -63,13 +63,13 @@ import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.SettingsModelFieldNodeSettingsPersistorFactory;
 
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-public class SettingsModelFieldNodeSettingsPersistorFactoryTest {
+@SuppressWarnings("java:S2698") // We allow assertions without messages
+class SettingsModelFieldNodeSettingsPersistorFactoryTest {
 
     private static final String CFG_KEY = "test";
 

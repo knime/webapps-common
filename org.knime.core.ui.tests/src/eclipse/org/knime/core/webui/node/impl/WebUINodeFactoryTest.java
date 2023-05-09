@@ -47,7 +47,6 @@
  *   10 Nov 2022 (marcbux): created
  */
 package org.knime.core.webui.node.impl;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
@@ -67,6 +66,7 @@ import org.knime.testing.node.view.TableTestUtil;
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class WebUINodeFactoryTest {
 
     static {
@@ -89,7 +89,7 @@ class WebUINodeFactoryTest {
         // test that no settings are when node unconfigured
         final var nodeSettings = new NodeSettings("test");
         model.saveSettingsTo(nodeSettings);
-        assertThat(nodeSettings.getChildCount()).isEqualTo(0);
+        assertThat(nodeSettings.getChildCount()).isZero();
 
         // test that settings are initialized and correctly saved when node is configured
         model.configure(testSpecs);
@@ -129,7 +129,7 @@ class WebUINodeFactoryTest {
         final var exec = TableTestUtil.getExec();
         final var file = new File(".");
 
-        assertThat(factory.getNrNodeViews()).isEqualTo(0);
+        assertThat(factory.getNrNodeViews()).isZero();
         assertThat(factory.createNodeView(0, model)).isNull();
         assertThat(factory.hasDialog()).isTrue();
 

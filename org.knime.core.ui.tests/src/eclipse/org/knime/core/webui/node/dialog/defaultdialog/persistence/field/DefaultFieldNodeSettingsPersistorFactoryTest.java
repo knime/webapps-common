@@ -56,15 +56,14 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultFieldNodeSettingsPersistorFactory;
 
 /**
  * Contains unit tests for the {@link DefaultFieldNodeSettingsPersistorFactory}.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("javadoc")
-public class DefaultFieldNodeSettingsPersistorFactoryTest {
+@SuppressWarnings("java:S2698")
+class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     private static final String KEY = "test";
 

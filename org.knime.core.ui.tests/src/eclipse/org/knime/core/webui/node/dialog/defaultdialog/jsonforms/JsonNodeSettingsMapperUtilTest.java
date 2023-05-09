@@ -84,6 +84,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonNodeSettingsMapperUtilTest {
 
     private static final Consumer<ObjectNode> NOOP_NODE_CONS = node -> {

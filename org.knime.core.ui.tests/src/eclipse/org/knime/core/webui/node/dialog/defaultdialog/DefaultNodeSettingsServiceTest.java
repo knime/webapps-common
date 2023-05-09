@@ -109,7 +109,7 @@ class DefaultNodeSettingsServiceTest {
         final var viewData = (ObjectNode)JsonFormsDataUtil.toJsonData(new TestSettings("foo"));
         final var specs =
             new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("bar", StringCell.TYPE).createSpec())};
-        final var viewDataSchema = JsonFormsSchemaUtil.buildSchema(TestSettings.class, null,
+        final var viewDataSchema = JsonFormsSchemaUtil.buildSchema(TestSettings.class,
             DefaultNodeSettings.createSettingsCreationContext(specs), MAPPER);
         final var nodeSettings = new NodeSettings("node_settings");
         JsonNodeSettingsMapperUtil.jsonObjectToNodeSettings(viewData, viewDataSchema, nodeSettings);
@@ -131,7 +131,7 @@ class DefaultNodeSettingsServiceTest {
         assertThatJson(initialData.get("data")).isEqualTo(wrappedViewData);
 
         // assert that returned schema is equal to wrapped schema created via JsonFormsSchemaUtil
-        final var schema = JsonFormsSchemaUtil.buildSchema(TestSettings.class, null,
+        final var schema = JsonFormsSchemaUtil.buildSchema(TestSettings.class,
             DefaultNodeSettings.createSettingsCreationContext(specs), MAPPER);
         final var wrappedSchema = MAPPER.createObjectNode();
         wrappedSchema.put("type", "object").putObject("properties").set(SettingsType.VIEW.getConfigKey(), schema);

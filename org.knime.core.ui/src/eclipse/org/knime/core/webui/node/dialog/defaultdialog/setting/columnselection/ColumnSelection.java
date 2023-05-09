@@ -50,7 +50,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.DialogComponentSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -97,14 +96,6 @@ public final class ColumnSelection implements DialogComponentSettings {
      */
     public ColumnSelection() {
         // Default constructor is needed for schema generation but does not need to set anything.
-    }
-
-    /**
-     * Initialises the column selection based on the given context.
-     *
-     * @param context settings creation context
-     */
-    public ColumnSelection(final SettingsCreationContext context) {
     }
 
     /**

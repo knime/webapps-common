@@ -105,8 +105,8 @@ import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
  * </ul>
  * The type is recognized automatically using the same mapper between POJO and json as in {@link JsonFormsDataUtil}.
  *
- * The other information can be controlled by using the {@link Widget @Widget} annotation and other field specific widget
- * annotations (e.g. {@link NumberInputWidget}) on the fields in the POJO class.
+ * The other information can be controlled by using the {@link Widget @Widget} annotation and other field specific
+ * widget annotations (e.g. {@link NumberInputWidget}) on the fields in the POJO class.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -128,13 +128,12 @@ public final class JsonFormsSchemaUtil {
      * @return a schema representation
      */
     public static JsonNode buildCombinedSchema(final Map<String, Class<? extends DefaultNodeSettings>> settingsClasses,
-        final Map<String, DefaultNodeSettings> settings, final SettingsCreationContext context,
-        final ObjectMapper mapper) {
+        final SettingsCreationContext context, final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
         final var properties = root.putObject(TAG_PROPERTIES);
-        settingsClasses.entrySet().stream().forEach(
-            e -> properties.set(e.getKey(), buildSchema(e.getValue(), settings.get(e.getKey()), context, mapper)));
+        settingsClasses.entrySet().stream()
+            .forEach(e -> properties.set(e.getKey(), buildSchema(e.getValue(), context, mapper)));
         return root;
     }
 
@@ -147,12 +146,12 @@ public final class JsonFormsSchemaUtil {
      * @return a schema representation of settingsClass
      */
     public static ObjectNode buildIncompleteSchema(final Class<?> settingsClass, final ObjectMapper mapper) {
-        return buildSchema(settingsClass, null, null, mapper);
+        return buildSchema(settingsClass, null, mapper);
     }
 
     @SuppressWarnings("javadoc")
-    public static ObjectNode buildSchema(final Class<?> settingsClass, final DefaultNodeSettings settings,
-        final SettingsCreationContext context, final ObjectMapper mapper) {
+    public static ObjectNode buildSchema(final Class<?> settingsClass, final SettingsCreationContext context,
+        final ObjectMapper mapper) {
         final var builder = new SchemaGeneratorConfigBuilder(mapper, VERSION, new OptionPreset(//
             Option.ADDITIONAL_FIXED_TYPES, //
             Option.EXTRA_OPEN_API_FORMAT_VALUES, //
@@ -167,7 +166,7 @@ public final class JsonFormsSchemaUtil {
         builder.forFields()
             .withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
 
-        builder.forFields().withCustomDefinitionProvider(new ChoicesAndEnumDefinitionProvider(context, settings));
+        builder.forFields().withCustomDefinitionProvider(new ChoicesAndEnumDefinitionProvider(context));
 
         builder.forFields().withDefaultResolver(new DefaultResolver(context));
 

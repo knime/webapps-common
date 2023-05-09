@@ -52,19 +52,19 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 
-import com.google.common.base.Function;
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
  *
  * @author Paul Bärnreuther
  */
-public class WidgetImplementationUtil {
+public final class WidgetImplementationUtil {
 
     private WidgetImplementationUtil() {
         // Utility class
@@ -139,6 +139,6 @@ public class WidgetImplementationUtil {
     }
 
     private static boolean isApplicable(final Class<?> fieldType, final List<Class<?>> applicableFields) {
-        return applicableFields.stream().filter(field -> field.isAssignableFrom(fieldType)).findAny().isPresent();
+        return applicableFields.stream().anyMatch(field -> field.isAssignableFrom(fieldType));
     }
 }

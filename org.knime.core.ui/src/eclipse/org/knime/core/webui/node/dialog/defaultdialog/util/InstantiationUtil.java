@@ -63,6 +63,10 @@ public final class InstantiationUtil {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(InstantiationUtil.class);
 
+    private InstantiationUtil() {
+        // Utility class
+    }
+
     /**
      *
      * @param <T> the type of the instance

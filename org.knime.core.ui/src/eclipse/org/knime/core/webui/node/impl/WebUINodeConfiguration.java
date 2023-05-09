@@ -240,7 +240,7 @@ public final class WebUINodeConfiguration {
 
         private final List<String> m_keywords = new ArrayList<>();
 
-        private Version m_sinceVersion = null;
+        private Version m_sinceVersion;
 
         NodeOptionals(final String name, final String icon, final String shortDescription, final String fullDescription,
             final Class<? extends DefaultNodeSettings> modelSettingsClass) {

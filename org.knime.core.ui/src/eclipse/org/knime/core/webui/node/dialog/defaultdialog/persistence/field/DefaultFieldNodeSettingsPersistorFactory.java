@@ -57,6 +57,7 @@ import java.util.stream.Stream;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 
 /**
@@ -102,22 +103,22 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
     private enum PersistorImpl implements FieldPersistor {
-            INT(int.class, (s, k) -> s.getInt(k), (v, s, k) -> s.addInt(k, v)),
-            DOUBLE(double.class, (s, k) -> s.getDouble(k), (v, s, k) -> s.addDouble(k, v)),
-            LONG(long.class, (s, k) -> s.getLong(k), (v, s, k) -> s.addLong(k, v)),
-            STRING(String.class, (s, k) -> s.getString(k), (v, s, k) -> s.addString(k, v)),
-            BOOLEAN(boolean.class, (s, k) -> s.getBoolean(k), (v, s, k) -> s.addBoolean(k, v)),
-            FLOAT(float.class, (s, k) -> s.getFloat(k), (v, s, k) -> s.addFloat(k, v)),
-            CHAR(char.class, (s, k) -> s.getChar(k), (v, s, k) -> s.addChar(k, v)),
-            BYTE(byte.class, (s, k) -> s.getByte(k), (v, s, k) -> s.addByte(k, v)),
-            INT_ARRAY(int[].class, (s, k) -> s.getIntArray(k), (v, s, k) -> s.addIntArray(k, v)),
-            DOUBLE_ARRAY(double[].class, (s, k) -> s.getDoubleArray(k), (v, s, k) -> s.addDoubleArray(k, v)),
-            LONG_ARRAY(long[].class, (s, k) -> s.getLongArray(k), (v, s, k) -> s.addLongArray(k, v)),
-            STRING_ARRAY(String[].class, (s, k) -> s.getStringArray(k), (v, s, k) -> s.addStringArray(k, v)),
-            BOOLEAN_ARRAY(boolean[].class, (s, k) -> s.getBooleanArray(k), (v, s, k) -> s.addBooleanArray(k, v)),
-            FLOAT_ARRAY(float[].class, (s, k) -> s.getFloatArray(k), (v, s, k) -> s.addFloatArray(k, v)),
-            CHAR_ARRAY(char[].class, (s, k) -> s.getCharArray(k), (v, s, k) -> s.addCharArray(k, v)),
-            BYTE_ARRAY(byte[].class, (s, k) -> s.getByteArray(k), (v, s, k) -> s.addByteArray(k, v));
+            INT(int.class, ConfigBaseRO::getInt, (v, s, k) -> s.addInt(k, v)),
+            DOUBLE(double.class, ConfigBaseRO::getDouble, (v, s, k) -> s.addDouble(k, v)),
+            LONG(long.class, ConfigBaseRO::getLong, (v, s, k) -> s.addLong(k, v)),
+            STRING(String.class, ConfigBaseRO::getString, (v, s, k) -> s.addString(k, v)),
+            BOOLEAN(boolean.class, ConfigBaseRO::getBoolean, (v, s, k) -> s.addBoolean(k, v)),
+            FLOAT(float.class, ConfigBaseRO::getFloat, (v, s, k) -> s.addFloat(k, v)),
+            CHAR(char.class, ConfigBaseRO::getChar, (v, s, k) -> s.addChar(k, v)),
+            BYTE(byte.class, ConfigBaseRO::getByte, (v, s, k) -> s.addByte(k, v)),
+            INT_ARRAY(int[].class, ConfigBaseRO::getIntArray, (v, s, k) -> s.addIntArray(k, v)),
+            DOUBLE_ARRAY(double[].class, ConfigBaseRO::getDoubleArray, (v, s, k) -> s.addDoubleArray(k, v)),
+            LONG_ARRAY(long[].class, ConfigBaseRO::getLongArray, (v, s, k) -> s.addLongArray(k, v)),
+            STRING_ARRAY(String[].class, ConfigBaseRO::getStringArray, (v, s, k) -> s.addStringArray(k, v)),
+            BOOLEAN_ARRAY(boolean[].class, ConfigBaseRO::getBooleanArray, (v, s, k) -> s.addBooleanArray(k, v)),
+            FLOAT_ARRAY(float[].class, ConfigBaseRO::getFloatArray, (v, s, k) -> s.addFloatArray(k, v)),
+            CHAR_ARRAY(char[].class, ConfigBaseRO::getCharArray, (v, s, k) -> s.addCharArray(k, v)),
+            BYTE_ARRAY(byte[].class, ConfigBaseRO::getByteArray, (v, s, k) -> s.addByteArray(k, v));
 
         private Class<?> m_type;
 
@@ -125,7 +126,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
 
         private FieldSaver<?> m_saver;
 
-        private <T> PersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
+        <T> PersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
             m_type = type;
             m_loader = loader;
             m_saver = saver;

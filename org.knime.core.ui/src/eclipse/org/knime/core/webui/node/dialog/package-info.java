@@ -11,13 +11,17 @@
  *
  * <h2>Persistence</h2>
  *
- * <p>By which rules the NodeSettings should be loaded and saved is specified by certain persistors associated to them (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence})</p>
+ * <p>
+ * By which rules the NodeSettings should be loaded and saved is specified by certain persistors associated to them (see
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.persistence})
+ * </p>
  *
  * <h2>Default Implementation: JsonForms</h2>
  *
- * <p>The default implementation of the above specifications is using <a href="https://jsonforms.io/">JsonForms</a> as text
- * medium (see {@link org.knime.core.webui.node.defaultdialog.jsonforms})</p>
+ * <p>
+ * The default implementation of the above specifications is using <a href="https://jsonforms.io/">JsonForms</a> as text
+ * medium (see {@link org.knime.core.webui.node.defaultdialog.jsonforms})
+ * </p>
  *
  *
  * @see {@link {@link org.knime.core.webui.node.defaultdialog Default implementation}

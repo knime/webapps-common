@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget;
 import java.util.stream.Stream;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 
 /**

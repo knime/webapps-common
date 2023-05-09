@@ -55,7 +55,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -76,13 +75,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
 
     private final SettingsCreationContext m_settingsContext;
 
-    @SuppressWarnings("unused")
-    private final DefaultNodeSettings m_settings;
-
-    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext,
-        final DefaultNodeSettings settings) {
+    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext) {
         m_settingsContext = settingsContext;
-        m_settings = settings;
     }
 
     private ChoicesWidget m_lastChoicesWidgetWithColumns;
@@ -119,7 +113,8 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
     }
 
     private static boolean hasChoices(final ChoicesWidget choicesWidget, final FieldScope field) {
-        return choicesWidget != null && !choicesWidget.choices().equals(ChoicesProvider.class) && !field.isFakeContainerItemScope();
+        return choicesWidget != null && !choicesWidget.choices().equals(ChoicesProvider.class)
+            && !field.isFakeContainerItemScope();
     }
 
     private boolean usesCachedChoices(final ChoicesWidget choicesWidget) {

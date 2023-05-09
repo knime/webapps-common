@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -239,6 +240,8 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
         private final ArrayList<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
 
+        public static Pattern isDigit = Pattern.compile("^\\d+$");
+
         ArrayFieldPersistor(final Class<S> elementType, final String configKey) {
             m_configKey = configKey;
             m_elementType = elementType;
@@ -247,7 +250,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         @Override
         public S[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
             var arraySettings = settings.getNodeSettings(m_configKey);
-            int size = arraySettings.keySet().stream().filter(s -> s.matches("^\\d+$")).toList().size();
+            int size = arraySettings.keySet().stream().filter(s -> isDigit.matcher(s).matches()).toList().size();
             ensureEnoughPersistors(size);
             @SuppressWarnings("unchecked")
             var values = (S[])Array.newInstance(m_elementType, size);
@@ -266,7 +269,7 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         @Override
         public void save(final S[] array, final NodeSettingsWO settings) {
             if (array == null) {
-                throw new NullPointerException(String.format("Array field %s cannot be saved as it is null. "
+                throw new IllegalStateException(String.format("Array field %s cannot be saved as it is null. "
                     + "Empty array fields should be represented by an empty array instead.", m_configKey));
             }
             ensureEnoughPersistors(array.length);

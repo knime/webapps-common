@@ -104,15 +104,14 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     @Override
-    public final JsonNode getSchema() {
+    public JsonNode getSchema() {
         var settingsClasses = createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
-        var settings = createSettingsTypeMap(m_modelSettings, m_viewSettings);
-        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, settings, m_context,
+        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_context,
             JsonFormsDataUtil.getMapper());
     }
 
     @Override
-    public final RawValue getUiSchema() {
+    public RawValue getUiSchema() {
         final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass;
         try (final var inputStream = clazz.getResourceAsStream("uischema.json")) {
             if (inputStream == null) {
@@ -137,7 +136,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     @Override
-    public final JsonNode getData() {
+    public JsonNode getData() {
         var settings = createSettingsTypeMap(m_modelSettings, m_viewSettings);
         return JsonFormsDataUtil.toCombinedJsonData(settings);
     }

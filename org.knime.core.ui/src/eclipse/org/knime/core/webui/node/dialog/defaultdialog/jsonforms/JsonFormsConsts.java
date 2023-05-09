@@ -74,7 +74,12 @@ public class JsonFormsConsts {
      *
      * @author Paul Bärnreuther
      */
-    public class Schema {
+    public static class Schema {
+
+        private Schema() {
+            // Utility
+        }
+
         public static final String TAG_TYPE = SchemaKeyword.TAG_TYPE.forVersion(VERSION);
 
         public static final String TAG_FORMAT = SchemaKeyword.TAG_FORMAT.forVersion(VERSION);
@@ -121,7 +126,12 @@ public class JsonFormsConsts {
      *
      * @author Paul Bärnreuther
      */
-    public class UiSchema {
+    public static class UiSchema {
+
+        private UiSchema() {
+            // Utility
+        }
+
         /**
          * A schema path to a setting
          */
@@ -147,7 +157,12 @@ public class JsonFormsConsts {
          *
          * @author Paul Bärnreuther
          */
-        public class Format {
+        public static class Format {
+
+            private Format() {
+                // Utility
+            }
+
             public static final String CHECKBOX = "checkbox";
 
             public static final String VALUE_SWITCH = "valueSwitch";
