@@ -156,7 +156,6 @@ export default {
             if (this.disabled) {
                 return;
             }
-
             this.expanded = !this.expanded;
 
             const toggleCallback = this.expanded
