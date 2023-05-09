@@ -122,15 +122,16 @@ const setOpenSubmenuIndex = (index: number) => {
     openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
 };
 
-const onKeydownWithOpenCloseSubMenu = async (event: KeyboardEvent) => {
+const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
     switch (event.code) {
         case 'ArrowLeft':
             emit('close-submenu');
             break;
         case 'ArrowRight':
             setOpenSubmenuIndex(currentIndex.value ?? 0);
-            await nextTick();
-            subLevelItems.value?.focusIndex();
+            nextTick(() => {
+                subLevelItems.value?.focusIndex();
+            });
             break;
     }
     onDropdownNavigationKeydown(event);
