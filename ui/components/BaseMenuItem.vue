@@ -62,6 +62,7 @@ defineProps<Props>();
 <style lang="postcss">
 .list-item {
   --icon-size: 18;
+
   border: none;
   background: none;
   width: 100%;
