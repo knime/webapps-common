@@ -42,7 +42,7 @@ export default defineComponent({
     computed: {
         inputName() {
             // @ts-expect-error
-            return this.name ? this.name : `wc-radio-${this.count}`;
+            return this.name || `wc-radio-${this.count}`;
         }
     },
     beforeCreate() {
@@ -53,7 +53,7 @@ export default defineComponent({
     methods: {
         onInput($event: Event) {
             // eslint-disable-next-line no-extra-parens
-            let value = ($event.target as HTMLInputElement).value;
+            const value = ($event.target as HTMLInputElement).value;
 
             /**
              * Fired when the radio button value changes.

@@ -100,7 +100,7 @@ export default defineComponent({
           Compact mode
           <ValueSwitch
             v-model="selectedCurrency"
-            variant="compact"
+            compact
             :possible-values="currencies"
           />
         </div>
@@ -114,6 +114,7 @@ export default defineComponent({
           Completely disabled
           <ValueSwitch
             v-model="selectedCurrency"
+            disabled
             :possible-values="currencies"
           />
         </div>
