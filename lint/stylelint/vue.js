@@ -1,11 +1,14 @@
 module.exports = {
     // this works, but we had some overriden rules that were not based on 'recommended-vue' so maybe worth reconsidering
-    extends: ['stylelint-config-standard-vue'],
+    extends: ['stylelint-config-standard-vue', 'stylelint-config-prettier'],
     rules: {
+        'rule-empty-line-before': ['always-multi-line', {
+          except: ['first-nested'],
+          ignore: ['after-comment']
+        }],
         'color-no-hex': true,
         'custom-property-empty-line-before': null,
         'declaration-colon-newline-after': null,
-        'max-empty-lines': 2,
         'no-empty-source': null,
         'property-no-unknown': [true, {
             // at the time of writing, content-visibility is only supported in Chrome,
@@ -26,4 +29,4 @@ module.exports = {
         'value-list-comma-newline-after': null
     }
 };
-  
+

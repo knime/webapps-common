@@ -1,6 +1,6 @@
 module.exports = {
     plugins: ['vue', 'import'],
-    extends: ['./base.js', 'plugin:vue/vue3-recommended', 'plugin:jsonc/recommended-with-json'],
+    extends: ['./base.js', 'plugin:vue/vue3-recommended', 'prettier'],
     parserOptions: {
         ecmaFeatures: {
             jsx: true

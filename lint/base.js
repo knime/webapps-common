@@ -1,6 +1,3 @@
-const indentationSpaces = 4;
-const jsonIndentationSpaces = 2;
-const lineLength = 120;
 const maxLines = 500;
 
 let parserOptions = {
@@ -10,7 +7,7 @@ let parserOptions = {
 
 module.exports = {
     root: true,
-    extends: ['eslint:recommended', 'plugin:jsonc/recommended-with-json'],
+    extends: ['eslint:recommended', 'prettier'],
     plugins: ['unused-imports'],
     parserOptions,
     env: {
@@ -18,14 +15,13 @@ module.exports = {
         es6: true
     },
     ignorePatterns: [
-        'package*.json',
-        'audit-resolve.json',
         'coverage/',
         'test-results/',
         'dist/',
         'target/',
         'webapps-common/',
-        'knime-ui-extension-service/'
+        'knime-ui-extension-service/',
+        'knime-js-pagebuilder/'
     ],
     rules: {
         'accessor-pairs': 'warn',
@@ -57,9 +53,6 @@ module.exports = {
         'generator-star-spacing': 'warn',
         'handle-callback-err': ['warn', '^err(or)?$'],
         'implicit-arrow-linebreak': 'error',
-        indent: ['error', indentationSpaces, {
-            SwitchCase: 1
-        }],
         'key-spacing': 'error',
         'keyword-spacing': 'error',
         'linebreak-style': ['error', 'unix'],
@@ -69,15 +62,6 @@ module.exports = {
             { exceptAfterSingleLine: true }
         ],
         'max-depth': 'warn',
-        'max-len': ['warn', {
-            code: lineLength,
-            ignoreComments: true,
-            ignoreRegExpLiterals: true,
-            ignoreStrings: false,
-            ignoreTemplateLiterals: false,
-            ignoreTrailingComments: true,
-            ignoreUrls: true
-        }],
         'max-lines': ['warn', {
             max: maxLines,
             skipBlankLines: true,
@@ -247,27 +231,6 @@ module.exports = {
         },
         env: {
             node: true
-        }
-    }, {
-        files: ['*.json'],
-        parser: 'jsonc-eslint-parser',
-        rules: {
-            'jsonc/auto': 'off',
-            'max-len': 'off',
-            'max-depth': 'off',
-            'max-lines': 'off',
-            semi: 'off',
-            'jsonc/indent': ['error', jsonIndentationSpaces],
-            'jsonc/object-curly-newline': ['error', { minProperties: 1 }],
-            'jsonc/array-bracket-spacing': ['error', 'never'],
-            'jsonc/array-bracket-newline': ['error', { minItems: 1 }],
-            'jsonc/array-element-newline': ['error', 'always'],
-            'jsonc/object-property-newline': ['error'],
-            'jsonc/key-spacing': ['error', {
-                beforeColon: false,
-                afterColon: true,
-                mode: 'strict'
-            }]
         }
     }]
 };

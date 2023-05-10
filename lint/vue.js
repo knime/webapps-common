@@ -2,7 +2,7 @@ const parentRules = require('./base').rules;
 
 module.exports = {
     plugins: ['vue', 'import'],
-    extends: ['./base.js', 'plugin:vue/recommended', 'plugin:jsonc/recommended-with-json'],
+    extends: ['./base.js', 'plugin:vue/recommended', 'prettier'],
     parserOptions: {
         ecmaFeatures: {
             jsx: true
@@ -26,13 +26,6 @@ module.exports = {
         'vue/singleline-html-element-content-newline': 'off',
         'import/extensions': ['error', { vue: 'always', json: 'always', mjs: 'always', svg: 'always' }]
     },
-    overrides: [{
-        // this needs to be done here as the max-lines rule above overrides stuff from eslintrc-base
-        files: ['*.json'],
-        rules: {
-            'max-lines': 'off'
-        }
-    }],
     settings: {
         'import/resolver': {
             alias: {

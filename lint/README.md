@@ -6,6 +6,8 @@ scenarios with [Jest] and [Vitest] are also present.
 
 Also it contains some configs for [Stylelint].
 
+Formatting is supposed to be handled via [Prettier].
+
 ## Development
 
 ### Prerequisites
@@ -75,14 +77,16 @@ See [stylelint](stylelint) folder for available configs.
 
 ### Requirements
 
-Projects using ESLint profiles defined herein need to still specify [ESlint] as a `devDependency` in their respective `package.json` files, but none of the required additional plugins. See [package.json](package.json) for supported
-[ESLint] versions.
+Projects still need to specify the following `devDependency` in their respective `package.json` files, but none of the required additional plugins:
+- [ESlint]
+- [Stylelint]
+- [Prettier]
 
-Same applies for [Stylelint].
 
 [node]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/905281540/Node.js+Installation
 [ESLint]: https://eslint.org/
 [Stylelint]: https://stylelint.io/
+[Prettier]: https://prettier.io/
 [Vue2]: https://v2.vuejs.org/
 [Vue3]: https://vuejs.org/
 [Nuxt]: https://nuxtjs.org/

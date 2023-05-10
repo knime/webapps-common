@@ -1,10 +1,9 @@
 module.exports = {
-    extends: 'stylelint-config-standard',
+    extends: ['stylelint-config-standard', 'stylelint-config-prettier'],
     rules: {
         'color-no-hex': true,
         'custom-property-empty-line-before': null,
         'declaration-colon-newline-after': null,
-        'max-empty-lines': 2,
         'no-empty-source': null,
         'property-no-unknown': [true, {
             // at the time of writing, content-visibility is only supported in Chrome,

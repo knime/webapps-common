@@ -1,7 +1,7 @@
 module.exports = {
     overrides: [
         {
-            extends: ['./base.js'],
+            extends: ['./base.js', 'prettier'],
             files: ['**/*.ts'],
             parser: '@typescript-eslint/parser',
             plugins: ['@typescript-eslint', 'import'],
