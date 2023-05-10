@@ -1,9 +1,12 @@
 module.exports = {
     extends: ['stylelint-config-standard', 'stylelint-config-prettier'],
     rules: {
+        'rule-empty-line-before': ['always-multi-line', {
+          except: ['first-nested'],
+          ignore: ['after-comment']
+        }],
         'color-no-hex': true,
         'custom-property-empty-line-before': null,
-        'declaration-colon-newline-after': null,
         'no-empty-source': null,
         'property-no-unknown': [true, {
             // at the time of writing, content-visibility is only supported in Chrome,
@@ -20,7 +23,6 @@ module.exports = {
                 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence',
                 'foreignObject', 'glyphRef', 'linearGradient', 'radialGradient', 'textPath'
             ]
-        }],
-        'value-list-comma-newline-after': null
+        }]
     }
 };

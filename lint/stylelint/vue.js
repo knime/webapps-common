@@ -1,5 +1,4 @@
 module.exports = {
-    // this works, but we had some overriden rules that were not based on 'recommended-vue' so maybe worth reconsidering
     extends: ['stylelint-config-standard-vue', 'stylelint-config-prettier'],
     rules: {
         'rule-empty-line-before': ['always-multi-line', {
@@ -8,7 +7,6 @@ module.exports = {
         }],
         'color-no-hex': true,
         'custom-property-empty-line-before': null,
-        'declaration-colon-newline-after': null,
         'no-empty-source': null,
         'property-no-unknown': [true, {
             // at the time of writing, content-visibility is only supported in Chrome,
@@ -25,8 +23,7 @@ module.exports = {
                 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence',
                 'foreignObject', 'glyphRef', 'linearGradient', 'radialGradient', 'textPath'
             ]
-        }],
-        'value-list-comma-newline-after': null
+        }]
     }
 };
 

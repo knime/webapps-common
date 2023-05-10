@@ -26,7 +26,15 @@ module.exports = {
         'vue/padding-line-between-blocks': 'error',
         'vue/require-v-for-key': 'warn',
         'vue/singleline-html-element-content-newline': 'off',
-        'vue/v-slot-style': ['error', 'shorthand']
+        'vue/v-slot-style': ['error', 'shorthand'],
+
+        // see https://github.com/prettier/eslint-config-prettier/#vuehtml-self-closing
+        'vue/html-self-closing': ['error', {
+            html: {
+              void: 'any'
+            }
+          }
+        ]
     },
     settings: {
         'import/resolver': {

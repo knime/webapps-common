@@ -10,8 +10,6 @@ module.exports = {
                 'import/no-duplicates': 'error',
                 'no-unused-vars': 'off',
                 '@typescript-eslint/no-unused-vars': 'off',
-                'no-extra-parens': 'off',
-                '@typescript-eslint/no-extra-parens': 'error',
                 'prefer-const': 'error'
             },
             // TODO: Consider removing this setting when this typescript configuration
