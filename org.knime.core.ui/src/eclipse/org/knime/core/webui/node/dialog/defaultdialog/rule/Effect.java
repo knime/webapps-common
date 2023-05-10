@@ -51,12 +51,12 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.knime.core.webui.node.dialog.ui.HorizontalLayout;
-import org.knime.core.webui.node.dialog.ui.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 
 /**
- * With this annotation a field or a whole layout part (i.e. {@link Section} or {@link HorizontalLayout}) can be disabled or
- * hidden depending on the values of other fields which are annotated by {@link Signal} themselves.
+ * With this annotation a field or a whole layout part (i.e. {@link Section} or {@link HorizontalLayout}) can be
+ * disabled or hidden depending on the values of other fields which are annotated by {@link Signal} themselves.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */

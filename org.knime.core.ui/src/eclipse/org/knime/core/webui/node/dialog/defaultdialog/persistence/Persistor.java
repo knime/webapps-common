@@ -58,8 +58,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBas
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
 /**
- * Annotates a class with a persistor that is used to save and load objects of the class to and from NodeSettings. If
- * no persistence is provided, we fall back to the previous JSON based persistence. For most use-cases
+ * Annotates a class with a persistor that is used to save and load objects of the class to and from NodeSettings. If no
+ * persistence is provided, we fall back to the previous JSON based persistence. For most use-cases
  * {@link FieldBasedNodeSettingsPersistor} is a good choice. It performs persistence of all fields independently and
  * allows further customization on a per field basis via the {@link Persist} annotation. <br>
  * <br>
@@ -74,8 +74,8 @@ public @interface Persistor {
 
     /**
      * The type of persistor to use for storing and loading the annotated object to and from NodeSettings. Either
-     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link NodeSettingsPersistor}. If
-     * you want to use the previous JSON based persistence simply provide no persistence at all.
+     * {@link FieldBasedNodeSettingsPersistor} or your own implementation of {@link NodeSettingsPersistor}. If you want
+     * to use the previous JSON based persistence simply provide no persistence at all.
      *
      * @return the class of the persistor
      */

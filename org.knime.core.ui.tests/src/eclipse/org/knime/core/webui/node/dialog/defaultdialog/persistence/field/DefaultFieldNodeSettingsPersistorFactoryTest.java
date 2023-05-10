@@ -69,10 +69,8 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     @Test
     void testFailsOnUnsupportedType() throws Exception {
-        assertThrows(IllegalArgumentException.class,
-            () -> createPersistor(UnsupportedType.class));
+        assertThrows(IllegalArgumentException.class, () -> createPersistor(UnsupportedType.class));
     }
-
 
     @Test
     void testInt() throws InvalidSettingsException {
@@ -132,57 +130,56 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     }
 
     private enum TestEnum {
-        FOO, BAR;
+            FOO, BAR;
     }
 
     @Test
     void testIntArray() throws InvalidSettingsException {
-        var array = new int[] {-4, 9};
+        var array = new int[]{-4, 9};
         assertArrayEquals(array, saveLoad(int[].class, array));
     }
 
     @Test
     void testDoubleArray() throws InvalidSettingsException {
-        var array = new double[] {3.5, 7.6};
+        var array = new double[]{3.5, 7.6};
         assertArrayEquals(array, saveLoad(double[].class, array));
     }
 
     @Test
     void testLongArray() throws InvalidSettingsException {
-        var array = new long[] {3, 5, 27};
+        var array = new long[]{3, 5, 27};
         assertArrayEquals(array, saveLoad(long[].class, array));
     }
 
     @Test
     void testStringArray() throws InvalidSettingsException {
-        var array = new String[] {"foo", "bar", "baz"};
+        var array = new String[]{"foo", "bar", "baz"};
         assertArrayEquals(array, saveLoad(String[].class, array));
     }
 
     @Test
     void testBooleanArray() throws InvalidSettingsException {
-        var array = new boolean[] {true, false};
+        var array = new boolean[]{true, false};
         assertArrayEquals(array, saveLoad(boolean[].class, array));
     }
 
     @Test
     void testFloatArray() throws InvalidSettingsException {
-        var array = new float[] {3.5f, 7.4f, -100};
+        var array = new float[]{3.5f, 7.4f, -100};
         assertArrayEquals(array, saveLoad(float[].class, array));
     }
 
     @Test
     void testCharArray() throws InvalidSettingsException {
-        var array = new char[] {(char)4};
+        var array = new char[]{(char)4};
         assertArrayEquals(array, saveLoad(char[].class, array));
     }
 
     @Test
     void testByteArray() throws InvalidSettingsException {
-        var array = new byte[] {3, 4, 5};
+        var array = new byte[]{3, 4, 5};
         assertArrayEquals(array, saveLoad(byte[].class, array));
     }
-
 
     private static <T> void testSaveLoadNullable(final Class<T> type, final T value) throws InvalidSettingsException {
         testSaveLoad(type, value);
@@ -200,8 +197,6 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
         T loaded = persistor.load(nodeSettings);
         return loaded;
     }
-
-
 
     private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> type) {
         return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, KEY);

@@ -63,8 +63,8 @@ final class FieldNodeSettingsPersistorFactoryTest {
 
     @Test
     void testFailsOnContractViolation() {
-        assertThrows(IllegalArgumentException.class, () ->
-            new FieldNodeSettingsPersistorFactory<>(ContractViolatingSettings.class));
+        assertThrows(IllegalArgumentException.class,
+            () -> new FieldNodeSettingsPersistorFactory<>(ContractViolatingSettings.class));
     }
 
     private static final class ContractViolatingSettings implements DefaultNodeSettings {

@@ -51,23 +51,24 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 /**
  * This enum lists the possibilities of how to choose from a set of table columns
+ * 
  * @author Paul Bärnreuther
  */
 enum ColumnFilterMode {
-    /**
-     * manual selection, i.e. a stored list of manually selected columns
-     */
-    MANUAL,
-    /**
-     * selection by matching to a regex pattern
-     */
-    REGEX,
-    /**
-     * selection by matching to a wildcard pattern
-     */
-    WILDCARD,
-    /**
-     * selection by filtering by the types of the table columns with respect to a list of selected types
-     */
-    TYPE
+        /**
+         * manual selection, i.e. a stored list of manually selected columns
+         */
+        MANUAL,
+        /**
+         * selection by matching to a regex pattern
+         */
+        REGEX,
+        /**
+         * selection by matching to a wildcard pattern
+         */
+        WILDCARD,
+        /**
+         * selection by filtering by the types of the table columns with respect to a list of selected types
+         */
+        TYPE
 }

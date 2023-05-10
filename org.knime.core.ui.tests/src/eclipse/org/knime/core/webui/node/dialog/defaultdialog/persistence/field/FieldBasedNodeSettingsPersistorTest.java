@@ -214,7 +214,7 @@ class FieldBasedNodeSettingsPersistorTest {
     void testSaveNullArraySettings() throws InvalidSettingsException {
         var persistor = new FieldBasedNodeSettingsPersistor<>(ArraySettings.class);
         var root = new NodeSettings(ROOT_KEY);
-        assertThrows(IllegalStateException.class, () -> persistor.save(null, root));
+        assertThrows(NullPointerException.class, () -> persistor.save(null, root));
     }
 
     private interface TestNodeSettings extends DefaultNodeSettings {
@@ -730,7 +730,6 @@ class FieldBasedNodeSettingsPersistorTest {
             return Objects.deepEquals(m_bar, settings.m_bar);
         }
 
-
     }
 
     @Test
@@ -779,7 +778,6 @@ class FieldBasedNodeSettingsPersistorTest {
 
         @Persist(defaultProvider = FooDefaultProvider.class, optional = true)
         int m_foo = 42;
-
 
         private static final class FooDefaultProvider implements DefaultProvider<Integer> {
 

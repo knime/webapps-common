@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
 /**
  * The atomic expression that is used for json forms implementation
+ * 
  * @author Paul Bärnreuther
  */
 public record JsonFormsExpression(String scope, Condition condition) implements AtomicExpression<JsonFormsExpression> {

@@ -55,8 +55,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An annotation for a layout part to ensure that the annotated element appears
- * <b>nested inside</b> the referenced layout part.
+ * An annotation for a layout part to ensure that the annotated element appears <b>nested inside</b> the referenced
+ * layout part.
  * <p>
  * Example:
  *

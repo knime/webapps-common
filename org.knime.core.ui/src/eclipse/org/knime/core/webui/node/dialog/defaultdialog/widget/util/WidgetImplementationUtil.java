@@ -55,9 +55,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
-
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
@@ -82,6 +84,8 @@ public final class WidgetImplementationUtil {
     /**
      * Extend this by a new element for each new default format of a ui element.
      *
+     * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
+     *
      * @author Paul Bärnreuther
      */
     @SuppressWarnings("javadoc")
@@ -98,13 +102,20 @@ public final class WidgetImplementationUtil {
 
     /**
      * Extend this by every new annotation defining the format of the annotated ui element.
+     *
+     * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
      */
     private static WidgetAnnotation[] widgetAnnotations = new WidgetAnnotation[]{//
         new WidgetAnnotation(List.of(Enum.class), RadioButtonsWidget.class), //
+        new WidgetAnnotation(
+            List.of(ColumnFilter.class, ColumnSelection.class, Enum.class, String.class, String[].class),
+            ChoicesWidget.class), //
     };
 
     /**
      * Extend this for every fields type which has default format set.
+     *
+     * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
      */
     private static DefaultWidget[] defaultWidgets = new DefaultWidget[]{//
         new DefaultWidget(List.of(boolean.class, Boolean.class), DefaultWidgetType.CHECKBOX), //

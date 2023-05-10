@@ -49,13 +49,14 @@
 package org.knime.core.webui.node.dialog.defaultdialog.layout;
 
 import static java.lang.annotation.ElementType.TYPE;
-import static  java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
  * An interface use to make {@After} repeatable
+ * 
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
@@ -63,9 +64,9 @@ import java.lang.annotation.Target;
 public @interface AfterAllOf {
 
     /**
-    *
-    * @return the list of {@link After}s after all of which the targeted part lies
-    */
+     *
+     * @return the list of {@link After}s after all of which the targeted part lies
+     */
     After[] value();
 
 }

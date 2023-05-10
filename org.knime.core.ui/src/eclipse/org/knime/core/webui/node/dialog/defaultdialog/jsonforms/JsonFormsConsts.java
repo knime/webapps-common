@@ -173,6 +173,21 @@ public final class JsonFormsConsts {
         }
 
         /**
+         * The option tag for the detail sub ui schema of an array layout
+         */
+        public static final String TAG_ARRAY_LAYOUT_DETAIL = "detail";
+
+        /**
+         * The title of the sub elements in an array layout
+         */
+        public static final String TAG_ARRAY_LAYOUT_ELEMENT_TITLE = "arrayElementTitle";
+
+        /**
+         * The text of the add button of an array layout
+         */
+        public static final String TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT = "addButtonText";
+
+        /**
          * Rules to show/hide/enable/disable an ui element in the ui-schema
          */
         public static final String TAG_RULE = "rule";

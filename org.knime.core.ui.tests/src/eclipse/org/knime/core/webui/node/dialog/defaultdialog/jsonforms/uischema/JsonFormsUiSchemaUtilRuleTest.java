@@ -505,8 +505,4 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
     }
 
-    private static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
-        return JsonFormsUiSchemaUtilTest.buildUiSchema(Map.of("test", settingsClass));
-    }
-
 }

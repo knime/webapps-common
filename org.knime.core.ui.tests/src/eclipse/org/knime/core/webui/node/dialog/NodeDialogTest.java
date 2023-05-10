@@ -245,8 +245,7 @@ public class NodeDialogTest {
         var initialModelSettings = new NodeSettings("model");
         var initialViewSettings = new NodeSettings("view");
         var nodeDialogManager = NodeDialogManager.getInstance();
-        nodeDialogManager.callApplyDataService(nncWrapper,
-            settingsToString(initialModelSettings, initialViewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, initialModelSettings, initialViewSettings,
             initialViewSettings);
         nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -258,12 +257,10 @@ public class NodeDialogTest {
         updatedModelSettings.addString("key", "updatedOnce");
         var updatedViewSettings = new NodeSettings("view");
         updatedViewSettings.addString("key", "updatedOnce");
-        nodeDialogManager.callApplyDataService(nncWrapper,
-            settingsToString(updatedModelSettings, updatedViewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(updatedModelSettings, updatedViewSettings));
         updatedModelSettings.addString("key", "updatedTwice");
         updatedViewSettings.addString("key", "updatedTwice");
-        nodeDialogManager.callApplyDataService(nncWrapper,
-            settingsToString(updatedModelSettings, updatedViewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(updatedModelSettings, updatedViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
             updatedViewSettings);
         nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -287,8 +284,7 @@ public class NodeDialogTest {
         wfm.loadNodeSettings(nnc.getID(), nodeSettings);
         nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
         nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
-        nodeDialogManager.callApplyDataService(nncWrapper,
-            settingsToString(initialModelSettings, initialViewSettings));
+        nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
             updatedViewSettings);
         nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -498,23 +494,20 @@ public class NodeDialogTest {
 
         // Setting with key "key1" not available
         assertThrows(Key1Exception.class, //
-            () -> nodeDialogManager.callApplyDataService(nncWrapper,
-                settingsToString(modelSettings, viewSettings)));
+            () -> nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings)));
 
         modelSettings.addString("key1", "val1");
         wfm.addWorkflowVariables(true, new FlowVariable("var1", "var_value1"));
 
         // Child settings not available
         assertThrows(ChildKeyException.class, //
-            () -> nodeDialogManager.callApplyDataService(nncWrapper,
-                settingsToString(modelSettings, viewSettings)));
+            () -> nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings)));
 
         modelSettings.addNodeSettings("child_settings");
 
         // Settings with key "key2" not available
         assertThrows(Key2Exception.class, //
-            () -> nodeDialogManager.callApplyDataService(nncWrapper,
-                settingsToString(modelSettings, viewSettings)));
+            () -> nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings)));
     }
 
     @SuppressWarnings("serial")

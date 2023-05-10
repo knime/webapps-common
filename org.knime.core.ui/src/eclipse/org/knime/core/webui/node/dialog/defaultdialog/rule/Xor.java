@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
 /**
  * The excluding or operation.
  *
- *  Similar to this, any kind of logical operation can be build up from {@link Operator}s.
+ * Similar to this, any kind of logical operation can be build up from {@link Operator}s.
  *
  * @author Paul Bärnreuther
  */

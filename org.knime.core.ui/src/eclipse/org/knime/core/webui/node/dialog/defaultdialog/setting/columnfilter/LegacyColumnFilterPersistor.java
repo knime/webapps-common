@@ -193,11 +193,10 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
 
     private static ColumnTypeDisplay[] getDisplays(final String[] selectedTypes) {
         return Stream.of(selectedTypes)//
-                .map(ColumnTypeDisplay::fromPreferredValueClass)//
-                .flatMap(Optional::stream)//
-                .toArray(ColumnTypeDisplay[]::new);
+            .map(ColumnTypeDisplay::fromPreferredValueClass)//
+            .flatMap(Optional::stream)//
+            .toArray(ColumnTypeDisplay[]::new);
     }
-
 
     private static String[] loadSelectedTypes(final NodeSettingsRO typeFilterSettings) throws InvalidSettingsException {
         var typeListSettings = typeFilterSettings.getNodeSettings(TYPELIST);

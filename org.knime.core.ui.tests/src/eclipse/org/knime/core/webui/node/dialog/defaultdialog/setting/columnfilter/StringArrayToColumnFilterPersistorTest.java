@@ -64,17 +64,15 @@ class StringArrayToColumnFilterPersistorTest {
 
     private static final String ROOT_KEY = "Test";
 
-
     private static final class StringArrayToColumnFilterPersistorSettings implements DefaultNodeSettings {
 
         @Persist(customPersistor = StringArrayToColumnFilterPersistor.class)
         ColumnFilter m_foo;
     }
 
-
     @Test
     void testLoadLegacyStringArray() throws InvalidSettingsException {
-        final var array = new String[] {"bar", "baz"};
+        final var array = new String[]{"bar", "baz"};
 
         final var savedSettings = new NodeSettings(ROOT_KEY);
         savedSettings.addStringArray("foo", array);
@@ -99,7 +97,7 @@ class StringArrayToColumnFilterPersistorTest {
 
     @Test
     void testSaveAndLoad() throws InvalidSettingsException {
-        final var array = new String[] {"bar", "baz"};
+        final var array = new String[]{"bar", "baz"};
 
         final var expected = new StringArrayToColumnFilterPersistorSettings();
         expected.m_foo = new ColumnFilter(array);
@@ -112,8 +110,10 @@ class StringArrayToColumnFilterPersistorTest {
         assertResults(expected, loaded);
     }
 
-    private static void assertResults(final StringArrayToColumnFilterPersistorSettings expected, final StringArrayToColumnFilterPersistorSettings loaded) {
-        assertArrayEquals(expected.m_foo.m_manualFilter.m_manuallySelected, loaded.m_foo.m_manualFilter.m_manuallySelected, "The loaded settings are not as expected");
+    private static void assertResults(final StringArrayToColumnFilterPersistorSettings expected,
+        final StringArrayToColumnFilterPersistorSettings loaded) {
+        assertArrayEquals(expected.m_foo.m_manualFilter.m_manuallySelected,
+            loaded.m_foo.m_manualFilter.m_manuallySelected, "The loaded settings are not as expected");
     }
 
 }

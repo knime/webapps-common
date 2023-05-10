@@ -68,7 +68,7 @@ public non-sealed class And<E extends AtomicExpression<E>> implements Operator<E
     }
 
     /**
-     * @return the expressions that are combined using an  operation
+     * @return the expressions that are combined using an operation
      */
     public Expression<E>[] getChildren() {
         return m_children;

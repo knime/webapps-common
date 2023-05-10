@@ -80,6 +80,6 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
 
     @Override
     public String[] getConfigKeys() {
-        return new String[] { m_configKey };
+        return new String[]{m_configKey};
     }
 }

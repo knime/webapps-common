@@ -114,8 +114,6 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         return loaded;
     }
 
-
-
     private void useBlackMagicToAccessFields(final PersistorConsumer consumer) throws InvalidSettingsException {
         for (var entry : m_persistors.entrySet()) {
             var fieldName = entry.getKey();

@@ -76,8 +76,8 @@ class ColumnFilterTest {
 
     @Test
     void testGetSelectedByManualWithIncludeUnknownColumns() {
-        final var selection = new ColumnFilter(new String[] {"Old selected"});
-        selection.m_manualFilter.m_manuallyDeselected = new String[] {"Old deselected"};
+        final var selection = new ColumnFilter(new String[]{"Old selected"});
+        selection.m_manualFilter.m_manuallyDeselected = new String[]{"Old deselected"};
         selection.m_manualFilter.m_includeUnknownColumns = true;
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected", choices[0]});
@@ -85,17 +85,17 @@ class ColumnFilterTest {
 
     @Test
     void testGetSelectedByManualOnlyIncludeNewColumnsIfUnknown() {
-        final var selection = new ColumnFilter(new String[] {"Old selected"});
+        final var selection = new ColumnFilter(new String[]{"Old selected"});
         final var choices = new String[]{COL_SPEC.getName()};
-        selection.m_manualFilter.m_manuallyDeselected = new String[] {choices[0]};
+        selection.m_manualFilter.m_manuallyDeselected = new String[]{choices[0]};
         selection.m_manualFilter.m_includeUnknownColumns = true;
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
     }
 
     @Test
     void testGetSelectedByManualWithExcludedUnknownColumns() {
-        final var selection = new ColumnFilter(new String[] {"Old selected"});
-        selection.m_manualFilter.m_manuallyDeselected = new String[] {"Old deselected"};
+        final var selection = new ColumnFilter(new String[]{"Old selected"});
+        selection.m_manualFilter.m_manuallyDeselected = new String[]{"Old deselected"};
         selection.m_manualFilter.m_includeUnknownColumns = false;
         final var choices = new String[]{COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected"});
@@ -177,7 +177,7 @@ class ColumnFilterTest {
     void testInitialSelectedEmpty() {
         final var empty = new String[0];
         final var selection = new ColumnFilter(empty);
-        final String[] choices = { COL_SPEC.getName() };
+        final String[] choices = {COL_SPEC.getName()};
         assertThat(selection.getSelected(choices, TABLE_SPEC)).isEqualTo(empty);
     }
 

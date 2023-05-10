@@ -268,10 +268,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
         @Override
         public void save(final S[] array, final NodeSettingsWO settings) {
-            if (array == null) {
-                throw new IllegalStateException(String.format("Array field %s cannot be saved as it is null. "
-                    + "Empty array fields should be represented by an empty array instead.", m_configKey));
-            }
             ensureEnoughPersistors(array.length);
             var arraySettings = settings.addNodeSettings(m_configKey);
             for (int i = 0; i < array.length; i++) {//NOSONAR

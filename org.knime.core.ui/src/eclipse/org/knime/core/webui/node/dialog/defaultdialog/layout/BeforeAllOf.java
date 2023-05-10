@@ -56,6 +56,7 @@ import java.lang.annotation.Target;
 
 /**
  * An interface use to make {@Before} repeatable
+ * 
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)

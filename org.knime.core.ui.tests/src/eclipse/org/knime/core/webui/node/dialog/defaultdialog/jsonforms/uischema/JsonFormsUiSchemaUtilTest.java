@@ -72,11 +72,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
 
-    static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings) {
         return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper());
     }
 
-    static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
+    static ObjectNode buildTestUiSchema(final Class<?> settingsClass) {
         return buildUiSchema(Map.of("test", settingsClass));
     }
 
@@ -279,8 +279,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testLayoutWithinSettings() {
-        final var response =
-            buildUiSchema(Map.of("test", TestLayoutWithinSettingsSettings.class));
+        final var response = buildUiSchema(Map.of("test", TestLayoutWithinSettingsSettings.class));
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
 

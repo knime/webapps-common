@@ -112,7 +112,6 @@ class SettingsModelFieldNodeSettingsPersistorFactoryTest {
         testSaveLoad(boolean.class, SettingsModelBoolean.class, false);
     }
 
-
     private static <T> void testSaveLoad(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final T value) throws InvalidSettingsException {
         testSaveLoad(fieldType, settingsModelType, value, Assertions::assertEquals);

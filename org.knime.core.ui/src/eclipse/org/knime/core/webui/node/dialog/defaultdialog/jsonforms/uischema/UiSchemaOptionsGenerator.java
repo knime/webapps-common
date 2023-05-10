@@ -48,18 +48,27 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -73,18 +82,24 @@ final class UiSchemaOptionsGenerator {
 
     private final PropertyWriter m_field;
 
-    private final Class<?> m_fieldType;
+    private final Class<?> m_fieldClass;
 
     private final String m_fieldName;
+
+    private final ObjectMapper m_mapper;
+
+    private final JavaType m_fieldType;
 
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
      * @param field the field for which options are to be added from {@link Style} annotations
      */
-    UiSchemaOptionsGenerator(final PropertyWriter field) {
+    UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
+        m_mapper = mapper;
         m_field = field;
-        m_fieldType = field.getType().getRawClass();
+        m_fieldType = field.getType();
+        m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
     }
 
@@ -95,9 +110,11 @@ final class UiSchemaOptionsGenerator {
      */
     void addOptionsTo(final ObjectNode control) {
 
-        final var defaultWidgets = getApplicableDefaults(m_fieldType);
+        final var defaultWidgets = getApplicableDefaults(m_fieldClass);
         final var annotatedWidgets = getAnnotatedWidgets();
-        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty()) {
+        final var isArrayOfObjects =
+            (m_fieldType.isArrayType() || m_fieldType.isCollectionLikeType()) && isObject(m_fieldType.getContentType());
+        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !isArrayOfObjects) {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
@@ -123,42 +140,47 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        // Handle arrays and collections
-        var type = m_field.getType();
-        if ((type.isArrayType() || type.isCollectionLikeType()) && isObject(type.getContentType())) {
-            applyArrayLayoutOptions(control, type.getContentType().getRawClass());
+        if (annotatedWidgets.contains(ChoicesWidget.class)) {
+            final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
+            if (choicesWidget.showNoneColumn()) {
+                options.put("showNoneColumn", true);
+            }
+        }
+
+        if (isArrayOfObjects) {
+            applyArrayLayoutOptions(control, m_fieldType.getContentType().getRawClass());
         }
     }
 
     private Collection<?> getAnnotatedWidgets() {
         final var partitionedWidgetAnnotations = partitionWidgetAnnotationsByApplicability(
-            widgetAnnotation -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldType);
+            widgetAnnotation -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldClass);
 
         if (!partitionedWidgetAnnotations.get(false).isEmpty()) {
             throw new UiSchemaGenerationException(
                 String.format("The annotation %s is not applicable for setting field %s with type %s",
-                    partitionedWidgetAnnotations.get(false).get(0), m_fieldName, m_fieldType));
+                    partitionedWidgetAnnotations.get(false).get(0), m_fieldName, m_fieldClass));
         }
 
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
     private void applyArrayLayoutOptions(final ObjectNode control, final Class<?> componentType) {
-        var options = control.putObject(OPTIONS_TAG);
+        var options = control.putObject(TAG_OPTIONS);
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
-        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings).get(ELEMENTS_TAG);
-        options.set(ARRAY_LAYOUT_DETAIL_TAG, details);
+        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper).get(TAG_ELEMENTS);
+        options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class)).ifPresent(arrayWidget -> {
             var addButtonText = arrayWidget.addButtonText();
             if (!addButtonText.isEmpty()) {
-                options.put(ARRAY_LAYOUT_ADD_BUTTON_TEXT_TAG, addButtonText);
+                options.put(TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT, addButtonText);
             }
             var elementTitle = arrayWidget.elementTitle();
             if (!elementTitle.isEmpty()) {
-                options.put(ARRAY_LAYOUT_ELEMENT_TITLE_TAG, elementTitle);
+                options.put(TAG_ARRAY_LAYOUT_ELEMENT_TITLE, elementTitle);
             }
         });
     }

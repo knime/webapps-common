@@ -68,7 +68,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class ColumnFilter implements PersistableSettings {
 
-
     /**
      * The setting representing the selected columns
      */
@@ -124,6 +123,7 @@ public class ColumnFilter implements PersistableSettings {
 
     /**
      * Initialises the column selection based on the given context.
+     * 
      * @param context settings creation context
      */
     public ColumnFilter(final SettingsCreationContext context) {
@@ -145,7 +145,6 @@ public class ColumnFilter implements PersistableSettings {
         columnFilter.m_manualFilter.m_includeUnknownColumns = true;
         return columnFilter;
     }
-
 
     /**
      * @param choices the non-null list of all possible column names

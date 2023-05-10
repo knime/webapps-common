@@ -65,7 +65,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 class ColumnTypeDisplay implements PersistableSettings {
 
     private static final Map<String, String> PREFERRED_VALUE_CLASS_TO_DISPLAY =
-            DataTypeRegistry.getInstance().availableDataTypes().stream()//
+        DataTypeRegistry.getInstance().availableDataTypes().stream()//
             .collect(toMap(t -> t.getPreferredValueClass().getName(), DataType::getName, (l, r) -> l));
 
     /**

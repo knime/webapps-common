@@ -56,6 +56,8 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 
 /**
@@ -80,7 +82,6 @@ class JsonFormsUiSchemaUtilOptionsTest {
             }
 
             MyEnum m_enum;
-
 
             ColumnFilter m_columnFilter;
         }
@@ -117,6 +118,19 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("radio");
         assertThatJson(response).inPath("$.elements[1].options.radioLayout").isString().isEqualTo("horizontal");
+    }
+
+    @Test
+    void testChoicesWidgetShowNoneColumn() {
+        class RadioButtonsSettings implements DefaultNodeSettings {
+
+            @ChoicesWidget(showNoneColumn = true)
+            ColumnSelection m_foo;
+
+        }
+        var response = buildTestUiSchema(RadioButtonsSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
     }
 
     @Test

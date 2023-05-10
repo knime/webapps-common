@@ -111,8 +111,8 @@ class JsonNodeSettingsMapperUtilTest {
     private static void writeReadArrayOfArrays(final Consumer<ArrayNode> nodeCons, final String... elementType)
         throws InvalidSettingsException {
         writeRead((name, node) -> nodeCons.accept(node.putArray(name).addArray()), node -> {
-            var items = node.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_ARRAY).putObject(TAG_ITEMS).put(TAG_TYPE,
-                elementType[0]);
+            var items =
+                node.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_ARRAY).putObject(TAG_ITEMS).put(TAG_TYPE, elementType[0]);
             if (elementType.length > 1) {
                 items.put(TAG_FORMAT, elementType[1]);
             }
@@ -310,8 +310,8 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadDoubleArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS)
-            .put(TAG_TYPE, TYPE_NUMBER).put(TAG_FORMAT, FORMAT_DOUBLE);
+        Consumer<ObjectNode> schemaNodeCons =
+            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_NUMBER).put(TAG_FORMAT, FORMAT_DOUBLE);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
@@ -329,8 +329,8 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadFloatArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS)
-            .put(TAG_TYPE, TYPE_NUMBER).put(TAG_FORMAT, FORMAT_FLOAT);
+        Consumer<ObjectNode> schemaNodeCons =
+            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_NUMBER).put(TAG_FORMAT, FORMAT_FLOAT);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
@@ -348,8 +348,8 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadIntArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS)
-            .put(TAG_TYPE, TYPE_INTEGER).put(TAG_FORMAT, FORMAT_INT);
+        Consumer<ObjectNode> schemaNodeCons =
+            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_INTEGER).put(TAG_FORMAT, FORMAT_INT);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
@@ -367,8 +367,8 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadLongArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS)
-            .put(TAG_TYPE, TYPE_INTEGER).put(TAG_FORMAT, FORMAT_LONG);
+        Consumer<ObjectNode> schemaNodeCons =
+            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_INTEGER).put(TAG_FORMAT, FORMAT_LONG);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
@@ -386,8 +386,7 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadBooleanArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons =
-            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_BOOLEAN);
+        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_BOOLEAN);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
@@ -414,8 +413,7 @@ class JsonNodeSettingsMapperUtilTest {
 
     @Test
     void testWriteReadStringArrayNull() throws InvalidSettingsException {
-        Consumer<ObjectNode> schemaNodeCons =
-            schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_STRING);
+        Consumer<ObjectNode> schemaNodeCons = schemaNode -> schemaNode.putObject(TAG_ITEMS).put(TAG_TYPE, TYPE_STRING);
         BiConsumer<String, ObjectNode> expectedNodeCons = (name, node) -> node.set(name, node.nullNode());
         writeRead(NOOP_NODE_BICONS, schemaNodeCons, expectedNodeCons, TYPE_ARRAY);
         writeRead((name, node) -> node.set(name, node.nullNode()), schemaNodeCons, expectedNodeCons, TYPE_ARRAY);

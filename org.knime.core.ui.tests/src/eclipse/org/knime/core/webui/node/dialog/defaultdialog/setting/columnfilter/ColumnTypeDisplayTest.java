@@ -66,7 +66,7 @@ final class ColumnTypeDisplayTest {
     void testFromPreferredValueClass() {
         String knownPreferredValueClass = StringValue.class.getName();
         var display = ColumnTypeDisplay.fromPreferredValueClass(knownPreferredValueClass)//
-                .orElseThrow();
+            .orElseThrow();
         assertEquals(knownPreferredValueClass, display.m_id, "Wrong id");
         assertEquals("String", display.m_text, "Wrong text");
     }

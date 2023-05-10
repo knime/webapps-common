@@ -86,4 +86,11 @@ public @interface ChoicesWidget {
      */
     boolean multiple() default false;
 
+    /**
+     * TODO UIEXT-907 Make this only available for column choices.
+     *
+     * @return whether to show an additional choice "None" representing no selection.
+     */
+    boolean showNoneColumn() default false;
+
 }

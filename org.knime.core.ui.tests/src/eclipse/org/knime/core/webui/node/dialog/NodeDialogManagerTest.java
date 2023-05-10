@@ -155,7 +155,7 @@ public class NodeDialogManagerTest {
     void testSubNodeContainerDialog() throws IOException {
         final var uiModeProperty = "org.knime.component.ui.mode";
         var componentUiMode = System.setProperty(uiModeProperty, "js");
-        var bundleContext = FrameworkUtil.getBundle(this.getClass()) .getBundleContext();
+        var bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
         var serviceRegistration = bundleContext.registerService(DefaultConfigurationLayoutCreator.class.getName(),
             new DefaultConfigurationLayoutCreator() { // NOSONAR
 

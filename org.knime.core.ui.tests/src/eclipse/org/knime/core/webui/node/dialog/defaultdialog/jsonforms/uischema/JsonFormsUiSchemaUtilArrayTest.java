@@ -43,14 +43,15 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.core.webui.node.dialog.impl;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 
 /**
@@ -64,7 +65,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
     @Test
     void testArrayLayout() {
-        class TestArrayLayoutSettings implements DefaultNodeSettings {
+        class TestArrayLayoutSettings {
 
             ArrayElements[] m_arraySetting;
 
@@ -85,7 +86,7 @@ class JsonFormsUiSchemaUtilArrayTest {
             }
         }
 
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", TestArrayLayoutSettings.class));
+        final var response = buildTestUiSchema(TestArrayLayoutSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[0].scope").isString()
@@ -143,7 +144,7 @@ class JsonFormsUiSchemaUtilArrayTest {
                 String m_innerSetting1;
             }
         }
-        final var response = JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", TestArrayWidgetSettings.class));
+        final var response = buildTestUiSchema(TestArrayWidgetSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("arrayElementTitle");
         assertThatJson(response).inPath("$.elements[0].options.addButtonText").isString()
@@ -206,8 +207,7 @@ class JsonFormsUiSchemaUtilArrayTest {
             Collection<String> m_stringCollection;
         }
 
-        final var response =
-            JsonFormsUiSchemaUtil.buildUISchema(Map.of("test", TestPrimitiveOrBoxedArraySettings.class));
+        final var response = buildTestUiSchema(TestPrimitiveOrBoxedArraySettings.class);
 
         for (var item : response.get("elements")) {
             assertThatJson(item).isObject().doesNotContainKey("options");
