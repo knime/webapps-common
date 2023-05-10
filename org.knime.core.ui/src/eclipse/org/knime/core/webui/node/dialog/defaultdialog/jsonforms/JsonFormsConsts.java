@@ -58,6 +58,10 @@ import com.github.victools.jsonschema.generator.SchemaVersion;
 @SuppressWarnings("javadoc")
 public final class JsonFormsConsts {
 
+    private JsonFormsConsts() {
+        // utility
+    }
+
     /**
      * The version of the designated jsonforms schema object
      */
