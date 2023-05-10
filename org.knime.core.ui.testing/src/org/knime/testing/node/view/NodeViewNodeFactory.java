@@ -58,6 +58,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import org.apache.xmlbeans.XmlException;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.NodeDescription;
@@ -69,6 +70,7 @@ import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.ApplyDataService.Applier;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewFactory;
 import org.knime.core.webui.page.Page;
@@ -128,7 +130,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_numInputs = numInputs;
         m_numOutputs = numOutputs;
         m_nodeViewCreator = m -> { // NOSONAR
-            return createNodeView(
+            return createNodeView(m,
                 Page.builder(() -> "foo", "index.html").addResourceFromString(() -> "bar", "resource.html").build(),
                 InitialDataService.builder(() -> m_initialData).build(),
                 RpcDataService.builder(new RpcServiceHandler()).build(), createApplyDataService());
@@ -214,6 +216,54 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         return new NoDescriptionProxy(getClass());
     }
 
+    private static NodeView createNodeView(final NodeViewNodeModel model, final Page page,
+        final InitialDataService<?> initDataService, final RpcDataService rpcDataService,
+        final ApplyDataService<?> applyDataService) {
+        var tables = model.getInternalTables();
+        if (tables != null && tables.length > 0) {
+            return new NodeTableView() { // NOSONAR
+
+                @Override
+                public Optional<InitialDataService<?>> createInitialDataService() {
+                    return Optional.ofNullable(initDataService);
+                }
+
+                @Override
+                public Optional<RpcDataService> createRpcDataService() {
+                    return Optional.ofNullable(rpcDataService);
+                }
+
+                @Override
+                public Optional<ApplyDataService<?>> createApplyDataService() {
+                    return Optional.ofNullable(applyDataService);
+                }
+
+                @Override
+                public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                    //
+                }
+
+                @Override
+                public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                    //
+                }
+
+                @Override
+                public Page getPage() {
+                    return page;
+                }
+
+                @Override
+                public DataTableSpec getSpec() {
+                    return tables[0].getDataTableSpec();
+                }
+
+            };
+        } else {
+            return createNodeView(page, initDataService, rpcDataService, applyDataService);
+        }
+    }
+
     @SuppressWarnings("javadoc")
     public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
         final RpcDataService rpcDataService, final ApplyDataService<?> applyDataService) {
@@ -248,6 +298,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
             public Page getPage() {
                 return page;
             }
+
         };
     }
 

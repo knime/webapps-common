@@ -134,6 +134,11 @@ public class NodeViewNodeModel extends NodeModel implements ReExecutable<String>
         BufferedDataContainer container = exec.createDataContainer(new DataTableSpec());
         container.close();
         Arrays.fill(outData, container.getTable());
+        if (inData.length > 0) {
+            m_tables = inData;
+        } else if (outData.length > 0) {
+            m_tables = outData;
+        }
         return outData;
     }
 
