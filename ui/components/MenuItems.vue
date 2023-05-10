@@ -14,6 +14,10 @@
  *
  * For some keydown events, a `@close` event is emitted.
  *
+ * There is a prop called `registerKeydown` if its true the component is registering the onKeydown method to
+ * the @keydown event on its own. This is handy if you don't need to have any control over it
+ * (like keeping the focus anywhere).
+ *
  * A click or activation by keyboard (enter and space) emits `@item-click`.
  * If the data has a `to` attribute the used tag will be `nuxt-link` if it has a `href` attribute it will be a `a` tag
  * otherwise we use the generic `button` and leave the handling of the action to the wrapping component that reacts
