@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['stylelint-config-standard-vue', 'stylelint-config-prettier'],
+    extends: ['stylelint-config-standard-vue'],
     rules: {
         'rule-empty-line-before': ['always-multi-line', {
           except: ['first-nested'],
