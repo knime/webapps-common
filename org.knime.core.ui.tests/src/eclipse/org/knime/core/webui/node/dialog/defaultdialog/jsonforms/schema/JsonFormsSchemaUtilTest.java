@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -87,6 +88,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -144,24 +146,39 @@ class JsonFormsSchemaUtilTest {
         testSettings(DescriptionSetting.class);
     }
 
-    private static class EnumTestSetting {
-        private static String SNAPSHOT = "{\"testEnum\":{\"oneOf\":["//
-            + "{\"const\":\"SOME_CHOICE\",\"title\":\"Some choice\"},"//
-            + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"second choice\"}"//
-            + "]}}";
+    @Test
+    void testEnum() throws JsonProcessingException {
+        class EnumTestSetting {
+            private static String SNAPSHOT = "{\"testEnum\":{\"oneOf\":["//
+                + "{\"const\":\"SOME_CHOICE\",\"title\":\"Some choice\"},"//
+                + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"second choice\"}"//
+                + "]}}";
 
-        enum TestEnum {
-                SOME_CHOICE, //
-                @Widget(title = "second choice")
-                SOME_OTHER_CHOICE
+            enum TestEnum {
+                    SOME_CHOICE, //
+                    @Label("second choice")
+                    SOME_OTHER_CHOICE
+            }
+
+            TestEnum testEnum;
         }
-
-        TestEnum testEnum;
+        testSettings(EnumTestSetting.class);
     }
 
     @Test
-    void testEnum() throws JsonProcessingException {
-        testSettings(EnumTestSetting.class);
+    void testEnumThrowsWhenUsingWidgetAnnotation() throws JsonProcessingException {
+
+
+        class EnumTestSettingWidgetAnnotation {
+            enum TestEnum {
+                    SOME_CHOICE, //
+                    @Widget(title = "second choice")
+                    SOME_OTHER_CHOICE
+            }
+
+            TestEnum testEnum;
+        }
+        assertThrows(IllegalStateException.class, () -> testSettings(EnumTestSettingWidgetAnnotation.class));
     }
 
     private static class TestChoices implements ChoicesProvider {

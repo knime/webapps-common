@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -143,11 +144,14 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
         String title = null;
         try {
             final var field = erasedType.getField(name);
+            if (field.isAnnotationPresent(Label.class)) {
+                final var label = field.getAnnotation(Label.class);
+                title = label.value();
+            }
             if (field.isAnnotationPresent(Widget.class)) {
-                final var schema = field.getAnnotation(Widget.class);
-                if (schema.title().length() > 0) {
-                    title = schema.title();
-                }
+                throw new IllegalStateException(String.format(
+                    "There is a @Widget annotation present at the enum field %s. Use the @Label annotation instead.",
+                    name));
             }
         } catch (NoSuchFieldException | SecurityException e) {
             NodeLogger.getLogger(getClass()).error(String.format("Exception when accessing field %s.", name), e);
