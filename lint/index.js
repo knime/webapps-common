@@ -1,1 +1,1 @@
-module.exports = require('./vue3');
+module.exports = require("./vue3");

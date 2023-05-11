@@ -12,7 +12,7 @@ Formatting is supposed to be handled via [Prettier].
 
 ### Prerequisites
 
-* Install [Node.js][node], see version in [package.json](package.json).
+- Install [Node.js][node], see version in [package.json](package.json).
 
 Newer versions may also work, but have not been tested.
 
@@ -50,17 +50,16 @@ in your `.eslintrc.js` file:
 
 ```js
 // This is a workaround for https://github.com/eslint/eslint/issues/3458
-require('@rushstack/eslint-patch/modern-module-resolution');
+require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
-  extends: ['@knime/eslint-config/vue3'],
+  extends: ["@knime/eslint-config/vue3"],
   globals: {
-    consola: true
+    consola: true,
   },
   // [...]
-}
+};
 ```
-
 
 ## Using Stylelint in your project
 
@@ -68,20 +67,19 @@ The following code block should give an understanding of a commonly used setup i
 
 ```js
 module.exports = {
-    extends: ['@knime/eslint-config/stylelint/vue']
+  extends: ["@knime/eslint-config/stylelint/vue"],
 };
 ```
 
 See [stylelint](stylelint) folder for available configs.
 
-
 ### Requirements
 
 Projects still need to specify the following `devDependency` in their respective `package.json` files, but none of the required additional plugins:
+
 - [ESlint]
 - [Stylelint]
 - [Prettier]
-
 
 [node]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/905281540/Node.js+Installation
 [ESLint]: https://eslint.org/
