@@ -1,1 +1,0 @@
-import{_ as a,o as e,c as o,u as n,t as _,l as r}from"./index-c99bab3b.js";const c={props:{text:{type:String,required:!0}}},d={class:"tooltip"},i={key:0,class:"text"};function l(s,p,t,u,f,x){return e(),o("div",d,[n(s.$slots,"default",{},void 0,!0),t.text?(e(),o("span",i,_(t.text),1)):r("",!0)])}const y=a(c,[["render",l],["__scopeId","data-v-251ab815"]]);export{y as T};
