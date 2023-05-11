@@ -226,7 +226,7 @@ export default {
           :class="['menu-items', `orient-${orientation}`]"
           :items="items"
           :max-menu-width="maxMenuWidth"
-          menu-aria-label="dropdown menu"
+          menu-aria-label="sub menu"
           @item-click="onItemClick"
           @close="closeMenu"
           @item-focused="setActiveDescendant"
