@@ -7,7 +7,7 @@ import { createPopper } from '@popperjs/core/dist/esm';
 import type { Instance, Options } from '@popperjs/core';
 
 
-type PopperTargets = {
+export type PopperTargets = {
     // the element to create a popover from
     popperTarget: Ref<HTMLElement | null>,
     // the element to which the popover is positioned
@@ -30,10 +30,11 @@ export default ({ popperTarget, referenceEl }: PopperTargets, options: Ref<Optio
     };
     onUnmounted(destroyPopper);
 
-
     const updatePopper = () => {
         if (popperInstance.value) {
-            popperInstance.value.update();
+            popperInstance.value.update().catch((reason) => {
+                throw Error(`Unable to update popper instance; ${reason}`);
+            });
         }
     };
 

@@ -12,7 +12,10 @@ export default {
 <template>
   <div class="tooltip">
     <slot />
-    <span class="text">{{ text }}</span>
+    <span
+      v-if="text"
+      class="text"
+    >{{ text }}</span>
   </div>
 </template>
 

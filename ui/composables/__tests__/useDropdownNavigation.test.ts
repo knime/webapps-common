@@ -63,6 +63,32 @@ describe('useDropdownNavigation', () => {
             expect(currentIndex.value).toBe(8);
         });
 
+        it('navigates to the last element on End', () => {
+            const simulatedLastIndex = 10;
+            props.getLastElement = vi.fn(() => ({
+                index: simulatedLastIndex,
+                onClick: () => clickSpy(simulatedLastIndex)
+            }));
+            const { currentIndex, onKeydown } = useDropdownNavigation(props);
+            simulateEventCall(onKeydown, 'End');
+            expect(currentIndex.value).toBe(simulatedLastIndex);
+            simulateEventCall(onKeydown, 'Enter');
+            expect(clickSpy).toHaveBeenCalledWith(simulatedLastIndex);
+        });
+
+        it('navigates to the first element on Home', () => {
+            const simulatedFirstIndex = -1;
+            props.getFirstElement = vi.fn(() => ({
+                index: simulatedFirstIndex,
+                onClick: () => clickSpy(simulatedFirstIndex)
+            }));
+            const { currentIndex, onKeydown } = useDropdownNavigation(props);
+            simulateEventCall(onKeydown, 'Home');
+            expect(currentIndex.value).toBe(simulatedFirstIndex);
+            simulateEventCall(onKeydown, 'Enter');
+            expect(clickSpy).toHaveBeenCalledWith(simulatedFirstIndex);
+        });
+
         it('calls close on Escape', () => {
             const { onKeydown } = useDropdownNavigation(props);
             expect(props.close).not.toHaveBeenCalled();
