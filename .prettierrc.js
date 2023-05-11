@@ -1,5 +1,1 @@
-module.exports = {
-    options: {
-        editorconfig: true
-    }
-}
+module.exports = {}
