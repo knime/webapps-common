@@ -1,14 +1,14 @@
 <script>
 export default {
-    props: {
-        /**
-         * If the tags should have hover + cursor styles.
-         */
-        clickable: {
-            type: Boolean,
-            default: false
-        }
-    }
+  props: {
+    /**
+     * If the tags should have hover + cursor styles.
+     */
+    clickable: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 

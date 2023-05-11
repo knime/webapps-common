@@ -1,3 +1,3 @@
 module.exports = {
-    extends: ['@knime/eslint-config/stylelint/vue']
+  extends: ["@knime/eslint-config/stylelint/vue"],
 };

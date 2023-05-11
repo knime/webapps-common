@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import code from 'webapps-common/ui/components/IdleReadyButton.vue?raw';
-import IdleReadyButton from 'webapps-common/ui/components/IdleReadyButton.vue';
+import CodeExample from "./demo/CodeExample.vue";
+import code from "webapps-common/ui/components/IdleReadyButton.vue?raw";
+import IdleReadyButton from "webapps-common/ui/components/IdleReadyButton.vue";
 
 const codeExample = `<IdleReadyButton
   :idle="ready"
@@ -14,43 +14,43 @@ const pageSize = 4;
 const maxLength = 11;
 
 export default {
-    components: {
-        CodeExample,
-        IdleReadyButton
+  components: {
+    CodeExample,
+    IdleReadyButton,
+  },
+  data() {
+    return {
+      codeExample,
+      code,
+      pageSize,
+      offset: pageSize,
+      idle: false,
+    };
+  },
+  computed: {
+    demoItems() {
+      const demoItems = [];
+      for (let index = 0; index < this.offset; index++) {
+        demoItems.push({
+          name: `Item-${index + 1}`,
+        });
+      }
+      return demoItems;
     },
-    data() {
-        return {
-            codeExample,
-            code,
-            pageSize,
-            offset: pageSize,
-            idle: false
-        };
+    showMore() {
+      return this.offset < maxLength;
     },
-    computed: {
-        demoItems() {
-            const demoItems = [];
-            for (let index = 0; index < this.offset; index++) {
-                demoItems.push({
-                    name: `Item-${index + 1}`
-                });
-            }
-            return demoItems;
-        },
-        showMore() {
-            return this.offset < maxLength;
-        }
+  },
+  methods: {
+    onMore() {
+      this.idle = true;
+      setTimeout(() => {
+        // simulate async idle
+        this.offset += pageSize;
+        this.idle = false;
+      }, 1000);
     },
-    methods: {
-        onMore() {
-            this.idle = true;
-            setTimeout(() => {
-                // simulate async idle
-                this.offset += pageSize;
-                this.idle = false;
-            }, 1000);
-        }
-    }
+  },
 };
 </script>
 
@@ -65,7 +65,10 @@ export default {
             <li>idle (e.g. while loading)</li>
             <li>and ready</li>
           </ul>
-          <p>Ready and idle states are set with props, as well as the idle text and ready text.</p>
+          <p>
+            Ready and idle states are set with props, as well as the idle text
+            and ready text.
+          </p>
         </div>
       </div>
     </section>
@@ -73,26 +76,23 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <ul>
-            <li
-              v-for="(item, index) in demoItems"
-              :key="index"
-            >
+            <li v-for="(item, index) in demoItems" :key="index">
               {{ item.name }}
             </li>
           </ul>
-          <IdleReadyButton
-            :ready="showMore"
-            :idle="idle"
-            @click="onMore"
-          />
+          <IdleReadyButton :ready="showMore" :idle="idle" @click="onMore" />
         </div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show IdleReadyButton.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show IdleReadyButton.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>
@@ -120,5 +120,4 @@ export default {
     margin-bottom: 5px;
   }
 }
-
 </style>

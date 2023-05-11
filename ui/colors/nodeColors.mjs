@@ -1,4 +1,4 @@
-import * as knime from './knimeColors.mjs';
+import * as knime from "./knimeColors.mjs";
 
 export const Component = knime.SilverSand;
 export const Configuration = knime.Avocado;
@@ -21,4 +21,3 @@ export const VirtualIn = knime.Stone;
 export const VirtualOut = knime.Stone;
 export const Visualizer = knime.AquamarineDark;
 export const Widget = knime.AquamarineDark;
-

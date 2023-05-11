@@ -1,30 +1,26 @@
 <script>
-
 export default {
-    props: {
-        /**
-         * the text to be shown
-         */
-        text: {
-            type: String,
-            default: null
-        },
-        /**
-         * whether the provided `text` should be rendered as HTML or plain text
-         */
-        renderAsHtml: {
-            type: Boolean,
-            default: false
-        }
-    }
+  props: {
+    /**
+     * the text to be shown
+     */
+    text: {
+      type: String,
+      default: null,
+    },
+    /**
+     * whether the provided `text` should be rendered as HTML or plain text
+     */
+    renderAsHtml: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 
 <template>
-  <div
-    v-if="$slots.default"
-    class="description"
-  >
+  <div v-if="$slots.default" class="description">
     <!-- @slot if content is provided via slot, the `text` and `renderAsHtml` props will be ignored -->
     <slot />
   </div>
@@ -34,11 +30,7 @@ export default {
     class="description"
     v-html="text"
   />
-  <div
-    v-else
-    class="description plain"
-    v-text="text"
-  />
+  <div v-else class="description plain" v-text="text" />
 </template>
 
 <style lang="postcss" scoped>
@@ -69,7 +61,8 @@ export default {
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
         content: "";
-        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50%
+          50%;
         mask-size: cover;
         background-color: var(--knime-masala); /* defines icon color */
         width: 16px;
@@ -87,7 +80,9 @@ export default {
       text-decoration: none;
 
       &::after {
-        background-color: var(--theme-text-link-foreground-color-hover); /* defines icon color */
+        background-color: var(
+          --theme-text-link-foreground-color-hover
+        ); /* defines icon color */
       }
     }
 
@@ -99,7 +94,9 @@ export default {
       text-decoration: none;
 
       &::after {
-        background-color: var(--theme-text-link-foreground-color-focus); /* defines icon color */
+        background-color: var(
+          --theme-text-link-foreground-color-focus
+        ); /* defines icon color */
       }
     }
   }
@@ -136,7 +133,6 @@ export default {
     margin: 20px 0;
     position: relative;
     left: -15px;
-
 
     & th {
       font-weight: 500;

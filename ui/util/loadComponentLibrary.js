@@ -1,4 +1,4 @@
-import { defineAsyncComponent, getCurrentInstance } from 'vue';
+import { defineAsyncComponent, getCurrentInstance } from "vue";
 
 /**
  * Determines whether a given component (by name) is registered on the given Vue instance
@@ -7,10 +7,11 @@ import { defineAsyncComponent, getCurrentInstance } from 'vue';
  * @param {String} param.componentName The component name to assert
  * @returns {Boolean} whether the component is already registered or not
  */
-export const isComponentRegistered = ({ vueInstance, componentName }) => Boolean(vueInstance.component(componentName));
+export const isComponentRegistered = ({ vueInstance, componentName }) =>
+  Boolean(vueInstance.component(componentName));
 
 const registerComponent = ({ vueInstance, componentName, component }) => {
-    vueInstance.component(componentName, component);
+  vueInstance.component(componentName, component);
 };
 
 /**
@@ -20,24 +21,24 @@ const registerComponent = ({ vueInstance, componentName, component }) => {
  * @param {String} payload.url url to fetch the script from
  * @returns {Promise} A promise that is resolved with the script element in case of success, or rejected on error.
  */
-export const loadScript = ({ url }) => new Promise((resolve, reject) => {
-    const script = window.document.createElement('script');
-    
+export const loadScript = ({ url }) =>
+  new Promise((resolve, reject) => {
+    const script = window.document.createElement("script");
+
     script.async = true; // this is the default, but let's be safe
-    
-    script.addEventListener('load', () => {
-        resolve(script);
+
+    script.addEventListener("load", () => {
+      resolve(script);
     });
-    
-    script.addEventListener('error', () => {
-        reject(new Error(`Script loading of "${url}" failed`));
-        window.document.head.removeChild(script);
+
+    script.addEventListener("error", () => {
+      reject(new Error(`Script loading of "${url}" failed`));
+      window.document.head.removeChild(script);
     });
-    
+
     script.src = url;
     window.document.head.appendChild(script);
-});
-
+  });
 
 /**
  * Loads a Vue component from an url and registers it globally
@@ -50,35 +51,37 @@ export const loadScript = ({ url }) => new Promise((resolve, reject) => {
  * @returns {Promise} A promise that is resolved if the component was loaded successfully.
  */
 export const loadComponentLibrary = async ({
-    resourceLocation,
-    componentName,
-    onLoad = null
+  resourceLocation,
+  componentName,
+  onLoad = null,
 }) => {
-    // Necessary for global component registration
-    const vueInstance = getCurrentInstance()?.appContext.app;
-    
-    // resolve immediately if component has already been loaded
-    if (isComponentRegistered({ vueInstance, componentName })) {
-        return Promise.resolve(vueInstance.component(componentName));
-    }
-    
-    // Load and mount component library script
-    await loadScript({ url: resourceLocation });
-    
-    // Lib build defines component on `window` using the name defined during build.
-    // This name has to match the componentName
-    const component = window[componentName];
-    if (!component) {
-        throw new Error(`Component "${componentName}" loading failed. Script invalid.`);
-    }
+  // Necessary for global component registration
+  const vueInstance = getCurrentInstance()?.appContext.app;
 
-    onLoad?.({ component });
-    
-    registerComponent({ vueInstance, componentName, component });
-    // clean up Window object
-    delete window[componentName];
+  // resolve immediately if component has already been loaded
+  if (isComponentRegistered({ vueInstance, componentName })) {
+    return Promise.resolve(vueInstance.component(componentName));
+  }
 
-    return Promise.resolve(component);
+  // Load and mount component library script
+  await loadScript({ url: resourceLocation });
+
+  // Lib build defines component on `window` using the name defined during build.
+  // This name has to match the componentName
+  const component = window[componentName];
+  if (!component) {
+    throw new Error(
+      `Component "${componentName}" loading failed. Script invalid.`
+    );
+  }
+
+  onLoad?.({ component });
+
+  registerComponent({ vueInstance, componentName, component });
+  // clean up Window object
+  delete window[componentName];
+
+  return Promise.resolve(component);
 };
 
 /**
@@ -94,11 +97,13 @@ export const loadComponentLibrary = async ({
  * @returns {Promise} A promise that is resolved if the component was loaded successfully.
  */
 export const loadAsyncComponent = ({
-    resourceLocation,
-    componentName,
-    asyncComponentOptions = {},
-    onLoad = null
-}) => defineAsyncComponent({
-    loader: () => loadComponentLibrary({ window, resourceLocation, componentName, onLoad }),
-    ...asyncComponentOptions
-});
+  resourceLocation,
+  componentName,
+  asyncComponentOptions = {},
+  onLoad = null,
+}) =>
+  defineAsyncComponent({
+    loader: () =>
+      loadComponentLibrary({ window, resourceLocation, componentName, onLoad }),
+    ...asyncComponentOptions,
+  });

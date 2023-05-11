@@ -1,25 +1,25 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import Description from 'webapps-common/ui/components/Description.vue';
-import code from 'webapps-common/ui/components/Description.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import Description from "webapps-common/ui/components/Description.vue";
+import code from "webapps-common/ui/components/Description.vue?raw";
 
 export default {
-    components: {
-        Description,
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample: `<Description>Text with <b>HTML code</b> via slot.</Description>
+  components: {
+    Description,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample: `<Description>Text with <b>HTML code</b> via slot.</Description>
 
-<Description :text="htmlString" renderAsHtml />`
-        };
+<Description :text="htmlString" renderAsHtml />`,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -29,7 +29,10 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <h2>Description</h2>
-          <p>The Description component provides styling for rich-text markup (see component code for details)…</p>
+          <p>
+            The Description component provides styling for rich-text markup (see
+            component code for details)…
+          </p>
         </div>
       </div>
     </section>
@@ -38,7 +41,8 @@ export default {
         <Description class="description grid-item-12">
           <h5>Links</h5>
           <p>
-            <a href="/">Internal link</a> or <a href="https://www.knime.com/">External link</a>
+            <a href="/">Internal link</a> or
+            <a href="https://www.knime.com/">External link</a>
           </p>
 
           <h5>Lists</h5>
@@ -50,15 +54,18 @@ export default {
           </ol>
           <ul>
             <li>
-              <b>Replace outlier values:</b> Allows to replace outliers based on the selected "Replacement strategy"
+              <b>Replace outlier values:</b> Allows to replace outliers based on
+              the selected "Replacement strategy"
             </li>
             <li>
               <b>Remove outlier rows:</b>
-              Removes all rows from the input data that contain in any of the selected columns at least one outlier
+              Removes all rows from the input data that contain in any of the
+              selected columns at least one outlier
             </li>
             <li>
               <b>Remove non-outlier rows:</b>
-              Retains only those rows of the input data that contain at least one outlier in any of the selected columns
+              Retains only those rows of the input data that contain at least
+              one outlier in any of the selected columns
             </li>
           </ul>
 
@@ -99,23 +106,19 @@ export default {
           </table>
 
           <h5>Code & Pre</h5>
-          <pre>var svgElement = document.getElementById("mySVG");
+          <pre>
+var svgElement = document.getElementById("mySVG");
 knimeService.inlineSvgStyles(svgElement);
-return (new XMLSerializer()).serializeToString(svgElement);</pre>
+return (new XMLSerializer()).serializeToString(svgElement);</pre
+          >
 
           <p>or <code>inline code</code></p>
           <h5>Definition list</h5>
           <dl>
             <dt>knimeNode:</dt>
-            <dd>
-              The knimeNode must have the correct namespace.
-            </dd>
-            <dt>
-              views:
-            </dt>
-            <dd>
-              Explains what is displayed in the view.
-            </dd>
+            <dd>The knimeNode must have the correct namespace.</dd>
+            <dt>views:</dt>
+            <dd>Explains what is displayed in the view.</dd>
           </dl>
         </Description>
       </div>
@@ -123,8 +126,12 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Description.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Description.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

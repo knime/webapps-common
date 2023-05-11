@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import type { MenuItem } from './MenuItems.vue';
+import type { MenuItem } from "./MenuItems.vue";
 
 type Props = {
-    item: MenuItem;
-    index: number;
-    hasFocus: boolean;
-    useMaxMenuWidth: boolean;
-}
+  item: MenuItem;
+  index: number;
+  hasFocus: boolean;
+  useMaxMenuWidth: boolean;
+};
 
 const linkTagByType = (item: MenuItem) => {
-    if (item.to) {
-        return 'nuxt-link';
-    } else if (item.href) {
-        return 'a';
-    } else {
-        return 'button';
-    }
+  if (item.to) {
+    return "nuxt-link";
+  } else if (item.href) {
+    return "a";
+  } else {
+    return "button";
+  }
 };
 
 defineProps<Props>();
@@ -32,29 +32,19 @@ defineProps<Props>();
       {
         disabled: item.disabled,
         selected: item.selected,
-        focused: hasFocus
-      }
+        focused: hasFocus,
+      },
     ]"
     :to="item.to || null"
     :href="item.href || null"
   >
-    <Component
-      :is="item.icon"
-      v-if="item.icon"
-      class="item-icon"
-    />
+    <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">
       <span :class="['text', { truncate: useMaxMenuWidth }]">
         {{ item.text }}
       </span>
-      <span
-        v-if="item.hotkeyText"
-        class="hotkey"
-      >{{ item.hotkeyText }}</span>
-      <slot
-        name="submenu"
-        :item-element="$refs.listItemComponent"
-      />
+      <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
+      <slot name="submenu" :item-element="$refs.listItemComponent" />
     </div>
   </Component>
 </template>
@@ -94,7 +84,9 @@ defineProps<Props>();
 
     &.selected {
       background-color: var(--theme-dropdown-foreground-color);
-      color: var(--theme-dropdown-background-color); /* background and foreground are switched on selection */
+      color: var(
+        --theme-dropdown-background-color
+      ); /* background and foreground are switched on selection */
 
       & .item-icon {
         stroke: var(--theme-dropdown-background-color);

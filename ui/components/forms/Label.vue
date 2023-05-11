@@ -14,60 +14,61 @@ let labelForId = 0;
  * as the input's `id`.
  */
 export default {
-    inject: {
-        compactLabels: { // provided e.g. by Fieldset.vue
-            default: false
-        }
+  inject: {
+    compactLabels: {
+      // provided e.g. by Fieldset.vue
+      default: false,
     },
-    props: {
-        generateId: {
-            type: Boolean,
-            default: true
-        },
-        idPrefix: {
-            type: String,
-            default: 'comp'
-        },
-        text: {
-            default: '',
-            type: String
-        },
-        /**
-         * smaller font size and margin
-         */
-        compact: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * Whether to show the label or only its content.
-         */
-        active: {
-            type: Boolean,
-            default: true
-        }
+  },
+  props: {
+    generateId: {
+      type: Boolean,
+      default: true,
     },
-    computed: {
-        labelFor() {
-            if (this.generateId) {
-                return `${this.idPrefix}-${this.labelForId}`;
-            }
-            return null;
-        },
-        labelId() {
-            if (this.generateId) {
-                return `label-${this.labelFor}`;
-            }
-            return null;
-        },
-        isCompact() {
-            return this.compact || this.compactLabels;
-        }
+    idPrefix: {
+      type: String,
+      default: "comp",
     },
-    beforeCreate() {
-        labelForId += 1;
-        this.labelForId = labelForId;
-    }
+    text: {
+      default: "",
+      type: String,
+    },
+    /**
+     * smaller font size and margin
+     */
+    compact: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Whether to show the label or only its content.
+     */
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  computed: {
+    labelFor() {
+      if (this.generateId) {
+        return `${this.idPrefix}-${this.labelForId}`;
+      }
+      return null;
+    },
+    labelId() {
+      if (this.generateId) {
+        return `label-${this.labelFor}`;
+      }
+      return null;
+    },
+    isCompact() {
+      return this.compact || this.compactLabels;
+    },
+  },
+  beforeCreate() {
+    labelForId += 1;
+    this.labelForId = labelForId;
+  },
 };
 </script>
 
@@ -77,7 +78,7 @@ export default {
       v-if="active"
       :id="labelId"
       :for="labelFor"
-      :class="['label-text', {compact: isCompact}]"
+      :class="['label-text', { compact: isCompact }]"
       v-text="text"
     />
     <slot :label-for-id="labelFor" />

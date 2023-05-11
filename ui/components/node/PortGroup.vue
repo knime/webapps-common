@@ -1,51 +1,51 @@
 <script>
-import PortIcon from './PortIcon.vue';
-import Description from '../Description.vue';
+import PortIcon from "./PortIcon.vue";
+import Description from "../Description.vue";
 
 /** PortGroups are part of the NodeFeaureList
  *  A PortGroup is one section that contains several ports and their metadata.
  *  Examples are "Input ports", "Output ports"
  */
 export default {
-    components: {
-        Description,
-        PortIcon
+  components: {
+    Description,
+    PortIcon,
+  },
+  props: {
+    /**
+     * Array of Ports
+     * Port {
+     *   color: String, // css-format
+     *   optional: Boolean,
+     *   type: String, // on of ['flowVariable', 'table', 'other']
+     *   typeName: String, // human readable data type,
+     *   name: String, // name of this port
+     *   description: String
+     * }
+     */
+    ports: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * Array of Ports
-         * Port {
-         *   color: String, // css-format
-         *   optional: Boolean,
-         *   type: String, // on of ['flowVariable', 'table', 'other']
-         *   typeName: String, // human readable data type,
-         *   name: String, // name of this port
-         *   description: String
-         * }
-         */
-        ports: {
-            type: Array,
-            default: () => []
-        },
-        /** Header title of this PortGroup */
-        title: {
-            type: String,
-            default: 'Input ports'
-        },
-        groupDescription: {
-            type: String,
-            default: null
-        }
+    /** Header title of this PortGroup */
+    title: {
+      type: String,
+      default: "Input ports",
     },
-    computed: {
-        /**
-         * Decides whether we are rendering static or dynamic ports.
-         * @returns {Boolean} dynamicPorts
-         */
-        dynamicPorts() {
-            return Boolean(this.groupDescription);
-        }
-    }
+    groupDescription: {
+      type: String,
+      default: null,
+    },
+  },
+  computed: {
+    /**
+     * Decides whether we are rendering static or dynamic ports.
+     * @returns {Boolean} dynamicPorts
+     */
+    dynamicPorts() {
+      return Boolean(this.groupDescription);
+    },
+  },
 };
 </script>
 
@@ -60,26 +60,18 @@ export default {
         class="dyn-ports-description"
       />
       <ol>
-        <li
-          v-for="(port,index) in ports"
-          :key="index"
-        >
-          <svg
-            viewBox="-4.5 -4.5 9 9"
-            width="12"
-            height="12"
-          >
+        <li v-for="(port, index) in ports" :key="index">
+          <svg viewBox="-4.5 -4.5 9 9" width="12" height="12">
             <PortIcon
               :color="port.color"
               :filled="!port.optional"
               :type="port.type"
             />
           </svg>
-          <div :class="['port-type', { fat: !dynamicPorts }]">Type: {{ port.typeName }}</div>
-          <div
-            v-if="!dynamicPorts && port.name"
-            class="port-name"
-          >
+          <div :class="['port-type', { fat: !dynamicPorts }]">
+            Type: {{ port.typeName }}
+          </div>
+          <div v-if="!dynamicPorts && port.name" class="port-name">
             {{ port.name }}
           </div>
           <Description

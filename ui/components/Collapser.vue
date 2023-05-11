@@ -1,33 +1,33 @@
 <script>
-import DropdownIcon from '../assets/img/icons/arrow-dropdown.svg';
-import BaseButton from './BaseButton.vue';
-import ExpandTransition from './transitions/ExpandTransition.vue';
+import DropdownIcon from "../assets/img/icons/arrow-dropdown.svg";
+import BaseButton from "./BaseButton.vue";
+import ExpandTransition from "./transitions/ExpandTransition.vue";
 
 export default {
-    components: {
-        DropdownIcon,
-        BaseButton,
-        ExpandTransition
+  components: {
+    DropdownIcon,
+    BaseButton,
+    ExpandTransition,
+  },
+  props: {
+    /**
+     * if the initial state is expanded
+     */
+    initiallyExpanded: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-        /**
-         * if the initial state is expanded
-         */
-        initiallyExpanded: {
-            type: Boolean,
-            default: false
-        }
+  },
+  data() {
+    return {
+      isExpanded: this.initiallyExpanded,
+    };
+  },
+  methods: {
+    onTrigger() {
+      this.isExpanded = !this.isExpanded;
     },
-    data() {
-        return {
-            isExpanded: this.initiallyExpanded
-        };
-    },
-    methods: {
-        onTrigger() {
-            this.isExpanded = !this.isExpanded;
-        }
-    }
+  },
 };
 </script>
 
@@ -40,7 +40,7 @@ export default {
     >
       <slot name="title" />
       <div class="dropdown">
-        <DropdownIcon :class="['dropdown-icon', {flip: isExpanded}]" />
+        <DropdownIcon :class="['dropdown-icon', { flip: isExpanded }]" />
       </div>
     </BaseButton>
     <ExpandTransition :is-expanded="isExpanded">
@@ -104,7 +104,8 @@ export default {
     }
   }
 
-  &:focus .dropdown { /* whole button gets focus but only dropdown icon is styled */
+  &:focus .dropdown {
+    /* whole button gets focus but only dropdown icon is styled */
     background-color: var(--theme-button-function-background-color-focus);
   }
 }

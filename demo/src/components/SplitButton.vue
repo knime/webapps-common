@@ -1,15 +1,15 @@
 <script>
-import { markRaw } from 'vue';
-import CodeExample from './demo/CodeExample.vue';
-import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
-import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
-import StarIcon from 'webapps-common/ui/assets/img/icons/star.svg';
-import LeaveIcon from 'webapps-common/ui/assets/img/icons/leave.svg';
-import HeartIcon from 'webapps-common/ui/assets/img/icons/heart.svg';
-import DropdownIcon from 'webapps-common/ui/assets/img/icons/arrow-dropdown.svg';
-import Button from 'webapps-common/ui/components/Button.vue';
-import SplitButton from 'webapps-common/ui/components/SplitButton.vue';
-import code from 'webapps-common/ui/components/SplitButton.vue?raw';
+import { markRaw } from "vue";
+import CodeExample from "./demo/CodeExample.vue";
+import SubMenu from "webapps-common/ui/components/SubMenu.vue";
+import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
+import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
+import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
+import DropdownIcon from "webapps-common/ui/assets/img/icons/arrow-dropdown.svg";
+import Button from "webapps-common/ui/components/Button.vue";
+import SplitButton from "webapps-common/ui/components/SplitButton.vue";
+import code from "webapps-common/ui/components/SplitButton.vue?raw";
 
 const codeExample = `<script>
 import Button from '~/webapps-common/ui/components/Button.vue';
@@ -79,40 +79,45 @@ export default {
 }
 </style>`;
 
-const subMenuItems = [{
-    href: 'http://apple.com',
-    text: 'Apples',
-    icon: markRaw(HelpIcon)
-}, {
-    href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-    text: 'Oranges',
-    icon: markRaw(StarIcon)
-}, {
-    to: '/testing-nuxt-link',
-    text: 'Ananas',
-    icon: markRaw(HeartIcon)
-}, {
-    href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
-    text: 'Bananas',
-    icon: markRaw(LeaveIcon)
-}];
+const subMenuItems = [
+  {
+    href: "http://apple.com",
+    text: "Apples",
+    icon: markRaw(HelpIcon),
+  },
+  {
+    href: "https://en.wikipedia.org/wiki/Orange_(colour)",
+    text: "Oranges",
+    icon: markRaw(StarIcon),
+  },
+  {
+    to: "/testing-nuxt-link",
+    text: "Ananas",
+    icon: markRaw(HeartIcon),
+  },
+  {
+    href: "https://www.urbandictionary.com/define.php?term=go%20bananas",
+    text: "Bananas",
+    icon: markRaw(LeaveIcon),
+  },
+];
 
 export default {
-    components: {
-        SubMenu,
-        CodeExample,
-        DropdownIcon,
-        Button,
-        SplitButton
-    },
-    data() {
-        return {
-            SubMenu,
-            subMenuItems,
-            codeExample,
-            code
-        };
-    }
+  components: {
+    SubMenu,
+    CodeExample,
+    DropdownIcon,
+    Button,
+    SplitButton,
+  },
+  data() {
+    return {
+      SubMenu,
+      subMenuItems,
+      codeExample,
+      code,
+    };
+  },
 };
 </script>
 
@@ -122,8 +127,9 @@ export default {
       <div class="grid-item-12">
         <h2>SplitButton</h2>
         <p>
-          A split button which combines a Button and SubMenu component. Both intentionally need to be added via the
-          default slot to have full flexibility regarding their props and events.
+          A split button which combines a Button and SubMenu component. Both
+          intentionally need to be added via the default slot to have full
+          flexibility regarding their props and events.
         </p>
         <div>
           <SplitButton>
@@ -138,8 +144,12 @@ export default {
             </SubMenu>
           </SplitButton>
         </div>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show SplitButton.vue source code">{{ code }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show SplitButton.vue source code">{{
+          code
+        }}</CodeExample>
       </div>
     </div>
   </section>

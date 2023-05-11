@@ -1,36 +1,36 @@
 <script>
-import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
+import { resolveNuxtLinkComponent } from "../util/nuxtComponentResolver";
 
 /**
  * Link component for use in the Message component. Minimally styled to allow reuse in the body
  * of the message, in the details or provided via slot.
  */
 export default {
-    props: {
-        /**
-         * Link configuration object. Can either be a nuxt-link (with the `to` property) or an
-         * `<a... />` tag (with href).
-         *
-         * @example
-         *    {
-         *       text
-         *       href (external links, will become <a></a>)
-         *       to (internal links, will become <nuxt-link></nuxt-link>)
-         *       newTab (will set the 'target' attribute to '_blank' to open link in new tab)
-         *    }
-         *
-         */
-        link: {
-            type: Object,
-            default: () => ({})
-        }
+  props: {
+    /**
+     * Link configuration object. Can either be a nuxt-link (with the `to` property) or an
+     * `<a... />` tag (with href).
+     *
+     * @example
+     *    {
+     *       text
+     *       href (external links, will become <a></a>)
+     *       to (internal links, will become <nuxt-link></nuxt-link>)
+     *       newTab (will set the 'target' attribute to '_blank' to open link in new tab)
+     *    }
+     *
+     */
+    link: {
+      type: Object,
+      default: () => ({}),
     },
-    computed: {
-        // TODO: Can be made into a composition function
-        linkComponent() {
-            return resolveNuxtLinkComponent();
-        }
-    }
+  },
+  computed: {
+    // TODO: Can be made into a composition function
+    linkComponent() {
+      return resolveNuxtLinkComponent();
+    },
+  },
 };
 </script>
 
@@ -41,7 +41,7 @@ export default {
     :to="link.to"
     class="message-link"
   >
-    {{ ' ' + link.text }}
+    {{ " " + link.text }}
   </Component>
   <a
     v-else-if="link.href"
@@ -49,7 +49,7 @@ export default {
     :target="link.newTab ? '_blank' : null"
     class="message-link"
   >
-    {{ ' ' + link.text }}
+    {{ " " + link.text }}
   </a>
 </template>
 
@@ -58,5 +58,4 @@ export default {
   text-decoration: underline;
   cursor: pointer;
 }
-
 </style>

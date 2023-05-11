@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import Carousel from 'webapps-common/ui/components/Carousel.vue';
-import carouselCode from 'webapps-common/ui/components/Carousel.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import Carousel from "webapps-common/ui/components/Carousel.vue";
+import carouselCode from "webapps-common/ui/components/Carousel.vue?raw";
 
 const codeExample = `
   <Carousel>
@@ -32,16 +32,16 @@ const codeExample = `
 </style>`;
 
 export default {
-    components: {
-        Carousel,
-        CodeExample
-    },
-    data() {
-        return {
-            carouselCode,
-            codeExample
-        };
-    }
+  components: {
+    Carousel,
+    CodeExample,
+  },
+  data() {
+    return {
+      carouselCode,
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -51,17 +51,17 @@ export default {
       <div class="grid-item-12">
         <h2>Carousel</h2>
         <p>
-          The carousel can fit items of any size and creates shadows on
-          each side of the viewport to indicate that scrolling is possible. When one side of the items inside of the
-          carousel is reached the shadow should disappear.
+          The carousel can fit items of any size and creates shadows on each
+          side of the viewport to indicate that scrolling is possible. When one
+          side of the items inside of the carousel is reached the shadow should
+          disappear.
         </p>
         <p>
-          The color of the shadow can be adjusted to the background
-          by setting the .shadow-color's before and after elements background-image (example below)
+          The color of the shadow can be adjusted to the background by setting
+          the .shadow-color's before and after elements background-image
+          (example below)
         </p>
-        <p>
-          See usage example for more CSS adjustments.
-        </p>
+        <p>See usage example for more CSS adjustments.</p>
         <section>
           <Carousel>
             <div class="wrapper">
@@ -74,8 +74,12 @@ export default {
             </div>
           </Carousel>
         </section>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Carousel.vue source code">{{ carouselCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show Carousel.vue source code">{{
+          carouselCode
+        }}</CodeExample>
       </div>
     </div>
   </section>
@@ -84,11 +88,19 @@ export default {
 <style lang="postcss" scoped>
 section {
   & :deep(.shadow-wrapper::before) {
-    background-image: linear-gradient(270deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(
+      270deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-white) 100%
+    );
   }
 
   & :deep(.shadow-wrapper::after) {
-    background-image: linear-gradient(90deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(
+      90deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-white) 100%
+    );
   }
 }
 

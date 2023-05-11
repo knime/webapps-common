@@ -1,8 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import DateTimeInput from 'webapps-common/ui/components/forms/DateTimeInput.vue';
-import Label from 'webapps-common/ui/components/forms/Label.vue';
-import code from 'webapps-common/ui/components/forms/DateTimeInput.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import DateTimeInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
+import code from "webapps-common/ui/components/forms/DateTimeInput.vue?raw";
 
 const codeExample = `<DateTimeInput
   :value="new Date()"
@@ -14,24 +14,24 @@ const codeExample = `<DateTimeInput
 />`;
 
 export default {
-    components: {
-        DateTimeInput,
-        Label,
-        CodeExample
+  components: {
+    DateTimeInput,
+    Label,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      dateDefault: new Date(),
+      dateOnlyDate: new Date(),
+      dateBounds: new Date(),
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            dateDefault: new Date(),
-            dateOnlyDate: new Date(),
-            dateBounds: new Date()
-        };
-    },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -42,12 +42,16 @@ export default {
         <div class="grid-item-12">
           <h2>DateTimeInput</h2>
           <p>
-            DateTime component shows input field with a button and a popover calendar to choose the date. Time is
-            represented with multiple TimePartInputs for hour, minute etc which can be toggled via the corresponding
-            <code>show{**Unit**}</code> properties. It acts as a form element, so it emits <code>input</code> events,
-            and it has a <code>value</code>. It also has <code>min</code> & <code>max</code> properties to set bounds to
-            the date. It detects the timezone based on the browser value, but the timezone can also be set separately
-            with the <code>timezone</code> property.
+            DateTime component shows input field with a button and a popover
+            calendar to choose the date. Time is represented with multiple
+            TimePartInputs for hour, minute etc which can be toggled via the
+            corresponding
+            <code>show{**Unit**}</code> properties. It acts as a form element,
+            so it emits <code>input</code> events, and it has a
+            <code>value</code>. It also has <code>min</code> &
+            <code>max</code> properties to set bounds to the date. It detects
+            the timezone based on the browser value, but the timezone can also
+            be set separately with the <code>timezone</code> property.
           </p>
           <p>
             It uses the DatePicker from v-calendar. See: https://vcalendar.io/
@@ -72,7 +76,7 @@ export default {
               v-model="dateBounds"
               :show-seconds="false"
               :show-milliseconds="false"
-              :min="new Date(new Date().setDate(new Date().getDate()-5))"
+              :min="new Date(new Date().setDate(new Date().getDate() - 5))"
               :max="new Date()"
             />
           </Label>
@@ -87,8 +91,12 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show TimeInputPart.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show TimeInputPart.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

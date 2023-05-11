@@ -6,7 +6,9 @@ defined in this package should be defined in `webapps-common/package.json` file 
 from a parent project.
 
 ## Tools and Functionality
+
 ---
+
 ### **1.) Open Source Credits**
 
 `npm run --prefix /webapps-common opensourcecredits`
@@ -27,4 +29,5 @@ overwritten with the new content.
 using this script.
 
 # Join the Community!
-* [KNIME Forum](https://forum.knime.com/)
+
+- [KNIME Forum](https://forum.knime.com/)

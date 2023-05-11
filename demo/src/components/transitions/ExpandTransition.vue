@@ -1,33 +1,33 @@
 <script>
-import CodeExample from '../demo/CodeExample.vue';
-import ExpandTransition from 'webapps-common/ui/components/transitions/ExpandTransition.vue';
-import Button from 'webapps-common/ui/components/Button.vue';
-import code from 'webapps-common/ui/components/transitions/ExpandTransition.vue?raw';
+import CodeExample from "../demo/CodeExample.vue";
+import ExpandTransition from "webapps-common/ui/components/transitions/ExpandTransition.vue";
+import Button from "webapps-common/ui/components/Button.vue";
+import code from "webapps-common/ui/components/transitions/ExpandTransition.vue?raw";
 
 export default {
-    components: {
-        ExpandTransition,
-        Button,
-        CodeExample
-    },
-    data() {
-        return {
-            isExpanded: false,
-            codeExample: `<ExpandTransition :is-expanded="isExpanded" >
+  components: {
+    ExpandTransition,
+    Button,
+    CodeExample,
+  },
+  data() {
+    return {
+      isExpanded: false,
+      codeExample: `<ExpandTransition :is-expanded="isExpanded" >
     <p>Lorem ipsum…</p>
-</ExpandTransition>`
-        };
+</ExpandTransition>`,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    computed: {
-        code() {
-            return code;
-        }
+  },
+  methods: {
+    onClick() {
+      this.isExpanded = !this.isExpanded;
     },
-    methods: {
-        onClick() {
-            this.isExpanded = !this.isExpanded;
-        }
-    }
+  },
 };
 </script>
 
@@ -47,17 +47,19 @@ export default {
           </Button>
           <div class="grid-item-3 content">
             <h5>Expand Transition</h5>
-            <ExpandTransition
-              :is-expanded="isExpanded"
-            >
+            <ExpandTransition :is-expanded="isExpanded">
               <div>
                 <p>Lorem ipsum…</p>
               </div>
             </ExpandTransition>
           </div>
         </div>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show ExpandTransition.vue source code">{{ code }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show ExpandTransition.vue source code">{{
+          code
+        }}</CodeExample>
       </div>
     </div>
   </section>

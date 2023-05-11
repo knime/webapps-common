@@ -1,8 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import Tooltip from 'webapps-common/ui/components/Tooltip.vue';
-import BrainIcon from 'webapps-common/ui/assets/img/icons/ai-brain.svg';
-import code from 'webapps-common/ui/components/Tooltip.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import Tooltip from "webapps-common/ui/components/Tooltip.vue";
+import BrainIcon from "webapps-common/ui/assets/img/icons/ai-brain.svg";
+import code from "webapps-common/ui/components/Tooltip.vue?raw";
 
 const codeExample = `
 <Tooltip
@@ -12,21 +12,21 @@ const codeExample = `
 </Tooltip>`;
 
 export default {
-    components: {
-        Tooltip,
-        CodeExample,
-        BrainIcon
+  components: {
+    Tooltip,
+    CodeExample,
+    BrainIcon,
+  },
+  data() {
+    return {
+      codeExample,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample
-        };
-    },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -37,28 +37,29 @@ export default {
         <div class="grid-item-12">
           <h2>Tooltip</h2>
           <p>
-            A simple tooltip only for devices with hover capabilities. For others it will be deactivated.
+            A simple tooltip only for devices with hover capabilities. For
+            others it will be deactivated.
           </p>
           <p>
-            Note: If the immediate child container of the tooltip has an <code class="language-js">expanded</code>
-            class, the tooltip will be hidden. This is useful for example for popovers (See KNIME Hub project).
+            Note: If the immediate child container of the tooltip has an
+            <code class="language-js">expanded</code>
+            class, the tooltip will be hidden. This is useful for example for
+            popovers (See KNIME Hub project).
           </p>
         </div>
       </div>
     </section>
     <section class="demo">
-      <div class="grid-container ">
+      <div class="grid-container">
         <div class="grid-item-6">
-          <Tooltip
-            text="What you see here is a headline tooltip"
-          >
-            <h3 class="demo-line">A headline which magically has now a tooltip</h3>
+          <Tooltip text="What you see here is a headline tooltip">
+            <h3 class="demo-line">
+              A headline which magically has now a tooltip
+            </h3>
           </Tooltip>
         </div>
         <div class="grid-item-6">
-          <Tooltip
-            text="Compact tooltip for a field"
-          >
+          <Tooltip text="Compact tooltip for a field">
             <BrainIcon />
           </Tooltip>
         </div>
@@ -67,8 +68,12 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Tooltip.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Tooltip.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

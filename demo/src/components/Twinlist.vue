@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
-import code from 'webapps-common/ui/components/forms/Twinlist.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
+import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
 
 const codeExample = `<Twinlist
   v-model="selected"
@@ -59,66 +59,80 @@ const codeExample = `<Twinlist
 />`;
 
 export default {
-    components: {
-        Twinlist,
-        CodeExample
+  components: {
+    Twinlist,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      selected: [],
+      selectedMissing: ["foo", "I am missing", "bar"],
+      selectedUnknown: [],
+      selectedSearchLabel: [],
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            selected: [],
-            selectedMissing: ['foo', 'I am missing', 'bar'],
-            selectedUnknown: [],
-            selectedSearchLabel: []
-        };
-    },
-    computed: {
-        code() {
-            return code;
+    demoValues() {
+      return [
+        {
+          id: "foo",
+          text: "Foo",
         },
-        demoValues() {
-            return [{
-                id: 'foo',
-                text: 'Foo'
-            }, {
-                id: 'bar',
-                text: 'Bar'
-            }, {
-                id: 'baz',
-                text: 'Baz'
-            }, {
-                id: 'baz2',
-                text: 'Baz 2'
-            }, {
-                id: 'baz3',
-                text: 'Baz 3'
-            }, {
-                id: 'baz4',
-                text: 'Baz 4'
-            }, {
-                id: 'baz5',
-                text: 'Baz 5'
-            }, {
-                id: 'baz6',
-                text: 'Baz 6'
-            }, {
-                id: 'baz7',
-                text: 'Baz 7'
-            }, {
-                id: 'baz8',
-                text: 'Baz 8'
-            }, {
-                id: 'baz9',
-                text: 'Baz 9'
-            }, {
-                id: 'baz10',
-                text: 'Baz 10'
-            }, {
-                id: 'baz11',
-                text: 'Baz 11'
-            }];
-        }
-    }
+        {
+          id: "bar",
+          text: "Bar",
+        },
+        {
+          id: "baz",
+          text: "Baz",
+        },
+        {
+          id: "baz2",
+          text: "Baz 2",
+        },
+        {
+          id: "baz3",
+          text: "Baz 3",
+        },
+        {
+          id: "baz4",
+          text: "Baz 4",
+        },
+        {
+          id: "baz5",
+          text: "Baz 5",
+        },
+        {
+          id: "baz6",
+          text: "Baz 6",
+        },
+        {
+          id: "baz7",
+          text: "Baz 7",
+        },
+        {
+          id: "baz8",
+          text: "Baz 8",
+        },
+        {
+          id: "baz9",
+          text: "Baz 9",
+        },
+        {
+          id: "baz10",
+          text: "Baz 10",
+        },
+        {
+          id: "baz11",
+          text: "Baz 11",
+        },
+      ];
+    },
+  },
 };
 </script>
 
@@ -129,10 +143,12 @@ export default {
         <div class="grid-item-12">
           <h2>Twinlist</h2>
           <p>
-            Two list boxes for selecting multiple items. It acts as a form element, so it emits an <code>input</code>
-            event when selection changes, and it has a <code>value</code>. For keyboard navigation
-            inside of the lists see <code>MultiselectListBox</code>. With <code>DoubleClick</code> the items can also
-            be moved between the lists.
+            Two list boxes for selecting multiple items. It acts as a form
+            element, so it emits an <code>input</code> event when selection
+            changes, and it has a <code>value</code>. For keyboard navigation
+            inside of the lists see <code>MultiselectListBox</code>. With
+            <code>DoubleClick</code> the items can also be moved between the
+            lists.
           </p>
         </div>
       </div>
@@ -146,11 +162,9 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>
-      <br>
+      <br />
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
@@ -162,17 +176,15 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>
-      <br>
+      <br />
       <div class="grid-container">
         <div class="grid-item-6">
           <p>
-            The Twinlist with a search field enabled and an initial
-            search term defined. Case-sensitive search can be enabled through
-            a button on the right.
+            The Twinlist with a search field enabled and an initial search term
+            defined. Case-sensitive search can be enabled through a button on
+            the right.
           </p>
         </div>
       </div>
@@ -190,15 +202,11 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selected }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <p>
-            The Twinlist with missing selected items.
-          </p>
+          <p>The Twinlist with missing selected items.</p>
         </div>
       </div>
       <div class="grid-container">
@@ -214,15 +222,11 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selectedMissing }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selectedMissing }}</div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <p>
-            The Twinlist with unknown items.
-          </p>
+          <p>The Twinlist with unknown items.</p>
         </div>
       </div>
       <div class="grid-container">
@@ -239,15 +243,11 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selectedUnknown }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selectedUnknown }}</div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <p>
-            The Twinlist can show a customizable search label.
-          </p>
+          <p>The Twinlist can show a customizable search label.</p>
         </div>
       </div>
       <div class="grid-container">
@@ -264,16 +264,18 @@ export default {
             :possible-values="demoValues"
           />
         </div>
-        <div class="grid-item-6">
-          selected ids: {{ selectedSearchLabel }}
-        </div>
+        <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Twinlist.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Twinlist.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

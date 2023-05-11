@@ -1,13 +1,13 @@
 <script>
-import { markRaw } from 'vue';
-import CodeExample from './demo/CodeExample.vue';
-import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
-import HelpIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
-import StarIcon from 'webapps-common/ui/assets/img/icons/star.svg';
-import LeaveIcon from 'webapps-common/ui/assets/img/icons/leave.svg';
-import HeartIcon from 'webapps-common/ui/assets/img/icons/heart.svg';
-import MenuIcon from 'webapps-common/ui/assets/img/icons/menu-options.svg';
-import code from 'webapps-common/ui/components/SubMenu.vue?raw';
+import { markRaw } from "vue";
+import CodeExample from "./demo/CodeExample.vue";
+import SubMenu from "webapps-common/ui/components/SubMenu.vue";
+import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
+import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
+import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
+import MenuIcon from "webapps-common/ui/assets/img/icons/menu-options.svg";
+import code from "webapps-common/ui/components/SubMenu.vue?raw";
 
 const codeExampleStandalone = `<script>
 import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
@@ -83,73 +83,80 @@ nav {
 </style>
 `;
 
-const subMenuItems = [{
-    href: 'http://apple.com',
-    text: 'Apples',
+const subMenuItems = [
+  {
+    href: "http://apple.com",
+    text: "Apples",
     icon: markRaw(HelpIcon),
-    hotkeyText: 'Ctrl + 1'
-}, {
-    href: 'https://en.wikipedia.org/wiki/Orange_(colour)',
-    text: 'Oranges',
+    hotkeyText: "Ctrl + 1",
+  },
+  {
+    href: "https://en.wikipedia.org/wiki/Orange_(colour)",
+    text: "Oranges",
     icon: markRaw(StarIcon),
-    hotkeyText: 'Ctrl + 2'
-}, {
-    href: 'about:blank',
-    text: 'Disabled Item',
+    hotkeyText: "Ctrl + 2",
+  },
+  {
+    href: "about:blank",
+    text: "Disabled Item",
     disabled: true,
     icon: markRaw(StarIcon),
-    hotkeyText: 'Ctrl + 3'
-}, {
-    to: '/testing-nuxt-link',
-    text: 'Ananas',
-    icon: markRaw(HeartIcon)
-}, {
-    href: 'https://www.urbandictionary.com/define.php?term=go%20bananas',
-    text: 'Bananas',
-    icon: markRaw(LeaveIcon)
-}, {
-    text: 'Item without href/to',
+    hotkeyText: "Ctrl + 3",
+  },
+  {
+    to: "/testing-nuxt-link",
+    text: "Ananas",
+    icon: markRaw(HeartIcon),
+  },
+  {
+    href: "https://www.urbandictionary.com/define.php?term=go%20bananas",
+    text: "Bananas",
+    icon: markRaw(LeaveIcon),
+  },
+  {
+    text: "Item without href/to",
     icon: markRaw(HelpIcon),
     children: [
-        {
-            text: 'I am part of a submenu',
-            icon: StarIcon
-        },
-        {
-            text: 'Woohooo',
-            href: 'https://example.com/woohoo'
-        }
-    ]
-}];
+      {
+        text: "I am part of a submenu",
+        icon: StarIcon,
+      },
+      {
+        text: "Woohooo",
+        href: "https://example.com/woohoo",
+      },
+    ],
+  },
+];
 
 export default {
-    components: {
-        SubMenu,
-        CodeExample,
-        MenuIcon
+  components: {
+    SubMenu,
+    CodeExample,
+    MenuIcon,
+  },
+  data() {
+    return {
+      SubMenu,
+      subMenuItems,
+      codeExampleStandalone,
+      code,
+      teleport: true,
+    };
+  },
+  computed: {
+    subMenuItemsWithSeparator() {
+      return subMenuItems.map((item, index) => {
+        // eslint-disable-next-line no-magic-numbers
+        const hasSeparator = index === 2 || index === 4;
+        return hasSeparator ? { ...item, separator: true } : item;
+      });
     },
-    data() {
-        return {
-            SubMenu,
-            subMenuItems,
-            codeExampleStandalone,
-            code,
-            teleport: true
-        };
+    subMenuItemsWithoutIcons() {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return subMenuItems.map(({ icon, hotkeyText, ...rest }) => rest);
     },
-    computed: {
-        subMenuItemsWithSeparator() {
-            return subMenuItems.map((item, index) => {
-                // eslint-disable-next-line no-magic-numbers
-                const hasSeparator = index === 2 || index === 4;
-                return hasSeparator ? { ...item, separator: true } : item;
-            });
-        },
-        subMenuItemsWithoutIcons() {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            return subMenuItems.map(({ icon, hotkeyText, ...rest }) => rest);
-        }
-    }
+  },
 };
 </script>
 
@@ -159,9 +166,10 @@ export default {
       <div class="grid-item-12">
         <h2>SubMenu</h2>
         <p>
-          A button that opens a dropdown menu containing clickable items. The menu will be positioned based on
-          the orientation prop but will readjust automatically depending on available space. Resize window and/or
-          scroll to try it out
+          A button that opens a dropdown menu containing clickable items. The
+          menu will be positioned based on the orientation prop but will
+          readjust automatically depending on available space. Resize window
+          and/or scroll to try it out
         </p>
 
         <div class="submenus">
@@ -221,10 +229,7 @@ export default {
 
           <div class="scroll-container">
             <div class="card translated">
-              <input
-                v-model="teleport"
-                type="checkbox"
-              >
+              <input v-model="teleport" type="checkbox" />
               <span class="menu-name">With teleport</span>
               <SubMenu
                 :teleport-to-body="teleport"
@@ -236,8 +241,12 @@ export default {
             </div>
           </div>
         </div>
-        <CodeExample summary="Show usage example">{{ codeExampleStandalone }}</CodeExample>
-        <CodeExample summary="Show SubMenu.vue source code">{{ code }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExampleStandalone
+        }}</CodeExample>
+        <CodeExample summary="Show SubMenu.vue source code">{{
+          code
+        }}</CodeExample>
       </div>
     </div>
   </section>

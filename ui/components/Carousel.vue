@@ -9,39 +9,39 @@ const scrollThreshold = 5; // to prevent clicks not being bubbled to child by ac
 let startX, scrollLeft, slider;
 
 export default {
-    /**
-     * following methods allow dragging via mouse
-     */
-    methods: {
-        onMouseDown(e) {
-            slider = this.$refs.carousel;
-            isMouseDown = true;
-            wasDragged = false;
-            startX = e.pageX;
-            scrollLeft = slider.scrollLeft;
-        },
-        onMouseEnd(e) {
-            if (wasDragged) {
-                e.preventDefault();
-            }
-            isMouseDown = false;
-        },
-        onMouseMove(e) {
-            if (!isMouseDown) {
-                return;
-            }
-            e.preventDefault();
-            const x = e.pageX;
-            const walk = x - startX;
-            if (wasDragged || Math.abs(walk) > scrollThreshold) {
-                wasDragged = true;
-                slider.scrollLeft = scrollLeft - walk;
-            }
-        },
-        onDragStart(e) {
-            e.preventDefault();
-        }
-    }
+  /**
+   * following methods allow dragging via mouse
+   */
+  methods: {
+    onMouseDown(e) {
+      slider = this.$refs.carousel;
+      isMouseDown = true;
+      wasDragged = false;
+      startX = e.pageX;
+      scrollLeft = slider.scrollLeft;
+    },
+    onMouseEnd(e) {
+      if (wasDragged) {
+        e.preventDefault();
+      }
+      isMouseDown = false;
+    },
+    onMouseMove(e) {
+      if (!isMouseDown) {
+        return;
+      }
+      e.preventDefault();
+      const x = e.pageX;
+      const walk = x - startX;
+      if (wasDragged || Math.abs(walk) > scrollThreshold) {
+        wasDragged = true;
+        slider.scrollLeft = scrollLeft - walk;
+      }
+    },
+    onDragStart(e) {
+      e.preventDefault();
+    },
+  },
 };
 </script>
 
@@ -81,12 +81,20 @@ export default {
 
   &::before {
     left: 0;
-    background-image: linear-gradient(270deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-porcelain) 100%);
+    background-image: linear-gradient(
+      270deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-porcelain) 100%
+    );
   }
 
   &::after {
     right: 0;
-    background-image: linear-gradient(90deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-porcelain) 100%);
+    background-image: linear-gradient(
+      90deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-porcelain) 100%
+    );
   }
 }
 

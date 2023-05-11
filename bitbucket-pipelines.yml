@@ -5,7 +5,7 @@ options:
 
 definitions:
   services:
-    docker: 
+    docker:
       memory: 6000
   caches:
     sonar: ~/.sonar/cache
@@ -48,7 +48,7 @@ definitions:
 
 pipelines:
   pull-requests:
-    '**':
+    "**":
       - step: *lint-test-build
   branches:
     master:

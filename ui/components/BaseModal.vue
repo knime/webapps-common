@@ -1,5 +1,5 @@
 <script>
-import { FocusTrap } from 'focus-trap-vue';
+import { FocusTrap } from "focus-trap-vue";
 
 /**
  * A reusable component which has an overlay and a slot for content. It contains the styles and animations needed for
@@ -11,66 +11,66 @@ import { FocusTrap } from 'focus-trap-vue';
  * Note that the widget width can be set vial the `--modal-width` CSS property, which defaults to `550px`.
  */
 export default {
-    components: {
-        FocusTrap
+  components: {
+    FocusTrap,
+  },
+  props: {
+    /**
+     * Opens and closes the alert from the parent.
+     */
+    active: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-        /**
-         * Opens and closes the alert from the parent.
-         */
-        active: {
-            type: Boolean,
-            default: false
-        }
+  },
+  emits: ["cancel"],
+  data() {
+    return {
+      /**
+       * 'showContent' is used to animate the modal content separately
+       */
+      showContent: false,
+    };
+  },
+  watch: {
+    // Set and remove global event handlers on modal activation.
+    // Only manual activation is supported.
+    active(newVal) {
+      if (newVal === true) {
+        window.addEventListener("keyup", this.onGlobalKeyUp);
+      } else {
+        window.removeEventListener("keyup", this.onGlobalKeyUp);
+      }
     },
-    emits: ['cancel'],
-    data() {
-        return {
-            /**
-             * 'showContent' is used to animate the modal content separately
-             */
-            showContent: false
-        };
+  },
+  beforeUnmount() {
+    window.removeEventListener("keyup", this.onGlobalKeyUp);
+  },
+  methods: {
+    onGlobalKeyUp(e) {
+      if (e.key === "Escape") {
+        consola.trace("ESC key press, closing modal");
+        this.cancel();
+      }
     },
-    watch: {
-        // Set and remove global event handlers on modal activation.
-        // Only manual activation is supported.
-        active(newVal) {
-            if (newVal === true) {
-                window.addEventListener('keyup', this.onGlobalKeyUp);
-            } else {
-                window.removeEventListener('keyup', this.onGlobalKeyUp);
-            }
-        }
+    /**
+     * Detects any clicks on the overlay or the escape key, allowing the modal to be dismissed
+     * without having to click a specific button or control.
+     *
+     * @param {Object} e - the browser mouse event.
+     * @returns {undefined}
+     */
+    onOverlayClick() {
+      this.cancel();
     },
-    beforeUnmount() {
-        window.removeEventListener('keyup', this.onGlobalKeyUp);
+    /**
+     * @emits {cancel} - can be used by parent to close the modal.
+     * @returns {undefined}
+     */
+    cancel() {
+      this.$emit("cancel");
     },
-    methods: {
-        onGlobalKeyUp(e) {
-            if (e.key === 'Escape') {
-                consola.trace('ESC key press, closing modal');
-                this.cancel();
-            }
-        },
-        /**
-         * Detects any clicks on the overlay or the escape key, allowing the modal to be dismissed
-         * without having to click a specific button or control.
-         *
-         * @param {Object} e - the browser mouse event.
-         * @returns {undefined}
-         */
-        onOverlayClick() {
-            this.cancel();
-        },
-        /**
-         * @emits {cancel} - can be used by parent to close the modal.
-         * @returns {undefined}
-         */
-        cancel() {
-            this.$emit('cancel');
-        }
-    }
+  },
 };
 </script>
 
@@ -87,20 +87,10 @@ export default {
       allow-outside-click
       class="container"
     >
-      <div
-        ref="dialog"
-        tabindex="-1"
-        @click.stop
-      >
-        <div
-          class="overlay"
-          @click.stop="onOverlayClick"
-        />
+      <div ref="dialog" tabindex="-1" @click.stop>
+        <div class="overlay" @click.stop="onOverlayClick" />
         <Transition name="slide">
-          <div
-            v-if="showContent"
-            class="wrapper"
-          >
+          <div v-if="showContent" class="wrapper">
             <div class="inner">
               <slot />
             </div>

@@ -1,9 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import SideDrawer from 'webapps-common/ui/components/SideDrawer.vue';
-import Button from 'webapps-common/ui/components/Button.vue';
-import code from 'webapps-common/ui/components/SideDrawer.vue?raw';
-
+import CodeExample from "./demo/CodeExample.vue";
+import SideDrawer from "webapps-common/ui/components/SideDrawer.vue";
+import Button from "webapps-common/ui/components/Button.vue";
+import code from "webapps-common/ui/components/SideDrawer.vue?raw";
 
 const codeExample = `<script>
 import SideDrawer from '~/webapps-common/ui/components/SideDrawer.vue';
@@ -65,26 +64,25 @@ h4 {
 `;
 
 export default {
-    components: {
-        SideDrawer,
-        Button,
-        CodeExample
+  components: {
+    SideDrawer,
+    Button,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      isExpanded: false,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            isExpanded: false
-        };
+    expandedMessage() {
+      return this.isExpanded ? "expanded" : "not expanded";
     },
-    computed: {
-        code() {
-            return code;
-        },
-        expandedMessage() {
-            return this.isExpanded ? 'expanded' : 'not expanded';
-        }
-    }
-
+  },
 };
 </script>
 
@@ -95,49 +93,41 @@ export default {
         <div class="grid-item-12 wrapper">
           <h2>SideDrawer</h2>
           <p>
-            Provides an expandable drawer to the right side which can be filled with arbitrary content.
-            On small screens it will take up the whole width.
+            Provides an expandable drawer to the right side which can be filled
+            with arbitrary content. On small screens it will take up the whole
+            width.
           </p>
-          <Button
-            primary
-            @click="isExpanded = !isExpanded"
-          >
-            Draw it!
-          </Button>
+          <Button primary @click="isExpanded = !isExpanded"> Draw it! </Button>
           <p>I am {{ expandedMessage }}</p>
         </div>
       </div>
     </section>
-    <SideDrawer
-      class="side-drawer"
-      :is-expanded="isExpanded"
-    >
+    <SideDrawer class="side-drawer" :is-expanded="isExpanded">
       <div class="contents-side-drawer">
         <h4>something here</h4>
         <p>
-          And a lot more Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, nemo
-          nostrum repellat voluptas, nesciunt sequi velit earum iusto iste beatae hic perspiciatis deserunt
-          exercitationem aut sapiente quas culpa sint alias.
+          And a lot more Lorem ipsum dolor sit amet consectetur adipisicing
+          elit. Enim, nemo nostrum repellat voluptas, nesciunt sequi velit earum
+          iusto iste beatae hic perspiciatis deserunt exercitationem aut
+          sapiente quas culpa sint alias.
         </p>
-        <Button
-          with-border
-          @click="isExpanded = false"
-        >
-          Close me!
-        </Button>
+        <Button with-border @click="isExpanded = false"> Close me! </Button>
       </div>
     </SideDrawer>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show SideDrawer.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show SideDrawer.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>
   </div>
 </template>
-
 
 <style lang="postcss" scoped>
 h4 {
@@ -150,5 +140,4 @@ h4 {
   background-color: var(--knime-white);
   height: 100%;
 }
-
 </style>

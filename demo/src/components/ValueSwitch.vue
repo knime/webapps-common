@@ -1,10 +1,10 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
-import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
-import code from 'webapps-common/ui/components/forms/ValueSwitch.vue?raw';
+import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
+import code from "webapps-common/ui/components/forms/ValueSwitch.vue?raw";
 
-import CodeExample from './demo/CodeExample.vue';
+import CodeExample from "./demo/CodeExample.vue";
 
 const codeExample = `<ValueSwitch
   v-model="selected"
@@ -43,35 +43,33 @@ const codeExample = `<ValueSwitch
 `;
 
 export default defineComponent({
-    components: {
-        ValueSwitch,
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample,
+  components: {
+    ValueSwitch,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
 
-            selectedCurrency: 'eur',
-            currencies: [
-                { id: 'eur', text: 'EUR' },
-                { id: 'usd', text: 'USD' },
-                { id: 'cad', text: 'CAD' }
-            ]
-        };
+      selectedCurrency: "eur",
+      currencies: [
+        { id: "eur", text: "EUR" },
+        { id: "usd", text: "USD" },
+        { id: "cad", text: "CAD" },
+      ],
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    computed: {
-        code() {
-            return code;
-        },
 
-        withDisabledItem() {
-            return this.currencies.map(
-                currency => currency.id === 'usd'
-                    ? { ...currency, disabled: true }
-                    : currency
-            );
-        }
-    }
+    withDisabledItem() {
+      return this.currencies.map((currency) =>
+        currency.id === "usd" ? { ...currency, disabled: true } : currency
+      );
+    },
+  },
 });
 </script>
 
@@ -82,8 +80,9 @@ export default defineComponent({
         <div class="grid-item-12">
           <h2>ValueSwitch</h2>
           <p>
-            A list of choices the user must choose one of. It emits an <code>input</code> event
-            when something is selected, and it has a <code>value</code>.
+            A list of choices the user must choose one of. It emits an
+            <code>input</code> event when something is selected, and it has a
+            <code>value</code>.
           </p>
         </div>
       </div>
@@ -104,9 +103,7 @@ export default defineComponent({
             :possible-values="currencies"
           />
         </div>
-        <div class="grid-item-4">
-          selected id: {{ selectedCurrency }}
-        </div>
+        <div class="grid-item-4">selected id: {{ selectedCurrency }}</div>
       </div>
 
       <div class="grid-container">
@@ -132,8 +129,12 @@ export default defineComponent({
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show ValueSwitch.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show ValueSwitch.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
-import c from 'consola';
+import c from "consola";
 
 window.consola = c.create({
-    level: 5
+  level: 5,
 });

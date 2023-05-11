@@ -6,30 +6,30 @@
  */
 
 export default {
-    props: {
-        /**
-         * Status code to be shown in the svg.
-         * "?" default for runtime errors.
-         */
-        statusCode: {
-            type: String,
-            default: null
-        },
-        /**
-         * Headline to display above the error message.
-         */
-        headline: {
-            type: String,
-            default: 'Something went wrong!'
-        },
-        /**
-         * Status code specific message.
-         */
-        message: {
-            type: String,
-            default: 'An error occurred. Please try again.'
-        }
-    }
+  props: {
+    /**
+     * Status code to be shown in the svg.
+     * "?" default for runtime errors.
+     */
+    statusCode: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Headline to display above the error message.
+     */
+    headline: {
+      type: String,
+      default: "Something went wrong!",
+    },
+    /**
+     * Status code specific message.
+     */
+    message: {
+      type: String,
+      default: "An error occurred. Please try again.",
+    },
+  },
 };
 </script>
 
@@ -85,11 +85,10 @@ export default {
             class="error-status"
             dy=".35em"
             text-anchor="middle"
-          >{{ statusCode }}</text>
-          <g
-            v-else
-            stroke="#ffffff"
           >
+            {{ statusCode }}
+          </text>
+          <g v-else stroke="#ffffff">
             <path d="M771.6,164.7L755.1,195 788.2,195zM771.6,174.1v10" />
             <line
               stroke-width="1.6"

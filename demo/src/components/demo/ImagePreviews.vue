@@ -1,38 +1,34 @@
 <script>
 export default {
-    props: {
-        images: {
-            type: Array,
-            default: () => []
-        },
-        width: {
-            type: String,
-            default: '60px'
-        },
-        height: {
-            type: String,
-            default: '60px'
-        },
-        checkerboard: {
-            type: Boolean,
-            default: false
-        }
-    }
+  props: {
+    images: {
+      type: Array,
+      default: () => [],
+    },
+    width: {
+      type: String,
+      default: "60px",
+    },
+    height: {
+      type: String,
+      default: "60px",
+    },
+    checkerboard: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 
 <template>
   <div class="wrapper">
-    <div
-      v-for="(image, index) of images"
-      :key="index"
-      class="image"
-    >
+    <div v-for="(image, index) of images" :key="index" class="image">
       <img
         :src="image.src"
         :class="{ checkerboard }"
         :style="{ width, height }"
-      >
+      />
       <span>{{ image.name }}</span>
     </div>
   </div>
@@ -57,14 +53,18 @@ export default {
     --checkerboard-size: 15px;
 
     border: 1px solid var(--checkerboard-color);
-    background-image:
-      linear-gradient(45deg, var(--checkerboard-color) 25%, transparent 25%),
+    background-image: linear-gradient(
+        45deg,
+        var(--checkerboard-color) 25%,
+        transparent 25%
+      ),
       linear-gradient(-45deg, var(--checkerboard-color) 25%, transparent 25%),
       linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
       linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
     background-size: var(--checkerboard-size) var(--checkerboard-size);
-    background-position: 0 0, 0 calc(var(--checkerboard-size) / 2), calc(var(--checkerboard-size) / 2)
-      calc(var(--checkerboard-size) / 2 * -1), calc(var(--checkerboard-size) / 2 * -1) 0;
+    background-position: 0 0, 0 calc(var(--checkerboard-size) / 2),
+      calc(var(--checkerboard-size) / 2) calc(var(--checkerboard-size) / 2 * -1),
+      calc(var(--checkerboard-size) / 2 * -1) 0;
   }
 
   &:hover > img {

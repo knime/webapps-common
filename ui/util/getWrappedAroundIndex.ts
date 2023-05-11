@@ -5,4 +5,5 @@
  * @param {number} length a positive integer
  * @returns {number} the non-negative modulo outcome
  */
-export default (index: number, length: number) => ((index % length) + length) % length;
+export default (index: number, length: number) =>
+  ((index % length) + length) % length;

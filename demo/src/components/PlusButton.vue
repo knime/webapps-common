@@ -1,11 +1,10 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import PlusButton from 'webapps-common/ui/components/PlusButton.vue';
-import PlusButtonCode from 'webapps-common/ui/components/PlusButton.vue?raw';
-import buttonCode from 'webapps-common/ui/components/Button.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import PlusButton from "webapps-common/ui/components/PlusButton.vue";
+import PlusButtonCode from "webapps-common/ui/components/PlusButton.vue?raw";
+import buttonCode from "webapps-common/ui/components/Button.vue?raw";
 
-const codeExample =
-`
+const codeExample = `
   <PlusButton title="Plus button"/>
 
   <PlusButton
@@ -33,17 +32,17 @@ const codeExample =
 `;
 
 export default {
-    components: {
-        PlusButton,
-        CodeExample
-    },
-    data() {
-        return {
-            PlusButtonCode,
-            buttonCode,
-            codeExample
-        };
-    }
+  components: {
+    PlusButton,
+    CodeExample,
+  },
+  data() {
+    return {
+      PlusButtonCode,
+      buttonCode,
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -61,10 +60,7 @@ export default {
               with-border
             />
           </div>
-          <PlusButton
-            title="Primary plus button"
-            primary
-          />
+          <PlusButton title="Primary plus button" primary />
           <div class="background">
             <PlusButton
               title="Primary plus button on dark"
@@ -72,15 +68,17 @@ export default {
               :on-dark="true"
             />
           </div>
-          <PlusButton
-            title="Disabled plus button"
-            primary
-            disabled
-          />
+          <PlusButton title="Disabled plus button" primary disabled />
         </div>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show PlusButton.vue source code">{{ PlusButtonCode }}</CodeExample>
-        <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show PlusButton.vue source code">{{
+          PlusButtonCode
+        }}</CodeExample>
+        <CodeExample summary="Show Button.vue source code">{{
+          buttonCode
+        }}</CodeExample>
       </div>
     </div>
   </section>

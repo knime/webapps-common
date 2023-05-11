@@ -1,4 +1,5 @@
-<script setup lang="ts">/**
+<script setup lang="ts">
+/**
  * MenuItems component with (optional) hotkey text and icons
  * Can be used to create a float-able menu or a sub menu or similar.
  * Position and visibility needs to be handled by the wrapper.
@@ -30,12 +31,18 @@
  * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus (e. g. box-shadow).
  *
  */
-import { type FunctionalComponent, nextTick, ref, type Ref, type SVGAttributes } from 'vue';
-import useDropdownNavigation from '../composables/useDropdownNavigation';
-import getWrappedAroundIndex from '../util/getWrappedAroundIndex';
-import BaseMenuItems from './BaseMenuItems.vue';
-import BaseMenuItem from './BaseMenuItem.vue';
-import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
+import {
+  type FunctionalComponent,
+  nextTick,
+  ref,
+  type Ref,
+  type SVGAttributes,
+} from "vue";
+import useDropdownNavigation from "../composables/useDropdownNavigation";
+import getWrappedAroundIndex from "../util/getWrappedAroundIndex";
+import BaseMenuItems from "./BaseMenuItems.vue";
+import BaseMenuItem from "./BaseMenuItem.vue";
+import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
 
 export interface MenuItem {
   text: string;
@@ -56,27 +63,32 @@ export interface MenuItem {
   /** shown aligned right besides the text */
   hotkeyText?: string;
   /** sub menu */
-  children?: Array<MenuItem>
+  children?: Array<MenuItem>;
 }
 
 type Props = {
-    items: MenuItem[];
-    menuAriaLabel: string;
-    disableSpaceToClick?: boolean,
-    registerKeydown?: boolean
-}
+  items: MenuItem[];
+  menuAriaLabel: string;
+  disableSpaceToClick?: boolean;
+  registerKeydown?: boolean;
+};
 
 const props = withDefaults(defineProps<Props>(), {
-    disableSpaceToClick: false,
-    registerKeydown: false
+  disableSpaceToClick: false,
+  registerKeydown: false,
 });
 
 interface Emits {
-    (e: 'close'): void
-    (e: 'item-click', event: MouseEvent, item: MenuItem, menuId: string): void
-    (e: 'item-focused', itemId: string|null, item: MenuItem|null): void
-    (e: 'item-hovered', item: MenuItem|null, menuId: string, index: number): void
-    (e: 'close-submenu'): void
+  (e: "close"): void;
+  (e: "item-click", event: MouseEvent, item: MenuItem, menuId: string): void;
+  (e: "item-focused", itemId: string | null, item: MenuItem | null): void;
+  (
+    e: "item-hovered",
+    item: MenuItem | null,
+    menuId: string,
+    index: number
+  ): void;
+  (e: "close-submenu"): void;
 }
 
 const emit = defineEmits<Emits>();
@@ -85,76 +97,82 @@ const openSubmenuItemIndex = ref(-1);
 const subLevelItems = ref<any>(null);
 
 const getNextElement = (current: number | null, direction: 1 | -1) => {
-    if (!baseMenuItems.value) {
-        return {
-            onClick: () => {
-            },
-            index: -1
-        };
-    }
+  if (!baseMenuItems.value) {
+    return {
+      onClick: () => {},
+      index: -1,
+    };
+  }
 
-    const listItems = baseMenuItems.value.getEnabledListItems();
-    let currentIndexInEnabled = listItems
-        .map<number | null>(({ index }) => index)
-        .indexOf(current);
+  const listItems = baseMenuItems.value.getEnabledListItems();
+  let currentIndexInEnabled = listItems
+    .map<number | null>(({ index }) => index)
+    .indexOf(current);
 
-    if (currentIndexInEnabled === -1 && direction === -1) {
-        currentIndexInEnabled = 0;
-    }
-    const nextIndex = getWrappedAroundIndex(currentIndexInEnabled + direction, listItems.length);
+  if (currentIndexInEnabled === -1 && direction === -1) {
+    currentIndexInEnabled = 0;
+  }
+  const nextIndex = getWrappedAroundIndex(
+    currentIndexInEnabled + direction,
+    listItems.length
+  );
 
-    const { element, index, onClick } = listItems[nextIndex];
-    baseMenuItems.value.scrollTo(element);
+  const { element, index, onClick } = listItems[nextIndex];
+  baseMenuItems.value.scrollTo(element);
 
-    return { index, onClick };
+  return { index, onClick };
 };
 
-const { currentIndex, onKeydown: onDropdownNavigationKeydown, resetNavigation } = useDropdownNavigation({
-    disableSpaceToClick: props.disableSpaceToClick,
-    getNextElement,
-    close: () => emit('close')
+const {
+  currentIndex,
+  onKeydown: onDropdownNavigationKeydown,
+  resetNavigation,
+} = useDropdownNavigation({
+  disableSpaceToClick: props.disableSpaceToClick,
+  getNextElement,
+  close: () => emit("close"),
 });
 
 const focusIndex = (index: number = 0) => {
-    currentIndex.value = index;
+  currentIndex.value = index;
 };
 
 const setOpenSubmenuIndex = (index: number) => {
-    const item = props.items[index];
-    const isEnabledSubmenuItem = item && !item.disabled && item.children?.length;
+  const item = props.items[index];
+  const isEnabledSubmenuItem = item && !item.disabled && item.children?.length;
 
-    openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
+  openSubmenuItemIndex.value = isEnabledSubmenuItem ? index : -1;
 };
 
 const onKeydownWithOpenCloseSubMenu = (event: KeyboardEvent) => {
-    switch (event.code) {
-        case 'ArrowLeft':
-            emit('close-submenu');
-            break;
-        case 'ArrowRight':
-            setOpenSubmenuIndex(currentIndex.value ?? 0);
-            nextTick(() => {
-                subLevelItems.value?.focusIndex();
-            });
-            break;
-    }
-    onDropdownNavigationKeydown(event);
+  switch (event.code) {
+    case "ArrowLeft":
+      emit("close-submenu");
+      break;
+    case "ArrowRight":
+      setOpenSubmenuIndex(currentIndex.value ?? 0);
+      nextTick(() => {
+        subLevelItems.value?.focusIndex();
+      });
+      break;
+  }
+  onDropdownNavigationKeydown(event);
 };
 
-const onItemHovered = (item: MenuItem|null, id: string, index: number) => {
-    if (item !== null) {
-        setOpenSubmenuIndex(index);
-    }
-    emit('item-hovered', item, id, index);
+const onItemHovered = (item: MenuItem | null, id: string, index: number) => {
+  if (item !== null) {
+    setOpenSubmenuIndex(index);
+  }
+  emit("item-hovered", item, id, index);
 };
 
 const onKeydown = (event: KeyboardEvent) => {
-    const isSubmenuOpen = openSubmenuItemIndex.value !== -1;
-    if (isSubmenuOpen) {
-        subLevelItems.value?.onKeydown(event);
-    } else {
-        onKeydownWithOpenCloseSubMenu(event);
-    }
+  const isSubmenuOpen = openSubmenuItemIndex.value !== -1;
+  if (isSubmenuOpen) {
+    subLevelItems.value?.onKeydown(event);
+  } else {
+    onKeydownWithOpenCloseSubMenu(event);
+  }
 };
 
 defineExpose({ onKeydown, resetNavigation, focusIndex });
@@ -172,7 +190,16 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
     @item-hovered="(item, id, index) => onItemHovered(item, id, index)"
     @item-focused="(...args) => $emit('item-focused', ...args)"
   >
-    <template #item="{ item, menuId, menuItemId, index, maxMenuWidth, focusedItemIndex }">
+    <template
+      #item="{
+        item,
+        menuId,
+        menuItemId,
+        index,
+        maxMenuWidth,
+        focusedItemIndex,
+      }"
+    >
       <BaseMenuItem
         :id="menuItemId(index)"
         :item="item"

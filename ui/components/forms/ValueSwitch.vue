@@ -1,42 +1,44 @@
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
-import BaseRadioButtons, { type BaseRadioButtonItem } from './BaseRadioButtons.vue';
+import { defineComponent, type PropType } from "vue";
+import BaseRadioButtons, {
+  type BaseRadioButtonItem,
+} from "./BaseRadioButtons.vue";
 
 // renamed and re-exported to prevent exposing BaseRadioButton's type.
 // also, if we want to add custom properties to the ValueSwitch's type, we can do so here
 export type ValueSwitchItem = BaseRadioButtonItem;
 
 export default defineComponent({
-    components: {
-        BaseRadioButtons
+  components: {
+    BaseRadioButtons,
+  },
+  props: {
+    id: {
+      type: String,
+      default: null,
     },
-    props: {
-        id: {
-            type: String,
-            default: null
-        },
-        modelValue: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
-        disabled: {
-            default: false,
-            type: Boolean
-        },
-        possibleValues: {
-            type: Array as PropType<Array<ValueSwitchItem>>,
-            default: () => []
-        },
-        compact: {
-            type: Boolean,
-            default: false
-        }
+    modelValue: {
+      type: String,
+      default: null,
     },
-    emits: ['update:modelValue']
+    name: {
+      type: String,
+      default: null,
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
+    possibleValues: {
+      type: Array as PropType<Array<ValueSwitchItem>>,
+      default: () => [],
+    },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ["update:modelValue"],
 });
 </script>
 
@@ -52,7 +54,7 @@ export default defineComponent({
     :class="{
       disabled,
       compact: compact,
-      normal: !compact
+      normal: !compact,
     }"
     @update:model-value="$emit('update:modelValue', $event)"
   />
@@ -115,5 +117,4 @@ export default defineComponent({
     }
   }
 }
-
 </style>

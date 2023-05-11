@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { PropType } from 'vue';
-import { defineComponent } from 'vue';
-import ArrowIcon from '../assets/img/icons/arrow-right.svg';
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
+import ArrowIcon from "../assets/img/icons/arrow-right.svg";
 
 interface LinkItem {
   text: string;
@@ -14,34 +14,24 @@ interface LinkItem {
  * Example:
  * -> Google
  * -> KNIME Hub
-*/
+ */
 export default defineComponent({
-    components: {
-        ArrowIcon
+  components: {
+    ArrowIcon,
+  },
+  props: {
+    links: {
+      type: Array as PropType<Array<LinkItem>>,
+      default: () => [],
     },
-    props: {
-        links: {
-            type: Array as PropType<Array<LinkItem>>,
-            default: () => []
-        }
-    }
+  },
 });
 </script>
 
 <template>
-  <ul
-    v-if="links && links.length"
-    class="link-list"
-  >
-    <li
-      v-for="(link, index) of links"
-      :key="index"
-    >
-      <a
-        v-if="link.url"
-        :href="link.url"
-        rel="ugc noopener"
-      >
+  <ul v-if="links && links.length" class="link-list">
+    <li v-for="(link, index) of links" :key="index">
+      <a v-if="link.url" :href="link.url" rel="ugc noopener">
         <ArrowIcon />
         {{ link.text || link.url }}
       </a>

@@ -1,8 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import FilterIcon from 'webapps-common/ui/assets/img/icons/filter.svg';
-import SearchInput from 'webapps-common/ui/components/forms/SearchInput.vue';
-import code from 'webapps-common/ui/components/forms/SearchInput.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import FilterIcon from "webapps-common/ui/assets/img/icons/filter.svg";
+import SearchInput from "webapps-common/ui/components/forms/SearchInput.vue";
+import code from "webapps-common/ui/components/forms/SearchInput.vue?raw";
 
 const codeExample = `<SearchInput
   v-model="inputValue"
@@ -41,31 +41,31 @@ const codeExample = `<SearchInput
 `;
 
 export default {
-    components: {
-        SearchInput,
-        FilterIcon,
-        CodeExample
+  components: {
+    SearchInput,
+    FilterIcon,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      inputValue: "",
+      inputValue2: "",
+      inputValue3: "Demo",
+      inputValue4: "",
+      inputValue5: "Demo",
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            inputValue: '',
-            inputValue2: '',
-            inputValue3: 'Demo',
-            inputValue4: '',
-            inputValue5: 'Demo'
-        };
+  },
+  methods: {
+    alert(msg) {
+      window.alert(msg);
     },
-    computed: {
-        code() {
-            return code;
-        }
-    },
-    methods: {
-        alert(msg) {
-            window.alert(msg);
-        }
-    }
+  },
 };
 </script>
 
@@ -77,9 +77,9 @@ export default {
           <h2>SearchInput</h2>
           <p>
             Single line string search input with search icon and clear button.
-            It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
-            Optionally, buttons for case-sensitive search and inverse searchc an
-            be shown.
+            It acts as a form element, so it emits <code>input</code> events and
+            it has a <code>value</code>. Optionally, buttons for case-sensitive
+            search and inverse searchc an be shown.
           </p>
         </div>
       </div>
@@ -122,16 +122,18 @@ export default {
             @focus="onFocus"
           />
         </div>
-        <div class="grid-item-6">
-          input value: {{ inputValue }}
-        </div>
+        <div class="grid-item-6">input value: {{ inputValue }}</div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show SearchInput.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show SearchInput.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>
