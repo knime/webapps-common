@@ -66,6 +66,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
@@ -108,21 +109,27 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
      */
     @Override
     public Optional<SelectionEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc) {
+        if (!NodeViewManager.hasNodeView(nnc)) {
+            return Optional.empty();
+        }
+        var nodeView = NodeViewManager.getInstance().getNodeView(nnc);
+        if (!(nodeView instanceof NodeTableView)) {
+            return Optional.empty();
+        }
+        var nodeTableView = (NodeTableView)nodeView;
         // TODO see UIEXT-51
-        var handler = nnc.getNodeModel().getInHiLiteHandler(0);
+        var handler = nnc.getNodeModel().getInHiLiteHandler(nodeTableView.getInPortIndex());
         synchronized (handler) {
             var hiLitKeys = handler.getHiLitKeys();
             var listener = new PerNodeHiliteListener(this::sendEvent, nnc);
             SelectionEvent selectionEvent = null;
-            if (NodeViewManager.hasNodeView(nnc)) {
-                selectionEvent = listener.createSelectionEvent(SelectionEventMode.ADD, hiLitKeys);
-            }
+            selectionEvent = listener.createSelectionEvent(SelectionEventMode.ADD, hiLitKeys);
             var nodeID = nnc.getID();
             if (!m_hiLiteListeners.containsKey(nodeID)) {
                 handler.addHiLiteListener(listener);
                 m_hiLiteListeners.put(nnc.getID(), Pair.create(handler, listener));
             }
-            return Optional.ofNullable(selectionEvent);
+            return Optional.of(selectionEvent);
         }
     }
 

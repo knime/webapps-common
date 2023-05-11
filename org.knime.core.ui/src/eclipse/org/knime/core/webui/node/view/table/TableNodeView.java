@@ -52,7 +52,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
@@ -151,14 +150,6 @@ public final class TableNodeView implements NodeTableView {
         } catch (InvalidSettingsException ex) {
             throw new IllegalStateException("The settings should have been validated first.", ex);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataTableSpec getSpec() {
-        return m_tableSupplier.get().getSpec();
     }
 
 }

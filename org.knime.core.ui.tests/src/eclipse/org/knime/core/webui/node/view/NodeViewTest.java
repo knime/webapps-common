@@ -50,7 +50,6 @@ package org.knime.core.webui.node.view;
 
 import java.util.Optional;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
@@ -118,6 +117,7 @@ public final class NodeViewTest {
         };
     }
 
+
     @SuppressWarnings("javadoc")
     public static NodeView createTableView(final Page page, final InitialDataService<?> initDataService,
         final RpcDataService dataService, final ApplyDataService<?> applyDataService,
@@ -158,10 +158,53 @@ public final class NodeViewTest {
             public Page getPage() {
                 return page;
             }
+        };
+    }
+
+    @SuppressWarnings("javadoc")
+    public static NodeView createTableView(final Page page, final InitialDataService<?> initDataService,
+        final RpcDataService dataService, final ApplyDataService<?> applyDataService,
+        final SelectionTranslationService selectionTranslationService, final int inPortIdx) {
+        return new NodeTableView() { // NOSONAR
 
             @Override
-            public DataTableSpec getSpec() {
-                return new DataTableSpec();
+            public Optional<InitialDataService<?>> createInitialDataService() {
+                return Optional.ofNullable(initDataService);
+            }
+
+            @Override
+            public Optional<RpcDataService> createRpcDataService() {
+                return Optional.ofNullable(dataService);
+            }
+
+            @Override
+            public Optional<ApplyDataService<?>> createApplyDataService() {
+                return Optional.ofNullable(applyDataService);
+            }
+
+            @Override
+            public Optional<SelectionTranslationService> createSelectionTranslationService() {
+                return Optional.ofNullable(selectionTranslationService);
+            }
+
+            @Override
+            public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                //
+            }
+
+            @Override
+            public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                //
+            }
+
+            @Override
+            public Page getPage() {
+                return page;
+            }
+
+            @Override
+            public int getInPortIndex() {
+                return inPortIdx;
             }
         };
 

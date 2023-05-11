@@ -50,6 +50,7 @@ package org.knime.gateway.api.entity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -61,8 +62,8 @@ import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeViewManager;
-import org.knime.core.webui.node.view.TableView;
 
 /**
  * Node view entity containing the info required by the UI (i.e. frontend) to be able display a node view.
@@ -102,7 +103,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
                 return new NodeViewEnt(nnc, null, null, ex.getMessage(), generatedImageActionId);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId);
+            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, null);
         }
     }
 
@@ -129,6 +130,28 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId) {
+        this(nnc, initialSelection, nodeViewManager, customErrorMessage, generatedImageActionId,
+            createSpecProvider(nnc));
+    }
+
+    private static Function<NodeTableView, DataTableSpec> createSpecProvider(final NativeNodeContainer nnc) {
+        Function<NodeTableView, DataTableSpec> specProvider = ntv -> {
+            var inPortIdx = ntv.getInPortIndex();
+            var wfm = nnc.getParent();
+            // plus 1 because the inPortIdx excludes the flow variable port
+            var conn = wfm.getIncomingConnectionFor(nnc.getID(), inPortIdx + 1);
+            return (DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
+                .getPortObjectSpec();
+        };
+        return specProvider;
+    }
+
+    /**
+     * Package scoped for testing purposes only
+     */
+    NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
+        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
+        final Function<NodeTableView, DataTableSpec> specProvider) {
         super(NodeWrapper.of(nnc), nodeViewManager, nodeViewManager, PageType.VIEW);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
@@ -136,11 +159,10 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         m_generatedImageActionId = generatedImageActionId;
         if (nodeViewManager != null) {
             final var nodeView = nodeViewManager.getNodeView(nnc);
-            if (nodeView instanceof TableView) {
-                final var spec = ((TableView)nodeView).getSpec();
+            if (nodeView instanceof NodeTableView ntv && specProvider != null) {
+                final var spec = specProvider.apply(ntv);
                 m_colorModelsEnt = getColorHandlerColumns(spec);
             }
-
         }
     }
 

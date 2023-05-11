@@ -50,7 +50,6 @@ package org.knime.core.webui.node.view;
 
 import java.util.Optional;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.port.PortView;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
 
@@ -60,7 +59,7 @@ import org.knime.core.webui.node.view.selection.SelectionTranslationService;
  *
  * @author Paul Bärnreuther
  */
-public interface TableView {
+interface TableView {
     /**
      * @return optional service to translate selection requests
      *
@@ -70,8 +69,4 @@ public interface TableView {
         return Optional.empty();
     }
 
-    /**
-     * @return the spec of the table
-     */
-    DataTableSpec getSpec();
 }

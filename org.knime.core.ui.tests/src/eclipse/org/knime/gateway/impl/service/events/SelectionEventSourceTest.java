@@ -74,7 +74,6 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
@@ -152,11 +151,6 @@ public class SelectionEventSourceTest {
             @Override
             public <D> Optional<ApplyDataService<D>> createApplyDataService() {
                 return Optional.empty();
-            }
-
-            @Override
-            public DataTableSpec getSpec() {
-                return new DataTableSpec();
             }
 
         };
@@ -328,11 +322,6 @@ public class SelectionEventSourceTest {
                 @Override
                 public Page getPage() {
                     return Page.builder(() -> "foo", "bar").build();
-                }
-
-                @Override
-                public DataTableSpec getSpec() {
-                    return new DataTableSpec();
                 }
 
             };

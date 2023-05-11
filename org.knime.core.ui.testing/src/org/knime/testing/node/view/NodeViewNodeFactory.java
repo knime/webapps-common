@@ -58,7 +58,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import org.apache.xmlbeans.XmlException;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.NodeDescription;
@@ -251,11 +250,6 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
                 @Override
                 public Page getPage() {
                     return page;
-                }
-
-                @Override
-                public DataTableSpec getSpec() {
-                    return tables[0].getDataTableSpec();
                 }
 
             };

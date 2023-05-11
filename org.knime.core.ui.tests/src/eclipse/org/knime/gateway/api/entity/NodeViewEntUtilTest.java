@@ -57,7 +57,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,7 +65,6 @@ import java.util.function.Function;
 
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -91,17 +89,17 @@ import org.mockito.Mockito;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class NodeViewEntUtilTest {
+class NodeViewEntUtilTest {
 
     /**
      * Tests
      * {@link NodeViewEntUtil#createNodeViewEntAndEventSources(org.knime.core.node.workflow.NativeNodeContainer, BiConsumer, boolean)}.
      *
-     * @throws IOException
+     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateNodeViewEntAndSetUpEventSources() throws IOException {
+    public void testCreateNodeViewEntAndSetUpEventSources() throws Exception {
 
         Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
             return new NodeTableView() { // NOSONAR
@@ -136,25 +134,20 @@ public class NodeViewEntUtilTest {
                     return Optional.empty();
                 }
 
-                @Override
-                public DataTableSpec getSpec() {
-                    return new DataTableSpec();
-                }
-
             };
         };
 
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(viewCreator));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0, viewCreator));
+        NodeViewEntTest.connectDataGeneratorToInputPort(wfm, nnc, 0);
+
         var hlh = nnc.getNodeModel().getInHiLiteHandler(0);
         wfm.executeAllAndWaitUntilDone();
-
 
         BiConsumer<String, Object> eventConsumer = Mockito.mock(BiConsumer.class);
 
         /* assert that the selection event source is properly set up */
-        var eventSource =
-            NodeViewEntUtil.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
+        var eventSource = NodeViewEntUtil.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
         fireHiLiteEvent(hlh, "test");
         verify(eventConsumer).accept(eq("SelectionEvent"),
             argThat(se -> verifySelectionEvent((SelectionEvent)se, "test")));

@@ -180,8 +180,8 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
 
     private Optional<? extends SelectionTranslationService> createSelectionTranslationService(final NodeContainer nc) {
         final var nodeView = getNodeView(nc);
-        if (nodeView instanceof TableView) {
-            return ((TableView)nodeView).createSelectionTranslationService();
+        if (nodeView instanceof TableView tv) {
+            return tv.createSelectionTranslationService();
         } else {
             throw new IllegalArgumentException(
                 "Trying to call a selection translation service of a node view which is not a table view.");

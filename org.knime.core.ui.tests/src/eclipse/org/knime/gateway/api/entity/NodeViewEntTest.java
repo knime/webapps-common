@@ -89,18 +89,22 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
+import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
+import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.NodeViewTest;
-import org.knime.core.webui.node.view.TableView;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
 import org.knime.core.webui.page.Resource;
@@ -303,18 +307,52 @@ class NodeViewEntTest {
     }
 
     /**
-     * Tests the {@link SelectionEventSource} in conjunction with {@link NodeViewEnt}.
+     * Tests that a {@link NodeViewEnt} is created for {@link NodeTableView} instances.
      *
-     * @throws IOException
+     * @throws Exception
      */
     @Test
-    void testNodeViewEntWithSelectionEventSource() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+    void testNodeViewEntWithTableInputSpec() throws Exception {
+        var pair = createExecutedNodeTableView();
+        var wfm = pair.getFirst();
+        var nnc = pair.getSecond();
+        var nodeViewEnt = NodeViewEnt.create(nnc);
 
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
-        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        wfm.executeAllAndWaitUntilDone();
+        assertThat(nodeViewEnt.getColorModels()).isEmpty();
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    /**
+     * Tests that a {@link NodeViewEnt} is created for {@link NodeTableView} instances with the input table taken from a
+     * port which is not the first one.
+     *
+     * @throws Exception
+     */
+    @Test
+    void testNodeViewEntWithTableInputSpecOnOtherPort() throws Exception {
+        var inputTablePortIndex = 5;
+        var pair = createExecutedNodeTableView(inputTablePortIndex);
+        var wfm = pair.getFirst();
+        var nnc = pair.getSecond();
+        var nodeViewEnt = NodeViewEnt.create(nnc);
+
+        assertThat(nodeViewEnt.getColorModels()).isEmpty();
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    /**
+     * Tests the {@link SelectionEventSource} in conjunction with {@link NodeViewEnt}.
+     *
+     * @throws Exception
+     */
+    @Test
+    void testNodeViewEntWithSelectionEventSource() throws Exception {
+
+        var pair = createExecutedNodeTableView();
+        var wfm = pair.getFirst();
+        var nnc = pair.getSecond();
 
         var hiLiteHandler = nnc.getNodeModel().getInHiLiteHandler(0);
         hiLiteHandler.fireHiLiteEvent(new RowKey("k1"), new RowKey("k2"));
@@ -334,6 +372,52 @@ class NodeViewEntTest {
                 argThat(se -> se.getSelection().equals(List.of("k3")) && se.getMode() == SelectionEventMode.ADD)));
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    private static Pair<WorkflowManager, NativeNodeContainer> createExecutedNodeTableView() throws Exception {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
+            m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+
+        return createExecutedNodeTableView(nodeViewCreator, 0);
+    }
+
+    private static Pair<WorkflowManager, NativeNodeContainer> createExecutedNodeTableView(final int inPortIdx)
+        throws Exception {
+
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> NodeViewTest
+            .createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null, inPortIdx);
+
+        return createExecutedNodeTableView(nodeViewCreator, inPortIdx);
+
+    }
+
+    private static Pair<WorkflowManager, NativeNodeContainer> createExecutedNodeTableView(
+        final Function<NodeViewNodeModel, NodeView> nodeViewCreator, final int inPortIdx) throws Exception {
+        final var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        NativeNodeContainer nnc =
+            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(inPortIdx + 1, 0, nodeViewCreator));
+        // We need the other connections as well for the workflow to be executable
+        for (var i = 0; i <= inPortIdx; i++) {
+            connectDataGeneratorToInputPort(wfm, nnc, i);
+        }
+        wfm.executeAllAndWaitUntilDone();
+        return new Pair<>(wfm, nnc);
+    }
+
+    /**
+     *
+     * @param wfm the workflow manager including the native node container
+     * @param nnc the native node container holding a node view with enough input ports
+     * @param inPortIdx the input port index to which a data generator should be connectes when not counting the flow
+     *            variables port
+     */
+    static void connectDataGeneratorToInputPort(final WorkflowManager wfm, final NativeNodeContainer nnc,
+        final int inPortIdx) throws InvalidSettingsException, InstantiationException, IllegalAccessException,
+        InvalidNodeFactoryExtensionException {
+        final var dataGeneratorNodeFactory = FileNativeNodeContainerPersistor
+            .loadNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory");
+        final var dataGeneratorNode = WorkflowManagerUtil.createAndAddNode(wfm, dataGeneratorNodeFactory);
+        wfm.addConnection(dataGeneratorNode.getID(), 1, nnc.getID(), inPortIdx + 1);
     }
 
     private class TestNodeView implements NodeView {
@@ -388,7 +472,7 @@ class NodeViewEntTest {
      * @throws InvalidSettingsException
      */
     @Test
-    void testNodeViewEntWithNumericColorModel() throws IOException, InvalidSettingsException {
+    void testNodeViewEntWithColorModels() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         var minValue = 0d;
@@ -423,9 +507,11 @@ class NodeViewEntTest {
         @SuppressWarnings("unchecked")
         var nominalModel = (Map<String, String>)(colorModelsEnt.get(nominalColorColumnName).getModel());
         assertThat(nominalModel).containsEntry(cell1, greenHex).containsEntry(cell2, blueHex);
+
+        WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
-    private NodeViewEnt createNodeViewEntWithColorModels(final WorkflowManager wfm,
+    private static NodeViewEnt createNodeViewEntWithColorModels(final WorkflowManager wfm,
         final Map<String, ColorModel> colorModels) throws InvalidSettingsException {
 
         final DataColumnSpec[] dataColumnSpecs = colorModels.entrySet().stream().map(e -> {
@@ -433,26 +519,18 @@ class NodeViewEntTest {
             creator.setColorHandler(new ColorHandler(e.getValue()));
             return creator.createSpec();
         }).toArray(DataColumnSpec[]::new);
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> new TestNodeViewWithColorModel(new DataTableSpec(dataColumnSpecs));
-        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        initViewSettingsAndExecute(nnc);
-        return NodeViewEnt.create(nnc);
+
+        final Function<NodeTableView, DataTableSpec> specProvider = _ntv -> new DataTableSpec(dataColumnSpecs);
+
+        return createNodeViewEntWithSpecProvider(wfm, specProvider);
     }
 
-    private class TestNodeViewWithColorModel extends TestNodeView implements TableView {
-
-        private DataTableSpec m_spec;
-
-        public TestNodeViewWithColorModel(final DataTableSpec spec) {
-            m_spec = spec;
-        }
-
-        @Override
-        public DataTableSpec getSpec() {
-            return m_spec;
-        }
-
+    private static NodeViewEnt createNodeViewEntWithSpecProvider(final WorkflowManager wfm,
+        final Function<NodeTableView, DataTableSpec> specProvider) {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
+            m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
+        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
+        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", specProvider);
     }
 
 }
