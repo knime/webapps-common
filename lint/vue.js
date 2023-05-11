@@ -2,7 +2,11 @@ const parentRules = require("./base").rules;
 
 module.exports = {
   plugins: ["vue", "import"],
-  extends: ["./base.js", "plugin:vue/recommended", "prettier"],
+  extends: [
+    "./base.js",
+    "plugin:vue/recommended",
+    "./prettierOverwrites-vue.js",
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

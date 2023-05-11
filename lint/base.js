@@ -7,7 +7,7 @@ let parserOptions = {
 
 module.exports = {
   root: true,
-  extends: ["eslint:recommended", "prettier"],
+  extends: ["eslint:recommended", "./prettierOverwrites.js"],
   plugins: ["unused-imports"],
   parserOptions,
   env: {
@@ -26,14 +26,12 @@ module.exports = {
   rules: {
     "accessor-pairs": "warn",
     "array-callback-return": "error",
-    "arrow-body-style": ["error", "as-needed"],
     "block-scoped-var": "error",
     camelcase: "error",
     "class-methods-use-this": "warn",
     complexity: "warn",
     "consistent-return": "warn",
     "consistent-this": ["warn", "self"],
-    curly: "error",
     "dot-notation": ["warn"],
     eqeqeq: "error",
     "func-name-matching": "warn",
@@ -129,19 +127,10 @@ module.exports = {
       },
     ],
     "operator-assignment": "warn",
-    "prefer-arrow-callback": "warn",
     "prefer-promise-reject-errors": "warn",
     "prefer-rest-params": "warn",
     "prefer-spread": "warn",
     "prefer-template": "error",
-    quotes: [
-      "warn",
-      "double",
-      {
-        avoidEscape: true,
-        allowTemplateLiterals: false, // see https://github.com/prettier/eslint-config-prettier/#quotes
-      },
-    ],
     radix: "error",
     "require-atomic-updates": "off",
     "require-await": "error",
