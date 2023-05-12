@@ -8,7 +8,7 @@ import useClickOutside from "../composables/useClickOutside";
 
 import type { MenuItem } from "./MenuItems.vue";
 import type { PropType } from "vue";
-import type { Placement } from "@popperjs/core";
+import type { Placement, PositioningStrategy } from "@popperjs/core";
 
 const orientations = ["right", "top", "left"] as const;
 
@@ -87,16 +87,25 @@ export default {
      * Allows the popover to be displayed outside a containing block with hidden or scroll overflow
      * (see also https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block, e.g. when a parent container
      * has a translate css styling).
-     * Whenever themenu is expanded, a callback which closes it again is emitted as the event 'toggle'.
+     * Whenever the menu is expanded, a callback which closes it again is emitted as the event 'toggle'.
      */
     teleportToBody: {
       type: Boolean,
       default: true,
     },
+    /**
+     * The positioning strategy for the dropdown menu (also called popover)
+     * see: https://popper.js.org/docs/v2/constructors/#strategy
+     */
+    positioningStrategy: {
+      type: String as PropType<PositioningStrategy>,
+      default: "fixed",
+      validator: (value: string) => ["fixed", "absolute"].includes(value),
+    },
   },
   emits: ["item-click", "toggle"],
   setup(props) {
-    const { allowOverflowMainAxis, orientation } = toRefs(props);
+    const { orientation } = toRefs(props);
     const submenu = ref(null);
     const menuItems = ref(null);
     const menuWrapper = ref(null);
@@ -116,13 +125,13 @@ export default {
         referenceEl: submenu,
       },
       computed(() => ({
-        placement: placementMap[unref(orientation)],
-        strategy: "fixed",
+        placement: placementMap[props.orientation],
+        strategy: props.positioningStrategy,
         modifiers: [
           {
             name: "preventOverflow",
             options: {
-              mainAxis: unref(allowOverflowMainAxis),
+              mainAxis: props.allowOverflowMainAxis,
             },
           },
         ],
@@ -211,7 +220,7 @@ export default {
       :aria-expanded="String(expanded)"
       :disabled="disabled"
       :active="expanded"
-      @click="toggleMenu"
+      @click.stop="toggleMenu"
     >
       <slot :expanded="expanded" />
     </FunctionButton>
