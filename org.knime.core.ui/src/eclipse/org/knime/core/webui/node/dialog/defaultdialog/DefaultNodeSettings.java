@@ -72,6 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -104,7 +105,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * annotations} to supply additional information (e.g. description, domain info, ...).
  *
  * The table below lists all the supported type with
- * <ul><li> the default widget being displayed if no specific widget annotation is given</li>
+ * <ul>
+ * <li>the default widget being displayed if no specific widget annotation is given</li>
  * <li>the widget annotations that are compatible with the type</li>
  * </ul>
  *
@@ -128,7 +130,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * <tr>
  * <td>String</td>
  * <td>Text Input</td>
- * <td>{@link ChoicesWidget} (twin-list)<br>{@link TextInputWidget}</td>
+ * <td>{@link ChoicesWidget} (twin-list)<br>
+ * {@link TextInputWidget}</td>
  * </tr>
  * <tr>
  * <td>String[]</td>
@@ -136,7 +139,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * <td>{@link ChoicesWidget} (drop-down)</td>
  * </tr>
  * <tr>
- * <td>Enums</td>
+ * <td>Enums(*)</td>
  * <td>Value Switch</td>
  * <td>{@link RadioButtonsWidget}</td>
  * </tr>
@@ -157,6 +160,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * </tr>
  * </table>
  *
+ * (*) Note on enums: in order to control the labels of enum-values to be used within the respective widget (e.g. Value
+ * Switch), the {@link Label}-annotation can be used.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany

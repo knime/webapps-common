@@ -55,7 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used to label the entries of an enum as they should appear in the desired widget (value
+ * This annotation can be used to label the values of an enum as they should appear in the desired widget (value
  * switch, radio buttons, ...)
  *
  * @author Paul Bärnreuther
