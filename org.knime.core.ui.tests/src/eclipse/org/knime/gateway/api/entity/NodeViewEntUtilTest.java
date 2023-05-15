@@ -139,7 +139,7 @@ class NodeViewEntUtilTest {
 
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0, viewCreator));
-        NodeViewEntTest.connectDataGeneratorToInputPort(wfm, nnc, 0);
+        NodeViewEntTest.connectSourceNodeToInputPort(wfm, nnc, 0);
 
         var hlh = nnc.getNodeModel().getInHiLiteHandler(0);
         wfm.executeAllAndWaitUntilDone();

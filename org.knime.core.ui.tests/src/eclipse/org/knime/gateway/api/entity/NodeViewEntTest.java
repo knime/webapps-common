@@ -91,7 +91,6 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.FileNativeNodeContainerPersistor;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeMessage;
@@ -398,7 +397,7 @@ class NodeViewEntTest {
             WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(inPortIdx + 1, 0, nodeViewCreator));
         // We need the other connections as well for the workflow to be executable
         for (var i = 0; i <= inPortIdx; i++) {
-            connectDataGeneratorToInputPort(wfm, nnc, i);
+            connectSourceNodeToInputPort(wfm, nnc, i);
         }
         wfm.executeAllAndWaitUntilDone();
         return new Pair<>(wfm, nnc);
@@ -408,16 +407,14 @@ class NodeViewEntTest {
      *
      * @param wfm the workflow manager including the native node container
      * @param nnc the native node container holding a node view with enough input ports
-     * @param inPortIdx the input port index to which a data generator should be connectes when not counting the flow
+     * @param inPortIdx the input port index to which a data generator should be connected when not counting the flow
      *            variables port
      */
-    static void connectDataGeneratorToInputPort(final WorkflowManager wfm, final NativeNodeContainer nnc,
+    static void connectSourceNodeToInputPort(final WorkflowManager wfm, final NativeNodeContainer nnc,
         final int inPortIdx) throws InvalidSettingsException, InstantiationException, IllegalAccessException,
         InvalidNodeFactoryExtensionException {
-        final var dataGeneratorNodeFactory = FileNativeNodeContainerPersistor
-            .loadNodeFactory("org.knime.base.node.util.sampledata.SampleDataNodeFactory");
-        final var dataGeneratorNode = WorkflowManagerUtil.createAndAddNode(wfm, dataGeneratorNodeFactory);
-        wfm.addConnection(dataGeneratorNode.getID(), 1, nnc.getID(), inPortIdx + 1);
+        final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeFactory());
+        wfm.addConnection(sourceNode.getID(), 1, nnc.getID(), inPortIdx + 1);
     }
 
     private class TestNodeView implements NodeView {
