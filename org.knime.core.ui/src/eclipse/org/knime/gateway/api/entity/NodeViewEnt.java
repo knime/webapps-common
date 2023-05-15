@@ -135,7 +135,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     private static Function<NodeTableView, DataTableSpec> createSpecProvider(final NativeNodeContainer nnc) {
-        Function<NodeTableView, DataTableSpec> specProvider = ntv -> {
+        return ntv -> {
             var inPortIdx = ntv.getInPortIndex();
             var wfm = nnc.getParent();
             // plus 1 because the inPortIdx excludes the flow variable port
@@ -143,7 +143,6 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
             return (DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
                 .getPortObjectSpec();
         };
-        return specProvider;
     }
 
     /**
@@ -171,8 +170,8 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      * @return a map from the name of a column to its attached color model
      */
     private static Map<String, ColorModelEnt> getColorHandlerColumns(final DataTableSpec spec) {
-        return spec.stream().filter(colSpec -> colSpec.getColorHandler() != null).collect(Collectors
-            .toMap(DataColumnSpec::getName, (col) -> new ColorModelEnt(col.getColorHandler().getColorModel())));
+        return spec.stream().filter(colSpec -> colSpec.getColorHandler() != null).collect(
+            Collectors.toMap(DataColumnSpec::getName, col -> new ColorModelEnt(col.getColorHandler().getColorModel())));
     }
 
     /**
