@@ -64,14 +64,18 @@ import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.ApplyDataService.Applier;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.NodeWrapper.CustomNodeWrapperTypeIdProvider;
 import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewFactory;
+import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.xml.sax.SAXException;
 
@@ -80,7 +84,10 @@ import org.xml.sax.SAXException;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implements NodeViewFactory<NodeViewNodeModel> {
+public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel>
+    implements NodeViewFactory<NodeViewNodeModel>, CustomNodeWrapperTypeIdProvider {
+
+    private static int instanceCount = 0;
 
     private final Function<NodeViewNodeModel, NodeView> m_nodeViewCreator;
 
@@ -107,6 +114,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_numInputs = 0;
         m_numOutputs = 0;
         m_hasView = () -> true;
+        instanceCount++;
     }
 
     /**
@@ -119,6 +127,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_numInputs = 0;
         m_numOutputs = 0;
         m_hasView = hasView;
+        instanceCount++;
     }
 
     /**
@@ -135,6 +144,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
                 RpcDataService.builder(new RpcServiceHandler()).build(), createApplyDataService());
         };
         m_hasView = () -> true;
+        instanceCount++;
     }
 
     public NodeViewNodeFactory(final int numInputs, final int numOutputs,
@@ -143,6 +153,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
         m_numOutputs = numOutputs;
         m_nodeViewCreator = nodeViewCreator;
         m_hasView = () -> true;
+        instanceCount++;
     }
 
     private ApplyDataService<String> createApplyDataService() {
@@ -307,6 +318,27 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel> implemen
             return "rpc method result with param: " + param;
         }
 
+    }
+
+    @Override
+    public String getNodeWrapperTypeId(final NativeNodeContainer nnc) {
+        return getNodeWrapperTypeIdStatic(nnc);
+    }
+
+    /**
+     * The node-wrapper-type-id returned by {@link NodeWrapper#getNodeWrapperTypeId()} for this node factory. Required
+     * to be able to assert the path returned by {@link NodeViewManager#getPagePath(NodeWrapper)} because the
+     * node-wrapper-type-id does NOT remain constant for this factory (usually it does). It's not constant because
+     * multiple tests use this factory to create views (and pages associated with the views) which in turn are kept in
+     * global static caches. And mutating the node-wrapper-type-id with every new instance of this factory essentially
+     * 'invalidates' the cache entries.
+     *
+     * @param nnc
+     * @return the id
+     */
+    public static String getNodeWrapperTypeIdStatic(final NativeNodeContainer nnc) {
+        var factory = nnc.getNode().getFactory();
+        return factory.getClass().getName() + "_" + instanceCount;
     }
 
 }

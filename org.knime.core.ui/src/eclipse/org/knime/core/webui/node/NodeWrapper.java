@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node;
 
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -91,7 +92,12 @@ public interface NodeWrapper {
             @Override
             public String getNodeWrapperTypeId() {
                 if (nc instanceof NativeNodeContainer nnc) {
-                    return nnc.getNode().getFactory().getClass().getName();
+                    var factory = nnc.getNode().getFactory();
+                    if (factory instanceof CustomNodeWrapperTypeIdProvider p) {
+                        return p.getNodeWrapperTypeId(nnc);
+                    } else {
+                        return factory.getClass().getName();
+                    }
                 } else if (nc instanceof SubNodeContainer snc) {
                     return snc.getClass().getName();
                 } else {
@@ -121,5 +127,13 @@ public interface NodeWrapper {
             }
         };
 
+    }
+
+    /**
+     * Implemented by {@link NodeFactory NodeFactories} in order to provide a custom node-wrapper-type-id as returned by
+     * {@link NodeWrapper#getNodeWrapperTypeId()}. Usually only necessary for testing purposes.
+     */
+    interface CustomNodeWrapperTypeIdProvider {
+        String getNodeWrapperTypeId(NativeNodeContainer nnc);
     }
 }

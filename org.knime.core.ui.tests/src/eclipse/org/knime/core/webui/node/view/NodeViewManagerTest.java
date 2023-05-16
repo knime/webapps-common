@@ -230,7 +230,8 @@ public class NodeViewManagerTest {
         assertThat(path3)
             .as("path of dynamic pages not expected to change for same node instance (without node state change)")
             .isEqualTo(path4);
-        assertThat(path).isEqualTo("uiext-view/org.knime.testing.node.view.NodeViewNodeFactory/page.html");
+        assertThat(path).isEqualTo("uiext-view/"
+            + NodeViewNodeFactory.getNodeWrapperTypeIdStatic((NativeNodeContainer)nnc.get()) + "/page.html");
         String baseUrl = nodeViewManager.getBaseUrl().orElse(null);
         assertThat(baseUrl).isEqualTo("http://org.knime.core.ui.view/");
 
@@ -251,12 +252,12 @@ public class NodeViewManagerTest {
 
         var nodeViewManager = NodeViewManager.getInstance();
         assertThat(nodeViewManager.getPagePath(NodeWrapper.of(nnc)))
-            .isEqualTo("uiext-view/org.knime.testing.node.view.NodeViewNodeFactory/page.html");
+            .isEqualTo("uiext-view/" + NodeViewNodeFactory.getNodeWrapperTypeIdStatic(nnc) + "/page.html");
 
         runOnExecutor(() -> { // NOSONAR
             String path = nodeViewManager.getPagePath(NodeWrapper.of(nnc));
             assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix1 = "uiext-view/" + nnc.getNode().getFactory().getClass().getName();
+            var resourcePrefix1 = "uiext-view/" + NodeViewNodeFactory.getNodeWrapperTypeIdStatic(nnc);
             assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
             testGetNodeViewPageResource(resourcePrefix1);
 
