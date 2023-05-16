@@ -107,9 +107,9 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
      * @return whether the node container provides a {@link NodeView}
      */
     public static boolean hasNodeView(final NodeContainer nc) {
-        if (nc instanceof NativeNodeContainer) {
-            var nodeFactory = ((NativeNodeContainer)nc).getNode().getFactory();
-            return nodeFactory instanceof NodeViewFactory && ((NodeViewFactory)nodeFactory).hasNodeView();
+        if (nc instanceof NativeNodeContainer nnc) {
+            var nodeFactory = nnc.getNode().getFactory();
+            return nodeFactory instanceof NodeViewFactory nodeViewFactory && nodeViewFactory.hasNodeView();
         } else {
             return false;
         }
@@ -148,7 +148,8 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
         if (service != null) {
             return service.toRowKeys(selection);
         } else {
-            // if no selection translation service is available, turn the list of strings directly into a list of row keys
+            // if no selection translation service is available,
+            // turn the list of strings directly into a list of row keys
             return selection.stream().map(RowKey::new).collect(Collectors.toSet());
         }
     }
@@ -169,7 +170,7 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
             return service.fromRowKeys(rowKeys);
         } else {
             // if no selection translation service is available, we just turn the row keys into strings
-            return rowKeys.stream().map(RowKey::toString).collect(Collectors.toList());
+            return rowKeys.stream().map(RowKey::toString).toList();
         }
     }
 
@@ -317,14 +318,6 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
 
     static int getIdForNodeExecutionCycle(final NativeNodeContainer nnc) {
         return System.identityHashCode(nnc.getNodeAndBundleInformation());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected final int getPageCacheSize() {
-        return super.getPageCacheSize();
     }
 
 }
