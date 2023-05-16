@@ -320,4 +320,12 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
         return System.identityHashCode(nnc.getNodeAndBundleInformation());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getPageCacheSize() {
+        return super.getPageCacheSize();
+    }
+
 }
