@@ -9,7 +9,7 @@ export const Masala = "hsl(12, 4.2%, 23.3%)"; /* #3E3A39 */
 export const DoveGray = "hsl(0, 0%, 43.1%)"; /* #6E6E6E */
 export const SilverSand = "hsl(200, 5%, 76.5%)"; /* #C0C4C6 */
 export const Porcelain = "hsl(200, 10.33%, 94.3%)"; /* #EFF1F2 */
-export const White = "white"; /* #FFFFFF */
+export const White = "hsl(0, 0%, 100%)"; /* #FFFFFF */
 
 /* secondary colors from the corporate styleguide */
 export const Aquamarine = "hsl(188, 63%, 71.4%)"; /* #88d8e4 */
