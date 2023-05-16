@@ -17,6 +17,13 @@ Same application also serves as a development environment (code lives in `demo` 
 npm run dev
 ```
 
+### Git hooks
+
+When committing your changes, a couple of commit hooks will run via [husky].
+
+- `pre-commit` hook to lint and format the changes in your stage zone (via [lintstaged])
+- `prepare-commit-msg` hook to format your commit message to conform with the required format by KNIME. In order for this to work you must set environment variables with your Atlassian email and API token. Refer to [scripts/README.md](scripts/README.md) for more information.
+
 ## Usage
 
 ---
@@ -96,3 +103,5 @@ A helper module for build specific utilities. For more details, see `/buildtools
 [postcss-nesting]: https://github.com/jonathantneal/postcss-nesting
 [CSS Nesting specification]: https://tabatkins.github.io/specs/css-nesting/#nest-selector
 [Stacking]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/Stacking_without_z-index
+[husky]: https://www.npmjs.com/package/husky
+[lintstaged]: https://github.com/okonet/lint-staged

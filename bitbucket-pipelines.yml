@@ -23,7 +23,8 @@ definitions:
           depth: full # SonarCloud scanner needs the full history to assign issues properly
         script:
           - npm ci
-          - npm run ci:lint
+          - npm run ci:lint-format
+          - npm run type-check
           - npm run coverage
           - npm run audit
           - pipe: sonarsource/sonarcloud-scan:1.4.0

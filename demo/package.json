@@ -5,7 +5,6 @@
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
-    "preinstall": "npm i --prefix ../ && npm i --prefix ../lint",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview --port 4173",
@@ -16,7 +15,8 @@
     "lint:css": "stylelint '**/*.{css,vue}'",
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
-    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles"
+    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles",
+    "preinstall": "npm i --prefix ../ && npm i --prefix ../lint"
   },
   "dependencies": {
     "prismjs": "1.29.0",

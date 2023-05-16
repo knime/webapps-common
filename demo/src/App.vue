@@ -265,6 +265,7 @@ export default {
     <img
       src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
       class="logo"
+      alt="KNIME"
     />
   </header>
   <main>
