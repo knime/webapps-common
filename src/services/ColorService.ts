@@ -90,7 +90,7 @@ export class ColorService {
         this.knimeService = knimeService;
     }
 
-    public getColorHandler(columnName: string) {
+    public getColorHandler(columnName: string, suppressWarning: boolean = false) {
         if (columnName in this.colorModels) {
             const colorModel = this.colorModels[columnName];
             if (colorModel.type === ColorModelType.NUMERIC) {
@@ -99,9 +99,11 @@ export class ColorService {
                 return new NominalColorHandler(colorModel.model);
             }
         }
-        this.knimeService.sendWarning(this.knimeService.createAlert(
-            { type: AlertTypes.WARN, message: `No color handler found for the given column name "${columnName}".` }
-        ));
+        if (!suppressWarning) {
+            this.knimeService.sendWarning(this.knimeService.createAlert(
+                { type: AlertTypes.WARN, message: `No color handler found for the given column name "${columnName}".` }
+            ));
+        }
         return null;
     }
 }

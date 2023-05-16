@@ -30,7 +30,7 @@ describe('ColorService', () => {
         }
     };
 
-    beforeAll(() => {
+    beforeEach(() => {
         const config = { ...extensionConfig, colorModels };
         knimeService = new KnimeService(config);
         knimeService.sendWarning = jest.fn();
@@ -43,6 +43,11 @@ describe('ColorService', () => {
         it('returns null and sets a warning if the column does not have a color handler', () => {
             expect(colorService.getColorHandler('foo')).toBeNull();
             expect(knimeService.sendWarning).toHaveBeenCalled();
+        });
+
+        it('does not set a warning if suppressed', () => {
+            colorService.getColorHandler('foo', true);
+            expect(knimeService.sendWarning).not.toHaveBeenCalled();
         });
 
         it('returns a function for nominal color model', () => {
