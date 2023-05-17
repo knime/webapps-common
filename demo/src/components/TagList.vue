@@ -43,9 +43,9 @@ export default {
           <p>
             Displays a list of tags with support for only showing a maximal
             number of tags via the
-            <code>numberOfInitialTags</code> prop. 
-            Optionally it is possible to display active tags. 
-            Tags can be clickable by enabling the <code>clickable</code> prop.
+            <code>numberOfInitialTags</code> prop. Optionally it is possible to
+            display active tags. Tags can be clickable by enabling the
+            <code>clickable</code> prop.
           </p>
         </div>
       </div>

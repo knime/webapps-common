@@ -2,34 +2,31 @@
 import CheckIcon from "../assets/img/icons/check.svg";
 
 export default {
-    components: {
-        CheckIcon
+  components: {
+    CheckIcon,
+  },
+  props: {
+    /**
+     * If the tags should have hover + cursor styles.
+     */
+    clickable: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-        /**
-         * If the tags should have hover + cursor styles.
-         */
-        clickable: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * If the tag should be displayed as active
-         */
-        active: {
-            type: Boolean,
-            default: false
-        }
-    }
+    /**
+     * If the tag should be displayed as active
+     */
+    active: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 
 <template>
   <span :class="['tag', { clickable, active }]">
-    <slot /><CheckIcon
-      v-if="clickable && active"
-      class="checkmark"
-    />
+    <slot /><CheckIcon v-if="clickable && active" class="checkmark" />
   </span>
 </template>
 
@@ -80,21 +77,19 @@ export default {
       }
     }
 
-
     &.active {
       &:hover {
-          background-color: var(--knime-dove-gray);
-          border-color: var(--knime-dove-gray);
+        background-color: var(--knime-dove-gray);
+        border-color: var(--knime-dove-gray);
       }
 
       & .checkmark {
         width: 18px;
         height: 18px;
         padding-left: 5px;
-        stroke-width: 2.4px
+        stroke-width: 2.4px;
       }
     }
-
   }
 }
 </style>
