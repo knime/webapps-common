@@ -45,9 +45,6 @@ export const formatTimeString = (timeString) => {
  * @param {String} dateTimeString String representation of the Date (including time and date) to format
  * @returns {String} human readable date/time String
  */
-export const formatDateTimeString = (dateTimeString) => {
+export const formatDateTimeString = (dateTimeString) =>
   // eslint-disable-line arrow-body-style
-  return `${formatDateString(dateTimeString)} ${formatTimeString(
-    dateTimeString
-  )}`;
-};
+  `${formatDateString(dateTimeString)} ${formatTimeString(dateTimeString)}`;

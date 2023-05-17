@@ -57,9 +57,9 @@ export default {
         :class="['options', { 'with-section': option.sectionName }]"
         :initially-expanded="options.length === 1"
       >
-        <template #title
-          ><h5>{{ option.sectionName }}</h5></template
-        >
+        <template #title>
+          <h5>{{ option.sectionName }}</h5>
+        </template>
         <Description
           v-if="option.sectionDescription"
           :text="option.sectionDescription"

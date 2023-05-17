@@ -1,5 +1,5 @@
 <script>
-import CheckIcon from '../assets/img/icons/check.svg';
+import CheckIcon from "../assets/img/icons/check.svg";
 
 export default {
     components: {
@@ -82,7 +82,6 @@ export default {
 
 
     &.active {
-
       &:hover {
           background-color: var(--knime-dove-gray);
           border-color: var(--knime-dove-gray);

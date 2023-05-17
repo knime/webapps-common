@@ -1,5 +1,5 @@
-import { describe, it, expect, test } from 'vitest';
-import { shallowMount } from '@vue/test-utils';
+import { describe, it, expect } from "vitest";
+import { shallowMount } from "@vue/test-utils";
 
 import TagList from "../TagList.vue";
 import Tag from "../Tag.vue";
@@ -78,39 +78,32 @@ describe("tagList.vue", () => {
     expect(wrapper.findAllComponents(Tag).length).toEqual(sevenTags.length);
   });
 
-  it("enables click events via prop", async () => {
+  it("doesnt show active tags by default", () => {
     const wrapper = shallowMount(TagList, {
       props: { tags: sevenTags },
     });
-
-    it('doesnt show active tags by default', () => {
-      const wrapper = shallowMount(TagList, {
-        props: { tags: sevenTags }
-      });
-      const tags = wrapper.findAllComponents(Tag);
-      tags.forEach((tag) => {
-        expect(tag.props('active')).toBe(false);
-      });
+    const tags = wrapper.findAllComponents(Tag);
+    tags.forEach((tag) => {
+      expect(tag.props("active")).toBe(false);
     });
+  });
 
-    it('shows active tags', () => {
-      const wrapper = shallowMount(TagList, {
-        props: { tags: sevenTags, activeTags: ['tagMaster', 'moarTags'] }
-      });
-      const tags = wrapper.findAllComponents(Tag);
+  it("shows active tags", () => {
+    const wrapper = shallowMount(TagList, {
+      props: { tags: sevenTags, activeTags: ["tagMaster", "moarTags"] },
+    });
+    const tags = wrapper.findAllComponents(Tag);
 
-      test.each([
-        { tag: tags.at(0), expected: false },
-        { tag: tags.at(1), expected: false },
-        { tag: tags.at(2), expected: false },
-        { tag: tags.at(3), expected: true },
-        { tag: tags.at(4), expected: false },
-        { tag: tags.at(5), expected: true },
-        { tag: tags.at(6), expected: false },
-      ])('tag is active or not', ({ tag, expected }) => {
-        expect(tag.props('active')).toBe(expected);
-      });
- 
-    })
-  })
+    it.each([
+      { tag: tags.at(0), expected: false },
+      { tag: tags.at(1), expected: false },
+      { tag: tags.at(2), expected: false },
+      { tag: tags.at(3), expected: true },
+      { tag: tags.at(4), expected: false },
+      { tag: tags.at(5), expected: true },
+      { tag: tags.at(6), expected: false },
+    ])("tag is active or not", ({ tag, expected }) => {
+      expect(tag.props("active")).toBe(expected);
+    });
+  });
 });
