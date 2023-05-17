@@ -54,7 +54,7 @@ export default {
   emits: ["item-click", "item-focused", "item-hovered"],
   setup(props) {
     // use composition api refs to be able to sync the index between props.items and the refs to the HTMLElement
-    const listItems = ref([]);
+    const listItems = ref<ElementTemplateRef[]>([]);
     const positionRelativeToElement = toRef(props, "positionRelativeToElement");
     const listContainer = ref<HTMLElement | null>(null);
 
@@ -112,6 +112,9 @@ export default {
   },
   expose: ["getEnabledListItems", "scrollTo"],
   methods: {
+    updateItem(el: HTMLElement, index: number) {
+      this.listItems[index] = el;
+    },
     getEnabledListItems() {
       const listItems = this.listItems as Array<HTMLLIElement>;
 
@@ -195,11 +198,7 @@ export default {
     <li
       v-for="(item, index) in items"
       :key="index"
-      :ref="
-        (el) => {
-          listItems[index] = el;
-        }
-      "
+      :ref="(el:any) => updateItem(el, index)"
       :data-index="index"
       :class="[{ separator: item.separator }]"
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"
