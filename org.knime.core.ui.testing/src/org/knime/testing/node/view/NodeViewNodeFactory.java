@@ -229,8 +229,7 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel>
     private static NodeView createNodeView(final NodeViewNodeModel model, final Page page,
         final InitialDataService<?> initDataService, final RpcDataService rpcDataService,
         final ApplyDataService<?> applyDataService) {
-        var tables = model.getInternalTables();
-        if (tables != null && tables.length > 0) {
+        if (model.hasTableInputPort()) {
             return new NodeTableView() { // NOSONAR
 
                 @Override
