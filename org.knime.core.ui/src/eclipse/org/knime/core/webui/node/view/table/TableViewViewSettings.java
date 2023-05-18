@@ -173,7 +173,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Enable selection of column renderer",
         description = "Whether to enable the selection of a column renderer in the header or not")
     @Persist(optional = true)
-    boolean m_enableRendererSelection = true;
+    public boolean m_enableRendererSelection = true;
 
     /**
      * If this view notifies other views when the users do a selection action
