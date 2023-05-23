@@ -1,56 +1,56 @@
 <script>
 export default {
-    props: {
-        id: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
-        modelValue: {
-            type: Boolean,
-            default: false
-        },
-        disabled: {
-            default: false,
-            type: Boolean
-        },
-        /**
-         * Controls the size of the label
-         * supported values:
-         * - regular
-         * - large
-         */
-        labelSize: {
-            type: String,
-            default: 'regular',
-            validator: (value) => ['regular', 'large'].includes(value)
-        }
+  props: {
+    id: {
+      type: String,
+      default: null,
     },
-    emits: ['update:modelValue'],
-    computed: {
-        classes() {
-            return ['checkbox', this.labelSize, { disabled: this.disabled }];
-        }
+    name: {
+      type: String,
+      default: null,
     },
-    methods: {
-        onInput($event) {
-            /**
-             * Fired when the checkbox value changes.
-             *
-             * @event input
-             * @type {Boolean}
-             */
-            let { checked } = $event.target;
-            consola.trace('Checkbox value changed to', checked);
-            this.$emit('update:modelValue', checked);
-        },
-        isChecked() {
-            return this.$refs.input.checked;
-        }
-    }
+    modelValue: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
+    /**
+     * Controls the size of the label
+     * supported values:
+     * - regular
+     * - large
+     */
+    labelSize: {
+      type: String,
+      default: "regular",
+      validator: (value) => ["regular", "large"].includes(value),
+    },
+  },
+  emits: ["update:modelValue"],
+  computed: {
+    classes() {
+      return ["checkbox", this.labelSize, { disabled: this.disabled }];
+    },
+  },
+  methods: {
+    onInput($event) {
+      /**
+       * Fired when the checkbox value changes.
+       *
+       * @event input
+       * @type {Boolean}
+       */
+      let { checked } = $event.target;
+      consola.trace("Checkbox value changed to", checked);
+      this.$emit("update:modelValue", checked);
+    },
+    isChecked() {
+      return this.$refs.input.checked;
+    },
+  },
 };
 </script>
 
@@ -64,7 +64,7 @@ export default {
       :disabled="disabled"
       type="checkbox"
       @change="onInput"
-    >
+    />
     <span>
       <slot />
     </span>
@@ -104,7 +104,8 @@ export default {
       max-width: 100%;
     }
 
-    & + span::before { /* □ */
+    & + span::before {
+      /* □ */
       border: 1px solid var(--theme-checkbox-border-color);
       background: var(--theme-checkbox-background-color);
       display: inline-block;
@@ -114,7 +115,8 @@ export default {
     }
 
     & + span::before, /* □ */
-    & + span::after { /* ✓ */
+    & + span::after {
+      /* ✓ */
       position: absolute;
       left: 0;
       top: 4px; /* based on regular line-height of 18px; container will be 24px(2x3px padding) 24-14=10/2 = 5-1 = 4
@@ -123,7 +125,8 @@ export default {
 
     &:checked {
       /* □ */
-      & + span::before { /* default */
+      & + span::before {
+        /* default */
         border-color: var(--theme-checkbox-border-color-selected);
         background: var(--theme-checkbox-background-color-selected);
       }
@@ -144,7 +147,8 @@ export default {
       }
 
       /* ✓ */
-      & + span::after { /* default */
+      & + span::after {
+        /* default */
         content: "";
         position: absolute;
         display: block;
@@ -212,11 +216,11 @@ export default {
 
     /* stylelint-disable no-descending-specificity */
     & input + span::before,
-    & input + span::after { /* ✓ */
+    & input + span::after {
+      /* ✓ */
       top: 5px; /* line height 20px; container 26px(2x3px padding) 26-14=12/2=6  -1=5 to center higher letters better */
     }
     /* stylelint-enable no-descending-specificity */
   }
 }
-
 </style>

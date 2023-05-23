@@ -12,51 +12,47 @@
 */
 
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-display: swap;
   font-weight: 300;
-  src:
-    local('Roboto Light'), local('Roboto-Light'),
-    url('@fontsource/roboto/files/roboto-all-300-normal.woff') format('woff');
+  src: local("Roboto Light"), local("Roboto-Light"),
+    url("@fontsource/roboto/files/roboto-all-300-normal.woff") format("woff");
   unicode-range: u+221e;
 }
 
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src:
-    local('Roboto'), local('Roboto-Regular'),
-    url('@fontsource/roboto/files/roboto-all-400-normal.woff') format('woff');
+  src: local("Roboto"), local("Roboto-Regular"),
+    url("@fontsource/roboto/files/roboto-all-400-normal.woff") format("woff");
   unicode-range: u+221e;
 }
 
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-display: swap;
   font-weight: 500;
-  src:
-    local('Roboto Medium'), local('Roboto-Medium'),
-    url('@fontsource/roboto/files/roboto-all-500-normal.woff') format('woff');
+  src: local("Roboto Medium"), local("Roboto-Medium"),
+    url("@fontsource/roboto/files/roboto-all-500-normal.woff") format("woff");
   unicode-range: u+221e;
 }
 
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-display: swap;
   font-weight: 700;
-  src:
-    local('Roboto Bold'), local('Roboto-Bold'),
-    url('@fontsource/roboto/files/roboto-all-700-normal.woff') format('woff');
+  src: local("Roboto Bold"), local("Roboto-Bold"),
+    url("@fontsource/roboto/files/roboto-all-700-normal.woff") format("woff");
   unicode-range: u+221e;
 }
 
 :root {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 300;
   letter-spacing: 0.007em;
 }
@@ -65,5 +61,5 @@ pre,
 code,
 tt,
 samp {
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
 }

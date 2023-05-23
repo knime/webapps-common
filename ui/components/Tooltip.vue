@@ -1,18 +1,18 @@
 <script>
 export default {
-    props: {
-        text: {
-            type: String,
-            required: true
-        }
-    }
+  props: {
+    text: {
+      type: String,
+      required: true,
+    },
+  },
 };
 </script>
 
 <template>
   <div class="tooltip">
     <slot />
-    <span class="text">{{ text }}</span>
+    <span v-if="text" class="text">{{ text }}</span>
   </div>
 </template>
 

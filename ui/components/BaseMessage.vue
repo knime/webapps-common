@@ -1,22 +1,21 @@
 <script>
-
 /**
  * Base Message banner component
  */
 export default {
-    props: {
-        /**
-         * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
-         * This has no implication on functionality, only styling
-         */
-        type: {
-            type: String,
-            default: 'info',
-            validator(type = 'info') {
-                return ['info', 'error', 'success', 'warn'].includes(type);
-            }
-        }
-    }
+  props: {
+    /**
+     * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
+     * This has no implication on functionality, only styling
+     */
+    type: {
+      type: String,
+      default: "info",
+      validator(type = "info") {
+        return ["info", "error", "success", "warn"].includes(type);
+      },
+    },
+  },
 };
 </script>
 

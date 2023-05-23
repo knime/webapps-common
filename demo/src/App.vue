@@ -1,111 +1,233 @@
 <script>
-import { defineAsyncComponent, h as createElement } from 'vue';
-import './assets/index.css';
+import { defineAsyncComponent, h as createElement } from "vue";
+import "./assets/index.css";
 
-import TabBarComponent from 'webapps-common/ui/components/TabBar.vue';
-import ImageIcon from 'webapps-common/ui/assets/img/icons/media-image.svg';
-import InteractiveIcon from 'webapps-common/ui/assets/img/icons/interactive.svg';
-import PaletteIcon from 'webapps-common/ui/assets/img/icons/color-palette.svg';
-import CheckboxIcon from 'webapps-common/ui/assets/img/icons/checkboxes.svg';
-import TooltipIcon from 'webapps-common/ui/assets/img/icons/tooltip.svg';
-import UnknownIcon from 'webapps-common/ui/assets/img/icons/file-question.svg';
-import ListThumbs from 'webapps-common/ui/assets/img/icons/list-thumbs.svg';
-import HeadlineWithAnchorLink from './components/demo/HeadlineWithAnchorLink.vue';
+import TabBarComponent from "webapps-common/ui/components/TabBar.vue";
+import ImageIcon from "webapps-common/ui/assets/img/icons/media-image.svg";
+import InteractiveIcon from "webapps-common/ui/assets/img/icons/interactive.svg";
+import PaletteIcon from "webapps-common/ui/assets/img/icons/color-palette.svg";
+import CheckboxIcon from "webapps-common/ui/assets/img/icons/checkboxes.svg";
+import TooltipIcon from "webapps-common/ui/assets/img/icons/tooltip.svg";
+import UnknownIcon from "webapps-common/ui/assets/img/icons/file-question.svg";
+import ListThumbs from "webapps-common/ui/assets/img/icons/list-thumbs.svg";
+import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 
-import SearchInputComponent from 'webapps-common/ui/components/forms/SearchInput.vue';
+import SearchInputComponent from "webapps-common/ui/components/forms/SearchInput.vue";
 
-import NpmLink from './components/demo/NpmLink.vue';
+import NpmLink from "./components/demo/NpmLink.vue";
 
 const demoComponents = {
-    layout: {
-        Fonts: defineAsyncComponent(() => import('./components/Fonts.vue')),
-        Colors: defineAsyncComponent(() => import('./components/Colors.vue')),
-        Grid: defineAsyncComponent(() => import('./components/Grid.vue')),
-        Headlines: defineAsyncComponent(() => import('./components/Headlines.vue')),
-        Description: defineAsyncComponent(() => import('./components/Description.vue'))
+  layout: {
+    Fonts: defineAsyncComponent(() => import("./components/Fonts.vue")),
+    Colors: defineAsyncComponent(() => import("./components/Colors.vue")),
+    Grid: defineAsyncComponent(() => import("./components/Grid.vue")),
+    Headlines: defineAsyncComponent(() => import("./components/Headlines.vue")),
+    Description: defineAsyncComponent(() =>
+      import("./components/Description.vue")
+    ),
+  },
+  images: {
+    Images: defineAsyncComponent(() => import("./components/Images.vue")),
+    Icons: defineAsyncComponent(() => import("./components/Icons.vue")),
+  },
+  interactive: {
+    Breadcrumb: defineAsyncComponent(() =>
+      import("./components/Breadcrumb.vue")
+    ),
+    LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
+    Button: defineAsyncComponent(() => import("./components/Button.vue")),
+    FunctionButton: defineAsyncComponent(() =>
+      import("./components/FunctionButton.vue")
+    ),
+    SplitButton: defineAsyncComponent(() =>
+      import("./components/SplitButton.vue")
+    ),
+    PlusButton: defineAsyncComponent(() =>
+      import("./components/PlusButton.vue")
+    ),
+    Carousel: defineAsyncComponent(() => import("./components/Carousel.vue")),
+    ExpandTransition: defineAsyncComponent(() =>
+      import("./components/transitions/ExpandTransition.vue")
+    ),
+    Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
+    FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
+    IdleReadyButton: defineAsyncComponent(() =>
+      import("./components/IdleReadyButton.vue")
+    ),
+    Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
+    MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
+    SideDrawer: defineAsyncComponent(() =>
+      import("./components/SideDrawer.vue")
+    ),
+    SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
+    Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
+    TabBarDemo: defineAsyncComponent(() => import("./components/TabBar.vue")),
+    TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
+    LoadingIcon: defineAsyncComponent(() =>
+      import("./components/LoadingIcon.vue")
+    ),
+    DonutChart: defineAsyncComponent(() =>
+      import("./components/DonutChart.vue")
+    ),
+  },
+  messages: {
+    Message: defineAsyncComponent(() => import("./components/Message.vue")),
+    Messages: defineAsyncComponent(() => import("./components/Messages.vue")),
+  },
+  forms: {
+    Label: defineAsyncComponent(() => import("./components/Label.vue")),
+    Fieldset: defineAsyncComponent(() => import("./components/Fieldset.vue")),
+    InputField: defineAsyncComponent(() =>
+      import("./components/InputField.vue")
+    ),
+    TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
+    SearchInputDemo: defineAsyncComponent(() =>
+      import("./components/SearchInput.vue")
+    ),
+    NumberInput: defineAsyncComponent(() =>
+      import("./components/NumberInput.vue")
+    ),
+    Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
+    Checkboxes: defineAsyncComponent(() =>
+      import("./components/Checkboxes.vue")
+    ),
+    ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
+    RadioButtons: defineAsyncComponent(() =>
+      import("./components/RadioButtons.vue")
+    ),
+    ValueSwitch: defineAsyncComponent(() =>
+      import("./components/ValueSwitch.vue")
+    ),
+    DateTimeInput: defineAsyncComponent(() =>
+      import("./components/DateTimeInput.vue")
+    ),
+    TimePartInput: defineAsyncComponent(() =>
+      import("./components/TimePartInput.vue")
+    ),
+    ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
+    Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
+    Multiselect: defineAsyncComponent(() =>
+      import("./components/Multiselect.vue")
+    ),
+    MultiselectListBox: defineAsyncComponent(() =>
+      import("./components/MultiselectListBox.vue")
+    ),
+    StyledListItem: defineAsyncComponent(() =>
+      import("./components/StyledListItem.vue")
+    ),
+    ToggleSwitch: defineAsyncComponent(() =>
+      import("./components/ToggleSwitch.vue")
+    ),
+    Twinlist: defineAsyncComponent(() => import("./components/Twinlist.vue")),
+    MultiModeTwinlist: defineAsyncComponent(() =>
+      import("./components/MultiModeTwinlist.vue")
+    ),
+  },
+  misc: {
+    NodePreview: defineAsyncComponent(() =>
+      import("./components/NodePreview.vue")
+    ),
+    NodeFeatureList: defineAsyncComponent(() =>
+      import("./components/NodeFeatureList.vue")
+    ),
+    OpenSourceCredits: defineAsyncComponent(() =>
+      import("./components/OpenSourceCredits.vue")
+    ),
+  },
+  npm: {
+    knimeUiTable: {
+      render() {
+        const link = "https://www.npmjs.com/package/@knime/knime-ui-table";
+        const name = "KNIME UI Table";
+        return createElement(NpmLink, { link, name });
+      },
     },
-    images: {
-        Images: defineAsyncComponent(() => import('./components/Images.vue')),
-        Icons: defineAsyncComponent(() => import('./components/Icons.vue'))
+    knimeEsLint: {
+      render() {
+        const link = "https://www.npmjs.com/package/@knime/eslint-config";
+        const name = "KNIME ESLint config";
+        return createElement(NpmLink, { link, name });
+      },
     },
     interactive: {
-        Breadcrumb: defineAsyncComponent(() => import('./components/Breadcrumb.vue')),
-        LinkList: defineAsyncComponent(() => import('./components/LinkList.vue')),
-        Button: defineAsyncComponent(() => import('./components/Button.vue')),
-        FunctionButton: defineAsyncComponent(() => import('./components/FunctionButton.vue')),
-        SplitButton: defineAsyncComponent(() => import('./components/SplitButton.vue')),
-        PlusButton: defineAsyncComponent(() => import('./components/PlusButton.vue')),
-        Carousel: defineAsyncComponent(() => import('./components/Carousel.vue')),
-        ExpandTransition: defineAsyncComponent(() => import('./components/transitions/ExpandTransition.vue')),
-        Collapser: defineAsyncComponent(() => import('./components/Collapser.vue')),
-        FileLink: defineAsyncComponent(() => import('./components/FileLink.vue')),
-        IdleReadyButton: defineAsyncComponent(() => import('./components/IdleReadyButton.vue')),
-        Modal: defineAsyncComponent(() => import('./components/Modal.vue')),
-        MenuItems: defineAsyncComponent(() => import('./components/MenuItems.vue')),
-        SideDrawer: defineAsyncComponent(() => import('./components/SideDrawer.vue')),
-        SubMenu: defineAsyncComponent(() => import('./components/SubMenu.vue')),
-        Tooltip: defineAsyncComponent(() => import('./components/Tooltip.vue')),
-        TabBar: defineAsyncComponent(() => import('./components/TabBar.vue')),
-        TagList: defineAsyncComponent(() => import('./components/TagList.vue')),
-        LoadingIcon: defineAsyncComponent(() => import('./components/LoadingIcon.vue')),
-        DonutChart: defineAsyncComponent(() => import('./components/DonutChart.vue'))
+        Breadcrumb: defineAsyncComponent(() => import("./components/Breadcrumb.vue")),
+        LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
+        Button: defineAsyncComponent(() => import("./components/Button.vue")),
+        FunctionButton: defineAsyncComponent(() => import("./components/FunctionButton.vue")),
+        SplitButton: defineAsyncComponent(() => import("./components/SplitButton.vue")),
+        PlusButton: defineAsyncComponent(() => import("./components/PlusButton.vue")),
+        Carousel: defineAsyncComponent(() => import("./components/Carousel.vue")),
+        ExpandTransition: defineAsyncComponent(() => import("./components/transitions/ExpandTransition.vue")),
+        Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
+        FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
+        IdleReadyButton: defineAsyncComponent(() => import("./components/IdleReadyButton.vue")),
+        Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
+        MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
+        SideDrawer: defineAsyncComponent(() => import("./components/SideDrawer.vue")),
+        SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
+        Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
+        TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
+        TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
+        LoadingIcon: defineAsyncComponent(() => import("./components/LoadingIcon.vue")),
+        DonutChart: defineAsyncComponent(() => import("./components/DonutChart.vue"))
     },
     messages: {
-        Message: defineAsyncComponent(() => import('./components/Message.vue')),
-        Messages: defineAsyncComponent(() => import('./components/Messages.vue'))
+        Message: defineAsyncComponent(() => import("./components/Message.vue")),
+        Messages: defineAsyncComponent(() => import("./components/Messages.vue"))
     },
     forms: {
-        Label: defineAsyncComponent(() => import('./components/Label.vue')),
-        Fieldset: defineAsyncComponent(() => import('./components/Fieldset.vue')),
-        InputField: defineAsyncComponent(() => import('./components/InputField.vue')),
-        TextArea: defineAsyncComponent(() => import('./components/TextArea.vue')),
-        SearchInput: defineAsyncComponent(() => import('./components/SearchInput.vue')),
-        NumberInput: defineAsyncComponent(() => import('./components/NumberInput.vue')),
-        Checkbox: defineAsyncComponent(() => import('./components/Checkbox.vue')),
-        Checkboxes: defineAsyncComponent(() => import('./components/Checkboxes.vue')),
-        ComboBox: defineAsyncComponent(() => import('./components/ComboBox.vue')),
-        RadioButtons: defineAsyncComponent(() => import('./components/RadioButtons.vue')),
-        ValueSwitch: defineAsyncComponent(() => import('./components/ValueSwitch.vue')),
-        DateTimeInput: defineAsyncComponent(() => import('./components/DateTimeInput.vue')),
-        TimePartInput: defineAsyncComponent(() => import('./components/TimePartInput.vue')),
-        ListBox: defineAsyncComponent(() => import('./components/ListBox.vue')),
-        Dropdown: defineAsyncComponent(() => import('./components/Dropdown.vue')),
-        Multiselect: defineAsyncComponent(() => import('./components/Multiselect.vue')),
-        MultiselectListBox: defineAsyncComponent(() => import('./components/MultiselectListBox.vue')),
-        StyledListItem: defineAsyncComponent(() => import('./components/StyledListItem.vue')),
-        ToggleSwitch: defineAsyncComponent(() => import('./components/ToggleSwitch.vue')),
-        Twinlist: defineAsyncComponent(() => import('./components/Twinlist.vue')),
-        MultiModeTwinlist: defineAsyncComponent(() => import('./components/MultiModeTwinlist.vue'))
+        Label: defineAsyncComponent(() => import("./components/Label.vue")),
+        Fieldset: defineAsyncComponent(() => import("./components/Fieldset.vue")),
+        InputField: defineAsyncComponent(() => import("./components/InputField.vue")),
+        TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
+        SearchInput: defineAsyncComponent(() => import("./components/SearchInput.vue")),
+        NumberInput: defineAsyncComponent(() => import("./components/NumberInput.vue")),
+        Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
+        Checkboxes: defineAsyncComponent(() => import("./components/Checkboxes.vue")),
+        ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
+        RadioButtons: defineAsyncComponent(() => import("./components/RadioButtons.vue")),
+        ValueSwitch: defineAsyncComponent(() => import("./components/ValueSwitch.vue")),
+        DateTimeInput: defineAsyncComponent(() => import("./components/DateTimeInput.vue")),
+        TimePartInput: defineAsyncComponent(() => import("./components/TimePartInput.vue")),
+        ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
+        Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
+        Multiselect: defineAsyncComponent(() => import("./components/Multiselect.vue")),
+        MultiselectListBox: defineAsyncComponent(() => import("./components/MultiselectListBox.vue")),
+        StyledListItem: defineAsyncComponent(() => import("./components/StyledListItem.vue")),
+        ToggleSwitch: defineAsyncComponent(() => import("./components/ToggleSwitch.vue")),
+        Twinlist: defineAsyncComponent(() => import("./components/Twinlist.vue")),
+        MultiModeTwinlist: defineAsyncComponent(() => import("./components/MultiModeTwinlist.vue"))
     },
     misc: {
-        NodePreview: defineAsyncComponent(() => import('./components/NodePreview.vue')),
-        NodeFeatureList: defineAsyncComponent(() => import('./components/NodeFeatureList.vue')),
-        OpenSourceCredits: defineAsyncComponent(() => import('./components/OpenSourceCredits.vue'))
+        NodePreview: defineAsyncComponent(() => import("./components/NodePreview.vue")),
+        NodeFeatureList: defineAsyncComponent(() => import("./components/NodeFeatureList.vue")),
+        OpenSourceCredits: defineAsyncComponent(() => import("./components/OpenSourceCredits.vue"))
     },
     npm: {
-        'KNIME UI Table': {
+        "KNIME UI Table": {
             render() {
-                const link = 'https://www.npmjs.com/package/@knime/knime-ui-table';
+                const link = "https://www.npmjs.com/package/@knime/knime-ui-table";
                 return createElement(NpmLink, { link });
             }
         },
-        'KNIME ESLint config': {
+        "KNIME ESLint config": {
             render() {
-                const link = 'https://www.npmjs.com/package/@knime/eslint-config';
+                const link = "https://www.npmjs.com/package/@knime/eslint-config";
                 return createElement(NpmLink, { link });
             }
         }
     }
+  }
 };
 
 const flattenComponents = (componentsByCategory) => {
-    let componentsFlattened = {};
-    for (let componentByName of Object.values(componentsByCategory)) {
-        for (let [name, component] of Object.entries(componentByName)) {
-            componentsFlattened[name] = component;
-        }
+  let componentsFlattened = {};
+  for (let componentByName of Object.values(componentsByCategory)) {
+    for (let [name, component] of Object.entries(componentByName)) {
+      componentsFlattened[name] = component;
     }
-    return componentsFlattened;
+  }
+  return componentsFlattened;
 };
 
 // Transform the components into a flat object
@@ -117,84 +239,94 @@ const components = {
 };
 
 export default {
-    components,
-    data() {
-        return {
-            searchQuery: '',
-            activeTab: ''
-        };
+  components,
+  data() {
+    return {
+      searchQuery: "",
+      activeTab: "",
+    };
+  },
+  computed: {
+    filteredDemoComponents() {
+      if (!this.isSearchActive) {
+        return this.demoComponents;
+      }
+      let filtered = {};
+      for (let [category, componentByName] of Object.entries(
+        this.demoComponents
+      )) {
+        for (let [name, component] of Object.entries(componentByName)) {
+          if (name.toLowerCase().includes(this.searchQuery.toLowerCase())) {
+            if (!filtered.hasOwnProperty(category)) {
+              filtered[category] = {};
+            }
+            filtered[category][name] = component;
+          }
+        }
+      }
+      return filtered;
     },
-    computed: {
-        filteredDemoComponents() {
-            if (!this.isSearchActive) {
-                return this.demoComponents;
-            }
-            let filtered = {};
-            for (let [category, componentByName] of Object.entries(this.demoComponents)) {
-                for (let [name, component] of Object.entries(componentByName)) {
-                    if (name.toLowerCase().includes(this.searchQuery.toLowerCase())) {
-                        if (!filtered.hasOwnProperty(category)) {
-                            filtered[category] = {};
-                        }
-                        filtered[category][name] = component;
-                    }
-                }
-            }
-            return filtered;
+    isSearchActive() {
+      return this.searchQuery !== "";
+    },
+    possibleTabValues() {
+      return [
+        {
+          value: "layout",
+          label: "Style & Layout",
+          icon: PaletteIcon,
         },
-        isSearchActive() {
-            return this.searchQuery !== '';
+        {
+          value: "images",
+          label: "Images & Icons",
+          icon: ImageIcon,
         },
-        possibleTabValues() {
-            return [{
-                value: 'layout',
-                label: 'Style & Layout',
-                icon: PaletteIcon
-            }, {
-                value: 'images',
-                label: 'Images & Icons',
-                icon: ImageIcon
-            }, {
-                value: 'interactive',
-                label: 'UI Components',
-                icon: InteractiveIcon
-            }, {
-                value: 'forms',
-                label: 'Forms',
-                icon: CheckboxIcon
-            }, {
-                value: 'messages',
-                label: 'Messages',
-                icon: TooltipIcon
-            }, {
-                value: 'misc',
-                label: 'Misc',
-                icon: UnknownIcon
-            }, {
-                value: 'npm',
-                label: 'npm packages',
-                icon: ListThumbs
-            }];
-        }
+        {
+          value: "interactive",
+          label: "UI Components",
+          icon: InteractiveIcon,
+        },
+        {
+          value: "forms",
+          label: "Forms",
+          icon: CheckboxIcon,
+        },
+        {
+          value: "messages",
+          label: "Messages",
+          icon: TooltipIcon,
+        },
+        {
+          value: "misc",
+          label: "Misc",
+          icon: UnknownIcon,
+        },
+        {
+          value: "npm",
+          label: "npm packages",
+          icon: ListThumbs,
+        },
+      ];
     },
-    watch: {
-        searchQuery(newSearchQuery, oldSearchQuery) {
-            if (newSearchQuery !== oldSearchQuery) {
-                const query = {};
-                if (newSearchQuery) {
-                    query.q = this.searchQuery;
-                }
-                this.$router.replace({ query });
-            }
+  },
+  watch: {
+    searchQuery(newSearchQuery, oldSearchQuery) {
+      if (newSearchQuery !== oldSearchQuery) {
+        const query = {};
+        if (newSearchQuery) {
+          query.q = this.searchQuery;
         }
+        this.$router.replace({ query });
+      }
     },
-    async created() {
-        this.demoComponents = demoComponents;
-        await this.$router.isReady();
-        if (this.$route.query.q) {
-            this.searchQuery = this.$route.query.q.trim();
-        }
+  },
+  async created() {
+    this.demoComponents = demoComponents;
+    await this.$router.isReady();
+    if (this.$route.query.q) {
+      this.searchQuery = this.$route.query.q.trim();
     }
+  },
 };
 </script>
 
@@ -204,6 +336,7 @@ export default {
       <img
         src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
         class="logo"
+        alt="KNIME"
       >
     </header>
     <main>
@@ -274,11 +407,19 @@ main {
 
 section {
   & :deep(.shadow-wrapper::before) {
-    background-image: linear-gradient(270deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(
+      270deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-white) 100%
+    );
   }
 
   & :deep(.shadow-wrapper::after) {
-    background-image: linear-gradient(90deg, hsl(0deg 0% 100% / 0%) 0%, var(--knime-white) 100%);
+    background-image: linear-gradient(
+      90deg,
+      hsl(0deg 0% 100% / 0%) 0%,
+      var(--knime-white) 100%
+    );
   }
 }
 

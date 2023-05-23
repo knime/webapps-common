@@ -1,59 +1,53 @@
 <script>
-import BaseMessage from './BaseMessage.vue';
-import Message from './Message.vue';
-import MessageLink from './MessageLink.vue';
+import BaseMessage from "./BaseMessage.vue";
+import Message from "./Message.vue";
+import MessageLink from "./MessageLink.vue";
 
 /**
  * Displays multiple stacked messages. If a message is added or removed (e.g. dismissed), a smooth animation is shown.
  */
 export default {
-    components: {
-        BaseMessage,
-        Message,
-        MessageLink
+  components: {
+    BaseMessage,
+    Message,
+    MessageLink,
+  },
+  props: {
+    /**
+     * Array with message configuration objects.
+     *
+     * @example
+     * [{
+     *    id
+     *    type (see Message component for supported values)
+     *    icon (Component)
+     *    button (optional button text)
+     *    message (actual message String)
+     *    content (optional Vue component to render instead of text message, icon, etc.)
+     *    link: { (optional link that will be displayed after the message)
+     *       text
+     *       href (external links, will become <a></a>)
+     *       to (internal links, will become <nuxt-link></nuxt-link>)
+     *    }
+     * }]
+     */
+    messages: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * Array with message configuration objects.
-         *
-         * @example
-         * [{
-         *    id
-         *    type (see Message component for supported values)
-         *    icon (Component)
-         *    button (optional button text)
-         *    message (actual message String)
-         *    content (optional Vue component to render instead of text message, icon, etc.)
-         *    link: { (optional link that will be displayed after the message)
-         *       text
-         *       href (external links, will become <a></a>)
-         *       to (internal links, will become <nuxt-link></nuxt-link>)
-         *    }
-         * }]
-         */
-        messages: {
-            type: Array,
-            default: () => []
-        }
-    },
-    emits: ['copied', 'dismiss']
+  },
+  emits: ["copied", "dismiss"],
 };
 </script>
 
 <template>
   <TransitionGroup
-    :class="[{'active': messages.length > 0}, 'messages' ]"
+    :class="[{ active: messages.length > 0 }, 'messages']"
     tag="div"
     name="messages"
   >
-    <template
-      v-for="message in messages"
-      :key="message.id"
-    >
-      <BaseMessage
-        v-if="message.content"
-        :type="message.type.toLowerCase()"
-      >
+    <template v-for="message in messages" :key="message.id">
+      <BaseMessage v-if="message.content" :type="message.type.toLowerCase()">
         <Component :is="message.content" />
       </BaseMessage>
       <Message
@@ -69,15 +63,10 @@ export default {
         @dismiss="$emit('dismiss', message.id)"
       >
         <template #icon>
-          <Component
-            :is="message.icon"
-          />
+          <Component :is="message.icon" />
         </template>
         {{ message.message }}
-        <MessageLink
-          v-if="message.link"
-          :link="message.link"
-        />
+        <MessageLink v-if="message.link" :link="message.link" />
       </Message>
     </template>
   </TransitionGroup>

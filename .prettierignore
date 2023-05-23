@@ -1,0 +1,5 @@
+package-lock.json
+coverage
+dist
+test-results
+**/opensourcecredits/used-packages.json

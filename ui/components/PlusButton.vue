@@ -1,42 +1,36 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
-import Button from './Button.vue';
-import Tooltip from './Tooltip.vue';
-import PlusIcon from '../assets/img/icons/plus-small.svg';
+import { defineComponent } from "vue";
+import Button from "./Button.vue";
+import Tooltip from "./Tooltip.vue";
+import PlusIcon from "../assets/img/icons/plus-small.svg";
 
 export default defineComponent({
-    components: {
-        Button,
-        Tooltip,
-        PlusIcon
-    },
-    inheritAttrs: false,
-    props: {
-        /**
-         * @see {@link Button.vue}
-         */
+  components: {
+    Button,
+    Tooltip,
+    PlusIcon,
+  },
+  inheritAttrs: false,
+  props: {
+    /**
+     * @see {@link Button.vue}
+     */
 
-        /**
-         * Button's title rendered as tooltip
-         * if null, the tooltip won't be rendered
-         */
-        title: {
-            type: String,
-            default: null
-        }
-    }
+    /**
+     * Button's title rendered as tooltip
+     * if null, the tooltip won't be rendered
+     */
+    title: {
+      type: String,
+      default: null,
+    },
+  },
 });
 </script>
 
 <template>
-  <Component
-    :is="title ? 'Tooltip' : 'div'"
-    :text="title"
-  >
-    <Button
-      class="plus-button"
-      v-bind="$attrs"
-    >
+  <Component :is="title ? 'Tooltip' : 'div'" :text="title">
+    <Button class="plus-button" v-bind="$attrs">
       <PlusIcon />
     </Button>
   </Component>
@@ -55,12 +49,14 @@ export default defineComponent({
   border: 0;
   cursor: pointer;
   background-color: transparent;
-  box-shadow: 0 0 10px var(--knime-gray-dark-semi), 0 0 4px var(--knime-gray-dark-semi);
+  box-shadow: 0 0 10px var(--knime-gray-dark-semi),
+    0 0 4px var(--knime-gray-dark-semi);
   display: flex;
   justify-content: center;
 
   &:hover {
-    box-shadow: 0 0 10px var(--knime-gray-dark-semi), 0 0 10px var(--knime-gray-dark-semi);
+    box-shadow: 0 0 10px var(--knime-gray-dark-semi),
+      0 0 10px var(--knime-gray-dark-semi);
   }
 
   &.button {

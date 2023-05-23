@@ -1,51 +1,60 @@
 <script>
 export default {
-    props: {
-        text: {
-            type: String,
-            default: ' '
-        },
-        selected: {
-            type: Boolean,
-            default: false
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        invalid: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * Styles the item distinct to the other ones by adding a margin, adjusting the font-style and -height and
-         * rounding the corners
-        */
-        special: {
-            type: Boolean,
-            default: false
-        },
-        lineHeight: {
-            type: Number,
-            default: null
-        }
+  props: {
+    text: {
+      type: String,
+      default: " ",
     },
-    emits: ['mousedown', 'mousemove', 'dblclick-exact', 'dblclick-shift', 'click']
+    selected: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Styles the item distinct to the other ones by adding a margin, adjusting the font-style and -height and
+     * rounding the corners
+     */
+    special: {
+      type: Boolean,
+      default: false,
+    },
+    lineHeight: {
+      type: Number,
+      default: null,
+    },
+  },
+  emits: [
+    "mousedown",
+    "mousemove",
+    "dblclick-exact",
+    "dblclick-shift",
+    "click",
+  ],
 };
 </script>
 
 <template>
-  <!-- //NOSONAR --><li
+  <!-- //NOSONAR -->
+  <li
     v-bind="$attrs"
     role="option"
     :title="text"
-    :style="{...lineHeight !== null ? {lineHeight: `${lineHeight}px`} : {}}"
+    :style="{
+      ...(lineHeight !== null ? { lineHeight: `${lineHeight}px` } : {}),
+    }"
     :class="{
       selected,
       invalid,
-      'empty': !Boolean(text.trim()),
+      empty: !Boolean(text.trim()),
       disabled,
-      special
+      special,
     }"
     :aria-selected="selected"
     @click="$emit('click', $event)"
@@ -122,6 +131,4 @@ export default {
     cursor: pointer;
   }
 }
-
-
 </style>

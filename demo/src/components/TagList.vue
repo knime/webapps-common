@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import TagList from 'webapps-common/ui/components/TagList.vue';
-import code from 'webapps-common/ui/components/TagList.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import TagList from "webapps-common/ui/components/TagList.vue";
+import code from "webapps-common/ui/components/TagList.vue?raw";
 
 const codeExample = `<TagList
   :tags="['Apple', 'Banana', 'Guanábana', 'Papaya', 'Mango', 'Granadilla']"
@@ -11,25 +11,25 @@ const codeExample = `<TagList
 />`;
 
 export default {
-    components: {
-        TagList,
-        CodeExample
+  components: {
+    TagList,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample
-        };
+  },
+  methods: {
+    onTagClick(tag) {
+      alert(`clicked tag: ${tag}`);
     },
-    computed: {
-        code() {
-            return code;
-        }
-    },
-    methods: {
-        onTagClick(tag) {
-            alert(`clicked tag: ${tag}`);
-        }
-    }
+  },
 };
 </script>
 
@@ -39,15 +39,24 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
-            Displays a list of tags with support for only showing a maximal number of tags via the
-            <code>numberOfInitialTags</code> prop. Tags can be clickable by enabling the <code>clickable</code> prop.
+            Displays a list of tags with support for only showing a maximal
+            number of tags via the
+            <code>numberOfInitialTags</code> prop. Tags can be clickable by
+            enabling the <code>clickable</code> prop.
           </p>
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
           <TagList
-            :tags="['Apple', 'Banana', 'Guanábana', 'Papaya', 'Mango', 'Granadilla']"
+            :tags="[
+              'Apple',
+              'Banana',
+              'Guanábana',
+              'Papaya',
+              'Mango',
+              'Granadilla',
+            ]"
             :number-of-initial-tags="3"
             clickable
             @click="onTagClick"
@@ -58,14 +67,16 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show TagList.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show TagList.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>
   </div>
 </template>
 
-<style lang="postcss" scoped>
-
-</style>
+<style lang="postcss" scoped></style>

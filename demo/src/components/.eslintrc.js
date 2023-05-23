@@ -1,5 +1,5 @@
 module.exports = {
-    rules: {
-        'no-useless-escape': 0
-    }
+  rules: {
+    "no-useless-escape": 0,
+  },
 };

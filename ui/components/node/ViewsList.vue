@@ -1,59 +1,47 @@
 <script>
-import Description from '../Description.vue';
-import StandardIcon from '../../assets/img/icons/eye.svg';
-import InteractiveIcon from '../../assets/img/icons/interactive.svg';
+import Description from "../Description.vue";
+import StandardIcon from "../../assets/img/icons/eye.svg";
+import InteractiveIcon from "../../assets/img/icons/interactive.svg";
 
 /**
  * ViewsList are part of the NodeFeaureList
  * Displays a list of views a component or node can produce
  */
 export default {
-    components: {
-        Description,
-        StandardIcon,
-        InteractiveIcon
+  components: {
+    Description,
+    StandardIcon,
+    InteractiveIcon,
+  },
+  props: {
+    /**
+     * Array of views
+     * View {
+     *    interactive: Boolean,
+     *    name: String,
+     *    description: String
+     * }
+     */
+    views: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * Array of views
-         * View {
-         *    interactive: Boolean,
-         *    name: String,
-         *    description: String
-         * }
-         */
-        views: {
-            type: Array,
-            default: () => []
-        }
-    }
+  },
 };
 </script>
 
 <template>
-  <ul
-    v-if="views.length"
-    class="views-list"
-  >
-    <li
-      v-for="(view, index) in views"
-      :key="index"
-    >
+  <ul v-if="views.length" class="views-list">
+    <li v-for="(view, index) in views" :key="index">
       <h6>
-        <InteractiveIcon
-          v-if="view.interactive"
-          class="interactive"
-        />
+        <InteractiveIcon v-if="view.interactive" class="interactive" />
         <StandardIcon v-else />
-        <span>{{ view.interactive ? 'Interactive' : 'Standard' }}</span>
+        <span>{{ view.interactive ? "Interactive" : "Standard" }}</span>
       </h6>
-      
+
       <div class="content">
         <span class="name">{{ view.name }}</span>
-        <Description
-          :text="view.description"
-          render-as-html
-        />
+        <Description :text="view.description" render-as-html />
       </div>
     </li>
   </ul>

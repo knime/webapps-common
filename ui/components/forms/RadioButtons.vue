@@ -1,56 +1,56 @@
 <script>
-import BaseRadioButtons from './BaseRadioButtons.vue';
+import BaseRadioButtons from "./BaseRadioButtons.vue";
 
 export default {
-    components: {
-        BaseRadioButtons
+  components: {
+    BaseRadioButtons,
+  },
+  props: {
+    // this props are passed to BaseRadioButtons
+    id: {
+      type: String,
+      default: null,
     },
-    props: {
-        // this props are passed to BaseRadioButtons
-        id: {
-            type: String,
-            default: null
-        },
-        modelValue: {
-            type: String,
-            default: ''
-        },
-        disabled: {
-            default: false,
-            type: Boolean
-        },
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property
-         * @example
-         * [{
-         *   id: 'pdf',
-         *   text: 'PDF'
-         * }, {
-         *   id: 'XLS',
-         *   text: 'Excel',
-         * }]
-         */
-        possibleValues: {
-            type: Array,
-            default: () => []
-        },
+    modelValue: {
+      type: String,
+      default: "",
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
+    /**
+     * List of possible values. Each item must have an `id` and a `text` property
+     * @example
+     * [{
+     *   id: 'pdf',
+     *   text: 'PDF'
+     * }, {
+     *   id: 'XLS',
+     *   text: 'Excel',
+     * }]
+     */
+    possibleValues: {
+      type: Array,
+      default: () => [],
+    },
 
-        // additional props
-        alignment: {
-            type: String,
-            default: 'horizontal',
-            validator(value) {
-                return ['horizontal', 'vertical'].includes(value);
-            }
-        }
+    // additional props
+    alignment: {
+      type: String,
+      default: "horizontal",
+      validator(value) {
+        return ["horizontal", "vertical"].includes(value);
+      },
     },
-    emits: ['update:modelValue'],
-    methods: {
-        hasSelection() {
-            /* looks in the DOM if one radio button is checked */
-            return this.$refs.radioButton.$refs.input.some(x => x.checked);
-        }
-    }
+  },
+  emits: ["update:modelValue"],
+  methods: {
+    hasSelection() {
+      /* looks in the DOM if one radio button is checked */
+      return this.$refs.radioButton.$refs.input.some((x) => x.checked);
+    },
+  },
 };
 </script>
 
@@ -61,7 +61,7 @@ export default {
     :possible-values="possibleValues"
     :model-value="modelValue"
     :disabled="disabled"
-    :class="['radio-buttons', alignment, {disabled}]"
+    :class="['radio-buttons', alignment, { disabled }]"
     @update:model-value="$emit('update:modelValue', $event)"
   />
 </template>
@@ -125,7 +125,8 @@ export default {
           background: var(--theme-radio-foreground-color-selected);
           border-color: var(--theme-radio-border-color-selected);
           content: "";
-          box-shadow: inset 0 0 0 4px var(--theme-radio-background-color-selected);
+          box-shadow: inset 0 0 0 4px
+            var(--theme-radio-background-color-selected);
         }
         /* stylelint-enable no-descending-specificity */
 

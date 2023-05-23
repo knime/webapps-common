@@ -1,39 +1,39 @@
 <script>
-import Carousel from './Carousel.vue';
+import Carousel from "./Carousel.vue";
 
 /**
  * A radio button group that looks like a tab bar
-*/
+ */
 export default {
-    components: {
-        Carousel
+  components: {
+    Carousel,
+  },
+  props: {
+    /**
+     * Make the whole tab bar read-only
+     */
+    disabled: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-        /**
-         * Make the whole tab bar read-only
-         */
-        disabled: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * Selected value. Should be one of the value attributes in the `possibleValues` prop.
-         */
-        modelValue: {
-            type: String,
-            default: ''
-        },
-        /**
-         * Name of the form elements. This is useful when using the tab bar inside a <form>.
-         * Defaults to `value`.
-         * If you have multiple tab bars on one page, make sure to include them in separate forms or use unique `name`
-         * properties. Otherwise the browser will not allow to select more than one tab in total.
-         */
-        name: {
-            type: String,
-            default: 'value'
-        },
-        /**
+    /**
+     * Selected value. Should be one of the value attributes in the `possibleValues` prop.
+     */
+    modelValue: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Name of the form elements. This is useful when using the tab bar inside a <form>.
+     * Defaults to `value`.
+     * If you have multiple tab bars on one page, make sure to include them in separate forms or use unique `name`
+     * properties. Otherwise the browser will not allow to select more than one tab in total.
+     */
+    name: {
+      type: String,
+      default: "value",
+    },
+    /**
          * @example
            [{
                value: 'all',
@@ -54,35 +54,35 @@ export default {
                disabled: true
            }]
          */
-        possibleValues: {
-            type: Array,
-            default: () => [],
-            validator(items = []) {
-                if (!Array.isArray(items)) {
-                    return false;
-                }
-                return items.every(item => item.value);
-            }
+    possibleValues: {
+      type: Array,
+      default: () => [],
+      validator(items = []) {
+        if (!Array.isArray(items)) {
+          return false;
         }
+        return items.every((item) => item.value);
+      },
     },
-    emits: ['update:modelValue'],
-    created() {
-        const firstTab = this.possibleValues.find(tab => !tab.disabled);
-        consola.trace('TabBar: Setting initial tab', firstTab);
-        this.$emit('update:modelValue', firstTab ? firstTab.value : null);
+  },
+  emits: ["update:modelValue"],
+  created() {
+    const firstTab = this.possibleValues.find((tab) => !tab.disabled);
+    consola.trace("TabBar: Setting initial tab", firstTab);
+    this.$emit("update:modelValue", firstTab ? firstTab.value : null);
+  },
+  methods: {
+    onChange(value) {
+      /**
+       * Update event. Fired when the selection is changed.
+       *
+       * @event update:value
+       * @type {String}
+       */
+      consola.trace("TabBar value changed to", value);
+      this.$emit("update:modelValue", value);
     },
-    methods: {
-        onChange(value) {
-            /**
-             * Update event. Fired when the selection is changed.
-             *
-             * @event update:value
-             * @type {String}
-             */
-            consola.trace('TabBar value changed to', value);
-            this.$emit('update:modelValue', value);
-        }
-    }
+  },
 };
 </script>
 
@@ -102,12 +102,9 @@ export default {
             type="radio"
             :checked="item.value === modelValue"
             @change="onChange(item.value)"
-          >
+          />
           <span>
-            <Component
-              :is="item.icon"
-              v-if="item.icon"
-            />
+            <Component :is="item.icon" v-if="item.icon" />
             {{ item.label }}
           </span>
         </label>
@@ -140,7 +137,6 @@ export default {
   right: var(--grid-gap-width);
   bottom: 26px;
 }
-
 
 label {
   position: relative;
@@ -216,5 +212,4 @@ input:checked:not(:disabled) + span::after {
   border-top: 3px solid var(--knime-masala);
   z-index: 1; /* local stacking context because Carousel.vue has isolation: isolate; */
 }
-
 </style>

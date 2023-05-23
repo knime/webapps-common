@@ -1,66 +1,65 @@
 <script>
-import Collapser from '../Collapser.vue';
-import Description from '../Description.vue';
+import Collapser from "../Collapser.vue";
+import Description from "../Description.vue";
 
 /**
  * DialogOptions are part of the NodeFeaureList
  * Displays all dialog options of a component or node
  */
 export default {
-    components: {
-        Collapser,
-        Description
+  components: {
+    Collapser,
+    Description,
+  },
+  props: {
+    /**
+     * Array of options
+     *
+     * Option: {
+     *   sectionName: String,
+     *   sectionDescription: String,
+     *   fields: [{
+     *     name: String,
+     *     description: String,
+     *     optional: Boolean
+     *   }]
+     * }
+     */
+    options: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * Array of options
-         *
-         * Option: {
-         *   sectionName: String,
-         *   sectionDescription: String,
-         *   fields: [{
-         *     name: String,
-         *     description: String,
-         *     optional: Boolean
-         *   }]
-         * }
-         */
-        options: {
-            type: Array,
-            default: () => []
-        },
-        /**
-         * Whether to sanitize the content rendered in the Description components (render as HTML or not)
-         */
-        sanitizeContent: {
-            type: Boolean,
-            default: false
-        }
+    /**
+     * Whether to sanitize the content rendered in the Description components (render as HTML or not)
+     */
+    sanitizeContent: {
+      type: Boolean,
+      default: false,
     },
-    computed: {
-        renderableOptions() {
-            // keep options that have fields or that start a section
-            return this.options.filter(option => (option.fields && option.fields.length) || option.sectionDescription);
-        }
-    }
+  },
+  computed: {
+    renderableOptions() {
+      // keep options that have fields or that start a section
+      return this.options.filter(
+        (option) =>
+          (option.fields && option.fields.length) || option.sectionDescription
+      );
+    },
+  },
 };
 </script>
 
 <template>
-  <div
-    v-if="renderableOptions.length"
-    class="dialog-options"
-  >
-    <template
-      v-for="(option, index) in renderableOptions"
-      :key="index"
-    >
+  <div v-if="renderableOptions.length" class="dialog-options">
+    <template v-for="(option, index) in renderableOptions" :key="index">
       <Component
         :is="option.sectionName ? 'Collapser' : 'div'"
         :class="['options', { 'with-section': option.sectionName }]"
         :initially-expanded="options.length === 1"
       >
-        <template #title><h5>{{ option.sectionName }}</h5></template>
+        <template #title
+          ><h5>{{ option.sectionName }}</h5></template
+        >
         <Description
           v-if="option.sectionDescription"
           :text="option.sectionDescription"
@@ -68,18 +67,10 @@ export default {
           class="section-description"
         />
         <ul class="panel">
-          <li
-            v-for="(field, fieldIndex) in option.fields"
-            :key="fieldIndex"
-          >
+          <li v-for="(field, fieldIndex) in option.fields" :key="fieldIndex">
             <p class="option-field-name">
               {{ field.name }}
-              <span
-                v-if="field.optional"
-                class="optional"
-              >
-                (optional)
-              </span>
+              <span v-if="field.optional" class="optional"> (optional) </span>
             </p>
 
             <!-- Possible markup: "Extended description" -->

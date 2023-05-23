@@ -6,11 +6,13 @@ scenarios with [Jest] and [Vitest] are also present.
 
 Also it contains some configs for [Stylelint].
 
+Formatting is supposed to be handled via [Prettier].
+
 ## Development
 
 ### Prerequisites
 
-* Install [Node.js][node], see version in [package.json](package.json).
+- Install [Node.js][node], see version in [package.json](package.json).
 
 Newer versions may also work, but have not been tested.
 
@@ -48,17 +50,16 @@ in your `.eslintrc.js` file:
 
 ```js
 // This is a workaround for https://github.com/eslint/eslint/issues/3458
-require('@rushstack/eslint-patch/modern-module-resolution');
+require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
-  extends: ['@knime/eslint-config/vue3'],
+  extends: ["@knime/eslint-config/vue3"],
   globals: {
-    consola: true
+    consola: true,
   },
   // [...]
-}
+};
 ```
-
 
 ## Using Stylelint in your project
 
@@ -66,23 +67,24 @@ The following code block should give an understanding of a commonly used setup i
 
 ```js
 module.exports = {
-    extends: ['@knime/eslint-config/stylelint/vue']
+  extends: ["@knime/eslint-config/stylelint/vue"],
 };
 ```
 
 See [stylelint](stylelint) folder for available configs.
 
-
 ### Requirements
 
-Projects using ESLint profiles defined herein need to still specify [ESlint] as a `devDependency` in their respective `package.json` files, but none of the required additional plugins. See [package.json](package.json) for supported
-[ESLint] versions.
+Projects still need to specify the following `devDependency` in their respective `package.json` files, but none of the required additional plugins:
 
-Same applies for [Stylelint].
+- [ESlint]
+- [Stylelint]
+- [Prettier]
 
 [node]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/905281540/Node.js+Installation
 [ESLint]: https://eslint.org/
 [Stylelint]: https://stylelint.io/
+[Prettier]: https://prettier.io/
 [Vue2]: https://v2.vuejs.org/
 [Vue3]: https://vuejs.org/
 [Nuxt]: https://nuxtjs.org/

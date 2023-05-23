@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import Checkboxes from 'webapps-common/ui/components/forms/Checkboxes.vue';
-import code from 'webapps-common/ui/components/forms/Checkboxes.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
+import code from "webapps-common/ui/components/forms/Checkboxes.vue?raw";
 
 const codeExample = `<Checkboxes
   v-model="selected"
@@ -18,21 +18,21 @@ const codeExample = `<Checkboxes
 />`;
 
 export default {
-    components: {
-        Checkboxes,
-        CodeExample
+  components: {
+    Checkboxes,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      selected: ["bar", "baz"],
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            selected: ['bar', 'baz']
-        };
-    },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -52,16 +52,20 @@ export default {
           <Checkboxes
             v-model="selected"
             placeholder="Select stuff here!"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
-            }]"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
           />
         </div>
         <div class="grid-item-5">
@@ -69,28 +73,34 @@ export default {
             v-model="selected"
             alignment="vertical"
             placeholder="Select stuff here vertical!"
-            :possible-values="[{
-              id: 'foo',
-              text: 'Foo'
-            }, {
-              id: 'bar',
-              text: 'Bar'
-            }, {
-              id: 'baz',
-              text: 'Baz'
-            }]"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
           />
         </div>
-        <div class="grid-item-2">
-          selected ids: {{ selected }}
-        </div>
+        <div class="grid-item-2">selected ids: {{ selected }}</div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Checkboxes.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Checkboxes.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

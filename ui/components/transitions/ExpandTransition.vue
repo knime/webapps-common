@@ -1,31 +1,30 @@
 <script>
-
 export default {
-    props: {
-        isExpanded: {
-            type: Boolean,
-            default: false
-        }
+  props: {
+    isExpanded: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-        onBeforeEnter(el) {
-            el.style.height = 0;
-        },
-        onEnter(el) {
-            el.style.height = `${el.scrollHeight}px`;
-        },
-        onAfterEnter(el) {
-            el.style.height = '';
-        },
-        onBeforeLeave(el) {
-            el.style.height = `${el.scrollHeight}px`;
-            // force repaint to trigger animation correctly
-            getComputedStyle(el).height; // eslint-disable-line no-unused-expressions
-        },
-        onLeave(el) {
-            el.style.height = 0;
-        }
-    }
+  },
+  methods: {
+    onBeforeEnter(el) {
+      el.style.height = 0;
+    },
+    onEnter(el) {
+      el.style.height = `${el.scrollHeight}px`;
+    },
+    onAfterEnter(el) {
+      el.style.height = "";
+    },
+    onBeforeLeave(el) {
+      el.style.height = `${el.scrollHeight}px`;
+      // force repaint to trigger animation correctly
+      getComputedStyle(el).height; // eslint-disable-line no-unused-expressions
+    },
+    onLeave(el) {
+      el.style.height = 0;
+    },
+  },
 };
 </script>
 
@@ -38,10 +37,7 @@ export default {
     @leave="onLeave"
     @after-enter="onAfterEnter"
   >
-    <div
-      v-show="isExpanded"
-      class="panel"
-    >
+    <div v-show="isExpanded" class="panel">
       <slot />
     </div>
   </Transition>

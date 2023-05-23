@@ -1,53 +1,53 @@
 <script>
-import Button from './Button.vue';
-import CloseIcon from '../assets/img/icons/close.svg';
+import Button from "./Button.vue";
+import CloseIcon from "../assets/img/icons/close.svg";
 
 export default {
-    components: {
-        Button,
-        CloseIcon
+  components: {
+    Button,
+    CloseIcon,
+  },
+  props: {
+    /**
+     * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
+     * This has no implication on functionality, only styling
+     */
+    type: {
+      type: String,
+      default: "info",
+      validator(type = "info") {
+        return ["info", "error", "success", "warn"].includes(type);
+      },
     },
-    props: {
-        /**
-         * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
-         * This has no implication on functionality, only styling
-         */
-        type: {
-            type: String,
-            default: 'info',
-            validator(type = 'info') {
-                return ['info', 'error', 'success', 'warn'].includes(type);
-            }
-        },
-        /**
-         * Enable / disable rendering of close button.
-         * Defaults to `true`.
-         */
-        showCloseButton: {
-            type: Boolean,
-            default: true
-        },
-        /**
-         * Optional button text.
-         * If set, renders a button instead of the 'x' that is used for closing the Message.
-         * If left blank, the 'x' is rendered.
-         * This property has no effect if `showCloseButton` is `false`.
-         */
-        button: {
-            type: String,
-            default: null
-        },
-        count: {
-            type: Number,
-            default: 1
-        }
+    /**
+     * Enable / disable rendering of close button.
+     * Defaults to `true`.
+     */
+    showCloseButton: {
+      type: Boolean,
+      default: true,
     },
-    emits: ['dismiss'],
-    methods: {
-        onDismiss() {
-            this.$emit('dismiss');
-        }
-    }
+    /**
+     * Optional button text.
+     * If set, renders a button instead of the 'x' that is used for closing the Message.
+     * If left blank, the 'x' is rendered.
+     * This property has no effect if `showCloseButton` is `false`.
+     */
+    button: {
+      type: String,
+      default: null,
+    },
+    count: {
+      type: Number,
+      default: 1,
+    },
+  },
+  emits: ["dismiss"],
+  methods: {
+    onDismiss() {
+      this.$emit("dismiss");
+    },
+  },
 };
 </script>
 
@@ -57,12 +57,8 @@ export default {
   <span class="message">
     <!-- @slot Use this slot to add text content (markup). -->
     <slot />
-    <span
-      v-show="count && count > 1"
-      class="message-count"
-      :class="type"
-    >
-      {{ '×' + count }}
+    <span v-show="count && count > 1" class="message-count" :class="type">
+      {{ "×" + count }}
     </span>
   </span>
   <template v-if="showCloseButton">
@@ -174,5 +170,4 @@ span.close {
 :last-child {
   border-bottom: 0;
 }
-
 </style>

@@ -1,15 +1,15 @@
 <script>
-import ImagePreviews from './demo/ImagePreviews.vue';
-import CodeExample from './demo/CodeExample.vue';
+import ImagePreviews from "./demo/ImagePreviews.vue";
+import CodeExample from "./demo/CodeExample.vue";
 
 export default {
-    components: {
-        ImagePreviews,
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample: `<img src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg">
+  components: {
+    ImagePreviews,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample: `<img src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg">
 
 or e.g. inline as base64 in CSS:
 
@@ -17,18 +17,21 @@ or e.g. inline as base64 in CSS:
 .foo {
   background: url("~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?data") no-repeat 50% 50%;
 }
-</style>`
-        };
+</style>`,
+    };
+  },
+  computed: {
+    images() {
+      const files = import.meta.glob("@@/../ui/assets/img/*", {
+        as: "url",
+        eager: true,
+      });
+      return Object.keys(files).map((file) => ({
+        name: file.replace("../ui/assets/img/", ""),
+        src: files[file],
+      }));
     },
-    computed: {
-        images() {
-            const files = import.meta.glob('@@/../ui/assets/img/*', { as: 'url', eager: true });
-            return Object.keys(files).map(file => ({
-                name: file.replace('../ui/assets/img/', ''),
-                src: files[file]
-            }));
-        }
-    }
+  },
 };
 </script>
 
@@ -42,7 +45,9 @@ or e.g. inline as base64 in CSS:
           height="auto"
           checkerboard
         />
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
       </div>
     </div>
   </section>

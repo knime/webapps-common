@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';
-import code from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
+import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
 
 const codeExample = `<MultiModeTwinlist
   :size="7"
@@ -52,73 +52,79 @@ const codeExample = `<MultiModeTwinlist
 `;
 
 export default {
-    components: {
-        MultiModeTwinlist,
-        CodeExample
+  components: {
+    MultiModeTwinlist,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      selected: [],
+      manuallySelected: ["missing"],
+      isCaseSensitivePattern: true,
+      isInverted: false,
+      mode: "regex",
+      pattern: "^[ab].*[57]$|\$",
+      selectedTypes: ["Type1", "Type"],
+      key: 0,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            selected: [],
-            manuallySelected: ['missing'],
-            isCaseSensitivePattern: true,
-            isInverted: false,
-            mode: 'regex',
-            pattern: '^[ab].*[57]$|\$',
-            selectedTypes: ['Type1', 'Type'],
-            key: 0
-        };
+    settingsHash() {
+      return [
+        `${this.manuallySelected}`,
+        `${this.isCaseSensitivePattern}`,
+        `${this.isInverted}`,
+        `${this.mode}`,
+        `${this.pattern}`,
+        `${this.selectedTypes}`,
+      ].join(", ");
     },
-    computed: {
-        code() {
-            return code;
+    demoValues() {
+      return [
+        {
+          id: "foo",
+          text: "foo",
+          type: { id: "type1", text: "Type 1" },
         },
-        settingsHash() {
-            return [
-                `${this.manuallySelected}`,
-                `${this.isCaseSensitivePattern}`,
-                `${this.isInverted}`,
-                `${this.mode}`,
-                `${this.pattern}`,
-                `${this.selectedTypes}`
-            ].join(', ');
+        {
+          id: "Foo",
+          text: "Foo",
+          type: { id: "type1", text: "Type 1" },
         },
-        demoValues() {
-            return [{
-                id: 'foo',
-                text: 'foo',
-                type: { id: 'type1', text: 'Type 1' }
-            }, {
-                id: 'Foo',
-                text: 'Foo',
-                type: { id: 'type1', text: 'Type 1' }
-            }, {
-                id: 'bar',
-                text: 'Bar',
-                type: { id: 'type2', text: 'Type 2' }
-            }, ...Array.from({ length: 6 }, (_, i) => ({
-                id: `baz${i}`,
-                text: `Baz${i}`,
-                type: { id: ` type${i}`, text: ` Type ${i}` }
-            })),
-            {
-                id: 'spec1',
-                text: 'Special *.^',
-                type: { id: 'type1', text: 'Type 1' }
-            }, {
-                id: 'spec2',
-                text: 'Special $?]',
-                type: { id: 'type2', text: 'Type 2' }
-            }];
-        }
+        {
+          id: "bar",
+          text: "Bar",
+          type: { id: "type2", text: "Type 2" },
+        },
+        ...Array.from({ length: 6 }, (_, i) => ({
+          id: `baz${i}`,
+          text: `Baz${i}`,
+          type: { id: ` type${i}`, text: ` Type ${i}` },
+        })),
+        {
+          id: "spec1",
+          text: "Special *.^",
+          type: { id: "type1", text: "Type 1" },
+        },
+        {
+          id: "spec2",
+          text: "Special $?]",
+          type: { id: "type2", text: "Type 2" },
+        },
+      ];
     },
-    watch: {
-        settingsHash(oldVal, newVal) {
-            if (oldVal !== newVal) {
-                this.key += 1;
-            }
-        }
-    }
+  },
+  watch: {
+    settingsHash(oldVal, newVal) {
+      if (oldVal !== newVal) {
+        this.key += 1;
+      }
+    },
+  },
 };
 </script>
 
@@ -128,9 +134,11 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
-            A MultiModeTwinlist with mode selection set to initial regex selection. The demo list
-            include items with special characters that need to be escaped for regular expression filters.
-            On type selection mode, the types of the possible values as well as an additional option are selectable.
+            A MultiModeTwinlist with mode selection set to initial regex
+            selection. The demo list include items with special characters that
+            need to be escaped for regular expression filters. On type selection
+            mode, the types of the possible values as well as an additional
+            option are selectable.
           </p>
         </div>
       </div>
@@ -145,31 +153,38 @@ export default {
             :initial-mode="mode"
             :initial-inverse-pattern="isInverted"
             :initial-manually-selected="manuallySelected"
-            :additional-possible-types="[{id: 'additionalId', text: 'additionalOption'}]"
+            :additional-possible-types="[
+              { id: 'additionalId', text: 'additionalOption' },
+            ]"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             mode-label="Selection mode"
             :possible-values="demoValues"
-            @input="(event) => {
-              selected = event
-              if(event.isManual) {
-                manuallySelected = event.selected
+            @input="
+              (event) => {
+                selected = event;
+                if (event.isManual) {
+                  manuallySelected = event.selected;
+                }
               }
-            }"
-            @pattern-input="(event) => pattern = event"
-            @mode-input="(event) => mode = event"
-            @types-input="(event) => selectedTypes = event"
-            @inverse-pattern-input="(event) => isInverted = event"
-            @case-sensitive-pattern-input="(event) => isCaseSensitivePattern = event"
+            "
+            @pattern-input="(event) => (pattern = event)"
+            @mode-input="(event) => (mode = event)"
+            @types-input="(event) => (selectedTypes = event)"
+            @inverse-pattern-input="(event) => (isInverted = event)"
+            @case-sensitive-pattern-input="
+              (event) => (isCaseSensitivePattern = event)
+            "
           />
         </div>
         <div class="grid-item-6">
           selected ids: {{ selected.selected }}
-          <br v-if="selected.isManual">
-          {{ selected.isManual ? 'deselected ids: ': '' }}{{ selected.deselected }}
+          <br v-if="selected.isManual" />
+          {{ selected.isManual ? "deselected ids: " : ""
+          }}{{ selected.deselected }}
         </div>
       </div>
-      <br>
+      <br />
       <div class="grid-container">
         <div class="grid-item-6">
           <MultiModeTwinlist
@@ -183,7 +198,9 @@ export default {
             :initial-mode="mode"
             :initial-inverse-pattern="isInverted"
             :initial-manually-selected="manuallySelected"
-            :additional-possible-types="[{id: 'additionalId', text: 'additionalOption'}]"
+            :additional-possible-types="[
+              { id: 'additionalId', text: 'additionalOption' },
+            ]"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             mode-label="Selection mode"
@@ -193,9 +210,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
-          <p>
-            Optionally, labels can be shown and customized:
-          </p>
+          <p>Optionally, labels can be shown and customized:</p>
         </div>
       </div>
       <div class="grid-container">
@@ -218,8 +233,12 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show MultiModeTwinlist.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show MultiModeTwinlist.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

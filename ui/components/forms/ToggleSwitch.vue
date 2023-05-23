@@ -1,46 +1,46 @@
 <script>
 export default {
-    props: {
-        id: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
-        modelValue: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * Controls the size of the label
-         * supported values:
-         * - regular
-         * - large
-         */
-        labelSize: {
-            type: String,
-            default: 'regular'
-        }
+  props: {
+    id: {
+      type: String,
+      default: null,
     },
-    emits: ['update:modelValue'],
-    methods: {
-        onChange($event) {
-            /**
-             * Fired when the toggle switch changes.
-             *
-             * @event input
-             * @type {Boolean}
-             */
-            let { checked } = $event.target;
-            consola.trace('ToggleSwitch value changed to', checked);
-            this.$emit('update:modelValue', checked);
-        },
-        isChecked() {
-            return this.$refs.input.checked;
-        }
-    }
+    name: {
+      type: String,
+      default: null,
+    },
+    modelValue: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Controls the size of the label
+     * supported values:
+     * - regular
+     * - large
+     */
+    labelSize: {
+      type: String,
+      default: "regular",
+    },
+  },
+  emits: ["update:modelValue"],
+  methods: {
+    onChange($event) {
+      /**
+       * Fired when the toggle switch changes.
+       *
+       * @event input
+       * @type {Boolean}
+       */
+      let { checked } = $event.target;
+      consola.trace("ToggleSwitch value changed to", checked);
+      this.$emit("update:modelValue", checked);
+    },
+    isChecked() {
+      return this.$refs.input.checked;
+    },
+  },
 };
 </script>
 
@@ -53,7 +53,7 @@ export default {
       type="checkbox"
       :checked="modelValue"
       @change="onChange"
-    >
+    />
     <span>
       <slot />
     </span>

@@ -1,44 +1,44 @@
 <script>
-import BaseModal from './BaseModal.vue';
-import FunctionButton from './FunctionButton.vue';
-import CloseIcon from '../assets/img/icons/close.svg';
+import BaseModal from "./BaseModal.vue";
+import FunctionButton from "./FunctionButton.vue";
+import CloseIcon from "../assets/img/icons/close.svg";
 
 /**
-* See demo for documentation
-*/
+ * See demo for documentation
+ */
 export default {
-    components: {
-        BaseModal,
-        CloseIcon,
-        FunctionButton
-    },
-    props: {
-        /**
-         * @see {@link BaseModal.vue}
-         */
+  components: {
+    BaseModal,
+    CloseIcon,
+    FunctionButton,
+  },
+  props: {
+    /**
+     * @see {@link BaseModal.vue}
+     */
 
-        title: {
-            default: null,
-            type: String
-        },
-        /**
-         * One of 'info', 'warn'. Defaults to 'info'.
-         * This has no implication on functionality, only styling,
-         */
-        styleType: {
-            type: String,
-            default: 'info',
-            validator(type = 'info') {
-                return ['info', 'warn'].includes(type);
-            }
-        }
+    title: {
+      default: null,
+      type: String,
     },
-    emits: ['cancel'],
-    methods: {
-        onCloserClick() {
-            this.$emit('cancel');
-        }
-    }
+    /**
+     * One of 'info', 'warn'. Defaults to 'info'.
+     * This has no implication on functionality, only styling,
+     */
+    styleType: {
+      type: String,
+      default: "info",
+      validator(type = "info") {
+        return ["info", "warn"].includes(type);
+      },
+    },
+  },
+  emits: ["cancel"],
+  methods: {
+    onCloserClick() {
+      this.$emit("cancel");
+    },
+  },
 };
 </script>
 
@@ -53,23 +53,14 @@ export default {
         <slot name="icon" />
       </span>
       <h2>{{ title }}</h2>
-      <FunctionButton
-        class="closer"
-        @click="onCloserClick"
-      >
+      <FunctionButton class="closer" @click="onCloserClick">
         <CloseIcon />
       </FunctionButton>
     </div>
-    <div
-      v-if="$slots.notice"
-      class="notice"
-    >
+    <div v-if="$slots.notice" class="notice">
       <slot name="notice" />
     </div>
-    <div
-      v-if="$slots.confirmation"
-      class="confirmation"
-    >
+    <div v-if="$slots.confirmation" class="confirmation">
       <slot name="confirmation" />
     </div>
     <div class="controls">
@@ -95,7 +86,8 @@ export default {
     @supports (mask: url("") no-repeat 50% 50%) {
       &[href^="http"]::after {
         content: "";
-        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50%
+          50%;
         mask-size: cover;
         background-color: var(--knime-masala); /* defines icon color */
         width: 16px;
@@ -113,7 +105,9 @@ export default {
       text-decoration: none;
 
       &::after {
-        background-color: var(--theme-text-link-foreground-color-hover); /* defines icon color */
+        background-color: var(
+          --theme-text-link-foreground-color-hover
+        ); /* defines icon color */
       }
     }
   }
@@ -224,5 +218,4 @@ export default {
     justify-content: space-between;
   }
 }
-
 </style>
