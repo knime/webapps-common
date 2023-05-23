@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
@@ -104,8 +103,8 @@ final class PageCache<N extends NodeWrapper> {
         }
 
         private static String determineNonStaticPageId(final NodeWrapper nw) {
-            var nnc = (NativeNodeContainer)nw.get();
-            return nnc.getID().toString().replace(":", "_");
+            var nc = nw.get();
+            return nc.getID().toString().replace(":", "_");
         }
 
     }
