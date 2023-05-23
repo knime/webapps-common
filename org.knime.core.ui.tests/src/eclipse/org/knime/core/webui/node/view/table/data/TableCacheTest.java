@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 
 /**
  * Tests {@link TableCache}.

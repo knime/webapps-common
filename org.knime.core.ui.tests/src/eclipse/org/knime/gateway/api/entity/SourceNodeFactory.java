@@ -63,7 +63,7 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 
 /**
  * Primitive source node for testing with one table output port.

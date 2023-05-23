@@ -65,7 +65,7 @@ import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 import org.xml.sax.SAXException;
 
 /**

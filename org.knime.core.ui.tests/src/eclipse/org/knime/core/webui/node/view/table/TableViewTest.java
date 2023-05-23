@@ -54,10 +54,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
-import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
-import static org.knime.testing.node.view.TableTestUtil.createTableFromColumns;
-import static org.knime.testing.node.view.TableTestUtil.getDefaultTestSpec;
-import static org.knime.testing.node.view.TableTestUtil.getExec;
+import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
+import static org.knime.testing.util.TableTestUtil.createTableFromColumns;
+import static org.knime.testing.util.TableTestUtil.getDefaultTestSpec;
+import static org.knime.testing.util.TableTestUtil.getExec;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -114,10 +114,10 @@ import org.knime.core.webui.node.view.table.data.render.SwingBasedRendererFactor
 import org.knime.core.webui.page.Resource;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
-import org.knime.testing.node.view.TableTestUtil;
-import org.knime.testing.node.view.TableTestUtil.ObjectColumn;
-import org.knime.testing.node.view.TableTestUtil.TableBuilder;
 import org.knime.testing.node.view.WarningMessageAsserterUtil.DataServiceContextWarningMessagesAsserter;
+import org.knime.testing.util.TableTestUtil;
+import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.knime.testing.util.TableTestUtil.TableBuilder;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

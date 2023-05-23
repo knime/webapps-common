@@ -59,7 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Settin
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany

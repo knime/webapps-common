@@ -49,8 +49,8 @@
 package org.knime.core.webui.node.view.table.data.render;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.knime.testing.node.view.TableTestUtil.createDefaultTestTable;
-import static org.knime.testing.node.view.TableTestUtil.getExec;
+import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
+import static org.knime.testing.util.TableTestUtil.getExec;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -52,7 +52,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 
 /**
  * @author Paul Bärnreuther

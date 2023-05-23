@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
-import static org.knime.testing.node.view.TableTestUtil.assertTableResults;
-import static org.knime.testing.node.view.TableTestUtil.getExec;
+import static org.knime.testing.util.TableTestUtil.assertTableResults;
+import static org.knime.testing.util.TableTestUtil.getExec;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,8 +57,8 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.testing.node.view.TableTestUtil;
-import org.knime.testing.node.view.TableTestUtil.ObjectColumn;
+import org.knime.testing.util.TableTestUtil;
+import org.knime.testing.util.TableTestUtil.ObjectColumn;
 
 /**
  * Tests {@link TableWithIndicesSupplier}.

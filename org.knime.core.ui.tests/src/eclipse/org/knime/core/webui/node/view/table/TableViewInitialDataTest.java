@@ -68,7 +68,7 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
-import org.knime.testing.node.view.TableTestUtil;
+import org.knime.testing.util.TableTestUtil;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
