@@ -19,13 +19,6 @@ module.exports = {
         max: 500,
       }),
     ],
-    "vue/html-closing-bracket-newline": [
-      "error",
-      {
-        singleline: "never",
-        multiline: "always",
-      },
-    ],
     "vue/multi-word-component-names": "off",
     "vue/no-reserved-component-names": "off",
     "vue/padding-line-between-blocks": "error",
