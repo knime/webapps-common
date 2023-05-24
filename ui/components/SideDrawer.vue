@@ -46,7 +46,7 @@ export default {
   background: var(--knime-porcelain);
   z-index: var(--z-index-common-side-drawer, 60);
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     z-index: var(--z-index-common-mobile-side-drawer, 60);
   }
 
@@ -54,7 +54,7 @@ export default {
     height: 100%;
   }
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     width: 100%;
   }
 }

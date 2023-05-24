@@ -132,7 +132,7 @@ export default {
   align-items: center;
   justify-items: center;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     grid-template-columns: repeat(1, max-content);
   }
 }
