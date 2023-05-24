@@ -1743,10 +1743,10 @@ describe('TableView.vue', () => {
         // TODO UIEXT-525 lets rethink these tests
         it.each([
             [{ clientWidth: 0 }, DEFAULT_COLUMN_SIZE],
-            [{ clientWidth }, 210.5],
-            [{ clientWidth, enableColumnSearch: true }, 203],
-            [{ clientWidth, showSelection: true }, 203],
-            [{ clientWidth, enableColumnSearch: true, showSelection: true }, 195.5]
+            [{ clientWidth }, 225.5],
+            [{ clientWidth, enableColumnSearch: true }, 218],
+            [{ clientWidth, showSelection: true }, 218],
+            [{ clientWidth, enableColumnSearch: true, showSelection: true }, 210.5]
         ])('divides available width into equal sizes',
             async (settings, columnWidth) => {
                 await setColumnWidthSettings(wrapper, settings);
@@ -1785,7 +1785,7 @@ describe('TableView.vue', () => {
                 1,
                 expect.anything(),
                 expect.anything(),
-                517
+                547
             ]);
         });
 

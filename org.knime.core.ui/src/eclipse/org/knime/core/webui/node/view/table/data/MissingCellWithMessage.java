@@ -44,26 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 16, 2023 (hornm): created
+ *   May 24, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.view.table.data;
 
 /**
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
- * @author Robin Gerling, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-public interface Cell {
-
+public interface MissingCellWithMessage extends Cell {
     /**
-     *
-     * @return the color of the cell with respect to the color handler attached to the column if present.
-     */
-    String getColor();
+    *
+    * @return the error message for missing cells
+    */
+   String getMetadata();
 
-    /**
-     * @return the value of the cell if it is not missing.
-     */
-    String getValue();
+   @Override
+   default String getValue() {
+       return null;
+   }
+
 
 }

@@ -59,10 +59,12 @@ import static org.knime.testing.node.view.TableTestUtil.createTableFromColumns;
 import static org.knime.testing.node.view.TableTestUtil.getDefaultTestSpec;
 import static org.knime.testing.node.view.TableTestUtil.getExec;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -79,6 +81,10 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.property.ColorAttr;
+import org.knime.core.data.property.ColorHandler;
+import org.knime.core.data.property.ColorModelNominal;
+import org.knime.core.data.property.ColorModelRange;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
@@ -92,6 +98,7 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.PageFormat.AspectRatio;
 import org.knime.core.webui.node.view.table.data.Cell;
+import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
@@ -419,8 +426,8 @@ class TableViewTest {
         });
         assertThat(tableSortedAscending.length).as("filters rows correctly").isEqualTo(1);
 
-        final var cachedTable = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
-            globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+        final var cachedTable = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5,
+            sortColumnName, true, globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
         assertThat(cachedTable).isDeepEqualTo(tableSortedAscending);
     }
 
@@ -548,10 +555,42 @@ class TableViewTest {
         final var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
         final var rows = table.getRows();
 
-        assertThat(((Cell)rows[0][2]).getMetadata()).isEqualTo("Row1_Col1");
-        assertThat(((Cell)rows[0][3]).getMetadata()).isEqualTo("Row1_Col2");
+        assertThat(((MissingCellWithMessage)rows[0][2]).getMetadata()).isEqualTo("Row1_Col1");
+        assertThat(((MissingCellWithMessage)rows[0][3]).getMetadata()).isEqualTo("Row1_Col2");
         assertThat(rows[1][2]).isNull();
-        assertThat(((Cell)rows[1][3]).getMetadata()).isEqualTo("Row2_Col2");
+        assertThat(((MissingCellWithMessage)rows[1][3]).getMetadata()).isEqualTo("Row2_Col2");
+    }
+
+    @Test
+    void testDataServiceGetRowsWithColoredCells() {
+        final var numericColorModel = new ColorModelRange(0, new Color(0, 0, 0), 1.0, new Color(255, 255, 255));
+        final var nominalColorModel = new ColorModelNominal(
+            Map.of(new StringCell("value1"), ColorAttr.getInstance(new Color(0, 255, 0))), null);
+
+        final var nominalColumn = new Object[]{ "value1" , null};
+        final var numericColumn = new Object[]{new MissingCell("Row1_Col2"), new MissingCell("Row2_Col2")};
+        final var inputTable = TableTestUtil.createTableFromColumns( //
+            new ObjectColumn("col1", StringCell.TYPE, new ColorHandler(nominalColorModel), nominalColumn), //
+            new ObjectColumn("col2", IntCell.TYPE, new ColorHandler(numericColorModel), numericColumn) //
+        );
+
+        final var dataService = createTableViewDataServiceInstance(() -> inputTable);
+        final var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
+        final var rows = table.getRows();
+
+        final var missingCellsColor = "#404040";
+
+        assertThat(((Cell)rows[0][2]).getColor()).isEqualTo("#00FF00");
+        assertThat(((Cell)rows[0][2]).getValue()).isEqualTo("value1");
+        assertThat(((Cell)rows[1][2]).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows[1][2]).getValue()).isEqualTo(null);
+
+        assertThat(((Cell)rows[0][3]).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows[0][3]).getValue()).isEqualTo(null);
+        assertThat(((MissingCellWithMessage)rows[0][3]).getMetadata()).isEqualTo("Row1_Col2");
+        assertThat(((Cell)rows[1][3]).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows[1][3]).getValue()).isEqualTo(null);
+        assertThat(((MissingCellWithMessage)rows[1][3]).getMetadata()).isEqualTo("Row2_Col2");
     }
 
     private static TableViewDataService

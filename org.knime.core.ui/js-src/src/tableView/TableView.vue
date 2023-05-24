@@ -5,7 +5,7 @@ import { TableUI, constants as tableUIConstants } from '@knime/knime-ui-table';
 import { createDefaultFilterConfig, arrayEquals, isImage } from '@/tableView/utils';
 import throttle from 'raf-throttle';
 
-const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE, DATA_COLUMNS_MARGIN } = tableUIConstants;
+const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE } = tableUIConstants;
 
 const INDEX_SYMBOL = Symbol('Index');
 const ROW_KEY_SYMBOL = Symbol('RowID');
@@ -170,11 +170,10 @@ export default {
             return this.displayedColumns.length + 2 + this.numberOfDisplayedRemainingColumns;
         },
         columnSizes() {
-            const nColumns = this.numberOfDisplayedColumns;
-            if (nColumns < 1) {
+            if (this.numberOfDisplayedColumns < 1) {
                 return [];
             }
-            const availableWidth = this.getAvailableWidth(nColumns);
+            const availableWidth = this.getAvailableWidth();
             const initialIndexColumnSize = this.settings.showRowIndices ? MIN_COLUMN_SIZE : 0;
             const initialRowKeyColumnSize = this.settings.showRowKeys ? MIN_COLUMN_SIZE : 0;
             const initialRemainingSkippedColumnSize = this.indicateRemainingColumnsSkipped
@@ -310,10 +309,10 @@ export default {
     },
     methods: {
         // The avaliable space for all resizable columns (i.e. table columns, but also index, rowKey, ...)
-        getAvailableWidth(nColumns) {
+        getAvailableWidth() {
             const specialColumnsSizeTotal = (this.settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
                 (this.settings.publishSelection || this.settings.subscribeToSelection ? SPECIAL_COLUMNS_SIZE : 0);
-            return this.clientWidth - specialColumnsSizeTotal - nColumns * DATA_COLUMNS_MARGIN;
+            return this.clientWidth - specialColumnsSizeTotal;
         },
         getDataColumnSizes(availableSpace) {
             const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, availableSpace / this.displayedColumns.length);
@@ -930,10 +929,14 @@ export default {
             // the columnConfigs contain at index 0 rowIndices, at index 1 rowKeys, and at index 2+ the data
             // the rowData consists of [rowIndices?, rowkeys, ...data] (rowIndices if showRowIndices)
             // we need to map from the columnConfig data indices to the rowData data indices
+            let cellData = data.data.row[index - (this.numberOfUsedColumns - this.numberOfDisplayedColumns)];
+            if (typeof cellData !== 'string') {
+                cellData = cellData.value;
+            }
             return this.$store.getters['api/uiExtResourceLocation']({
                 resourceInfo: {
                     baseUrl: this.baseUrl,
-                    path: data.data.row[index - (this.numberOfUsedColumns - this.numberOfDisplayedColumns)]
+                    path: cellData
                 }
             });
         },
@@ -1033,7 +1036,7 @@ export default {
 
 .table-title {
   margin: 0;
-  padding: 15px 0, 5px 5px;
+  padding: 15px 0 5px 5px;
   color: rgb(70 70 70);
   font-size: 20px;
 }
