@@ -85,6 +85,11 @@ export default {
     white-space: pre-wrap;
   }
 
+  &.empty::after {
+    content: "\200B";
+    visibility: hidden;
+  }
+
   &.disabled {
     cursor: unset;
   }
