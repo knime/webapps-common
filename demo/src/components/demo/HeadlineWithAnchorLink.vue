@@ -2,11 +2,13 @@
 import { useClipboard } from "@vueuse/core";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
+import CheckIcon from "webapps-common/ui/assets/img/icons/check.svg";
 import Tooltip from "webapps-common/ui/components/Tooltip.vue";
 
 export default {
   components: {
     LinkIcon,
+    CheckIcon,
     FunctionButton,
     Tooltip,
   },
@@ -49,7 +51,8 @@ export default {
           {{ title }}
           <Tooltip :text="tooltipText">
             <FunctionButton :active="copied" @click="copyToClipboard">
-              <LinkIcon />
+              <CheckIcon v-if="copied" />
+              <LinkIcon v-else />
             </FunctionButton>
           </Tooltip>
         </h2>
@@ -74,6 +77,9 @@ h2 {
 
 .function-button.active {
   background-color: var(--theme-color-success);
+  display: block;
+  opacity: 0;
+  transition: opacity 1.5s linear;
 }
 
 .header:hover {
