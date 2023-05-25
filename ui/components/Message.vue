@@ -307,7 +307,7 @@ export default {
   }
 }
 
-@media only screen and (max-width: 1180px) {
+@media only screen and (width <= 1180px) {
   .collapser {
     & :deep(.panel) {
       padding-left: var(--grid-gap-width);

@@ -1,5 +1,15 @@
 export default {
-  "*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": ["eslint --cache --fix"],
-  "*.{css,vue}": ["stylelint --cache --fix"],
-  "*": ["prettier --cache --ignore-unknown --write"],
+  "*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
+    "eslint --cache --fix",
+    "prettier --cache --write",
+  ],
+  "*.vue": [
+    "eslint --cache --fix",
+    "stylelint --cache --fix",
+    "prettier --cache --write",
+  ],
+  "*.css": ["stylelint --cache --fix", "prettier --cache --write"],
+  "*.!({js,jsx,cjs,mjs,ts,tsx,cts,mts,vue,css})": [
+    "prettier --cache --ignore-unknown --write",
+  ],
 };

@@ -25,6 +25,14 @@ export default {
       default: () => [],
     },
     /**
+     * List of active tags (Strings) to display.
+     * @type Array<String>
+     */
+    activeTags: {
+      type: Array,
+      default: () => [],
+    },
+    /**
      * If the tags should emit events and have hover + cursor styles.
      */
     clickable: {
@@ -40,15 +48,21 @@ export default {
   },
   computed: {
     tagsToDisplay() {
-      if (this.displayAll) {
-        return this.tags;
+      let displayTags = this.tags;
+      if (!this.displayAll) {
+        displayTags = this.tags.slice(0, this.numberOfInitialTags);
       }
-      let displayTags = this.tags.slice(0, this.numberOfInitialTags);
-      return displayTags;
+      return displayTags.map((tag) => ({
+        isActive: this.activeTags.includes(tag),
+        name: tag,
+      }));
     },
     hasMoreTags() {
       return !this.displayAll && this.tags.length > this.numberOfInitialTags;
     },
+  },
+  hasMoreTags() {
+    return !this.displayAll && this.tags.length > this.numberOfInitialTags;
   },
   methods: {
     onClick(tag) {
@@ -68,13 +82,14 @@ export default {
     <Tag
       v-for="(tag, index) in tagsToDisplay"
       :key="index"
+      :active="tag.isActive"
       :clickable="clickable"
-      @click.prevent="onClick(tag)"
+      @click.prevent="onClick(tag.name)"
     >
-      {{ tag }}
+      {{ tag.name }}
       <slot name="icon" /> </Tag
     ><!-- no whitespace
- --><Tag v-if="hasMoreTags" class="more-tags" @click.prevent="onShowMore">
+    --><Tag v-if="hasMoreTags" class="more-tags" @click.prevent="onShowMore">
       +{{ tags.length - numberOfInitialTags }}
     </Tag>
   </div>

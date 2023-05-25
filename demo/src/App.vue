@@ -359,7 +359,7 @@ section {
     top: 0;
     z-index: 1;
 
-    @media only screen and (max-width: 1280px) {
+    @media only screen and (width <= 1280px) {
       position: relative;
       margin-bottom: 30px;
     }

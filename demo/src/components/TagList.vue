@@ -7,6 +7,7 @@ const codeExample = `<TagList
   :tags="['Apple', 'Banana', 'Guanábana', 'Papaya', 'Mango', 'Granadilla']"
   :number-of-initial-tags="3"
   clickable
+  activeTags="['Banana', 'Papaya']"
   @click="onTagClick"
 />`;
 
@@ -41,8 +42,9 @@ export default {
           <p>
             Displays a list of tags with support for only showing a maximal
             number of tags via the
-            <code>numberOfInitialTags</code> prop. Tags can be clickable by
-            enabling the <code>clickable</code> prop.
+            <code>numberOfInitialTags</code> prop. Optionally it is possible to
+            display active tags. Tags can be clickable by enabling the
+            <code>clickable</code> prop.
           </p>
         </div>
       </div>
@@ -59,6 +61,7 @@ export default {
             ]"
             :number-of-initial-tags="3"
             clickable
+            active-tags="['Banana', 'Papaya']"
             @click="onTagClick"
           />
         </div>
