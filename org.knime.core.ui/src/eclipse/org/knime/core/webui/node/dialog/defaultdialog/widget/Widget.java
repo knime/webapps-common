@@ -79,4 +79,9 @@ public @interface Widget {
      */
     String description() default "";
 
+    /**
+     * @return true if the annotated setting is advanced
+     */
+    boolean isAdvanced() default false;
+
 }

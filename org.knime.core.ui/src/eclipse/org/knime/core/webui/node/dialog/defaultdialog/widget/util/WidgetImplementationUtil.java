@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
@@ -79,6 +80,13 @@ public final class WidgetImplementationUtil {
      * @param widgetAnnotation the class of the annotation
      */
     public record WidgetAnnotation(List<Class<?>> applicableFields, Class<? extends Annotation> widgetAnnotation) {
+
+        /**
+         * @param widgetAnnotation an annotation which is applicable to all types of fields
+         */
+        public WidgetAnnotation(final Class<? extends Annotation> widgetAnnotation) {
+            this(null, widgetAnnotation);
+        }
     }
 
     /**
@@ -106,6 +114,7 @@ public final class WidgetImplementationUtil {
      * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
      */
     private static WidgetAnnotation[] widgetAnnotations = new WidgetAnnotation[]{//
+        new WidgetAnnotation(Widget.class), //
         new WidgetAnnotation(List.of(Enum.class), RadioButtonsWidget.class), //
         new WidgetAnnotation(
             List.of(ColumnFilter.class, ColumnSelection.class, Enum.class, String.class, String[].class),
@@ -150,6 +159,9 @@ public final class WidgetImplementationUtil {
     }
 
     private static boolean isApplicable(final Class<?> fieldType, final List<Class<?>> applicableFields) {
+        if (applicableFields == null) {
+            return true;
+        }
         return applicableFields.stream().anyMatch(field -> field.isAssignableFrom(fieldType));
     }
 }

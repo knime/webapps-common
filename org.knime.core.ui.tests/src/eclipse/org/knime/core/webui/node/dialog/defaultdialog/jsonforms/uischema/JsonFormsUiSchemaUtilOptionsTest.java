@@ -59,6 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  *
@@ -94,6 +95,24 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("valueSwitch");
         assertThatJson(response).inPath("$.elements[3].scope").isString().contains("columnFilter");
         assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("columnFilter");
+    }
+
+    @Test
+    void testAdvancedSettings() {
+        class AdvancedSettings implements DefaultNodeSettings {
+
+            @Widget(isAdvanced = true)
+            ColumnSelection m_foo;
+
+            @Widget()
+            ColumnSelection m_bar;
+
+        }
+        var response = buildTestUiSchema(AdvancedSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.isAdvanced").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1]").isObject().doesNotContainKey("isAdvanced");
     }
 
     @Test
