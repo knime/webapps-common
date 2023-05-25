@@ -61,7 +61,7 @@ const demoComponents = {
     ),
     SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
     Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
-    TabBarDemo: defineAsyncComponent(() => import("./components/TabBar.vue")),
+    TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
     TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
     LoadingIcon: defineAsyncComponent(() =>
       import("./components/LoadingIcon.vue")
@@ -81,7 +81,7 @@ const demoComponents = {
       import("./components/InputField.vue")
     ),
     TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
-    SearchInputDemo: defineAsyncComponent(() =>
+    SearchInput: defineAsyncComponent(() =>
       import("./components/SearchInput.vue")
     ),
     NumberInput: defineAsyncComponent(() =>
@@ -135,89 +135,19 @@ const demoComponents = {
     ),
   },
   npm: {
-    knimeUiTable: {
+    "KNIME UI Table": {
       render() {
         const link = "https://www.npmjs.com/package/@knime/knime-ui-table";
-        const name = "KNIME UI Table";
-        return createElement(NpmLink, { link, name });
+        return createElement(NpmLink, { link });
       },
     },
-    knimeEsLint: {
+    "KNIME ESLint config": {
       render() {
         const link = "https://www.npmjs.com/package/@knime/eslint-config";
-        const name = "KNIME ESLint config";
-        return createElement(NpmLink, { link, name });
+        return createElement(NpmLink, { link });
       },
     },
-    interactive: {
-        Breadcrumb: defineAsyncComponent(() => import("./components/Breadcrumb.vue")),
-        LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
-        Button: defineAsyncComponent(() => import("./components/Button.vue")),
-        FunctionButton: defineAsyncComponent(() => import("./components/FunctionButton.vue")),
-        SplitButton: defineAsyncComponent(() => import("./components/SplitButton.vue")),
-        PlusButton: defineAsyncComponent(() => import("./components/PlusButton.vue")),
-        Carousel: defineAsyncComponent(() => import("./components/Carousel.vue")),
-        ExpandTransition: defineAsyncComponent(() => import("./components/transitions/ExpandTransition.vue")),
-        Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
-        FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
-        IdleReadyButton: defineAsyncComponent(() => import("./components/IdleReadyButton.vue")),
-        Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
-        MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
-        SideDrawer: defineAsyncComponent(() => import("./components/SideDrawer.vue")),
-        SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
-        Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
-        TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
-        TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
-        LoadingIcon: defineAsyncComponent(() => import("./components/LoadingIcon.vue")),
-        DonutChart: defineAsyncComponent(() => import("./components/DonutChart.vue"))
-    },
-    messages: {
-        Message: defineAsyncComponent(() => import("./components/Message.vue")),
-        Messages: defineAsyncComponent(() => import("./components/Messages.vue"))
-    },
-    forms: {
-        Label: defineAsyncComponent(() => import("./components/Label.vue")),
-        Fieldset: defineAsyncComponent(() => import("./components/Fieldset.vue")),
-        InputField: defineAsyncComponent(() => import("./components/InputField.vue")),
-        TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
-        SearchInput: defineAsyncComponent(() => import("./components/SearchInput.vue")),
-        NumberInput: defineAsyncComponent(() => import("./components/NumberInput.vue")),
-        Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
-        Checkboxes: defineAsyncComponent(() => import("./components/Checkboxes.vue")),
-        ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
-        RadioButtons: defineAsyncComponent(() => import("./components/RadioButtons.vue")),
-        ValueSwitch: defineAsyncComponent(() => import("./components/ValueSwitch.vue")),
-        DateTimeInput: defineAsyncComponent(() => import("./components/DateTimeInput.vue")),
-        TimePartInput: defineAsyncComponent(() => import("./components/TimePartInput.vue")),
-        ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
-        Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
-        Multiselect: defineAsyncComponent(() => import("./components/Multiselect.vue")),
-        MultiselectListBox: defineAsyncComponent(() => import("./components/MultiselectListBox.vue")),
-        StyledListItem: defineAsyncComponent(() => import("./components/StyledListItem.vue")),
-        ToggleSwitch: defineAsyncComponent(() => import("./components/ToggleSwitch.vue")),
-        Twinlist: defineAsyncComponent(() => import("./components/Twinlist.vue")),
-        MultiModeTwinlist: defineAsyncComponent(() => import("./components/MultiModeTwinlist.vue"))
-    },
-    misc: {
-        NodePreview: defineAsyncComponent(() => import("./components/NodePreview.vue")),
-        NodeFeatureList: defineAsyncComponent(() => import("./components/NodeFeatureList.vue")),
-        OpenSourceCredits: defineAsyncComponent(() => import("./components/OpenSourceCredits.vue"))
-    },
-    npm: {
-        "KNIME UI Table": {
-            render() {
-                const link = "https://www.npmjs.com/package/@knime/knime-ui-table";
-                return createElement(NpmLink, { link });
-            }
-        },
-        "KNIME ESLint config": {
-            render() {
-                const link = "https://www.npmjs.com/package/@knime/eslint-config";
-                return createElement(NpmLink, { link });
-            }
-        }
-    }
-  }
+  },
 };
 
 const flattenComponents = (componentsByCategory) => {
@@ -232,10 +162,10 @@ const flattenComponents = (componentsByCategory) => {
 
 // Transform the components into a flat object
 const components = {
-    TabBarComponent,
-    HeadlineWithAnchorLink,
-    SearchInputComponent,
-    ...flattenComponents(demoComponents)
+  TabBarComponent,
+  HeadlineWithAnchorLink,
+  SearchInputComponent,
+  ...flattenComponents(demoComponents),
 };
 
 export default {
@@ -337,7 +267,7 @@ export default {
         src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
         class="logo"
         alt="KNIME"
-      >
+      />
     </header>
     <main>
       <section>
@@ -345,10 +275,14 @@ export default {
           <div class="grid-item-12">
             <h1>KNIME WebApps Common</h1>
             <p>
-              This page gives an overview of shared CSS, assets like icons and Vue-based UI components.
-              To use them, it's recommended to integrate them as Git submodule as described in the
-              <a href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md">README.md</a>.
-              More and more parts are also available as <a href="https://www.npmjs.com/~knime">npm packages</a>.
+              This page gives an overview of shared CSS, assets like icons and
+              Vue-based UI components. To use them, it's recommended to
+              integrate them as Git submodule as described in the
+              <a
+                href="https://bitbucket.org/KNIME/webapps-common/src/master/README.md"
+                >README.md</a
+              >. More and more parts are also available as
+              <a href="https://www.npmjs.com/~knime">npm packages</a>.
             </p>
 
             <div class="categories">
@@ -369,21 +303,13 @@ export default {
       </section>
 
       <template v-for="(componentByName, category) in filteredDemoComponents">
-        <div
-          v-if="activeTab === category || isSearchActive"
-          :key="category"
-        >
+        <div v-if="activeTab === category || isSearchActive" :key="category">
           <div
             v-for="(component, name) in componentByName"
-            :key="category+name"
+            :key="category + name"
           >
-            <HeadlineWithAnchorLink
-              :title="name"
-            />
-            <component
-              :is="name"
-              class="component"
-            />
+            <HeadlineWithAnchorLink :title="name" />
+            <component :is="name" class="component" />
           </div>
         </div>
       </template>
