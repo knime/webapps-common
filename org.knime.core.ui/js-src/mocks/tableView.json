@@ -28,6 +28,7 @@
         "showRowKeys": true,
         "showColumnDataType": true,
         "showRowIndices": false,
+        "showTableSize": true,
         "title": "Table View",
         "showTitle": true,
         "enablePagination": true,
@@ -280,6 +281,12 @@
               "title": "Title",
               "description": "The title of the table shown above the generated image. If left blank, no title will be shown.",
               "default": "Table View"
+            },
+            "showTableSize": {
+              "type": "boolean",
+              "title": "Show table size",
+              "description": "Whether to display the number of rows and columns above the table or not.",
+              "default": true
             }
           }
         }
@@ -319,6 +326,13 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/showRowIndices",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showTableSize",
               "options": {
                 "format": "checkbox"
               }

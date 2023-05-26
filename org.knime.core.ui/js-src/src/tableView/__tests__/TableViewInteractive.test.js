@@ -79,6 +79,7 @@ describe('TableViewInteractive.vue', () => {
                 showRowKeys: false,
                 showColumnDataType: false,
                 showRowIndices: false,
+                showTableSize: true,
                 showTitle: true,
                 enableColumnSearch: true,
                 enableGlobalSearch: true,
@@ -213,7 +214,8 @@ describe('TableViewInteractive.vue', () => {
                     tableSize: 4,
                     pageSize: 2,
                     currentPage: 1,
-                    columnCount: 4
+                    columnCount: 4,
+                    showTableSize: true
                 },
                 sortConfig: {
                     sortColumn: null,
@@ -1043,7 +1045,8 @@ describe('TableViewInteractive.vue', () => {
             ['enableColumnSearch', false],
             ['enableGlobalSearch', false],
             ['showTitle', false],
-            ['compactMode', true]
+            ['compactMode', true],
+            ['showTableSize', true]
         ])('view setting %p change causes data NOT to be requested',
             (settingsKey, newValue) => {
                 changeViewSetting(wrapper, settingsKey, newValue);

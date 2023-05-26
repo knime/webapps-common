@@ -123,6 +123,16 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Layout(DataSection.class)
     public boolean m_showColumnDataType = true;
 
+     /**
+     * Whether to show the number of rows and columns above the table or or not
+     */
+    @Widget(title = "Show table size",
+        description = "Whether to display the number of rows " + "and columns above the table or not.")
+    @Persist(optional = true)
+    @Effect(signals = IsPaginationEnabled.class, type = EffectType.DISABLE)
+    @Layout(DataSection.class)
+    public boolean m_showTableSize = true;
+
     /**
      * The title of the table
      */
