@@ -35,7 +35,10 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <p>There are seven pre-defined headline sizes. There is no need to use dedicated components.</p>
+          <p>
+            There are seven pre-defined headline sizes. There is no need to use
+            dedicated components.
+          </p>
         </div>
       </div>
     </section>

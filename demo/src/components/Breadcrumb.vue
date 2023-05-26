@@ -49,7 +49,10 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <p>Breadcrumbs can have different focus/hover styles, these can be toggled via the "greyStyle"-property</p>
+        <p>
+          Breadcrumbs can have different focus/hover styles, these can be
+          toggled via the "greyStyle"-property
+        </p>
         <span>Default style:</span>
         <Breadcrumb :items="breadcrumbItems" @click-item="onItemClicked" />
         <span>"greyStyle" enabled:</span>

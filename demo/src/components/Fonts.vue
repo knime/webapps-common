@@ -33,7 +33,6 @@
 </template>
 
 <style scoped lang="postcss">
-
 .demo {
   background: var(--knime-porcelain);
 
@@ -41,7 +40,7 @@
     padding: 1em 0;
   }
 
-  & p:first-child{
+  & p:first-child {
     padding-top: 16px;
   }
 }
