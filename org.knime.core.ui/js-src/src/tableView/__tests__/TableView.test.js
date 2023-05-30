@@ -1718,7 +1718,7 @@ describe('TableView.vue', () => {
     describe('slot rendering', () => {
         it('creates the correct source urls', async () => {
             const path = 'myPathForTest';
-            const imageIndex = 6;
+            const imageIndex = 5;
             TableUIStub.template = `<div>
                 <slot 
                     name="cellContent-${imageIndex}" 
@@ -1732,15 +1732,16 @@ describe('TableView.vue', () => {
 
         it('creates the correct content for html', async () => {
             const htmlIndex = 4;
+            const content = '<h1> Title </h1>';
             TableUIStub.template = `<div>
                 <slot 
                     name="cellContent-${htmlIndex}" 
-                    :data="{ row: ${JSON.stringify(initialDataMock.table.rows[0].slice(2)).replaceAll('"', "'")} }"
+                    :data="{ cell: '${content}' }"
                 />
             </div>`;
             const wrapper = await shallowMountTableView(context);
             const tableUI = wrapper.getComponent(TableUIStub);
-            expect(tableUI.findComponent(HTMLRenderer).attributes().content).toBe('<h1>1</h1>');
+            expect(tableUI.findComponent(HTMLRenderer).attributes().content).toBe(content);
         });
     });
 

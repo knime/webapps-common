@@ -84,12 +84,12 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.data.property.ValueFormatHandler;
-import org.knime.core.data.property.ValueFormatModel;
 import org.knime.core.data.property.ColorAttr;
 import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
+import org.knime.core.data.property.ValueFormatHandler;
+import org.knime.core.data.property.ValueFormatModel;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.port.PortObject;
@@ -175,7 +175,8 @@ class TableViewTest {
         var tableWithFormatters = createTableWithFormatters();
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
 
-        var rendererIds = new String[]{null, "org.knime.core.data.renderer.DoubleValueRenderer$PercentageRendererFactory", null};
+        var rendererIds =
+            new String[]{null, "org.knime.core.data.renderer.DoubleValueRenderer$PercentageRendererFactory", null};
         final var table = new TableViewDataServiceImpl(tableWithFormatters, "tableId", new SwingBasedRendererFactory(),
             rendererRegistry).getTable(new String[]{"firstCol", "secondCol", "thirdCol"}, 0, 1, rendererIds, false,
                 true, false);
@@ -616,10 +617,10 @@ class TableViewTest {
     @Test
     void testDataServiceGetRowsWithColoredCells() {
         final var numericColorModel = new ColorModelRange(0, new Color(0, 0, 0), 1.0, new Color(255, 255, 255));
-        final var nominalColorModel = new ColorModelNominal(
-            Map.of(new StringCell("value1"), ColorAttr.getInstance(new Color(0, 255, 0))), null);
+        final var nominalColorModel =
+            new ColorModelNominal(Map.of(new StringCell("value1"), ColorAttr.getInstance(new Color(0, 255, 0))), null);
 
-        final var nominalColumn = new Object[]{ "value1" , null};
+        final var nominalColumn = new Object[]{"value1", null};
         final var numericColumn = new Object[]{new MissingCell("Row1_Col2"), new MissingCell("Row2_Col2")};
         final var inputTable = TableTestUtil.createTableFromColumns( //
             new ObjectColumn("col1", StringCell.TYPE, new ColorHandler(nominalColorModel), nominalColumn), //

@@ -104,12 +104,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private final DataValueRendererFactory m_rendererFactory;
 
-    /*
-     * Caches data value renderers for the key [column-name, renderer-id].
-     * Allows one to re-use the renderers and to not create them over and over again (e.g. when paging the table).
-     */
-    private final Map<Pair<String, String>, DataValueRenderer> m_renderersMap = new HashMap<>();
-
     private final String m_tableId;
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
@@ -180,19 +174,18 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             return createEmptyTable();
         }
 
-        var displayedColumns = updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
-        final var numDisplayedColumns = displayedColumns.length;
-        if (trimColumns) {
-            final var maxNumColumns = 100;
-            if (numDisplayedColumns > maxNumColumns) {
-                displayedColumns = Arrays.copyOfRange(displayedColumns, 0, maxNumColumns);
-            }
-        }
+        final var allDisplayedColumns =
+            updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
+        final var numDisplayedColumns = allDisplayedColumns.length;
+        final String[] displayedColumns =
+            trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
 
         // we sort first (even though it is more expensive) because filtering happens more frequently
         // and therefore we do not have to re-sort every time we filter
-        m_sortedTableCache.conditionallyUpdateCachedTable(() -> sortTable(bufferedDataTable, sortColumn, sortAscending),
-            sortColumn == null || bufferedDataTable.size() <= 1, sortColumn, sortAscending);
+        m_sortedTableCache.conditionallyUpdateCachedTable(() ->
+
+        sortTable(bufferedDataTable, sortColumn, sortAscending), sortColumn == null || bufferedDataTable.size() <= 1,
+            sortColumn, sortAscending);
         final var sortedTable = m_sortedTableCache.getCachedTable().orElseGet(() -> bufferedDataTable);
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
             () -> filterTable(sortedTable, columns, globalSearchTerm, columnFilterValue, filterRowKeys),
@@ -229,7 +222,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 rendererIds = rendererIdsParam;
             }
         }
-        updateRenderersMap(spec, displayedColumns, rendererIds);
+        Map<Pair<String, String>, DataValueRenderer> renderersMap =
+            createRenderers(spec, displayedColumns, rendererIds);
 
         final var tableSize = filteredAndSortedTable.size();
         final var toIndex = Math.min(fromIndex + numRows, tableSize) - 1;
@@ -245,13 +239,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             filter.withToRowIndex(toIndex); // will throw exception when toIndex < fromIndex
             filter.withMaterializeColumnIndices(colIndices);
             rows = renderRows(displayedColumns, colIndices, colorHandlers, rendererIds, size,
-                () -> filteredAndSortedTable.filter(filter.build()).iterator(), m_rendererRegistry, m_renderersMap,
+                () -> filteredAndSortedTable.filter(filter.build()).iterator(), m_rendererRegistry, renderersMap,
                 m_tableId);
         } else {
             rows = new String[0][];
         }
         final var tableSpec = bufferedDataTable.getDataTableSpec();
-        final var contentTypes = getColumnContentTypes(displayedColumns, rendererIds, m_renderersMap);
+        final var contentTypes = getColumnContentTypes(displayedColumns, rendererIds, renderersMap);
         final var dataTypeIds = getColumnDataTypeIds(displayedColumns, tableSpec);
         var currentSelection = getCurrentSelection();
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
@@ -259,8 +253,57 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var columnFormatterDescriptions = Arrays.asList(displayedColumns).stream().map(tableSpec::getColumnSpec)
             .map(DataColumnSpec::getValueFormatHandler).map(f -> f == null ? null : "Attached formatter")
             .toArray(String[]::new);
-        return createTable(displayedColumns, contentTypes, dataTypeIds, columnFormatterDescriptions, rows, tableSize,
-            numDisplayedColumns, totalSelected);
+        return new Table() {
+
+            @Override
+            public String[] getDisplayedColumns() {
+                return displayedColumns;
+            }
+
+            @Override
+            public String[] getColumnContentTypes() {
+                return contentTypes;
+            }
+
+            @Override
+            public String[] getColumnDataTypeIds() {
+                return dataTypeIds;
+            }
+
+            @Override
+            public String[] getColumnFormatterDescriptions() {
+                return columnFormatterDescriptions;
+            }
+
+            @Override
+            public Object[][] getRows() {
+                return rows;
+            }
+
+            @Override
+            public long getRowCount() {
+                return tableSize;
+            }
+
+            @Override
+            public long getColumnCount() {
+                return numDisplayedColumns;
+            }
+
+            @Override
+            public Long getTotalSelected() {
+                return totalSelected;
+            }
+
+        };
+    }
+
+    private static String[] getTrimmedColumns(final int numDisplayedColumns, final String[] allDisplayedColumns) {
+        final var maxNumColumns = 100;
+        if (numDisplayedColumns > maxNumColumns) {
+            return Arrays.copyOfRange(allDisplayedColumns, 0, maxNumColumns);
+        }
+        return allDisplayedColumns;
     }
 
     @Override
@@ -515,12 +558,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
     }
 
-    private void updateRenderersMap(final DataTableSpec spec, final String[] columns, final String[] rendererIds) {
+    private Map<Pair<String, String>, DataValueRenderer> createRenderers(final DataTableSpec spec,
+        final String[] columns, final String[] rendererIds) {
+        var result = new HashMap<Pair<String, String>, DataValueRenderer>();
         for (var i = 0; i < columns.length; i++) {
             var key = Pair.create(columns[i], rendererIds[i]);
-            m_renderersMap.computeIfAbsent(key,
-                k -> m_rendererFactory.createDataValueRenderer(spec.getColumnSpec(k.getFirst()), k.getSecond()));
+            result.put(key,
+                m_rendererFactory.createDataValueRenderer(spec.getColumnSpec(key.getFirst()), key.getSecond()));
         }
+        return result;
     }
 
     private static String[] getColumnContentTypes(final String[] columns, final String[] rendererIds,
@@ -536,55 +582,50 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static Table createEmptyTable() {
-        return createTable(new String[0], new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l);
-    }
-
-    private static Table createTable(final String[] displayedColumns, final String[] contentTypes,
-        final String[] columnDataTypeIds, final String[] columnFormatterDescriptions, final Object[][] rows,
-        final long rowCount, final long columnCount, final Long totalSelected) {
         return new Table() {
 
             @Override
             public String[] getDisplayedColumns() {
-                return displayedColumns;
+                return new String[0];
             }
 
             @Override
             public String[] getColumnContentTypes() {
-                return contentTypes;
+                return new String[0];
             }
 
             @Override
             public String[] getColumnDataTypeIds() {
-                return columnDataTypeIds;
+                return new String[0];
             }
 
             @Override
             public String[] getColumnFormatterDescriptions() {
-                return columnFormatterDescriptions;
+                return new String[0];
             }
 
             @Override
             public Object[][] getRows() {
-                return rows;
+                return new String[0][0];
             }
 
             @Override
             public long getRowCount() {
-                return rowCount;
+                return 0;
             }
 
             @Override
             public long getColumnCount() {
-                return columnCount;
+                return 0;
             }
 
             @Override
             public Long getTotalSelected() {
-                return totalSelected;
+                return 0l;
             }
 
         };
+
     }
 
     @Override

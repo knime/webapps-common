@@ -222,8 +222,7 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
 
             @Override
             public String renderText(final DataValue value) {
-                var result = formatHandler.get(value);
-                return result;
+                return formatHandler.get(value);
             }
         };
     }
