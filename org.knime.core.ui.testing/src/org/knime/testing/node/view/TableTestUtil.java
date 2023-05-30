@@ -141,11 +141,11 @@ public final class TableTestUtil {
         }
 
         /**
-         * Add a column with a given name and of a given type to this spec.
+         * Add a column with a given name, attached colorHandler and of a given type to this spec.
          *
          * @param name the name of the to-be-added column
          * @param type the type of the to-be-added column
-         * @param colorHandler the color handler that is to be attached to the column. Null if none.
+         * @param colorHandler the color handler that is to be attached to the to-be-added column. Null if none.
          * @return this builder
          */
         public SpecBuilder addColumn(final String name, final DataType type, final ColorHandler colorHandler) {
@@ -222,8 +222,8 @@ public final class TableTestUtil {
          * @return this builder
          */
         public TableBuilder addRowWithId(final String rowId, final Object... cells) {
-            m_container.addRowToTable(new DefaultRow(new RowKey(rowId),
-                Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
+            m_container.addRowToTable(
+                new DefaultRow(new RowKey(rowId), Arrays.stream(cells).map(m_cellify).toArray(DataCell[]::new)));
             return this;
         }
 
@@ -503,7 +503,7 @@ public final class TableTestUtil {
      * @param seed the initial seed for the random number generator (for deterministic random images)
      * @return a {@link PNGImageCell} containing a small png image
      */
-    public static DataCell createPNGImageCell(final long seed)  {
+    public static DataCell createPNGImageCell(final long seed) {
         var img = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
         var rand = new Random(seed);
         for (var x = 0; x < img.getHeight(); x++) {
@@ -546,7 +546,7 @@ public final class TableTestUtil {
         private final Object[] m_data;
 
         /**
-         * the colorHandler the color handler that should be attached to the columns. Null if none
+         * the color handler that should be attached to the columns. Null if none
          */
         private final ColorHandler m_colorHandler;
 
@@ -556,7 +556,7 @@ public final class TableTestUtil {
          * @param data the source of the row values of the column
          */
         public ObjectColumn(final String name, final DataType type, final Object[] data) {
-           this(name, type, null, data);
+            this(name, type, null, data);
         }
 
         /**
@@ -565,7 +565,8 @@ public final class TableTestUtil {
          * @param colorHandler the color handler that should be attached to the columns. Null if none
          * @param data the source of the row values of the column
          */
-        public ObjectColumn(final String name, final DataType type, final ColorHandler colorHandler, final Object[] data) {
+        public ObjectColumn(final String name, final DataType type, final ColorHandler colorHandler,
+            final Object[] data) {
             m_name = name;
             m_type = type;
             m_colorHandler = colorHandler;

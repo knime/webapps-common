@@ -54,15 +54,14 @@ package org.knime.core.webui.node.view.table.data;
  */
 public interface MissingCellWithMessage extends Cell {
     /**
-    *
-    * @return the error message for missing cells
-    */
-   String getMetadata();
+     *
+     * @return the error message for missing cells
+     */
+    String getMetadata();
 
-   @Override
-   default String getValue() {
-       return null;
-   }
-
+    @Override
+    default String getValue() {
+        return null;
+    }
 
 }

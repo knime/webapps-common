@@ -454,7 +454,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
                 @Override
                 public String getColor() {
-                    // TODO Auto-generated method stub
                     return color;
                 }
             };

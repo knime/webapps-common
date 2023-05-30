@@ -1698,18 +1698,17 @@ describe('TableView.vue', () => {
 
     describe('image rendering', () => {
         it('creates the correct source urls', async () => {
-            const completeRow = initialDataMock.table.rows[0];
-            const row = [completeRow[0], ...completeRow.slice(2)]; // we do not show row keys
+            const path = 'myPathForTest';
             const imageIndex = 6;
             TableUIStub.template = `<div>
                 <slot 
                     name="cellContent-${imageIndex}" 
-                    :data="{ row: ${JSON.stringify(row).replaceAll('"', "'")} }"
+                    :data="{ cell: '${path}' }"
                 />
             </div>`;
             const wrapper = await shallowMountTableView(context);
             const tableUI = wrapper.getComponent(TableUIStub);
-            expect(tableUI.find('img').attributes().src).toBe('http://localhost:8080/base.url/view_x_y/datacell/hash1.png');
+            expect(tableUI.find('img').attributes().src).toBe('http://localhost:8080/base.url/myPathForTest');
         });
     });
 

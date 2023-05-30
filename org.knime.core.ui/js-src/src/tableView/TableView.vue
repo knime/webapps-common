@@ -925,18 +925,11 @@ export default {
         updateColumnIndexMap(columnConfigs) {
             this.columnIndexMap = new Map(columnConfigs.map((config, index) => [index, config.key]));
         },
-        getImageUrl(data, index) {
-            // the columnConfigs contain at index 0 rowIndices, at index 1 rowKeys, and at index 2+ the data
-            // the rowData consists of [rowIndices?, rowkeys, ...data] (rowIndices if showRowIndices)
-            // we need to map from the columnConfig data indices to the rowData data indices
-            let cellData = data.data.row[index - (this.numberOfUsedColumns - this.numberOfDisplayedColumns)];
-            if (typeof cellData !== 'string') {
-                cellData = cellData.value;
-            }
+        getImageUrl(path) {
             return this.$store.getters['api/uiExtResourceLocation']({
                 resourceInfo: {
                     baseUrl: this.baseUrl,
-                    path: cellData
+                    path
                 }
             });
         },
@@ -990,12 +983,12 @@ export default {
       <template
         v-for="index in numberOfUsedColumns"
         :key="index"
-        #[`cellContent-${index}`]="data"
+        #[`cellContent-${index}`]="{data: {cell}}"
       >
         <img
           :key="index"
           loading="lazy"
-          :src="getImageUrl(data, index)"
+          :src="getImageUrl(cell, index)"
           alt=""
         >
       </template>
