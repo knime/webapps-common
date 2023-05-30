@@ -10,10 +10,6 @@ export default {
       required: true,
       type: String,
     },
-    name: {
-      required: true,
-      type: String,
-    },
     description: {
       default: "See npm package:",
       type: String,
