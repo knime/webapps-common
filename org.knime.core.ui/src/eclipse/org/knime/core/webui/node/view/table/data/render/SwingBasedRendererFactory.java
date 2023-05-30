@@ -54,12 +54,14 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
+import org.knime.core.data.property.ValueFormatHandler;
 import org.knime.core.data.renderer.AbstractPainterDataValueRenderer;
 import org.knime.core.data.renderer.DefaultDataValueRenderer;
 import org.knime.core.data.renderer.ImageValueRenderer;
@@ -78,11 +80,23 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
     public DataValueRenderer createDataValueRenderer(final DataColumnSpec colSpec, final String rendererId) {
         var dataType = colSpec.getType();
         if (rendererId == null) {
+            // create default renderer
+
+            // use formatter attached to the column if present
+            Optional<DataValueRenderer> formatHandler = Optional.ofNullable(colSpec.getValueFormatHandler())//
+                .map(SwingBasedRendererFactory::createHtmlRenderer);
+            if (formatHandler.isPresent()) {
+                return formatHandler.get();
+            }
+
+            // use swing-based legacy renderers as fallback
             var it = dataType.getRendererFactories().iterator();
             return createRenderer(it.next(), colSpec);
         } else {
-            return dataType.getRendererFactories().stream().filter(f -> f.getId().equals(rendererId))
-                .map(f -> createRenderer(f, colSpec)).findFirst().orElseGet(() -> {
+            return dataType.getRendererFactories().stream()//
+                .filter(f -> f.getId().equals(rendererId)) //
+                .map(f -> createRenderer(f, colSpec))//
+                .findFirst().orElseGet(() -> {
                     NodeLogger.getLogger(getClass())
                         .warn("No renderer found for id " + rendererId + ". Falling back to default renderer.");
                     return createDataValueRenderer(colSpec, null);
@@ -136,6 +150,7 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
     static class SwingBasedImageRenderer implements DataValueImageRenderer {
 
         private final org.knime.core.data.renderer.DataValueRenderer m_renderer;
+
         private final String m_id;
 
         SwingBasedImageRenderer(final AbstractPainterDataValueRenderer swingBasedPainterRenderer, final String id) {
@@ -163,7 +178,7 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
             // create graphics object to paint in
             Graphics2D graphics = image.createGraphics();
             comp.paint(graphics);
-            try (var bos = new ByteArrayOutputStream(4096)){
+            try (var bos = new ByteArrayOutputStream(4096)) {
                 ImageIO.write(image, "png", bos);
                 return bos.toByteArray();
             } catch (IOException e) {
@@ -195,6 +210,22 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
             return m_id;
         }
 
+    }
+
+    private static DataValueRenderer createHtmlRenderer(final ValueFormatHandler formatHandler) {
+        return new DataValueTextRenderer() {
+
+            @Override
+            public DataCellContentType getContentType() {
+                return DataCellContentType.HTML;
+            }
+
+            @Override
+            public String renderText(final DataValue value) {
+                var result = formatHandler.get(value);
+                return result;
+            }
+        };
     }
 
 }

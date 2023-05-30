@@ -183,7 +183,7 @@ public final class TableTestUtil {
          *
          * @param spec the spec of the to-be-assembled table
          */
-        TableBuilder(final DataTableSpec spec) {
+        public TableBuilder(final DataTableSpec spec) {
             this(spec, TableTestUtil::cellify);
         }
 

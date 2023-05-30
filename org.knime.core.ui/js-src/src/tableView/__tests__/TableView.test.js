@@ -7,6 +7,8 @@ import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { shallowMountTableView, changeViewSetting } from './tableViewTestUtils';
 import { createStore } from 'vuex';
 import flushPromises from 'flush-promises';
+import ImageRenderer from '../ImageRenderer.vue';
+import HTMLRenderer from '../HtmlRenderer.vue';
 import { constants as tableUIConstants } from '@knime/knime-ui-table';
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
@@ -38,12 +40,15 @@ describe('TableView.vue', () => {
     beforeEach(() => {
         initialDataMock = {
             table: {
-                rows: [['1', 'row1', { metadata: 'row1col2' }, 'entry1col2', '1', 'view_x_y/datacell/hash1.png'],
-                    ['2', 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png'],
+                rows: [
+                    ['1', 'row1', { metadata: 'row1col2' }, 'entry1col2', '<h1>1</h1>', 'view_x_y/datacell/hash1.png'],
+                    ['2', 'row2', 'entry2col1', 'entry2col2', '<h1>2</h1>', 'view_x_y/datacell/hash2.png'],
                     ['3', 'row3', 'entry3col1', 'entry3col2', { metadata: 'row3col4' }, 'view_x_y/datacell/hash3.png'],
-                    ['4', 'row4', 'entry4col1', 'entry4col2', '4', 'view_x_y/datacell/hash4.png']],
-                columnContentTypes: ['txt', 'txt', 'txt', 'img_path'],
+                    ['4', 'row4', 'entry4col1', 'entry4col2', '<h1>4</h1>', 'view_x_y/datacell/hash4.png']
+                ],
+                columnContentTypes: ['txt', 'txt', 'html', 'img_path'],
                 columnDataTypeIds: ['datatype1', 'datatype1', 'datatype2', 'datatype3'],
+                columnFormatterDescriptions: [null, 'Formatter(col2)', null, 'Formatter(col4)'],
                 rowCount,
                 columnCount,
                 displayedColumns: ['col1', 'col2', 'col3', 'col4'],
@@ -246,16 +251,30 @@ describe('TableView.vue', () => {
                 }
             });
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
-            const headerSubMenuItems = [{ sectionHeadline: true, separator: true, text: 'Data renderer' },
+            const headline = { sectionHeadline: true, separator: true, text: 'Data renderer' };
+            const normalRenderers = [
                 { id: 't1r1', section: 'dataRendering', selected: false, text: 'type1renderer1' },
                 { id: 't1r2', section: 'dataRendering', selected: false, text: 'type1renderer2' },
                 { id: 't1r3', section: 'dataRendering', selected: false, text: 'type1renderer3' },
-                { id: 't1r4', section: 'dataRendering', selected: false, text: 'type1renderer4' }];
+                { id: 't1r4', section: 'dataRendering', selected: false, text: 'type1renderer4' }
+            ];
             expect(dataConfig).toMatchObject({
                 columnConfigs: [
-                    { key: 2, header: 'col1', size: expectedColumnSize, hasSlotContent: false, headerSubMenuItems },
-                    { key: 3, header: 'col2', size: expectedColumnSize, hasSlotContent: false, headerSubMenuItems },
-                    { key: 4, header: 'col3', size: expectedColumnSize, hasSlotContent: false },
+                    {
+                        key: 2,
+                        header: 'col1',
+                        size: expectedColumnSize,
+                        hasSlotContent: false,
+                        headerSubMenuItems: [headline, ...normalRenderers]
+                    },
+                    {
+                        key: 3,
+                        header: 'col2',
+                        size: expectedColumnSize,
+                        hasSlotContent: false,
+                        headerSubMenuItems: [headline, { text: 'Formatter(col2)', id: null }, ...normalRenderers]
+                    },
+                    { key: 4, header: 'col3', size: expectedColumnSize, hasSlotContent: true },
                     { key: 5, header: 'col4', size: expectedColumnSize, hasSlotContent: true }
                 ],
                 rowConfig: {
@@ -309,7 +328,7 @@ describe('TableView.vue', () => {
                     size: expectedColumnSize,
                     hasSlotContent: false
                 },
-                { key: 4, header: 'col3', subHeader: 'col3TypeName', size: expectedColumnSize, hasSlotContent: false },
+                { key: 4, header: 'col3', subHeader: 'col3TypeName', size: expectedColumnSize, hasSlotContent: true },
                 { key: 5, header: 'col4', subHeader: 'col4TypeName', size: expectedColumnSize, hasSlotContent: true }
             ];
 
@@ -1128,7 +1147,7 @@ describe('TableView.vue', () => {
             });
             expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
             expect(wrapper.vm.rowData[0]).toStrictEqual(
-                ['2', 'row2', 'entry2col1', 'entry2col2', '2', 'view_x_y/datacell/hash2.png', '…']
+                ['2', 'row2', 'entry2col1', 'entry2col2', '<h1>2</h1>', 'view_x_y/datacell/hash2.png', '…']
             );
         });
 
@@ -1696,7 +1715,7 @@ describe('TableView.vue', () => {
             });
     });
 
-    describe('image rendering', () => {
+    describe('slot rendering', () => {
         it('creates the correct source urls', async () => {
             const path = 'myPathForTest';
             const imageIndex = 6;
@@ -1708,7 +1727,20 @@ describe('TableView.vue', () => {
             </div>`;
             const wrapper = await shallowMountTableView(context);
             const tableUI = wrapper.getComponent(TableUIStub);
-            expect(tableUI.find('img').attributes().src).toBe('http://localhost:8080/base.url/myPathForTest');
+            expect(tableUI.findComponent(ImageRenderer).attributes().url).toBe('http://localhost:8080/base.url/myPathForTest');
+        });
+
+        it('creates the correct content for html', async () => {
+            const htmlIndex = 4;
+            TableUIStub.template = `<div>
+                <slot 
+                    name="cellContent-${htmlIndex}" 
+                    :data="{ row: ${JSON.stringify(initialDataMock.table.rows[0].slice(2)).replaceAll('"', "'")} }"
+                />
+            </div>`;
+            const wrapper = await shallowMountTableView(context);
+            const tableUI = wrapper.getComponent(TableUIStub);
+            expect(tableUI.findComponent(HTMLRenderer).attributes().content).toBe('<h1>1</h1>');
         });
     });
 

@@ -2,8 +2,10 @@
 <script>
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import { TableUI, constants as tableUIConstants } from '@knime/knime-ui-table';
-import { createDefaultFilterConfig, arrayEquals, isImage } from '@/tableView/utils';
+import { createDefaultFilterConfig, arrayEquals, isImage, isHtml } from '@/tableView/utils';
 import throttle from 'raf-throttle';
+import ImageRenderer from './ImageRenderer.vue';
+import HTMLRenderer from './HtmlRenderer.vue';
 
 const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE } = tableUIConstants;
 
@@ -18,7 +20,9 @@ const DEFAULT_COLUMN_SIZE = 100;
 
 export default {
     components: {
-        TableUI
+        TableUI,
+        ImageRenderer,
+        HTMLRenderer
     },
     inject: ['getKnimeService'],
     data() {
@@ -68,7 +72,8 @@ export default {
             lastUpdateHash: 0,
             wrapperResizeObserver: new ResizeObserver(() => {
                 this.onResize();
-            })
+            }),
+            columnFormatterDescriptions: []
         };
     },
     computed: {
@@ -92,6 +97,8 @@ export default {
                 ));
             }
             this.displayedColumns.forEach((columnName, index) => {
+                const columnFormatterDescription = this.columnFormatterDescriptions[index];
+                const renderers = this.dataTypes[this.columnDataTypeIds?.[index]]?.renderers;
                 // + 2: offset for the index and rowKey, because the first column
                 // (index 0) always contains the indices and the second one the row keys
                 const { showColumnDataType, enableRendererSelection } = this.settings;
@@ -103,7 +110,10 @@ export default {
                         columnTypeName: this.dataTypes[this.columnDataTypeIds?.[index]]?.name
                     },
                     ...enableRendererSelection && {
-                        columnTypeRenderers: this.dataTypes[this.columnDataTypeIds?.[index]]?.renderers
+                        columnTypeRenderers: renderers && [
+                            ...columnFormatterDescription ? [{ id: null, name: columnFormatterDescription }] : [],
+                            ...renderers
+                        ]
                     },
                     isSortable: true
                 };
@@ -287,6 +297,7 @@ export default {
             this.columnCount = table.columnCount;
             this.columnDataTypeIds = table.columnDataTypeIds;
             this.columnContentTypes = table.columnContentTypes;
+            this.columnFormatterDescriptions = table.columnFormatterDescriptions;
             this.dataTypes = dataTypes;
             this.columnDomainValues = columnDomainValues;
             this.totalRowCount = table.rowCount;
@@ -308,6 +319,7 @@ export default {
         this.wrapperResizeObserver.disconnect();
     },
     methods: {
+        isImage,
         // The avaliable space for all resizable columns (i.e. table columns, but also index, rowKey, ...)
         getAvailableWidth() {
             const specialColumnsSizeTotal = (this.settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
@@ -478,6 +490,7 @@ export default {
                 this.columnFilters = this.getDefaultFilterConfigs(getFromTopOrBottom('displayedColumns'));
                 this.displayedColumns = getFromTopOrBottom('displayedColumns');
                 this.columnDataTypeIds = getFromTopOrBottom('columnDataTypeIds');
+                this.columnFormatterDescriptions = getFromTopOrBottom('columnFormatterDescriptions');
                 this.columnCount = getFromTopOrBottom('columnCount');
             }
             if (updateTotalSelected) {
@@ -867,7 +880,7 @@ export default {
                 key: index,
                 header: columnName,
                 subHeader: columnTypeName,
-                hasSlotContent: isImage(contentType),
+                hasSlotContent: isImage(contentType) || isHtml(contentType),
                 size: this.columnSizes[index],
                 filterConfig: this.columnFilters[index],
                 ...columnTypeRenderers && {
@@ -985,12 +998,14 @@ export default {
         :key="index"
         #[`cellContent-${index}`]="{data: {cell}}"
       >
-        <img
-          :key="index"
-          loading="lazy"
-          :src="getImageUrl(cell, index)"
-          alt=""
-        >
+        <ImageRenderer
+          v-if="isImage(columnContentTypes[index - 2])"
+          :url="getImageUrl(cell, index)"
+        />
+        <HTMLRenderer
+          v-else
+          :content="cell"
+        />
       </template>
     </TableUI>
     <div

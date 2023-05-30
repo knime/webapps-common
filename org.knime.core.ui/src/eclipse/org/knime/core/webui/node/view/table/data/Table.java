@@ -70,6 +70,11 @@ public interface Table {
     String[] getColumnDataTypeIds();
 
     /**
+     * @return the description of the formatters attached to the columns or null where none is attached.
+     */
+    String[] getColumnFormatterDescriptions();
+
+    /**
      * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
      *         {@code Cell}s in case of missing values
      */

@@ -58,9 +58,14 @@ import org.knime.core.data.DataCell;
 public enum DataCellContentType {
 
         /**
-         * If a {@link DataCell} shall be represented as text.
+         * If a {@link DataCell} shall be represented as plain text.
          */
         TXT,
+
+        /**
+         * Markup content.
+         */
+        HTML,
 
         /**
          * If a {@link DataCell} shall be represented as an image which is given by a relative path.

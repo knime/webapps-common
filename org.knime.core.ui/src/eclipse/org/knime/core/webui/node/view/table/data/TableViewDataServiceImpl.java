@@ -256,8 +256,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         var currentSelection = getCurrentSelection();
         var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
             : countSelectedRows(filteredAndSortedTable, currentSelection);
-        return createTable(displayedColumns, contentTypes, dataTypeIds, rows, tableSize, numDisplayedColumns,
-            totalSelected);
+        final var columnFormatterDescriptions = Arrays.asList(displayedColumns).stream().map(tableSpec::getColumnSpec)
+            .map(DataColumnSpec::getValueFormatHandler).map(f -> f == null ? null : "Attached formatter")
+            .toArray(String[]::new);
+        return createTable(displayedColumns, contentTypes, dataTypeIds, columnFormatterDescriptions, rows, tableSize,
+            numDisplayedColumns, totalSelected);
     }
 
     @Override
@@ -533,12 +536,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static Table createEmptyTable() {
-        return createTable(new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l);
+        return createTable(new String[0], new String[0], new String[0], new String[0], new String[0][], 0, 0, 0l);
     }
 
     private static Table createTable(final String[] displayedColumns, final String[] contentTypes,
-        final String[] columnDataTypeIds, final Object[][] rows, final long rowCount, final long columnCount,
-        final Long totalSelected) {
+        final String[] columnDataTypeIds, final String[] columnFormatterDescriptions, final Object[][] rows,
+        final long rowCount, final long columnCount, final Long totalSelected) {
         return new Table() {
 
             @Override
@@ -554,6 +557,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public String[] getColumnDataTypeIds() {
                 return columnDataTypeIds;
+            }
+
+            @Override
+            public String[] getColumnFormatterDescriptions() {
+                return columnFormatterDescriptions;
             }
 
             @Override
