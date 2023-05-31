@@ -58,12 +58,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -169,6 +169,9 @@ final class JsonFormsUiSchemaGenerator {
     private void addField(final Map<Class<?>, List<JsonFormsControl>> layoutControls,
         final Map<Class<?>, JsonFormsExpression> signals, final String parentScope, final Class<?> defaultLayout,
         final PropertyWriter field) {
+        if (isHidden(field)) {
+            return;
+        }
         final var scope = addPropertyToPrefix(parentScope, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var layoutByFieldAnnotation = getFieldLayout(field);
@@ -195,6 +198,10 @@ final class JsonFormsUiSchemaGenerator {
 
     private static Optional<Signal> getSignal(final PropertyWriter field) {
         return Optional.ofNullable(field.getAnnotation(Signal.class));
+    }
+
+    private static boolean isHidden(final PropertyWriter field) {
+        return field.getAnnotation(Hidden.class) != null;
     }
 
     private static Optional<Class<?>> getFieldLayout(final PropertyWriter field) {

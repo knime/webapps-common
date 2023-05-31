@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -186,6 +187,24 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/settingWithNestedUiElements/properties/sub2");
         assertThatJson(response).inPath("$.elements[3].scope").isString()
             .isEqualTo("#/properties/test/properties/customSetting");
+    }
+
+
+
+    @Test
+    void testHiddenSettings() throws JsonProcessingException {
+        @SuppressWarnings("unused")
+        class TestHiddenSettings implements DefaultNodeSettings {
+            String m_normalSetting;
+
+            @Hidden
+            String m_hiddenSetting;
+
+        }
+        final var response = buildUiSchema(Map.of("test", TestHiddenSettings.class));
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/normalSetting");
     }
 
     interface TestDefaultParentLayout {
