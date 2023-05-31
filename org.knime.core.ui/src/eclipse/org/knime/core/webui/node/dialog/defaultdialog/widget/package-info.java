@@ -49,7 +49,7 @@
 /**
  * Use the {@link org.knime.core.webui.node.dialog.defaultdialog.widget.Widget} to set properties shared among all types
  * of widgets and more specific annotations contained in this package for certain types of widgets.
- *
+ * Use the {@link org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden} annotation to hide certain settings from the dialog.
  * <p>
  * Example:
  *
@@ -63,6 +63,9 @@
  *     &#64;Widget(title = "Choices", description = "Select from provided strings.")
  *     &#64;ChoicesWidget(choices = MyChoicesProvider.class)
  *     String[] m_choices;
+ *
+ *     &#64;Hidden
+ *     String[] m_invisibleSetting;
  *
  *     boolean m_settingWithoutAnnotation;
  * }
