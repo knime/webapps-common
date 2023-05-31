@@ -609,18 +609,25 @@ class JsonFormsUiSchemaUtilRuleTest {
             return "foo";
         }
     }
+
     @Test
     void testIsSpecificColumnCondition() {
+
         final class ChoicesWithSpecificColumnCondition implements DefaultNodeSettings {
+
             interface TestColumnCondition {
             }
+
             @Widget(title = "Foo")
             @ChoicesWidget()
             @Signal(id = TestColumnCondition.class, condition = IsTestColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
+
             @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
+
         }
+
         final var response = buildTestUiSchema(ChoicesWithSpecificColumnCondition.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
@@ -643,6 +650,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Effect(signals = IsNoneColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
         }
+
         final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");

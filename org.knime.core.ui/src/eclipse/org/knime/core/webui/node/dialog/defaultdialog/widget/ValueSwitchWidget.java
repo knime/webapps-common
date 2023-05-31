@@ -56,7 +56,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate an {@link Enum} setting with this in order to display them as a value switch instead of the default
- * (dropdown list).
+ * (dropdown list). Note that a {@link Label} annotations must be used on {@link Enum} fields to control their string
+ * representation.
  *
  * @author Rupert Ettrich
  */

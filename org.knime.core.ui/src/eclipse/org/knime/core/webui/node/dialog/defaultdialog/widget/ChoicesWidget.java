@@ -55,6 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
 /**
@@ -74,7 +75,7 @@ public @interface ChoicesWidget {
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 
     /**
-     * TODO UIEXT-907 remove this.
+     * TODO UIEXT-1012 remove this when we add a separate ColumnChoicesWidget
      *
      * @return true if a parent contains the annotation for the choices of this field. This is only used internally for
      *         the {@link ColumnFilter} and {@link ColumnSelection}.
@@ -104,7 +105,8 @@ public @interface ChoicesWidget {
     boolean showSearch() default true;
 
     /**
-     * @return whether the column selection mode should be displayed for the {@link ColumnFilter}
+     * @return whether the column filter mode selection should be displayed for the {@link ColumnFilter}. The possible
+     *         modes are defined by {@link ColumnFilterMode}.
      */
     boolean showMode() default true;
 

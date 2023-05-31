@@ -44,32 +44,20 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   1 Jun 2023 (Rupert Ettrich): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
  *
- * @author Paul Bärnreuther
+ * @author Rupert Ettrich
  */
-public final class JsonFormsUiSchemaUtil {
+interface TestLayout {
+    @Section(title = "First")
+    interface FirstSection {}
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
-    }
-
-    /**
-     * @param settings
-     * @param mapper
-     * @return the ui schema resolved by the mapper from the given settings
-     */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        return new JsonFormsUiSchemaGenerator(settings, mapper).build();
-    }
+    @Section(title = "Second")
+    interface SecondSection {}
 }

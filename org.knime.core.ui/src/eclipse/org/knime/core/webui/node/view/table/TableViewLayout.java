@@ -44,32 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   1 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.view.table;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
- *
- * @author Paul Bärnreuther
+ * The common Section Layout used by the Table View and Statistics View nodes
+ * TODO: UIEXT-994 move to knime-base-views
+ * @author Rupert Ettrich
  */
-public final class JsonFormsUiSchemaUtil {
+@SuppressWarnings("javadoc")
+public class TableViewLayout {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
+    @Section(title = "Data")
+    public interface DataSection {
     }
 
-    /**
-     * @param settings
-     * @param mapper
-     * @return the ui schema resolved by the mapper from the given settings
-     */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        return new JsonFormsUiSchemaGenerator(settings, mapper).build();
+    @Section(title = "View")
+    @After(DataSection.class)
+    public interface ViewSection {
+    }
+
+    @Section(title = "Interactivity")
+    @After(ViewSection.class)
+    public interface InteractivitySection {
     }
 }
+

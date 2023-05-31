@@ -54,6 +54,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * This interface is used as a container for fields with repeated {@link Signal} annotations.
  *
  * @author Rupert Ettrich
  */
@@ -62,4 +63,3 @@ import java.lang.annotation.Target;
 public @interface Signals {
     Signal[] value();
 }
-

@@ -80,6 +80,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
  * declare the dialog's settings and widgets in a compact manner.
@@ -106,6 +108,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
  * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
  * annotations} to supply additional information (e.g. description, domain info, ...).
+ * Note that getters of at least 'package scope' will also be represented as dialog widgets. If this is not intended,
+ * they can be annotated by an {@link JsonIgnore} annotation.
  *
  * The table below lists all the supported type with
  * <ul>

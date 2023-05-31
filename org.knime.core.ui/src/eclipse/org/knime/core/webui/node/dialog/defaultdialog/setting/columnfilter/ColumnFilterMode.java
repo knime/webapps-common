@@ -51,10 +51,10 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 /**
  * This enum lists the possibilities of how to choose from a set of table columns
- * 
+ *
  * @author Paul Bärnreuther
  */
-enum ColumnFilterMode {
+public enum ColumnFilterMode {
         /**
          * manual selection, i.e. a stored list of manually selected columns
          */
