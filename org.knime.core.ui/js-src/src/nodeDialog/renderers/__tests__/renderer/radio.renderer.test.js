@@ -24,18 +24,6 @@ describe('RadioInput', () => {
         }
     };
 
-    it('radioInput config error', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/radio',
-            options: {
-                format: 'integer'
-            }
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleColumnSelect');
-    });
-
     it('radioInput with options', () => {
         const uiSchema = {
             type: 'Control',
@@ -46,14 +34,5 @@ describe('RadioInput', () => {
         };
         
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('RadioInput');
-    });
-
-    it('radioInput without options', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/radio'
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleColumnSelect');
     });
 });

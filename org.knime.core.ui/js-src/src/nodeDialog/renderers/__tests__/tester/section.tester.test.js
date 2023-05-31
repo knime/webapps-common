@@ -9,7 +9,7 @@ describe('uses section layout', () => {
                 type: 'Section',
                 label: 'Data'
             },
-            dialogInitialData.schema)
+            {})
         ).toBe(true);
     });
 
@@ -19,7 +19,7 @@ describe('uses section layout', () => {
                 type: 'Group',
                 label: 'Data'
             },
-            dialogInitialData.schema)
+            {})
         ).toBe(false);
         
         expect(

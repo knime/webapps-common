@@ -179,6 +179,8 @@ public final class JsonFormsConsts {
 
             public static final String DROP_DOWN = "dropDown";
 
+            public static final String TWIN_LIST = "twinList";
+
             public static final String RADIO = "radio";
         }
 

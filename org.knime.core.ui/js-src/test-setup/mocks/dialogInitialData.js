@@ -35,61 +35,18 @@ export const dialogInitialData = {
                         description: 'some description'
                     },
                     dropdown: {
-                        oneOf: [
-                            {
-                                const: 'value 1',
-                                title: 'Value 1'
-                            },
-                            {
-                                const: 'value 2',
-                                title: 'Value 2'
-                            },
-                            {
-                                const: 'Value 3',
-                                title: 'Value 3'
-                            }
-                        ],
+                        type: 'string',
                         title: 'Simple Dropdown'
                     },
                     simpleColumnSelect: {
-                        oneOf: [
-                            {
-                                const: 'column 1',
-                                title: 'Column 1'
-                            },
-                            {
-                                const: 'column 2',
-                                title: 'Column 2'
-                            },
-                            {
-                                const: 'column 3',
-                                title: 'Column 3'
-                            }
-                        ],
+                        type: 'string',
                         title: 'Simple Dropdown'
                     },
                     xAxisColumn: {
                         type: 'object',
                         properties: {
                             selected: {
-                                oneOf: [
-                                    {
-                                        const: 'Universe_0_0',
-                                        title: 'Universe_0_0'
-                                    },
-                                    {
-                                        const: 'Universe_0_1',
-                                        title: 'Universe_0_1'
-                                    },
-                                    {
-                                        const: 'Universe_1_0',
-                                        title: 'Universe_1_0'
-                                    },
-                                    {
-                                        const: 'Universe_1_1',
-                                        title: 'Universe_1_1'
-                                    }
-                                ]
+                                type: 'string'
                             }
                         },
                         title: 'X Axis Column'
@@ -99,24 +56,7 @@ export const dialogInitialData = {
                         title: 'X Axis Label'
                     },
                     yAxisColumn: {
-                        oneOf: [
-                            {
-                                const: 'Universe_0_0',
-                                title: 'Universe_0_0'
-                            },
-                            {
-                                const: 'Universe_0_1',
-                                title: 'Universe_0_1'
-                            },
-                            {
-                                const: 'Universe_1_0',
-                                title: 'Universe_1_0'
-                            },
-                            {
-                                const: 'Universe_1_1',
-                                title: 'Universe_1_1'
-                            }
-                        ],
+                        type: 'string',
                         title: 'Y Axis Column'
                     },
                     yAxisLabel: {
@@ -363,6 +303,22 @@ export const dialogInitialData = {
                         scope: '#/properties/view/properties/xAxisColumn',
                         options: {
                             format: 'columnSelection',
+                            possibleValues: [{
+                                id: 'Cluster_Membership',
+                                text: 'Cluster_Membership'
+                            }, {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0'
+                            }, {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1'
+                            }, {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0'
+                            }, {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1'
+                            }],
                             showRowKeys: false,
                             showNoneColumn: false
                         }
@@ -371,7 +327,23 @@ export const dialogInitialData = {
                         type: 'Control',
                         scope: '#/properties/view/properties/yAxisColumn',
                         options: {
-                            format: 'columnSelection',
+                            format: 'twinList',
+                            possibleValues: [{
+                                id: 'Cluster_Membership',
+                                text: 'Cluster_Membership'
+                            }, {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0'
+                            }, {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1'
+                            }, {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0'
+                            }, {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1'
+                            }],
                             showRowKeys: false,
                             showNoneColumn: false
                         }
@@ -389,6 +361,22 @@ export const dialogInitialData = {
                         scope: '#/properties/view/properties/frequencyColumns',
                         options: {
                             format: 'columnFilter',
+                            possibleValues: [{
+                                id: 'Cluster_Membership',
+                                text: 'Cluster_Membership'
+                            }, {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0'
+                            }, {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1'
+                            }, {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0'
+                            }, {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1'
+                            }],
                             allowEmptyInclude: true,
                             twinlistSize: 7,
                             twinlistLeftLabel: 'Excluded Columns',
@@ -397,7 +385,26 @@ export const dialogInitialData = {
                     },
                     {
                         type: 'Control',
-                        scope: '#/properties/view/properties/simpleTwinlist'
+                        scope: '#/properties/view/properties/simpleTwinlist',
+                        options: {
+                            format: 'twinList',
+                            possibleValues: [{
+                                id: 'Cluster_Membership',
+                                text: 'Cluster_Membership'
+                            }, {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0'
+                            }, {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1'
+                            }, {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0'
+                            }, {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1'
+                            }]
+                        }
                     }
                 ]
             },
@@ -455,7 +462,7 @@ export const expectedRenderers = [
     { scope: '#/properties/view/properties/fraction', component: 'IntegerInput' },
     { scope: '#/properties/view/properties/showTooltip', component: 'CheckboxInput' },
     { scope: '#/properties/view/properties/xAxisColumn', component: 'ColumnSelect' },
-    { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleColumnSelect' },
+    { scope: '#/properties/view/properties/yAxisColumn', component: 'SimpleTwinListInput' },
     { scope: '#/properties/view/properties/xAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/yAxisLabel', component: 'TextInput' },
     { scope: '#/properties/view/properties/frequencyColumns', component: 'ColumnFilter' },

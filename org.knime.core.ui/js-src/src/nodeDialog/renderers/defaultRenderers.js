@@ -4,7 +4,7 @@ import { dropdownRenderer } from './dropdownRenderer';
 import { numberRenderer } from './numberRenderer';
 import { radioRenderer } from './radioRenderer';
 import { textRenderer } from './textRenderer';
-import { twinlistRenderer } from './twinlistRenderer';
+import { twinlistRenderer, simpleTwinlistRenderer } from './twinlistRenderer';
 import { columnFilterRenderer } from './columnFilterRenderer';
 import { columnSelectRenderer } from './columnSelectRenderer';
 import { integerRenderer } from './integerRenderer';
@@ -16,6 +16,7 @@ export const defaultRenderers = [
     sectionLayoutRenderer,
     checkboxRenderer,
     dropdownRenderer,
+    simpleTwinlistRenderer,
     numberRenderer,
     radioRenderer,
     textRenderer,

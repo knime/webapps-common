@@ -201,30 +201,7 @@
             "xAxisColumn": {
               "type": "object",
               "properties": {
-                "selected": {
-                  "oneOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0"
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1"
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0"
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1"
-                    },
-                    {
-                      "const": "Cluster Membership",
-                      "title": "Cluster Membership"
-                    }
-                  ]
-                }
+                "selected": {}
               },
               "title": "Horizontal dimension",
               "description": "Defines the column that contains the values for x coordinates.",
@@ -259,30 +236,7 @@
             "yAxisColumn": {
               "type": "object",
               "properties": {
-                "selected": {
-                  "oneOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0"
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1"
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0"
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1"
-                    },
-                    {
-                      "const": "Cluster Membership",
-                      "title": "Cluster Membership"
-                    }
-                  ]
-                }
+                "selected": {}
               },
               "title": "Vertical dimension",
               "description": "Defines the column that contains the values for y coordinates.",
@@ -368,7 +322,30 @@
               "scope": "#/properties/view/properties/xAxisColumn",
               "options": {
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "format": "columnSelection",
+                "possibleValues": [
+                  {
+                    "id": "Universe_0_0",
+                    "text": "Universe_0_0"
+                  },
+                  {
+                    "id": "Universe_0_1",
+                    "text": "Universe_0_1"
+                  },
+                  {
+                    "id": "Universe_1_0",
+                    "text": "Universe_1_0"
+                  },
+                  {
+                    "id": "Universe_1_1",
+                    "text": "Universe_1_1"
+                  },
+                  {
+                    "id": "Cluster Membership",
+                    "text": "Cluster Membership"
+                  }
+                ]
               }
             },
             {
@@ -376,7 +353,30 @@
               "scope": "#/properties/view/properties/yAxisColumn",
               "options": {
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "format": "columnSelection",
+                "possibleValues": [
+                  {
+                    "id": "Universe_0_0",
+                    "text": "Universe_0_0"
+                  },
+                  {
+                    "id": "Universe_0_1",
+                    "text": "Universe_0_1"
+                  },
+                  {
+                    "id": "Universe_1_0",
+                    "text": "Universe_1_0"
+                  },
+                  {
+                    "id": "Universe_1_1",
+                    "text": "Universe_1_1"
+                  },
+                  {
+                    "id": "Cluster Membership",
+                    "text": "Cluster Membership"
+                  }
+                ]
               }
             },
             {

@@ -21,24 +21,6 @@ describe('DropdownInput.vue', () => {
                 data: 'Universe_0_0',
                 label: 'defaultLabel',
                 schema: {
-                    oneOf: [
-                        {
-                            const: 'Universe_0_0',
-                            title: 'Universe_0_0'
-                        },
-                        {
-                            const: 'Universe_0_1',
-                            title: 'Universe_0_1'
-                        },
-                        {
-                            const: 'Universe_1_0',
-                            title: 'Universe_1_0'
-                        },
-                        {
-                            const: 'Universe_1_1',
-                            title: 'Universe_1_1'
-                        }
-                    ],
                     title: 'Y Axis Column'
                 },
                 uischema: {
@@ -47,7 +29,25 @@ describe('DropdownInput.vue', () => {
                     options: {
                         format: 'columnSelection',
                         showRowKeys: false,
-                        showNoneColumn: false
+                        showNoneColumn: false,
+                        possibleValues: [
+                            {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0'
+                            },
+                            {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1'
+                            },
+                            {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0'
+                            },
+                            {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1'
+                            }
+                        ]
                     }
                 },
                 rootSchema: {
@@ -130,17 +130,8 @@ describe('DropdownInput.vue', () => {
         expect(wrapper.find('label').text()).toBe(defaultProps.control.label);
     });
 
-    it('transforms empty oneOf into empty possible values', async () => {
-        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
-        const localWrapper = await mountJsonFormsComponentWithStore(
-            DropdownInput,
-            defaultProps
-        );
-        expect(localWrapper.findComponent(Dropdown).props().possibleValues).toEqual([]);
-    });
-
     it('checks that placeholder text is correctly set if no possible values are present', async () => {
-        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
+        defaultProps.control.uischema.options.possibleValues = [];
         const localWrapper = await mountJsonFormsComponentWithStore(
             DropdownInput,
             defaultProps
@@ -170,7 +161,7 @@ describe('DropdownInput.vue', () => {
     });
 
     it('disables dropdown when there are no possible values', async () => {
-        defaultProps.control.schema.oneOf = [{ const: '', title: '' }];
+        defaultProps.control.uischema.options.possibleValues = [];
         wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
         expect(wrapper.vm.disabled).toBeTruthy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();

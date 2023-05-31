@@ -56,6 +56,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.AfterCenterLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.BeforeCenterLayout;
@@ -83,11 +84,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildUiSchema(final Map<String, Class<?>> settings) {
-        return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper());
+        return buildUiSchema(settings, null);
+    }
+
+    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings, final SettingsCreationContext context) {
+        return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), context);
     }
 
     static ObjectNode buildTestUiSchema(final Class<?> settingsClass) {
         return buildUiSchema(Map.of("test", settingsClass));
+    }
+
+    static ObjectNode buildTestUiSchema(final Class<?> settingsClass, final SettingsCreationContext context) {
+        return buildUiSchema(Map.of("test", settingsClass), context);
     }
 
     interface TestSettingsLayout {

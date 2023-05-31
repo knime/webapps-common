@@ -1,11 +1,9 @@
-import { uiTypeIs, rankWith, schemaMatches, and } from '@jsonforms/core';
+import { isControl, rankWith } from '@jsonforms/core';
 import ColumnSelect from '../uiComponents/ColumnSelect.vue';
-import { priorityRanks } from '../constants';
+import { inputFormats, priorityRanks } from '../constants';
 
-export const columnSelectTester = and(uiTypeIs('Control'), schemaMatches(
-    (s) => s.hasOwnProperty('properties') &&
-    s.properties.hasOwnProperty('selected') && s.properties.selected.hasOwnProperty('oneOf')
-));
+export const columnSelectTester = (uischema, _schema) => isControl(uischema) &&
+    uischema.options?.format === inputFormats.columnSelect;
 
 export const columnSelectRenderer = {
     renderer: ColumnSelect,

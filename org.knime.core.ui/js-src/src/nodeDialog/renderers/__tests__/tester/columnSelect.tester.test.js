@@ -3,11 +3,14 @@ import { columnSelectTester } from '../../columnSelectRenderer';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
 describe('columnSelectTester', () => {
-    it('applies on oneOf control with columnSelect format', () => {
+    it('applies control with columnSelect format', () => {
         expect(
             columnSelectTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn'
+                scope: '#/properties/view/properties/xAxisColumn',
+                options: {
+                    format: 'columnSelection'
+                }
             },
             dialogInitialData.schema)
         ).toBe(true);
@@ -16,8 +19,7 @@ describe('columnSelectTester', () => {
     it('does not apply if not a control', () => {
         expect(
             columnSelectTester({
-                type: 'Section',
-                scope: '#/properties/view/properties/xAxisColumn'
+                type: 'Section'
             },
             dialogInitialData.schema)
         ).toBe(false);

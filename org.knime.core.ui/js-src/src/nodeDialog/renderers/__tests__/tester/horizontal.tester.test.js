@@ -8,7 +8,7 @@ describe('horizontalLayoutTester', () => {
             horizontalLayoutTester({
                 type: 'HorizontalLayout'
             },
-            dialogInitialData.schema)
+            {})
         ).toBe(true);
     });
     
@@ -18,7 +18,7 @@ describe('horizontalLayoutTester', () => {
                 type: 'Section',
                 label: 'Data'
             },
-            dialogInitialData.schema)
+            {})
         ).toBe(false);
     
         expect(

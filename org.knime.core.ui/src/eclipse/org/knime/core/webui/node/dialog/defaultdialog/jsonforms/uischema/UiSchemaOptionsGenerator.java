@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -97,17 +98,21 @@ final class UiSchemaOptionsGenerator {
 
     private final JavaType m_fieldType;
 
+    private final SettingsCreationContext m_settingsCreationContext;
+
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
      * @param field the field for which options are to be added from {@link Style} annotations
      */
-    UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field) {
+    UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
+        final SettingsCreationContext context) {
         m_mapper = mapper;
         m_field = field;
         m_fieldType = field.getType();
         m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
+        m_settingsCreationContext = context;
     }
 
     /**
@@ -116,7 +121,6 @@ final class UiSchemaOptionsGenerator {
      * @param control
      */
     void addOptionsTo(final ObjectNode control) {
-
         final var defaultWidgets = getApplicableDefaults(m_fieldClass);
         final var annotatedWidgets = getAnnotatedWidgets();
         final var isArrayOfObjects =
@@ -166,8 +170,11 @@ final class UiSchemaOptionsGenerator {
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
+            final var possibleValuesGenerator = new ChoicesArrayNodeGenerator(m_mapper, m_settingsCreationContext);
+            options.set("possibleValues", possibleValuesGenerator.createChoicesNode(choicesWidget.choices()));
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
-                options.put(TAG_FORMAT, Format.DROP_DOWN);
+                String format = getChoicesComponentFormat();
+                options.put(TAG_FORMAT, format);
             }
             options.put("showNoneColumn", choicesWidget.showNoneColumn());
             options.put("showRowKeys", choicesWidget.showRowKeys());
@@ -178,6 +185,20 @@ final class UiSchemaOptionsGenerator {
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
+    }
+
+    /**
+     * Note that for ColumnFilter and ColumnSelection, the format is set as part of the default formats. For String
+     * arrays, we use the "twinList" format and otherwise we use "dropDown".
+     *
+     * @return
+     */
+    private String getChoicesComponentFormat() {
+        String format = Format.DROP_DOWN;
+        if (m_fieldType.isArrayType() && m_fieldType.getContentType().getRawClass().equals(String.class)) {
+            format = Format.TWIN_LIST;
+        }
+        return format;
     }
 
     private Collection<?> getAnnotatedWidgets() {
@@ -197,7 +218,8 @@ final class UiSchemaOptionsGenerator {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
-        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper).get(TAG_ELEMENTS);
+        var details =
+            JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_settingsCreationContext).get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))

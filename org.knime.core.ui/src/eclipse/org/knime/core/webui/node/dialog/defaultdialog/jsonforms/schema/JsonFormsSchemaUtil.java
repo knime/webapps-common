@@ -166,7 +166,7 @@ public final class JsonFormsSchemaUtil {
         builder.forFields()
             .withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
 
-        builder.forFields().withCustomDefinitionProvider(new ChoicesAndEnumDefinitionProvider(context));
+        builder.forFields().withCustomDefinitionProvider(new EnumDefinitionProvider());
 
         builder.forFields().withDefaultResolver(new DefaultResolver(context));
 
@@ -246,7 +246,7 @@ public final class JsonFormsSchemaUtil {
     }
 
     private static List<ResolvedType> overrideClass(final FieldScope field) {
-        // override class regardless of @Schema annotation
+        // override class regardless of @Widget annotation
         if (field.isFakeContainerItemScope()) {
             return Collections.emptyList();
         }

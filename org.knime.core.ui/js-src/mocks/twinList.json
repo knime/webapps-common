@@ -1,0 +1,158 @@
+{
+  "result": {
+    "name": "Dropdowns",
+    "data": {
+      "AnyOfControl": [
+        "foo",
+        "foo2"
+      ],
+      "StringArray": [
+        "foo",
+        "foo2"
+      ],
+      "MultiModeTwinlist": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": [
+            "foo",
+            "foo2"
+          ],
+          "manuallyDeselected": [
+            "bar"
+          ]
+        },
+        "typeFilter": {
+          "selectedTypes": []
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
+      },
+      "ColumnFilter": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": [
+            "foo",
+            "foo2"
+          ],
+          "manuallyDeselected": [
+            "bar"
+          ]
+        },
+        "typeFilter": {
+          "selectedTypes": [
+            "typeA"
+          ]
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "AnyOfControl": {
+          "anyOf": [
+            {
+              "const": "foo",
+              "title": "Foo"
+            },
+            {
+              "const": "bar",
+              "title": "Bar"
+            }
+          ]
+        },
+        "StringArray": {
+          "type": "array"
+        },
+        "MultiModeTwinlist": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        },
+        "ColumnFilter": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "properties/AnyOfControl"
+        },
+        {
+          "type": "Control",
+          "scope": "properties/StringArray",
+          "options": {
+            "format": "twinList",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo"
+              },
+              {
+                "id": "bar",
+                "text": "Bar"
+              }
+            ]
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "properties/MultiModeTwinlist",
+          "options": {
+            "format": "twinList",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo"
+              },
+              {
+                "id": "bar",
+                "text": "Bar"
+              }
+            ]
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "properties/ColumnFilter",
+          "options": {
+            "format": "columnFilter",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo",
+                "type": {
+                  "id": "typeA",
+                  "text": "Type A"
+                }
+              },
+              {
+                "id": "bar",
+                "text": "Bar",
+                "type": {
+                  "id": "typeB",
+                  "text": "Type B"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

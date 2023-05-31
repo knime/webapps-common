@@ -52,7 +52,6 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -66,8 +65,7 @@ public final class ColumnSelection implements PersistableSettings {
     /**
      * The selected column
      */
-    @ChoicesWidget(takeChoicesFromParent = true)
-    public String m_selected;
+    public String m_selected; // NOSONAR
 
     /**
      * The collection of the names of all types with respect to which the current selected column is compatible

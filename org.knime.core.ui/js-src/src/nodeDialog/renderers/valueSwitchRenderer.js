@@ -4,7 +4,7 @@ import ValueSwitchInput from '../uiComponents/ValueSwitchInput.vue';
 
 export const valueSwitchTester = (uischema, schema) => {
     const isOneOf = isOneOfControl(uischema, schema);
-    return isOneOf && uischema.options?.format === inputFormats.oneOfValueSwitch;
+    return isOneOf && uischema.options?.format === inputFormats.valueSwitch;
 };
 
 export const valueSwitchRenderer = {

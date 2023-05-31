@@ -1,8 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { mergeDeep, optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView, optionsMapperWithType, generatePossibleValues }
-    from '../utils';
+import { mergeDeep, getFlowVariablesMap, isModelSettingAndHasNodeView, getPossibleValuesFromUiSchema } from '../utils';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import MultiModeTwinlist from 'webapps-common/ui/components/forms/MultiModeTwinlist.vue';
@@ -56,7 +55,7 @@ const TwinlistInput = defineComponent({
             return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
         },
         withTypes() {
-            return this.control.schema.properties.selected.anyOf[0].hasOwnProperty('columnType');
+            return this.possibleValues && this.possibleValues[0] && this.possibleValues[0].hasOwnProperty('type');
         },
         showMode() {
             return !this.control.uischema.options?.hasOwnProperty('showMode') ||
@@ -68,9 +67,7 @@ const TwinlistInput = defineComponent({
         }
     },
     created() {
-        const mapper = this.withTypes ? optionsMapperWithType : optionsMapper;
-        const anyOfOption = this.control.schema.properties.selected.anyOf;
-        this.possibleValues = generatePossibleValues(anyOfOption, {}, mapper);
+        this.possibleValues = getPossibleValuesFromUiSchema(this.control);
         this.updateManualFilter(this.possibleValues.map(col => col.id));
 
         this.previouslySelectedTypes = this.getPreviouslySelectedTypes();

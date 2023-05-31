@@ -22,28 +22,7 @@ describe('ColumnSelect.vue', () => {
                     type: 'object',
                     properties: {
                         selected: {
-                            oneOf: [
-                                {
-                                    const: 'Universe_0_0',
-                                    title: 'Universe_0_0',
-                                    compatibleTypes: ['Type_0_0', 'OtherType_0_0']
-                                },
-                                {
-                                    const: 'Universe_0_1',
-                                    title: 'Universe_0_1',
-                                    compatibleTypes: ['Type_0_1', 'OtherType_0_1']
-                                },
-                                {
-                                    const: 'Universe_1_0',
-                                    title: 'Universe_1_0',
-                                    compatibleTypes: ['Type_1_0', 'OtherType_1_0']
-                                },
-                                {
-                                    const: 'Universe_1_1',
-                                    title: 'Universe_1_1',
-                                    compatibleTypes: ['Type_1_1', 'OtherType_1_1']
-                                }
-                            ]
+                            type: 'array'
                         }
                     },
                     title: 'Y Axis Column'
@@ -54,7 +33,29 @@ describe('ColumnSelect.vue', () => {
                     options: {
                         format: 'columnSelection',
                         showRowKeys: false,
-                        showNoneColumn: false
+                        showNoneColumn: false,
+                        possibleValues: [
+                            {
+                                id: 'Universe_0_0',
+                                text: 'Universe_0_0',
+                                compatibleTypes: ['Type_0_0', 'OtherType_0_0']
+                            },
+                            {
+                                id: 'Universe_0_1',
+                                text: 'Universe_0_1',
+                                compatibleTypes: ['Type_0_1', 'OtherType_0_1']
+                            },
+                            {
+                                id: 'Universe_1_0',
+                                text: 'Universe_1_0',
+                                compatibleTypes: ['Type_1_0', 'OtherType_1_0']
+                            },
+                            {
+                                id: 'Universe_1_1',
+                                text: 'Universe_1_1',
+                                compatibleTypes: ['Type_1_1', 'OtherType_1_1']
+                            }
+                        ]
                     }
                 }
             }
@@ -105,22 +106,24 @@ describe('ColumnSelect.vue', () => {
             await wrapper.vm.$nextTick();
     
             expect(wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control)).toEqual(
-                [{
-                    id: 'Universe_0_0',
-                    text: 'Universe_0_0'
-                },
-                {
-                    id: 'Universe_0_1',
-                    text: 'Universe_0_1'
-                },
-                {
-                    id: 'Universe_1_0',
-                    text: 'Universe_1_0'
-                },
-                {
-                    id: 'Universe_1_1',
-                    text: 'Universe_1_1'
-                }]
+                [
+                    expect.objectContaining({
+                        id: 'Universe_0_0',
+                        text: 'Universe_0_0'
+                    }),
+                    expect.objectContaining({
+                        id: 'Universe_0_1',
+                        text: 'Universe_0_1'
+                    }),
+                    expect.objectContaining({
+                        id: 'Universe_1_0',
+                        text: 'Universe_1_0'
+                    }),
+                    expect.objectContaining({
+                        id: 'Universe_1_1',
+                        text: 'Universe_1_1'
+                    })
+                ]
             );
         });
     
@@ -131,57 +134,30 @@ describe('ColumnSelect.vue', () => {
             
             const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
             expect(tmp).toEqual(
-                [{
+                [expect.objectContaining({
                     id: '<none>',
                     text: 'None'
-                },
-                {
+                }),
+                expect.objectContaining({
                     id: '<row-keys>',
                     text: 'RowIDs'
-                },
-                {
+                }),
+                expect.objectContaining({
                     id: 'Universe_0_0',
                     text: 'Universe_0_0'
-                },
-                {
+                }),
+                expect.objectContaining({
                     id: 'Universe_0_1',
                     text: 'Universe_0_1'
-                },
-                {
+                }),
+                expect.objectContaining({
                     id: 'Universe_1_0',
                     text: 'Universe_1_0'
-                },
-                {
+                }),
+                expect.objectContaining({
                     id: 'Universe_1_1',
                     text: 'Universe_1_1'
-                }]
-            );
-        });
-    
-        it('optionsGenerator removes empty element coming because oneOfs cant be empty', async () => {
-            await wrapper.vm.$nextTick();
-            props.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
-            
-            const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
-            expect(tmp).toEqual([]);
-        });
-    
-        it('optionsGenerator removes empty element coming because oneOfs can\'t be empty with special rows', async () => {
-            await wrapper.vm.$nextTick();
-            props.control.schema.properties.selected.oneOf = [{ const: '', title: '' }];
-            props.control.uischema.options.showNoneColumn = true;
-            props.control.uischema.options.showRowKeys = true;
-            
-            const tmp = wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control);
-            expect(tmp).toEqual(
-                [{
-                    id: '<none>',
-                    text: 'None'
-                },
-                {
-                    id: '<row-keys>',
-                    text: 'RowIDs'
-                }]
+                })]
             );
         });
     });

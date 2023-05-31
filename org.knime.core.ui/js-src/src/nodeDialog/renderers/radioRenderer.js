@@ -4,7 +4,7 @@ import RadioInput from '../uiComponents/RadioInput.vue';
 
 export const radioTester = (uischema, schema) => {
     const isOneOf = isOneOfControl(uischema, schema);
-    return isOneOf && uischema.options?.format === inputFormats.oneOfRadio;
+    return isOneOf && uischema.options?.format === inputFormats.radio;
 };
 
 export const radioRenderer = {

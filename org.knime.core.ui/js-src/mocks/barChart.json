@@ -174,14 +174,7 @@
             "categoryColumn": {
               "type": "object",
               "properties": {
-                "selected": {
-                  "oneOf": [
-                    {
-                      "const": "Cluster Membership",
-                      "title": "Cluster Membership"
-                    }
-                  ]
-                }
+                "selected": {}
               },
               "title": "Category dimension",
               "description": "Select the column that contains the category values. Note: Missing values are treated as separate category.",
@@ -265,32 +258,6 @@
                   }
                 },
                 "selected": {
-                  "anyOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)"
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)"
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)"
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)"
-                    }
-                  ],
                   "configKeys": [
                     "selected_Internals"
                   ]
@@ -405,7 +372,14 @@
               "scope": "#/properties/model/properties/categoryColumn",
               "options": {
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "format": "columnSelection",
+                "possibleValues": [
+                  {
+                    "id": "Cluster Membership",
+                    "text": "Cluster Membership"
+                  }
+                ]
               }
             },
             {
@@ -420,7 +394,41 @@
               "type": "Control",
               "scope": "#/properties/model/properties/frequencyColumns",
               "options": {
-                "format": "columnFilter"
+                "format": "columnFilter",
+                "possibleValues": [
+                  {
+                    "id": "Universe_0_0",
+                    "text": "Universe_0_0",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    }
+                  },
+                  {
+                    "id": "Universe_0_1",
+                    "text": "Universe_0_1",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    }
+                  },
+                  {
+                    "id": "Universe_1_0",
+                    "text": "Universe_1_0",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    }
+                  },
+                  {
+                    "id": "Universe_1_1",
+                    "text": "Universe_1_1",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    }
+                  }
+                ]
               },
               "rule": {
                 "effect": "DISABLE",

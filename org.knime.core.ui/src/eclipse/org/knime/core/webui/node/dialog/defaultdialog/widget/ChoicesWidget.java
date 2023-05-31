@@ -56,7 +56,6 @@ import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
 /**
  * A widget supplied with an array of possible values, which are the choices for a selection.
@@ -73,19 +72,6 @@ public @interface ChoicesWidget {
      *         annotation instead for column choices.
      */
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
-
-    /**
-     * TODO UIEXT-1012 remove this when we add a separate ColumnChoicesWidget
-     *
-     * @return true if a parent contains the annotation for the choices of this field. This is only used internally for
-     *         the {@link ColumnFilter} and {@link ColumnSelection}.
-     */
-    boolean takeChoicesFromParent() default false;
-
-    /**
-     * @return true for a multiple choice selection/enum, false for a single choice selection/enum.
-     */
-    boolean multiple() default false;
 
     /**
      * TODO UIEXT-907 Make this only available for column choices.

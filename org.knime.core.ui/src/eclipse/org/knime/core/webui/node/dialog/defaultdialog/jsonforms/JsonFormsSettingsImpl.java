@@ -106,8 +106,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     @Override
     public JsonNode getSchema() {
         var settingsClasses = createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
-        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_context,
-            JsonFormsDataUtil.getMapper());
+        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_context, JsonFormsDataUtil.getMapper());
     }
 
     @Override
@@ -132,7 +131,8 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         if (m_viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), m_viewSettingsClass);
         }
-        return new RawValue(JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper()).toString());
+        return new RawValue(
+            JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), m_context).toString());
     }
 
     @Override

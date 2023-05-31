@@ -55,6 +55,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 
 import java.util.Map;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaGenerator.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaGenerator.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -76,16 +77,20 @@ final class LayoutNodesGenerator {
 
     private Map<Class<?>, JsonFormsExpression> m_signals;
 
+    private final SettingsCreationContext m_settingsCreationContext;
+
     /**
      * @param mapper the object mapper used for the ui schema generation
      * @param controls the mapping between layout parts and their contained settings controls
      * @param ruleSourcesMap the mapping between ids of rule sources to their conditions.
      * @param rootClass the root class of the layout. This can be null but only if no nested layout parts exist.
      */
-    LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout) {
+    LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout,
+        final SettingsCreationContext context) {
         m_mapper = mapper;
         m_signals = layout.signals();
         m_rootLayoutTree = layout.layoutTreeRoot();
+        m_settingsCreationContext = context;
     }
 
     ObjectNode build() {
@@ -104,7 +109,7 @@ final class LayoutNodesGenerator {
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, controlElement.scope());
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field).addOptionsTo(control);
+        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext).addOptionsTo(control);
         new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

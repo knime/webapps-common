@@ -1,18 +1,16 @@
 <script>
-import { generatePossibleValues } from '../utils';
+import { optionsMapper } from '../utils';
 import DropdownInput from './DropdownInput.vue';
 
 export default {
-    name: 'SimpleColumnSelect',
+    name: 'OneOfDropdown',
     components: {
         DropdownInput
     },
     inheritAttrs: false,
     methods: {
         optionsGenerator(control) {
-            const oneOf = control.schema.oneOf;
-            const options = control.uischema.options;
-            return generatePossibleValues(oneOf, options);
+            return control?.schema?.oneOf?.map(optionsMapper);
         }
     }
 };

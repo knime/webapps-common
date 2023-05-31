@@ -2,41 +2,55 @@
   "result": {
     "name": "Dropdowns",
     "data": {
+      "OneOfControl": "SUM",
+      "SimpleDropdown": "SUM",
       "EmptyState": {
         "selected": ""
       },
       "NoPossibleValues": {
         "selected": ""
       },
+      "MissingValue": {
+        "selected": "This is missing"
+      },
       "EmptyButSpecialValuesShown": {
-        "selected": "test"
+        "selected": "<none>"
       }
     },
     "schema": {
       "type": "object",
       "properties": {
+        "OneOfControl": {
+          "oneOf": [
+            {
+              "const": "NONE",
+              "title": "None"
+            },
+            {
+              "const": "COUNT",
+              "title": "Occurrence count"
+            },
+            {
+              "const": "SUM",
+              "title": "Sum"
+            },
+            {
+              "const": "AVG",
+              "title": "Average"
+            }
+          ],
+          "description": "Tests a dropdown with no initial selection",
+          "default": ""
+        },
+        "SimpleDropdown": {
+          "type": "string",
+          "description": "Tests a dropdown with no initial selection",
+          "default": ""
+        },
         "EmptyState": {
-          "type": "object",
           "properties": {
             "selected": {
-              "oneOf": [
-                {
-                  "const": "NONE",
-                  "title": "None"
-                },
-                {
-                  "const": "COUNT",
-                  "title": "Occurrence count"
-                },
-                {
-                  "const": "SUM",
-                  "title": "Sum"
-                },
-                {
-                  "const": "AVG",
-                  "title": "Average"
-                }
-              ]
+              "type": "string"
             }
           },
           "title": "Empty state",
@@ -47,28 +61,29 @@
           "type": "object",
           "properties": {
             "selected": {
-              "oneOf": [
-                {
-                  "const": "",
-                  "title": ""
-                }
-              ]
+              "type": "string"
             }
           },
           "title": "No possible values",
           "description": "Tests a dropdown with no possible values",
           "default": ""
         },
+        "MissingValue": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "string"
+            }
+          },
+          "title": "No possible values but special values",
+          "description": "Tests a dropdown with no possible values but therefore special values",
+          "default": ""
+        },
         "EmptyButSpecialValuesShown": {
           "type": "object",
           "properties": {
             "selected": {
-              "oneOf": [
-                {
-                  "const": "",
-                  "title": ""
-                }
-              ]
+              "type": "string"
             }
           },
           "title": "No possible values but special values",
@@ -81,7 +96,43 @@
       "elements": [
         {
           "type": "Section",
-          "label": "Dropdowns",
+          "label": "String Dropdowns",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/OneOfControl"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/SimpleDropdown",
+              "options": {
+                "format": "dropDown",
+                "possibleValues": [
+                  {
+                    "id": "NONE",
+                    "text": "None"
+                  },
+                  {
+                    "id": "COUNT",
+                    "text": "Occurrence count"
+                  },
+                  {
+                    "id": "SUM",
+                    "text": "Sum"
+                  },
+                  {
+                    "id": "AVG",
+                    "text": "Average"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "type": "Section",
+          "label": "Column Selection Dropdowns",
           "elements": [
             {
               "type": "Control",
@@ -89,7 +140,25 @@
               "options": {
                 "format": "columnSelection",
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "possibleValues": [
+                  {
+                    "id": "NONE",
+                    "text": "None"
+                  },
+                  {
+                    "id": "COUNT",
+                    "text": "Occurrence count"
+                  },
+                  {
+                    "id": "SUM",
+                    "text": "Sum"
+                  },
+                  {
+                    "id": "AVG",
+                    "text": "Average"
+                  }
+                ]
               }
             },
             {
@@ -98,7 +167,23 @@
               "options": {
                 "format": "columnSelection",
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "possibleValues": []
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/MissingValue",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": false,
+                "showNoneColumn": false,
+                "possibleValues": [
+                  {
+                    "id": "existing",
+                    "text": "Existing value"
+                  }
+                ]
               }
             },
             {

@@ -1,18 +1,27 @@
-import { uiTypeIs, rankWith, schemaMatches, and } from '@jsonforms/core';
+import { and, isControl, not, rankWith, schemaMatches } from '@jsonforms/core';
 import TwinlistInput from '../uiComponents/TwinlistInput.vue';
-import { priorityRanks, inputFormats } from '../constants';
+import SimpleTwinlistInput from '../uiComponents/SimpleTwinlistInput.vue';
 
-export const checkTwinlistStructure = and(uiTypeIs('Control'), schemaMatches(
-    (s) => s.hasOwnProperty('properties') &&
-     Object.values(s.properties).some(prop => prop.hasOwnProperty('anyOf'))
-));
+import { inputFormats, priorityRanks } from '../constants';
 
+const isSelection = schemaMatches(
+    (s) => s.hasOwnProperty('properties') && s.properties.hasOwnProperty('selected')
+);
 
-export const twinlistTester = (uischema, schema) => checkTwinlistStructure(uischema, schema) &&
-    uischema.options?.format === inputFormats.anyOfTwinList;
+const isTwinlist = (uischema, _schema) => isControl(uischema) &&
+    uischema.options?.format === inputFormats.twinList;
+
+export const twinlistTester = and(isTwinlist, isSelection);
 
 
 export const twinlistRenderer = {
     renderer: TwinlistInput,
     tester: rankWith(priorityRanks.default, twinlistTester)
+};
+
+export const simpleTwinlistTester = and(isTwinlist, not(isSelection));
+
+export const simpleTwinlistRenderer = {
+    renderer: SimpleTwinlistInput,
+    tester: rankWith(priorityRanks.default, simpleTwinlistTester)
 };

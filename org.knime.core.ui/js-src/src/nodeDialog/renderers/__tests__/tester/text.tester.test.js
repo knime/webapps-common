@@ -29,10 +29,18 @@ describe('textTester', () => {
         expect(
             textTester({
                 type: 'Control',
-                scope: '#/properties/view/properties/xAxisColumn',
-                options: {
-                    format: 'columnSelection'
-                }
+                scope: '#/properties/view/properties/xAxisColumn'
+            },
+            dialogInitialData.schema)
+        ).toBe(false);
+    });
+
+
+    it('does not apply if a oneOf control', () => {
+        expect(
+            textTester({
+                type: 'Control',
+                scope: '#/properties/view/properties/xAxisColumn'
             },
             dialogInitialData.schema)
         ).toBe(false);

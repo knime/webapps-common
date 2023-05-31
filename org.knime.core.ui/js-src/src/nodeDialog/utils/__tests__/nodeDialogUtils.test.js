@@ -2,10 +2,9 @@ import { describe, expect, it, test } from 'vitest';
 import { optionsMapper,
     isModelSettingAndHasNodeView,
     hasAdvancedOptions,
-    optionsMapperWithType,
     getFlowVariablesMap,
     mergeDeep,
-    generatePossibleValues } from '..';
+    getPossibleValuesFromUiSchema } from '..';
 
 describe('Utils', () => {
     it('optionsMapper maps Knime row data presentation to echarts index value', () => {
@@ -20,50 +19,37 @@ describe('Utils', () => {
         ]);
     });
 
-    it('optionsMapperWithType resolves additional type information', () => {
-        expect(
-            [
-                { const: 'rowName', title: 'Row Name', columnType: 'typeA', columnTypeDisplayed: 'Type A' },
-                { const: 'columName', title: 'Colum Name', columnType: 'typeB', columnTypeDisplayed: 'Type B' }
-            ].map(optionsMapperWithType)
-        ).toEqual([
-            { id: 'rowName', text: 'Row Name', type: { id: 'typeA', text: 'Type A' } },
-            { id: 'columName', text: 'Colum Name', type: { id: 'typeB', text: 'Type B' } }
-        ]);
-    });
-
     describe('generatePossibleValues', () => {
-        const optionsArray = [
-            { const: 'column_1', title: 'Column Name 1' },
-            { const: 'column_2', title: 'Column Name 2' }
+        const possibleValues = [
+            { id: 'column_1', text: 'Column Name 1' },
+            { id: 'column_2', text: 'Column Name 2' }
         ];
+        const control = { uischema: { options: { possibleValues } } };
 
         it('uses optionsMapper per default', () => {
-            expect(generatePossibleValues(optionsArray)).toStrictEqual(optionsArray.map(optionsMapper));
-        });
-
-        it('uses custom mapper if provided', () => {
-            expect(generatePossibleValues(optionsArray, {}, () => 1)).toStrictEqual([1, 1]);
+            expect(getPossibleValuesFromUiSchema(control)).toStrictEqual(possibleValues);
         });
 
         it('adds additional options', () => {
-            expect(generatePossibleValues(optionsArray, { showNoneColumn: true })).toEqual(
+            expect(getPossibleValuesFromUiSchema({ uischema: { options: {
+                possibleValues,
+                showNoneColumn: true
+            } } })).toEqual(
                 expect.arrayContaining([{
                     id: '<none>',
                     text: 'None'
                 }])
             );
-            expect(generatePossibleValues(optionsArray, { showRowKeys: true })).toEqual(
+            expect(getPossibleValuesFromUiSchema({ uischema: { options: {
+                possibleValues,
+                showRowKeys: true
+            } } })).toEqual(
                 expect.arrayContaining([{
                     id: '<row-keys>',
                     text: 'RowIDs'
                    
                 }])
             );
-        });
-
-        it('returns empty options if options contain only one empty value', () => {
-            expect(generatePossibleValues([{ const: '', title: '' }])).toEqual([]);
         });
     });
 

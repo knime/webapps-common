@@ -1,7 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
+import { getFlowVariablesMap, isModelSettingAndHasNodeView, getPossibleValuesFromUiSchema } from '../utils';
 import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
@@ -34,6 +34,11 @@ const SimpleTwinlistInput = defineComponent({
             type: String,
             required: false,
             default: defaultTwinlistRightLabel
+        },
+        optionsGenerator: {
+            type: Function,
+            required: false,
+            default: getPossibleValuesFromUiSchema
         }
     },
     setup(props) {
@@ -56,7 +61,7 @@ const SimpleTwinlistInput = defineComponent({
         }
     },
     created() {
-        this.possibleValues = this.control.schema.anyOf.map(optionsMapper);
+        this.possibleValues = this.optionsGenerator(this.control);
     },
     methods: {
         onChange(event) {

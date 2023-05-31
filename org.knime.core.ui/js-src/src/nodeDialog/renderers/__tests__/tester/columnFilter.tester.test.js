@@ -23,7 +23,7 @@ describe('ColumnFilterTester', () => {
                 type: 'Control',
                 scope: '#/properties/view/properties/frequencyColumns',
                 options: {
-                    format: inputFormats.anyOfTwinList
+                    format: inputFormats.twinList
                 }
             },
             dialogInitialData.schema)
@@ -34,7 +34,6 @@ describe('ColumnFilterTester', () => {
         expect(
             columnFilterTester({
                 type: 'Section',
-                scope: '#/properties/view/properties/frequencyColumns',
                 options: {
                     format: inputFormats.columnFilter
                 }

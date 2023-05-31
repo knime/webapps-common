@@ -44,13 +44,4 @@ describe('ColumnFilter', () => {
         
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ColumnFilter');
     });
-
-    it('columnFilter without options uses twinlist fallback', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/columnFilter'
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('TwinListInput');
-    });
 });

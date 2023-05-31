@@ -118,29 +118,38 @@ describe('TwinlistInput.vue', () => {
                             ]
                         },
                         selected: {
-                            anyOf:
-                                [{
-                                    const: 'test_1',
-                                    title: 'test_1',
-                                    columnType: 'StringValue',
-                                    columnTypeDisplayed: 'String'
-                                },
-                                {
-                                    const: 'test_2',
-                                    title: 'test_2',
-                                    columnType: 'DoubleValue',
-                                    columnTypeDisplayed: 'Double'
-                                },
-                                {
-                                    const: 'test_3',
-                                    title: 'test_3',
-                                    columnType: 'StringValue',
-                                    columnTypeDisplayed: 'String'
-                                }]
+                            type: 'array'
                         }
                     }
                 },
-                uischema: {},
+                uischema: {
+                    options: {
+                        possibleValues: [{
+                            id: 'test_1',
+                            text: 'test_1',
+                            type: {
+                                id: 'StringValue',
+                                text: 'String'
+                            }
+                        },
+                        {
+                            id: 'test_2',
+                            text: 'test_2',
+                            type: {
+                                id: 'DoubleValue',
+                                text: 'Double'
+                            }
+                        },
+                        {
+                            id: 'test_3',
+                            text: 'test_3',
+                            type: {
+                                id: 'StringValue',
+                                text: 'String'
+                            }
+                        }]
+                    }
+                },
                 rootSchema: {
                     hasNodeView: true,
                     flowVariablesMap: {}
@@ -324,15 +333,6 @@ describe('TwinlistInput.vue', () => {
         ]);
     });
 
-    it('transforms empty anyof into empty possible values', async () => {
-        props.control.schema.properties.selected.anyOf = [{ const: '', title: '' }];
-        const localWrapper = await mountJsonFormsComponentWithStore(
-            TwinlistInput,
-            props
-        );
-        expect(localWrapper.findComponent(Twinlist).props().possibleValues).toEqual([]);
-    });
-
     describe('unknown columns', () => {
         it('excludes unknown columns', () => {
             const localProps = mergeDeep(props, {
@@ -344,15 +344,13 @@ describe('TwinlistInput.vue', () => {
                             manuallyDeselected: ['C', 'D']
                         }
                     },
-                    schema: {
-                        properties: {
-                            selected: {
-                                anyOf: [
-                                    { const: 'B', title: 'B' },
-                                    { const: 'D', title: 'D' },
-                                    { const: 'E', title: 'E' }
-                                ]
-                            }
+                    uischema: {
+                        options: {
+                            possibleValues: [
+                                { id: 'B', text: 'B' },
+                                { id: 'D', text: 'D' },
+                                { id: 'E', text: 'E' }
+                            ]
                         }
                     }
                 }
@@ -377,15 +375,13 @@ describe('TwinlistInput.vue', () => {
                             manuallyDeselected: ['C', 'D']
                         }
                     },
-                    schema: {
-                        properties: {
-                            selected: {
-                                anyOf: [
-                                    { const: 'B', title: 'B' },
-                                    { const: 'D', title: 'D' },
-                                    { const: 'E', title: 'E' }
-                                ]
-                            }
+                    uischema: {
+                        options: {
+                            possibleValues: [
+                                { id: 'B', text: 'B' },
+                                { id: 'D', text: 'D' },
+                                { id: 'E', text: 'E' }
+                            ]
                         }
                     }
                 }

@@ -44,13 +44,9 @@
  * ---------------------------------------------------------------------
  *
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema;
-
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_TITLE;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
@@ -60,11 +56,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.victools.jsonschema.generator.SchemaGenerationContext;
-import com.github.victools.jsonschema.generator.SchemaGeneratorConfig;
 
 /**
  * @author Paul Bärnreuther
@@ -73,18 +68,17 @@ final class ChoicesArrayNodeGenerator {
 
     private final SettingsCreationContext m_settingsContext;
 
-    private final SchemaGeneratorConfig m_config;
-
     private ArrayNode m_arrayNode;
 
-    public ChoicesArrayNodeGenerator(final SchemaGenerationContext schemaContext,
-        final SettingsCreationContext settingsContext) {
+    private final ObjectMapper m_mapper;
+
+    ChoicesArrayNodeGenerator(final ObjectMapper mapper, final SettingsCreationContext settingsContext) {
         m_settingsContext = settingsContext;
-        m_config = schemaContext.getGeneratorConfig();
+        m_mapper = mapper;
     }
 
-    public ArrayNode createChoicesNode(final Class<? extends ChoicesProvider> choicesProviderClass) {
-        m_arrayNode = m_config.createArrayNode();
+    ArrayNode createChoicesNode(final Class<? extends ChoicesProvider> choicesProviderClass) {
+        m_arrayNode = m_mapper.createArrayNode();
         final ChoicesProvider choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
         if (isColumnChoicesProvider(choicesProviderClass)) {
             addColumnsFromColumnChoicesProvider((ColumnChoicesProvider)choicesProvider);
@@ -102,14 +96,10 @@ final class ChoicesArrayNodeGenerator {
     private void addColumnsFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider) {
         DataColumnSpec[] columnChoices = choicesProvider == null || m_settingsContext == null ? new DataColumnSpec[0]
             : choicesProvider.columnChoices(m_settingsContext);
-        if (columnChoices.length > 0) {
-            addNonEmptyColumnChoices(columnChoices);
-        } else {
-            addEmptyColumnChoice();
-        }
+        addColumnChoices(columnChoices);
     }
 
-    private void addNonEmptyColumnChoices(final DataColumnSpec[] colChoices) {
+    private void addColumnChoices(final DataColumnSpec[] colChoices) {
         for (DataColumnSpec colChoice : colChoices) {
             final var colName = colChoice.getName();
             final var colType = colChoice.getType();
@@ -120,29 +110,17 @@ final class ChoicesArrayNodeGenerator {
         }
     }
 
-    private void addEmptyColumnChoice() {
-        addChoiceWithTypeInformation("", "", "", "", Collections.emptyList());
-    }
-
     private void addStringsFromChoicesProvider(final ChoicesProvider choicesProvider) {
         String[] choices = choicesProvider == null || m_settingsContext == null //
             ? new String[0] //
             : choicesProvider.choices(m_settingsContext);
-        if (choices.length != 0) {
-            addNonEmptyStringChoices(choices);
-        } else {
-            addEmptyStringChoice();
-        }
+        addStringChoices(choices);
     }
 
-    private void addNonEmptyStringChoices(final String[] choices) {
+    private void addStringChoices(final String[] choices) {
         for (var choice : choices) {
             addChoice(choice, choice);
         }
-    }
-
-    private void addEmptyStringChoice() {
-        addChoice("", "");
     }
 
     private void addChoice(final String id, final String text) {
@@ -153,14 +131,13 @@ final class ChoicesArrayNodeGenerator {
     private void addChoiceWithTypeInformation(final String id, final String text, final String type,
         final String displayedType, final List<String> compatibleTypes) {
         final var entry = getBaseEntry(id, text);
-        entry.put("columnType", type);
-        entry.put("columnTypeDisplayed", displayedType);
+        entry.putObject("type").put("id", type).put("text", displayedType);
         final var compatibleTypesArrayNode = entry.putArray("compatibleTypes");
         compatibleTypes.stream().map(TextNode::new).forEach(compatibleTypesArrayNode::add);
         m_arrayNode.add(entry);
     }
 
     private ObjectNode getBaseEntry(final String id, final String text) {
-        return m_config.createObjectNode().put(TAG_CONST, id).put(TAG_TITLE, text);
+        return m_mapper.createObjectNode().put("id", id).put("text", text);
     }
 }

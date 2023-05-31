@@ -10,35 +10,10 @@ describe('TwinlistInput', () => {
         type: 'object',
         properties: {
             twinlist: {
-                anyOf: [
-                    {
-                        const: '1',
-                        title: 'One'
-                    },
-                    {
-                        const: '2',
-                        title: 'Two'
-                    },
-                    {
-                        const: '3',
-                        title: 'Three'
-                    }
-                ]
+                type: 'array'
             }
         }
     };
-
-    it('twinListInput config error', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/twinlist',
-            options: {
-                format: 'integer'
-            }
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleTwinListInput');
-    });
 
     it('twinListInput with options', () => {
         const uiSchema = {
@@ -49,15 +24,6 @@ describe('TwinlistInput', () => {
             }
         };
         
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleTwinListInput');
-    });
-
-    it('twinListInput without options uses oneOf fallback', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/twinlist'
-        };
-
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleTwinListInput');
     });
 });

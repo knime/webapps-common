@@ -48,18 +48,14 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ANYOF;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ONEOF;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_TITLE;
 
+import java.util.Locale;
+
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
@@ -72,59 +68,24 @@ import com.github.victools.jsonschema.generator.SchemaGenerationContext;
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinitionProvider<FieldScope> {
+final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<FieldScope> {
 
-    private final SettingsCreationContext m_settingsContext;
-
-    ChoicesAndEnumDefinitionProvider(final SettingsCreationContext settingsContext) {
-        m_settingsContext = settingsContext;
-    }
-
-    private ChoicesWidget m_lastChoicesWidgetWithColumns;
 
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
         final SchemaGenerationContext schemaContext) {
-        ArrayNode arrayNode = null;
         final var type = field.getType();
         final var erasedType = type.getErasedType();
-        final var choicesWidget = field.getAnnotation(ChoicesWidget.class);
 
-        if (hasChoices(choicesWidget, field)) {
-            if (type.canCreateSubtype(ColumnFilter.class) || type.canCreateSubtype(ColumnSelection.class)) {
-                m_lastChoicesWidgetWithColumns = choicesWidget;
-            } else {
-                arrayNode = determineChoiceValues(schemaContext, choicesWidget.choices());
-            }
-        }
-        if (usesCachedChoices(choicesWidget)) {
-            arrayNode = determineChoiceValues(schemaContext, m_lastChoicesWidgetWithColumns.choices());
-        }
         if (type.isInstanceOf(Enum.class) && erasedType.getEnumConstants() != null) {
-            arrayNode = determineEnumValues(schemaContext, erasedType);
+            final var arrayNode = determineEnumValues(schemaContext, erasedType);
+            final var outerObjectNode = schemaContext.getGeneratorConfig().createObjectNode();
+
+            outerObjectNode.set(TAG_ONEOF, arrayNode);
+            return new CustomPropertyDefinition(outerObjectNode);
         }
-        if (arrayNode == null) {
-            return null;
-        }
+        return null;
 
-        final var outerObjectNode = schemaContext.getGeneratorConfig().createObjectNode();
-
-        outerObjectNode.set(determineEnumTagType(field), arrayNode);
-        return new CustomPropertyDefinition(outerObjectNode);
-    }
-
-    private static boolean hasChoices(final ChoicesWidget choicesWidget, final FieldScope field) {
-        return choicesWidget != null && !choicesWidget.choices().equals(ChoicesProvider.class)
-            && !field.isFakeContainerItemScope();
-    }
-
-    private boolean usesCachedChoices(final ChoicesWidget choicesWidget) {
-        return choicesWidget != null && choicesWidget.takeChoicesFromParent() && m_lastChoicesWidgetWithColumns != null;
-    }
-
-    private ArrayNode determineChoiceValues(final SchemaGenerationContext schemaContext,
-        final Class<? extends ChoicesProvider> choicesProviderClass) {
-        return new ChoicesArrayNodeGenerator(schemaContext, m_settingsContext).createChoicesNode(choicesProviderClass);
     }
 
     private ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext, final Class<?> erasedType) {
@@ -157,15 +118,6 @@ final class ChoicesAndEnumDefinitionProvider implements CustomPropertyDefinition
             NodeLogger.getLogger(getClass()).error(String.format("Exception when accessing field %s.", name), e);
         }
         innerObjectNode.put(TAG_TITLE,
-            title != null ? title : StringUtils.capitalize(name.toLowerCase().replace("_", " ")));
-    }
-
-    private static String determineEnumTagType(final FieldScope field) {
-        final var choicesWidget = field.getAnnotationConsideringFieldAndGetter(ChoicesWidget.class);
-        if (choicesWidget != null && choicesWidget.multiple()) {
-            return TAG_ANYOF;
-        } else {
-            return TAG_ONEOF;
-        }
+            title != null ? title : StringUtils.capitalize(name.toLowerCase(Locale.getDefault()).replace("_", " ")));
     }
 }

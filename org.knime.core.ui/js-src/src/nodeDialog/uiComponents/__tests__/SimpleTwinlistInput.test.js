@@ -14,21 +14,24 @@ describe('SimpleTwinlistInput.vue', () => {
             label: 'defaultLabel',
             data: ['test_1'],
             schema: {
-                anyOf:
-                    [{
-                        const: 'test_1',
-                        title: 'test_1'
-                    },
-                    {
-                        const: 'test_2',
-                        title: 'test_2'
-                    },
-                    {
-                        const: 'test_3',
-                        title: 'test_3'
-                    }]
+                type: 'array'
             },
-            uischema: {},
+            uischema: {
+                options: {
+                    possibleValues: [{
+                        id: 'test_1',
+                        text: 'test_1'
+                    },
+                    {
+                        id: 'test_2',
+                        text: 'test_2'
+                    },
+                    {
+                        id: 'test_3',
+                        text: 'test_3'
+                    }]
+                }
+            },
             rootSchema: {
                 hasNodeView: true,
                 flowVariablesMap: {}
@@ -83,7 +86,7 @@ describe('SimpleTwinlistInput.vue', () => {
                 control: {
                     ...defaultProps.control,
                     uischema: {
-                        ...defaultProps.control.schema,
+                        ...defaultProps.control.uischema,
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }

@@ -65,15 +65,9 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -83,11 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Settin
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -168,7 +158,6 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testEnumThrowsWhenUsingWidgetAnnotation() throws JsonProcessingException {
 
-
         class EnumTestSettingWidgetAnnotation {
             enum TestEnum {
                     SOME_CHOICE, //
@@ -186,36 +175,6 @@ class JsonFormsSchemaUtilTest {
         public String[] choices(final SettingsCreationContext context) {
             return new String[]{context.getDataTableSpecs()[0].getColumnSpec(0).getName()};
         }
-    }
-
-    private static class TestChoicesSetting {
-        private static String SNAPSHOT = "{\"test\":{\"oneOf\":[" + //
-            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
-            "]}}";
-
-        @ChoicesWidget(choices = TestChoices.class)
-        public String test;
-    }
-
-    @Test
-    void testChoices() throws JsonProcessingException {
-        final var spec = new DataTableSpec(new DataColumnSpecCreator("some choice", StringCell.TYPE).createSpec());
-        testSettings(TestChoicesSetting.class, spec);
-    }
-
-    private static class TestMultipleChoicesSetting {
-        private static String SNAPSHOT = "{\"test\":{\"anyOf\":[" + //
-            "{\"const\":\"some choice\",\"title\":\"some choice\"}" + //
-            "]}}";
-
-        @ChoicesWidget(choices = TestChoices.class, multiple = true)
-        public String[] test;
-    }
-
-    @Test
-    void testMultipleChoices() throws JsonProcessingException {
-        final var spec = new DataTableSpec(new DataColumnSpecCreator("some choice", StringCell.TYPE).createSpec());
-        testSettings(TestMultipleChoicesSetting.class, spec);
     }
 
     private static class MinMaxSetting {
@@ -385,170 +344,6 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testIgnore() throws JsonProcessingException {
         testSettings(IgnoreSetting.class);
-    }
-
-    private static class ColumnChoices implements ColumnChoicesProvider {
-
-        static String[] included = new String[]{"included", "included2"};
-
-        @Override
-        public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
-            DataTableSpec spec = context.getDataTableSpecs()[0];
-            return Stream.of(included)//
-                .map(spec::getColumnSpec)//
-                .toArray(DataColumnSpec[]::new);
-        }
-    }
-
-    private static class NonColumnChoices implements ChoicesProvider {
-
-        static String[] included = new String[]{"included", "included2"};
-
-        @Override
-        public String[] choices(final SettingsCreationContext context) {
-            return included;
-        }
-    }
-
-    private static String COMPATIBLE_TYPES_STRING_VALUE = " [" //
-        + "\"org.knime.core.data.StringValue\", " //
-        + "\"org.knime.core.data.DataValue\", " //
-        + "\"org.knime.core.data.NominalValue\"" //
-        + "]";
-
-    private static String COMPATIBLE_TYPES_DOUBLE_VALUE = "[" //
-        + "\"org.knime.core.data.DoubleValue\", " //
-        + "\"org.knime.core.data.DataValue\", " //
-        + "\"org.knime.core.data.ComplexNumberValue\", " //
-        + "\"org.knime.core.data.FuzzyNumberValue\", " //
-        + "\"org.knime.core.data.FuzzyIntervalValue\", " //
-        + "\"org.knime.core.data.BoundedValue\"]";
-
-    private static class ColumnSelectionSettings {
-
-        private static DataTableSpec spec =
-            new DataTableSpec(new DataColumnSpecCreator(ColumnChoices.included[0], DoubleCell.TYPE).createSpec(),
-                new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
-
-        private static String COMPATIBLE_TYPES_SNAPSHOT = "{\"configKeys\":[\"compatibleTypes_Internals\"]," //
-            + "\"items\":{\"configKeys\":[\"compatibleTypes_Internals\"],\"type\":\"string\"}," //
-            + "\"type\":\"array\"}";
-
-        private static String SNAPSHOT = "{" + //
-            "\"testColumnSelection\":{"// +
-            + "\"title\":\"column\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\","
-            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_DOUBLE_VALUE //
-            + "},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\"," //
-            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_STRING_VALUE //
-            + "}]},"//
-            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_SNAPSHOT + "}}," //
-            + "\"testColumnSelectionNoTypes\":{"// +
-            + "\"title\":\"strings\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + "\"selected\":{\"oneOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}]}," //
-            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_SNAPSHOT + "}}" + "}";
-
-        @Widget(title = "column")
-        @ChoicesWidget(choices = ColumnChoices.class)
-        public ColumnSelection testColumnSelection;
-
-        @Widget(title = "strings")
-        @ChoicesWidget(choices = NonColumnChoices.class)
-        public ColumnSelection testColumnSelectionNoTypes;
-    }
-
-    @Test
-    void testColumnSelection() throws JsonProcessingException {
-        testSettings(ColumnSelectionSettings.class, ColumnSelectionSettings.spec);
-    }
-
-    private static String COLUMN_FILTER_SNAPSHOT_IDENTICAL =
-        "\"manualFilter\":{\"type\":\"object\",\"properties\":{\"manuallySelected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"manuallyDeselected\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}, \"includeUnknownColumns\":{\"type\":\"boolean\",\"default\":false}}, \"default\":{\"manuallySelected\":[], \"manuallyDeselected\":[], \"includeUnknownColumns\":false}},"
-            + "\"mode\":{\"oneOf\":[{\"const\":\"MANUAL\",\"title\":\"Manual\"},{\"const\":\"REGEX\",\"title\":\"Regex\"},{\"const\":\"WILDCARD\",\"title\":\"Wildcard\"},{\"const\":\"TYPE\",\"title\":\"Type\"}],\"default\":\"MANUAL\"},"
-            + "\"patternFilter\":{\"type\":\"object\",\"properties\":{\"isCaseSensitive\":{\"type\":\"boolean\",\"default\":false},\"isInverted\":{\"type\":\"boolean\",\"default\":false},\"pattern\":{\"type\":\"string\",\"default\":\"\"}},\"default\":{\"pattern\":\"\",\"isCaseSensitive\":false,\"isInverted\":false}},"
-            + "\"typeFilter\":{\"type\":\"object\",\"properties\":{"
-            + "\"selectedTypes\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"string\"}},"
-            + "\"typeDisplays\":{\"default\":[],\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"text\":{\"type\":\"string\"}}}}"
-            + "},\"default\":{\"selectedTypes\":[],\"typeDisplays\":[]}},";
-
-    private static class ColumnFilterSetting {
-
-        private static DataTableSpec spec =
-            new DataTableSpec(new DataColumnSpecCreator(ColumnChoices.included[0], DoubleCell.TYPE).createSpec(),
-                new DataColumnSpecCreator(ColumnChoices.included[1], StringCell.TYPE).createSpec(),
-                new DataColumnSpecCreator("excluded", StringCell.TYPE).createSpec());
-
-        private static String SNAPSHOT = "{" + //
-            "\"testColumnFilter\":{"// +
-            + "\"title\":\"columns\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + COLUMN_FILTER_SNAPSHOT_IDENTICAL + "\"selected\":{\"anyOf\":["
-            + "{\"const\":\"included\",\"title\":\"included\",\"columnType\":\"org.knime.core.data.DoubleValue\",\"columnTypeDisplayed\":\"Number (double)\","
-            + "\"compatibleTypes\": " + COMPATIBLE_TYPES_DOUBLE_VALUE //
-            + "},{\"const\":\"included2\",\"title\":\"included2\",\"columnType\":\"org.knime.core.data.StringValue\",\"columnTypeDisplayed\":\"String\","
-            + "\"compatibleTypes\":" + COMPATIBLE_TYPES_STRING_VALUE //
-            + "}],\"configKeys\":[\"selected_Internals\"]}"//
-            + "}}," //
-            + "\"testColumnFilterNoTypes\":{" //
-            + "\"title\":\"otherSelection\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"included\",\"title\":\"included\"},{\"const\":\"included2\",\"title\":\"included2\"}],\"configKeys\":[\"selected_Internals\"]}"//
-            + "}}}";
-
-        @Widget(title = "columns")
-        @ChoicesWidget(choices = ColumnChoices.class)
-        public ColumnFilter testColumnFilter;
-
-        @Widget(title = "otherSelection")
-        @ChoicesWidget(choices = NonColumnChoices.class)
-        public ColumnFilter testColumnFilterNoTypes;
-    }
-
-    @Test
-    void testColumnFilter() throws JsonProcessingException {
-        testSettings(ColumnFilterSetting.class, ColumnFilterSetting.spec);
-    }
-
-    private static class ColumnFilterSettingWithoutContext {
-
-        private static String SNAPSHOT = "{" + //
-            "\"testColumnFilter\":{"// +
-            + "\"title\":\"columns\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\",\"columnType\":\"\",\"columnTypeDisplayed\":\"\","
-            + "\"compatibleTypes\": []" + "}],\"configKeys\":[\"selected_Internals\"]}"//
-            + "}}," //
-            + "\"testColumnFilterNoTypes\":{" //
-            + "\"title\":\"otherSelection\","//
-            + "\"type\":\"object\","//
-            + "\"properties\":{" //
-            + COLUMN_FILTER_SNAPSHOT_IDENTICAL
-            + "\"selected\":{\"anyOf\":[{\"const\":\"\",\"title\":\"\"}],\"configKeys\":[\"selected_Internals\"]}"//
-            + "}}" //
-            + "}";
-
-        @Widget(title = "columns")
-        @ChoicesWidget(choices = ColumnChoices.class)
-        public ColumnFilter testColumnFilter;
-
-        @Widget(title = "otherSelection")
-        @ChoicesWidget(choices = NonColumnChoices.class)
-        public ColumnFilter testColumnFilterNoTypes;
-    }
-
-    @Test
-    void testColumnFilterWithoutContext() throws JsonProcessingException {
-        testSettingsWithoutContext(ColumnFilterSettingWithoutContext.class);
     }
 
     private static class SettingWithConfigKeyInPersistAnnotation {

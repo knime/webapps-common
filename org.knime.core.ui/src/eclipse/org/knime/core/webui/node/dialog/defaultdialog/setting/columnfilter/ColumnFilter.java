@@ -56,7 +56,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -71,7 +70,6 @@ public class ColumnFilter implements PersistableSettings {
     /**
      * The setting representing the selected columns
      */
-    @ChoicesWidget(takeChoicesFromParent = true, multiple = true)
     @Persist(hidden = true)
     public String[] m_selected;
 
@@ -123,7 +121,7 @@ public class ColumnFilter implements PersistableSettings {
 
     /**
      * Initialises the column selection based on the given context.
-     * 
+     *
      * @param context settings creation context
      */
     public ColumnFilter(final SettingsCreationContext context) {

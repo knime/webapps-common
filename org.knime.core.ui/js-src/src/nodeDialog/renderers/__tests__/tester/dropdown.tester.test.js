@@ -10,7 +10,7 @@ describe('dropdownTester', () => {
                 type: 'Control',
                 scope: '#/properties/view/properties/dropdown',
                 options: {
-                    format: inputFormats.oneOfDropdown
+                    format: inputFormats.dropDown
                 }
             },
             dialogInitialData.schema)
@@ -31,9 +31,8 @@ describe('dropdownTester', () => {
         expect(
             dropdownTester({
                 type: 'Section',
-                scope: '#/properties/view/properties/dropdown',
                 options: {
-                    format: inputFormats.oneOfDropdown
+                    format: inputFormats.dropDown
                 }
             },
             dialogInitialData.schema)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { simpleTwinlistTester } from '../../simpleTwinlistRenderer';
+import { simpleTwinlistTester } from '../../twinlistRenderer';
 import { inputFormats } from '@/nodeDialog/constants/inputFormats';
 import { dialogInitialData } from '@@/test-setup/mocks/dialogInitialData';
 
@@ -11,7 +11,7 @@ describe('simpleTwinlistTester', () => {
                     type: 'Control',
                     scope: '#/properties/view/properties/simpleTwinlist',
                     options: {
-                        format: inputFormats.anyOfTwinList
+                        format: inputFormats.twinList
                     }
                 },
                 dialogInitialData.schema
@@ -33,9 +33,8 @@ describe('simpleTwinlistTester', () => {
         expect(
             simpleTwinlistTester({
                 type: 'Section',
-                scope: '#/properties/view/properties/simpleTwinlist',
                 options: {
-                    format: inputFormats.anyOfTwinList
+                    format: inputFormats.twinList
                 }
             },
             dialogInitialData.schema)

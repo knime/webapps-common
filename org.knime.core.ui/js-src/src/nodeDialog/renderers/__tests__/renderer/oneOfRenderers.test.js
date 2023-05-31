@@ -5,11 +5,11 @@ import { determineRenderer } from '../rendererTestUtils';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
-describe('ValueSwitchInput', () => {
+describe('controls with an oneOf schema', () => {
     const schema = {
         type: 'object',
         properties: {
-            valueSwitch: {
+            oneOfControl: {
                 oneOf: [
                     {
                         const: '1',
@@ -24,22 +24,10 @@ describe('ValueSwitchInput', () => {
         }
     };
 
-    it('check that the default renderer is used for invalid configs', () => {
+    it('creates a value switch if requested', () => {
         const uiSchema = {
             type: 'Control',
-            scope: '#/properties/valueSwitch',
-            options: {
-                format: 'integer'
-            }
-        };
-
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleColumnSelect');
-    });
-
-    it('ensure a value switch is created if explicitly requested', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/valueSwitch',
+            scope: '#/properties/oneOfControl',
             options: {
                 format: 'valueSwitch'
             }
@@ -48,12 +36,24 @@ describe('ValueSwitchInput', () => {
         expect(determineRenderer(uiSchema, schema, renderers)).toBe('ValueSwitchInput');
     });
 
-    it('check if default renderer is used if value switch isn\'t explicitly requested', () => {
+    it('creates radio buttons if requested', () => {
         const uiSchema = {
             type: 'Control',
-            scope: '#/properties/valueSwitch'
+            scope: '#/properties/oneOfControl',
+            options: {
+                format: 'radio'
+            }
         };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleColumnSelect');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('RadioInput');
+    });
+
+    it('falls back to dropdown without format', () => {
+        const uiSchema = {
+            type: 'Control',
+            scope: '#/properties/oneOfControl'
+        };
+
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('OneOfDropdown');
     });
 });

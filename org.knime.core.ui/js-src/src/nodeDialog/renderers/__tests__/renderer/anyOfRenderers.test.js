@@ -5,12 +5,12 @@ import { determineRenderer } from '../rendererTestUtils';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
-describe('Dropdown', () => {
+describe('controls with an anyOf schema', () => {
     const schema = {
         type: 'object',
         properties: {
-            dropdown: {
-                oneOf: [
+            anyOfControl: {
+                anyOf: [
                     {
                         const: '1',
                         title: 'One'
@@ -18,25 +18,18 @@ describe('Dropdown', () => {
                     {
                         const: '2',
                         title: 'Two'
-                    },
-                    {
-                        const: '3',
-                        title: 'Three'
                     }
                 ]
             }
         }
     };
 
-    it('renders DropdownInput', () => {
+    it('falls back to twinlist without format', () => {
         const uiSchema = {
             type: 'Control',
-            scope: '#/properties/dropdown',
-            options: {
-                format: 'dropDown'
-            }
+            scope: '#/properties/anyOfControl'
         };
-        
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('AnyOfTwinlist');
     });
 });

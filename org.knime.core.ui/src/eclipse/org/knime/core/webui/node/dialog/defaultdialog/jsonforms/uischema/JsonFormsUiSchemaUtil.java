@@ -50,6 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.Map;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -69,7 +71,8 @@ public final class JsonFormsUiSchemaUtil {
      * @param mapper
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        return new JsonFormsUiSchemaGenerator(settings, mapper).build();
+    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings,
+        final ObjectMapper mapper, final SettingsCreationContext context) {
+        return new JsonFormsUiSchemaGenerator(settings, mapper, context).build();
     }
 }

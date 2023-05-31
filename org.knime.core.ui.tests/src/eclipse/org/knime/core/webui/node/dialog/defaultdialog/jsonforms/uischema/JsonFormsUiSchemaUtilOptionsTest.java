@@ -53,13 +53,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -88,6 +97,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
             MyEnum m_enum;
 
             ColumnFilter m_columnFilter;
+
+            ColumnSelection m_columnSelection;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
@@ -98,6 +109,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[2]").isObject().doesNotContainKey("options");
         assertThatJson(response).inPath("$.elements[3].scope").isString().contains("columnFilter");
         assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("columnFilter");
+        assertThatJson(response).inPath("$.elements[4].scope").isString().contains("columnSelection");
+        assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("columnSelection");
     }
 
     @Test
@@ -191,6 +204,120 @@ class JsonFormsUiSchemaUtilOptionsTest {
         var response = buildTestUiSchema(ValueSwitchSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("valueSwitch");
+    }
+
+    static class TestColumnChoicesProvider implements ColumnChoicesProvider {
+
+        @Override
+        public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
+            return ((DataTableSpec)context.getPortObjectSpec(0).get()).stream().toArray(DataColumnSpec[]::new);
+        }
+    }
+
+    static class TestChoicesProvider implements ChoicesProvider {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String[] choices(final SettingsCreationContext context) {
+            return new String[]{"column1", "column2"};
+        }
+    }
+
+    class ChoicesSettings implements DefaultNodeSettings {
+
+        @ChoicesWidget(showNoneColumn = true, choices = TestColumnChoicesProvider.class)
+        ColumnSelection m_foo;
+
+        @ChoicesWidget(choices = TestChoicesProvider.class)
+        String m_bar;
+
+    }
+
+    @Test
+    void testChoicesWidget() {
+
+        SettingsCreationContext settingsCreationContext = new SettingsCreationContext(
+                new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
+                        new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
+                null);
+
+        var response = buildTestUiSchema(ChoicesSettings.class, settingsCreationContext);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].id").isString().isEqualTo("column1");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].id").isString().isEqualTo("column2");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].text").isString().isEqualTo("column1");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].text").isString().isEqualTo("column2");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].type.id").isString()
+                .isEqualTo("org.knime.core.data.StringValue");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].type.id").isString()
+                .isEqualTo("org.knime.core.data.DoubleValue");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].type.text").isString()
+                .isEqualTo("String");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].type.text").isString()
+                .isEqualTo("Number (double)");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].compatibleTypes").isArray()
+                .contains("org.knime.core.data.NominalValue");
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].compatibleTypes").isArray()
+                .contains("org.knime.core.data.BoundedValue");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues[0].id").isString().isEqualTo("column1");
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues[1].id").isString().isEqualTo("column2");
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues[0].text").isString().isEqualTo("column1");
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues[1].text").isString().isEqualTo("column2");
+    }
+
+    @Test
+    void testChoicesWidgetWitoutSettingsCreationContext() {
+
+        var response = buildTestUiSchema(ChoicesSettings.class, null);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().isEmpty();
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().isEmpty();
+
+    }
+
+    @Test
+    void testFormatForChoicesWidget() {
+
+        @SuppressWarnings("unused")
+        class SeveralChoicesSettings implements DefaultNodeSettings {
+            @ChoicesWidget
+            ColumnSelection m_columnSelection;
+
+            @ChoicesWidget
+            ColumnFilter m_columnFilter;
+
+            @ChoicesWidget
+            String[] m_stringArray;
+
+            @ChoicesWidget
+            String m_string;
+
+            enum MyEnum {
+                A, B, C
+            }
+
+            @ChoicesWidget
+            MyEnum m_foo;
+        }
+
+        var response = buildTestUiSchema(SeveralChoicesSettings.class, null);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("columnSelection");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("columnSelection");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("columnFilter");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("columnFilter");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("stringArray");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("twinList");
+        assertThatJson(response).inPath("$.elements[3].scope").isString().contains("string");
+        assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("dropDown");
+        assertThatJson(response).inPath("$.elements[4].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("dropDown");
     }
 
     @Test

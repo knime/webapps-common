@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
@@ -93,15 +94,19 @@ final class JsonFormsUiSchemaGenerator {
 
     private final Map<String, Class<?>> m_settings;
 
-    JsonFormsUiSchemaGenerator(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
+    private final SettingsCreationContext m_settingsCreationContext;
+
+    JsonFormsUiSchemaGenerator(final Map<String, Class<?>> settings, final ObjectMapper mapper,
+        final SettingsCreationContext context) {
         m_settings = settings;
         m_mapper = mapper;
         m_serializerProvider = m_mapper.getSerializerProviderInstance();
+        m_settingsCreationContext = context;
     }
 
     ObjectNode build() {
         final var layoutSkeleton = resolveLayout();
-        return new LayoutNodesGenerator(m_mapper, layoutSkeleton).build();
+        return new LayoutNodesGenerator(m_mapper, layoutSkeleton, m_settingsCreationContext).build();
     }
 
     static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals) {

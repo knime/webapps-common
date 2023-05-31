@@ -1,10 +1,10 @@
-import { rankWith } from '@jsonforms/core';
+import { isControl, rankWith } from '@jsonforms/core';
 import ColumnFilter from '../uiComponents/ColumnFilter.vue';
 import { priorityRanks, inputFormats } from '../constants';
-import { checkTwinlistStructure } from './twinlistRenderer';
 
-export const columnFilterTester = (uischema, schema) => checkTwinlistStructure(uischema, schema) &&
+export const columnFilterTester = (uischema, _schema) => isControl(uischema) &&
     uischema.options?.format === inputFormats.columnFilter;
+
 
 export const columnFilterRenderer = {
     renderer: ColumnFilter,
