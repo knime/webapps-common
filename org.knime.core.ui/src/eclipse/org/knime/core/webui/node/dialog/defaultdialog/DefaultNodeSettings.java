@@ -65,6 +65,7 @@ import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
@@ -82,6 +83,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
  * declare the dialog's settings and widgets in a compact manner.
  *
+ * <h3>Constructors and fields</h3>
  * <p>
  * The implementations must follow the following conventions:
  * <ol>
@@ -98,7 +100,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * <li>Make sure that the persistors of non-primitive fields support null values if no proper default is provided
  * </ul>
  * </ol>
- *
+ * <h3>Dialog widgets</h3>
  * <p>
  * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
  * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
@@ -144,7 +146,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * <td>{@link RadioButtonsWidget}</td>
  * </tr>
  * <tr>
- * <td>Arrays/Collections of objects</td>
+ * <td>Arrays/Collections of objects(**)</td>
  * <td>Array Widget</td>
  * <td>{@link ArrayWidget}</td>
  * </tr>
@@ -160,8 +162,21 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * </tr>
  * </table>
  *
- * (*) Note on enums: in order to control the labels of enum-values to be used within the respective widget (e.g. Value
+ * <p>
+ * (*) Note on enums: In order to control the labels of enum-values to be used within the respective widget (e.g. Value
  * Switch), the {@link Label}-annotation can be used.
+ * </p>
+ * <p>
+ * (**) Note on arrays: To be more precise, the elements of an array need to be serialized to an Object, i.e. arrays of
+ * Strings or boxed types will not lead to an array layout. Instead these need to be wrapped inside a class.
+ * </p>
+ *
+ * <h4>Nested settings</h4> For nested fields to be transformed to dialog widgets themselves the containing class has to
+ * be annotated with {@link LayoutGroup}
+ *
+ * <h4>Layouting</h4> Additional annotations can be used to set the layouting for the generated dialog. See the
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.layout layout package} for further information. The class of
+ * the elements of an arrays are treated as self-contained settings with their own layouting.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
