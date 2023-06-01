@@ -82,6 +82,6 @@ public @interface Widget {
     /**
      * @return true if the annotated setting is advanced
      */
-    boolean isAdvanced() default false;
+    boolean advanced() default false;
 
 }

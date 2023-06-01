@@ -101,7 +101,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testAdvancedSettings() {
         class AdvancedSettings implements DefaultNodeSettings {
 
-            @Widget(isAdvanced = true)
+            @Widget(advanced = true)
             ColumnSelection m_foo;
 
             @Widget()

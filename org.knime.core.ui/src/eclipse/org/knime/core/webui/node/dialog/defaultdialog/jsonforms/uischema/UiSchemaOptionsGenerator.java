@@ -136,7 +136,7 @@ final class UiSchemaOptionsGenerator {
 
         if(annotatedWidgets.contains(Widget.class)) {
             final var widget = m_field.getAnnotation(Widget.class);
-            if (widget.isAdvanced()) {
+            if (widget.advanced()) {
                 options.put(OPTIONS_IS_ADVANCED, true);
             }
         }
@@ -157,7 +157,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (isArrayOfObjects) {
-            applyArrayLayoutOptions(control, m_fieldType.getContentType().getRawClass());
+            applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
     }
 
@@ -174,8 +174,7 @@ final class UiSchemaOptionsGenerator {
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
-    private void applyArrayLayoutOptions(final ObjectNode control, final Class<?> componentType) {
-        var options = control.putObject(TAG_OPTIONS);
+    private void applyArrayLayoutOptions(final ObjectNode options, final Class<?> componentType) {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);

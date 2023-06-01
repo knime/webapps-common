@@ -53,6 +53,7 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * Test UI schema generation with arrays.
@@ -139,6 +140,9 @@ class JsonFormsUiSchemaUtilArrayTest {
             @ArrayWidget(elementTitle = "", addButtonText = "")
             Collection<ArrayElements> m_collectionSetting3;
 
+            @Widget(advanced = true)
+            ArrayElements[] m_arrayAdvancedSetting;
+
             class ArrayElements {
 
                 String m_innerSetting1;
@@ -163,6 +167,7 @@ class JsonFormsUiSchemaUtilArrayTest {
         assertThatJson(response).inPath("$.elements[4].options").isObject().doesNotContainKey("addButtonText");
         assertThatJson(response).inPath("$.elements[5].options").isObject().doesNotContainKey("arrayElementTitle");
         assertThatJson(response).inPath("$.elements[5].options").isObject().doesNotContainKey("addButtonText");
+        assertThatJson(response).inPath("$.elements[6].options.isAdvanced").isBoolean().isTrue();
     }
 
     @Test
