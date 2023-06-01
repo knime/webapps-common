@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -98,7 +99,7 @@ public final class WidgetImplementationUtil {
      */
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
-            CHECKBOX, VALUE_SWITCH, COLUMN_FILTER
+            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION
     }
 
     /**
@@ -116,9 +117,8 @@ public final class WidgetImplementationUtil {
     private static WidgetAnnotation[] widgetAnnotations = new WidgetAnnotation[]{//
         new WidgetAnnotation(Widget.class), //
         new WidgetAnnotation(List.of(Enum.class), RadioButtonsWidget.class), //
-        new WidgetAnnotation(
-            List.of(ColumnFilter.class, ColumnSelection.class, Enum.class, String.class, String[].class),
-            ChoicesWidget.class), //
+        new WidgetAnnotation(List.of(Enum.class), ValueSwitchWidget.class), //
+        new WidgetAnnotation(ChoicesWidget.class) //
     };
 
     /**
@@ -128,8 +128,8 @@ public final class WidgetImplementationUtil {
      */
     private static DefaultWidget[] defaultWidgets = new DefaultWidget[]{//
         new DefaultWidget(List.of(boolean.class, Boolean.class), DefaultWidgetType.CHECKBOX), //
-        new DefaultWidget(List.of(Enum.class), DefaultWidgetType.VALUE_SWITCH), //
         new DefaultWidget(List.of(ColumnFilter.class), DefaultWidgetType.COLUMN_FILTER), //
+        new DefaultWidget(List.of(ColumnSelection.class), DefaultWidgetType.COLUMN_SELECTION), //
     };
 
     /**

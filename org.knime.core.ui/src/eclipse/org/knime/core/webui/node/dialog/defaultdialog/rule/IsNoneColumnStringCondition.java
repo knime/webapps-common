@@ -44,50 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   12 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
 /**
- * An annotation for indicating controlling the common widget metadata of a given field.
+ * Condition that triggers when "None" column is selected. Should be used with older nodes that use a {@link String}
+ * field instead of {@link ColumnSelection}.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Rupert Ettrich
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Widget {
+public class IsNoneColumnStringCondition extends IsSpecificStringCondition {
 
-    /**
-     * @return the title / label of the field
-     */
-    String title() default "";
-
-    /**
-     * @return the description of the field (for tooltips or node descriptions)
-     */
-    String description() default "";
-
-    /**
-     * @return true if the annotated setting is advanced
-     */
-    boolean advanced() default false;
-
-    /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
-     */
-    boolean hideTitle() default false;
+    @Override
+    public String getValue() {
+        return "<none>";
+    }
 
 }

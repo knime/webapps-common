@@ -52,8 +52,10 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
@@ -65,9 +67,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
@@ -120,6 +125,7 @@ final class UiSchemaOptionsGenerator {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
+
         for (var defaultWidget : defaultWidgets) {
             switch (defaultWidget.type()) {
                 case CHECKBOX:
@@ -128,17 +134,24 @@ final class UiSchemaOptionsGenerator {
                 case COLUMN_FILTER:
                     options.put(TAG_FORMAT, Format.COLUMN_FILTER);
                     break;
-                case VALUE_SWITCH:
-                    options.put(TAG_FORMAT, Format.VALUE_SWITCH);
+                case COLUMN_SELECTION:
+                    options.put(TAG_FORMAT, Format.COLUMN_SELECTION);
                     break;
             }
         }
 
-        if(annotatedWidgets.contains(Widget.class)) {
+        if (annotatedWidgets.contains(Widget.class)) {
             final var widget = m_field.getAnnotation(Widget.class);
             if (widget.advanced()) {
                 options.put(OPTIONS_IS_ADVANCED, true);
             }
+            if (widget.hideTitle()) {
+                control.put(TAG_LABEL, "");
+            }
+        }
+
+        if (annotatedWidgets.contains(ValueSwitchWidget.class)) {
+            options.put(TAG_FORMAT, Format.VALUE_SWITCH);
         }
 
         if (annotatedWidgets.contains(RadioButtonsWidget.class)) {
@@ -146,14 +159,20 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.RADIO);
             if (radioButtons.horizontal()) {
                 options.put("radioLayout", "horizontal");
+            } else {
+                options.put("radioLayout", "vertical");
             }
         }
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
-            if (choicesWidget.showNoneColumn()) {
-                options.put("showNoneColumn", true);
+            if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
+                options.put(TAG_FORMAT, Format.DROP_DOWN);
             }
+            options.put("showNoneColumn", choicesWidget.showNoneColumn());
+            options.put("showRowKeys", choicesWidget.showRowKeys());
+            options.put("showSearch", choicesWidget.showSearch());
+            options.put("showMode", choicesWidget.showMode());
         }
 
         if (isArrayOfObjects) {
@@ -181,16 +200,22 @@ final class UiSchemaOptionsGenerator {
         var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper).get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
-        Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class)).ifPresent(arrayWidget -> {
-            var addButtonText = arrayWidget.addButtonText();
-            if (!addButtonText.isEmpty()) {
-                options.put(TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT, addButtonText);
-            }
-            var elementTitle = arrayWidget.elementTitle();
-            if (!elementTitle.isEmpty()) {
-                options.put(TAG_ARRAY_LAYOUT_ELEMENT_TITLE, elementTitle);
-            }
-        });
+        Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))
+            .ifPresent(arrayWidget -> addArrayLayoutOptions(arrayWidget, options));
+    }
+
+    private static void addArrayLayoutOptions(final ArrayWidget arrayWidget, final ObjectNode options) {
+        var addButtonText = arrayWidget.addButtonText();
+        if (!addButtonText.isEmpty()) {
+            options.put(TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT, addButtonText);
+        }
+        var elementTitle = arrayWidget.elementTitle();
+        if (!elementTitle.isEmpty()) {
+            options.put(TAG_ARRAY_LAYOUT_ELEMENT_TITLE, elementTitle);
+        }
+        if (arrayWidget.showSortButtons()) {
+            options.put(TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS, true);
+        }
     }
 
     /** @return true if the type is from an POJO and not a primitive, String, Boxed type, or enum */

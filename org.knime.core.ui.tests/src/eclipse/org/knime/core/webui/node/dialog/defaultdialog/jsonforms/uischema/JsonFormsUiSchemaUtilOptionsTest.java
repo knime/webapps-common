@@ -54,11 +54,14 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -92,9 +95,37 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("boolean");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("checkbox");
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("enum");
-        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("valueSwitch");
+        assertThatJson(response).inPath("$.elements[2]").isObject().doesNotContainKey("options");
         assertThatJson(response).inPath("$.elements[3].scope").isString().contains("columnFilter");
         assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("columnFilter");
+    }
+
+    @Test
+    void testChoicesWidgetFormats() {
+        class ChoicesWidgetFormatSettings {
+            @ChoicesWidget
+            String m_stringDropDown;
+
+            @ChoicesWidget
+            ColumnSelection m_columnSelectDropDown;
+
+            @ChoicesWidget
+            ColumnFilter m_columnFilterDropDown;
+        }
+
+        var response = buildTestUiSchema(ChoicesWidgetFormatSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("stringDropDown");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().containsKey("format");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo(Format.DROP_DOWN);
+
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("columnSelectDropDown");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("format");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo(Format.COLUMN_SELECTION);
+
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("columnFilterDropDown");
+        assertThatJson(response).inPath("$.elements[2].options").isObject().containsKey("format");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo(Format.COLUMN_FILTER);
     }
 
     @Test
@@ -129,14 +160,37 @@ class JsonFormsUiSchemaUtilOptionsTest {
             @RadioButtonsWidget(horizontal = true)
             MyEnum m_bar;
 
+            @RadioButtonsWidget(horizontal = false)
+            MyEnum m_baz;
+
         }
         var response = buildTestUiSchema(RadioButtonsSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("radio");
-        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("radioLayout");
+        assertThatJson(response).inPath("$.elements[0].options.radioLayout").isString().isEqualTo("vertical");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("radio");
         assertThatJson(response).inPath("$.elements[1].options.radioLayout").isString().isEqualTo("horizontal");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("baz");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("radio");
+        assertThatJson(response).inPath("$.elements[2].options.radioLayout").isString().isEqualTo("vertical");
+    }
+
+    @Test
+    void testValueSwitchWidget() {
+        class ValueSwitchSettings implements DefaultNodeSettings {
+
+            enum MyEnum {
+                A, B, C
+            }
+
+            @ValueSwitchWidget
+            MyEnum m_foo;
+        }
+
+        var response = buildTestUiSchema(ValueSwitchSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("valueSwitch");
     }
 
     @Test
@@ -161,4 +215,42 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(NonApplicableStyleSettings.class));
     }
 
+    @Test
+    void testShowSortButtonsTest() {
+        class ArrayElement {
+            String m_field1;
+            int m_field2;
+        }
+
+        class ShowSortButtonsTestSettings {
+            @ArrayWidget
+            ArrayElement[] m_arrayElementNoSortButtons;
+
+            @ArrayWidget(showSortButtons = true)
+            ArrayElement[] m_arrayElementWithSortButtons;
+        }
+
+        var response = buildTestUiSchema(ShowSortButtonsTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementNoSortButtons");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("showSortButtons");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementWithSortButtons");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("showSortButtons");
+        assertThatJson(response).inPath("$.elements[1].options.showSortButtons").isBoolean().isTrue();
+    }
+
+    @Test
+    void testHideTitle() {
+        class HideTitleSettings {
+            @Widget(title = "foo1")
+            String m_foo1;
+
+            @Widget(title = "foo2", hideTitle = true)
+            String m_foo2;
+        }
+
+        var response = buildTestUiSchema(HideTitleSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("label");
+        assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("label");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
+    }
 }

@@ -61,11 +61,18 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsNoneColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  *
@@ -503,6 +510,170 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
+    }
+
+    @Test
+    void testHasMultipleItemsCondition() {
+
+        final class HasMultipleItemsConditionSettings implements DefaultNodeSettings {
+
+            interface HasMultipleItemsTest {
+            }
+
+            @Signal(id = HasMultipleItemsTest.class, condition = HasMultipleItemsCondition.class)
+            ArraySettings[] m_arrayElements;
+
+            @Effect(signals = HasMultipleItemsTest.class, type = EffectType.SHOW)
+            boolean m_targetSetting;
+
+            class ArraySettings {
+
+                String m_stringField1;
+
+                String m_stringField2;
+            }
+        }
+
+        final var response = buildTestUiSchema(HasMultipleItemsConditionSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElements");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("targetSetting");
+        assertThatJson(response).inPath("$.elements[1].rule").isObject().containsKey("condition");
+        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().containsKey("schema");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema").isObject().containsKey("minItems");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.minItems").isNumber().isEqualTo("2");
+    }
+
+    @Test
+    void testRuleWithRepeatedSignals() {
+        final class RepeatedSignalsTestSettings {
+
+            enum MyEnum {
+                    A, B, C;
+
+                static class IsA extends OneOfEnumCondition<MyEnum> {
+
+                    @Override
+                    public MyEnum[] oneOf() {
+                        return new MyEnum[]{A};
+                    }
+
+                }
+
+                static class IsAorB extends OneOfEnumCondition<MyEnum> {
+
+                    @Override
+                    public MyEnum[] oneOf() {
+                        return new MyEnum[]{A, B};
+                    }
+
+                }
+            }
+
+            @Signal(condition = MyEnum.IsA.class)
+            @Signal(condition = MyEnum.IsAorB.class)
+            MyEnum m_foo;
+
+            @Effect(signals = MyEnum.IsA.class, type = EffectType.SHOW)
+            boolean m_showIfA;
+
+            @Effect(signals = MyEnum.IsAorB.class, type = EffectType.SHOW)
+            boolean m_showIfB;
+        }
+
+        final var response = buildTestUiSchema(RepeatedSignalsTestSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("showIfA");
+        assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("rule");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[0].const").isString().isEqualTo("A");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("showIfB");
+        assertThatJson(response).inPath("$.elements[2]").isObject().containsKey("rule");
+        assertThatJson(response).inPath("$.elements[2].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[2].rule.condition").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf[0].const").isString().isEqualTo("A");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf[1].const").isString().isEqualTo("B");
+    }
+
+    static class IsTestColumnCondition extends IsSpecificColumnCondition {
+        @Override
+        public String getColumnName() {
+            return "foo";
+        }
+    }
+    @Test
+    void testIsSpecificColumnCondition() {
+        final class ChoicesWithSpecificColumnCondition implements DefaultNodeSettings {
+            interface TestColumnCondition {
+            }
+            @Widget(title = "Foo")
+            @ChoicesWidget()
+            @Signal(id = TestColumnCondition.class, condition = IsTestColumnCondition.class)
+            ColumnSelection columnSelection = new ColumnSelection();
+            @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
+            boolean someConditionalSetting = true;
+        }
+        final var response = buildTestUiSchema(ChoicesWithSpecificColumnCondition.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.properties.selected.const").isString()
+            .isEqualTo("foo");
+    }
+
+    @Test
+    void testIsNoneColumnCondition() {
+        final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
+            @Widget(title = "Foo")
+            @ChoicesWidget()
+            @Signal(condition = IsNoneColumnCondition.class)
+            ColumnSelection columnSelection = new ColumnSelection();
+
+            @Effect(signals = IsNoneColumnCondition.class, type = EffectType.SHOW)
+            boolean someConditionalSetting = true;
+        }
+        final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.properties.selected.const").isString()
+            .isEqualTo("<none>");
+    }
+
+    @Test
+    void testIsNoneStringCondition() {
+        final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
+            @Widget(title = "Foo")
+            @ChoicesWidget()
+            @Signal(condition = IsNoneColumnStringCondition.class)
+            String columnSelection;
+
+            @Effect(signals = IsNoneColumnStringCondition.class, type = EffectType.SHOW)
+            boolean someConditionalSetting = true;
+        }
+        final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isString()
+            .isEqualTo("<none>");
     }
 
 }

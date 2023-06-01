@@ -37,6 +37,6 @@ describe('Dropdown', () => {
             }
         };
         
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('DropdownInput');
+        expect(determineRenderer(uiSchema, schema, renderers)).toBe('SimpleColumnSelect');
     });
 });

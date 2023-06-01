@@ -63,6 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -167,7 +168,7 @@ final class JsonFormsUiSchemaGenerator {
     }
 
     private void addField(final Map<Class<?>, List<JsonFormsControl>> layoutControls,
-        final Map<Class<?>, JsonFormsExpression> signals, final String parentScope, final Class<?> defaultLayout,
+        final Map<Class<?>, JsonFormsExpression> signalsMap, final String parentScope, final Class<?> defaultLayout,
         final PropertyWriter field) {
         if (isHidden(field)) {
             return;
@@ -178,7 +179,7 @@ final class JsonFormsUiSchemaGenerator {
         final var declaringClassLayout = getClassLayout(field.getMember().getDeclaringClass()).orElse(defaultLayout);
         final var fieldLayout = layoutByFieldAnnotation.orElse(declaringClassLayout);
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
-            this.addAllFields(fieldType, layoutControls, signals, scope, fieldLayout,
+            this.addAllFields(fieldType, layoutControls, signalsMap, scope, fieldLayout,
                 layoutByFieldAnnotation.isPresent());
         } else {
             layoutControls.compute(fieldLayout, (k, previous) -> {
@@ -186,18 +187,39 @@ final class JsonFormsUiSchemaGenerator {
                 newControls.add(new JsonFormsControl(scope, field));
                 return newControls;
             });
-            getSignal(field).ifPresent(signal -> {
-                final var conditionClass = signal.condition();
-                final var condition = createInstance(conditionClass);
-                final var scopedSignal = new JsonFormsExpression(scope, condition);
-                final var signalId = signal.id();
-                signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedSignal);
-            });
+
+            for (Signal signal : getSignalList(field)) {
+                addSignal(signalsMap, scope, signal);
+            }
         }
     }
 
-    private static Optional<Signal> getSignal(final PropertyWriter field) {
-        return Optional.ofNullable(field.getAnnotation(Signal.class));
+    private static List<Signal> getSignalList(final PropertyWriter field) {
+        // This is needed because of the way Jackson handles annotations internally;
+        // If a single signal is added, the annotation can only be retrieved by Signal.class
+        // If multiple signals are added, the annotations can only be retrieved by Signals.class
+        var singleSignal = field.getAnnotation(Signal.class);
+
+        if (singleSignal != null) {
+            return List.of(singleSignal);
+        }
+
+        var multipleSignals = field.getAnnotation(Signals.class);
+
+        if (multipleSignals != null) {
+            return List.of(multipleSignals.value());
+        }
+
+        return List.of();
+    }
+
+    private static void addSignal(final Map<Class<?>, JsonFormsExpression> signalsMap, final String scope,
+        final Signal signal) {
+        final var conditionClass = signal.condition();
+        final var condition = createInstance(conditionClass);
+        final var scopedSignal = new JsonFormsExpression(scope, condition);
+        final var signalId = signal.id();
+        signalsMap.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedSignal);
     }
 
     private static boolean isHidden(final PropertyWriter field) {

@@ -77,6 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -142,8 +143,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * </tr>
  * <tr>
  * <td>Enums(*)</td>
- * <td>Value Switch</td>
- * <td>{@link RadioButtonsWidget}</td>
+ * <td>Drop Down </td>
+ * <td>{@link ValueSwitchWidget}<br>
+ * {@link RadioButtonsWidget}</td>
  * </tr>
  * <tr>
  * <td>Arrays/Collections of objects(**)</td>

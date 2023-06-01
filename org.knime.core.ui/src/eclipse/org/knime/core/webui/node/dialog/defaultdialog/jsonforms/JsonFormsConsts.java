@@ -123,6 +123,8 @@ public final class JsonFormsConsts {
         public static final String TAG_TITLE = SchemaKeyword.TAG_TITLE.forVersion(VERSION);
 
         public static final String TAG_CONST = SchemaKeyword.TAG_CONST.forVersion(VERSION);
+
+        public static final String TAG_ITEMS_MIN = SchemaKeyword.TAG_ITEMS_MIN.forVersion(VERSION);
     }
 
     /**
@@ -173,6 +175,10 @@ public final class JsonFormsConsts {
 
             public static final String COLUMN_FILTER = "columnFilter";
 
+            public static final String COLUMN_SELECTION = "columnSelection";
+
+            public static final String DROP_DOWN = "dropDown";
+
             public static final String RADIO = "radio";
         }
 
@@ -190,6 +196,11 @@ public final class JsonFormsConsts {
          * The text of the add button of an array layout
          */
         public static final String TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT = "addButtonText";
+
+        /**
+         * Whether to add sort buttons to change order of array layout elements
+         */
+        public static final String TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS = "showSortButtons";
 
         /**
          * Rules to show/hide/enable/disable an ui element in the ui-schema

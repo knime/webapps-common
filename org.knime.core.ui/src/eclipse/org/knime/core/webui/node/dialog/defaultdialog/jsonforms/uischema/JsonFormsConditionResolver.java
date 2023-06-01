@@ -49,12 +49,17 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ITEMS_MIN;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ONEOF;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PROPERTIES;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -92,6 +97,26 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
     @Override
     public ObjectNode visit(final FalseCondition falseCondition) {
         return m_mapper.createObjectNode().put(TAG_CONST, false);
+    }
+
+    @Override
+    public ObjectNode visit(final HasMultipleItemsCondition hasMultipleItemsCondition) {
+        return m_mapper.createObjectNode().put(TAG_ITEMS_MIN, 2);
+    }
+
+    @Override
+    public ObjectNode visit(final IsSpecificColumnCondition isSpecificColumnCondition) {
+        final var condition = m_mapper.createObjectNode();
+        condition //
+            .putObject(TAG_PROPERTIES).putObject(IsSpecificColumnCondition.PROPERTY_NAME) //
+            .put(TAG_CONST, isSpecificColumnCondition.getColumnName());
+        return condition;
+    }
+
+    @Override
+    public ObjectNode visit(final IsSpecificStringCondition isSpecificStringCondition) {
+        return m_mapper.createObjectNode() //
+            .put(TAG_CONST, isSpecificStringCondition.getValue());
     }
 
 }

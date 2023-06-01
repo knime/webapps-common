@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
+
 /**
  * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
  * implementation dependent format.
@@ -63,5 +65,11 @@ public interface ConditionVisitor<T> {
     T visit(TrueCondition trueCondition);
 
     T visit(FalseCondition falseCondition);
+
+    T visit(HasMultipleItemsCondition hasMultipleItemsCondition);
+
+    T visit(IsSpecificColumnCondition isSpecificColumnCondition);
+
+    T visit(IsSpecificStringCondition isSpecificStringCondition);
 
 }

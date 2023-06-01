@@ -73,4 +73,9 @@ public @interface ArrayWidget {
      * @return a title that is shown above each element of the array
      */
     String elementTitle() default "";
+
+    /**
+     * @return whether sort buttons should be shown that allow to change the order of the array elements
+     */
+    boolean showSortButtons() default false;
 }

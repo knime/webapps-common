@@ -55,8 +55,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Annotate an {@link Enum} setting with this in order to display them as radio buttons instead of the default (value
- * switch).
+ * Annotate an {@link Enum} setting with this in order to display them as radio buttons instead of the default
+ * (dropdown list).
  *
  * @author Paul Bärnreuther
  */

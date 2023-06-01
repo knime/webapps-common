@@ -50,8 +50,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

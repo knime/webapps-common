@@ -44,50 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   12 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
 
 /**
- * An annotation for indicating controlling the common widget metadata of a given field.
+ * Condition to be used for {@link ColumnSelection} fields. It is triggered whenever the name of the selected column is
+ * the specified one.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Rupert Ettrich
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Widget {
+public abstract class IsSpecificColumnCondition implements Condition {
+
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
     /**
-     * @return the title / label of the field
+     * The property within a {@link ColumnSelection} containing the name of the column.
      */
-    String title() default "";
+    public static final String PROPERTY_NAME = "selected";
 
     /**
-     * @return the description of the field (for tooltips or node descriptions)
+     * @return Returns the column name that should trigger the condition.
      */
-    String description() default "";
-
-    /**
-     * @return true if the annotated setting is advanced
-     */
-    boolean advanced() default false;
-
-    /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
-     */
-    boolean hideTitle() default false;
+    public abstract String getColumnName();
 
 }

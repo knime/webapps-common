@@ -93,4 +93,19 @@ public @interface ChoicesWidget {
      */
     boolean showNoneColumn() default false;
 
+    /**
+     * @return whether to show an additional choice "RowIDs" representing the row key column.
+     */
+    boolean showRowKeys() default false;
+
+    /**
+     * @return whether a search field should be shown for the {@link ColumnFilter}
+     */
+    boolean showSearch() default true;
+
+    /**
+     * @return whether the column selection mode should be displayed for the {@link ColumnFilter}
+     */
+    boolean showMode() default true;
+
 }

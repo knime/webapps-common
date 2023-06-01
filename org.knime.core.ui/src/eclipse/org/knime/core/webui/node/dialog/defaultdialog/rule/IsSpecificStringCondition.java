@@ -44,50 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Jun 12, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
 /**
- * An annotation for indicating controlling the common widget metadata of a given field.
+ * Condition to be used when an field serialized to a string should trigger a {@link Signal} when it matches a specific
+ * string.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Widget {
+public abstract class IsSpecificStringCondition implements Condition {
+
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
     /**
-     * @return the title / label of the field
+     * @return the string subject to the condition.
      */
-    String title() default "";
-
-    /**
-     * @return the description of the field (for tooltips or node descriptions)
-     */
-    String description() default "";
-
-    /**
-     * @return true if the annotated setting is advanced
-     */
-    boolean advanced() default false;
-
-    /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
-     */
-    boolean hideTitle() default false;
+    public abstract String getValue();
 
 }

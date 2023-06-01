@@ -53,7 +53,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
  *
  * @author Paul Bärnreuther
  */
-public abstract non-sealed class OneOfEnumCondition<E extends Enum<E>> implements Condition {
+public abstract class OneOfEnumCondition<E extends Enum<E>> implements Condition {
 
     /**
      * @return the values of the enum for which the condition should apply

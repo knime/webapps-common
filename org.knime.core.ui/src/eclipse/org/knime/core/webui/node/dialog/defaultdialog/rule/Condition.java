@@ -53,7 +53,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
  *
  * @author Paul Bärnreuther
  */
-public sealed interface Condition permits TrueCondition, FalseCondition, OneOfEnumCondition<?> {
+public interface Condition {
 
     /**
      * @param <T> the returned type

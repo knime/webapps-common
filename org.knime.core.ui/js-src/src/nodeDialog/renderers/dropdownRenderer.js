@@ -1,5 +1,5 @@
 import { rankWith, isOneOfControl } from '@jsonforms/core';
-import DropdownInput from '../uiComponents/DropdownInput.vue';
+import SimpleColumnSelect from '../uiComponents/SimpleColumnSelect.vue';
 import { priorityRanks, inputFormats } from '../constants';
 
 export const dropdownTester = (uischema, schema) => {
@@ -8,6 +8,6 @@ export const dropdownTester = (uischema, schema) => {
 };
 
 export const dropdownRenderer = {
-    renderer: DropdownInput,
+    renderer: SimpleColumnSelect,
     tester: rankWith(priorityRanks.default, dropdownTester)
 };
