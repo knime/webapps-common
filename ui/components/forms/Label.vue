@@ -35,7 +35,7 @@ export default {
         /**
          * smaller font size and margin
          */
-        compact: {
+        big: {
             type: Boolean,
             default: false
         }
@@ -53,8 +53,8 @@ export default {
             }
             return null;
         },
-        isCompact() {
-            return this.compact || this.compactLabels;
+        isBig() {
+            return this.big && !this.compactLabels;
         }
     },
     beforeCreate() {
@@ -69,7 +69,7 @@ export default {
     <label
       :id="labelId"
       :for="labelFor"
-      :class="['label-text', {compact: isCompact}]"
+      :class="['label-text', {big: isBig}]"
       v-text="text"
     />
     <slot :label-for-id="labelFor" />
@@ -82,25 +82,25 @@ export default {
 }
 
 .label-text {
-  font-weight: 700;
-  font-size: 16px;
-  font-family: var(--theme-text-bold-font-family);
-  color: var(--theme-text-bold-color);
-  line-height: 20px;
+  font-weight: 500;
+  font-size: 13px;
+  font-family: var(--theme-text-medium-font-family);
+  color: var(--theme-text-medium-color);
+  line-height: 18px;
   display: block;
   width: max-content;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
 
-  &.compact {
-    font-weight: 500;
-    font-size: 13px;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    line-height: 18px;
-    margin-bottom: 3px;
+  &.big{
+    font-weight: 700;
+    font-size: 16px;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
+    line-height: 20px;
+    margin-bottom: 10px;
   }
 }
 </style>
