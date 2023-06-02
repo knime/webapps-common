@@ -118,7 +118,7 @@ export default {
         selectedItems() {
             return this.selectedIds.length === 0
                 ? []
-                : this.selectedIds.map(id => this.allPossibleItems.find(item => item.id === id));
+                : this.selectedIds.map(id => this.allPossibleItems.find(item => item.id === id) || { id, text: id });
         },
         maxSizeVisibleOptions() {
             return this.searchResults.length < this.sizeVisibleOptions
@@ -138,7 +138,7 @@ export default {
             this.$refs.combobox.onDown();
         },
         onEnter() {
-            this.updateSelectedIds([...this.selectedIds, this.draftItem.id]);
+            this.updateSelectedIds([...this.selectedIds, this.searchResults[0]?.id]);
         },
         onBackspace() {
             if (!this.searchValue) {

@@ -62,6 +62,7 @@ export default {
           <ComboBox
             :possible-values="values"
             :initial-selected-ids="selected[0]"
+            :addingNewAllowed="false"
             @update:selected-ids="selectedValues => selected[0] = selectedValues"
           />
         </div>
