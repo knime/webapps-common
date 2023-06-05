@@ -15,8 +15,8 @@ let labelForId = 0;
  */
 export default {
     inject: {
-        compactLabels: { // provided e.g. by Fieldset.vue
-            default: false
+        bigLabels: { // provided e.g. by Fieldset.vue
+            default: true
         }
     },
     props: {
@@ -54,7 +54,7 @@ export default {
             return null;
         },
         isBig() {
-            return this.big && !this.compactLabels;
+            return this.big || this.bigLabels;
         }
     },
     beforeCreate() {

@@ -286,7 +286,6 @@ export default {
       v-slot="{ labelForId }"
       :text="modeLabel"
       class="label"
-      compact
     >
       <ValueSwitch
         :id="labelForId"
@@ -302,7 +301,6 @@ export default {
       v-slot="{ labelForId }"
       :text="patternLabel"
       class="label"
-      compact
     >
       <SearchInput
         :id="labelForId"
@@ -323,7 +321,6 @@ export default {
       v-if="mode === 'type' && possibleTypes.length > 0"
       :text="selectedTypesLabel"
       class="label"
-      compact
     >
       <Checkboxes
         :value="chosenTypes"

@@ -4,7 +4,7 @@
  */
 export default {
     provide: {
-        compactLabels: true
+        bigLabels: false
     },
     props: {
         text: {

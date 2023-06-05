@@ -382,7 +382,6 @@ export default {
       v-slot="{ labelForId }"
       :text="searchLabel"
       class="search-wrapper"
-      compact
     >
       <SearchInput
         :id="labelForId"
