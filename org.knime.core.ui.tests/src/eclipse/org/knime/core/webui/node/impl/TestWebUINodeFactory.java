@@ -45,9 +45,6 @@
  */
 package org.knime.core.webui.node.impl;
 
-import org.knime.core.webui.node.impl.WebUINodeConfiguration;
-import org.knime.core.webui.node.impl.WebUINodeFactory;
-
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -59,6 +56,7 @@ public final class TestWebUINodeFactory extends WebUINodeFactory<TestWebUINodeMo
         .shortDescription("Short Description")//
         .fullDescription("Full Description")//
         .modelSettingsClass(TestWebUINodeModelSettings.class)//
+        .nodeType(NodeType.Sink)//
         .addInputTable("Input Table", "Input Port Description")//
         .addOutputTable("Output Table", "Output Port Description")//
         .build();

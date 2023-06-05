@@ -55,6 +55,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.util.Version;
@@ -82,6 +83,8 @@ public final class WebUINodeConfiguration {
 
     private final String m_fullDescription;
 
+    private final NodeType m_nodeType;
+
     private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
 
     private final PortDescription[] m_inPortDescriptions;
@@ -97,6 +100,7 @@ public final class WebUINodeConfiguration {
         m_icon = builder.m_icon;
         m_shortDescription = builder.m_shortDescription;
         m_fullDescription = builder.m_fullDescription;
+        m_nodeType = builder.m_nodeType;
         m_modelSettingsClass = builder.m_modelSettingsClass;
         m_inPortDescriptions = builder.m_inputPortDescriptions.toArray(PortDescription[]::new);
         m_outPortDescriptions = builder.m_outputPortDescriptions.toArray(PortDescription[]::new);
@@ -118,6 +122,10 @@ public final class WebUINodeConfiguration {
 
     String getFullDescription() {
         return m_fullDescription;
+    }
+
+    NodeType getNodeType() {
+        return m_nodeType;
     }
 
     Class<? extends DefaultNodeSettings> getModelSettingsClass() {
@@ -232,6 +240,8 @@ public final class WebUINodeConfiguration {
 
         private final String m_fullDescription;
 
+        private NodeType m_nodeType;
+
         private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
 
         private final List<PortDescription> m_inputPortDescriptions = new ArrayList<>();
@@ -249,6 +259,18 @@ public final class WebUINodeConfiguration {
             m_shortDescription = shortDescription;
             m_fullDescription = fullDescription;
             m_modelSettingsClass = modelSettingsClass;
+        }
+
+        /**
+         * Sets the node type. This affects how the node is shown, e.g., Loop Start nodes are shown in light blue and
+         * form a small opening bracket that matches the way Loop End nodes are displayed.
+         *
+         * @param nodeType the node type
+         * @return this build stage
+         */
+        public NodeOptionals nodeType(final NodeType nodeType) {
+            m_nodeType = nodeType;
+            return this;
         }
 
         /**

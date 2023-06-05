@@ -106,8 +106,8 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         return createNodeDescription(m_configuration.getName(), m_configuration.getIcon(),
             m_configuration.getInPortDescriptions(), m_configuration.getOutPortDescriptions(),
             m_configuration.getShortDescription(), m_configuration.getFullDescription(),
-            m_configuration.getModelSettingsClass(), null, null, null, m_configuration.getKeywords(),
-            m_configuration.getSinceVersion());
+            m_configuration.getModelSettingsClass(), null, null, m_configuration.getNodeType(),
+            m_configuration.getKeywords(), m_configuration.getSinceVersion());
     }
 
     /**

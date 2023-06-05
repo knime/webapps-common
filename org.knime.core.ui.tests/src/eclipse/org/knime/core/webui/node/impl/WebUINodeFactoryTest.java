@@ -48,20 +48,25 @@
  */
 package org.knime.core.webui.node.impl;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.xmlbeans.XmlException;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDescription;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.extension.NodeFactoryExtensionManager;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.testing.node.view.TableTestUtil;
+import org.xml.sax.SAXException;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -79,8 +84,84 @@ class WebUINodeFactoryTest {
         }
     }
 
+    /**
+     * Test that information passed to the WebUINodeFactory in the TestWebUINode is correctly translated to a node
+     * description.
+     */
+    @Test
+    void testTestNodeDescription() throws SAXException, IOException, XmlException {
+        // given the description of the test node factory
+        final var factory = new TestWebUINodeFactory();
+        final var nodeDescription = factory.createNodeDescription();
+
+        // when reading out the properties
+        final var name = nodeDescription.getNodeName();
+        final var icon = nodeDescription.getIconPath();
+        final var shortDescription = nodeDescription.getShortDescription().get();
+        final var longDescription = nodeDescription.getIntro().get();
+        final var nodeType = nodeDescription.getType();
+        final var inputDescription = nodeDescription.getInportDescription(0);
+        final var outputDescription = nodeDescription.getOutportDescription(0);
+
+        // then we get the values passed to the WebUINodeFactory constructor.
+        assertEquals("Template", name, "Name is not set correctly.");
+        assertEquals("./Template.png", icon, "Icon is not set correctly.");
+        assertEquals("Short Description", shortDescription, "Short description is not set correctly.");
+        assertEquals("Full Description", longDescription, "Long description is not set correctly.");
+        assertEquals(NodeType.Sink, nodeType, "Node type is not set correctly.");
+        assertEquals("Input Port Description", inputDescription, "Input description is not set correctly.");
+        assertEquals("Output Port Description", outputDescription, "Output description is not set correctly.");
+    }
+
+    /**
+     * Test that the legacy {@link NodeDescription} is created correctly by the WebUINodeFactory static method.
+     */
+    @Test
+    void testCreateStatic() {
+        // given the a node description
+        final var name = "Node name";
+        final var icon = "some/icon path.png";
+        final var inPortDescriptions = new PortDescription[] {new PortDescription("In1", BufferedDataTable.TYPE_OPTIONAL, "Input port description")};
+        final var outPortDescriptions = new PortDescription[] {new PortDescription("Out1", BufferedDataTable.TYPE, "Output port description")};
+        final var shortDescription = "Short description";
+        final var longDescription = "Long description";
+        final Class<DefaultNodeSettings> modelSettingsClass = DefaultNodeSettings.class;
+        final Class<DefaultNodeSettings> viewSettingsClass = DefaultNodeSettings.class;
+        final var viewDescription = "View description";
+        final var nodeType = NodeType.Sink;
+        final var keywords = new String[]{"keyword1", "keyword2"};
+
+        // when creating a node description via the static constructor
+        final var nodeDescription = WebUINodeFactory.createNodeDescription(name, icon, inPortDescriptions,
+            outPortDescriptions, shortDescription, longDescription, modelSettingsClass, viewSettingsClass,
+            viewDescription, nodeType, keywords);
+
+        // then we get the same values back
+        assertEquals(name, nodeDescription.getNodeName(), "Name is not set correctly.");
+        assertEquals(icon, nodeDescription.getIconPath(), "Icon is not set correctly.");
+        assertEquals(shortDescription, nodeDescription.getShortDescription().get(),
+            "Short description is not set correctly.");
+        assertEquals(longDescription, nodeDescription.getIntro().get(), "Long description is not set correctly.");
+        assertEquals(nodeType, nodeDescription.getType(), "Node type is not set correctly.");
+        assertEquals(inPortDescriptions[0].getName(), nodeDescription.getInportName(0),
+            "Input port name is not set correctly.");
+        assertEquals(inPortDescriptions[0].getDescription(), nodeDescription.getInportDescription(0),
+            "Input description is not set correctly.");
+        assertEquals(outPortDescriptions[0].getName(), nodeDescription.getOutportName(0),
+            "Output port name is not set correctly.");
+        assertEquals(outPortDescriptions[0].getDescription(), nodeDescription.getOutportDescription(0),
+            "Output description is not set correctly.");
+        final var nodeKeywords = nodeDescription.getKeywords();
+        assertEquals(keywords.length, nodeKeywords.length, "Number of keywords is not set correctly.");
+        for (int i = 0; i < keywords.length; i++) {
+            assertEquals(keywords[i], nodeKeywords[i], "Keyword " + i + " is not set correctly.");
+        }
+
+    }
+
     @Test
     void testConfigure() throws InvalidSettingsException {
+        // given
         final var factory = new TestWebUINodeFactory();
         final var model = factory.createNodeModel();
         final var testSpecs =
