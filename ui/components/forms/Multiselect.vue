@@ -405,7 +405,7 @@ export default {
     padding: 5px 10px;
     margin-top: -1px;
     background: var(--theme-multiselect-background-color);
-    box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
+    box-shadow: var(--shadow-elevation-1);
     overflow-y: auto;
 
     & .boxes {

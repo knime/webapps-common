@@ -471,7 +471,7 @@ export default {
       --rounded-lg: 0;
 
       /* popover box shadow */
-      --shadow-lg: 0 1px 4px 0 var(--theme-date-input-box-shadow-color);
+      --shadow-lg: var(--shadow-elevation-1);
 
       /* color prop value (in our case 'masala' see above) and vc-COLOR-PROP-NAME need to be defined */
       --masala-100: var(--theme-date-input-accent-100);

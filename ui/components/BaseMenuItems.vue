@@ -229,6 +229,12 @@ export default {
 
 <style lang="postcss" scoped>
 .base-menu-items {
+  /*
+    default to elevation-1, but still allow overriding shadow from outside
+    by setting this variable on the component root element's css without having to deep style
+   */
+  --menu-items-elevation: var(--shadow-elevation-1);
+
   margin: 5px 0;
   padding: 0;
   background-color: var(--knime-white);
@@ -240,6 +246,7 @@ export default {
   text-align: left;
   list-style-type: none;
   z-index: var(--z-index-common-menu-items-expanded, 1);
+  box-shadow: var(--menu-items-elevation);
 
   /* Determine offsetTop of child elements correctly when using the scrollTo method */
   position: relative;

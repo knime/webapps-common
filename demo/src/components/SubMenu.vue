@@ -269,7 +269,7 @@ h4 {
 .card {
   display: flex;
   align-items: center;
-  box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
+  box-shadow: var(--shadow-elevation-1);
 }
 
 .submenus {
