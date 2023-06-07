@@ -425,7 +425,6 @@ export default {
       :active="withSearchLabel"
       :text="searchLabel"
       class="search-wrapper"
-      compact
     >
       <SearchInput
         :id="labelForId"

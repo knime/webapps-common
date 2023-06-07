@@ -25,23 +25,23 @@ describe("Label.vue", () => {
     expect(wrapper.text()).toContain("slot content");
   });
 
-  it("renders compact class if prop set", () => {
+  it("renders big class if prop set", () => {
     const wrapper = shallowMount(Label, {
       props: {
-        compact: true,
+        big: true,
       },
     });
-    expect(wrapper.find("label").classes()).toContain("compact");
+    expect(wrapper.find("label").classes()).toContain("big");
   });
 
-  it("renders compact class if compactLabels is provided by a parent component", () => {
+  it("renders big class if bigLabels is provided by a parent component", () => {
     const wrapper = shallowMount(Label, {
       global: {
         provide: {
-          compactLabels: true,
+          bigLabels: true,
         },
       },
     });
-    expect(wrapper.find("label").classes()).toContain("compact");
+    expect(wrapper.find("label").classes()).toContain("big");
   });
 });

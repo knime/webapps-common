@@ -58,7 +58,7 @@ export default {
           <h2>Fieldset</h2>
           <p>
             Fieldset can be used to group multiple form fields. Labels inside
-            Fieldsets automagically use their compact size.
+            Fieldsets automatically use their default size.
           </p>
         </div>
       </div>
