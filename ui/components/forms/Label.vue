@@ -91,25 +91,25 @@ export default {
 }
 
 .label-text {
-  font-weight: 700;
-  font-size: 16px;
-  font-family: var(--theme-text-bold-font-family);
-  color: var(--theme-text-bold-color);
-  line-height: 20px;
+  font-weight: 500;
+  font-size: 13px;
+  font-family: var(--theme-text-medium-font-family);
+  color: var(--theme-text-medium-color);
+  line-height: 18px;
   display: block;
   width: max-content;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
 
   &.big {
-    font-weight: 500;
-    font-size: 13px;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    line-height: 18px;
-    margin-bottom: 3px;
+    font-weight: 700;
+    font-size: 16px;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
+    line-height: 20px;
+    margin-bottom: 10px;
   }
 }
 </style>
