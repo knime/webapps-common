@@ -33,11 +33,4 @@ describe("Fieldset.vue", () => {
     });
     expect(wrapper.get("legend").text()).toContain("icon content");
   });
-
-  it("provides compactLabels to child components", () => {
-    const wrapper = shallowMount(Label);
-    expect(wrapper.vm.$options.provide).toEqual({
-      compactLabels: true,
-    });
-  });
 });
