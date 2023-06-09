@@ -15,8 +15,8 @@ let labelForId = 0;
  */
 export default {
     inject: {
-        bigLabels: { // provided e.g. by Fieldset.vue
-            default: true
+        largeLabels: { // provided e.g. by Fieldset.vue
+            default: false
         }
     },
     props: {
@@ -35,7 +35,7 @@ export default {
         /**
          * smaller font size and margin
          */
-        big: {
+        large: {
             type: Boolean,
             default: false
         }
@@ -53,8 +53,8 @@ export default {
             }
             return null;
         },
-        isBig() {
-            return this.big || this.bigLabels;
+        isLarge() {
+            return this.large || this.largeLabels;
         }
     },
     beforeCreate() {
@@ -69,7 +69,7 @@ export default {
     <label
       :id="labelId"
       :for="labelFor"
-      :class="['label-text', {big: isBig}]"
+      :class="['label-text', {large: isLarge}]"
       v-text="text"
     />
     <slot :label-for-id="labelFor" />
@@ -94,7 +94,7 @@ export default {
   overflow: hidden;
   max-width: 100%;
 
-  &.big{
+  &.large{
     font-weight: 700;
     font-size: 16px;
     font-family: var(--theme-text-bold-font-family);

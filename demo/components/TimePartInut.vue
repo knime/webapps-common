@@ -4,7 +4,7 @@ import TimePartInput from '../../ui/components/forms/TimePartInput.vue';
 import Label from '../../ui/components/forms/Label.vue';
 import code from '!!raw-loader!../../ui/components/forms/TimePartInput';
 
-const codeExample = `<Label text="Hours">
+const codeExample = `<Label text="Hours" large>
   <TimePartInput
     type="integer"
     :min="0"
@@ -68,7 +68,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label text="Hours">
+          <Label text="Hours" large>
             <TimePartInput
               v-model="hours"
               type="integer"
@@ -78,7 +78,7 @@ export default {
               @bounds="hoursBound"
             />
           </Label>
-          <Label text="Minutes">
+          <Label text="Minutes" large>
             <TimePartInput
               v-model="minutes"
               type="integer"
@@ -88,7 +88,7 @@ export default {
               @bounds="minutesBound"
             />
           </Label>
-          <Label text="Seconds">
+          <Label text="Seconds" large>
             <TimePartInput
               v-model="seconds"
               type="integer"
@@ -98,7 +98,7 @@ export default {
               @bounds="secondsBound"
             />
           </Label>
-          <Label text="Milliseconds">
+          <Label text="Milliseconds" large>
             <TimePartInput
               v-model="milliseconds"
               type="integer"

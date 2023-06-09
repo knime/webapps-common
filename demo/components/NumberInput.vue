@@ -97,6 +97,7 @@ export default {
           <Label
             v-slot="{ labelForId }"
             text="Integer (step-size = 1)"
+            large
           >
             <NumberInput
               :id="labelForId"
@@ -113,6 +114,7 @@ export default {
           <Label
             v-slot="{ labelForId }"
             text="Double (step-size = .1)"
+            large
           >
             <NumberInput
               :id="labelForId"
@@ -129,6 +131,7 @@ export default {
           <Label
             v-slot="{ labelForId }"
             :text="input3Text"
+            large
           >
             <NumberInput
               :id="labelForId"
@@ -145,6 +148,7 @@ export default {
           <Label
             v-slot="{ labelForId }"
             text="Disabled"
+            large
           >
             <NumberInput
               :id="labelForId"
