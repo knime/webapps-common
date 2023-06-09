@@ -7,18 +7,37 @@ import StarterKit from "@tiptap/starter-kit";
 
 import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
+import type { DisabledTools } from "./types";
 
 interface Props {
   initialValue: string;
   editable?: boolean;
   compact?: boolean;
+  /**
+   * Max height the editor can have. The editor container will grow up to this
+   * value before it starts to overflow the content. By default this is unset, so
+   * the editor will grow with the content
+   */
   maxHeight?: number | null;
+  /**
+   * Tools that should be disabled. By default all tools are enabled
+   */
+  disabledTools?: DisabledTools;
+  /**
+   * Function to format the display value of each tool's hotkeys as a title when hovered.
+   * Receives as parameter the key combinations of each tool and should return
+   * the string to be displayed in the title
+   * @param hotkey
+   */
+  hotkeyFormatter?: (hotkey: Array<string>) => string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   editable: true,
   compact: false,
   maxHeight: null,
+  disabledTools: () => ({} as DisabledTools),
+  hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
 });
 
 const slots = useSlots();
@@ -28,16 +47,33 @@ const emit = defineEmits<{
   (e: "change", content: string): void;
 }>();
 
+const extensions = [
+  StarterKit.configure({
+    // eslint-disable-next-line no-undefined
+    bold: props.disabledTools.bold ? false : undefined,
+    // eslint-disable-next-line no-undefined
+    italic: props.disabledTools.italic ? false : undefined,
+    // eslint-disable-next-line no-undefined
+    bulletList: props.disabledTools.bulletList ? false : undefined,
+    // eslint-disable-next-line no-undefined
+    orderedList: props.disabledTools.orderedList ? false : undefined,
+    // eslint-disable-next-line no-undefined
+    heading: props.disabledTools.heading ? false : undefined,
+  }),
+  ...(props.disabledTools.underline ? [] : [UnderLine]),
+  ...(props.disabledTools.textAlign
+    ? []
+    : [
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+      ]),
+];
+
 const editor = useEditor({
   content: props.initialValue,
   editable: props.editable,
-  extensions: [
-    StarterKit,
-    UnderLine,
-    TextAlign.configure({
-      types: ["heading", "paragraph"],
-    }),
-  ],
+  extensions,
   onUpdate: () => emit("change", editor.value?.getHTML() || ""),
 });
 
@@ -82,10 +118,17 @@ const hasCustomToolbar = slots.customToolbar;
         v-if="editor && editable"
         :class="{ 'embedded-toolbar': !hasCustomToolbar }"
       >
-        <RichTextEditorBaseToolbar :editor="editor">
+        <RichTextEditorBaseToolbar
+          :editor="editor"
+          :disabled-tools="disabledTools"
+        >
           <template #default="{ tools }">
             <slot name="customToolbar" :editor="editor" :tools="tools">
-              <RichTextEditorToolbar :editor="editor" :tools="tools" />
+              <RichTextEditorToolbar
+                :editor="editor"
+                :tools="tools"
+                :hotkey-formatter="hotkeyFormatter"
+              />
             </slot>
           </template>
         </RichTextEditorBaseToolbar>
@@ -104,18 +147,16 @@ const hasCustomToolbar = slots.customToolbar;
 .editor-wrapper {
   height: 100%;
 
-  --toolbar-height: 40px;
-
+  --toolbar-height: 48px;
   --rich-text-editor-font-size: 12;
-  --font-scaling: 1;
 }
 
 .embedded-toolbar {
   height: var(--toolbar-height);
   border-bottom: 1px solid var(--knime-silver-sand);
-  overscroll-behavior: contain;
-  padding: 4px;
+  padding: 0 4px;
   background: var(--knime-white);
+  overscroll-behavior: contain;
   overflow-x: auto;
   white-space: pre;
   -ms-overflow-style: none; /* needed to hide scroll bar in edge */
@@ -155,9 +196,7 @@ const hasCustomToolbar = slots.customToolbar;
   /* stylelint-disable-next-line selector-class-pattern */
   & :deep(.ProseMirror) {
     height: 100%;
-    font-size: calc(
-      calc(var(--rich-text-editor-font-size) * var(--font-scaling)) * 1px
-    );
+    font-size: calc(var(--rich-text-editor-font-size) * 1px);
     padding: v-bind("compact ? '4px' : '16px'");
     color: var(--knime-black);
 
@@ -192,50 +231,33 @@ const hasCustomToolbar = slots.customToolbar;
     }
 
     & h1 {
-      --font-scaling: 4;
-
+      font-size: 48px;
       margin: 32px 0 16px;
     }
 
     & h2 {
-      --font-scaling: 3;
-
+      font-size: 36px;
       margin: 24px 0 12px;
     }
 
     & h3 {
-      --font-scaling: 2.5;
-
+      font-size: 30px;
       margin: 20px 0 10px;
     }
 
     & h4 {
-      --font-scaling: 2;
-
+      font-size: 24px;
       margin: 16px 0 8px;
     }
 
     & h5 {
-      --font-scaling: 1.5;
-
+      font-size: 18px;
       margin: 12px 0 6px;
     }
 
     & h6 {
-      --font-scaling: 1.25;
-
+      font-size: 15px;
       margin: 10px 0 5px;
-    }
-
-    & h1,
-    & h2,
-    & h3,
-    & h4,
-    & h5,
-    & h6 {
-      font-size: calc(
-        calc(var(--rich-text-editor-font-size) * var(--font-scaling)) * 1px
-      );
     }
 
     & h1:first-child,
