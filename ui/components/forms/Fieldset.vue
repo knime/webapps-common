@@ -3,6 +3,10 @@
  * Fieldset for elements that contain more than one input field
  */
 export default {
+  provide: {
+    largeLabels: false,
+  },
+
   props: {
     text: {
       default: "",

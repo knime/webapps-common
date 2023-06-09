@@ -33,4 +33,13 @@ describe("Fieldset.vue", () => {
     });
     expect(wrapper.get("legend").text()).toContain("icon content");
   });
+
+  it("provides largeLabels to child components", () => {
+    const wrapper = shallowMount(Label, {
+      provide: {
+        largeLabels: true,
+      },
+    });
+    expect(wrapper.vm.$options.provide).toEqual({ largeLabels: true });
+  });
 });

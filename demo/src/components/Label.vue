@@ -18,8 +18,8 @@ const codeExample = `<!-- The labelForId syntax is used to associate the label w
 </Label>
 <Label
   #default="{ labelForId }"
-  text="Big label for a field"
-  big
+  text="Large label for a field"
+  large
 >
   <InputField
     :id="labelForId"
@@ -66,12 +66,12 @@ export default {
           <h2>Label</h2>
           <p>
             Labels for form fields. Beside their default size, they come with a
-            bigger one as well which can be enabled by setting the
-            <code>big</code> prop or
+            larger one as well which can be enabled by setting the
+            <code>large</code> prop or
             <a
               href="https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection"
               >providing</a
-            >&nbsp; <code>bigLabels: true</code>.
+            >&nbsp; <code>largeLabels: true</code>.
           </p>
         </div>
       </div>
@@ -86,7 +86,7 @@ export default {
           </Label>
         </div>
         <div class="grid-item-6">
-          <Label #default="{ labelForId }" text="Big label for a field" big>
+          <Label #default="{ labelForId }" text="Large label for a field" large>
             <InputField
               :id="labelForId"
               type="text"
