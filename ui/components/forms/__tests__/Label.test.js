@@ -34,7 +34,7 @@ describe("Label.vue", () => {
     expect(wrapper.find("label").classes()).toContain("large");
   });
 
-  it("renders large class if bigLabels is provided by a parent component", () => {
+  it("renders large class if largeLabels is provided by a parent component", () => {
     const wrapper = shallowMount(Label, {
       global: {
         provide: {
