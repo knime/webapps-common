@@ -14,6 +14,11 @@ interface Props {
   editable?: boolean;
   compact?: boolean;
   /**
+   * Min height the editor should have. By default this is unset, so
+   * the editor will fir the min content
+   */
+  minHeight?: number | null;
+  /**
    * Max height the editor can have. The editor container will grow up to this
    * value before it starts to overflow the content. By default this is unset, so
    * the editor will grow with the content
@@ -35,6 +40,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   editable: true,
   compact: false,
+  minHeight: null,
   maxHeight: null,
   disabledTools: () => ({} as DisabledTools),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
@@ -76,6 +82,10 @@ const editor = useEditor({
   extensions,
   onUpdate: () => emit("change", editor.value?.getHTML() || ""),
 });
+
+const minHeight = computed(() =>
+  props.minHeight ? `${props.minHeight}px` : "initial"
+);
 
 const maxHeight = computed(() =>
   props.maxHeight ? `${props.maxHeight}px` : "initial"
@@ -191,6 +201,11 @@ const hasCustomToolbar = slots.customToolbar;
   &.editable {
     cursor: text;
     background: var(--knime-white);
+
+    /* stylelint-disable-next-line selector-class-pattern */
+    & :deep(.ProseMirror) {
+      min-height: v-bind("minHeight");
+    }
   }
 
   /* stylelint-disable-next-line selector-class-pattern */

@@ -4,7 +4,7 @@ import { defineComponent } from "vue";
 import ArrowIcon from "../assets/img/icons/arrow-right.svg";
 
 interface LinkItem {
-  text: string;
+  text?: string;
   url: string;
 }
 
