@@ -182,7 +182,7 @@ class TableViewTest {
                 true, false);
         var rows = table.getRows();
         assertThat(rows[0][2]).isEqualTo("<h1>dummy html</h1>");
-        assertThat(rows[0][3]).isEqualTo("50.0%");
+        assertThat((String)rows[0][3]).endsWith("%"); // Asserting the exact string is not possible as it is locale-dependent.
         assertThat(rows[0][4]).isEqualTo("B");
 
         assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"html", "txt", "txt"});
