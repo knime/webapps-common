@@ -340,6 +340,18 @@ export default {
 .multiselect {
   position: relative;
 
+  & label {
+    &:focus-within {
+      background-color: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+
+    &:hover {
+      background-color: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+  }
+
   &.invalid::after {
     content: "";
     position: absolute;
@@ -402,11 +414,23 @@ export default {
     position: absolute;
     z-index: var(--z-index-common-multiselect-expanded, 2);
     width: 100%;
-    padding: 5px 10px;
+    padding: 5px 0;
     margin-top: -1px;
     background: var(--theme-multiselect-background-color);
     box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
     overflow-y: auto;
+
+    & :deep(span) {
+      padding-left: 5px;
+
+      &::before {
+        left: 10px;
+      }
+
+      &::after {
+        left: 9px !important;
+      }
+    }
 
     & .boxes {
       display: block;

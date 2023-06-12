@@ -1,9 +1,35 @@
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue";
+import { kebabCase, uniq } from "lodash";
+
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";
 import CloseIcon from "../../assets/img/icons/close.svg";
 
-export default {
+const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
+
+interface ComboBoxItem {
+  id: string;
+  text: string;
+}
+
+interface ComponentData {
+  selectedIds: Array<string>;
+  searchValue: string;
+  inputOrOptionsFocussed: boolean;
+  /*
+   * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
+   * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
+   * it needs to be passed to the Multiselect component.
+   */
+  focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  allPossibleItems: Array<ComboBoxItem>;
+}
+
+type MultiselectRef = InstanceType<typeof Multiselect>;
+
+export default defineComponent({
   components: {
     Multiselect,
     FunctionButton,
@@ -15,7 +41,7 @@ export default {
      * can be used that are specified in Multiselect.vue.
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<Array<ComboBoxItem>>,
       default: () => [],
       validator(values) {
         if (!Array.isArray(values)) {
@@ -30,7 +56,7 @@ export default {
      * List of initial selected ids.
      */
     initialSelectedIds: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => [],
     },
     /**
@@ -39,7 +65,7 @@ export default {
     sizeVisibleOptions: {
       type: Number,
       default: 5,
-      validator(value) {
+      validator(value: number) {
         return value >= 0;
       },
     },
@@ -54,9 +80,21 @@ export default {
       type: Boolean,
       default: true,
     },
+    /**
+     * Allow adding and selecting new tags, not just possible values
+     */
+    allowNewValues: {
+      type: Boolean,
+      default: true,
+    },
   },
-  emits: ["update:selectedIds"],
-  data() {
+
+  emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "update:selectedIds": (_payload: Array<string>) => true,
+  },
+
+  data(): ComponentData {
     return {
       selectedIds: this.initialSelectedIds,
       searchValue: "",
@@ -68,90 +106,169 @@ export default {
        */
       focusElement: null,
       refocusElement: null,
+      allPossibleItems: this.possibleValues,
     };
   },
+
   computed: {
-    filteredValues() {
-      return this.possibleValues.filter((value) =>
-        value.text.includes(this.searchValue)
-      );
+    isSearchEmpty() {
+      return !this.searchValue.trim();
     },
+
+    searchResults() {
+      const hasExactSearchMatch = this.allPossibleItems.some(
+        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase()
+      );
+
+      const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
+        text.toLowerCase().includes(this.searchValue.toLowerCase())
+      );
+
+      const hasSearchValue = this.searchValue.trim();
+
+      if (this.allowNewValues && !hasExactSearchMatch && hasSearchValue) {
+        // add a preview for a non existing items
+        return [
+          { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
+          ...fuzzyMatchedItems,
+        ];
+      }
+
+      return fuzzyMatchedItems;
+    },
+
     hasSelection() {
       return this.selectedValues.length > 0;
     },
+
     inputWidth() {
-      return this.inputOrOptionsFocussed && this.filteredValues.length > 0
+      return this.inputOrOptionsFocussed && this.searchResults.length > 0
         ? {}
         : { width: "0%" };
     },
+
     selectedValues() {
       return this.selectedIds.length === 0
         ? []
-        : this.possibleValues.filter((ele) =>
-            this.selectedIds.includes(ele.id)
+        : this.selectedIds.map(
+            (id) =>
+              this.allPossibleItems.find((item) => item.id === id) || {
+                id,
+                text: id,
+              }
           );
     },
+
     maxSizeVisibleOptions() {
-      return this.filteredValues.length < this.sizeVisibleOptions
-        ? this.filteredValues.length
+      return this.searchResults.length < this.sizeVisibleOptions
+        ? this.searchResults.length
         : this.sizeVisibleOptions;
     },
   },
+
   mounted() {
-    this.focusElement = this.$refs.searchInput;
-    this.refocusElement = this.$refs.listBox;
+    this.focusElement = this.$refs.searchInput as HTMLInputElement;
+    this.refocusElement = this.$refs.listBox as HTMLDivElement;
   },
+
   methods: {
     focusInput() {
-      this.$refs.searchInput.focus();
+      (this.$refs.searchInput as HTMLInputElement).focus();
     },
     onDown() {
-      this.$refs.combobox.onDown();
+      (this.$refs.combobox as MultiselectRef).onDown();
+    },
+    onEnter() {
+      if (this.isSearchEmpty) {
+        return;
+      }
+
+      this.updateSelectedIds([...this.selectedIds, this.searchResults[0]?.id]);
+      this.searchValue = "";
+    },
+    onBackspace() {
+      if (!this.searchValue) {
+        this.selectedIds.pop();
+      }
+      // else regular backspace behavior
     },
     onFocusOutside() {
       this.inputOrOptionsFocussed = false;
       this.searchValue = "";
     },
     onInput() {
-      this.$refs.combobox.updateFocusOptions();
+      (this.$refs.combobox as MultiselectRef).updateFocusOptions();
     },
     onInputFocus() {
       if (!this.inputOrOptionsFocussed) {
-        this.$refs.combobox.toggle();
+        (this.$refs.combobox as MultiselectRef).toggle();
       }
+
       this.inputOrOptionsFocussed = true;
-      this.$refs.combobox.updateFocusOptions();
+      (this.$refs.combobox as MultiselectRef).updateFocusOptions();
     },
-    onInputEscape() {
-      this.$refs.combobox.closeOptions();
+
+    updateSelectedIds(selectedIds: Array<string>) {
+      const setSelectedIds = (value: Array<string>) => {
+        this.selectedIds = uniq(value).filter(Boolean);
+        this.$emit("update:selectedIds", this.selectedIds);
+      };
+
+      const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
+
+      if (!hasNewItem) {
+        setSelectedIds(selectedIds);
+        return;
+      }
+
+      const newItem: ComboBoxItem = {
+        id: kebabCase(this.searchValue),
+        text: this.searchValue.trim(),
+      };
+
+      const isDuplicateItem = this.allPossibleItems.some(
+        (item) => item.id === newItem.id
+      );
+
+      if (isDuplicateItem) {
+        return;
+      }
+
+      this.allPossibleItems.push(newItem);
+
+      setSelectedIds(
+        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id))
+      );
     },
-    updateSelectedIds(selectedIds) {
-      this.selectedIds = selectedIds;
-      this.$emit("update:selectedIds", this.selectedIds);
-    },
-    removeTag(idToRemove) {
+
+    removeTag(idToRemove: string) {
       this.updateSelectedIds(
         this.selectedIds.filter((id) => id !== idToRemove)
       );
-      this.$refs.combobox.closeOptions();
+      this.closeOptions();
     },
+
     removeAllTags() {
       this.updateSelectedIds([]);
-      this.$refs.combobox.closeOptions();
+      this.closeOptions();
+    },
+
+    closeOptions() {
+      (this.$refs.combobox as MultiselectRef).closeOptions();
     },
   },
-};
+});
 </script>
 
 <template>
   <Multiselect
     ref="combobox"
     :model-value="selectedIds"
-    :possible-values="filteredValues"
+    :possible-values="searchResults"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-element="focusElement"
-    :parent-refocus-element-on-close="refocusElement"
+    :parent-refocus-element-on-close="focusElement"
     :close-dropdown-on-selection="closeDropdownOnSelection"
     :is-valid="isValid"
     @focus-outside="onFocusOutside"
@@ -193,8 +310,10 @@ export default {
             :style="inputWidth"
             @focus="onInputFocus"
             @input="onInput"
+            @keydown.enter.prevent="onEnter"
+            @keydown.backspace="onBackspace"
             @keydown.down.stop.prevent="onDown"
-            @keydown.esc.stop.prevent="onInputEscape"
+            @keydown.esc.stop.prevent="closeOptions"
           />
         </div>
         <div v-show="hasSelection" class="icon-right">
