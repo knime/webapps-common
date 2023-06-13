@@ -12,11 +12,11 @@ export interface EditorToolItem {
 export type EditorTools = Array<EditorToolItem>;
 
 export type DisabledTools = {
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-  textAlign?: boolean;
-  bulletList?: boolean;
-  orderedList?: boolean;
-  heading?: boolean;
+  bold?: true;
+  italic?: true;
+  underline?: true;
+  textAlign?: true;
+  bulletList?: true;
+  orderedList?: true;
+  heading?: true;
 };

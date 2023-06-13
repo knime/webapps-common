@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, toRefs, useSlots, watch } from "vue";
-import { EditorContent, useEditor } from "@tiptap/vue-3";
+import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
 import TextAlign from "@tiptap/extension-text-align";
 import UnderLine from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
@@ -35,6 +35,8 @@ interface Props {
    * @param hotkey
    */
   hotkeyFormatter?: (hotkey: Array<string>) => string;
+
+  customExtensions?: Array<AnyExtension>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -44,6 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
   maxHeight: null,
   disabledTools: () => ({} as DisabledTools),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
+  customExtensions: () => [] as Array<AnyExtension>,
 });
 
 const slots = useSlots();
@@ -67,6 +70,7 @@ const extensions = [
     heading: props.disabledTools.heading ? false : undefined,
   }),
   ...(props.disabledTools.underline ? [] : [UnderLine]),
+
   ...(props.disabledTools.textAlign
     ? []
     : [
@@ -74,6 +78,8 @@ const extensions = [
           types: ["heading", "paragraph"],
         }),
       ]),
+
+  ...props.customExtensions,
 ];
 
 const editor = useEditor({
@@ -322,7 +328,12 @@ const hasCustomToolbar = slots.customToolbar;
     }
 
     & a {
-      color: var(--knime-cornflower);
+      color: var(--knime-dove-gray);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--knime-masala);
+      }
     }
   }
 }

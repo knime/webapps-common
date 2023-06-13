@@ -46,8 +46,8 @@ defineProps<Props>();
 
     & svg {
       background: initial !important;
-      width: calc(calc(var(--item-size) - 5) * 1px);
-      height: calc(calc(var(--item-size) - 5) * 1px);
+      width: calc(calc(var(--item-size) - 14) * 1px);
+      height: calc(calc(var(--item-size) - 14) * 1px);
     }
   }
 }
