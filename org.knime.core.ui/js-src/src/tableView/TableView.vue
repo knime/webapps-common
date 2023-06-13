@@ -692,10 +692,10 @@ export default {
                 sortingParamsReseted = this.updateSortingParams(newSettings, displayedColumnsChanged,
                     showRowKeysChanged, showRowIndicesChanged);
             }
-            if (compactModeChangeInducesRefresh || sortingParamsReseted) {
-                this.refreshTable();
-            } else if (displayedColumnsChanged) {
+            if (displayedColumnsChanged) {
                 this.refreshTable({ updateDisplayedColumns: true, updateTotalSelected: true });
+            } else if (compactModeChangeInducesRefresh || sortingParamsReseted) {
+                this.refreshTable({ });
             } else if (pageSizeChanged || enablePaginationChanged) {
                 this.refreshTable({ resetPage: true });
             }

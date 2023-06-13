@@ -1202,9 +1202,11 @@ describe('TableView.vue', () => {
 
             it('resets the sort parameters when the sorted column gets removed', () => {
                 const resetSortingSpy = vi.spyOn(wrapper.vm, 'resetSorting');
+                const updateDataSpy = vi.spyOn(wrapper.vm, 'updateData');
                 wrapper.vm.onColumnSort(2);
                 changeViewSetting(wrapper, 'displayedColumns', { selected: ['col1', 'col2', 'col4'] });
                 expect(resetSortingSpy).toHaveBeenCalled();
+                expect(updateDataSpy).toHaveBeenCalledWith(expect.objectContaining({ updateDisplayedColumns: true }));
             });
 
             it('resets the sort parameters when the sorted row key column gets removed', async () => {
