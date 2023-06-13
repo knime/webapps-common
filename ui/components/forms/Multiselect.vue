@@ -339,6 +339,7 @@ export default {
 <style scoped lang="postcss">
 .multiselect {
   position: relative;
+  background-color: var(--knime-white);
 
   & label {
     &:focus-within {

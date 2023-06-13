@@ -4,7 +4,10 @@ import { mount } from "@vue/test-utils";
 import ComboBox from "../ComboBox.vue";
 import Multiselect from "../Multiselect.vue";
 
-const doMount = (dynamicProps, options) =>
+const doMount = (
+  dynamicProps?: Record<string, any>,
+  options?: { attachTo: HTMLElement }
+) =>
   mount(ComboBox, {
     props: {
       possibleValues: [
@@ -39,7 +42,9 @@ describe("ComboBox.vue", () => {
     const wrapper = doMount({
       initialSelectedIds: ["test1", "test2", "test3"],
     });
-    await wrapper.findAll(".remove-tag-button").at(1).trigger("click");
+
+    await wrapper.findAll(".remove-tag-button").at(1)?.trigger("click");
+
     const selectedIds = ["test1", "test3"];
     expect(wrapper.vm.selectedIds).toEqual(selectedIds);
     expect(wrapper.emitted()).toHaveProperty("update:selectedIds");
@@ -60,10 +65,13 @@ describe("ComboBox.vue", () => {
     const sizeVisibleOptions = 3;
     const wrapper = doMount({ sizeVisibleOptions });
     const searchInput = wrapper.find({ ref: "searchInput" });
+
     await searchInput.setValue("test2");
     expect(wrapper.vm.sizeVisibleOptions).toBe(sizeVisibleOptions);
-    expect(wrapper.vm.filteredValues).toHaveLength(1);
-    expect(wrapper.vm.maxSizeVisibleOptions).toBe(1);
+
+    const multiselectComponent = wrapper.findComponent(Multiselect);
+    expect(multiselectComponent.props("possibleValues").length).toBe(1);
+    expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
   });
 
   describe("focussing", () => {
@@ -91,7 +99,8 @@ describe("ComboBox.vue", () => {
       const wrapper = doMount({}, { attachTo: document.body });
       await wrapper.find(".summary-input-wrapper").trigger("click");
       const input = wrapper.find({ ref: "searchInput" });
-      expect(input.wrapperElement).toBe(document.activeElement);
+
+      expect(input.element).toBe(document.activeElement);
       expect(wrapper.vm.inputOrOptionsFocussed).toBeTruthy();
 
       wrapper.findComponent(Multiselect).vm.$emit("focusOutside");
@@ -99,14 +108,16 @@ describe("ComboBox.vue", () => {
       expect(wrapper.vm.searchValue).toBe("");
     });
 
-    it("refocusses the listbox when pressing esc on the dropdown", async () => {
+    it("refocuses the listbox when pressing esc on the dropdown", async () => {
       vi.useFakeTimers();
       const wrapper = doMount({}, { attachTo: document.body });
-      wrapper.vm.focusInput();
-      wrapper.vm.onDown();
+
+      wrapper.find(".summary-input-icon-wrapper").trigger("keydown.enter");
+      wrapper.find(".search-input").trigger("keydown.down");
       await wrapper.find(".multiselect").trigger("keydown.esc");
+
       vi.runAllTimers();
-      expect(wrapper.find(".summary-input-icon-wrapper").wrapperElement).toBe(
+      expect(wrapper.find(".summary-input-icon-wrapper").element).toBe(
         document.activeElement
       );
     });
@@ -143,10 +154,49 @@ describe("ComboBox.vue", () => {
   });
 
   describe("tag interactions", () => {
+    it("creates a new tag", async () => {
+      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      await wrapper.find(".search-input").setValue("another");
+      await wrapper.find(".search-input").trigger("keydown.enter");
+
+      expect(wrapper.findAll(".tag").length).toBe(3);
+      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("another");
+    });
+
+    it("removes tags with backspace", async () => {
+      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+
+      expect(wrapper.findAll(".tag").length).toBe(2);
+
+      await wrapper.find(".search-input").trigger("keydown.backspace");
+      expect(wrapper.findAll(".tag").length).toBe(1);
+      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test2");
+    });
+
+    it("does not create tag when search is empty", async () => {
+      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      await wrapper.find(".search-input").setValue("");
+      await wrapper.find(".search-input").trigger("keydown.enter");
+
+      expect(wrapper.findAll(".tag").length).toBe(2);
+      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test3");
+    });
+
+    it("does not create repeated tags", async () => {
+      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      await wrapper.find(".search-input").setValue("another");
+      await wrapper.find(".search-input").trigger("keydown.enter");
+
+      await wrapper.find(".search-input").setValue("another");
+      await wrapper.find(".search-input").trigger("keydown.enter");
+
+      expect(wrapper.findAll(".tag").length).toBe(3);
+    });
+
     it("removes a tag on click of removeTag button", async () => {
       const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
       const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
-      await wrapper.findAll(".remove-tag-button").at(0).trigger("click");
+      await wrapper.findAll(".remove-tag-button").at(0)?.trigger("click");
       expect(updateSelectedIdsSpy).toHaveBeenCalledWith(["test3"]);
     });
 
@@ -158,9 +208,7 @@ describe("ComboBox.vue", () => {
       const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
       await wrapper.find(".remove-all-tags-button").trigger("click");
       const summaryWrapper = wrapper.find({ ref: "listBox" });
-      expect(summaryWrapper.wrapperElement).toStrictEqual(
-        document.activeElement
-      );
+      expect(summaryWrapper.element).toStrictEqual(document.activeElement);
       expect(updateSelectedIdsSpy).toHaveBeenCalledWith([]);
     });
   });
@@ -180,9 +228,7 @@ describe("ComboBox.vue", () => {
       const wrapper = doMount({}, { attachTo: document.body });
       await wrapper.find({ ref: "searchInput" }).trigger("keydown.esc");
       const summaryWrapper = wrapper.find({ ref: "listBox" });
-      expect(summaryWrapper.wrapperElement).toStrictEqual(
-        document.activeElement
-      );
+      expect(summaryWrapper.element).toStrictEqual(document.activeElement);
     });
   });
 });

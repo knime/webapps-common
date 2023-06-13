@@ -124,9 +124,7 @@ export default defineComponent({
         text.toLowerCase().includes(this.searchValue.toLowerCase())
       );
 
-      const hasSearchValue = this.searchValue.trim();
-
-      if (this.allowNewValues && !hasExactSearchMatch && hasSearchValue) {
+      if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
         // add a preview for a non existing items
         return [
           { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
@@ -150,13 +148,10 @@ export default defineComponent({
     selectedValues() {
       return this.selectedIds.length === 0
         ? []
-        : this.selectedIds.map(
-            (id) =>
-              this.allPossibleItems.find((item) => item.id === id) || {
-                id,
-                text: id,
-              }
-          );
+        : this.selectedIds.map((id) => {
+            const item = this.allPossibleItems.find((item) => item.id === id);
+            return item || { id, text: id };
+          });
     },
 
     maxSizeVisibleOptions() {
@@ -268,7 +263,7 @@ export default defineComponent({
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-element="focusElement"
-    :parent-refocus-element-on-close="focusElement"
+    :parent-refocus-element-on-close="refocusElement"
     :close-dropdown-on-selection="closeDropdownOnSelection"
     :is-valid="isValid"
     @focus-outside="onFocusOutside"
@@ -332,7 +327,7 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .multiselect {
-  border: 1px solid var(--knime-dove-gray);
+  border: 1px solid var(--knime-stone-gray);
 
   &:focus-within {
     border-color: var(--knime-masala);

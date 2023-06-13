@@ -69,7 +69,6 @@ export default defineComponent({
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>RichTextEditor</h2>
           <Checkbox v-model="editable"> Toggle editable </Checkbox>
           &nbsp;
           <Checkbox v-model="compact"> Toggle compact </Checkbox>
