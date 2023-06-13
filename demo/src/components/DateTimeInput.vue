@@ -40,7 +40,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>DateTimeInput</h2>
           <p>
             DateTime component shows input field with a button and a popover
             calendar to choose the date. Time is represented with multiple

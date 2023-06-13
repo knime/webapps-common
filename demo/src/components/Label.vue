@@ -63,7 +63,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Label</h2>
           <p>
             Labels for form fields. Beside their default size, they come with a
             smaller one as well which can be enabled by setting the

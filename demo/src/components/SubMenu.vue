@@ -164,7 +164,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>SubMenu</h2>
         <p>
           A button that opens a dropdown menu containing clickable items. The
           menu will be positioned based on the orientation prop but will

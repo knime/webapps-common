@@ -47,7 +47,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>MultiselectListBox</h2>
           <p>
             A list box for selecting multiple items. It acts as a form element,
             so it emits an <code>input</code> event when something is

@@ -49,7 +49,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Carousel</h2>
         <p>
           The carousel can fit items of any size and creates shadows on each
           side of the viewport to indicate that scrolling is possible. When one

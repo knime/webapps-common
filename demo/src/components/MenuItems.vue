@@ -199,7 +199,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>MenuItems</h2>
         <p>
           A component that displays a group of items. Supports keyboard
           navigation.

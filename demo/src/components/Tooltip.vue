@@ -35,7 +35,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Tooltip</h2>
           <p>
             A simple tooltip only for devices with hover capabilities. For
             others it will be deactivated.

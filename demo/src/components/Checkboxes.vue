@@ -41,7 +41,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Checkboxes</h2>
           <p>
             A list of choices to choose of. It emits an <code>input</code> event
             when something is selected, and it has a <code>value</code>.

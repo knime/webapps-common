@@ -49,7 +49,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>StyledListItem</h2>
           <p>A li element with several styles</p>
           <ul>
             <StyledListItem text="Normal" />

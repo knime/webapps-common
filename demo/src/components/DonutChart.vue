@@ -35,7 +35,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>DonutChart</h2>
           <p>
             Displays a donut chart. It can display the current and max value as
             well as display an additional label. Also supports a secondary value

@@ -19,7 +19,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Colors</h2>
         <p>The following colors are pre-defined:</p>
 
         <h4>Primary Colors from the corporate style guide</h4>

@@ -50,7 +50,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>TextArea</h2>
           <p>
             Multi-line string input with optional invalid styling. It acts as a
             form element, so it emits <code>input</code> events and it has a
