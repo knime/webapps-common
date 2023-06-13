@@ -22,7 +22,9 @@ export default {
     },
   },
   setup() {
-    const { copy, copied } = useClipboard();
+    const { copy, copied } = useClipboard({
+      copiedDuring: 3000, // 3s
+    });
     return {
       copy,
       copied,
@@ -73,13 +75,14 @@ h2 {
   padding: 0;
   margin: 5px 12px;
   align-items: center;
-}
 
-.function-button.active {
-  background-color: var(--theme-color-success);
-  display: block;
-  opacity: 0;
-  transition: opacity 1.5s linear;
+  &.active {
+    background-color: var(--theme-color-success);
+    display: block;
+    opacity: 0;
+    transition: opacity 2s linear;
+    transition-delay: 1s;
+  }
 }
 
 .header:hover {
