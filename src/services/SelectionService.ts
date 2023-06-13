@@ -12,6 +12,7 @@ export class SelectionService<T = any> {
     private onSelectionChangeCallback: (any: any) => void;
     private currentPublishSelection: boolean;
     private currentSubscribeToSelection: boolean;
+    private initialized = false;
 
     /**
      * @param {KnimeService} knimeService - instance should be provided to use events.
@@ -119,6 +120,7 @@ export class SelectionService<T = any> {
         if (currentSubscribeToSelection) {
             this.addOnSelectionChangeCallback(this.onSelectionChangeCallback);
         }
+        this.initialized = true;
     }
 
     /**
@@ -143,11 +145,13 @@ export class SelectionService<T = any> {
      */
     onSettingsChange(getCurrentSelectionCallback: Function, clearSelectionCallback: () => void,
         newPublishSelection: boolean, newSubscribeToSelection: boolean) {
+        if (!this.initialized) {
+            return;
+        }
         if (!this.currentPublishSelection && newPublishSelection) {
             const currentSelection = getCurrentSelectionCallback();
             this.replace(currentSelection);
         }
-
         if (newSubscribeToSelection !== this.currentSubscribeToSelection) {
             const mode = newSubscribeToSelection ? 'addOnSelectionChangeCallback' : 'removeOnSelectionChangeCallback';
             this[mode](this.onSelectionChangeCallback);

@@ -179,6 +179,24 @@ describe('SelectionService', () => {
                 replaceSpy = jest.spyOn(selectionService, 'replace');
             });
 
+            it('does nothing when onInit was not called before', () => {
+                const newPublishSelection = true;
+                const newSubscribeToSelection = true;
+    
+                const addOnSelectionChangeCallbackSpy = jest.spyOn(selectionService, 'addOnSelectionChangeCallback');
+                const removeOnSelectionChangeCallbackSpy = jest.spyOn(selectionService,
+                    'removeOnSelectionChangeCallback');
+    
+                selectionService.onSettingsChange(getCurrentSelectionCallback, clearSelectionCallback,
+                    newPublishSelection, newSubscribeToSelection);
+    
+                expect(addOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();
+                expect(removeOnSelectionChangeCallbackSpy).not.toHaveBeenCalled();
+                expect(replaceSpy).not.toHaveBeenCalled();
+                expect(getCurrentSelectionCallback).not.toHaveBeenCalled();
+                expect(clearSelectionCallback).not.toHaveBeenCalled();
+            });
+
             it('replaces the current selection when publishSelection changes to checked, updates local selection vars'
                 , () => {
                     const previousPublishSelection = false;
