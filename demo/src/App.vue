@@ -121,6 +121,9 @@ const demoComponents = {
     MultiModeTwinlist: defineAsyncComponent(() =>
       import("./components/MultiModeTwinlist.vue")
     ),
+    RichTextEditor: defineAsyncComponent(() =>
+      import("./components/RichTextEditor.vue")
+    ),
   },
   misc: {
     NodePreview: defineAsyncComponent(() =>
