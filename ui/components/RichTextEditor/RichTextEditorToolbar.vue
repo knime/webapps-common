@@ -18,7 +18,8 @@ defineProps<Props>();
     <FunctionButton
       v-for="tool of tools"
       :key="tool.id"
-      :class="['tool', { active: tool.active ? tool.active() : false }]"
+      class="tool"
+      :active="tool.active ? tool.active() : false"
       :title="hotkeyFormatter(tool.hotkey)"
       compact
       @click.stop="tool.onClick"
