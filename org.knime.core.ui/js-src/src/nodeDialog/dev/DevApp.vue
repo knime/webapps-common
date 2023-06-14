@@ -62,6 +62,7 @@ export default {
                 nodeId: '0',
                 workflowId: '0',
                 projectId: '7',
+                flowVariableSettings: { viewVariables: this.currentDialog.result.schema.flowVariablesMap },
                 resourceInfo: {
                     type: 'VUE_COMPONENT_LIB',
                     id: 'NodeDialog',
@@ -133,8 +134,8 @@ export default {
 
 body {
   margin: 10px;
-  font-size: 18px;
-  line-height: 26px;
+  font-size: 16px;
+  line-height: 1.15;
 }
 
 .container {
