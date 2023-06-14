@@ -325,7 +325,7 @@ export default {
 
 <template>
   <div class="date-time-input">
-    <div v-if="showDate" class="date-picker">
+    <div v-if="showDate" :class="['date-picker', { disabled }]">
       <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
@@ -374,6 +374,7 @@ export default {
         :max="23"
         :min-digits="2"
         :model-value="dateTimeHours"
+        :disabled="disabled"
         @bounds="onTimeHoursBounds"
         @update:model-value="onTimeHoursChange"
       />
@@ -385,6 +386,7 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeMinutes"
+        :disabled="disabled"
         @bounds="onTimeMinutesBounds"
         @update:model-value="onTimeMinutesChange"
       />
@@ -397,6 +399,7 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeSeconds"
+        :disabled="disabled"
         @bounds="onTimeSecondsBounds"
         @update:model-value="onTimeSecondsChange"
       />
@@ -409,6 +412,7 @@ export default {
         :max="999"
         :min-digits="3"
         :model-value="dateTimeMilliseconds"
+        :disabled="disabled"
         @bounds="onTimeMillisecondsBounds"
         @update:model-value="onTimeMillisecondsChange"
       />
@@ -453,6 +457,10 @@ export default {
   }
 
   & .date-picker {
+    &.disabled {
+      opacity: 0.5;
+    }
+
     /* v-calendar theme
        new 1.1+ theme with css-vars see https://github.com/nathanreyes/v-calendar/blob/master/src/styles/base.css */
 
