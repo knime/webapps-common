@@ -78,7 +78,7 @@ describe("RichTextEditor.vue", () => {
   });
 
   const defaultProps = {
-    initialValue: "<p>Hello world</p>",
+    modelValue: "<p>Hello world</p>",
   };
 
   const doMount = ({
@@ -109,7 +109,7 @@ describe("RichTextEditor.vue", () => {
 
     expect(useEditor).toHaveBeenCalledWith(
       expect.objectContaining({
-        content: defaultProps.initialValue,
+        content: defaultProps.modelValue,
         extensions: expect.any(Array),
         editable: true,
         onUpdate: expect.any(Function),
@@ -119,13 +119,13 @@ describe("RichTextEditor.vue", () => {
     expect(mockEditor.value.params.extensions.length).toBe(3);
   });
 
-  it("should emit a change event", () => {
+  it("should emit an 'update:modelValue' event", () => {
     const { wrapper } = doMount();
 
     // trigger update function
     mockEditor.value.params.onUpdate();
 
-    expect(wrapper.emitted("change")).toBeDefined();
+    expect(wrapper.emitted("update:modelValue")).toBeDefined();
   });
 
   describe("disabled tools", () => {
