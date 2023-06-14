@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, toRefs, useSlots, watch } from "vue";
+import { computed, onMounted, toRefs, useSlots, watch, nextTick } from "vue";
 import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
 import TextAlign from "@tiptap/extension-text-align";
 import UnderLine from "@tiptap/extension-underline";
@@ -37,6 +37,8 @@ interface Props {
   hotkeyFormatter?: (hotkey: Array<string>) => string;
 
   customExtensions?: Array<AnyExtension>;
+
+  autofocus?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,6 +49,7 @@ const props = withDefaults(defineProps<Props>(), {
   disabledTools: () => ({} as DisabledTools),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
   customExtensions: () => [] as Array<AnyExtension>,
+  autofocus: true,
 });
 
 const slots = useSlots();
@@ -93,6 +96,12 @@ const minHeight = computed(() =>
   props.minHeight ? `${props.minHeight}px` : "initial"
 );
 
+const focus = () => {
+  editor.value?.commands?.focus?.();
+};
+
+defineExpose({ focus });
+
 const maxHeight = computed(() =>
   props.maxHeight ? `${props.maxHeight}px` : "initial"
 );
@@ -111,16 +120,13 @@ watch(editable, (value) => {
   }
 
   editor.value.setEditable(value);
+  focus();
 });
 
 onMounted(async () => {
-  if (props.editable) {
-    if (!editor.value) {
-      return;
-    }
-
-    await new Promise((r) => setTimeout(r, 0));
-    editor.value.commands.focus();
+  if (props.editable && props.autofocus) {
+    await nextTick();
+    focus();
   }
 });
 
@@ -227,9 +233,13 @@ const hasCustomToolbar = slots.customToolbar;
     }
 
     & p {
-      margin: 0 0 6px;
       padding: 0;
       line-height: 1.44;
+      margin: 0 0 6px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
 
     & blockquote {
