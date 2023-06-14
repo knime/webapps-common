@@ -62,9 +62,20 @@ import org.knime.core.webui.data.DataServiceProvider;
 public interface PortView extends UIExtension, DataServiceProvider {
 
     @Override
-    default Optional<ApplyDataService> createApplyDataService() {
+    default Optional<ApplyDataService<?>> createApplyDataService() {
         // not available to port views
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * @return the dimension of the space the port view page is supposed to take. If not specified (empty), the maximum
+     *         available space will be taken
+     */
+    default Optional<Dimension> getDimension() {
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("javadoc")
+    public record Dimension(int widthInPx, int heightInPx) {}
 
 }

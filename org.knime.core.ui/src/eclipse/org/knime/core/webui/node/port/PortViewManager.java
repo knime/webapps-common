@@ -138,7 +138,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * {@inheritDoc}
      */
     @Override
-    public Page createPage(final NodePortWrapper nodePortWrapper) {
+    protected Page createPage(final NodePortWrapper nodePortWrapper) {
         return getPortView(nodePortWrapper).getPage();
     }
 
@@ -173,7 +173,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    PortView getPortView(final NodePortWrapper nodePortWrapper) {
+    public PortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
             return portView;

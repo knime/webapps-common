@@ -60,15 +60,27 @@ import org.knime.core.webui.node.port.PortViewManager;
  */
 public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
 
+    private final NodePortWrapper m_wrapper;
+
     /**
      * @param nc the node the port to display the port view for belongs to
      * @param portIdx the port index of the port to display a view for
      * @param viewIdx The index of the view group
      */
     public PortViewEnt(final NodeContainer nc, final int portIdx, final int viewIdx) {
-        super(NodePortWrapper.of(nc, portIdx, viewIdx), PortViewManager.getInstance(),
-            PortViewManager.getInstance(),
+        super(NodePortWrapper.of(nc, portIdx, viewIdx), PortViewManager.getInstance(), PortViewManager.getInstance(),
             PageType.PORT);
+        m_wrapper = NodePortWrapper.of(nc, portIdx, viewIdx);
+    }
+
+    /**
+     * @return custom styling of the iframe that displays the port view's page
+     */
+    public String getIFrameStyle() {
+        var dims = PortViewManager.getInstance().getPortView(m_wrapper).getDimension().orElse(null);
+        var width = dims == null ? "100%" : (dims.widthInPx() + "px");
+        var height = dims == null ? "100%" : (dims.heightInPx() + "px");
+        return String.format("border:none;width:%s;height:%s;", width, height);
     }
 
 }
