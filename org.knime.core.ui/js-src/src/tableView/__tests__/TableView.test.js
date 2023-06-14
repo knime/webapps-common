@@ -1834,7 +1834,36 @@ describe('TableView.vue', () => {
                 1,
                 expect.anything(),
                 expect.anything(),
-                547
+                547 // The rest of the space
+            ]);
+        });
+
+        it('correctly overrides all column sizes', async () => {
+            await setColumnWidthSettings(wrapper, { clientWidth });
+            wrapper.vm.onColumnResize(0, 1); // not overwritten since this is the index column
+            wrapper.vm.onColumnResize(2, 1); // this will be overwritten
+            const defaultSizeOverride = 30;
+            wrapper.vm.onAllColumnsResize(defaultSizeOverride);
+            wrapper.vm.onColumnResize(3, 1); // this owerwrites the default again
+            expect(wrapper.vm.columnSizes).toStrictEqual([
+                1,
+                MIN_COLUMN_SIZE,
+                defaultSizeOverride,
+                1,
+                defaultSizeOverride,
+                890 // The rest of the space
+            ]);
+
+            const largeDefaultSizeOverride = 1000;
+            wrapper.vm.onAllColumnsResize(largeDefaultSizeOverride);
+
+            expect(wrapper.vm.columnSizes).toStrictEqual([
+                1,
+                50,
+                largeDefaultSizeOverride,
+                largeDefaultSizeOverride,
+                largeDefaultSizeOverride,
+                largeDefaultSizeOverride
             ]);
         });
 
@@ -1877,6 +1906,8 @@ describe('TableView.vue', () => {
             expect(resizeObserverObserve).toHaveBeenCalledTimes(1);
             expect(resizeObserverObserve).toHaveBeenCalledWith(wrapper.vm.$el);
 
+            const defaultColumnSizeOverride = 123;
+            wrapper.vm.onAllColumnsResize(defaultColumnSizeOverride);
             wrapper.vm.$el.getBoundingClientRect = function () {
                 return { width: 0 };
             };
@@ -1891,6 +1922,14 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
             expect(intersectionObserverUnobserve).toHaveBeenCalledTimes(2);
             expect(intersectionObserverUnobserve).toHaveBeenLastCalledWith(wrapper.vm.$el);
+            expect(wrapper.vm.columnSizes).toStrictEqual([
+                0,
+                0,
+                defaultColumnSizeOverride,
+                defaultColumnSizeOverride,
+                defaultColumnSizeOverride,
+                defaultColumnSizeOverride
+            ]);
 
             clientWidth = 200;
             wrapper.vm.$el.getBoundingClientRect = function () {
@@ -1899,6 +1938,14 @@ describe('TableView.vue', () => {
             window.dispatchEvent(new Event('resize'));
 
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
+            expect(wrapper.vm.columnSizes).toStrictEqual([
+                0,
+                0,
+                defaultColumnSizeOverride * 2,
+                defaultColumnSizeOverride * 2,
+                defaultColumnSizeOverride * 2,
+                defaultColumnSizeOverride * 2
+            ]);
 
             wrapper.unmount();
             expect(resizeObserverDisconnect).toHaveBeenCalledTimes(1);

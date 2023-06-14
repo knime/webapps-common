@@ -60,6 +60,7 @@ export default {
             baseUrl: null,
             clientWidth: 0,
             columnSizeOverrides: {},
+            defaultColumnSizeOverride: null,
             scopeSize: MIN_SCOPE_SIZE,
             bufferSize: MIN_BUFFER_SIZE,
             numRowsAbove: 0,
@@ -332,8 +333,10 @@ export default {
         },
         getDataColumnSizes(availableSpace) {
             const defaultColumnSize = Math.max(DEFAULT_COLUMN_SIZE, availableSpace / this.displayedColumns.length);
+            const currentDefaultColumnSize = this.defaultColumnSizeOverride || defaultColumnSize;
+
             return this.displayedColumns.reduce((columnSizes, columnName) => {
-                columnSizes.push(this.columnSizeOverrides[columnName] || defaultColumnSize);
+                columnSizes.push(this.columnSizeOverrides[columnName] || currentDefaultColumnSize);
                 return columnSizes;
             }, []);
         },
@@ -788,6 +791,12 @@ export default {
                 this.columnSizeOverrides[colName] = newColumnSize;
             }
         },
+        onAllColumnsResize(columnSize) {
+            this.defaultColumnSizeOverride = columnSize;
+            this.displayedColumns.forEach(columnName => {
+                delete this.columnSizeOverrides[columnName];
+            });
+        },
         observeTableIntersection() {
             new IntersectionObserver((entries, observer) => {
                 entries.forEach((entry) => {
@@ -812,6 +821,9 @@ export default {
                 Object.getOwnPropertySymbols(this.columnSizeOverrides).forEach(symbol => {
                     this.columnSizeOverrides[symbol] *= ratio;
                 });
+                if (this.defaultColumnSizeOverride) {
+                    this.defaultColumnSizeOverride *= ratio;
+                }
                 this.clientWidth = updatedClientWidth;
             } else {
                 this.observeTableIntersection();
@@ -996,6 +1008,7 @@ export default {
       @column-resize="onColumnResize"
       @column-resize-start="columnResizeActive.setTrue"
       @column-resize-end="columnResizeActive.setFalse"
+      @all-columns-resize="onAllColumnsResize"
       @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
       @lazyload="onScroll"
     >
