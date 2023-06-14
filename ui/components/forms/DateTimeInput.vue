@@ -103,6 +103,10 @@ export default {
       type: String,
       default: getLocalTimeZone(),
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -345,13 +349,14 @@ export default {
               <input
                 :id="id"
                 :value="inputValue"
+                :disabled="disabled"
                 v-on="inputEvents"
                 @change="onTextInputChange($event, hidePopover)"
                 @blur="hidePopover"
               />
               <span
-                :class="['button', { active: popoverIsVisible }]"
-                @click="togglePopover"
+                :class="['button', { active: popoverIsVisible, disabled }]"
+                @click="disabled ? () => {} : togglePopover()"
               >
                 <CalendarIcon />
               </span>
@@ -465,6 +470,10 @@ export default {
       --popover-transition-time: 0.1s ease-in-out;
     }
 
+    & :deep(.vc-day-content.is-disabled) {
+      opacity: 0.5;
+    }
+
     & :deep(.vc-container) {
       /* remove roundness */
       --rounded: 0;
@@ -533,7 +542,7 @@ export default {
       font-size: 13px;
       font-weight: 300;
       letter-spacing: inherit;
-      height: 40px;
+      height: 38px;
       line-height: normal;
       border: 0;
       margin: 0;
@@ -548,7 +557,11 @@ export default {
         box-shadow: none; /* override default browser styling */
       }
 
-      &:hover:not(:focus) {
+      &:disabled {
+        opacity: 0.5;
+      }
+
+      &:hover:not(:focus, :disabled) {
         background-color: var(--theme-date-input-input-hover-background);
       }
     }
@@ -568,12 +581,12 @@ export default {
       position: absolute;
       z-index: 1;
       width: 32px;
-      height: 40px;
+      height: 38px;
       padding-left: 10px;
       padding-right: 9px;
-      cursor: pointer;
 
-      &:hover {
+      &:hover:not(.disabled) {
+        cursor: pointer;
         background-color: var(--theme-date-input-input-hover-background);
       }
 
@@ -582,10 +595,14 @@ export default {
         height: 100%;
         stroke-width: 1.5px;
       }
+
+      &.disabled {
+        opacity: 0.5;
+      }
     }
 
-    & .button:active,
-    & .button.active {
+    & .button:active:not(.disabled),
+    & .button.active:not(.disabled) {
       color: var(--theme-date-input-white);
       background-color: var(--theme-date-input-button-active-color);
 
