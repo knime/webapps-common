@@ -10,7 +10,7 @@ import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { DisabledTools } from "./types";
 
 interface Props {
-  initialValue: string;
+  modelValue: string;
   editable?: boolean;
   compact?: boolean;
   /**
@@ -37,8 +37,16 @@ interface Props {
   hotkeyFormatter?: (hotkey: Array<string>) => string;
 
   customExtensions?: Array<AnyExtension>;
-
+  /**
+   * Whether to automatically focus the editor on mount. Also applies when the
+   * editable prop changes. True by default
+   */
   autofocus?: boolean;
+  /**
+   * Whether to disable the expand transition when the editor goes into edit mode.
+   * False by default
+   */
+  disableEditableTransition?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -50,13 +58,14 @@ const props = withDefaults(defineProps<Props>(), {
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: true,
+  disableEditableTransition: false,
 });
 
 const slots = useSlots();
-const { initialValue, editable } = toRefs(props);
+const { modelValue, editable } = toRefs(props);
 
 const emit = defineEmits<{
-  (e: "change", content: string): void;
+  (e: "update:modelValue", content: string): void;
 }>();
 
 const extensions = [
@@ -86,10 +95,10 @@ const extensions = [
 ];
 
 const editor = useEditor({
-  content: props.initialValue,
+  content: props.modelValue,
   editable: props.editable,
   extensions,
-  onUpdate: () => emit("change", editor.value?.getHTML() || ""),
+  onUpdate: () => emit("update:modelValue", editor.value?.getHTML() ?? ""),
 });
 
 const minHeight = computed(() =>
@@ -106,12 +115,18 @@ const maxHeight = computed(() =>
   props.maxHeight ? `${props.maxHeight}px` : "initial"
 );
 
-watch(initialValue, () => {
+watch(modelValue, (_value) => {
   if (!editor.value) {
     return;
   }
 
-  editor.value.commands.setContent(initialValue.value);
+  const isSame = editor.value.getHTML() === _value;
+
+  if (isSame) {
+    return;
+  }
+
+  editor.value.commands.setContent(_value);
 });
 
 watch(editable, (value) => {
@@ -120,7 +135,10 @@ watch(editable, (value) => {
   }
 
   editor.value.setEditable(value);
-  focus();
+
+  if (props.autofocus) {
+    focus();
+  }
 });
 
 onMounted(async () => {
@@ -135,7 +153,10 @@ const hasCustomToolbar = slots.customToolbar;
 
 <template>
   <div class="editor-wrapper">
-    <Transition name="expand" :css="!hasCustomToolbar">
+    <Transition
+      name="expand"
+      :css="!hasCustomToolbar && !disableEditableTransition"
+    >
       <div
         v-if="editor && editable"
         :class="{ 'embedded-toolbar': !hasCustomToolbar }"

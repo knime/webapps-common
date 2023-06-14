@@ -8,22 +8,20 @@ import code from "webapps-common/ui/components/RichTextEditor/RichTextEditor.vue
 
 const codeExample = `
 <RichTextEditor
+  v-model="value"
   compact
   :editable="editable"
-  :initial-value="initialValue"
   :min-height="minHeight"
   :max-height="maxHeight"
-  @change="updatedValue = $event"
 />
 
 <RichTextEditor
+  v-model="value"
   compact
   :editable="editable"
-  :initial-value="initialValue"
   :min-height="minHeight"
   :max-height="maxHeight"
   :disabled-tools="{ textAlign: true }"
-  @change="updatedValue = $event"
 >
   <template #customToolbar="{ tools }">
     <div class="custom-toolbar">
@@ -52,11 +50,11 @@ export default defineComponent({
     return {
       compact: true,
       editable: true,
-      initialValue: "<p><strong>Hello</strong> World</p>",
+      value: "<p><strong>Hello</strong> World</p>",
+      disableEditableTransition: false,
       minHeight: 150,
       maxHeight: 300,
       disabledTools: {},
-      updatedValue: "<p><strong>Hello</strong> World</p>",
       code,
       codeExample,
     };
@@ -69,24 +67,28 @@ export default defineComponent({
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <Checkbox v-model="editable"> Toggle editable </Checkbox>
+          <Checkbox v-model="editable"> Editable </Checkbox>
           &nbsp;
-          <Checkbox v-model="compact"> Toggle compact </Checkbox>
+          <Checkbox v-model="compact"> Compact </Checkbox>
+          &nbsp;
+          <Checkbox v-model="disableEditableTransition">
+            Disable editable transition
+          </Checkbox>
           <div class="editor-wrapper">
             <RichTextEditor
+              v-model="value"
               :compact="compact"
+              :disable-editable-transition="disableEditableTransition"
               :editable="editable"
-              :initial-value="initialValue"
               :min-height="minHeight"
               :max-height="maxHeight"
-              @change="updatedValue = $event"
             />
           </div>
         </div>
         <div class="grid-item-12">
           <div class="output">
             <h4>Output</h4>
-            {{ updatedValue }}
+            {{ value }}
           </div>
         </div>
       </div>
@@ -98,13 +100,12 @@ export default defineComponent({
 
           <div class="editor-wrapper custom-toolbar-wrapper">
             <RichTextEditor
+              v-model="value"
               compact
               :editable="editable"
-              :initial-value="initialValue"
               :min-height="minHeight"
               :max-height="maxHeight"
               :disabled-tools="{ textAlign: true }"
-              @change="updatedValue = $event"
             >
               <template #customToolbar="{ tools }">
                 <div class="custom-toolbar">
