@@ -1721,15 +1721,19 @@ describe('TableView.vue', () => {
         it('creates the correct source urls', async () => {
             const path = 'myPathForTest';
             const imageIndex = 5;
+            const width = 80;
+            const height = 90;
             TableUIStub.template = `<div>
                 <slot 
                     name="cellContent-${imageIndex}" 
-                    :data="{ cell: '${path}' }"
+                    :data="{ cell: '${path}', height: ${height}, width: ${width} }"
                 />
             </div>`;
             const wrapper = await shallowMountTableView(context);
             const tableUI = wrapper.getComponent(TableUIStub);
             expect(tableUI.findComponent(ImageRenderer).attributes().url).toBe('http://localhost:8080/base.url/myPathForTest');
+            expect(tableUI.findComponent(ImageRenderer).attributes().width).toBe(`${width}`);
+            expect(tableUI.findComponent(ImageRenderer).attributes().height).toBe(`${height}`);
         });
 
         it('creates the correct content for html', async () => {

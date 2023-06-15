@@ -207,4 +207,36 @@ public class DataValueImageRendererRegistryTest {
 
     }
 
+
+    /**
+     * Test that images are cached with respect to dimension parameters.
+     */
+    @Test
+    void testImageDataCachedPerDimension() {
+        var tableSupplier = createDefaultTestTable(15);
+
+        var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
+        var tableId =  "test_table_id";
+        var dataService =
+            new TableViewDataServiceImpl(tableSupplier,tableId, new SwingBasedRendererFactory(), imgReg);
+        var pathPrefix = "uiext/test_page_id/images/";
+
+        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
+        imgReg.clearImageDataCache("test_table_id");
+
+        // access the same image multiple times (within the same chunk/page of rows)
+        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
+        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        var res1 = imgReg.renderImage(imgPath);
+        var res2 = imgReg.renderImage(imgPath + "?w=20&h=30");
+        var res3 = imgReg.renderImage(imgPath);
+        var res4 = imgReg.renderImage(imgPath + "?w=30&h=20");
+        var res5 = imgReg.renderImage(imgPath + "?w=20&h=30");
+        var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
+        assertThat(res3).isEqualTo(res1);
+        assertThat(res5).isEqualTo(res2);
+        assertThat(res4).isNotEqualTo(res2);
+        assertThat(numCalls).isEqualTo(3);
+    }
+
 }

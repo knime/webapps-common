@@ -1,14 +1,22 @@
 <script setup lang="ts">
-defineProps<{
-    url: string
+import { computed } from 'vue';
+
+const props = defineProps<{
+    url: string,
+    height?: number,
+    width?: number
 }>();
+
+const src = computed(() => props.width && props.height
+    ? `${props.url}?w=${Math.floor(props.width)}&h=${Math.floor(props.height)}`
+    : props.url);
 
 </script>
 
 <template>
   <img
     loading="lazy"
-    :src="url"
+    :src="src"
     alt=""
   >
 </template>

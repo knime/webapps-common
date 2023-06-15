@@ -100,7 +100,6 @@ public final class DataValueImageRendererRegistry {
 
     private final Map<String, Images> m_imagesPerTable = Collections.synchronizedMap(new HashMap<>());
 
-
     /**
      * @param pageIdSupplier the page id of the view (see, e.g.,
      *            {@link PageResourceManager#getPageId(org.knime.core.webui.node.NodeWrapper)}). It's used to define the
@@ -244,6 +243,8 @@ public final class DataValueImageRendererRegistry {
 
         int numImages();
 
+        int numRenderImageCalls();
+
         int numRenderedImages();
 
         int[] batchSizes();
@@ -312,6 +313,12 @@ public final class DataValueImageRendererRegistry {
                         return (int)m_images.values().stream().filter(Image::isRendered).count();
                     }
 
+
+                    @Override
+                    public int numRenderImageCalls() {
+                        return m_images.values().stream().mapToInt(Image::getNumRenderCalls).sum();
+                    }
+
                     @Override
                     public int[] batchSizes() {
                         return m_batches.stream().mapToInt(Set::size).toArray();
@@ -330,7 +337,9 @@ public final class DataValueImageRendererRegistry {
 
         private DataValueImageRenderer m_renderer;
 
-        private byte[] m_data;
+        private Map<String, byte[]> m_dataCache = new HashMap<>();
+
+        private int m_numRenderCalls;
 
         Image(final DataCell cell, final DataValueImageRenderer renderer) {
             m_cell = cell;
@@ -338,12 +347,15 @@ public final class DataValueImageRendererRegistry {
         }
 
         byte[] getData(final int width, final int height) {
-            if (m_data == null) {
-                m_data = m_renderer.renderImage(m_cell, width, height);
-                m_renderer = null;
-                m_cell = null;
+
+            String key = width + ":" + height;
+            if (m_dataCache.containsKey(key)) {
+                return m_dataCache.get(key);
             }
-            return m_data;
+            m_numRenderCalls++;
+            final var data = m_renderer.renderImage(m_cell, width, height);
+            m_dataCache.put(key, data);
+            return data;
         }
 
         DataCell getDataCell() {
@@ -351,7 +363,11 @@ public final class DataValueImageRendererRegistry {
         }
 
         boolean isRendered() {
-            return m_data != null;
+            return !m_dataCache.isEmpty();
+        }
+
+        int getNumRenderCalls() {
+            return m_numRenderCalls ;
         }
 
     }

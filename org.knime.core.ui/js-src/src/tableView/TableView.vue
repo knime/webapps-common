@@ -996,11 +996,13 @@ export default {
       <template
         v-for="index in numberOfUsedColumns"
         :key="index"
-        #[`cellContent-${index}`]="{data: {cell}}"
+        #[`cellContent-${index}`]="{data: {cell, height, width}}"
       >
         <ImageRenderer
           v-if="isImage(columnContentTypes[index - 2])"
           :url="getImageUrl(cell, index)"
+          :height="height"
+          :width="width"
         />
         <HTMLRenderer
           v-else
