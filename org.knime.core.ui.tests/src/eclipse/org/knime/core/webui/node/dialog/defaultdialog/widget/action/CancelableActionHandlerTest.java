@@ -44,20 +44,55 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 19, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
+import org.junit.jupiter.api.Test;
+
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
- *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+public class CancelableActionHandlerTest {
+
+    @Test
+    void testCancelableActionHandler() {
+        final ActionHandler actionHandler = new CancelableActionHandler() {
+
+            @Override
+            protected Future<ActionHandlerResult> invoke() {
+                return new CompletableFuture<>();
+            }
+        };
+        final var result = actionHandler.invoke(null);
+        actionHandler.invoke(CancelableActionHandler.CANCEL_MODE);
+        assertTrue(result.isCancelled());
+    }
+
+    @Test
+    void testCancelableActionHandlerNotCanceledIfOverwritten() {
+        final ActionHandler actionHandler = new CancelableActionHandler() {
+
+            @Override
+            protected Future<ActionHandlerResult> invoke() {
+                return new CompletableFuture<>();
+            }
+
+            @Override
+            protected void cancel() {
+                return;
+            }
+        };
+        final var result = actionHandler.invoke(null);
+        actionHandler.invoke(CancelableActionHandler.CANCEL_MODE);
+        assertFalse(result.isCancelled());
+    }
+
+}

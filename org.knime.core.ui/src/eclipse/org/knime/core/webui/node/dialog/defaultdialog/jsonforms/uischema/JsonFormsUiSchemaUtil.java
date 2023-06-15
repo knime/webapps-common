@@ -51,12 +51,27 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutNodesGenerator.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Class for creating ui schema content from a settings POJO class.
+ *
+ *
+ * The UiSchema generation follows these steps:
+ * <ol type="1">
+ * <li>Collect all {@link Layout} and {@link Signal} annotations and register all controls (see
+ * {@link UiSchemaDefaultNodeSettingsTraverser})</li>
+ * <li>Use order annotations (see e.g. {@link After}) and class hierarchies to determine a tree structure (see
+ * {@link LayoutTree})</li>
+ * <li>Generate the layout parts starting from the root and add the mapped controls (see
+ * {@link LayoutNodesGenerator})</li>
+ * </ol>
  *
  * @author Paul Bärnreuther
  */
@@ -69,10 +84,19 @@ public final class JsonFormsUiSchemaUtil {
     /**
      * @param settings
      * @param mapper
+     * @param context
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings,
-        final ObjectMapper mapper, final SettingsCreationContext context) {
-        return new JsonFormsUiSchemaGenerator(settings, mapper, context).build();
+    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
+        final SettingsCreationContext context) {
+        final var layoutSkeleton = resolveLayout(settings, mapper);
+        return new LayoutNodesGenerator(layoutSkeleton, mapper, context).build();
+    }
+
+    private static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
+        final var traverser = new UiSchemaDefaultNodeSettingsTraverser(mapper);
+        final var traversalResult = traverser.traverse(settings);
+        final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
+        return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals());
     }
 }

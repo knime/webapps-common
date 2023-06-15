@@ -44,20 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 15, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+
+import java.util.concurrent.Future;
+
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
- *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
+ * The interface for the handler of an action invocation specified by a {@link ButtonWidget}.
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+public interface ActionHandler {
+
+    /**
+     * @param mode a string specified by the frontend in order to reuse the same button for multiple different kinds of
+     *            invocations. E.g. this can be used to cancel an invocation (refer to {@link CancelableActionHandler}.
+     * @return an asynchronous result. In case the handler is synchronous, refer to {@link SynchronousActionHandler}.
+     */
+    Future<ActionHandlerResult> invoke(String mode);
+
+}

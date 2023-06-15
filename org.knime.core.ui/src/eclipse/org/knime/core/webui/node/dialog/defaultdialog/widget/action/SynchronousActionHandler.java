@@ -44,20 +44,32 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 16, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
- *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
+ * An {@link ActionHandler} whose invocation is synchronous.
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+public abstract class SynchronousActionHandler implements ActionHandler {
+
+    /**
+     * @param mode of invocation. This can be ignored in simple cases.
+     * @return the result of the invocation.
+     */
+    public abstract ActionHandlerResult invokeSync(String mode);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Future<ActionHandlerResult> invoke(final String mode) {
+        return CompletableFuture.supplyAsync(() -> invokeSync(mode));
+    }
+
+}

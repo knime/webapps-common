@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 
@@ -392,7 +393,7 @@ class JsonFormsUiSchemaUtilTest {
     @Test
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
         final Map<String, Class<?>> settings = Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
+        assertThrows(FieldAnnotationsHolder.FieldAnnotationException.class, () -> buildUiSchema(settings));
     }
 
     @Test

@@ -56,8 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaGenerator.JsonFormsControl;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaGenerator.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 
@@ -79,13 +78,16 @@ final class LayoutNodesGenerator {
 
     private final SettingsCreationContext m_settingsCreationContext;
 
+    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals) {
+    }
+
     /**
+     * @param layout a record containing controls (as a mapping between layout parts and their contained settings
+     *            controls) and a ruleSourcesMap (the mapping between ids of rule sources to their conditions)
      * @param mapper the object mapper used for the ui schema generation
-     * @param controls the mapping between layout parts and their contained settings controls
-     * @param ruleSourcesMap the mapping between ids of rule sources to their conditions.
-     * @param rootClass the root class of the layout. This can be null but only if no nested layout parts exist.
+     * @param context the settings creation context with access to the input ports
      */
-    LayoutNodesGenerator(final ObjectMapper mapper, final LayoutSkeleton layout,
+    LayoutNodesGenerator(final LayoutSkeleton layout, final ObjectMapper mapper,
         final SettingsCreationContext context) {
         m_mapper = mapper;
         m_signals = layout.signals();

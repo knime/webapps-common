@@ -98,7 +98,7 @@ final class UiSchemaRulesGenerator {
     /**
      * Applies a rule to an object node based on the {@link Effect} annotation of a given field. The linked sources are
      * fetched and combined using the provided operator, with nested operations being resolved recursively. For more
-     * information on the resolution of different operations, see {@link JsonFormsUiSchemaGenerator}.
+     * information on the resolution of different operations, see {@link JsonFormsUiSchemaUtil}.
      *
      * @param control the object node to which the rule should be applied
      */

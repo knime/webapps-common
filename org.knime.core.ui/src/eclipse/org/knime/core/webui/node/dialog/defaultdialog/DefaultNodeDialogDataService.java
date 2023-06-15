@@ -44,20 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 15, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog;
+
+import java.util.concurrent.ExecutionException;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
+
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
- *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+public interface DefaultNodeDialogDataService {
+
+    /**
+     *
+     * @param handlerClass the class name of the {@link ActionHandler} that is to be used.
+     * @return a {@link ActionHandlerResult}
+     * @throws ExecutionException if an error is thrown during the invocation
+     * @throws InterruptedException if the used thread is interrupted
+     */
+    ActionHandlerResult invokeActionHandler(String handlerClass) throws ExecutionException, InterruptedException;
+
+    /**
+     * @param handlerClass the class name of the {@link ActionHandler} that is to be used.
+     * @param mode a string key that is/can be used inside an {@link ActionHandler} to have different outcomes.
+     * @return a {@link ActionHandlerResult}
+     * @throws ExecutionException if an error is thrown during the invocation
+     * @throws InterruptedException if the used thread is interrupted
+     */
+    ActionHandlerResult invokeActionHandler(String handlerClass, String mode)
+        throws ExecutionException, InterruptedException;
+
+}

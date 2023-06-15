@@ -79,6 +79,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -165,6 +166,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>{@link ColumnFilter}</td>
  * <td></td>
  * <td>{@link ChoicesWidget} (twin-list)</td>
+ * </tr>
+ * <tr>
+ * <td>Any type</td>
+ * <td>-</td>
+ * <td>{@link ButtonWidget} (button with backend-side action handler)</td>
  * </tr>
  * </table>
  *

@@ -43,21 +43,12 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   May 2, 2023 (Paul Bärnreuther): created
  */
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
+ * This package contains the additional widget annotations and classes to define widgets which trigger certain actions.
  *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
+ * For defining a button which triggers an action on click refer to the {@link org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget}
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.action;

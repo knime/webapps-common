@@ -44,20 +44,40 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 16, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+
 /**
- * This package contains the implementation of the generation of an ui schema from
- * {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings}.
+ * The result of the invocation of an {@link ActionHandler}
  *
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil Implementation
- *      details}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.layout How to define the overall layout and its parts.}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil How to adjust the
- *      (default) format of ui elements}
- * @see {@link org.knime.core.webui.node.dialog.defaultdialog.rule How to conditionally show/hide/disable/enable
- *      settings}
- *
+ * @param result the result of a succesful response
+ * @param state the state of the result.
+ * @param message the error message in case of a failed response.
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+public record ActionHandlerResult(Object result, ActionHandlerState state, String message) {
+
+    /**
+     * @param result the value of the successful result
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#SUCCESS}
+     */
+    public static ActionHandlerResult succeed(final Object result) {
+        return new ActionHandlerResult(result, ActionHandlerState.SUCCESS, null);
+    }
+
+    /**
+     * @param message the supplied error message
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#FAIL}
+     */
+    public static ActionHandlerResult fail(final String message) {
+        return new ActionHandlerResult(null, ActionHandlerState.FAIL, message);
+    }
+
+    /**
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#CANCELED}
+     */
+    public static ActionHandlerResult cancel() {
+        return new ActionHandlerResult(null, ActionHandlerState.CANCELED, null);
+    }
+}

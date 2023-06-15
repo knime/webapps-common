@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -75,6 +77,8 @@ public final class DefaultNodeDialog extends NodeDialog {
 
     private final DefaultNodeSettingsService m_settingsDataService;
 
+    private Collection<Class<?>> m_settingsClasses;
+
     /**
      * Creates a new instance.
      *
@@ -84,6 +88,7 @@ public final class DefaultNodeDialog extends NodeDialog {
     public DefaultNodeDialog(final SettingsType settingsType,
         final Class<? extends DefaultNodeSettings> settingsClass) {
         super(settingsType);
+        m_settingsClasses = List.of(settingsClass);
         m_settingsDataService = new DefaultNodeSettingsService(Map.of(settingsType, settingsClass));
     }
 
@@ -99,9 +104,7 @@ public final class DefaultNodeDialog extends NodeDialog {
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2) {
-        super(settingsType1, settingsType2);
-        m_settingsDataService =
-            new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+        this(settingsType1, settingsClass1, settingsType2, settingsClass2, null);
     }
 
     /**
@@ -116,9 +119,9 @@ public final class DefaultNodeDialog extends NodeDialog {
      */
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
-        final Class<? extends DefaultNodeSettings> settingsClass2,
-        final OnApplyNodeModifier onApplyModifier) {
+        final Class<? extends DefaultNodeSettings> settingsClass2, final OnApplyNodeModifier onApplyModifier) {
         super(onApplyModifier, settingsType1, settingsType2);
+        m_settingsClasses = List.of(settingsClass1, settingsClass2);
         m_settingsDataService =
             new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
     }
@@ -130,8 +133,10 @@ public final class DefaultNodeDialog extends NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        return Optional.empty();
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses);
+        return Optional.ofNullable(RpcDataService.builder(dataService).build());
     }
+
 
     @Override
     protected NodeSettingsService getNodeSettingsService() {
