@@ -118,7 +118,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Message</h2>
           <p>
             There are several types of messages: <code>info</code> (default),
             <code>success</code> and <code>error</code>.

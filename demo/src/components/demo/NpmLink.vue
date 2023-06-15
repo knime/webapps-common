@@ -10,10 +10,6 @@ export default {
       required: true,
       type: String,
     },
-    name: {
-      required: true,
-      type: String,
-    },
     description: {
       default: "See npm package:",
       type: String,
@@ -26,7 +22,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>{{ name }}</h2>
         <Description>
           <p>{{ description }}</p>
           <a :href="link">{{ link }}</a>

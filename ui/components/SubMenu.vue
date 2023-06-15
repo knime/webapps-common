@@ -248,11 +248,6 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-.menu-items,
-:deep(.menu-items-sub-level) {
-  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
-}
-
 .menu-wrapper {
   z-index: var(--z-index-common-menu-items-expanded, 57);
 

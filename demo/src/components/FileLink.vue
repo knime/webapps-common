@@ -49,7 +49,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>FileLink</h2>
         <p>
           The file link is a regular link with support for file icons and size
           display.

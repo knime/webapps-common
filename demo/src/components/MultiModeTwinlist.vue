@@ -133,7 +133,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>MultiModeTwinList</h2>
           <p>
             A MultiModeTwinlist with mode selection set to initial regex
             selection. The demo list include items with special characters that

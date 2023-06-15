@@ -121,7 +121,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>TabBar</h2>
         <p>
           The tab bar can be used as a standalone component or together with the
           included mixin, which syncs the selected value to the

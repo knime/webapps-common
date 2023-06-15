@@ -72,7 +72,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>FunctionButton</h2>
         <p>
           The function button is a button with an optional active state, e.g.
           when a dropdown menu is expanded and can also be disabled.

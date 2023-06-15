@@ -49,7 +49,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Breadcrumb</h2>
         <p>
           Breadcrumbs can have different focus/hover styles, these can be
           toggled via the "greyStyle"-property

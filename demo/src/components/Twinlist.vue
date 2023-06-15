@@ -141,7 +141,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Twinlist</h2>
           <p>
             Two list boxes for selecting multiple items. It acts as a form
             element, so it emits an <code>input</code> event when selection

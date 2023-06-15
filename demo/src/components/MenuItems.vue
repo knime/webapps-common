@@ -199,7 +199,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>MenuItems</h2>
         <p>
           A component that displays a group of items. Supports keyboard
           navigation.
@@ -326,14 +325,9 @@ h4 {
   text-align: center;
 }
 
-:deep(.menu-items-sub-level) {
-  box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
-}
-
 .card {
   display: flex;
   flex-direction: column;
-  box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
 }
 
 .menu-items-with-navigation {

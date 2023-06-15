@@ -420,7 +420,7 @@ export default {
     padding: 0;
     margin: -1px 0 1px;
     background: var(--theme-dropdown-background-color);
-    box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
+    box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
   }
 

@@ -91,7 +91,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12 wrapper">
-          <h2>SideDrawer</h2>
           <p>
             Provides an expandable drawer to the right side which can be filled
             with arbitrary content. On small screens it will take up the whole

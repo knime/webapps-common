@@ -68,7 +68,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>NodePreview</h2>
           <p>
             A component that draws a Node (left, with dynamic ports) or a
             Component (right).<br />

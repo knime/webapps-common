@@ -3,7 +3,6 @@
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Fonts</h2>
           <p>
             We use
             <a href="https://fonts.google.com/specimen/Roboto">Roboto</a> and
@@ -39,6 +38,10 @@
 
   & .grid-item-12 {
     padding: 1em 0;
+  }
+
+  & p:first-child {
+    padding-top: 16px;
   }
 }
 

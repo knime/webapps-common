@@ -125,7 +125,6 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Messages</h2>
           <p>
             Displays multiple stacked messages and animates if a message is
             added or removed (e.g. dismissed).
