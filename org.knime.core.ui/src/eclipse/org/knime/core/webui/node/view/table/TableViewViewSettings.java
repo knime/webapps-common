@@ -80,27 +80,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     }
 
     /**
-     * @param spec The spec of the displayed table
-     * @return Settings describing a reduced table view suitable for displaying a few rows of spec info.
-     */
-    public static TableViewViewSettings getSpecViewSettings(DataTableSpec spec) {
-        var settings = new TableViewViewSettings(spec);
-        settings.m_showTitle = false;
-        settings.m_enableGlobalSearch = false;
-        settings.m_enableSortingByHeader = false;
-        settings.m_enableColumnSearch = false;
-        settings.m_compactMode = true;
-        settings.m_subscribeToSelection = false;
-        settings.m_publishSelection = false;
-        // enable pagination in order to not lazily fetch data (there isn't any) after initially loading the table in the FE
-        settings.m_enablePagination = true;
-        settings.m_enableRendererSelection = false;
-        settings.m_showRowKeys = false;
-        settings.m_showRowIndices = false;
-        return settings;
-    }
-
-    /**
      * The selected columns to be displayed.
      */
 
