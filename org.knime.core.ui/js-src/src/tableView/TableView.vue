@@ -6,6 +6,7 @@ import { createDefaultFilterConfig, arrayEquals, isImage, isHtml } from '@/table
 import throttle from 'raf-throttle';
 import ImageRenderer from './ImageRenderer.vue';
 import HTMLRenderer from './HtmlRenderer.vue';
+import useBoolean from './utils/useBoolean';
 
 const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE } = tableUIConstants;
 
@@ -25,6 +26,9 @@ export default {
         HTMLRenderer
     },
     inject: ['getKnimeService'],
+    setup() {
+        return { columnResizeActive: useBoolean() };
+    },
     data() {
         return {
             dataLoaded: false,
@@ -990,6 +994,8 @@ export default {
       @column-filter="onColumnFilter"
       @clear-filter="onClearFilter"
       @column-resize="onColumnResize"
+      @column-resize-start="columnResizeActive.setTrue"
+      @column-resize-end="columnResizeActive.setFalse"
       @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
       @lazyload="onScroll"
     >
@@ -1003,6 +1009,7 @@ export default {
           :url="getImageUrl(cell, index)"
           :height="height"
           :width="width"
+          :update-size="!columnResizeActive.state"
         />
         <HTMLRenderer
           v-else

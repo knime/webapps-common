@@ -26,4 +26,26 @@ describe('ImageRenderer.vue', () => {
         const wrapper = mount(ImageRenderer, { props });
         expect(wrapper.find('img').attributes().src).toBe(`${props.url}?w=${props.width}&h=${props.height}`);
     });
+
+
+    it('does not update src if desired', async () => {
+        props.width = 10;
+        props.height = 20;
+        props.updateSize = false;
+        const wrapper = mount(ImageRenderer, { props });
+        const initialSrc = `${props.url}?w=${props.width}&h=${props.height}`;
+        expect(wrapper.find('img').attributes().src).toBe(initialSrc);
+
+        const newProps = {
+            width: 123,
+            height: 123
+        };
+        await wrapper.setProps(newProps);
+        expect(wrapper.find('img').attributes().src).toBe(initialSrc);
+        
+        await wrapper.setProps({
+            updateSize: true
+        });
+        expect(wrapper.find('img').attributes().src).toBe(`${props.url}?w=${newProps.width}&h=${newProps.height}`);
+    });
 });

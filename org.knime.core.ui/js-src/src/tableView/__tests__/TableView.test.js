@@ -1718,22 +1718,33 @@ describe('TableView.vue', () => {
     });
 
     describe('slot rendering', () => {
+        const getImageTableUiStubTemplate = ({ path, height, width } = {}) => `<div>
+            <slot 
+                name="cellContent-5" 
+                :data="{ cell: '${path}', height: ${height}, width: ${width} }"
+            />
+        </div>`;
+    
+
         it('creates the correct source urls', async () => {
             const path = 'myPathForTest';
-            const imageIndex = 5;
             const width = 80;
             const height = 90;
-            TableUIStub.template = `<div>
-                <slot 
-                    name="cellContent-${imageIndex}" 
-                    :data="{ cell: '${path}', height: ${height}, width: ${width} }"
-                />
-            </div>`;
+            TableUIStub.template = getImageTableUiStubTemplate({ path, height, width });
             const wrapper = await shallowMountTableView(context);
             const tableUI = wrapper.getComponent(TableUIStub);
             expect(tableUI.findComponent(ImageRenderer).attributes().url).toBe('http://localhost:8080/base.url/myPathForTest');
             expect(tableUI.findComponent(ImageRenderer).attributes().width).toBe(`${width}`);
             expect(tableUI.findComponent(ImageRenderer).attributes().height).toBe(`${height}`);
+            expect(tableUI.findComponent(ImageRenderer).attributes().updatesize).toBeTruthy();
+        });
+
+        it('prevents size update if resizing is active', async () => {
+            TableUIStub.template = getImageTableUiStubTemplate();
+            const wrapper = await shallowMountTableView(context);
+            const tableUI = wrapper.getComponent(TableUIStub);
+            await tableUI.vm.$emit('columnResizeStart');
+            expect(tableUI.findComponent(ImageRenderer).attributes().updatesize).toBe('false');
         });
 
         it('creates the correct content for html', async () => {
@@ -1891,6 +1902,17 @@ describe('TableView.vue', () => {
 
             wrapper.unmount();
             expect(resizeObserverDisconnect).toHaveBeenCalledTimes(1);
+        });
+
+        it('sets columnResizeActive state', () => {
+            const tableUI = wrapper.findComponent(TableUIStub);
+            
+            expect(wrapper.vm.columnResizeActive.state).toBeFalsy();
+            tableUI.vm.$emit('columnResizeStart');
+            expect(wrapper.vm.columnResizeActive.state).toBeTruthy();
+
+            tableUI.vm.$emit('columnResizeEnd');
+            expect(wrapper.vm.columnResizeActive.state).toBeFalsy();
         });
     });
 });
