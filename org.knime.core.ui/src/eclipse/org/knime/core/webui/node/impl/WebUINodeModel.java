@@ -170,10 +170,38 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     @Override
     protected final void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
+
+        onLoadInternals(nodeInternDir, exec);
+    }
+
+    /**
+     * Allows extending classes to implement custom behavior during {@link #loadInternals(File, ExecutionMonitor)}o
+     *
+     * @param nodeInternDir
+     * @param exec
+     * @throws IOException
+     * @throws CanceledExecutionException
+     */
+    protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
     }
 
     @Override
     protected final void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+
+        onSaveInternals(nodeInternDir, exec);
+    }
+
+    /**
+     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}o
+     *
+     * @param nodeInternDir
+     * @param exec
+     * @throws IOException
+     * @throws CanceledExecutionException
+     */
+    protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
     }
 
@@ -206,6 +234,12 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     @Override
     protected final void reset() {
+        onReset();
     }
 
+    /**
+     * Allows extending classes to implement custom behavior during {@link #reset()}.
+     */
+    protected void onReset() {
+    }
 }
