@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -97,23 +96,25 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     }
 
     TraversalResult traverse(final Map<String, Class<?>> settings) {
-
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
         final Map<Class<?>, JsonFormsExpression> signals = new HashMap<>();
         final var addLayout = getAddLayoutConsumer(layoutPartToControls);
         final var addSignal = getAddSignalConsumer(signals);
-        settings.forEach((settingsKey, setting) -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, setting);
-            traverser.traverse(field -> {
-                final var scope = toScope(field.path(), settingsKey);
-                if (field.trackedAnnotations().getInstance(Hidden.class).isPresent()) {
-                    return;
-                }
-                addLayout.accept(field, scope);
-                addSignal.accept(field, scope);
-            }, List.of(Layout.class, Hidden.class));
-        });
+        settings.forEach((settingsKey, setting) -> traverseSettingsClass(addLayout, addSignal, settingsKey, setting));
         return new TraversalResult(layoutPartToControls, signals);
+    }
+
+    private void traverseSettingsClass(final BiConsumer<Field, String> addLayout,
+        final BiConsumer<Field, String> addSignal, final String settingsKey, final Class<?> setting) {
+        final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, setting);
+        traverser.traverse(field -> {
+            if (field.trackedAnnotations().getInstance(Hidden.class).isPresent()) {
+                return;
+            }
+            final var scope = toScope(field.path(), settingsKey);
+            addLayout.accept(field, scope);
+            addSignal.accept(field, scope);
+        }, List.of(Layout.class, Hidden.class));
     }
 
     private static BiConsumer<Field, String> getAddSignalConsumer(final Map<Class<?>, JsonFormsExpression> signals) {
@@ -121,9 +122,11 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     }
 
     private static List<Signal> getSignalList(final PropertyWriter field) {
-        // This is needed because of the way Jackson handles annotations internally;
-        // If a single signal is added, the annotation can only be retrieved by Signal.class
-        // If multiple signals are added, the annotations can only be retrieved by Signals.class
+        /**
+         * This is needed because of the way Jackson handles annotations internally; If a single signal is added, the
+         * annotation can only be retrieved by Signal.class If multiple signals are added, the annotations can only be
+         * retrieved by Signals.class
+         */
         var singleSignal = field.getAnnotation(Signal.class);
 
         if (singleSignal != null) {
@@ -139,7 +142,8 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         return List.of();
     }
 
-    private static Consumer<? super Signal> addSignal(final Map<Class<?>, JsonFormsExpression> signals, final String scope) {
+    private static Consumer<? super Signal> addSignal(final Map<Class<?>, JsonFormsExpression> signals,
+        final String scope) {
         return signal -> {
             final var conditionClass = signal.condition();
             final var condition = InstantiationUtil.createInstance(conditionClass);
@@ -168,9 +172,5 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         }
         pathWithPrefix.add(0, "#");
         return String.join("/properties/", pathWithPrefix);
-    }
-
-    private static Optional<Signal> getSignal(final PropertyWriter field) {
-        return Optional.ofNullable(field.getAnnotation(Signal.class));
     }
 }

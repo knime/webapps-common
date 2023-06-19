@@ -57,7 +57,8 @@ import java.lang.annotation.Target;
 /**
  *
  * This annotation can be applied to a field of any serializable type, in order to display a button widget which, on
- * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a successful response.
+ * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
+ * successful response.
  *
  * @author Paul Bärnreuther
  */

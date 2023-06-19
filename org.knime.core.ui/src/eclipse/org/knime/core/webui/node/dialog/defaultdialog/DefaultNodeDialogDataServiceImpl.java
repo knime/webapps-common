@@ -58,12 +58,12 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,13 +74,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
+
     private Map<String, ActionHandler> m_handlers = new HashMap<>();
 
     DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses) {
         final var handlerClasses = getActionHandlersClasses(settingsClasses, JsonFormsDataUtil.getMapper());
-        handlerClasses.forEach(handler -> {
-            m_handlers.put(handler.getName(), createInstance(handler));
-        });
+        handlerClasses.forEach(handler -> m_handlers.put(handler.getName(), createInstance(handler)));
     }
 
     private static Collection<Class<? extends ActionHandler>>
@@ -114,7 +114,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     @Override
-    public ActionHandlerResult invokeActionHandler(final String handlerClass, final String mode) throws ExecutionException, InterruptedException {
+    public ActionHandlerResult invokeActionHandler(final String handlerClass, final String mode)
+        throws ExecutionException, InterruptedException {
         final var handler = m_handlers.get(handlerClass);
         if (handler == null) {
             throw new NoActionHandlerFoundError(handlerClass);
@@ -122,7 +123,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         try {
             return handler.invoke(mode).get();
         } catch (CancellationException ex) {
-            return new ActionHandlerResult(null, ActionHandlerState.CANCELED, ex.getMessage());
+            LOGGER.info(ex);
+            return ActionHandlerResult.cancel();
         }
     }
 
@@ -130,8 +132,9 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
      * {@inheritDoc}
      */
     @Override
-    public ActionHandlerResult invokeActionHandler(final String handlerClass) throws ExecutionException, InterruptedException {
-       return invokeActionHandler(handlerClass, null);
+    public ActionHandlerResult invokeActionHandler(final String handlerClass)
+        throws ExecutionException, InterruptedException {
+        return invokeActionHandler(handlerClass, null);
     }
 
 }

@@ -60,7 +60,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Paul Bärnreuther
  */
-public class CancelableActionHandlerTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class CancelableActionHandlerTest {
 
     @Test
     void testCancelableActionHandler() {
@@ -72,7 +73,7 @@ public class CancelableActionHandlerTest {
             }
         };
         final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_MODE);
+        actionHandler.invoke(CancelableActionHandler.cancelMode);
         assertTrue(result.isCancelled());
     }
 
@@ -91,7 +92,7 @@ public class CancelableActionHandlerTest {
             }
         };
         final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_MODE);
+        actionHandler.invoke(CancelableActionHandler.cancelMode);
         assertFalse(result.isCancelled());
     }
 

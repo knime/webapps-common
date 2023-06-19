@@ -58,7 +58,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Paul Bärnreuther
  */
-public class SynchronousActionHandlerTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class SynchronousActionHandlerTest {
 
     @Test
     void testSynchoronousActionHandler() throws InterruptedException, ExecutionException {

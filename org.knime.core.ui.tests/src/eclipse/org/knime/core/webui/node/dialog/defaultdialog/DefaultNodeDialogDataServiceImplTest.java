@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class DefaultNodeDialogDataServiceImplTest {
 
     static class TestActionHandler implements ActionHandler {

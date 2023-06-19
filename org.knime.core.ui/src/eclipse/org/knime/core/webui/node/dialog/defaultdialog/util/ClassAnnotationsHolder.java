@@ -54,6 +54,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.knime.core.util.Pair;
@@ -87,15 +88,20 @@ class ClassAnnotationsHolder {
      * @return The field annotations holder.
      */
     FieldAnnotationsHolder toFieldAnnotationsHolder(final PropertyWriter field) {
-        final Map<Class<? extends Annotation>, Object> newAnnotations = m_trackedAnnotations.stream()
+        return new FieldAnnotationsHolder(m_trackedAnnotations, getNewAnnotations(field),
+            getNewEnclosingFieldSetsAnnotation(field));
+    }
+
+    private Set<Class<?>> getNewEnclosingFieldSetsAnnotation(final PropertyWriter field) {
+        return m_trackedAnnotations.stream()
+            .filter(annotationClass -> getAnnotationFromField(annotationClass, field).isPresent())
+            .collect(Collectors.toSet());
+    }
+
+    private Map<Class<? extends Annotation>, Object> getNewAnnotations(final PropertyWriter field) {
+        return m_trackedAnnotations.stream()
             .map(annotationClass -> new Pair<>(annotationClass, mergeAnnotationsForField(annotationClass, field)))
             .filter(pair -> pair.getSecond() != null).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
-        final Collection<Class<?>> newEnclosingFieldSetsAnnotation =
-            m_trackedAnnotations.stream().filter(annotationClass -> {
-                return getAnnotationFromField(annotationClass, field).isPresent();
-            }).collect(Collectors.toSet());
-
-        return new FieldAnnotationsHolder(m_trackedAnnotations, newAnnotations, newEnclosingFieldSetsAnnotation);
     }
 
     private Object mergeAnnotationsForField(final Class<? extends Annotation> annotationClass,

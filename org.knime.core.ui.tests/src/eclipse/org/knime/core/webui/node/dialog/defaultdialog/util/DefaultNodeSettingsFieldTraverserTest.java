@@ -71,8 +71,8 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-@SuppressWarnings("unused") // We allow unused settings in the dummy settings.
-public class DefaultNodeSettingsFieldTraverserTest {
+@SuppressWarnings({"unused", "java:S2698"}) // We allow unused settings in the dummy settings. we accept assertions without messages
+class DefaultNodeSettingsFieldTraverserTest {
 
     static DefaultNodeSettingsFieldTraverser getTraverser(final Class<?> settingsClass) {
         return new DefaultNodeSettingsFieldTraverser(JsonFormsDataUtil.getMapper(), settingsClass);

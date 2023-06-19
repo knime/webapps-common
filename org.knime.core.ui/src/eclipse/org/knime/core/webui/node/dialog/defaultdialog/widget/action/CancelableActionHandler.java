@@ -58,7 +58,7 @@ import java.util.concurrent.Future;
  */
 public abstract class CancelableActionHandler implements ActionHandler {
 
-    static String CANCEL_MODE = "cancel";
+    static String cancelMode = "cancel";
 
     private Future<ActionHandlerResult> m_lastInvokationResult;
 
@@ -71,7 +71,7 @@ public abstract class CancelableActionHandler implements ActionHandler {
 
     @Override
     public Future<ActionHandlerResult> invoke(final String mode) {
-        if (CANCEL_MODE.equals(mode)) {
+        if (cancelMode.equals(mode)) {
             cancel();
             return CompletableFuture.supplyAsync(() -> null);
         } else {
