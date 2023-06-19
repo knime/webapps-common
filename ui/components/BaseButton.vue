@@ -27,6 +27,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["click"],
   computed: {
@@ -82,6 +86,7 @@ export default defineComponent({
     :is="component"
     v-bind="dynamicProps"
     ref="button"
+    :disabled="disabled ? 'disabled' : null"
     @click="onClick"
   >
     <slot />

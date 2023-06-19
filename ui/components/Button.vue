@@ -39,6 +39,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     classes() {
@@ -55,7 +59,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <BaseButton :class="classes">
+  <BaseButton :class="classes" :disabled="disabled">
     <slot />
   </BaseButton>
 </template>
