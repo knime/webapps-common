@@ -48,16 +48,13 @@
  */
 package org.knime.testing.node.view;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import org.apache.xmlbeans.XmlException;
+import org.assertj.core.api.Assertions;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NoDescriptionProxy;
 import org.knime.core.node.NodeDescription;
@@ -172,8 +169,8 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel>
      */
     @Override
     public NodeView createNodeView(final NodeViewNodeModel nodeModel) {
-        assertThat("A node context is expected to be given", NodeContext.getContext().getNodeContainer(),
-            is(notNullValue()));
+        Assertions.assertThat(NodeContext.getContext().getNodeContainer()).as("A node context is expected to be given")
+            .isNotNull();
         return m_nodeViewCreator.apply(nodeModel);
     }
 

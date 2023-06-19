@@ -48,13 +48,10 @@
  */
 package org.knime.testing.node.dialog;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import org.assertj.core.api.Assertions;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NodeContext;
@@ -119,8 +116,8 @@ public class NodeDialogNodeFactory extends NodeFactory<NodeDialogNodeModel>
      */
     @Override
     public NodeDialog createNodeDialog() {
-        assertThat("A node context is expected to be given", NodeContext.getContext().getNodeContainer(),
-            is(notNullValue()));
+        Assertions.assertThat(NodeContext.getContext().getNodeContainer()).as("A node context is expected to be given")
+            .isNotNull();
         return m_nodeDialogCreator.get();
     }
 

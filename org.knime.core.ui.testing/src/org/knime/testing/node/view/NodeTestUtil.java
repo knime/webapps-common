@@ -63,12 +63,13 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
- * Unit test util class which can be used to test a {@link BaseViewsNode BaseViewsNodes} and call its factories.
+ * Unit test util class which can be used to test a node providing a {@link NodeView}.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
@@ -76,7 +77,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
 public final class NodeTestUtil {
 
     /**
-     * Instantiates a given {@link BaseViewsNodeFactory}, connects it to a data generator node, executes it, and checks
+     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks
      * for the presence of its services. Returns the {@link Page} of the node's view.
      *
      * @param nodeFactorySupplier a supplier for the to-be-instantiated factory
@@ -91,7 +92,7 @@ public final class NodeTestUtil {
     }
 
     /**
-     * Instantiates a given {@link BaseViewsNodeFactory}, connects it to a data generator node, executes it, and checks
+     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks
      * for the presence of its services. Returns the {@link Page} of the node's view.
      *
      * @param nodeFactorySupplier a supplier for the to-be-instantiated factory
