@@ -57,7 +57,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandle
  *
  * @author Paul Bärnreuther
  */
-public interface DefaultNodeDialogDataService {
+interface DefaultNodeDialogDataService {
 
     /**
      *
@@ -66,7 +66,7 @@ public interface DefaultNodeDialogDataService {
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
-    ActionHandlerResult invokeActionHandler(String handlerClass) throws ExecutionException, InterruptedException;
+    ActionHandlerResult<?> invokeActionHandler(String handlerClass) throws ExecutionException, InterruptedException;
 
     /**
      * @param handlerClass the class name of the {@link ActionHandler} that is to be used.
@@ -75,7 +75,7 @@ public interface DefaultNodeDialogDataService {
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
-    ActionHandlerResult invokeActionHandler(String handlerClass, String mode)
+    ActionHandlerResult<?> invokeActionHandler(String handlerClass, String mode)
         throws ExecutionException, InterruptedException;
 
 }

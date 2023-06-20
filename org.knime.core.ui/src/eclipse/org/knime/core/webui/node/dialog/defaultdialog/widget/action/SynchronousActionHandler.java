@@ -54,22 +54,24 @@ import java.util.concurrent.Future;
 /**
  * An {@link ActionHandler} whose invocation is synchronous.
  *
+ * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
+ *            the field has to be assignable from it.
  * @author Paul Bärnreuther
  */
-public abstract class SynchronousActionHandler implements ActionHandler {
+public abstract class SynchronousActionHandler<R> implements ActionHandler<R> {
 
     /**
-     * @param mode of invocation. This can be ignored in simple cases.
+     * @param buttonState of invocation. This can be ignored in simple cases.
      * @return the result of the invocation.
      */
-    public abstract ActionHandlerResult invokeSync(String mode);
+    public abstract ActionHandlerResult<R> invokeSync(String buttonState);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Future<ActionHandlerResult> invoke(final String mode) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(mode));
+    public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
+        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState));
     }
 
 }

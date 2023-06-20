@@ -54,30 +54,31 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
  * @param result the result of a succesful response
  * @param state the state of the result.
  * @param message the error message in case of a failed response.
+ * @param <R> The type of the result
  * @author Paul Bärnreuther
  */
-public record ActionHandlerResult(Object result, ActionHandlerState state, String message) {
+public record ActionHandlerResult<R>(R result, ActionHandlerState state, String message) {
 
     /**
      * @param result the value of the successful result
      * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#SUCCESS}
      */
-    public static ActionHandlerResult succeed(final Object result) {
-        return new ActionHandlerResult(result, ActionHandlerState.SUCCESS, null);
+    public static <R>  ActionHandlerResult<R> succeed(final R result) {
+        return new ActionHandlerResult<R>(result, ActionHandlerState.SUCCESS, null);
     }
 
     /**
      * @param message the supplied error message
      * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#FAIL}
      */
-    public static ActionHandlerResult fail(final String message) {
-        return new ActionHandlerResult(null, ActionHandlerState.FAIL, message);
+    public static <R> ActionHandlerResult<R> fail(final String message) {
+        return new ActionHandlerResult<R>(null, ActionHandlerState.FAIL, message);
     }
 
     /**
      * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#CANCELED}
      */
-    public static ActionHandlerResult cancel() {
-        return new ActionHandlerResult(null, ActionHandlerState.CANCELED, null);
+    public static <R> ActionHandlerResult<R> cancel() {
+        return new ActionHandlerResult<R>(null, ActionHandlerState.CANCELED, null);
     }
 }

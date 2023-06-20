@@ -70,6 +70,6 @@ public @interface ButtonWidget {
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
      *         the setting that is implemented.
      */
-    Class<? extends ActionHandler> actionHandler();
+    Class<? extends ActionHandler<?>> actionHandler();
 
 }

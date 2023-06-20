@@ -63,11 +63,11 @@ class SynchronousActionHandlerTest {
 
     @Test
     void testSynchoronousActionHandler() throws InterruptedException, ExecutionException {
-        final ActionHandler syncActionHandler = new SynchronousActionHandler() {
+        final ActionHandler<String> syncActionHandler = new SynchronousActionHandler<String>() {
 
             @Override
-            public ActionHandlerResult invokeSync(final String mode) {
-                return ActionHandlerResult.succeed(mode);
+            public ActionHandlerResult<String> invokeSync(final String buttonState) {
+                return ActionHandlerResult.succeed(buttonState);
             }
         };
         final var payload = "myMode";

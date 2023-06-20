@@ -54,24 +54,26 @@ import java.util.concurrent.Future;
 /**
  * An {@link ActionHandler} with an asynchronous invocation whose result can be retrieved and canceled.
  *
+ * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
+ *            field has to be assignable from it.
  * @author Paul Bärnreuther
  */
-public abstract class CancelableActionHandler implements ActionHandler {
+public abstract class CancelableActionHandler<R> implements ActionHandler<R> {
 
-    static String cancelMode = "cancel";
+    static String cancelButtonState = "cancel";
 
-    private Future<ActionHandlerResult> m_lastInvokationResult;
+    private Future<ActionHandlerResult<R>> m_lastInvokationResult;
 
     /**
      * @return the result of the last invocation or null if no invocation has taken place.
      */
-    protected Future<ActionHandlerResult> getLastInvokationResult() {
+    protected Future<ActionHandlerResult<R>> getLastInvokationResult() {
         return m_lastInvokationResult;
     }
 
     @Override
-    public Future<ActionHandlerResult> invoke(final String mode) {
-        if (cancelMode.equals(mode)) {
+    public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
+        if (cancelButtonState.equals(buttonState)) {
             cancel();
             return CompletableFuture.supplyAsync(() -> null);
         } else {
@@ -92,6 +94,6 @@ public abstract class CancelableActionHandler implements ActionHandler {
      *
      * @return the future result.
      */
-    protected abstract Future<ActionHandlerResult> invoke();
+    protected abstract Future<ActionHandlerResult<R>> invoke();
 
 }

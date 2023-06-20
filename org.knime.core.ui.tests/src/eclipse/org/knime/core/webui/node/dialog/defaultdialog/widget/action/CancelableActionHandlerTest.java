@@ -65,24 +65,24 @@ class CancelableActionHandlerTest {
 
     @Test
     void testCancelableActionHandler() {
-        final ActionHandler actionHandler = new CancelableActionHandler() {
+        final ActionHandler<String> actionHandler = new CancelableActionHandler<String>() {
 
             @Override
-            protected Future<ActionHandlerResult> invoke() {
+            protected Future<ActionHandlerResult<String>> invoke() {
                 return new CompletableFuture<>();
             }
         };
         final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.cancelMode);
+        actionHandler.invoke(CancelableActionHandler.cancelButtonState);
         assertTrue(result.isCancelled());
     }
 
     @Test
     void testCancelableActionHandlerNotCanceledIfOverwritten() {
-        final ActionHandler actionHandler = new CancelableActionHandler() {
+        final ActionHandler<String> actionHandler = new CancelableActionHandler<String>() {
 
             @Override
-            protected Future<ActionHandlerResult> invoke() {
+            protected Future<ActionHandlerResult<String>> invoke() {
                 return new CompletableFuture<>();
             }
 
@@ -92,7 +92,7 @@ class CancelableActionHandlerTest {
             }
         };
         final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.cancelMode);
+        actionHandler.invoke(CancelableActionHandler.cancelButtonState);
         assertFalse(result.isCancelled());
     }
 

@@ -57,11 +57,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogDataServiceImpl.NoActionHandlerFoundError;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.action.SynchronousActionHandler;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -71,27 +71,27 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class DefaultNodeDialogDataServiceImplTest {
 
-    static class TestActionHandler implements ActionHandler {
+    static class TestActionHandler implements ActionHandler<String> {
 
         @Override
-        public Future<ActionHandlerResult> invoke(final String mode) {
-            return CompletableFuture.supplyAsync(() -> ActionHandlerResult.succeed(getResult(mode)));
+        public Future<ActionHandlerResult<String>> invoke(final String buttonState) {
+            return CompletableFuture.supplyAsync(() -> ActionHandlerResult.succeed(getResult(buttonState)));
         }
 
-        static String getResult(final String mode) {
-            if (mode == null) {
+        static String getResult(final String buttonState) {
+            if (buttonState == null) {
                 return getNullResult();
             }
-            return "dummyResult_" + mode;
+            return "dummyResult_" + buttonState;
         }
 
         static String getNullResult() {
-            return "no mode";
+            return "no state";
         }
     }
 
     @Test
-    void testInvokeActionHandlerCallsActionHandlerWithMode() throws ExecutionException, InterruptedException {
+    void testInvokeActionHandlerCallsActionHandlerWithState() throws ExecutionException, InterruptedException {
 
         class ButtonSettings {
             @ButtonWidget(actionHandler = TestActionHandler.class)
@@ -108,7 +108,7 @@ class DefaultNodeDialogDataServiceImplTest {
     }
 
     @Test
-    void testInvokeActionHandlerCallsActionHandlerWithoutMode() throws ExecutionException, InterruptedException {
+    void testInvokeActionHandlerCallsActionHandlerWithoutState() throws ExecutionException, InterruptedException {
 
         class ButtonSettings {
             @ButtonWidget(actionHandler = TestActionHandler.class)
@@ -120,15 +120,15 @@ class DefaultNodeDialogDataServiceImplTest {
         assertThat(result.result()).isEqualTo(TestActionHandler.getNullResult());
     }
 
-    static class OtherTestActionHandler implements ActionHandler {
+    static class OtherTestActionHandler implements ActionHandler<String> {
 
         @Override
-        public Future<ActionHandlerResult> invoke(final String mode) {
-            return CompletableFuture.supplyAsync(() -> ActionHandlerResult.fail(getErrorMessage(mode)));
+        public Future<ActionHandlerResult<String>> invoke(final String buttonState) {
+            return CompletableFuture.supplyAsync(() -> ActionHandlerResult.fail(getErrorMessage(buttonState)));
         }
 
-        static String getErrorMessage(final String mode) {
-            return "dummyError_" + mode;
+        static String getErrorMessage(final String buttonState) {
+            return "dummyError_" + buttonState;
         }
     }
 
@@ -159,7 +159,7 @@ class DefaultNodeDialogDataServiceImplTest {
         }
 
         final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
-        assertThrows(NoActionHandlerFoundError.class,
+        assertThrows(IllegalArgumentException.class,
             () -> dataService.invokeActionHandler(OtherTestActionHandler.class.getName()));
 
     }
@@ -176,7 +176,7 @@ class DefaultNodeDialogDataServiceImplTest {
         }
 
         final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
-        assertThrows(NoActionHandlerFoundError.class,
+        assertThrows(IllegalArgumentException.class,
             () -> dataService.invokeActionHandler(NonStaticActionHandler.class.getName()));
 
     }
@@ -202,17 +202,17 @@ class DefaultNodeDialogDataServiceImplTest {
         assertThat(secondResult.message()).isEqualTo(OtherTestActionHandler.getErrorMessage(null));
     }
 
-    static class CanceledResponseActionHandler implements ActionHandler {
+    static class CanceledResponseActionHandler implements ActionHandler<String> {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public Future<ActionHandlerResult> invoke(final String mode) {
+        public Future<ActionHandlerResult<String>> invoke(final String state) {
 
-            CompletableFuture<ActionHandlerResult> future = new CompletableFuture<>();
+            CompletableFuture<ActionHandlerResult<String>> future = new CompletableFuture<>();
             future.cancel(true);
-            future.complete(new ActionHandlerResult("success", ActionHandlerState.SUCCESS, null));
+            future.complete(new ActionHandlerResult<String>("success", ActionHandlerState.SUCCESS, null));
             return future;
 
         }
@@ -230,6 +230,63 @@ class DefaultNodeDialogDataServiceImplTest {
         final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
         final var result = dataService.invokeActionHandler(CanceledResponseActionHandler.class.getName());
         assertThat(result.state()).isEqualTo(ActionHandlerState.CANCELED);
+    }
+
+    static class WrongResultTypeActionHandler extends SynchronousActionHandler<Integer> {
+
+        @Override
+        public ActionHandlerResult<Integer> invokeSync(final String buttonState) {
+            return ActionHandlerResult.succeed(1);
+        }
+
+    }
+
+    @Test
+    void testThrowsIfFieldTypeIsNotAssignableFromReturnType() throws ExecutionException, InterruptedException {
+
+        class ButtonSettings {
+            @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
+            String m_button;
+        }
+
+        assertThrows(IllegalArgumentException.class,
+            () -> new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class)));
+    }
+
+    @SuppressWarnings("unused")
+    static class IntermediateSuperType<A, B> implements ActionHandler<B> {
+
+        @Override
+        public Future<ActionHandlerResult<B>> invoke(final String buttonState) {
+            return CompletableFuture.supplyAsync(() -> ActionHandlerResult.succeed(null));
+        }
+
+    }
+
+    @SuppressWarnings("unused")
+    static class IntermediateSuperType2 extends IntermediateSuperType<Integer, String> {
+    }
+
+    static class GenericTypesTextActionHandler1 extends IntermediateSuperType<Integer, String> {
+    }
+
+    static class GenericTypesTextActionHandler extends IntermediateSuperType2 {
+    }
+
+    @Test
+    void testExtractsCorrectGenericReturnType() throws ExecutionException, InterruptedException {
+
+        class ButtonSettings {
+            @ButtonWidget(actionHandler = GenericTypesTextActionHandler1.class)
+            String m_button;
+
+            @ButtonWidget(actionHandler = GenericTypesTextActionHandler.class)
+            String m_button2;
+        }
+
+        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var result = dataService.invokeActionHandler(GenericTypesTextActionHandler.class.getName());
+        assertThat(result.result()).isNull();
     }
 
 }
