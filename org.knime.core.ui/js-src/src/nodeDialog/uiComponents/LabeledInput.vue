@@ -47,6 +47,10 @@ const LabeledInput = {
         flowSettings: {
             default: null,
             type: Object
+        },
+        show: {
+            default: true,
+            type: Boolean
         }
     }
 };
@@ -55,6 +59,7 @@ export default LabeledInput;
 
 <template>
   <div
+    v-if="show"
     class="labeled-input"
     @mouseover="hover = true"
     @mouseleave="hover = false"
@@ -83,6 +88,7 @@ export default LabeledInput;
       :error="errors"
     />
   </div>
+  <slot v-else />
 </template>
 
 <style lang="postcss" scoped>

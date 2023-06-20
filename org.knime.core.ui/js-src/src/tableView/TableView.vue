@@ -106,7 +106,8 @@ export default {
                 const renderers = this.dataTypes[this.columnDataTypeIds?.[index]]?.renderers;
                 // + 2: offset for the index and rowKey, because the first column
                 // (index 0) always contains the indices and the second one the row keys
-                const { showColumnDataType, enableRendererSelection } = this.settings;
+                const { showColumnDataType } = this.settings;
+                const enableRendererSelection = true;
                 const columnInformation = {
                     index: index + 2,
                     columnName,

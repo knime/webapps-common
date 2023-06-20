@@ -79,7 +79,8 @@ export default {
         // Mock service calls
         callService(request) {
             console.log('KnimeService called service with request:', request);
-            return Promise.resolve('');
+            const delay = 3000;
+            return new Promise(resolve => setTimeout(resolve, delay));
         },
         pushEvent(event) {
             console.log('Push event was called:', event);

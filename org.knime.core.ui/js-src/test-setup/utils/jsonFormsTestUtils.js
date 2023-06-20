@@ -2,7 +2,7 @@
  * within a JSONForms context.
  * A component can be mounted using composition API and the correct initialization of JSONForms can be verified on a
  * given vue test utils wrapper. */
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
 
 import { mount } from '@vue/test-utils';
 import { createStore } from 'vuex';
@@ -14,6 +14,14 @@ export const mountJsonFormsComponentWithStore = (component, props, modules, show
     {
         props,
         global: {
+            provide: {
+                getKnimeService: () => ({
+                    extensionConfig: {},
+                    callService: vi.fn().mockResolvedValue({}),
+                    registerDataGetter: vi.fn(),
+                    addEventCallback: vi.fn()
+                })
+            },
             stubs: {
                 DispatchRenderer: true
             },
