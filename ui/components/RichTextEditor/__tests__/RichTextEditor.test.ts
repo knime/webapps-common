@@ -79,6 +79,7 @@ describe("RichTextEditor.vue", () => {
 
   const defaultProps = {
     modelValue: "<p>Hello world</p>",
+    enabledTools: { all: true },
   };
 
   const doMount = ({
@@ -128,7 +129,37 @@ describe("RichTextEditor.vue", () => {
     expect(wrapper.emitted("update:modelValue")).toBeDefined();
   });
 
-  describe("disabled tools", () => {
+  describe("enabled tools", () => {
+    it("should not have tools enabled by default", () => {
+      doMount({
+        props: { enabledTools: {} },
+      });
+
+      const baseTools = [
+        "bold",
+        "italic",
+        "bulletList",
+        "orderedList",
+        "heading",
+      ];
+
+      const [starterKitExtension] = mockEditor.value.params.extensions;
+
+      baseTools.forEach((toolName) => {
+        expect(starterKitExtension.options[toolName]).toBe(false);
+      });
+
+      const underlineExtension = mockEditor.value.params.extensions.find(
+        (extension: any) => extension.name === "underline"
+      );
+      expect(underlineExtension).toBeUndefined();
+
+      const textAlignExtension = mockEditor.value.params.extensions.find(
+        (extension: any) => extension.name === "textAlign"
+      );
+      expect(textAlignExtension).toBeUndefined();
+    });
+
     it.each([
       ["bold"],
       ["italic"],
@@ -136,37 +167,38 @@ describe("RichTextEditor.vue", () => {
       ["orderedList"],
       ["heading"],
     ])(
-      "should disable the tools specified via props (StarterKit)",
+      "should enable the tools specified via props (StarterKit)",
       (toolName) => {
         doMount({
-          props: { disabledTools: { [toolName]: true } },
+          props: { enabledTools: { [toolName]: true } },
         });
 
         const [starterKitExtension] = mockEditor.value.params.extensions;
-        expect(starterKitExtension.options[toolName]).toBe(false);
+        // undefined means enabled
+        expect(starterKitExtension.options[toolName]).toBeUndefined();
       }
     );
 
-    it("should disable the underline tool", () => {
+    it("should enable the underline tool", () => {
       doMount({
-        props: { disabledTools: { underline: true } },
+        props: { enabledTools: { underline: true } },
       });
 
       const underlineExtension = mockEditor.value.params.extensions.find(
         (extension: any) => extension.name === "underline"
       );
-      expect(underlineExtension).toBeUndefined();
+      expect(underlineExtension).toBeDefined();
     });
 
-    it("should disable the textAlign tool", () => {
+    it("should enable the textAlign tool", () => {
       doMount({
-        props: { disabledTools: { textAlign: true } },
+        props: { enabledTools: { textAlign: true } },
       });
 
       const textAlignExtension = mockEditor.value.params.extensions.find(
         (extension: any) => extension.name === "textAlign"
       );
-      expect(textAlignExtension).toBeUndefined();
+      expect(textAlignExtension).toBeDefined();
     });
   });
 

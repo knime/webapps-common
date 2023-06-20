@@ -11,7 +11,7 @@ export interface EditorToolItem {
 
 export type EditorTools = Array<EditorToolItem>;
 
-export type DisabledTools = {
+export type EnabledTools = {
   bold?: true;
   italic?: true;
   underline?: true;

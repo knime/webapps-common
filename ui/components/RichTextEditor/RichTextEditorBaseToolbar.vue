@@ -10,24 +10,25 @@ import AlignLeftIcon from "../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../assets/img/icons/align-right.svg";
 
-import type { DisabledTools, EditorTools, EditorToolItem } from "./types";
+import type { EnabledTools, EditorTools, EditorToolItem } from "./types";
 
 interface Props {
   editor: Editor;
-  disabledTools: DisabledTools;
+  enabledTools: EnabledTools | { all: true };
 }
 
 const props = defineProps<Props>();
 
-const registerTool = (
-  isDisabled: boolean | undefined,
-  tool: EditorToolItem
-) => {
-  return isDisabled ? [] : [tool];
+const registerTool = (toolName: keyof EnabledTools, tool: EditorToolItem) => {
+  if ("all" in props.enabledTools) {
+    return [tool];
+  }
+
+  return props.enabledTools[toolName] ? [tool] : [];
 };
 
 const editorTools: EditorTools = [
-  ...registerTool(props.disabledTools.bold, {
+  ...registerTool("bold", {
     id: "bold",
     name: "Bold",
     hotkey: ["Ctrl", "B"],
@@ -36,7 +37,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().toggleBold().run(),
   }),
 
-  ...registerTool(props.disabledTools.italic, {
+  ...registerTool("italic", {
     id: "italic",
     name: "Italic",
     icon: ItalicIcon,
@@ -45,7 +46,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().toggleItalic().run(),
   }),
 
-  ...registerTool(props.disabledTools.underline, {
+  ...registerTool("underline", {
     id: "underline",
     name: "Underline",
     icon: UnderlineIcon,
@@ -54,7 +55,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().toggleUnderline().run(),
   }),
 
-  ...registerTool(props.disabledTools.bulletList, {
+  ...registerTool("bulletList", {
     id: "bullet-list",
     name: "Bullet list",
     icon: BulletListIcon,
@@ -63,7 +64,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().toggleBulletList().run(),
   }),
 
-  ...registerTool(props.disabledTools.orderedList, {
+  ...registerTool("orderedList", {
     id: "ordered-list",
     name: "Ordered list",
     icon: OrderedListIcon,
@@ -72,7 +73,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().toggleOrderedList().run(),
   }),
 
-  ...registerTool(props.disabledTools.textAlign, {
+  ...registerTool("textAlign", {
     id: "align-left",
     icon: AlignLeftIcon,
     name: "Align left",
@@ -81,7 +82,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().setTextAlign("left").run(),
   }),
 
-  ...registerTool(props.disabledTools.textAlign, {
+  ...registerTool("textAlign", {
     id: "align-center",
     icon: AlignCenterIcon,
     name: "Align center",
@@ -90,7 +91,7 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().setTextAlign("center").run(),
   }),
 
-  ...registerTool(props.disabledTools.textAlign, {
+  ...registerTool("textAlign", {
     id: "align-right",
     icon: AlignRightIcon,
     name: "Align right",

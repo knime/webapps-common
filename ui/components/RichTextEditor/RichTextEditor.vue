@@ -7,7 +7,11 @@ import StarterKit from "@tiptap/starter-kit";
 
 import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
-import type { DisabledTools } from "./types";
+import type { EnabledTools } from "./types";
+
+type EnabledToolsPropType =
+  | EnabledTools
+  | ({ [key in keyof EnabledTools]: never } & { all: boolean });
 
 interface Props {
   modelValue: string;
@@ -25,9 +29,10 @@ interface Props {
    */
   maxHeight?: number | null;
   /**
-   * Tools that should be disabled. By default all tools are enabled
+   * Tools that should be enabled. By default all tools are disabled and you
+   * have to opt-in to use them
    */
-  disabledTools?: DisabledTools;
+  enabledTools?: EnabledToolsPropType;
   /**
    * Function to format the display value of each tool's hotkeys as a title when hovered.
    * Receives as parameter the key combinations of each tool and should return
@@ -54,7 +59,7 @@ const props = withDefaults(defineProps<Props>(), {
   compact: false,
   minHeight: null,
   maxHeight: null,
-  disabledTools: () => ({} as DisabledTools),
+  enabledTools: () => ({} as EnabledToolsPropType),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: true,
@@ -68,28 +73,36 @@ const emit = defineEmits<{
   (e: "update:modelValue", content: string): void;
 }>();
 
+const isToolEnabled = (toolName: keyof EnabledTools) => {
+  if ("all" in props.enabledTools) {
+    return true;
+  }
+
+  return Boolean(props.enabledTools[toolName]);
+};
+
 const extensions = [
   StarterKit.configure({
     // eslint-disable-next-line no-undefined
-    bold: props.disabledTools.bold ? false : undefined,
+    bold: isToolEnabled("bold") ? undefined : false,
     // eslint-disable-next-line no-undefined
-    italic: props.disabledTools.italic ? false : undefined,
+    italic: isToolEnabled("italic") ? undefined : false,
     // eslint-disable-next-line no-undefined
-    bulletList: props.disabledTools.bulletList ? false : undefined,
+    bulletList: isToolEnabled("bulletList") ? undefined : false,
     // eslint-disable-next-line no-undefined
-    orderedList: props.disabledTools.orderedList ? false : undefined,
+    orderedList: isToolEnabled("orderedList") ? undefined : false,
     // eslint-disable-next-line no-undefined
-    heading: props.disabledTools.heading ? false : undefined,
+    heading: isToolEnabled("heading") ? undefined : false,
   }),
-  ...(props.disabledTools.underline ? [] : [UnderLine]),
+  ...(isToolEnabled("underline") ? [UnderLine] : []),
 
-  ...(props.disabledTools.textAlign
-    ? []
-    : [
+  ...(isToolEnabled("textAlign")
+    ? [
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
-      ]),
+      ]
+    : []),
 
   ...props.customExtensions,
 ];
@@ -149,11 +162,13 @@ onMounted(async () => {
 });
 
 const hasCustomToolbar = slots.customToolbar;
+const hasTools = computed(() => Object.keys(props.enabledTools).length !== 0);
 </script>
 
 <template>
   <div class="editor-wrapper">
     <Transition
+      v-if="hasTools"
       name="expand"
       :css="!hasCustomToolbar && !disableEditableTransition"
     >
@@ -163,7 +178,7 @@ const hasCustomToolbar = slots.customToolbar;
       >
         <RichTextEditorBaseToolbar
           :editor="editor"
-          :disabled-tools="disabledTools"
+          :enabled-tools="enabledTools"
         >
           <template #default="{ tools }">
             <slot name="customToolbar" :editor="editor" :tools="tools">
@@ -187,6 +202,8 @@ const hasCustomToolbar = slots.customToolbar;
 </template>
 
 <style lang="postcss" scoped>
+@import url("./styles.css");
+
 .editor-wrapper {
   height: 100%;
 
@@ -253,119 +270,13 @@ const hasCustomToolbar = slots.customToolbar;
       outline: transparent;
     }
 
-    & p {
-      padding: 0;
-      line-height: 1.44;
-      margin: 0 0 6px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    & blockquote {
-      margin: 0 0 6px 12px;
-      position: relative;
-
-      &::before {
-        position: absolute;
-        content: "";
-        left: -12px;
-        height: 100%;
-        width: 4px;
-        background-color: var(--knime-silver-sand);
-        border-radius: 4px;
-      }
-
-      & p:last-child {
-        padding-bottom: 0;
-      }
-    }
-
-    & h1 {
-      font-size: 48px;
-      margin: 32px 0 16px;
-    }
-
-    & h2 {
-      font-size: 36px;
-      margin: 24px 0 12px;
-    }
-
-    & h3 {
-      font-size: 30px;
-      margin: 20px 0 10px;
-    }
-
-    & h4 {
-      font-size: 24px;
-      margin: 16px 0 8px;
-    }
-
-    & h5 {
-      font-size: 18px;
-      margin: 12px 0 6px;
-    }
-
-    & h6 {
-      font-size: 15px;
-      margin: 10px 0 5px;
-    }
-
-    & h1:first-child,
-    & h2:first-child,
-    & h3:first-child,
-    & h4:first-child,
-    & h5:first-child,
-    & h6:first-child {
-      margin-top: 0;
-    }
-
-    & hr {
-      border: none;
-      border-top: 1px solid var(--knime-silver-sand);
-      margin: 6px 0;
-    }
-
-    & :not(pre) > code {
-      padding: 0 2px;
-      font-family: "Roboto Mono", monospace;
-      border: 1px solid var(--knime-silver-sand);
-      background: var(--knime-gray-light-semi);
-      box-decoration-break: clone;
-    }
-
-    & pre {
-      background: var(--knime-gray-light-semi);
-      border: 1px solid var(--knime-silver-sand);
-      font-family: "Roboto Mono", monospace;
-      padding: 8px 12px;
-      line-height: 1.44;
-
-      & > code {
-        color: inherit;
-        padding: 0;
-        background: none;
-      }
-    }
-
-    & ul,
-    & ol {
-      padding-left: 20px;
-
-      &:first-child {
-        margin-top: 0;
-      }
-    }
-
-    & a {
-      color: var(--knime-dove-gray);
-      text-decoration: none;
-
-      &:hover {
-        color: var(--knime-masala);
-      }
-    }
+    @mixin rich-text-editor-headings;
+    @mixin rich-text-editor-hr;
+    @mixin rich-text-editor-p;
+    @mixin rich-text-editor-blockquote;
+    @mixin rich-text-editor-code;
+    @mixin rich-text-editor-lists;
+    @mixin rich-text-editor-links;
   }
 }
 </style>

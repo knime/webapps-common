@@ -1,0 +1,141 @@
+@define-mixin rich-text-editor-p {
+  & p {
+    padding: 0;
+    line-height: 1.44;
+    margin: 0 0 6px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-blockquote {
+  & blockquote {
+    margin: 0 0 6px 12px;
+    position: relative;
+
+    &::before {
+      position: absolute;
+      content: "";
+      left: -12px;
+      height: 100%;
+      width: 4px;
+      background-color: var(--knime-silver-sand);
+      border-radius: 4px;
+    }
+
+    & p:last-child {
+      padding-bottom: 0;
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-headings {
+  & h1 {
+    font-size: 48px;
+    margin: 32px 0 16px;
+  }
+
+  & h2 {
+    font-size: 36px;
+    margin: 24px 0 12px;
+  }
+
+  & h3 {
+    font-size: 30px;
+    margin: 20px 0 10px;
+  }
+
+  & h4 {
+    font-size: 24px;
+    margin: 16px 0 8px;
+  }
+
+  & h5 {
+    font-size: 18px;
+    margin: 12px 0 6px;
+  }
+
+  & h6 {
+    font-size: 15px;
+    margin: 10px 0 5px;
+  }
+
+  & h1:first-child,
+  & h2:first-child,
+  & h3:first-child,
+  & h4:first-child,
+  & h5:first-child,
+  & h6:first-child {
+    margin-top: 0;
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-hr {
+  & hr {
+    border: none;
+    border-top: 1px solid var(--knime-silver-sand);
+    margin: 6px 0;
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-code {
+  & :not(pre) > code {
+    padding: 0 2px;
+    font-family: "Roboto Mono", monospace;
+    border: 1px solid var(--knime-silver-sand);
+    background: var(--knime-gray-light-semi);
+    box-decoration-break: clone;
+  }
+
+  & pre {
+    background: var(--knime-gray-light-semi);
+    border: 1px solid var(--knime-silver-sand);
+    font-family: "Roboto Mono", monospace;
+    padding: 8px 12px;
+    line-height: 1.44;
+
+    & > code {
+      color: inherit;
+      padding: 0;
+      background: none;
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-lists {
+  & ul,
+  & ol {
+    padding-left: 20px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-links {
+  & a {
+    color: var(--knime-dove-gray);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--knime-masala);
+    }
+  }
+
+  @mixin-content;
+}

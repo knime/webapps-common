@@ -11,6 +11,7 @@ const codeExample = `
   v-model="value"
   compact
   :editable="editable"
+  :enabled-tools={ all: true }
   :min-height="minHeight"
   :max-height="maxHeight"
 />
@@ -21,7 +22,7 @@ const codeExample = `
   :editable="editable"
   :min-height="minHeight"
   :max-height="maxHeight"
-  :disabled-tools="{ textAlign: true }"
+  :enabled-tools="{ bold: true, italic: true, underline: true }"
 >
   <template #customToolbar="{ tools }">
     <div class="custom-toolbar">
@@ -54,7 +55,6 @@ export default defineComponent({
       disableEditableTransition: false,
       minHeight: 150,
       maxHeight: 300,
-      disabledTools: {},
       code,
       codeExample,
     };
@@ -79,6 +79,7 @@ export default defineComponent({
               v-model="value"
               :compact="compact"
               :disable-editable-transition="disableEditableTransition"
+              :enabled-tools="{ all: true }"
               :editable="editable"
               :min-height="minHeight"
               :max-height="maxHeight"
@@ -96,7 +97,7 @@ export default defineComponent({
     <section>
       <div class="grid-container">
         <div class="grid-item-12 custom-toolbar-wrapper">
-          <h3>Custom toolbar</h3>
+          <h3>Custom toolbar and opt-in tools</h3>
 
           <div class="editor-wrapper custom-toolbar-wrapper">
             <RichTextEditor
@@ -105,7 +106,7 @@ export default defineComponent({
               :editable="editable"
               :min-height="minHeight"
               :max-height="maxHeight"
-              :disabled-tools="{ textAlign: true }"
+              :enabled-tools="{ bold: true, italic: true, underline: true }"
             >
               <template #customToolbar="{ tools }">
                 <div class="custom-toolbar">
@@ -131,7 +132,7 @@ export default defineComponent({
           <CodeExample summary="Show usage example">{{
             codeExample
           }}</CodeExample>
-          <CodeExample summary="Show SearchInput.vue source code">{{
+          <CodeExample summary="Show RichTextEditor.vue source code">{{
             code
           }}</CodeExample>
         </div>
