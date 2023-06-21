@@ -1,5 +1,5 @@
 /* eslint-disable vue/one-component-per-file */
-import { h, defineComponent, getCurrentInstance } from "vue";
+import { h, defineComponent, getCurrentInstance, useSlots } from "vue";
 
 const getAppInstance = () => {
   const currentInstance = getCurrentInstance();
@@ -19,7 +19,7 @@ export const resolveClientOnlyComponent = () => {
   // fallback component when ClientOnly not available
   const fallbackComponent = defineComponent({
     render() {
-      return this.$slots.default();
+      return useSlots().default();
     },
   });
 
@@ -50,7 +50,7 @@ export const resolveNuxtLinkComponent = () => {
     },
 
     render() {
-      return h("a", { href: this.to }, [this.$slots.default()]);
+      return h("a", { href: this.to }, [useSlots().default()]);
     },
   });
 
