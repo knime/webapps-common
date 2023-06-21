@@ -52,6 +52,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import org.apache.commons.math3.exception.OutOfRangeException;
+
 /**
  *
  * @author Paul Bärnreuther
@@ -73,7 +75,7 @@ public class GenericTypeFinderUtil {
 
         final var genericTypes = getGenericTypes(clazz, genericSuperInterface);
         if (index < 0 || index + 1 > genericTypes.length) {
-            String.format("No generic type for interface $s at index %s", genericSuperInterface.getSimpleName(), index);
+            throw new OutOfRangeException(index, 0, genericTypes.length);
         }
         return (Class<?>)genericTypes[index];
     }
