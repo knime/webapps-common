@@ -60,7 +60,10 @@ import java.util.concurrent.Future;
  */
 public abstract class CancelableActionHandler<R> implements ActionHandler<R> {
 
-    static String cancelButtonState = "cancel";
+    /**
+     * State of the cancel button.
+     */
+    public static final String CANCEL_BUTTON_STATE = "cancel";
 
     private Future<ActionHandlerResult<R>> m_lastInvokationResult;
 
@@ -73,7 +76,7 @@ public abstract class CancelableActionHandler<R> implements ActionHandler<R> {
 
     @Override
     public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
-        if (cancelButtonState.equals(buttonState)) {
+        if (CANCEL_BUTTON_STATE.equals(buttonState)) {
             cancel();
             return CompletableFuture.supplyAsync(() -> null);
         } else {
