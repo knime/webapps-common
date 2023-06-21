@@ -11,19 +11,21 @@ describe('ButtonInput', () => {
     let wrapper, props;
     const defaultOptions = {
         format: 'button',
-        invokeButtonText: 'Custom Action Text',
-        cancelButtonText: 'Custom Cancel Text',
-        succeededButtonText: 'Custom Succeeded Text',
+        buttonTexts: {
+            invoke: 'Custom Action Text',
+            cancel: 'Custom Cancel Text',
+            succeeded: 'Custom Succeeded Text'
+        },
         isMultipleUse: false,
         displayErrorMessage: true,
         isCancelable: true,
-        showTitle: true
+        showTitleAndDescription: true,
+        actionHandler: 'MyActionHandlerClass'
     };
     const uischema = {
         type: 'Control',
         scope: '#/properties/buttonInput',
-        options: defaultOptions,
-        actionHandler: 'MyActionHandlerClass'
+        options: defaultOptions
     };
     const schema = {
         properties: {
@@ -112,7 +114,7 @@ describe('ButtonInput', () => {
         });
 
         it('does not render label if showTitle is set to false', async () => {
-            const hideTitleUischemaOptions = { showTitle: false };
+            const hideTitleUischemaOptions = { showTitleAndDescription: false };
             props = getProps(hideTitleUischemaOptions);
             wrapper = await mountJsonFormsComponent(ButtonInput, props);
             expect(wrapper.findComponent(Label).exists()).toBeFalsy();
@@ -125,7 +127,7 @@ describe('ButtonInput', () => {
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
             expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
                 method: 'invokeActionHandler',
-                options: [uischema.actionHandler]
+                options: [uischema.options.actionHandler]
             });
         });
 
@@ -135,7 +137,7 @@ describe('ButtonInput', () => {
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
             expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
                 method: 'invokeActionHandler',
-                options: [uischema.actionHandler, 'cancel']
+                options: [uischema.options.actionHandler, 'cancel']
             });
         });
 

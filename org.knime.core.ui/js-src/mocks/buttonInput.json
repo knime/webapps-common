@@ -33,9 +33,9 @@
             "isMultipleUse": false,
             "displayErrorMessage": true,
             "isCancelable": true,
-            "showTitle": false
-          },
-          "actionHandler": "[Class name of ActionHandler]"
+            "showTitleAndDescription": false,
+            "actionHandler": "[Class name of ActionHandler]"
+          }
         },
         {
           "scope": "#/properties/default_button",
@@ -48,9 +48,9 @@
             "isMultipleUse": false,
             "displayErrorMessage": true,
             "isCancelable": true,
-            "showTitle": true
-          },
-          "actionHandler": "[Class name of ActionHandler]"
+            "showTitleAndDescription": true,
+            "actionHandler": "[Class name of ActionHandler]"
+          }
         },
         {
           "scope": "#/properties/success_button",
@@ -63,9 +63,9 @@
             "isMultipleUse": false,
             "displayErrorMessage": true,
             "isCancelable": true,
-            "showTitle": true
-          },
-          "actionHandler": "[Class name of ActionHandler]"
+            "showTitleAndDescription": true,
+            "actionHandler": "[Class name of ActionHandler]"
+          }
         }
       ]
     }

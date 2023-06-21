@@ -45,13 +45,13 @@ const ButtonInput = defineComponent({
                 (this.isLoading && !this.isCancelable);
         },
         invokeButtonText() {
-            return this.control.uischema.options?.invokeButtonText ?? 'Invoke action';
+            return this.control.uischema.options?.buttonTexts?.invoke ?? 'Invoke action';
         },
         cancelButtonText() {
-            return this.control.uischema.options?.cancelButtonText ?? 'Cancel';
+            return this.control.uischema.options?.buttonTexts?.cancel ?? 'Cancel';
         },
         succeededButtonText() {
-            return this.control.uischema.options?.succeededButtonText ?? 'Success';
+            return this.control.uischema.options?.buttonTexts?.succeeded ?? 'Success';
         },
         displayErrorMessage() {
             return this.control.uischema.options?.displayErrorMessage ?? true;
@@ -62,8 +62,8 @@ const ButtonInput = defineComponent({
         isCancelable() {
             return this.control.uischema.options?.isCancelable ?? true;
         },
-        showTitle() {
-            return this.control.uischema.options?.showTitle ?? true;
+        showTitleAndDescription() {
+            return this.control.uischema.options?.showTitleAndDescription ?? true;
         }
     },
     mounted() {
@@ -75,14 +75,14 @@ const ButtonInput = defineComponent({
             if (this.isLoading) {
                 this.jsonDataService.data({
                     method: 'invokeActionHandler',
-                    options: [this.control.uischema.actionHandler, 'cancel']
+                    options: [this.control.uischema.options.actionHandler, 'cancel']
                 });
                 this.isLoading = false;
             } else {
                 this.isLoading = true;
                 const receivedData = await this.jsonDataService.data({
                     method: 'invokeActionHandler',
-                    options: [this.control.uischema.actionHandler]
+                    options: [this.control.uischema.options.actionHandler]
                 });
                 this.isLoading = false;
                 if (receivedData?.state === 'FAIL') {
@@ -106,7 +106,7 @@ export default ButtonInput;
       :show-reexecution-icon="isModelSettingAndHasNodeView"
       :scope="control.uischema.scope"
       :flow-settings="flowSettings"
-      :show="showTitle"
+      :show="showTitleAndDescription"
     >
       <div class="button-wrapper">
         <FunctionButton

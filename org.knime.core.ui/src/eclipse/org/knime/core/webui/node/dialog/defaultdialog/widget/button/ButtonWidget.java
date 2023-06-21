@@ -72,4 +72,36 @@ public @interface ButtonWidget {
      */
     Class<? extends ActionHandler<?>> actionHandler();
 
+    /**
+     * @return the initial text shown on the button that should describe the invoked action.
+     */
+    String invokeButtonText() default "";
+
+    /**
+     * @return the text that appears on the button during a request for asynchronous actions. Should indicate that the
+     *         current request will be cancelled if the button is triggered.
+     */
+    String cancelButtonText() default "";
+
+    /**
+     * @return the text that appears on a single-use button after the invoked action has succeeded.
+     */
+    String succeededButtonText() default "";
+
+    /**
+     * @return if set to true, error messages are displayed besides the button.
+     */
+    boolean displayErrorMessage() default true;
+
+    /**
+     * @return if set to true, the button can be triggered multiple times. Otherwise it will deactivate after a single
+     *         successful invocation.
+     */
+    boolean isMultipleUse() default false;
+
+    /**
+     * @return if set to true, title and description will be shown above the ButtonWidget
+     */
+    boolean showTitleAndDescription() default true;
+
 }

@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+
 import com.github.victools.jsonschema.generator.SchemaKeyword;
 import com.github.victools.jsonschema.generator.SchemaVersion;
 
@@ -159,6 +161,11 @@ public final class JsonFormsConsts {
         public static final String TAG_FORMAT = "format";
 
         /**
+         * The {@link ActionHandler} of a {@link ButtonWidget}
+         */
+        public static final String TAG_ACTION_HANDLER = "actionHandler";
+
+        /**
          * Several formats which are written to the options of the ui-schema of an ui element
          *
          * @author Paul Bärnreuther
@@ -182,6 +189,8 @@ public final class JsonFormsConsts {
             public static final String TWIN_LIST = "twinList";
 
             public static final String RADIO = "radio";
+
+            public static final String BUTTON = "button";
         }
 
         /**

@@ -52,6 +52,9 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -60,8 +63,8 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -72,6 +75,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvid
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
  *
@@ -194,7 +202,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
         class ValueSwitchSettings implements DefaultNodeSettings {
 
             enum MyEnum {
-                A, B, C
+                    A, B, C
             }
 
             @ValueSwitchWidget
@@ -238,9 +246,9 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testChoicesWidget() {
 
         SettingsCreationContext settingsCreationContext = new SettingsCreationContext(
-                new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
-                        new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
-                null);
+            new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
+                new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
+            null);
 
         var response = buildTestUiSchema(ChoicesSettings.class, settingsCreationContext);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
@@ -251,17 +259,17 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].text").isString().isEqualTo("column1");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].text").isString().isEqualTo("column2");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].type.id").isString()
-                .isEqualTo("org.knime.core.data.StringValue");
+            .isEqualTo("org.knime.core.data.StringValue");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].type.id").isString()
-                .isEqualTo("org.knime.core.data.DoubleValue");
+            .isEqualTo("org.knime.core.data.DoubleValue");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].type.text").isString()
-                .isEqualTo("String");
+            .isEqualTo("String");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].type.text").isString()
-                .isEqualTo("Number (double)");
+            .isEqualTo("Number (double)");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[0].compatibleTypes").isArray()
-                .contains("org.knime.core.data.NominalValue");
+            .contains("org.knime.core.data.NominalValue");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].compatibleTypes").isArray()
-                .contains("org.knime.core.data.BoundedValue");
+            .contains("org.knime.core.data.BoundedValue");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[1].options.possibleValues[0].id").isString().isEqualTo("column1");
@@ -300,7 +308,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
             String m_string;
 
             enum MyEnum {
-                A, B, C
+                    A, B, C
             }
 
             @ChoicesWidget
@@ -405,6 +413,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testShowSortButtonsTest() {
         class ArrayElement {
             String m_field1;
+
             int m_field2;
         }
 
@@ -439,4 +448,83 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("label");
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
     }
+
+    static class SynchronousTestActionHandler extends SynchronousActionHandler<String> {
+        @Override
+        public ActionHandlerResult<String> invokeSync(final String buttonState) {
+            return new ActionHandlerResult<String>("Result", ActionHandlerState.SUCCESS, "message");
+        }
+    }
+
+    static class CancelableTestActionHandler extends CancelableActionHandler<String> {
+        @Override
+        protected Future<ActionHandlerResult<String>> invoke() {
+            return CompletableFuture.supplyAsync(() -> null);
+        }
+    }
+
+    @Test
+    void testDefaultButtonWidgetOptions() {
+        class ButtonWidgetDefaultTestSettings {
+
+            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class)
+            String m_foo;
+        }
+
+        var response = buildTestUiSchema(ButtonWidgetDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
+            .isEqualTo(SynchronousTestActionHandler.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("button");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts").isObject();
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.invoke").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.cancel").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.succeeded").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options.displayErrorMessage").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.isMultipleUse").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isTrue();
+    }
+
+    @Test
+    void testIsCancelableButtonWidget() {
+        class ButtonWidgetIsCancelableTestSettings {
+            @ButtonWidget(actionHandler = CancelableTestActionHandler.class)
+            String m_cancelable;
+
+            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class)
+            String m_notCancelable;
+        }
+
+        var response = buildTestUiSchema(ButtonWidgetIsCancelableTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
+            .isEqualTo(CancelableTestActionHandler.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.isCancelable").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[1].options.actionHandler").isString()
+            .isEqualTo(SynchronousTestActionHandler.class.getName());
+        assertThatJson(response).inPath("$.elements[1].options.isCancelable").isBoolean().isFalse();
+    }
+
+    @Test
+    void testButtonWidgetOptions() {
+        class ButtonWidgetOptionsTestSettings {
+            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class, invokeButtonText = "Invoke",
+                cancelButtonText = "Cancel", succeededButtonText = "Success", displayErrorMessage = false,
+                isMultipleUse = true, showTitleAndDescription = false)
+            String m_foo;
+        }
+        var response = buildTestUiSchema(ButtonWidgetOptionsTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
+            .isEqualTo(SynchronousTestActionHandler.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("button");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts").isObject();
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.invoke").isString().isEqualTo("Invoke");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.cancel").isString().isEqualTo("Cancel");
+        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.succeeded").isString().isEqualTo("Success");
+        assertThatJson(response).inPath("$.elements[0].options.displayErrorMessage").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.isMultipleUse").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isFalse();
+
+    }
+
 }

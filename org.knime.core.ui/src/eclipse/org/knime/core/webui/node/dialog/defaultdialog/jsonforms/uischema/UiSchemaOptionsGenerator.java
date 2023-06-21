@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.OPTIONS_IS_ADVANCED;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ACTION_HANDLER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
@@ -75,6 +76,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -152,6 +155,20 @@ final class UiSchemaOptionsGenerator {
             if (widget.hideTitle()) {
                 control.put(TAG_LABEL, "");
             }
+        }
+
+        if (annotatedWidgets.contains(ButtonWidget.class)) {
+            final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);
+            options.put(TAG_ACTION_HANDLER, buttonWidget.actionHandler().getName());
+            options.put(TAG_FORMAT, Format.BUTTON);
+            options.putObject("buttonTexts").put("invoke", buttonWidget.invokeButtonText())
+                .put("cancel", buttonWidget.cancelButtonText())
+                .put("succeeded", buttonWidget.succeededButtonText());
+            options.put("displayErrorMessage", buttonWidget.displayErrorMessage());
+            options.put("isMultipleUse", buttonWidget.isMultipleUse());
+            options.put("showTitleAndDescription", buttonWidget.showTitleAndDescription());
+            var cancelable = CancelableActionHandler.class.isAssignableFrom(buttonWidget.actionHandler());
+            options.put("isCancelable", cancelable);
         }
 
         if (annotatedWidgets.contains(ValueSwitchWidget.class)) {

@@ -62,6 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
@@ -118,7 +119,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(Widget.class), //
         new WidgetAnnotation(List.of(Enum.class), RadioButtonsWidget.class), //
         new WidgetAnnotation(List.of(Enum.class), ValueSwitchWidget.class), //
-        new WidgetAnnotation(ChoicesWidget.class) //
+        new WidgetAnnotation(ChoicesWidget.class), //
+        new WidgetAnnotation(ButtonWidget.class)
     };
 
     /**
