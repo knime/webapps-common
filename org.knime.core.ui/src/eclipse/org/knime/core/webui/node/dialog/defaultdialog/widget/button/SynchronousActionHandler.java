@@ -44,56 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 19, 2023 (Paul Bärnreuther): created
+ *   Jun 16, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
- * An {@link ActionHandler} with an asynchronous invocation whose result can be retrieved and canceled.
+ * An {@link ActionHandler} whose invocation is synchronous.
  *
- * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
- *            field has to be assignable from it.
+ * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
+ *            the field has to be assignable from it.
  * @author Paul Bärnreuther
  */
-public abstract class CancelableActionHandler<R> implements ActionHandler<R> {
-
-    static String cancelButtonState = "cancel";
-
-    private Future<ActionHandlerResult<R>> m_lastInvokationResult;
+public abstract class SynchronousActionHandler<R> implements ActionHandler<R> {
 
     /**
-     * @return the result of the last invocation or null if no invocation has taken place.
+     * @param buttonState of invocation. This can be ignored in simple cases.
+     * @return the result of the invocation.
      */
-    protected Future<ActionHandlerResult<R>> getLastInvokationResult() {
-        return m_lastInvokationResult;
-    }
+    public abstract ActionHandlerResult<R> invokeSync(String buttonState);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
-        if (cancelButtonState.equals(buttonState)) {
-            cancel();
-            return CompletableFuture.supplyAsync(() -> null);
-        } else {
-            m_lastInvokationResult = invoke();
-            return m_lastInvokationResult;
-        }
+        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState));
     }
-
-    /**
-     * Overwrite this method to implement more complex cancellations.
-     */
-    protected void cancel() {
-        m_lastInvokationResult.cancel(true);
-    }
-
-    /**
-     * An invocation which is triggered if a request which is not a cancel request is sent.
-     *
-     * @return the future result.
-     */
-    protected abstract Future<ActionHandlerResult<R>> invoke();
 
 }

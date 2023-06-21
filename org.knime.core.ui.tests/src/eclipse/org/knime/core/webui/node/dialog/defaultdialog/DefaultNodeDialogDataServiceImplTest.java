@@ -57,11 +57,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.SynchronousActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
  * Tests DefaultNodeSettingsService.

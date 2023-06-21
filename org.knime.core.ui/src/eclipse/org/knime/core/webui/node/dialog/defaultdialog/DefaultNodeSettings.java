@@ -79,7 +79,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

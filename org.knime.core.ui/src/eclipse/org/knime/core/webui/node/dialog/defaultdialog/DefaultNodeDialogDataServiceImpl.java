@@ -62,10 +62,10 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ButtonWidget;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;

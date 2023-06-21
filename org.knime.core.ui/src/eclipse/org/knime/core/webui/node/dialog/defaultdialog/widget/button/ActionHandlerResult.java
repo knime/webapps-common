@@ -46,32 +46,39 @@
  * History
  *   Jun 16, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 /**
- * An {@link ActionHandler} whose invocation is synchronous.
+ * The result of the invocation of an {@link ActionHandler}
  *
- * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
- *            the field has to be assignable from it.
+ * @param result the result of a succesful response
+ * @param state the state of the result.
+ * @param message the error message in case of a failed response.
+ * @param <R> The type of the result
  * @author Paul Bärnreuther
  */
-public abstract class SynchronousActionHandler<R> implements ActionHandler<R> {
+public record ActionHandlerResult<R>(R result, ActionHandlerState state, String message) {
 
     /**
-     * @param buttonState of invocation. This can be ignored in simple cases.
-     * @return the result of the invocation.
+     * @param result the value of the successful result
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#SUCCESS}
      */
-    public abstract ActionHandlerResult<R> invokeSync(String buttonState);
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState));
+    public static <R>  ActionHandlerResult<R> succeed(final R result) {
+        return new ActionHandlerResult<>(result, ActionHandlerState.SUCCESS, null);
     }
 
+    /**
+     * @param message the supplied error message
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#FAIL}
+     */
+    public static <R> ActionHandlerResult<R> fail(final String message) {
+        return new ActionHandlerResult<>(null, ActionHandlerState.FAIL, message);
+    }
+
+    /**
+     * @return an {@link ActionHandlerResult} with state {@link ActionHandlerState#CANCELED}
+     */
+    public static <R> ActionHandlerResult<R> cancel() {
+        return new ActionHandlerResult<>(null, ActionHandlerState.CANCELED, null);
+    }
 }

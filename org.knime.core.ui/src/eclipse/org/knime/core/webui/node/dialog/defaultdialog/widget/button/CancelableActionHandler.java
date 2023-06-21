@@ -44,26 +44,56 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   Jun 19, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
- * The state a {@link ActionHandlerResult} can have.
+ * An {@link ActionHandler} with an asynchronous invocation whose result can be retrieved and canceled.
  *
+ * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
+ *            field has to be assignable from it.
  * @author Paul Bärnreuther
  */
-public enum ActionHandlerState {
-        /**
-         * The invocation was succesful.
-         */
-        SUCCESS,
-        /**
-         * The invocation was canceled.
-         */
-        CANCELED,
-        /**
-         * The invocation yielded an expected error, which is explicitly caught.
-         */
-        FAIL
+public abstract class CancelableActionHandler<R> implements ActionHandler<R> {
+
+    static String cancelButtonState = "cancel";
+
+    private Future<ActionHandlerResult<R>> m_lastInvokationResult;
+
+    /**
+     * @return the result of the last invocation or null if no invocation has taken place.
+     */
+    protected Future<ActionHandlerResult<R>> getLastInvokationResult() {
+        return m_lastInvokationResult;
+    }
+
+    @Override
+    public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
+        if (cancelButtonState.equals(buttonState)) {
+            cancel();
+            return CompletableFuture.supplyAsync(() -> null);
+        } else {
+            m_lastInvokationResult = invoke();
+            return m_lastInvokationResult;
+        }
+    }
+
+    /**
+     * Overwrite this method to implement more complex cancellations.
+     */
+    protected void cancel() {
+        m_lastInvokationResult.cancel(true);
+    }
+
+    /**
+     * An invocation which is triggered if a request which is not a cancel request is sent.
+     *
+     * @return the future result.
+     */
+    protected abstract Future<ActionHandlerResult<R>> invoke();
+
 }

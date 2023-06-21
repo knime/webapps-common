@@ -53,6 +53,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
  *

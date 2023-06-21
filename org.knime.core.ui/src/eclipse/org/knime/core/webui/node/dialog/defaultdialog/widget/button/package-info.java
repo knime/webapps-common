@@ -43,33 +43,12 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jun 15, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
+ * This package contains the additional widget annotations and classes to define widgets which trigger certain actions.
  *
- * This annotation can be applied to a field of any serializable type, in order to display a button widget which, on
- * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
- * successful response.
+ * For defining a button which triggers an action on click refer to the {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget}
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface ButtonWidget {
-
-    /**
-     * @return the action handler that is to be triggered on click. A successful result should be of the same type as
-     *         the setting that is implemented.
-     */
-    Class<? extends ActionHandler<?>> actionHandler();
-
-}
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;

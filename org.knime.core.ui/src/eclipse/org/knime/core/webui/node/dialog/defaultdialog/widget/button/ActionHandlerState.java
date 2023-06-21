@@ -44,27 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 21, 2023 (Paul Bärnreuther): created
+ *   Jun 16, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
-
-import java.util.concurrent.Future;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 /**
- * The interface for the handler of an action invocation specified by a {@link ButtonWidget}.
+ * The state a {@link ActionHandlerResult} can have.
  *
  * @author Paul Bärnreuther
- * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
- *            the field has to be assignable from it.
  */
-public interface ActionHandler<R> {
-
-    /**
-     * @param buttonState a string specified by the frontend in order to reuse the same button for multiple different
-     *            kinds of invocations. E.g. this can be used to cancel an invocation (refer to
-     *            {@link CancelableActionHandler}.
-     * @return an asynchronous result. In case the handler is synchronous, refer to {@link SynchronousActionHandler}.
-     */
-    Future<ActionHandlerResult<R>> invoke(String buttonState);
-
+public enum ActionHandlerState {
+        /**
+         * The invocation was succesful.
+         */
+        SUCCESS,
+        /**
+         * The invocation was canceled.
+         */
+        CANCELED,
+        /**
+         * The invocation yielded an expected error, which is explicitly caught.
+         */
+        FAIL
 }

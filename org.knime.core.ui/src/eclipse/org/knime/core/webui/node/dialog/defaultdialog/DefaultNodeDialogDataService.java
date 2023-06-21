@@ -50,8 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import java.util.concurrent.ExecutionException;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.action.ActionHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
 
 /**
  *
