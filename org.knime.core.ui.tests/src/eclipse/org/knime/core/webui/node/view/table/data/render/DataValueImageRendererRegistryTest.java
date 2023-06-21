@@ -233,10 +233,10 @@ public class DataValueImageRendererRegistryTest {
         var res4 = imgReg.renderImage(imgPath + "?w=30&h=20");
         var res5 = imgReg.renderImage(imgPath + "?w=20&h=30");
         var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
-        assertThat(res3).isEqualTo(res1);
-        assertThat(res5).isEqualTo(res2);
-        assertThat(res4).isNotEqualTo(res2);
-        assertThat(numCalls).isEqualTo(3);
+        assertThat(res3).as("Requests without width and heigt parameter should be cached").isEqualTo(res1);
+        assertThat(res5).as("Requests with width and heigt parameter should be cached").isEqualTo(res2);
+        assertThat(res4).as("Requests with different inputs should yield different output").isNotEqualTo(res2);
+        assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
     }
 
 }
