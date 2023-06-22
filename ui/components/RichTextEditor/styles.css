@@ -129,11 +129,13 @@
 
 @define-mixin rich-text-editor-links {
   & a {
-    color: var(--knime-dove-gray);
-    text-decoration: none;
+    color: var(--theme-text-link-foreground-color);
+    text-decoration-style: dashed;
 
     &:hover {
-      color: var(--knime-masala);
+      text-decoration-style: solid;
+      background: var(--theme-text-link-background-color-hover);
+      color: var(--theme-text-link-foreground-color-hover);
     }
   }
 
