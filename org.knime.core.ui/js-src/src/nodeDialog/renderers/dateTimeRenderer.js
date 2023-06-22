@@ -4,5 +4,5 @@ import DateTimeInput from '../uiComponents/DateTimeInput.vue';
 
 export const dateTimeRenderer = {
     renderer: DateTimeInput,
-    tester: rankWith(priorityRanks.high, isDateTimeControl)
+    tester: rankWith(priorityRanks.default, isDateTimeControl)
 };
