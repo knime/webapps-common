@@ -13,6 +13,7 @@
     "build": "npm run cleanDist && run-p type-check build:*",
     "build:NodeDialog": "vite build --mode NodeDialog",
     "build:TableView": "vite build --mode TableView",
+    "build:DeferredTableView": "vite build --mode DeferredTableView",
     "type-check": "vue-tsc --noEmit",
     "cleanDist": "rimraf dist",
     "lint": "run-p 'lint:* -- --fix'",

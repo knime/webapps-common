@@ -17,11 +17,17 @@ const libraries = {
         name: 'tableview',
         fileName: 'TableView',
         formats: ['umd']
+    } as LibraryOptions,
+    DeferredTableView: {
+        entry: fileURLToPath(new URL('./src/deferredTableView/DeferredTableView.vue', import.meta.url)),
+        name: 'deferredtableview',
+        fileName: 'DeferredTableView',
+        formats: ['umd']
     } as LibraryOptions
 };
 
 const getCurrentLibrary = (mode: string) => {
-    if (mode === 'NodeDialog' || mode === 'TableView') {
+    if (mode === 'NodeDialog' || mode === 'TableView' || mode === 'DeferredTableView') {
         return libraries[mode];
     }
     return false;

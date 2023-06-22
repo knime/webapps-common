@@ -43,6 +43,7 @@ Export-Package: org.knime.core.ui;x-internal:=true,
  org.knime.core.webui.node.view.selection;x-internal:=true,
  org.knime.core.webui.node.view.table;x-internal:=true,
  org.knime.core.webui.node.view.table.data;x-internal:=true,
+ org.knime.core.webui.node.view.table.data.render,
  org.knime.core.webui.page;x-internal:=true,
  org.knime.gateway.api.entity;x-internal:=true,
  org.knime.gateway.impl.service.events;x-internal:=true
