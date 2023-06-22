@@ -43,11 +43,7 @@ export default {
 </script>
 
 <template>
-  <BaseModal
-    v-bind="$attrs"
-    :class="['modal', styleType]"
-    @cancel="$emit('cancel', $event)"
-  >
+  <BaseModal :class="['modal', styleType]" @cancel="$emit('cancel', $event)">
     <div class="header">
       <span class="header-icon">
         <slot name="icon" />

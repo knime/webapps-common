@@ -27,6 +27,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["click"],
   computed: {
@@ -80,8 +84,9 @@ export default defineComponent({
   <!-- Note: @click events also fire on keyboard activation via Enter -->
   <Component
     :is="component"
-    v-bind="{ ...$attrs, ...dynamicProps }"
+    v-bind="dynamicProps"
     ref="button"
+    :disabled="disabled ? 'disabled' : null"
     @click="onClick"
   >
     <slot />

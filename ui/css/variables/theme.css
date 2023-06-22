@@ -196,7 +196,6 @@
   --theme-slider-background-color: var(--knime-yellow);
 
   /* DateInput */
-  --theme-date-input-box-shadow-color: var(--knime-masala-semi);
   --theme-date-input-day-content-background: rgba(192, 196, 198, 0.5);
   --theme-date-input-border-color: var(--knime-stone-gray);
   --theme-date-input-border-focus-color: var(--knime-masala);

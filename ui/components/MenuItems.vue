@@ -28,8 +28,7 @@
  *
  * There is support for sub menus with the `children` key in items. The sublevel menus are recursive and create
  * another MenuItems instance. The keyboard navigation is delegated to the submenu and open/close is handled.
- * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus (e. g. box-shadow).
- *
+ * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus
  */
 import {
   type FunctionalComponent,

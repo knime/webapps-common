@@ -46,15 +46,20 @@ You should follow these steps
 
 Alternativly, more and more parts are also published as [npm packages](https://www.npmjs.com/~knime) and can be used without git submodules.
 
-## Vue
-
----
+### Vue
 
 The Vue components expect that the app provides the following:
 
 - Vue and Consola compatible to the versions defined in [`package.json`](package.json)
 - global `window.consola` instance for logging
 - [PostCSS] configuration as described in [`webpack/webpack.postcss.config.js`](webpack/webpack.postcss.config.js).
+
+### Nuxt
+
+Additional requirements when used with Nuxt:
+
+- Nuxt-native `ClientOnly` and `NuxtLink` components need to be registered globally,
+  otherwise they can't get resolved in [`ui/util/nuxtComponentResolver.js`](ui/util/nuxtComponentResolver.js)
 
 ## Styling
 

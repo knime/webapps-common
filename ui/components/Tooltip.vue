@@ -40,7 +40,7 @@ export default {
   white-space: nowrap;
   color: var(--theme-tooltip-foreground-color);
   padding: 6px 10px;
-  box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
+  box-shadow: var(--shadow-elevation-2);
   border-radius: 1px;
   font-size: 13px;
   pointer-events: none;

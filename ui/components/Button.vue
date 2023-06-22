@@ -6,7 +6,6 @@ export default defineComponent({
   components: {
     BaseButton,
   },
-  inheritAttrs: false,
   props: {
     /**
      * @see {@link BaseButton.vue}
@@ -40,6 +39,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     classes() {
@@ -56,7 +59,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <BaseButton v-bind="$attrs" :class="classes">
+  <BaseButton :class="classes" :disabled="disabled">
     <slot />
   </BaseButton>
 </template>
