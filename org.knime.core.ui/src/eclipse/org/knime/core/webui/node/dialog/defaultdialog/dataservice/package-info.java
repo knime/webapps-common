@@ -44,37 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 21, 2023 (Paul Bärnreuther): created
+ *   May 2, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataService;
-
-import java.util.concurrent.Future;
-
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
-
 /**
- * The interface for the handler of an action invocation specified by a {@link ButtonWidget}.
+ * THis package contains the rpc data service
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
+ * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
+ * between the calls from the frontend and classes extending
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler}. During initialization of
+ * the data service, these handlers are parsed from a collection of supplied {@link DefaultNodeSettings} and it is
+ * checked that the generic type determining the output type matches the type of an associated field in the node
+ * settings.
  *
  * @author Paul Bärnreuther
- * @param <S> the type of the input to the invocation, i.e. the other settings, the handler is depending on.
- * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
- *            field has to be assignable from it.
  */
-public abstract class DialogDataServiceHandler<R, S> {
-
-    /**
-     * @param state a string specified by the frontend in order to reuse the same invocation for multiple uses. E.g.
-     *            this can be used to cancel an invocation (refer to {@link CancelableActionHandler}.
-     * @param settings the settings of type {@code S} which the invocation depends on.
-     * @return an asynchronous result. In case the handler is synchronous, refer to {@link SynchronousActionHandler}.
-     */
-    abstract public Future<DialogDataServiceHandlerResult<R>> invoke(String state, S settings);
-
-    @SuppressWarnings({"javadoc", "unchecked"})
-    public Future<DialogDataServiceHandlerResult<R>> castAndInvoke(final String state, final Object settings) {
-        return invoke(state, (S)settings);
-    }
-
-}
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;

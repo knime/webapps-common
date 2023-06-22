@@ -65,7 +65,7 @@ import java.lang.annotation.RetentionPolicy;
  * </ul>
  * <h2>Layout parts</h2>
  * <p>
- * The annotation may target any of the following classes representing layout parts:
+ * The annotation may target any of the following cclasses representing layout parts:
  * </p>
  *
  * <ul>

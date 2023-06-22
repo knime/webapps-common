@@ -51,9 +51,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
-
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
 /**
  * An {@link DialogDataServiceHandler} whose invocation is synchronous.
  *
@@ -62,21 +62,22 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServ
  * @param <S>
  * @author Paul Bärnreuther
  */
-public abstract class SynchronousActionHandler<R, S> extends DialogDataServiceHandler<R, S> {
+public abstract class SynchronousActionHandler<R, S> implements DialogDataServiceHandler<R, S> {
 
     /**
      * @param buttonState of invocation. This can be ignored in simple cases.
      * @param settings the settings the invocation depends on
+     * @param context the current {@link SettingsCreationContext}
      * @return the result of the invocation.
      */
-    public abstract DialogDataServiceHandlerResult<R> invokeSync(String buttonState, S settings);
+    public abstract DialogDataServiceHandlerResult<R> invokeSync(String buttonState, S settings, SettingsCreationContext context);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState, settings));
+    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings, final SettingsCreationContext context) {
+        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState, settings, context));
     }
 
 }

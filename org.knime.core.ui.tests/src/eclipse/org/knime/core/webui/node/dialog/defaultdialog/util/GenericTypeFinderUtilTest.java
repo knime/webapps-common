@@ -58,6 +58,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Paul Bärnreuther
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class GenericTypeFinderUtilTest {
     @SuppressWarnings("unused")
     static interface GenericInterface<A, B, C> {

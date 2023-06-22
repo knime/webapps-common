@@ -51,8 +51,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
 
 /**
  * An {@link DialogDataServiceHandler} with an asynchronous invocation whose result can be retrieved and canceled.
@@ -62,27 +63,28 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServ
  * @param <S> the type of the settings the invocation depends on
  * @author Paul Bärnreuther
  */
-public abstract class CancelableActionHandler<R, S> extends DialogDataServiceHandler<R, S> {
+public abstract class CancelableActionHandler<R, S> implements DialogDataServiceHandler<R, S> {
 
-    static final String cancelButtonState = "cancel";
+    static final String CANCEL_BUTTON_STATE = "cancel";
 
-    private Future<DialogDataServiceHandlerResult<R>> m_lastInvokationResult;
+    private Future<DialogDataServiceHandlerResult<R>> m_lastInvocationResult;
 
     /**
      * @return the result of the last invocation or null if no invocation has taken place.
      */
     protected Future<DialogDataServiceHandlerResult<R>> getLastInvokationResult() {
-        return m_lastInvokationResult;
+        return m_lastInvocationResult;
     }
 
     @Override
-    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings) {
-        if (cancelButtonState.equals(buttonState)) {
+    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings,
+        final SettingsCreationContext context) {
+        if (CANCEL_BUTTON_STATE.equals(buttonState)) {
             cancel();
             return CompletableFuture.supplyAsync(() -> null);
         } else {
-            m_lastInvokationResult = invoke(settings);
-            return m_lastInvokationResult;
+            m_lastInvocationResult = invoke(settings, context);
+            return m_lastInvocationResult;
         }
     }
 
@@ -90,15 +92,17 @@ public abstract class CancelableActionHandler<R, S> extends DialogDataServiceHan
      * Overwrite this method to implement more complex cancellations.
      */
     protected void cancel() {
-        m_lastInvokationResult.cancel(true);
+        m_lastInvocationResult.cancel(true);
     }
 
     /**
      * An invocation which is triggered if a request which is not a cancel request is sent.
+     *
      * @param settings the settings the invocation depends on
+     * @param context the current {@link SettingsCreationContext}
      *
      * @return the future result.
      */
-    protected abstract Future<DialogDataServiceHandlerResult<R>> invoke(S settings);
+    protected abstract Future<DialogDataServiceHandlerResult<R>> invoke(S settings, SettingsCreationContext context);
 
 }

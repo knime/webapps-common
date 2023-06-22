@@ -44,41 +44,39 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   Jun 21, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataService;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+
+import java.util.concurrent.Future;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
- * The result of the invocation of an {@link DialogDataServiceHandler}
+ * The handler of an action invocation specified by a {@link ButtonWidget}.
  *
- * @param result the result of a succesful response
- * @param state the state of the result.
- * @param message the error message in case of a failed response.
- * @param <R> The type of the result
  * @author Paul Bärnreuther
+ * @param <S> the type of the input to the invocation, i.e. the other settings, the handler is depending on.
+ * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
+ *            field has to be assignable from it.
  */
-public record DialogDataServiceHandlerResult<R>(R result, DialogDataServiceHandlerResultState state, String message) {
+public interface DialogDataServiceHandler<R, S> {
 
     /**
-     * @param result the value of the successful result
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#SUCCESS}
+     * @param state a string specified by the frontend in order to reuse the same invocation for multiple uses. E.g.
+     *            this can be used to cancel an invocation (refer to {@link CancelableActionHandler}.
+     * @param settings the settings of type {@code S} which the invocation depends on.
+     * @param context the current {@link SettingsCreationContext} holding flow variable stack and port object specs
+     * @return an asynchronous result. In case the handler is synchronous, refer to {@link SynchronousActionHandler}.
      */
-    public static <R>  DialogDataServiceHandlerResult<R> succeed(final R result) {
-        return new DialogDataServiceHandlerResult<>(result, DialogDataServiceHandlerResultState.SUCCESS, null);
-    }
+    Future<DialogDataServiceHandlerResult<R>> invoke(String state, S settings, SettingsCreationContext context);
 
-    /**
-     * @param message the supplied error message
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#FAIL}
-     */
-    public static <R> DialogDataServiceHandlerResult<R> fail(final String message) {
-        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.FAIL, message);
-    }
-
-    /**
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#CANCELED}
-     */
-    public static <R> DialogDataServiceHandlerResult<R> cancel() {
-        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.CANCELED, null);
+    @SuppressWarnings({"javadoc", "unchecked"})
+    default Future<DialogDataServiceHandlerResult<R>> castAndInvoke(final String state, final Object settings,
+        final SettingsCreationContext context) {
+        return invoke(state, (S)settings, context);
     }
 }

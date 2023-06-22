@@ -58,7 +58,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DefaultNodeDialogDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -134,10 +134,10 @@ public final class DefaultNodeDialog extends NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses);
+        final var dataService =
+            new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsDataService::getCreationContext);
         return Optional.ofNullable(RpcDataService.builder(dataService).build());
     }
-
 
     @Override
     protected NodeSettingsService getNodeSettingsService() {

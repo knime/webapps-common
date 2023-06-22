@@ -51,18 +51,23 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DefaultNodeDialogDataServiceImpl;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResultState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
@@ -78,11 +83,16 @@ class DefaultNodeDialogDataServiceImplTest {
 
     }
 
-    static class TestHandler extends DialogDataServiceHandler<String, TestDefaultNodeSettings> {
+    private static DefaultNodeDialogDataServiceImpl
+        getDataServiceWithNullContext(final Collection<Class<?>> settingsClasses) {
+        return new DefaultNodeDialogDataServiceImpl(settingsClasses, null);
+    }
+
+    static class TestHandler implements DialogDataServiceHandler<String, TestDefaultNodeSettings> {
 
         @Override
         public Future<DialogDataServiceHandlerResult<String>> invoke(final String state,
-            final TestDefaultNodeSettings settings) {
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
             return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(getResult(state)));
         }
 
@@ -109,7 +119,7 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_otherSetting;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var mode = "myMode";
         final var result = dataService.invokeActionHandler(TestHandler.class.getName(), mode);
         assertThat(result.result()).isEqualTo(TestHandler.getResult(mode));
@@ -123,18 +133,17 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var result = dataService.invokeActionHandler(TestHandler.class.getName());
         assertThat(result.result()).isEqualTo(TestHandler.getNullResult());
     }
 
-    static class OtherTestHandler extends DialogDataServiceHandler<String, TestDefaultNodeSettings> {
+    static class OtherTestHandler implements DialogDataServiceHandler<String, TestDefaultNodeSettings> {
 
         @Override
         public Future<DialogDataServiceHandlerResult<String>> invoke(final String state,
-            final TestDefaultNodeSettings settings) {
-            return CompletableFuture
-                .supplyAsync(() -> DialogDataServiceHandlerResult.fail(getErrorMessage(state)));
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+            return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.fail(getErrorMessage(state)));
         }
 
         static String getErrorMessage(final String state) {
@@ -153,7 +162,7 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_otherButton;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var firstResult = dataService.invokeActionHandler(TestHandler.class.getName());
         final var secondResult = dataService.invokeActionHandler(OtherTestHandler.class.getName());
         assertThat(firstResult.result()).isEqualTo(TestHandler.getNullResult());
@@ -168,9 +177,10 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
+        final var handlerName = OtherTestHandler.class.getName();
         assertThrows(IllegalArgumentException.class,
-            () -> dataService.invokeActionHandler(OtherTestHandler.class.getName()));
+            () -> dataService.invokeActionHandler(handlerName));
 
     }
 
@@ -184,10 +194,10 @@ class DefaultNodeDialogDataServiceImplTest {
             @ButtonWidget(actionHandler = NonStaticActionHandler.class)
             String m_button;
         }
-
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var handlerName = NonStaticActionHandler.class.getName();
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         assertThrows(IllegalArgumentException.class,
-            () -> dataService.invokeActionHandler(NonStaticActionHandler.class.getName()));
+            () -> dataService.invokeActionHandler(handlerName));
 
     }
 
@@ -204,18 +214,18 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button;
         }
 
-        final var dataService =
-            new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class, OtherButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class, OtherButtonSettings.class));
         final var firstResult = dataService.invokeActionHandler(TestHandler.class.getName());
         final var secondResult = dataService.invokeActionHandler(OtherTestHandler.class.getName());
         assertThat(firstResult.result()).isEqualTo(TestHandler.getNullResult());
         assertThat(secondResult.message()).isEqualTo(OtherTestHandler.getErrorMessage(null));
     }
 
-    static class CanceledResponseActionHandler extends DialogDataServiceHandler<String, TestDefaultNodeSettings> {
+    static class CanceledResponseActionHandler implements DialogDataServiceHandler<String, TestDefaultNodeSettings> {
 
         @Override
-        public Future<DialogDataServiceHandlerResult<String>> invoke(final String state, final TestDefaultNodeSettings settings) {
+        public Future<DialogDataServiceHandlerResult<String>> invoke(final String state,
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
 
             CompletableFuture<DialogDataServiceHandlerResult<String>> future = new CompletableFuture<>();
             future.cancel(true);
@@ -235,7 +245,7 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var result = dataService.invokeActionHandler(CanceledResponseActionHandler.class.getName());
         assertThat(result.state()).isEqualTo(DialogDataServiceHandlerResultState.CANCELED);
     }
@@ -243,7 +253,8 @@ class DefaultNodeDialogDataServiceImplTest {
     static class WrongResultTypeActionHandler extends SynchronousActionHandler<Integer, TestDefaultNodeSettings> {
 
         @Override
-        public DialogDataServiceHandlerResult<Integer> invokeSync(final String state, final TestDefaultNodeSettings settings) {
+        public DialogDataServiceHandlerResult<Integer> invokeSync(final String state,
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
             return DialogDataServiceHandlerResult.succeed(1);
         }
 
@@ -257,15 +268,16 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button;
         }
 
+        final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
         assertThrows(IllegalArgumentException.class,
-            () -> new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class)));
+            () -> getDataServiceWithNullContext(settingsClasses));
     }
 
     @SuppressWarnings("unused")
-    static class IntermediateSuperType<A extends DefaultNodeSettings, B> extends DialogDataServiceHandler<B, A> {
+    static class IntermediateSuperType<A extends DefaultNodeSettings, B> implements DialogDataServiceHandler<B, A> {
 
         @Override
-        public Future<DialogDataServiceHandlerResult<B>> invoke(final String state, final A settings) {
+        public Future<DialogDataServiceHandlerResult<B>> invoke(final String state, final A settings, final SettingsCreationContext context) {
             return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(null));
         }
 
@@ -292,20 +304,23 @@ class DefaultNodeDialogDataServiceImplTest {
             String m_button2;
         }
 
-        final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var result = dataService.invokeActionHandler(GenericTypesTestHandler2.class.getName());
         assertThat(result.result()).isNull();
     }
 
     static class SimpleDefaultNodeSettings implements DefaultNodeSettings {
         int m_foo = 1;
+
         String m_bar = "Hello World";
     }
 
-    static class HandlerWithDependentSettings extends DialogDataServiceHandler<SimpleDefaultNodeSettings, SimpleDefaultNodeSettings> {
+    static class HandlerWithDependentSettings
+        implements DialogDataServiceHandler<SimpleDefaultNodeSettings, SimpleDefaultNodeSettings> {
 
         @Override
-        public Future<DialogDataServiceHandlerResult<SimpleDefaultNodeSettings>> invoke(final String state, final SimpleDefaultNodeSettings settings) {
+        public Future<DialogDataServiceHandlerResult<SimpleDefaultNodeSettings>> invoke(final String state,
+            final SimpleDefaultNodeSettings settings, final SettingsCreationContext context) {
             return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(settings));
         }
 
@@ -319,13 +334,62 @@ class DefaultNodeDialogDataServiceImplTest {
             SimpleDefaultNodeSettings m_button;
         }
 
-        final var dataService =  new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class));
+        final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
 
         final Object inputSettings = Map.of("foo", "2");
-        final var result = (SimpleDefaultNodeSettings) dataService.invokeActionHandler(HandlerWithDependentSettings.class.getName(), null, inputSettings).result();
+        final var result = (SimpleDefaultNodeSettings)dataService
+            .invokeActionHandler(HandlerWithDependentSettings.class.getName(), null, inputSettings).result();
         assertThat(result.m_foo).isEqualTo(2);
         assertThat(result.m_bar).isEqualTo("Hello World");
 
+    }
+
+    static class SettingsCreationContextHandler implements DialogDataServiceHandler<Boolean, TestDefaultNodeSettings> {
+
+        @Override
+        public Future<DialogDataServiceHandlerResult<Boolean>> invoke(final String state,
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+            return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(context == null));
+        }
+
+    }
+
+    @Nested
+    class SettingsCreationContextSupplierTest {
+        private SettingsCreationContext m_context = null; //NOSONAR
+
+        @Test
+        void testSuppliesSettingsCreationContextToHandler() throws ExecutionException, InterruptedException {
+
+            class ButtonSettings {
+                @ButtonWidget(actionHandler = SettingsCreationContextHandler.class)
+                Boolean m_button;
+            }
+
+            final Supplier<SettingsCreationContext> contextProvider =
+                new Supplier<DefaultNodeSettings.SettingsCreationContext>() {
+
+                    @Override
+                    public SettingsCreationContext get() {
+                        return m_context;
+                    }
+                };
+
+            m_context = null; //NOSONAR
+            final var dataService =
+                new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider);
+
+            final var firstResult =
+                (Boolean)dataService.invokeActionHandler(SettingsCreationContextHandler.class.getName()).result();
+            assertThat(firstResult).isFalse();
+
+            m_context = new SettingsCreationContext(new PortObjectSpec[0], null);
+
+            final var secondResult =
+                (Boolean)dataService.invokeActionHandler(SettingsCreationContextHandler.class.getName()).result();
+            assertThat(secondResult).isTrue();
+
+        }
     }
 
 }

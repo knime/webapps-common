@@ -44,19 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 15, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+
+import java.util.concurrent.ExecutionException;
+
 /**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataService.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and classes extending
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler}. During initialization of
- * the data service, these handlers are parsed from a collection of supplied {@link DefaultNodeSettings} and it is
- * checked that the generic type determining the output type matches the type of an associated field in the node
- * settings.
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataService;
+@SuppressWarnings("java:S1452") //Allow wildcard return values
+interface DefaultNodeDialogDataService {
+
+    /**
+     *
+     * @param handlerClass the class name of the {@link DialogDataServiceHandler} that is to be used.
+     * @return a {@link DialogDataServiceHandlerResult}
+     * @throws ExecutionException if an error is thrown during the invocation
+     * @throws InterruptedException if the used thread is interrupted
+     */
+    DialogDataServiceHandlerResult<?> invokeActionHandler(String handlerClass)
+        throws ExecutionException, InterruptedException;
+
+    /**
+     * @param handlerClass the class name of the {@link DialogDataServiceHandler} that is to be used.
+     * @param mode a string key that is/can be used inside an {@link DialogDataServiceHandler} to have different
+     *            outcomes.
+     * @return a {@link DialogDataServiceHandlerResult}
+     * @throws ExecutionException if an error is thrown during the invocation
+     * @throws InterruptedException if the used thread is interrupted
+     */
+    DialogDataServiceHandlerResult<?> invokeActionHandler(String handlerClass, String mode)
+        throws ExecutionException, InterruptedException;
+
+    /**
+     * @param handlerClass
+     * @param buttonState
+     * @param objectSettings
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    DialogDataServiceHandlerResult<?> invokeActionHandler(String handlerClass, String buttonState,
+        Object objectSettings) throws ExecutionException, InterruptedException;
+
+}

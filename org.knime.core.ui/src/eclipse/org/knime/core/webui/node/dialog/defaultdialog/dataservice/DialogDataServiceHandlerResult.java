@@ -46,24 +46,39 @@
  * History
  *   Jun 16, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataService;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 /**
- * The state a {@link DialogDataServiceHandlerResult} can have.
+ * The result of the invocation of an {@link DialogDataServiceHandler}
  *
+ * @param result the result of a succesful response
+ * @param state the state of the result.
+ * @param message the error message in case of a failed response.
+ * @param <R> The type of the result
  * @author Paul Bärnreuther
  */
-public enum DialogDataServiceHandlerResultState {
-        /**
-         * The invocation was succesful.
-         */
-        SUCCESS,
-        /**
-         * The invocation was canceled.
-         */
-        CANCELED,
-        /**
-         * The invocation yielded an expected error, which is explicitly caught.
-         */
-        FAIL
+public record DialogDataServiceHandlerResult<R>(R result, DialogDataServiceHandlerResultState state, String message) {
+
+    /**
+     * @param result the value of the successful result
+     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#SUCCESS}
+     */
+    public static <R>  DialogDataServiceHandlerResult<R> succeed(final R result) {
+        return new DialogDataServiceHandlerResult<>(result, DialogDataServiceHandlerResultState.SUCCESS, null);
+    }
+
+    /**
+     * @param message the supplied error message
+     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#FAIL}
+     */
+    public static <R> DialogDataServiceHandlerResult<R> fail(final String message) {
+        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.FAIL, message);
+    }
+
+    /**
+     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#CANCELED}
+     */
+    public static <R> DialogDataServiceHandlerResult<R> cancel() {
+        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.CANCELED, null);
+    }
 }

@@ -55,8 +55,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
 
 /**
  *
@@ -67,34 +68,36 @@ class CancelableActionHandlerTest {
 
     @Test
     void testCancelableActionHandler() {
-        final DialogDataServiceHandler<String, Void> actionHandler = new CancelableActionHandler<String, Void>() {
+        final DialogDataServiceHandler<String, Void> actionHandler =
+            new CancelableActionHandler<String, Void>() {
 
-            @Override
-            protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings) {
-                return new CompletableFuture<>();
-            }
-        };
-        final var result = actionHandler.invoke(null, null);
-        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null);
+                @Override
+                protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
+                    return new CompletableFuture<>();
+                }
+            };
+        final var result = actionHandler.invoke(null, null, null);
+        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null, null);
         assertTrue(result.isCancelled());
     }
 
     @Test
     void testCancelableActionHandlerNotCanceledIfOverwritten() {
-        final DialogDataServiceHandler<String, Void> actionHandler = new CancelableActionHandler<String, Void>() {
+        final DialogDataServiceHandler<String, Void> actionHandler =
+            new CancelableActionHandler<String, Void>() {
 
-            @Override
-            protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings) {
-                return new CompletableFuture<>();
-            }
+                @Override
+                protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
+                    return new CompletableFuture<>();
+                }
 
-            @Override
-            protected void cancel() {
-                return;
-            }
-        };
-        final var result = actionHandler.invoke(null, null);
-        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null);
+                @Override
+                protected void cancel() {
+                    return;
+                }
+            };
+        final var result = actionHandler.invoke(null, null, null);
+        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null, null);
         assertFalse(result.isCancelled());
     }
 

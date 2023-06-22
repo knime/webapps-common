@@ -63,6 +63,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 
@@ -81,6 +82,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeSettingsService.class);
 
     private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+
+    private SettingsCreationContext m_creationContext;
 
     /**
      * @param settingsClasses map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
@@ -113,10 +116,10 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
 
     @Override
     public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings, final PortObjectSpec[] specs) {
-        var creationContext = DefaultNodeSettings.createSettingsCreationContext(specs);
+        m_creationContext = DefaultNodeSettings.createSettingsCreationContext(specs);
         var loadedSettings = settings.entrySet().stream()//
             .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
-        final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, creationContext);
+        final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, m_creationContext);
         final var mapper = JsonFormsDataUtil.getMapper();
         final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
@@ -128,6 +131,10 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
             throw new IllegalStateException(
                 String.format("Exception when reading data from node settings: %s", e.getMessage()), e);
         }
+    }
+
+    SettingsCreationContext getCreationContext() {
+        return m_creationContext;
     }
 
     private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeSettingsRO> nodeSettings,

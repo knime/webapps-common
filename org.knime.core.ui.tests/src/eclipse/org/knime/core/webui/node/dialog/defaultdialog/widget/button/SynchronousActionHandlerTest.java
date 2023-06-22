@@ -53,10 +53,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
-
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
 /**
  *
  * @author Paul Bärnreuther
@@ -66,15 +65,17 @@ class SynchronousActionHandlerTest {
 
     @Test
     void testSynchoronousActionHandler() throws InterruptedException, ExecutionException {
-        final DialogDataServiceHandler<String, Void> syncActionHandler = new SynchronousActionHandler<String, Void>() {
+        final DialogDataServiceHandler<String, Void> syncActionHandler =
+            new SynchronousActionHandler<String, Void>() {
 
-            @Override
-            public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState, final Void noSettings) {
-                return DialogDataServiceHandlerResult.succeed(buttonState);
-            }
-        };
+                @Override
+                public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
+                    final Void noSettings, final SettingsCreationContext context) {
+                    return DialogDataServiceHandlerResult.succeed(buttonState);
+                }
+            };
         final var payload = "myMode";
-        final var result = syncActionHandler.invoke(payload, null).get();
+        final var result = syncActionHandler.invoke(payload, null, null).get();
 
         assertThat(result.result()).isEqualTo(payload);
 

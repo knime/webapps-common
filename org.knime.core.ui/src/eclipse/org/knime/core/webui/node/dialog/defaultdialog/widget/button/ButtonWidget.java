@@ -55,7 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 
 /**
  *
@@ -63,7 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServ
  * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
  * successful response.
  *
- * @see org.knime.core.webui.node.dialog.defaultdialog.dataService
+ * @see org.knime.core.webui.node.dialog.defaultdialog.dataservice
  *
  * @author Paul Bärnreuther
  */
@@ -75,7 +75,7 @@ public @interface ButtonWidget {
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
      *         the setting that is implemented.
      */
-    Class<? extends DialogDataServiceHandler<?, ? extends DefaultNodeSettings>> actionHandler();
+    Class<? extends DialogDataServiceHandler<?, ? extends DefaultNodeSettings>> actionHandler(); //NOSONAR
 
     /**
      * @return the initial text shown on the button that should describe the invoked action.
