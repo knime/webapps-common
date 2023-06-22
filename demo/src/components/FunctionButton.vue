@@ -26,7 +26,7 @@ const codeExample = `
     <MenuOptionsIcon />
   </FunctionButton>
 
-  <FunctionButton :disabled="disabled">
+  <FunctionButton disabled>
     <span>Disabled Function</span>
     <SorterIcon />
   </FunctionButton>
@@ -48,7 +48,6 @@ export default {
       active1: false,
       active2: false,
       active3: false,
-      disabled: true,
       subMenuItems: [
         {
           href: "http://apple.com",
@@ -98,7 +97,7 @@ export default {
           <FunctionButton primary>
             <MenuOptionsIcon />
           </FunctionButton>
-          <FunctionButton :disabled="disabled">
+          <FunctionButton disabled>
             <span>Disabled Function</span>
             <SorterIcon />
           </FunctionButton>

@@ -10,6 +10,7 @@ const getAppInstance = () => {
 export const resolveClientOnlyComponent = () => {
   const app = getAppInstance();
 
+  // only works when ClientOnly is registered globally, which it's not by default
   const clientOnlyComponent = app.component("ClientOnly");
   if (clientOnlyComponent) {
     return clientOnlyComponent;
@@ -28,6 +29,7 @@ export const resolveClientOnlyComponent = () => {
 export const resolveNuxtLinkComponent = () => {
   const app = getAppInstance();
 
+  // only works when NuxtLink is registered globally, which it's not by default
   const nuxtLinkComponent = app.component("NuxtLink");
   if (nuxtLinkComponent) {
     return nuxtLinkComponent;
