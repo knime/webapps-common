@@ -51,27 +51,32 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
+
 /**
- * An {@link ActionHandler} whose invocation is synchronous.
+ * An {@link DialogDataServiceHandler} whose invocation is synchronous.
  *
  * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
  *            the field has to be assignable from it.
+ * @param <S>
  * @author Paul Bärnreuther
  */
-public abstract class SynchronousActionHandler<R> implements ActionHandler<R> {
+public abstract class SynchronousActionHandler<R, S> extends DialogDataServiceHandler<R, S> {
 
     /**
      * @param buttonState of invocation. This can be ignored in simple cases.
+     * @param settings the settings the invocation depends on
      * @return the result of the invocation.
      */
-    public abstract ActionHandlerResult<R> invokeSync(String buttonState);
+    public abstract DialogDataServiceHandlerResult<R> invokeSync(String buttonState, S settings);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Future<ActionHandlerResult<R>> invoke(final String buttonState) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState));
+    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings) {
+        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState, settings));
     }
 
 }

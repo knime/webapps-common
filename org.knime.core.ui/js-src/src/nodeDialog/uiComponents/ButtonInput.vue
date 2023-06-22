@@ -5,7 +5,9 @@ import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
+
 import { JsonDataService } from '@knime/ui-extension-service';
+import { unset } from 'lodash';
 
 const ButtonInput = defineComponent({
     name: 'ButtonInput',
@@ -15,7 +17,7 @@ const ButtonInput = defineComponent({
         LabeledInput,
         LoadingIcon
     },
-    inject: ['getKnimeService'],
+    inject: ['getKnimeService', 'registerWatcher'],
     inheritAttrs: false,
     props: {
         ...rendererProps()
@@ -67,30 +69,64 @@ const ButtonInput = defineComponent({
         }
     },
     mounted() {
+        this.registerWatcher(this.onSettingsChange.bind(this));
         this.jsonDataService = new JsonDataService(this.getKnimeService());
     },
     methods: {
+        saveResult(result) {
+            setTimeout(() => this.handleChange(this.control.path, result));
+        },
         async onClick() {
-            this.errorMessage = null;
+            this.clearError();
             if (this.isLoading) {
-                this.jsonDataService.data({
-                    method: 'invokeActionHandler',
-                    options: [this.control.uischema.options.actionHandler, 'cancel']
-                });
-                this.isLoading = false;
+                this.cancel();
             } else {
                 this.isLoading = true;
                 const receivedData = await this.jsonDataService.data({
                     method: 'invokeActionHandler',
-                    options: [this.control.uischema.options.actionHandler]
+                    options: [this.control.uischema.actionHandler, 'click', this.currentSettings]
                 });
                 this.isLoading = false;
                 if (receivedData?.state === 'FAIL') {
                     this.errorMessage = receivedData.message;
                 } else if (receivedData?.state === 'SUCCESS') {
-                    this.handleChange(this.control.path, receivedData.result);
+                    this.saveResult(receivedData?.result);
                 }
             }
+        },
+        cancel() {
+            this.jsonDataService.data({
+                method: 'invokeActionHandler',
+                options: [this.control.uischema.actionHandler, 'cancel']
+            });
+            this.isLoading = false;
+        },
+        clearError() {
+            this.errorMessage = null;
+        },
+        onSettingsChange(oldSettings, newSettings) {
+            this.currentSettings = { ...newSettings.view, ...newSettings.model };
+            if (this.hasData && this.otherSettingsChanged(oldSettings, newSettings)) {
+                if (this.isLoading && this.isCancelable) {
+                    this.cancel();
+                }
+                this.saveResult(null);
+            }
+        },
+        /**
+         * We only compare the other settings to avoid an infinite loops of updates
+         * @param {Object} oldSettings
+         * @param {Object} newSettings
+         * @returns {Boolean} whether something changed apart from the settings of the button.
+         */
+        otherSettingsChanged(oldSettings, newSettings) {
+            const restrictedOldSettings = this.restrictToOtherSettings(oldSettings);
+            const restrictedNewSettings = this.restrictToOtherSettings(newSettings);
+            return JSON.stringify(restrictedOldSettings) !== JSON.stringify(restrictedNewSettings);
+        },
+        restrictToOtherSettings(settings) {
+            unset(settings, this.control.path);
+            return settings;
         }
     }
 });

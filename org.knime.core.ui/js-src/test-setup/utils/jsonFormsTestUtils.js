@@ -9,36 +9,54 @@ import { createStore } from 'vuex';
 
 import { useJsonFormsControl, useJsonFormsLayout, useJsonFormsArrayControl } from '@jsonforms/vue';
 
-export const mountJsonFormsComponentWithStore = (component, props, modules, showAdvanced = false) => mount(
-    component,
-    {
-        props,
-        global: {
+const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules, showAdvanced = false) => {
+    const callbacks = [];
+    const wrapper = mount(
+        component,
+        {
+            props,
+            global: {
+                provide: {
+                    getKnimeService: () => ({
+                        extensionConfig: {},
+                        callService: vi.fn().mockResolvedValue({}),
+                        registerDataGetter: vi.fn(),
+                        addEventCallback: vi.fn()
+                    }),
+                    registerWatcher: (callback) => callbacks.push(callback)
+                },
+                stubs: {
+                    DispatchRenderer: true
+                },
+                mocks: {
+                    $store: createStore({ modules })
+                }
+            },
             provide: {
-                getKnimeService: () => ({
-                    extensionConfig: {},
-                    callService: vi.fn().mockResolvedValue({}),
-                    registerDataGetter: vi.fn(),
-                    addEventCallback: vi.fn()
-                })
-            },
-            stubs: {
-                DispatchRenderer: true
-            },
-            mocks: {
-                $store: createStore({ modules })
-            }
-        },
-        provide: {
-            jsonforms: {
-                core: {
-                    schema: {
-                        showAdvancedSettings: showAdvanced
+                jsonforms: {
+                    core: {
+                        schema: {
+                            showAdvancedSettings: showAdvanced
+                        }
                     }
                 }
             }
         }
-    }
+    );
+    return { wrapper, callbacks };
+};
+
+export const mountJsonFormsComponentWithStore = (
+    component, props, modules, showAdvanced = false
+) => mountJsonFormsComponentWithStoreAndCallbacks(
+    component, props, modules, showAdvanced
+).wrapper;
+
+
+export const mountJsonFormsComponentWithCallbacks = (
+    component, { props }
+) => mountJsonFormsComponentWithStoreAndCallbacks(
+    component, props, null, false
 );
 
 // eslint-disable-next-line arrow-body-style

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl } from
+import { initializesJsonFormsControl, mountJsonFormsComponentWithCallbacks } from
     '@@/test-setup/utils/jsonFormsTestUtils';
 import ButtonInput from '../ButtonInput.vue';
 import DialogComponentWrapper from '../DialogComponentWrapper.vue';
@@ -40,10 +40,12 @@ describe('ButtonInput', () => {
         result: 'token'
     };
 
+    const path = 'test';
+
     const getProps = (uischemaOptions = defaultOptions) => ({
         control: {
             visible: true,
-            path: 'test',
+            path,
             schema,
             label: 'Test title',
             uischema: {
@@ -58,10 +60,13 @@ describe('ButtonInput', () => {
 
     beforeEach(async () => {
         props = getProps(defaultOptions);
-        wrapper = await mountJsonFormsComponent(ButtonInput, props);
+        vi.useFakeTimers();
+        const comp = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+        wrapper = comp.wrapper;
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         vi.clearAllMocks();
     });
 
@@ -91,7 +96,7 @@ describe('ButtonInput', () => {
             const emptyUischemaOptions = {};
     
             props = getProps(emptyUischemaOptions);
-            wrapper = await mountJsonFormsComponent(ButtonInput, props);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             expect(wrapper.find('.button-input-text').text()).toBe('Invoke action');
             wrapper.vm.isLoading = true;
             await wrapper.vm.$nextTick();
@@ -116,7 +121,7 @@ describe('ButtonInput', () => {
         it('does not render label if showTitle is set to false', async () => {
             const hideTitleUischemaOptions = { showTitleAndDescription: false };
             props = getProps(hideTitleUischemaOptions);
-            wrapper = await mountJsonFormsComponent(ButtonInput, props);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             expect(wrapper.findComponent(Label).exists()).toBeFalsy();
         });
     });
@@ -124,10 +129,14 @@ describe('ButtonInput', () => {
     describe('actions', () => {
         it('invokes action on click', async () => {
             wrapper.vm.jsonDataService.data = vi.fn();
+            const currentSettings = { foo: 'bar' };
+            await wrapper.setData({
+                currentSettings
+            });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
             expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
                 method: 'invokeActionHandler',
-                options: [uischema.options.actionHandler]
+                options: [uischema.options.actionHandler, 'click', currentSettings]
             });
         });
 
@@ -147,7 +156,9 @@ describe('ButtonInput', () => {
                 wrapper.vm.control.data = dataSuccess.result;
             });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            vi.runAllTimers();
             expect(wrapper.vm.hasData).toBeTruthy();
+            await wrapper.vm.$nextTick();
             expect(wrapper.findComponent(FunctionButton).find('button').attributes().class).contains('disabled');
         });
     
@@ -155,12 +166,13 @@ describe('ButtonInput', () => {
             const isMultipleUseUischemaOptions = { isMultipleUse: true };
     
             props = getProps(isMultipleUseUischemaOptions);
-            wrapper = await mountJsonFormsComponent(ButtonInput, props);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             wrapper.vm.jsonDataService.data = vi.fn(() => dataSuccess);
             wrapper.vm.handleChange = vi.fn(() => {
                 wrapper.vm.control.data = dataSuccess.result;
             });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            vi.runAllTimers();
             expect(wrapper.vm.hasData).toBeTruthy();
             expect(wrapper.findComponent(FunctionButton).find('button').attributes().class).not.contains('disabled');
         });
@@ -172,6 +184,7 @@ describe('ButtonInput', () => {
             }));
             wrapper.vm.handleChange = vi.fn();
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            vi.runAllTimers();
             expect(wrapper.vm.handleChange).toHaveBeenCalledWith('test', 'token');
         });
 
@@ -179,7 +192,7 @@ describe('ButtonInput', () => {
             const isCancelableUischemaOptions = { isCancelable: false };
     
             props = getProps(isCancelableUischemaOptions);
-            wrapper = await mountJsonFormsComponent(ButtonInput, props);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             wrapper.vm.isLoading = true;
             await wrapper.vm.$nextTick();
             expect(wrapper.findComponent(FunctionButton).find('button').attributes().class).contains('disabled');
@@ -198,11 +211,98 @@ describe('ButtonInput', () => {
             const noErrorUischema = { displayErrorMessage: false };
     
             props = getProps(noErrorUischema);
-            wrapper = await mountJsonFormsComponent(ButtonInput, props);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             wrapper.vm.errorMessage = 'some error';
             await wrapper.vm.$nextTick();
             expect(wrapper.find('.button-wrapper').exists()).toBeTruthy();
             expect(wrapper.find('.button-wrapper').text()).not.contains('Error');
+        });
+    });
+
+
+    describe('dependencies to other settings', () => {
+        let settingsChangeCallback, wrapper;
+
+        beforeEach(() => {
+            const props = getProps({ isCancelable: true });
+            const comp = mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+            wrapper = comp.wrapper;
+            settingsChangeCallback = comp.callbacks[0];
+            wrapper.vm.cancel = vi.fn();
+            wrapper.vm.handleChange = vi.fn();
+        });
+
+        it('registers watcher', () => {
+            expect(settingsChangeCallback).toBeDefined();
+        });
+
+        it('unpacks new data to current settings', () => {
+            settingsChangeCallback({ model: { foo: 1 } }, { model: { foo: 2, bar: 1 } });
+            expect(wrapper.vm.currentSettings).toStrictEqual({ foo: 2, bar: 1 });
+        });
+
+        it('cancels the current request and unsets data', async () => {
+            await wrapper.setData({ isLoading: true });
+            const control = wrapper.vm.control;
+            await wrapper.setProps({ control: {
+                ...control,
+                data: 'nonEmptyData'
+            } });
+            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            expect(wrapper.vm.cancel).toHaveBeenCalled();
+            vi.runAllTimers();
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, null);
+        });
+
+        it('does not cancel the request if not isLoading ', async () => {
+            await wrapper.setProps({ control: {
+                ...wrapper.vm.control,
+                data: 'nonEmptyData'
+            } });
+            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            expect(wrapper.vm.cancel).not.toHaveBeenCalled();
+        });
+
+        it('does not cancel the request or unset data if no data', async () => {
+            await wrapper.setData({ isLoading: true });
+            const control = wrapper.vm.control;
+            await wrapper.setProps({ control: {
+                ...control
+            } });
+            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            expect(wrapper.vm.cancel).not.toHaveBeenCalled();
+            vi.runAllTimers();
+            expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
+        });
+
+        it('does not cancel the request if not cancelable', async () => {
+            await wrapper.setData({ isLoading: true });
+            const control = wrapper.vm.control;
+            await wrapper.setProps({ control: {
+                ...control,
+                data: 'nonEmptyData',
+                uischema: {
+                    ...control.uischmea,
+                    options: {
+                        ...control.uischema.options,
+                        isCancelable: false
+                    }
+                }
+            } });
+            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            expect(wrapper.vm.cancel).not.toHaveBeenCalled();
+        });
+
+        it('does not cancel the request or unset data if no change', async () => {
+            await wrapper.setData({ isLoading: true });
+            const control = wrapper.vm.control;
+            await wrapper.setProps({ control: {
+                ...control,
+                data: 'nonEmptyData'
+            } });
+            settingsChangeCallback({ foo: 1, [path]: 1 }, { foo: 1, [path]: 2 });
+            expect(wrapper.vm.cancel).not.toHaveBeenCalled();
+            expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
         });
     });
 });

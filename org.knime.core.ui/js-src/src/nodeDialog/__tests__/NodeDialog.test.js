@@ -182,4 +182,26 @@ describe('NodeDialog.vue', () => {
 
         expect(spy).toHaveBeenCalledWith();
     });
+
+    describe('registerWatcher', () => {
+        it('provides registerWatcher method', () => {
+            const wrapper = shallowMount(NodeDialog, getOptions());
+            // this.registerWatcher is undefined in the test setup, so we just check for the key.
+            expect(Object.getOwnPropertyNames(wrapper.vm.$options.provide())).toContain('registerWatcher');
+        });
+
+
+        it('calls registered callbacks on data update', async () => {
+            const wrapper = shallowMount(NodeDialog, getOptions());
+            await flushPromises();
+            const callbacks = [vi.fn(), vi.fn(), vi.fn()];
+            callbacks.forEach(c => {
+                wrapper.vm.registerWatcher(c);
+            });
+            const jsonformsStub = wrapper.getComponent(JsonForms);
+            const data = { ...dialogInitialData.data, yAxisScale: 'NEW_VALUE' };
+            jsonformsStub.vm.$emit('change', { data });
+            callbacks.forEach(c => expect(c).toHaveBeenCalledWith(dialogInitialData.data, data));
+        });
+    });
 });

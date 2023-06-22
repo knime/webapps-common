@@ -46,57 +46,37 @@
  * History
  *   Jun 19, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.action;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
  *
  * @author Paul Bärnreuther
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
-class CancelableActionHandlerTest {
+class SynchronousActionHandlerTest {
 
     @Test
-    void testCancelableActionHandler() {
-        final ActionHandler<String> actionHandler = new CancelableActionHandler<String>() {
+    void testSynchoronousActionHandler() throws InterruptedException, ExecutionException {
+        final DialogDataServiceHandler<String, Void> syncActionHandler = new SynchronousActionHandler<String, Void>() {
 
             @Override
-            protected Future<ActionHandlerResult<String>> invoke() {
-                return new CompletableFuture<>();
+            public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState, final Void noSettings) {
+                return DialogDataServiceHandlerResult.succeed(buttonState);
             }
         };
-        final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE);
-        assertTrue(result.isCancelled());
+        final var payload = "myMode";
+        final var result = syncActionHandler.invoke(payload, null).get();
+
+        assertThat(result.result()).isEqualTo(payload);
+
     }
-
-    @Test
-    void testCancelableActionHandlerNotCanceledIfOverwritten() {
-        final ActionHandler<String> actionHandler = new CancelableActionHandler<String>() {
-
-            @Override
-            protected Future<ActionHandlerResult<String>> invoke() {
-                return new CompletableFuture<>();
-            }
-
-            @Override
-            protected void cancel() {
-                return;
-            }
-        };
-        final var result = actionHandler.invoke(null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE);
-        assertFalse(result.isCancelled());
-    }
-
 }

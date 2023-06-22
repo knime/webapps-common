@@ -46,7 +46,7 @@
  * History
  *   Jun 15, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog;
+package org.knime.core.webui.node.dialog.defaultdialog.dataService;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
@@ -63,8 +63,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,16 +76,19 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
 
-    private Map<String, ActionHandler<?>> m_handlers = new HashMap<>();
+    private Map<String, DialogDataServiceHandler<?, ?>> m_handlers = new HashMap<>();
 
-    DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses) {
+    /**
+     * @param settingsClasses
+     */
+    public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses) {
         final var handlerClasses = getActionHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
         handlerClasses.forEach(handler -> m_handlers.put(handler.getName(), createInstance(handler)));
     }
 
-    private static Collection<Class<? extends ActionHandler<?>>> getActionHandlers(final Collection<Class<?>> settings,
+    private static Collection<Class<? extends DialogDataServiceHandler<?, ?>>> getActionHandlers(final Collection<Class<?>> settings,
         final ObjectMapper mapper) {
-        final Collection<Class<? extends ActionHandler<?>>> actionHandlerClasses = new HashSet<>();
+        final Collection<Class<? extends DialogDataServiceHandler<?, ?>>> actionHandlerClasses = new HashSet<>();
         final Consumer<Field> addActionHandlerClass = getAddActionHandlerClassCallback(actionHandlerClasses);
         settings.forEach(settingsClass -> {
             final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
@@ -97,7 +98,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     private static Consumer<Field>
-        getAddActionHandlerClassCallback(final Collection<Class<? extends ActionHandler<?>>> actionHandlerClasses) {
+        getAddActionHandlerClassCallback(final Collection<Class<? extends DialogDataServiceHandler<?, ?>>> actionHandlerClasses) {
         return field -> {
             final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
             if (buttonWidget == null) {
@@ -114,26 +115,34 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     private static boolean isValidReturnType(final PropertyWriter field,
-        final Class<? extends ActionHandler<?>> actionHandlerClass) {
-        final var returnType = GenericTypeFinderUtil.getNthGenericType(actionHandlerClass, ActionHandler.class, 0);
+        final Class<? extends DialogDataServiceHandler<?, ?>> actionHandlerClass) {
+        final var returnType = GenericTypeFinderUtil.getNthGenericType(actionHandlerClass, DialogDataServiceHandler.class, 0);
         final var fieldType = field.getType().getRawClass();
         return fieldType.isAssignableFrom(returnType);
 
     }
 
     @Override
-    public ActionHandlerResult<?> invokeActionHandler(final String handlerClass, final String buttonState)
+    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass, final String buttonState)
         throws ExecutionException, InterruptedException {
-        final ActionHandler<?> handler = m_handlers.get(handlerClass);
+        return invokeActionHandler(handlerClass, buttonState, null);
+    }
+
+    @Override
+    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass, final String buttonState, final Object objectSettings)
+        throws ExecutionException, InterruptedException {
+        final DialogDataServiceHandler<?, ?> handler = m_handlers.get(handlerClass);
         if (handler == null) {
             throw new IllegalArgumentException(String
                 .format("No action handler found for class %s. Most likely an implementation error.", handlerClass));
         }
+        final var settingsType = GenericTypeFinderUtil.getNthGenericType(handler.getClass(), DialogDataServiceHandler.class, 1);
+        final var convertedSettings = JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
         try {
-            return handler.invoke(buttonState).get();
+            return handler.castAndInvoke(buttonState, convertedSettings).get();
         } catch (CancellationException ex) {
             LOGGER.info(ex);
-            return ActionHandlerResult.cancel();
+            return DialogDataServiceHandlerResult.cancel();
         }
     }
 
@@ -141,7 +150,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
      * {@inheritDoc}
      */
     @Override
-    public ActionHandlerResult<?> invokeActionHandler(final String handlerClass)
+    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass)
         throws ExecutionException, InterruptedException {
         return invokeActionHandler(handlerClass, null);
     }

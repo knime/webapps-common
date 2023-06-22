@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.commons.math3.exception.OutOfRangeException;
 
@@ -80,24 +81,53 @@ public class GenericTypeFinderUtil {
         return (Class<?>)genericTypes[index];
     }
 
-    private static Type[] getGenericTypes(final Class<?> clazz, final Class<?> genericSuperInterface) {
+    private static Type[] getGenericTypes(final Class<?> clazz, final Class<?> goalType) {
         if (clazz == null) {
             return new Type[0];
         }
-        Type[] interfaces = clazz.getGenericInterfaces();
-        for (Type inter : interfaces) {
-            final var paramType = (ParameterizedType)inter;
-            final var rawType = paramType.getRawType();
-            if (genericSuperInterface.isAssignableFrom((Class<?>)rawType)) {
-                return paramType.getActualTypeArguments();
-            }
+        final var fromInterface = getFromInterface(clazz, goalType);
+        if (fromInterface.isPresent()) {
+            return fromInterface.get();
         }
-        return getGenericTypesViaSuperclass(clazz, genericSuperInterface);
+        final var fromSuperclass = getFromSuperclass(clazz, goalType);
+        if (fromSuperclass.isPresent()) {
+            return fromSuperclass.get();
+        }
+        return repeatForSuperclass(clazz, goalType);
     }
 
-    private static Type[] getGenericTypesViaSuperclass(final Class<?> clazz, final Class<?> genericSuperInterface) {
+    private static Optional<Type[]> getFromInterface(final Class<?> clazz, final Class<?> goalType) {
+        Type[] interfaces = clazz.getGenericInterfaces();
+        for (Type inter : interfaces) {
+            final var fromInter = matchAndGetTypes(inter, goalType);
+            if (fromInter.isPresent()) {
+                return fromInter;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Optional<Type[]> getFromSuperclass(final Class<?> clazz, final Class<?> goalType) {
+        return matchAndGetTypes(clazz.getGenericSuperclass(), goalType);
+    }
+
+    /**
+     * @param goalType
+     * @return
+     */
+    private static Optional<Type[]> matchAndGetTypes(final Type type, final Class<?> goalType) {
+        if (type instanceof ParameterizedType pt) {
+            final var rawType = pt.getRawType();
+            if (((Class<?>)rawType).isAssignableFrom(goalType)) {
+                return Optional.of(pt.getActualTypeArguments());
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static Type[] repeatForSuperclass(final Class<?> clazz, final Class<?> goalType) {
         final var superClass = clazz.getSuperclass();
-        final var superClassResult = getGenericTypes(superClass, genericSuperInterface);
+        final var superClassResult = getGenericTypes(superClass, goalType);
 
         final var genericSuperClass = clazz.getGenericSuperclass();
         if (genericSuperClass instanceof ParameterizedType pt) {
@@ -112,8 +142,8 @@ public class GenericTypeFinderUtil {
      * as received from superClass.getTypeParameters() and not the actual ones), we need to replace those afterwards.
      */
     private static Type[] replaceByActualType(final Class<?> superClass, final Type[] superClassResult,
-        final ParameterizedType genericSuperclass) {
-        final var actualGenericTypesOfSuperClass = genericSuperclass.getActualTypeArguments();
+        final ParameterizedType goalType) {
+        final var actualGenericTypesOfSuperClass = goalType.getActualTypeArguments();
         final var typeParamsOfSuperClass = Arrays.asList(superClass.getTypeParameters());
         return Arrays.asList(superClassResult).stream().map(t -> {
             final var index = typeParamsOfSuperClass.indexOf(t);

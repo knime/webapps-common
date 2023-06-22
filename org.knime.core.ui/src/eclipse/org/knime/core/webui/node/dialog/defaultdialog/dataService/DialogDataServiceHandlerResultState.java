@@ -46,14 +46,14 @@
  * History
  *   Jun 16, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+package org.knime.core.webui.node.dialog.defaultdialog.dataService;
 
 /**
- * The state a {@link ActionHandlerResult} can have.
+ * The state a {@link DialogDataServiceHandlerResult} can have.
  *
  * @author Paul Bärnreuther
  */
-public enum ActionHandlerState {
+public enum DialogDataServiceHandlerResultState {
         /**
          * The invocation was succesful.
          */

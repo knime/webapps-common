@@ -15,11 +15,17 @@ export default {
         Button
     },
     inject: ['getKnimeService'],
+    provide() {
+        return {
+            registerWatcher: this.registerWatcher
+        };
+    },
     data() {
         return {
             jsonDataService: null,
             settings: null,
             originalSettingsData: null,
+            allSettingsWatcherCallbacks: [],
             renderers: Object.freeze(renderers)
         };
     },
@@ -33,7 +39,6 @@ export default {
         this.jsonDataService = new JsonDataService(this.getKnimeService());
         this.dialogService = new DialogService(this.getKnimeService());
         const settings = await this.jsonDataService.initialData();
-
         settings.schema.flowVariablesMap = await this.dialogService.getFlowVariableSettings();
         settings.schema.hasNodeView = this.dialogService.hasNodeView();
         settings.schema.showAdvancedSettings = false;
@@ -47,7 +52,17 @@ export default {
         getData() {
             return this.settings.data;
         },
+        registerWatcher(callback) {
+            this.allSettingsWatcherCallbacks.push(callback);
+        },
         onSettingsChanged(data) {
+            if (this.allSettingsWatcherCallbacks.length) {
+                const copyOfOldData = JSON.parse(JSON.stringify(this.settings.data));
+                const copyOfNewData = JSON.parse(JSON.stringify(data.data));
+                this.allSettingsWatcherCallbacks.forEach(callback => {
+                    callback(copyOfOldData, copyOfNewData);
+                });
+            }
             if (data.data) {
                 this.settings.data = data.data;
                 // TODO: UIEXT-236 Move to dialog service

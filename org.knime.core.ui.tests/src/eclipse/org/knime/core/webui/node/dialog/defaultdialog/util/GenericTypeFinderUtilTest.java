@@ -63,7 +63,7 @@ class GenericTypeFinderUtilTest {
     static interface GenericInterface<A, B, C> {
     }
 
-    static Class<?> getNthType(final Class<?> clazz, final int n) {
+    static Class<?> getNthTypeInterface(final Class<?> clazz, final int n) {
         return GenericTypeFinderUtil.getNthGenericType(clazz, GenericInterface.class, n);
     }
 
@@ -73,12 +73,12 @@ class GenericTypeFinderUtilTest {
         class SimpleImplementation implements GenericInterface<String, Integer, Boolean> {
 
         }
-        final var first = getNthType(SimpleImplementation.class, 0);
-        final var second = getNthType(SimpleImplementation.class, 1);
-        final var third = getNthType(SimpleImplementation.class, 2);
+        final var first = getNthTypeInterface(SimpleImplementation.class, 0);
+        final var second = getNthTypeInterface(SimpleImplementation.class, 1);
+        final var third = getNthTypeInterface(SimpleImplementation.class, 2);
 
-        assertThrows(OutOfRangeException.class, () -> getNthType(SimpleImplementation.class, 3));
-        assertThrows(OutOfRangeException.class, () -> getNthType(SimpleImplementation.class, -1));
+        assertThrows(OutOfRangeException.class, () -> getNthTypeInterface(SimpleImplementation.class, 3));
+        assertThrows(OutOfRangeException.class, () -> getNthTypeInterface(SimpleImplementation.class, -1));
 
         assertThat(first).isEqualTo(String.class);
         assertThat(second).isEqualTo(Integer.class);
@@ -86,7 +86,29 @@ class GenericTypeFinderUtilTest {
     }
 
     @Test
-    void testFindsGenericTypesForDescendants() {
+    void testFindsGenericTypesForCorrectInterface() {
+
+        @SuppressWarnings("unused")
+        interface GenericInterface2<A, B, C> {
+        }
+
+        interface NonGenericInterface {
+        }
+
+        class MultiImplementation implements  GenericInterface2<Long, Long, Long>, NonGenericInterface, GenericInterface<String, Integer, Boolean> {
+
+        }
+        final var first = getNthTypeInterface(MultiImplementation.class, 0);
+        final var second = getNthTypeInterface(MultiImplementation.class, 1);
+        final var third = getNthTypeInterface(MultiImplementation.class, 2);
+
+        assertThat(first).isEqualTo(String.class);
+        assertThat(second).isEqualTo(Integer.class);
+        assertThat(third).isEqualTo(Boolean.class);
+    }
+
+    @Test
+    void testFindsGenericTypesOfInterfaceForDescendants() {
 
         class Descendant1<A, B> implements GenericInterface<A, B, Boolean> {
         }
@@ -97,16 +119,66 @@ class GenericTypeFinderUtilTest {
         class Descendant4 extends Descendant3 {
         }
 
-        final var first = getNthType(Descendant4.class, 0);
-        final var second = getNthType(Descendant4.class, 1);
-        final var third = getNthType(Descendant4.class, 2);
+        final var first = getNthTypeInterface(Descendant4.class, 0);
+        final var second = getNthTypeInterface(Descendant4.class, 1);
+        final var third = getNthTypeInterface(Descendant4.class, 2);
 
         assertThat(first).isEqualTo(String.class);
         assertThat(second).isEqualTo(Integer.class);
         assertThat(third).isEqualTo(Boolean.class);
 
-        assertThat(getNthType(Descendant1.class, 2)).isEqualTo(Boolean.class);
-        assertThrows(ClassCastException.class, () -> getNthType(Descendant1.class, 1));
+        assertThat(getNthTypeInterface(Descendant1.class, 2)).isEqualTo(Boolean.class);
+        assertThrows(ClassCastException.class, () -> getNthTypeInterface(Descendant1.class, 1));
+    }
+
+    @SuppressWarnings("unused")
+    abstract class GenericSuperClass<A, B, C> {
+    }
+
+    static Class<?> getNthTypeClass(final Class<?> clazz, final int n) {
+        return GenericTypeFinderUtil.getNthGenericType(clazz, GenericSuperClass.class, n);
+    }
+
+    @Test
+    void testFindsGenericTypesOfSuperClass() {
+
+        class SimpleImplementation extends GenericSuperClass<String, Integer, Boolean> {
+
+        }
+        final var first = getNthTypeClass(SimpleImplementation.class, 0);
+        final var second = getNthTypeClass(SimpleImplementation.class, 1);
+        final var third = getNthTypeClass(SimpleImplementation.class, 2);
+
+        assertThrows(OutOfRangeException.class, () -> getNthTypeClass(SimpleImplementation.class, 3));
+        assertThrows(OutOfRangeException.class, () -> getNthTypeClass(SimpleImplementation.class, -1));
+
+        assertThat(first).isEqualTo(String.class);
+        assertThat(second).isEqualTo(Integer.class);
+        assertThat(third).isEqualTo(Boolean.class);
+    }
+
+    @Test
+    void testFindsGenericTypesOfAbstractClassDescendants() {
+
+        class Descendant1<A, B> extends GenericSuperClass<A, B, Boolean> {
+        }
+        class Descendant2<A> extends Descendant1<A, Integer> {
+        }
+        class Descendant3 extends Descendant2<String> {
+        }
+        class Descendant4 extends Descendant3 {
+        }
+
+        final var first = getNthTypeClass(Descendant4.class, 0);
+        final var second = getNthTypeClass(Descendant4.class, 1);
+        final var third = getNthTypeClass(Descendant4.class, 2);
+
+        assertThat(first).isEqualTo(String.class);
+        assertThat(second).isEqualTo(Integer.class);
+        assertThat(third).isEqualTo(Boolean.class);
+
+        assertThat(getNthTypeClass(Descendant1.class, 2)).isEqualTo(Boolean.class);
+        assertThrows(ClassCastException.class, () -> getNthTypeClass(Descendant1.class, 1));
     }
 
 }

@@ -169,7 +169,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * </tr>
  * <tr>
  * <td>Any type</td>
- * <td>-</td>
+ * <td></td>
  * <td>{@link ButtonWidget} (button with backend-side action handler)</td>
  * </tr>
  * </table>

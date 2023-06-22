@@ -58,6 +58,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.dataService.DefaultNodeDialogDataServiceImpl;
 import org.knime.core.webui.page.Page;
 
 /**

@@ -44,69 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 15, 2023 (Paul Bärnreuther): created
+ *   May 2, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler;
-
 /**
- *
- * This annotation can be applied to a field of any serializable type, in order to display a button widget which, on
- * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
- * successful response.
- *
- * @see org.knime.core.webui.node.dialog.defaultdialog.dataService
+ * THis package contains the rpc data service
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.dataService.DefaultNodeDialogDataServiceImpl} of a
+ * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
+ * between the calls from the frontend and classes extending
+ * {@link org.knime.core.webui.node.dialog.defaultdialog.dataService.DialogDataServiceHandler}. During initialization of
+ * the data service, these handlers are parsed from a collection of supplied {@link DefaultNodeSettings} and it is
+ * checked that the generic type determining the output type matches the type of an associated field in the node
+ * settings.
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface ButtonWidget {
-
-    /**
-     * @return the action handler that is to be triggered on click. A successful result should be of the same type as
-     *         the setting that is implemented.
-     */
-    Class<? extends DialogDataServiceHandler<?, ? extends DefaultNodeSettings>> actionHandler();
-
-    /**
-     * @return the initial text shown on the button that should describe the invoked action.
-     */
-    String invokeButtonText() default "";
-
-    /**
-     * @return the text that appears on the button during a request for asynchronous actions. Should indicate that the
-     *         current request will be cancelled if the button is triggered.
-     */
-    String cancelButtonText() default "";
-
-    /**
-     * @return the text that appears on a single-use button after the invoked action has succeeded.
-     */
-    String succeededButtonText() default "";
-
-    /**
-     * @return if set to true, error messages are displayed besides the button.
-     */
-    boolean displayErrorMessage() default true;
-
-    /**
-     * @return if set to true, the button can be triggered multiple times. Otherwise it will deactivate after a single
-     *         successful invocation.
-     */
-    boolean isMultipleUse() default false;
-
-    /**
-     * @return if set to true, title and description will be shown above the ButtonWidget
-     */
-    boolean showTitleAndDescription() default true;
-
-}
+package org.knime.core.webui.node.dialog.defaultdialog.dataService;
