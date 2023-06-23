@@ -57,6 +57,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousA
 
 /**
  * The handler of an action invocation specified by a {@link ButtonWidget}.
+ * TODO: Add a subinterface for buttons when this handler is also used for other cases.
  *
  * @author Paul Bärnreuther
  * @param <S> the type of the input to the invocation, i.e. the other settings, the handler is depending on.

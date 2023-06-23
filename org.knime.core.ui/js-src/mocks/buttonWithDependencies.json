@@ -42,10 +42,12 @@
             "showTitle": true
           },
           "actionHandler": "[Class name of ActionHandler]"
-        },{
+        },
+        {
           "scope": "#/properties/string",
           "type": "Control"
-        },{
+        },
+        {
           "scope": "#/properties/string2",
           "type": "Control"
         }

@@ -29,7 +29,8 @@ const ButtonInput = defineComponent({
         return {
             jsonDataService: null,
             isLoading: false,
-            errorMessage: null
+            errorMessage: null,
+            currentSettings: null
         };
     },
     computed: {
@@ -74,6 +75,7 @@ const ButtonInput = defineComponent({
     },
     methods: {
         saveResult(result) {
+            // without setTimeout, the value is not updated when triggered via onSettigsChange
             setTimeout(() => this.handleChange(this.control.path, result));
         },
         async onClick() {
