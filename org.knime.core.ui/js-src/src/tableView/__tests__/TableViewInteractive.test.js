@@ -4,12 +4,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
-import { shallowMountTableView, changeViewSetting } from './tableViewTestUtils';
-import { createStore } from 'vuex';
+import { shallowMountInteractive, changeViewSetting } from './utils/interactive';
+import TableViewDisplay from '../TableViewDisplay.vue';
 import flushPromises from 'flush-promises';
-import ImageRenderer from '../ImageRenderer.vue';
-import HTMLRenderer from '../HtmlRenderer.vue';
-import { constants as tableUIConstants } from '@knime/knime-ui-table';
+import { constants as tableUIConstants, TableUI } from '@knime/knime-ui-table';
+import specialColumns from '../utils/specialColumns';
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
@@ -21,8 +20,8 @@ vi.mock('raf-throttle', () => ({
 
 const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
 
-describe('TableView.vue', () => {
-    const emptyColumnFilterValues = [[''], [], [], [''], [''], ['']];
+describe('TableViewInteractive.vue', () => {
+    const emptyColumnFilterValues = [[''], [], [], [''], ['']];
     const emptyRenderers = new Array(4).fill(null);
 
     let context,
@@ -31,8 +30,7 @@ describe('TableView.vue', () => {
         getData,
         onInit,
         getTotalSelectedResult,
-        getCurrentRowKeysResult,
-        TableUIStub;
+        getCurrentRowKeysResult;
 
     const rowCount = 4;
     const columnCount = 4;
@@ -99,7 +97,12 @@ describe('TableView.vue', () => {
         };
 
         // eslint-disable-next-line no-magic-numbers
-        dataRequestResult = { ...initialDataMock.table, rows: initialDataMock.table.rows.slice(1, 3), columnCount: 2 };
+        dataRequestResult = {
+            ...initialDataMock.table,
+            rows: initialDataMock.table.rows.slice(1, 3),
+            columnCount: 2,
+            columnContentTypes: ['txt', 'html']
+        };
         getTotalSelectedResult = 2;
         getCurrentRowKeysResult = ['row1', 'row3'];
         getData = vi.fn();
@@ -135,43 +138,13 @@ describe('TableView.vue', () => {
             onSettingsChange: vi.fn()
         }));
 
-        const store = createStore({
-            modules: {
-                api: {
-                    getters: {
-                        uiExtResourceLocation: () => ({ resourceInfo }) => resourceInfo.baseUrl + resourceInfo.path
-                    },
-                    namespaced: true
-                }
-            }
-        });
-
-        TableUIStub = {
-            props: {
-                dataConfig: {},
-                tableConfig: {},
-                data: {},
-                currentSelection: {},
-                totalSelected: {}
-            },
-            methods: {
-                refreshScroller() {
-                    // rerenders the virtual scroller
-                }
-            },
-            template: '<div/>'
-        };
-
         context = {
             global: {
                 provide: {
                     getKnimeService: () => ({ extensionConfig: { resourceInfo: { baseUrl: 'http://localhost:8080/base.url/' } } })
                 },
-                mocks: {
-                    $store: store
-                },
                 stubs: {
-                    TableUI: TableUIStub
+                    TableViewDisplay
                 }
             }
         };
@@ -192,21 +165,23 @@ describe('TableView.vue', () => {
         vi.clearAllMocks();
     });
 
+    const findTableUI = (wrapper) => wrapper.findComponent(TableViewDisplay).findComponent(TableUI);
+
     describe('initialization and data fetching', () => {
         it('does not render the TableUI when no initialData is given', async () => {
             initialDataMock = null;
-            const wrapper = await shallowMountTableView(context);
-            expect(wrapper.findComponent(TableUIStub).exists()).toBeFalsy();
+            const wrapper = await shallowMountInteractive(context);
+            expect(findTableUI(wrapper).exists()).toBeFalsy();
         });
 
         it('fetches initialData', async () => {
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
             const dataSpy = wrapper.vm.jsonDataService.initialData;
             expect(dataSpy).toHaveBeenCalled();
         });
 
         it('requests new data and updates table view', async () => {
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
             await wrapper.vm.performRequest('getTable', [['col1', 'col2'], 0, rowCount]);
             expect(getData).toBeCalledWith({ method: 'getTable', options: [['col1', 'col2'], 0, rowCount] });
         });
@@ -220,8 +195,8 @@ describe('TableView.vue', () => {
             };
             initialDataMock.table.displayedColumns = [];
             initialDataMock.table.columnCount = 0;
-            const wrapper = await shallowMountTableView(context);
-            expect(wrapper.findComponent(TableUIStub).exists()).toBeFalsy();
+            const wrapper = await shallowMountInteractive(context);
+            expect(findTableUI(wrapper).exists()).toBeFalsy();
             expect(wrapper.find('.no-columns').exists()).toBeTruthy();
         });
 
@@ -229,8 +204,8 @@ describe('TableView.vue', () => {
             initialDataMock.settings.publishSelection = true;
             initialDataMock.settings.subscribeToSelection = true;
 
-            const wrapper = await shallowMountTableView(context);
-            const tableUI = wrapper.findComponent(TableUIStub);
+            const wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
             expect(tableUI.exists()).toBe(true);
             const { data, currentSelection, totalSelected, dataConfig, tableConfig } = tableUI.vm.$props;
             expect(data).toEqual([initialDataMock.table.rows]);
@@ -283,7 +258,7 @@ describe('TableView.vue', () => {
                 }
             });
 
-            expect(wrapper.findComponent(TableUIStub).exists()).toBe(true);
+            expect(findTableUI(wrapper).exists()).toBe(true);
             expect(tableConfig).toMatchObject({
                 showSelection: true
             });
@@ -292,8 +267,8 @@ describe('TableView.vue', () => {
         it('passes the correct dataConfig when showing rowkeys', async () => {
             initialDataMock.settings.showRowKeys = true;
             
-            const wrapper = await shallowMountTableView(context);
-            const tableUI = wrapper.findComponent(TableUIStub);
+            const wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
             expect(tableUI.exists()).toBeTruthy();
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             expect(tableUI.vm.dataConfig).toMatchObject({
@@ -310,7 +285,7 @@ describe('TableView.vue', () => {
         it('passes the correct dataConfig when showing content types', async () => {
             initialDataMock.settings.showColumnDataType = true;
             
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const newColumnConfig = [
@@ -332,7 +307,7 @@ describe('TableView.vue', () => {
                 { key: 5, header: 'col4', subHeader: 'col4TypeName', size: expectedColumnSize, hasSlotContent: true }
             ];
 
-            const tableUI = wrapper.findComponent(TableUIStub);
+            const tableUI = findTableUI(wrapper);
             expect(tableUI.exists()).toBe(true);
             expect(tableUI.vm.dataConfig).toMatchObject({
                 columnConfigs: newColumnConfig
@@ -343,9 +318,9 @@ describe('TableView.vue', () => {
             initialDataMock.settings.publishSelection = false;
             initialDataMock.settings.subscribeToSelection = false;
 
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
-            const tableUI = wrapper.findComponent(TableUIStub);
+            const tableUI = findTableUI(wrapper);
             expect(tableUI.exists()).toBe(true);
             expect(tableUI.vm.tableConfig).toMatchObject({
                 showSelection: false
@@ -353,7 +328,7 @@ describe('TableView.vue', () => {
         });
 
         it('ignores obsolete requests', async () => {
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
             const updateInternalsSpy = vi.spyOn(wrapper.vm, 'updateInternals');
             const firstReqeust = wrapper.vm.updateData({});
             const secondRequest = wrapper.vm.updateData({});
@@ -367,7 +342,7 @@ describe('TableView.vue', () => {
     
             beforeEach(async () => {
                 initialDataMock.settings.enablePagination = false;
-                wrapper = await shallowMountTableView(context);
+                wrapper = await shallowMountInteractive(context);
                 updateDataSpy = vi.spyOn(wrapper.vm, 'updateData');
             });
         
@@ -1039,7 +1014,7 @@ describe('TableView.vue', () => {
 
 
         beforeEach(async () => {
-            wrapper = await shallowMountTableView(context);
+            wrapper = await shallowMountInteractive(context);
             refreshTableSpy = vi.spyOn(wrapper.vm, 'refreshTable');
             updateDataSpy = vi.spyOn(wrapper.vm, 'updateData');
         });
@@ -1107,7 +1082,8 @@ describe('TableView.vue', () => {
                 options: [newColumns, 0, 2, [null, null, null, null, null], true, true, false]
             });
             expect(wrapper.vm.displayedColumns).toStrictEqual(initialDataMock.table.displayedColumns);
-            expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
+            expect(findTableUI(wrapper).vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
+            expect(wrapper.vm.columnContentTypes).toStrictEqual(dataRequestResult.columnContentTypes);
         });
 
         it('adds additional column indicating that columns were skipped', async () => {
@@ -1115,7 +1091,7 @@ describe('TableView.vue', () => {
             const newColumns = ['col2', 'col3'];
             dataRequestResult.columnCount = 3;
             dataRequestResult.displayedColumns = newColumns;
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
             changeViewSetting(wrapper, 'displayedColumns', { selected: newColumns });
             await flushPromises();
@@ -1127,7 +1103,7 @@ describe('TableView.vue', () => {
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const newColumnConfig = [
                 { key: 2, header: 'col2', size: expectedColumnSize, hasSlotContent: false },
-                { key: 3, header: 'col3', size: expectedColumnSize, hasSlotContent: false },
+                { key: 3, header: 'col3', size: expectedColumnSize, hasSlotContent: true },
                 {
                     filterConfig: {
                         is: '',
@@ -1137,23 +1113,24 @@ describe('TableView.vue', () => {
                     header: '(skipped remaining columns)',
                     isSortable: false,
                     key: 4,
-                    size: wrapper.vm.skippedRemainingColumnsColumnMinWidth,
+                    size: specialColumns.SKIPPED_REMAINING_COLUMNS_COLUMN.defaultSize,
                     // eslint-disable-next-line no-undefined
                     subHeader: undefined
                 }
             ];
-            expect(wrapper.vm.dataConfig).toMatchObject({
+            const tableUI = findTableUI(wrapper);
+            expect(tableUI.vm.dataConfig).toMatchObject({
                 columnConfigs: newColumnConfig
             });
-            expect(wrapper.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
-            expect(wrapper.vm.rowData[0]).toStrictEqual(
+            expect(tableUI.vm.tableConfig.pageConfig.columnCount).toBe(dataRequestResult.columnCount);
+            expect(tableUI.vm.data[0][0]).toStrictEqual(
                 ['2', 'row2', 'entry2col1', 'entry2col2', '<h1>2</h1>', 'view_x_y/datacell/hash2.png', '…']
             );
         });
 
         it('updates columnDataTypeIds on displayes columns update', async () => {
             initialDataMock.settings.showColumnDataType = true;
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const newColumns = ['col2', 'col3'];
@@ -1175,17 +1152,27 @@ describe('TableView.vue', () => {
                     size: expectedColumnSize,
                     hasSlotContent: false
                 },
-                { key: 3, header: 'col3', subHeader: 'col3TypeName', size: expectedColumnSize, hasSlotContent: false }
+                { key: 3, header: 'col3', subHeader: 'col3TypeName', size: expectedColumnSize, hasSlotContent: true }
             ];
-            expect(wrapper.vm.dataConfig).toMatchObject({
+            expect(findTableUI(wrapper).vm.dataConfig).toMatchObject({
                 columnConfigs: newColumnConfig
             });
         });
 
         describe('sort parameter update', () => {
+            let sortColumn;
+
+            beforeEach(() => {
+                const tableUI = findTableUI(wrapper);
+                sortColumn = (index) => {
+                    tableUI.vm.$emit('columnSort', index);
+                };
+            });
+
+
             it('updates the sort parameters when a sorting is active and columns are changed',
                 () => {
-                    wrapper.vm.onColumnSort(2);
+                    sortColumn(2);
                     const updateSortingParamsSpy = vi.spyOn(wrapper.vm, 'updateSortingParams');
 
                     changeViewSetting(wrapper, 'displayedColumns', { selected: ['col2', 'col3', 'col4'] });
@@ -1203,7 +1190,7 @@ describe('TableView.vue', () => {
             it('resets the sort parameters when the sorted column gets removed', () => {
                 const resetSortingSpy = vi.spyOn(wrapper.vm, 'resetSorting');
                 const updateDataSpy = vi.spyOn(wrapper.vm, 'updateData');
-                wrapper.vm.onColumnSort(2);
+                sortColumn(2);
                 changeViewSetting(wrapper, 'displayedColumns', { selected: ['col1', 'col2', 'col4'] });
                 expect(resetSortingSpy).toHaveBeenCalled();
                 expect(updateDataSpy).toHaveBeenCalledWith(expect.objectContaining({ updateDisplayedColumns: true }));
@@ -1218,7 +1205,7 @@ describe('TableView.vue', () => {
                 });
                 const resetSortingSpy = vi.spyOn(wrapper.vm, 'resetSorting');
 
-                wrapper.vm.onColumnSort(0);
+                sortColumn(0);
                 changeViewSetting(wrapper, 'showRowKeys', false);
 
                 expect(resetSortingSpy).toHaveBeenCalled();
@@ -1234,7 +1221,7 @@ describe('TableView.vue', () => {
                 ['showRowIndices', 2, 3]
             ])('enabling viewSetting %p when sorting is active leads to incrementation of sortColIndex from %p to %p',
                 (settingsKey, colSortIndex, newColSortIndex) => {
-                    wrapper.vm.onColumnSort(colSortIndex);
+                    sortColumn(colSortIndex);
                     const updateSortingParamsSpy = vi.spyOn(wrapper.vm, 'updateSortingParams');
 
                     changeViewSetting(wrapper, settingsKey, true);
@@ -1254,7 +1241,7 @@ describe('TableView.vue', () => {
                             [settingsKey]: true
                         }
                     });
-                    wrapper.vm.onColumnSort(colSortIndex);
+                    sortColumn(colSortIndex);
                     const updateSortingParamsSpy = vi.spyOn(wrapper.vm, 'updateSortingParams');
 
                     changeViewSetting(wrapper, settingsKey, false);
@@ -1266,10 +1253,14 @@ describe('TableView.vue', () => {
     });
 
     describe('sorting and pagination', () => {
-        let wrapper;
+        let wrapper, sortColumn;
 
         beforeEach(async () => {
-            wrapper = await shallowMountTableView(context);
+            wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
+            sortColumn = (colIndex) => {
+                tableUI.vm.$emit('columnSort', colIndex);
+            };
         });
 
         it('sets the correct parameters on next page and requests new data with updated parameters',
@@ -1295,13 +1286,13 @@ describe('TableView.vue', () => {
 
         it('disables sorting', async () => {
             initialDataMock.settings.enableSortingByHeader = false;
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
             const columnHeaders = wrapper.findAll('.column-header');
             columnHeaders.forEach(colHeaderWrapper => {
                 expect(colHeaderWrapper.element.classList.contains('sortable')).toBe(false);
             });
-            const { tableConfig } = wrapper.vm.$refs.tableUI.$props;
+            const { tableConfig } = findTableUI(wrapper).vm.$props;
             expect(tableConfig).toMatchObject({
                 subMenuItems: [],
                 pageConfig: {
@@ -1314,7 +1305,7 @@ describe('TableView.vue', () => {
         });
 
         it('sorts descending on any new column and requests new data with updated parameters', () => {
-            wrapper.vm.onColumnSort(0);
+            sortColumn(0);
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
@@ -1324,9 +1315,9 @@ describe('TableView.vue', () => {
         });
 
         it('sorts in the different direction when sorting the same column again', () => {
-            wrapper.vm.onColumnSort(0);
+            sortColumn(0);
 
-            wrapper.vm.onColumnSort(0);
+            sortColumn(0);
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
@@ -1334,7 +1325,7 @@ describe('TableView.vue', () => {
             });
             expect(wrapper.vm.currentPage).toBe(1);
 
-            wrapper.vm.onColumnSort(0);
+            sortColumn(0);
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
@@ -1343,7 +1334,7 @@ describe('TableView.vue', () => {
         });
 
         it('requests new sorted data with updated parameters on changing page after sorting', () => {
-            wrapper.vm.onColumnSort(0);
+            sortColumn(0);
             wrapper.vm.onPageChange(1);
 
             expect(getData).toHaveBeenNthCalledWith(2, {
@@ -1356,9 +1347,9 @@ describe('TableView.vue', () => {
 
         it('passes the correct parameters when sorting by rowKeys', async () => {
             initialDataMock.settings.showRowKeys = true;
-            const wrapper = await shallowMountTableView(context);
-
-            wrapper.vm.onColumnSort(0);
+            const wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
+            tableUI.vm.$emit('columnSort', 0);
 
             expect(getData).toHaveBeenCalledWith({
                 method: 'getFilteredAndSortedTable',
@@ -1370,7 +1361,7 @@ describe('TableView.vue', () => {
 
     describe('selection', () => {
         it('resets the selection on clearSelection', async () => {
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
             await wrapper.setData({
                 currentSelection: [false, false, true, false]
@@ -1386,7 +1377,7 @@ describe('TableView.vue', () => {
         });
 
         it('calls selectionService.onInit with correct parameters when mounting the view', async () => {
-            await shallowMountTableView(context);
+            await shallowMountInteractive(context);
 
             const { publishSelection, subscribeToSelection } = initialDataMock.settings;
             expect(onInit).toHaveBeenCalledWith(expect.any(Function), publishSelection,
@@ -1394,19 +1385,19 @@ describe('TableView.vue', () => {
         });
 
         describe('emit selection', () => {
-            let wrapper, publishOnSelectionChangeSpy, tableUI;
+            let wrapper, publishOnSelectionChangeSpy, tableViewDisplay;
 
             beforeEach(async () => {
                 initialDataMock.settings.publishSelection = true;
-                wrapper = await shallowMountTableView(context);
+                wrapper = await shallowMountInteractive(context);
                 publishOnSelectionChangeSpy = vi.spyOn(wrapper.vm.selectionService, 'publishOnSelectionChange');
-                tableUI = wrapper.findComponent(TableUIStub);
+                tableViewDisplay = findTableUI(wrapper);
             });
 
             it('calls the selection service and updates local selection on select single row',
                 async () => {
                     // select row
-                    await tableUI.vm.$emit('rowSelect', true, 1, 0, true);
+                    await tableViewDisplay.vm.$emit('rowSelect', true, 1, 0, true);
 
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('add', ['row2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, true, false, false]);
@@ -1414,7 +1405,7 @@ describe('TableView.vue', () => {
                     expect(wrapper.vm.totalSelected).toBe(1);
 
                     // unselect row
-                    await tableUI.vm.$emit('rowSelect', false, 1, 0, true);
+                    await tableViewDisplay.vm.$emit('rowSelect', false, 1, 0, true);
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('remove', ['row2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([]);
@@ -1429,7 +1420,7 @@ describe('TableView.vue', () => {
                     });
 
                     // select row
-                    await tableUI.vm.$emit('rowSelect', true, 1, 0, false);
+                    await tableViewDisplay.vm.$emit('rowSelect', true, 1, 0, false);
 
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('add', ['bottomRow2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
@@ -1437,7 +1428,7 @@ describe('TableView.vue', () => {
                     expect(wrapper.vm.totalSelected).toBe(1);
 
                     // unselect row
-                    await tableUI.vm.$emit('rowSelect', false, 1, 0, false);
+                    await tableViewDisplay.vm.$emit('rowSelect', false, 1, 0, false);
                     expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith('remove', ['bottomRow2']);
                     expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
                     expect(wrapper.vm.currentBottomSelection).toEqual([false, false]);
@@ -1452,7 +1443,7 @@ describe('TableView.vue', () => {
                             currentRowCount
                         });
 
-                        await tableUI.vm.$emit('selectAll', true);
+                        await tableViewDisplay.vm.$emit('selectAll', true);
                         await flushPromises();
 
                         expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith(
@@ -1461,7 +1452,7 @@ describe('TableView.vue', () => {
                         expect(wrapper.vm.currentSelection).toEqual([true, false, true, false]);
                         expect(wrapper.vm.totalSelected).toEqual(currentRowCount);
     
-                        await tableUI.vm.$emit('selectAll', false);
+                        await tableViewDisplay.vm.$emit('selectAll', false);
                         await flushPromises();
 
                         expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(2,
@@ -1479,7 +1470,7 @@ describe('TableView.vue', () => {
                             totalRowCount: currentRowCount
                         });
     
-                        await tableUI.vm.$emit('selectAll', true);
+                        await tableViewDisplay.vm.$emit('selectAll', true);
                         await flushPromises();
 
                         expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith(
@@ -1489,7 +1480,7 @@ describe('TableView.vue', () => {
                         expect(wrapper.vm.totalSelected).toEqual(currentRowCount);
 
     
-                        await tableUI.vm.$emit('selectAll', false);
+                        await tableViewDisplay.vm.$emit('selectAll', false);
                         await flushPromises();
 
                         expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(2,
@@ -1504,7 +1495,7 @@ describe('TableView.vue', () => {
             let wrapper, rowKey1, rowKey2;
 
             beforeEach(async () => {
-                wrapper = await shallowMountTableView(context);
+                wrapper = await shallowMountInteractive(context);
                 rowKey1 = initialDataMock.table.rows[0][1];
                 rowKey2 = initialDataMock.table.rows[1][1];
             });
@@ -1552,18 +1543,24 @@ describe('TableView.vue', () => {
     });
 
     describe('global and column search', () => {
-        let wrapper;
+        let wrapper, setColumnFilter, clearColumnFilter;
 
         beforeEach(async () => {
-            wrapper = await shallowMountTableView(context);
+            wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
+            setColumnFilter = (colIndex, filterVal) => {
+                tableUI.vm.$emit('columnFilter', colIndex, filterVal);
+            };
+            clearColumnFilter = () => {
+                tableUI.vm.$emit('clearFilter');
+            };
         });
 
-        it('requests new data on column search', () => {
+        it('requests new data on column search', async () => {
             const columnSearchTerm = 'entry1col1';
 
-            wrapper.vm.onColumnFilter(0, columnSearchTerm);
-
-            const columnFilterValues = [[''], [columnSearchTerm], [], [''], [''], ['']];
+            await setColumnFilter(0, columnSearchTerm);
+            const columnFilterValues = [[''], [columnSearchTerm], [], [''], ['']]; // row keys + 4 columns
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
                 options: [initialDataMock.table.displayedColumns,
@@ -1585,7 +1582,7 @@ describe('TableView.vue', () => {
         it('requests new data on global search', () => {
             const globalSearchTerm = 'entry1';
 
-            wrapper.vm.onSearch(globalSearchTerm);
+            findTableUI(wrapper).vm.$emit('search', globalSearchTerm);
 
             expect(getData).toBeCalledWith({
                 method: 'getFilteredAndSortedTable',
@@ -1605,11 +1602,11 @@ describe('TableView.vue', () => {
             });
         });
 
-        it('clears column filters', () => {
+        it('clears column filters', async () => {
             const columnSearchTerm = 'entry1col1';
 
-            wrapper.vm.onColumnFilter(0, columnSearchTerm);
-            wrapper.vm.onClearFilter();
+            await setColumnFilter(0, columnSearchTerm);
+            await clearColumnFilter();
 
             expect(getData).toHaveBeenNthCalledWith(2, {
                 method: 'getTable',
@@ -1619,42 +1616,28 @@ describe('TableView.vue', () => {
 
         it('clears column filters on displayed columns change', async () => {
             const columnSearchTerm = 'entry1col1';
-            wrapper.vm.onColumnFilter(0, columnSearchTerm);
+            await setColumnFilter(0, columnSearchTerm);
             const newColumns = [
                 ...initialDataMock.settings.displayedColumns.selected,
                 'missing'
             ];
-
             changeViewSetting(wrapper, 'displayedColumns', { selected: newColumns });
             await flushPromises();
-
-            expect(getData).toHaveBeenNthCalledWith(2, {
-                method: 'getFilteredAndSortedTable',
-                options: [newColumns,
-                    0,
-                    2,
-                    null,
-                    false,
-                    '',
-                    null,
-                    initialDataMock.settings.showRowKeys,
-                    [null, null, null, null, null],
-                    true,
-                    true,
-                    true,
-                    false]
-            });
-            expect(wrapper.vm.columnFilters).toStrictEqual(
-                wrapper.vm.getDefaultFilterConfigs(initialDataMock.table.displayedColumns)
+            expect(wrapper.vm.columnFiltersMap).toStrictEqual(
+                wrapper.vm.getDefaultFilterConfigsMap(initialDataMock.table.displayedColumns)
             );
         });
     });
 
     describe('column renderer selection', () => {
-        let wrapper;
+        let wrapper, setHeaderSubMenuItem;
 
         beforeEach(async () => {
-            wrapper = await shallowMountTableView(context);
+            wrapper = await shallowMountInteractive(context);
+            const tableUI = findTableUI(wrapper);
+            setHeaderSubMenuItem = (item, colIndex) => {
+                tableUI.vm.$emit('header-sub-menu-item-selection', item, colIndex);
+            };
         });
 
         it('requests new data on renderer change', () => {
@@ -1665,7 +1648,7 @@ describe('TableView.vue', () => {
             };
             expect(Object.keys(wrapper.vm.colNameSelectedRendererId).length).toBe(0);
 
-            wrapper.vm.onHeaderSubMenuItemSelection(renderer, 2);
+            setHeaderSubMenuItem(renderer, 2);
 
             expect(wrapper.vm.colNameSelectedRendererId).toEqual({ col3: 'renderer1' });
             expect(getData).toBeCalledWith({
@@ -1679,13 +1662,13 @@ describe('TableView.vue', () => {
         });
 
         it('sets the selected renderer in colNameSelectedRendererId on headerSubMenuSelectionChange', () => {
-            wrapper.vm.onHeaderSubMenuItemSelection(
+            setHeaderSubMenuItem(
                 { id: 't1r4', section: 'dataRendering', selected: false, text: 'type1renderer4' },
                 0
             );
             expect(wrapper.vm.colNameSelectedRendererId).toEqual({ col1: 't1r4' });
 
-            wrapper.vm.onHeaderSubMenuItemSelection(
+            setHeaderSubMenuItem(
                 { id: 't3r2', section: 'dataRendering', selected: false, text: 'type3renderer2' },
                 3
             );
@@ -1693,7 +1676,7 @@ describe('TableView.vue', () => {
         });
 
         it('does not update the colNameSelectedRendererId when the section is not dataRendering', () => {
-            wrapper.vm.onHeaderSubMenuItemSelection(
+            setHeaderSubMenuItem(
                 { id: 'loremId', section: 'dataSection', selected: false, text: 'lorem' },
                 2
             );
@@ -1702,7 +1685,7 @@ describe('TableView.vue', () => {
 
         it('uses settings.displayedColumns instead of displayedColumns to adjust renderers on displayedColumns change',
             () => {
-                wrapper.vm.onHeaderSubMenuItemSelection(
+                setHeaderSubMenuItem(
                     { id: 't2r1', section: 'dataRendering', selected: false, text: 'type2renderer1' },
                     2
                 );
@@ -1717,53 +1700,8 @@ describe('TableView.vue', () => {
             });
     });
 
-    describe('slot rendering', () => {
-        const getImageTableUiStubTemplate = ({ path, height, width } = {}) => `<div>
-            <slot 
-                name="cellContent-5" 
-                :data="{ cell: '${path}', height: ${height}, width: ${width} }"
-            />
-        </div>`;
-    
-
-        it('creates the correct source urls', async () => {
-            const path = 'myPathForTest';
-            const width = 80;
-            const height = 90;
-            TableUIStub.template = getImageTableUiStubTemplate({ path, height, width });
-            const wrapper = await shallowMountTableView(context);
-            const tableUI = wrapper.getComponent(TableUIStub);
-            expect(tableUI.findComponent(ImageRenderer).attributes().url).toBe('http://localhost:8080/base.url/myPathForTest');
-            expect(tableUI.findComponent(ImageRenderer).attributes().width).toBe(`${width}`);
-            expect(tableUI.findComponent(ImageRenderer).attributes().height).toBe(`${height}`);
-            expect(tableUI.findComponent(ImageRenderer).attributes().updatesize).toBeTruthy();
-        });
-
-        it('prevents size update if resizing is active', async () => {
-            TableUIStub.template = getImageTableUiStubTemplate();
-            const wrapper = await shallowMountTableView(context);
-            const tableUI = wrapper.getComponent(TableUIStub);
-            await tableUI.vm.$emit('columnResizeStart');
-            expect(tableUI.findComponent(ImageRenderer).attributes().updatesize).toBe('false');
-        });
-
-        it('creates the correct content for html', async () => {
-            const htmlIndex = 4;
-            const content = '<h1> Title </h1>';
-            TableUIStub.template = `<div>
-                <slot 
-                    name="cellContent-${htmlIndex}" 
-                    :data="{ cell: '${content}' }"
-                />
-            </div>`;
-            const wrapper = await shallowMountTableView(context);
-            const tableUI = wrapper.getComponent(TableUIStub);
-            expect(tableUI.findComponent(HTMLRenderer).attributes().content).toBe(content);
-        });
-    });
-
     describe('column resizing', () => {
-        let wrapper;
+        let wrapper, tableUI, setColumnWidth, setAllColumnsWidth;
 
         const setColumnWidthSettings = async (
             wrapper,
@@ -1786,7 +1724,14 @@ describe('TableView.vue', () => {
         const clientWidth = 1002;
 
         beforeEach(async () => {
-            wrapper = await shallowMountTableView(context);
+            wrapper = await shallowMountInteractive(context);
+            tableUI = wrapper.findComponent(TableUI);
+            setColumnWidth = async (colIndex, newSize) => {
+                await tableUI.vm.$emit('column-resize', colIndex, newSize);
+            };
+            setAllColumnsWidth = async (newSize) => {
+                await tableUI.vm.$emit('all-columns-resize', newSize);
+            };
         });
 
         // TODO UIEXT-525 lets rethink these tests
@@ -1799,7 +1744,7 @@ describe('TableView.vue', () => {
         ])('divides available width into equal sizes',
             async (settings, columnWidth) => {
                 await setColumnWidthSettings(wrapper, settings);
-                expect(wrapper.vm.columnSizes).toStrictEqual([
+                expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                     MIN_COLUMN_SIZE,
                     MIN_COLUMN_SIZE,
                     columnWidth,
@@ -1818,17 +1763,19 @@ describe('TableView.vue', () => {
             initialDataMock.table.displayedColumns = [];
             initialDataMock.table.columnCount = 0;
 
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
 
-            expect(wrapper.vm.columnSizes).toStrictEqual([]);
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([0, 0]);
         });
 
         it('correctly overrides column sizes', async () => {
             await setColumnWidthSettings(wrapper, { clientWidth });
-            wrapper.vm.onColumnResize(0, 1);
-            wrapper.vm.onColumnResize(1, 2);
-            wrapper.vm.onColumnResize(2, 1);
-            expect(wrapper.vm.columnSizes).toStrictEqual([
+            
+            
+            await setColumnWidth(0, 1);
+            await setColumnWidth(1, 2);
+            await setColumnWidth(2, 1);
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 1,
                 2,
                 1,
@@ -1840,12 +1787,13 @@ describe('TableView.vue', () => {
 
         it('correctly overrides all column sizes', async () => {
             await setColumnWidthSettings(wrapper, { clientWidth });
-            wrapper.vm.onColumnResize(0, 1); // not overwritten since this is the index column
-            wrapper.vm.onColumnResize(2, 1); // this will be overwritten
+            await setColumnWidth(0, 1); // not overwritten since this is the index column
+            await setColumnWidth(2, 1); // this will be overwritten
             const defaultSizeOverride = 30;
-            wrapper.vm.onAllColumnsResize(defaultSizeOverride);
-            wrapper.vm.onColumnResize(3, 1); // this owerwrites the default again
-            expect(wrapper.vm.columnSizes).toStrictEqual([
+            await setAllColumnsWidth(defaultSizeOverride);
+            await setColumnWidth(3, 1); // this owerwrites the default again
+
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 1,
                 MIN_COLUMN_SIZE,
                 defaultSizeOverride,
@@ -1855,9 +1803,9 @@ describe('TableView.vue', () => {
             ]);
 
             const largeDefaultSizeOverride = 1000;
-            wrapper.vm.onAllColumnsResize(largeDefaultSizeOverride);
+            await setAllColumnsWidth(largeDefaultSizeOverride);
 
-            expect(wrapper.vm.columnSizes).toStrictEqual([
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 1,
                 50,
                 largeDefaultSizeOverride,
@@ -1882,7 +1830,7 @@ describe('TableView.vue', () => {
                 disconnect: resizeObserverDisconnect
             }));
             
-            const wrapper = await shallowMountTableView(context);
+            const wrapper = await shallowMountInteractive(context);
             expect(wrapper.vm.clientWidth).toBe(0);
             expect(window.IntersectionObserver).toHaveBeenCalledTimes(1);
             expect(intersectionObserverObserve).toHaveBeenCalledTimes(1);
@@ -1907,10 +1855,11 @@ describe('TableView.vue', () => {
             expect(resizeObserverObserve).toHaveBeenCalledWith(wrapper.vm.$el);
 
             const defaultColumnSizeOverride = 123;
-            wrapper.vm.onAllColumnsResize(defaultColumnSizeOverride);
+            await wrapper.findComponent(TableUI).vm.$emit('all-columns-resize', defaultColumnSizeOverride);
             wrapper.vm.$el.getBoundingClientRect = function () {
                 return { width: 0 };
             };
+            expect(wrapper.vm.defaultColumnSizeOverride).toBe(123);
             window.dispatchEvent(new Event('resize'));
             
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
@@ -1922,7 +1871,7 @@ describe('TableView.vue', () => {
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
             expect(intersectionObserverUnobserve).toHaveBeenCalledTimes(2);
             expect(intersectionObserverUnobserve).toHaveBeenLastCalledWith(wrapper.vm.$el);
-            expect(wrapper.vm.columnSizes).toStrictEqual([
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 0,
                 0,
                 defaultColumnSizeOverride,
@@ -1938,7 +1887,8 @@ describe('TableView.vue', () => {
             window.dispatchEvent(new Event('resize'));
 
             expect(wrapper.vm.clientWidth).toBe(clientWidth);
-            expect(wrapper.vm.columnSizes).toStrictEqual([
+            await flushPromises();
+            expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 0,
                 0,
                 defaultColumnSizeOverride * 2,
@@ -1952,14 +1902,13 @@ describe('TableView.vue', () => {
         });
 
         it('sets columnResizeActive state', () => {
-            const tableUI = wrapper.findComponent(TableUIStub);
-            
-            expect(wrapper.vm.columnResizeActive.state).toBeFalsy();
+            const columnResizeActive = wrapper.findComponent(TableViewDisplay).vm.columnResizeActive;
+            expect(columnResizeActive.state).toBeFalsy();
             tableUI.vm.$emit('columnResizeStart');
-            expect(wrapper.vm.columnResizeActive.state).toBeTruthy();
+            expect(columnResizeActive.state).toBeTruthy();
 
             tableUI.vm.$emit('columnResizeEnd');
-            expect(wrapper.vm.columnResizeActive.state).toBeFalsy();
+            expect(columnResizeActive.state).toBeFalsy();
         });
     });
 });

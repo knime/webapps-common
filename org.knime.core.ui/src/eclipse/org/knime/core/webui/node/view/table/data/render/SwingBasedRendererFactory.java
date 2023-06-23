@@ -78,6 +78,7 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
 
     @Override
     public DataValueRenderer createDataValueRenderer(final DataColumnSpec colSpec, final String rendererId) {
+        // use swing-based legacy renderers as fallback
         var dataType = colSpec.getType();
         if (rendererId == null) {
             // create default renderer

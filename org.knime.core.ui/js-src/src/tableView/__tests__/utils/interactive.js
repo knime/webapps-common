@@ -1,10 +1,10 @@
-import TableView from '../TableView.vue';
+import TableViewInteractive from '../../TableViewInteractive.vue';
 import { shallowMount } from '@vue/test-utils';
 import flushPromises from 'flush-promises';
 
 
-export const shallowMountTableView = async (context) => {
-    const wrapper = shallowMount(TableView, context);
+export const shallowMountInteractive = async (context) => {
+    const wrapper = shallowMount(TableViewInteractive, context);
     await flushPromises();
     return wrapper;
 };
