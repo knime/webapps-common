@@ -110,6 +110,14 @@ export default {
               @bounds="millisecondsBound"
             />
           </Label>
+          <Label text="Disabled">
+            <TimePartInput
+              v-model="milliseconds"
+              disabled
+              type="integer"
+              :min-digits="3"
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
           Time: {{ hours }}h : {{ minutes }}m : {{ seconds }}s :
