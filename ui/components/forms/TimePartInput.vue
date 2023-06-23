@@ -54,6 +54,10 @@ export default {
       default: "",
       type: String,
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue", "bounds"],
   data() {
@@ -258,6 +262,9 @@ export default {
      * @returns {undefined}
      */
     mouseEvent(e, type) {
+      if (this.disabled) {
+        return;
+      }
       // on any mouse event, clear existing timers and intervals
       clearTimeout(this.spinnerArrowInterval);
       clearInterval(this.spinnerArrowTimeout);
@@ -293,7 +300,7 @@ export default {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div :class="['wrapper', { disabled }]">
     <input
       :id="id"
       ref="input"
@@ -304,6 +311,7 @@ export default {
       :max="max"
       :step="stepSize"
       :class="inputClassList"
+      :disabled="disabled"
       @input="onInput"
       @blur="onBlur"
       @mouseenter="toggleHover"
@@ -311,7 +319,7 @@ export default {
     />
     <span v-if="!isValid" class="invalid-marker" />
     <span
-      class="increase"
+      :class="['increase', { disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
       @mouseleave="(e) => mouseEvent(e, 'increase')"
@@ -319,7 +327,7 @@ export default {
       <ArrowIcon />
     </span>
     <span
-      class="decrease"
+      :class="['decrease', { disabled }]"
       @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
       @mouseleave="(e) => mouseEvent(e, 'decrease')"
@@ -336,6 +344,10 @@ export default {
   width: 100%;
   border: 1px solid var(--knime-stone-gray);
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   &:focus-within {
     border-color: var(--knime-masala);
   }
@@ -344,7 +356,7 @@ export default {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: inherit;
-    height: 40px;
+    height: 38px;
     line-height: normal;
     border: 0;
     margin: 0;
@@ -367,6 +379,10 @@ export default {
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */
+    }
+
+    &:disabled {
+      opacity: 0.5;
     }
 
     &.hover:not(:focus) {
@@ -401,11 +417,11 @@ export default {
     height: 20px;
     padding-left: 10px;
     padding-right: 9px;
-    cursor: pointer;
     background-color: var(--theme-time-part-input-background-color);
 
-    &:hover {
+    &:not(.disabled):hover {
       background-color: var(--theme-time-part-input-background-color-hover);
+      cursor: pointer;
     }
 
     & svg {
@@ -415,13 +431,15 @@ export default {
     }
   }
 
-  & .increase:active,
-  & .decrease:active {
-    color: var(--knime-white);
-    background-color: var(--knime-masala);
+  &:not(.disabled) {
+    & .increase:active,
+    & .decrease:active {
+      color: var(--knime-white);
+      background-color: var(--knime-masala);
 
-    & svg {
-      stroke: var(--knime-white);
+      & svg {
+        stroke: var(--knime-white);
+      }
     }
   }
 }

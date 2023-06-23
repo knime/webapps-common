@@ -79,6 +79,14 @@ export default {
               :max="new Date()"
             />
           </Label>
+          <Label text="With disabled state">
+            <DateTimeInput
+              v-model="dateBounds"
+              :show-seconds="true"
+              :show-milliseconds="true"
+              disabled
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
           <p>Default: {{ dateDefault }}</p>

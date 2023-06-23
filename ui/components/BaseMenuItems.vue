@@ -70,14 +70,7 @@ export default {
       {
         strategy: "fixed",
         placement: "right-start",
-        modifiers: [
-          {
-            name: "flip",
-            options: {
-              fallbackPlacements: ["auto-start"],
-            },
-          },
-        ],
+        modifiers: [],
       }
     );
     return {

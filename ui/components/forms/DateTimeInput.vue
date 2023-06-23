@@ -103,6 +103,10 @@ export default {
       type: String,
       default: getLocalTimeZone(),
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -321,7 +325,7 @@ export default {
 
 <template>
   <div class="date-time-input">
-    <div v-if="showDate" class="date-picker">
+    <div v-if="showDate" :class="['date-picker', { disabled }]">
       <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
@@ -345,13 +349,14 @@ export default {
               <input
                 :id="id"
                 :value="inputValue"
+                :disabled="disabled"
                 v-on="inputEvents"
                 @change="onTextInputChange($event, hidePopover)"
                 @blur="hidePopover"
               />
               <span
-                :class="['button', { active: popoverIsVisible }]"
-                @click="togglePopover"
+                :class="['button', { active: popoverIsVisible, disabled }]"
+                @click="disabled ? () => {} : togglePopover()"
               >
                 <CalendarIcon />
               </span>
@@ -369,6 +374,7 @@ export default {
         :max="23"
         :min-digits="2"
         :model-value="dateTimeHours"
+        :disabled="disabled"
         @bounds="onTimeHoursBounds"
         @update:model-value="onTimeHoursChange"
       />
@@ -380,6 +386,7 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeMinutes"
+        :disabled="disabled"
         @bounds="onTimeMinutesBounds"
         @update:model-value="onTimeMinutesChange"
       />
@@ -392,6 +399,7 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeSeconds"
+        :disabled="disabled"
         @bounds="onTimeSecondsBounds"
         @update:model-value="onTimeSecondsChange"
       />
@@ -404,6 +412,7 @@ export default {
         :max="999"
         :min-digits="3"
         :model-value="dateTimeMilliseconds"
+        :disabled="disabled"
         @bounds="onTimeMillisecondsBounds"
         @update:model-value="onTimeMillisecondsChange"
       />
@@ -448,6 +457,10 @@ export default {
   }
 
   & .date-picker {
+    &.disabled {
+      opacity: 0.5;
+    }
+
     /* v-calendar theme
        new 1.1+ theme with css-vars see https://github.com/nathanreyes/v-calendar/blob/master/src/styles/base.css */
 
@@ -463,6 +476,10 @@ export default {
 
       /* default animation is too slow */
       --popover-transition-time: 0.1s ease-in-out;
+    }
+
+    & :deep(.vc-day-content.is-disabled) {
+      opacity: 0.5;
     }
 
     & :deep(.vc-container) {
@@ -533,7 +550,7 @@ export default {
       font-size: 13px;
       font-weight: 300;
       letter-spacing: inherit;
-      height: 40px;
+      height: 38px;
       line-height: normal;
       border: 0;
       margin: 0;
@@ -548,7 +565,11 @@ export default {
         box-shadow: none; /* override default browser styling */
       }
 
-      &:hover:not(:focus) {
+      &:disabled {
+        opacity: 0.5;
+      }
+
+      &:hover:not(:focus, :disabled) {
         background-color: var(--theme-date-input-input-hover-background);
       }
     }
@@ -568,12 +589,12 @@ export default {
       position: absolute;
       z-index: 1;
       width: 32px;
-      height: 40px;
+      height: 38px;
       padding-left: 10px;
       padding-right: 9px;
-      cursor: pointer;
 
-      &:hover {
+      &:hover:not(.disabled) {
+        cursor: pointer;
         background-color: var(--theme-date-input-input-hover-background);
       }
 
@@ -582,10 +603,14 @@ export default {
         height: 100%;
         stroke-width: 1.5px;
       }
+
+      &.disabled {
+        opacity: 0.5;
+      }
     }
 
-    & .button:active,
-    & .button.active {
+    & .button:active:not(.disabled),
+    & .button.active:not(.disabled) {
       color: var(--theme-date-input-white);
       background-color: var(--theme-date-input-button-active-color);
 
