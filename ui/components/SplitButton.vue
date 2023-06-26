@@ -31,6 +31,12 @@ div {
     }
   }
 
+  & :deep(.button.primary.compact) {
+    /* best way to ensure flexible 1/4 corners also for a button in compact mode */
+    border-radius: var(--theme-button-split-border-radius) 0 0
+      var(--theme-button-split-border-radius);
+  }
+
   &:hover,
   &:focus-within {
     & :deep(.button) {
