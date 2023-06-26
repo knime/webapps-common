@@ -224,9 +224,16 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If there should be a limit on rendered Columns
      */
-    @Hidden()
+    @Hidden
     @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
+
+    /**
+     * Whether to show the table dimensions (number of rows and columns).
+     */
+    @Hidden
+    @Persist(hidden = true, optional = true)
+    public boolean m_showTableSize = true;
 
     /**
      * Create a new {@link TableViewViewSettings} with default values
