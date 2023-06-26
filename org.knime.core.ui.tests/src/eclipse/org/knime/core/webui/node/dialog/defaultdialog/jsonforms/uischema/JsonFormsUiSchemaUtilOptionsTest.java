@@ -74,6 +74,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -534,6 +535,47 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.isMultipleUse").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isFalse();
 
+    }
+
+    @Test
+    void testDateTimeWidgetDefaultOptions() {
+        class DateTimeDefaultTestSettings {
+
+            @DateTimeWidget
+            String m_dateTime;
+        }
+
+        var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("dateFormat");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("timezone");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("minimum");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("maximum");
+    }
+
+    @Test
+    void testDateTimeWidgetCustomOptions() {
+        class DateTimeDefaultTestSettings {
+
+            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, dateFormat = "dd-MM-YYYY",
+                minDate = "2023-06-12", maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
+            String m_dateTime;
+        }
+
+        var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.dateFormat").isString().isEqualTo("dd-MM-YYYY");
+        assertThatJson(response).inPath("$.elements[0].options.timezone").isString().isEqualTo("America/Dawson_Creek");
+        assertThatJson(response).inPath("$.elements[0].options.minimum").isString().isEqualTo("2023-06-12");
+        assertThatJson(response).inPath("$.elements[0].options.maximum").isString().isEqualTo("2023-06-14");
     }
 
 }

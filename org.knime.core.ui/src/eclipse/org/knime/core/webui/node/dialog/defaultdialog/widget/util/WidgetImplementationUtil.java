@@ -59,6 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -120,7 +121,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(Enum.class), RadioButtonsWidget.class), //
         new WidgetAnnotation(List.of(Enum.class), ValueSwitchWidget.class), //
         new WidgetAnnotation(ChoicesWidget.class), //
-        new WidgetAnnotation(ButtonWidget.class)
+        new WidgetAnnotation(ButtonWidget.class), //
+        new WidgetAnnotation(List.of(String.class), DateTimeWidget.class)
     };
 
     /**

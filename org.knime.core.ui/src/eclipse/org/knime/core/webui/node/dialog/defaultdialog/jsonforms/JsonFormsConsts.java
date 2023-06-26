@@ -191,6 +191,8 @@ public final class JsonFormsConsts {
             public static final String RADIO = "radio";
 
             public static final String BUTTON = "button";
+
+            public static final String DATE_TIME = "date-time";
         }
 
         /**

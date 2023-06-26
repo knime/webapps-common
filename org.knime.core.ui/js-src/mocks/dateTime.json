@@ -20,7 +20,6 @@
           "properties": {
             "date": {
               "type": "string",
-              "format": "date-time",
               "title": "Date",
               "configKeys": [
                 "date"
@@ -35,13 +34,11 @@
             },
             "dateTimeSeconds": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time Seconds",
               "description": "Example of date & time input with seconds"
             },
             "dateTimeSecondsMilliseconds": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time Seconds and Milliseconds",
               "description": "Example of date &  time input with seconds and milliseconds"
             },
@@ -53,13 +50,11 @@
             },
             "dateTimeWithMinMax": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time with min (12.06.23) and max (14.06.23)",
               "description": "Example of date & time input with a specified min and max value"
             },
             "dateTimeWithSpecialFormats": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time with special formats",
               "description": "Example of date & time input with a specified format"
             }
@@ -80,6 +75,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/date",
           "options": {
+            "format": "date-time",
             "showTime": false
           }
         },
@@ -87,6 +83,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTime",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "showSeconds": false
           }
@@ -95,6 +92,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTimeSeconds",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "showSeconds": true
           }
@@ -103,6 +101,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTimeSecondsMilliseconds",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "showSeconds": true,
             "showMilliseconds": true
@@ -112,6 +111,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTimeTimezone",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "timezone": "America/Dawson_Creek"
           }
@@ -120,6 +120,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTimeWithMinMax",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "minimum": "2023-06-12",
             "maximum": "2023-06-14"
@@ -129,6 +130,7 @@
           "type": "Control",
           "scope": "#/properties/view/properties/dateTimeWithSpecialFormats",
           "options": {
+            "format": "date-time",
             "showTime": true,
             "dateFormat": "dd-MM-YYYY"
           }

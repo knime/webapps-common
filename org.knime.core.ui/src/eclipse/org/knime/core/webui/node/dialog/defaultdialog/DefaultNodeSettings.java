@@ -73,6 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -139,7 +140,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>String</td>
  * <td>Text Input</td>
  * <td>{@link ChoicesWidget} (twin-list)<br>
- * {@link TextInputWidget}</td>
+ * {@link TextInputWidget}<br>
+ * {@link DateTimeWidget}</td>
  * </tr>
  * <tr>
  * <td>String[]</td>

@@ -73,6 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -154,6 +155,26 @@ final class UiSchemaOptionsGenerator {
             }
             if (widget.hideTitle()) {
                 control.put(TAG_LABEL, "");
+            }
+        }
+
+        if(annotatedWidgets.contains(DateTimeWidget.class)) {
+            final var dateTimeWidget = m_field.getAnnotation(DateTimeWidget.class);
+            options.put(TAG_FORMAT, Format.DATE_TIME);
+            options.put("showTime", dateTimeWidget.showTime());
+            options.put("showSeconds", dateTimeWidget.showSeconds());
+            options.put("showMilliseconds", dateTimeWidget.showMilliseconds());
+            if (!dateTimeWidget.timezone().isEmpty()) {
+                options.put("timezone", dateTimeWidget.timezone());
+            }
+            if (!dateTimeWidget.minDate().isEmpty()) {
+                options.put("minimum", dateTimeWidget.minDate());
+            }
+            if (!dateTimeWidget.timezone().isEmpty()) {
+                options.put("maximum", dateTimeWidget.maxDate());
+            }
+            if (!dateTimeWidget.dateFormat().isEmpty()) {
+                options.put("dateFormat", dateTimeWidget.dateFormat());
             }
         }
 
