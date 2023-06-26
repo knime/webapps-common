@@ -25,7 +25,6 @@ export default {
         return {
             jsonDataService: null,
             settings: null,
-            originalSettingsData: null,
             renderers: Object.freeze(renderers)
         };
     },
@@ -43,8 +42,6 @@ export default {
         settings.schema.hasNodeView = this.dialogService.hasNodeView();
         settings.schema.showAdvancedSettings = false;
         this.settings = settings;
-
-        this.originalSettingsData = JSON.stringify(this.settings?.data || {});
         this.jsonDataService.registerDataGetter(this.getData);
         this.$store.dispatch('pagebuilder/dialog/setApplySettings', { applySettings: this.applySettings });
     },
@@ -76,12 +73,6 @@ export default {
             if (data.data) {
                 this.settings.data = data.data;
                 // TODO: UIEXT-236 Move to dialog service
-                if (this.originalSettingsData === JSON.stringify(this.settings.data)) {
-                    this.$store.dispatch('pagebuilder/dialog/cleanSettings');
-                } else {
-                    this.$store.dispatch('pagebuilder/dialog/dirtySettings');
-                }
-                // TODO: UIEXT-236 Move to dialog service
                 if (!this.dirtyModelSettings) {
                     const rawSettings = cloneDeep(this.settings);
                     this.jsonDataService.publishData(rawSettings);
@@ -89,7 +80,6 @@ export default {
             }
         },
         applySettings() {
-            this.originalSettingsData = JSON.stringify(this.settings.data);
             return this.jsonDataService.applyData();
         },
         async applySettingsCloseDialog() {

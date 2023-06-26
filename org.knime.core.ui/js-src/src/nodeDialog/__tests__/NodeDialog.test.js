@@ -11,12 +11,10 @@ import flushPromises from 'flush-promises';
 window.closeCEFWindow = () => {};
 
 describe('NodeDialog.vue', () => {
-    const getOptions = ({ setApplySettingsMock, dirtySettingsMock, cleanSettingsMock } = {}) => {
+    const getOptions = ({ setApplySettingsMock } = {}) => {
         const dialogStoreOptions = {
             actions: {
-                setApplySettings: setApplySettingsMock || vi.fn(),
-                dirtySettings: dirtySettingsMock || vi.fn(),
-                cleanSettings: cleanSettingsMock || vi.fn()
+                setApplySettings: setApplySettingsMock || vi.fn()
             },
             namespaced: true
         };
@@ -81,12 +79,10 @@ describe('NodeDialog.vue', () => {
     });
 
     describe('onSettingsChanged', () => {
-        let wrapper, onSettingsChangedSpy, publishDataSpy, jsonformsStub, dirtySettingsMock, cleanSettingsMock;
+        let wrapper, onSettingsChangedSpy, publishDataSpy, jsonformsStub;
 
         beforeEach(async () => {
-            dirtySettingsMock = vi.fn();
-            cleanSettingsMock = vi.fn();
-            wrapper = shallowMount(NodeDialog, getOptions({ dirtySettingsMock, cleanSettingsMock }));
+            wrapper = shallowMount(NodeDialog, getOptions());
             onSettingsChangedSpy = vi.spyOn(wrapper.vm, 'onSettingsChanged');
             publishDataSpy = vi.spyOn(wrapper.vm.jsonDataService, 'publishData');
 
@@ -97,34 +93,20 @@ describe('NodeDialog.vue', () => {
 
         it('sets new values', () => {
             jsonformsStub.vm.$emit('change', {
-                data: { ...dialogInitialData.data, yAxisScale: 'NEW_VALUE' }
+                data: { ...dialogInitialData.data, model: { yAxisScale: 'NEW_VALUE' } }
             });
 
             expect(onSettingsChangedSpy).toHaveBeenCalledWith({
-                data: { ...dialogInitialData.data, yAxisScale: 'NEW_VALUE' }
+                data: { ...dialogInitialData.data, model: { yAxisScale: 'NEW_VALUE' } }
             });
 
             const expectedData = {
                 ...dialogInitialData.data,
-                yAxisScale: 'NEW_VALUE'
+                model: { yAxisScale: 'NEW_VALUE' }
             };
 
             expect(wrapper.vm.settings.data).toStrictEqual(expectedData);
             expect(publishDataSpy).toHaveBeenCalledWith({ ...dialogInitialData, data: expectedData });
-            expect(dirtySettingsMock).toHaveBeenCalledTimes(1);
-        });
-
-        it('cleans settings if new data match original data', () => {
-            const payload = { data: dialogInitialData.data };
-            jsonformsStub.vm.$emit('change', payload);
-
-            expect(onSettingsChangedSpy).toHaveBeenCalledWith(payload);
-
-            expect(wrapper.vm.settings.data).toStrictEqual(dialogInitialData.data);
-            expect(wrapper.vm.originalSettingsData).toStrictEqual(JSON.stringify(dialogInitialData.data));
-            expect(publishDataSpy).toHaveBeenCalledWith(wrapper.vm.settings);
-            expect(cleanSettingsMock).toHaveBeenCalledTimes(1);
-            expect(dirtySettingsMock).toHaveBeenCalledTimes(0);
         });
 
         it('does not set new value if data is not provided', () => {
@@ -134,7 +116,6 @@ describe('NodeDialog.vue', () => {
                 ...dialogInitialData.data
             });
             expect(publishDataSpy).not.toHaveBeenCalled();
-            expect(dirtySettingsMock).toHaveBeenCalledTimes(0);
         });
     });
 
