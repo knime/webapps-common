@@ -48,13 +48,16 @@
  */
 package org.knime.core.webui.node.port;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.data.DataServiceProvider;
@@ -73,7 +76,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
 
     private static PortViewManager instance;
 
-    private static final Map<PortType, PortViews> m_portViews = new HashMap<>();
+    private static final Map<Class<?>, PortViews> m_portViews = new HashMap<>();
 
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
@@ -89,7 +92,22 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      */
     public static void registerPortViews(final PortType portType, final List<PortViewDescriptor> viewDescriptors,
         final List<Integer> configuredIndices, final List<Integer> executedIndices) {
-        m_portViews.put(portType, new PortViews(viewDescriptors, configuredIndices, executedIndices));
+        registerPortViews(portType.getPortObjectClass(), viewDescriptors, configuredIndices, executedIndices);
+    }
+
+    /**
+     * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
+     *
+     * @param portObjectClass The given port type.
+     * @param viewDescriptors The views to associate with this port type.
+     * @param configuredIndices Indices into {@code viewDescriptors} of views that are to be displayed when the node is
+     *            in "configured" state.
+     * @param executedIndices Indices into {@code viewDescriptors} of views that are to be displayed when the node is in
+     *            "executed" state.
+     */
+    public static void registerPortViews(final Class<?> portObjectClass, final List<PortViewDescriptor> viewDescriptors,
+        final List<Integer> configuredIndices, final List<Integer> executedIndices) {
+        m_portViews.put(portObjectClass, new PortViews(viewDescriptors, configuredIndices, executedIndices));
     }
 
     /**
@@ -111,7 +129,7 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      *         any
      */
     public static Optional<PortViewDescriptor> getPortViewDescriptor(final PortType portType, final int viewIdx) {
-        return Optional.of(m_portViews.get(portType)).map(views -> {
+        return Optional.ofNullable(getPortViews(portType)).map(views -> {
             try {
                 return views.viewDescriptors().get(viewIdx);
             } catch (IndexOutOfBoundsException e) { // NOSONAR
@@ -127,7 +145,9 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      * @return A {@link PortViews} instance, or {@code null} if none available.
      */
     public static PortViews getPortViews(final PortType portType) {
-        return m_portViews.get(portType);
+        var portObjectClass = portType.getPortObjectClass();
+        return Stream.concat(Stream.of(portObjectClass), Arrays.stream(portObjectClass.getInterfaces()))
+            .map(m_portViews::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     private PortViewManager() {
