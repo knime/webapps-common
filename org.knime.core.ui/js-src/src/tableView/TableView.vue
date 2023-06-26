@@ -149,7 +149,7 @@ export default {
         },
         tableConfig() {
             const { enableSortingByHeader, enableGlobalSearch, enableColumnSearch,
-                publishSelection, subscribeToSelection, pageSize, enablePagination } = this.settings;
+                publishSelection, subscribeToSelection, pageSize, enablePagination, showTableSize } = this.settings;
             return {
                 subMenuItems: [],
                 showSelection: publishSelection || subscribeToSelection,
@@ -159,7 +159,8 @@ export default {
                     tableSize: this.totalRowCount,
                     pageSize: enablePagination ? pageSize : this.currentRowCount,
                     currentPage: this.currentPage,
-                    columnCount: this.columnCount
+                    columnCount: this.columnCount,
+                    showTableSize
                 },
                 enableVirtualScrolling: true,
                 fitToContainer: true,
