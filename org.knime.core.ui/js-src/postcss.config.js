@@ -1,4 +1,4 @@
-const { preset } = require('webapps-common/webpack/webpack.postcss.config');
+const { preset } = require('webapps-common/config/postcss.config');
 
 module.exports = {
     plugins: {
