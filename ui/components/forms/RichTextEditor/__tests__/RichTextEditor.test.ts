@@ -4,7 +4,7 @@ import { h, shallowRef, type Slot } from "vue";
 
 import { useEditor } from "@tiptap/vue-3";
 
-import FunctionButton from "../../FunctionButton.vue";
+import FunctionButton from "../../../FunctionButton.vue";
 
 import RichTextEditor from "../RichTextEditor.vue";
 

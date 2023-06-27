@@ -3,8 +3,8 @@ import { defineComponent } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import RichTextEditor from "webapps-common/ui/components/RichTextEditor/RichTextEditor.vue";
-import code from "webapps-common/ui/components/RichTextEditor/RichTextEditor.vue?raw";
+import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor";
+import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
 
 const codeExample = `
 <RichTextEditor

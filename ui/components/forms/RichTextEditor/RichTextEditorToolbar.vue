@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Editor } from "@tiptap/vue-3";
 
-import FunctionButton from "../FunctionButton.vue";
+import FunctionButton from "../../FunctionButton.vue";
 import type { EditorTools } from "./types";
 
 interface Props {

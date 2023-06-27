@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { Editor } from "@tiptap/vue-3";
 
-import BoldIcon from "../../assets/img/icons/bold.svg";
-import ItalicIcon from "../../assets/img/icons/italic.svg";
-import UnderlineIcon from "../../assets/img/icons/underline.svg";
-import BulletListIcon from "../../assets/img/icons/unordered-list.svg";
-import OrderedListIcon from "../../assets/img/icons/ordered-list.svg";
-import AlignLeftIcon from "../../assets/img/icons/align-left.svg";
-import AlignCenterIcon from "../../assets/img/icons/align-center.svg";
-import AlignRightIcon from "../../assets/img/icons/align-right.svg";
+import BoldIcon from "../../../assets/img/icons/bold.svg";
+import ItalicIcon from "../../../assets/img/icons/italic.svg";
+import UnderlineIcon from "../../../assets/img/icons/underline.svg";
+import BulletListIcon from "../../../assets/img/icons/unordered-list.svg";
+import OrderedListIcon from "../../../assets/img/icons/ordered-list.svg";
+import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
+import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
+import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
 
 import type { EnabledTools, EditorTools, EditorToolItem } from "./types";
 
