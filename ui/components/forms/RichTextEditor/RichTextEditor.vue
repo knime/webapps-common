@@ -44,7 +44,7 @@ interface Props {
   customExtensions?: Array<AnyExtension>;
   /**
    * Whether to automatically focus the editor on mount. Also applies when the
-   * editable prop changes. True by default
+   * editable prop changes. False by default
    */
   autofocus?: boolean;
   /**
@@ -62,7 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
   enabledTools: () => ({} as EnabledToolsPropType),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
   customExtensions: () => [] as Array<AnyExtension>,
-  autofocus: true,
+  autofocus: false,
   disableEditableTransition: false,
 });
 
@@ -111,6 +111,7 @@ const extensions = [
 const editor = useEditor({
   content: props.modelValue,
   editable: props.editable,
+  autofocus: props.autofocus,
   extensions,
   onUpdate: () => emit("update:modelValue", editor.value?.getHTML() ?? ""),
 });

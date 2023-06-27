@@ -217,7 +217,7 @@ describe("RichTextEditor.vue", () => {
   });
 
   it("should focus editor on mount", async () => {
-    doMount();
+    doMount({ props: { autofocus: true } });
 
     await new Promise((r) => setTimeout(r, 0));
 
