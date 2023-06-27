@@ -27,6 +27,9 @@ const registerTool = (toolName: keyof EnabledTools, tool: EditorToolItem) => {
   return props.enabledTools[toolName] ? [tool] : [];
 };
 
+const isListActive = () =>
+  props.editor.isActive("orderedList") || props.editor.isActive("bulletList");
+
 const editorTools: EditorTools = [
   ...registerTool("bold", {
     id: "bold",
@@ -80,6 +83,7 @@ const editorTools: EditorTools = [
     hotkey: ["Ctrl", "Shift", "L"],
     active: () => props.editor.isActive({ textAlign: "left" }),
     onClick: () => props.editor.chain().focus().setTextAlign("left").run(),
+    disabled: () => isListActive(),
   }),
 
   ...registerTool("textAlign", {
@@ -89,6 +93,7 @@ const editorTools: EditorTools = [
     hotkey: ["Ctrl", "Shift", "E"],
     active: () => props.editor.isActive({ textAlign: "center" }),
     onClick: () => props.editor.chain().focus().setTextAlign("center").run(),
+    disabled: () => isListActive(),
   }),
 
   ...registerTool("textAlign", {
@@ -98,6 +103,7 @@ const editorTools: EditorTools = [
     hotkey: ["Ctrl", "Shift", "R"],
     active: () => props.editor.isActive({ textAlign: "right" }),
     onClick: () => props.editor.chain().focus().setTextAlign("right").run(),
+    disabled: () => isListActive(),
   }),
 ];
 </script>

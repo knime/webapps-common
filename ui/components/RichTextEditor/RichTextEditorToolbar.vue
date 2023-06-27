@@ -19,7 +19,8 @@ defineProps<Props>();
       v-for="tool of tools"
       :key="tool.id"
       class="tool"
-      :active="tool.active ? tool.active() : false"
+      :disabled="tool.disabled?.()"
+      :active="tool.active?.()"
       :title="hotkeyFormatter(tool.hotkey)"
       compact
       @click.stop="tool.onClick"

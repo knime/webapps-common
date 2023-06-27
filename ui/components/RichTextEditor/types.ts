@@ -7,6 +7,7 @@ export interface EditorToolItem {
   hotkey: Array<string>;
   onClick: () => void;
   active?: () => boolean;
+  disabled?: () => boolean;
 }
 
 export type EditorTools = Array<EditorToolItem>;

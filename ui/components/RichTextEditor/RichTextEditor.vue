@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, toRefs, useSlots, watch, nextTick } from "vue";
 import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
-import TextAlign from "@tiptap/extension-text-align";
 import UnderLine from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 
 import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { EnabledTools } from "./types";
+import { CustomTextAlign } from "./custom-text-align";
 
 type EnabledToolsPropType =
   | EnabledTools
@@ -98,8 +98,9 @@ const extensions = [
 
   ...(isToolEnabled("textAlign")
     ? [
-        TextAlign.configure({
+        CustomTextAlign.configure({
           types: ["heading", "paragraph"],
+          alignments: ["left", "right", "center"],
         }),
       ]
     : []),
