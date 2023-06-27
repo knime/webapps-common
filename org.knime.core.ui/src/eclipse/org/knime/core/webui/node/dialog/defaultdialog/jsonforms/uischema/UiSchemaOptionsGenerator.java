@@ -250,27 +250,30 @@ final class UiSchemaOptionsGenerator {
         return field -> {
             final var searchScope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path());
             final var declaringClass = field.propertyWriter().getAnnotation(DeclaringClass.class);
-            final var targetScope = findTargetScope(searchScope, declaringClass);
+            final var clazz = field.propertyWriter().getType().getRawClass();
+            final var targetScope = findTargetScope(searchScope, declaringClass, clazz);
             dependencies.add(targetScope);
         };
     }
 
-    private String findTargetScope(final String searchScope, final DeclaringClass declaringClassAnnotation) {
+    private String findTargetScope(final String searchScope, final DeclaringClass declaringClassAnnotation,
+        final Class<?> clazz) {
         final var candidates = m_fields.stream().filter(control -> {
             if (declaringClassAnnotation != null
                 && !control.field().getMember().getDeclaringClass().equals(declaringClassAnnotation.value())) {
                 return false;
             }
-            return control.scope().endsWith(searchScope);
+            boolean classEquals = control.field().getType().getRawClass().equals(clazz);
+            boolean matchesSearchPath = control.scope().endsWith(searchScope);
+            return classEquals && matchesSearchPath;
         }).map(JsonFormsControl::scope).toList();
         if (candidates.size() > 1) {
             throw new UiSchemaGenerationException(
                 String.format("Multiple settings found for path %s. Consider using @DeclaringClass to "
-                    + "disambiguate the reference", searchScope));
+                    + "disambiguate the reference.", searchScope));
         }
-        final var targetScope = candidates.stream().findFirst().orElseThrow(
-            () -> new UiSchemaGenerationException(String.format("No setting found for path %s", searchScope)));
-        return targetScope;
+        return candidates.stream().findFirst().orElseThrow(
+            () -> new UiSchemaGenerationException(String.format("No setting found for path %s.", searchScope)));
     }
 
     /**

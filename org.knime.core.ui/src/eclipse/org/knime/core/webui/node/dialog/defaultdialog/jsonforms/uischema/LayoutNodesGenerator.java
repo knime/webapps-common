@@ -79,7 +79,7 @@ final class LayoutNodesGenerator {
 
     private final SettingsCreationContext m_settingsCreationContext;
 
-    private static Collection<JsonFormsControl> m_fields;
+    private final Collection<JsonFormsControl> m_fields;
 
     static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals,
         Collection<JsonFormsControl> fields) {

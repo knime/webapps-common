@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildUiSchema;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -553,7 +554,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
         Boolean m_otherSetting1;
 
-        Boolean m_otherSetting2;
+        ColumnFilter m_otherSetting2;
 
         GroupOfSettings m_otherSetting3;
 
@@ -689,13 +690,42 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     @Test
     void testButtonWidgetWithAmbigousDependenciesUsingSpecifyingContainingClass() {
-        final var settingsClasses =
-                Map.of("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class, "bar", SecondSettings.class);
+        final var settingsClasses = new LinkedHashMap<String, Class<?>>();
+        settingsClasses.put("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
+        settingsClasses.put("bar", SecondSettings.class);
         var response =buildUiSchema(settingsClasses);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].options.dependencies[0]").isString()
             .isEqualTo("#/properties/bar/properties/otherSetting1");
+    }
+
+    class ButtonWidgetWithWrongTypeDependenciesTestSettings {
+        @ButtonWidget(actionHandler = TestActionHandlerWithWrongTypeDependencies.class)
+        String m_foo;
+
+        Boolean m_otherSetting1;
+    }
+
+    static class OtherSettingsWithWrongType {
+        String m_otherSetting1;
+    }
+
+    static class TestActionHandlerWithWrongTypeDependencies
+        extends SynchronousActionHandler<String, OtherSettingsWithWrongType> {
+
+        @Override
+        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
+            final OtherSettingsWithWrongType settings, final SettingsCreationContext context) {
+            return null;
+        }
+
+    }
+
+    @Test
+    void testThrowForButtonWidgetWithDependenciesWithConflictingTypes() {
+        assertThrows(UiSchemaGenerationException.class,
+            () -> buildTestUiSchema(ButtonWidgetWithWrongTypeDependenciesTestSettings.class));
     }
 
     @Test
