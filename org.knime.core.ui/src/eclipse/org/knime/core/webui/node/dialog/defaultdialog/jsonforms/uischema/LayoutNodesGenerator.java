@@ -53,6 +53,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_TYPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_CONTROL;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
@@ -78,7 +79,10 @@ final class LayoutNodesGenerator {
 
     private final SettingsCreationContext m_settingsCreationContext;
 
-    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals) {
+    private static Collection<JsonFormsControl> m_fields;
+
+    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals,
+        Collection<JsonFormsControl> fields) {
     }
 
     /**
@@ -91,6 +95,7 @@ final class LayoutNodesGenerator {
         final SettingsCreationContext context) {
         m_mapper = mapper;
         m_signals = layout.signals();
+        m_fields = layout.fields();
         m_rootLayoutTree = layout.layoutTreeRoot();
         m_settingsCreationContext = context;
     }
@@ -111,7 +116,7 @@ final class LayoutNodesGenerator {
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, controlElement.scope());
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext).addOptionsTo(control);
+        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext, m_fields).addOptionsTo(control);
         new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

@@ -44,59 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Jun 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.Map;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutNodesGenerator.LayoutSkeleton;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
- *
- *
- * The UiSchema generation follows these steps:
- * <ol type="1">
- * <li>Collect all {@link Layout} and {@link Signal} annotations and register all controls (see
- * {@link UiSchemaDefaultNodeSettingsTraverser})</li>
- * <li>Use order annotations (see e.g. {@link After}) and class hierarchies to determine a tree structure (see
- * {@link LayoutTree})</li>
- * <li>Generate the layout parts starting from the root and add the mapped controls (see
- * {@link LayoutNodesGenerator})</li>
- * </ol>
+ * An annotation to specify which setting exactly a setting with an attached {@link DialogDataServiceHandler} is
+ * dependent of in case the path of the field exists in more than one of the supplied {@link DefaultNodeSettings}
  *
  * @author Paul Bärnreuther
  */
-public final class JsonFormsUiSchemaUtil {
-
-    private JsonFormsUiSchemaUtil() {
-        // utility class
-    }
-
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface DeclaringClass {
     /**
-     * @param settings
-     * @param mapper
-     * @param context
-     * @return the ui schema resolved by the mapper from the given settings
+     * @return the class in which the field that the annotated field should reference lies.
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
-        final SettingsCreationContext context) {
-        final var layoutSkeleton = resolveLayout(settings, mapper);
-        return new LayoutNodesGenerator(layoutSkeleton, mapper, context).build();
-    }
-
-    private static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        final var traverser = new UiSchemaDefaultNodeSettingsTraverser(mapper);
-        final var traversalResult = traverser.traverse(settings);
-        final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
-        return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals(), traversalResult.fields());
-    }
+    Class<?> value();
 }
