@@ -177,7 +177,7 @@ export default {
     & .column-count {
       color: var(--knime-dove-gray);
       font-size: 14px;
-      font-family: Roboto Condensed;
+      font-family: "Roboto Condensed", sans-serif;
       white-space: pre;
     }
   }
@@ -192,16 +192,18 @@ export default {
 
     & .submenu {
       background-color: var(--knime-yellow);
+
       &:focus-within,
       &:hover {
         background-color: var(--knime-masala);
+
         & button svg {
           stroke: var(--knime-white);
         }
       }
     }
 
-    .description {
+    & .description {
       margin-bottom: 20px;
     }
   }
