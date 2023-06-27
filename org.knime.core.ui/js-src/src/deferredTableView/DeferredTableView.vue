@@ -48,6 +48,15 @@ export default {
         },
         columnCount() {
             return this.tableViewInitialData?.table.columnCount;
+        },
+        numDisplayedRows() {
+            if (this.tableViewInitialData) {
+                const tableRowCount = this.tableViewInitialData.table.rowCount;
+                if (tableRowCount < this.numRows) {
+                    return tableRowCount;
+                }
+            }
+            return this.numRows;
         }
     },
     mounted() {
@@ -90,7 +99,7 @@ export default {
         @item-click="(_, item) => onSubmenuItemClick(item.value, true)"
       >
         <span>
-          Rows: {{ numRows }}
+          Rows: {{ numDisplayedRows }}
           <DropdownIcon />
         </span>
       </SubMenu>
