@@ -143,7 +143,7 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .editor-wrapper {
-  width: 800px;
+  max-width: 800px;
   border: 1px solid var(--knime-masala);
 }
 
