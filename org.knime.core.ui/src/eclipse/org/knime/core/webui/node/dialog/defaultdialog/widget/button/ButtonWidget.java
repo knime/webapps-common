@@ -54,15 +54,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-
 /**
  *
  * This annotation can be applied to a field of any serializable type, in order to display a button widget which, on
  * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
  * successful response.
- *
- *
  *
  * @see org.knime.core.webui.node.dialog.defaultdialog.dataservice
  *
@@ -74,38 +70,16 @@ public @interface ButtonWidget {
 
     /**
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
-     *         the setting that is implemented. The second generic type of the {@link DialogDataSerciceHandler} controls
+     *         the setting that is implemented. The second generic type of the {@link ButtonActionHandler} controls
      *         which other settings trigger a reset of the button when they change (i.e. delete the saved value and
      *         enable the button again). See there for further information on how to use this.
      */
-    Class<? extends DialogDataServiceHandler<?, ?>> actionHandler(); //NOSONAR
-
-    /**
-     * @return the initial text shown on the button that should describe the invoked action.
-     */
-    String invokeButtonText() default "";
-
-    /**
-     * @return the text that appears on the button during a request for asynchronous actions. Should indicate that the
-     *         current request will be cancelled if the button is triggered.
-     */
-    String cancelButtonText() default "";
-
-    /**
-     * @return the text that appears on a single-use button after the invoked action has succeeded.
-     */
-    String succeededButtonText() default "";
+    Class<? extends ButtonActionHandler<?, ?, ?>> actionHandler(); //NOSONAR
 
     /**
      * @return if set to true, error messages are displayed besides the button.
      */
     boolean displayErrorMessage() default true;
-
-    /**
-     * @return if set to true, the button can be triggered multiple times. Otherwise it will deactivate after a single
-     *         successful invocation.
-     */
-    boolean isMultipleUse() default false;
 
     /**
      * @return if set to true, title and description will be shown above the ButtonWidget

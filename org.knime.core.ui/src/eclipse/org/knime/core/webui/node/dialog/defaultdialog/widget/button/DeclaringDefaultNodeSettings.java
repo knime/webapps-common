@@ -55,11 +55,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 
 /**
- * An annotation to specify which setting exactly a setting with an attached {@link DialogDataServiceHandler} is
- * dependent of in case the path of the field exists in more than one of the supplied {@link DefaultNodeSettings}
+ * An annotation to specify which setting exactly a setting with an attached {@link DependencyHandler} is dependent of
+ * in case the path of the field exists in more than one of the supplied {@link DefaultNodeSettings}
  *
  * @author Paul Bärnreuther
  */

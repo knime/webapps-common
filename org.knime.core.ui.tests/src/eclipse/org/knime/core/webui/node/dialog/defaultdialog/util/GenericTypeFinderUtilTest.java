@@ -64,7 +64,8 @@ class GenericTypeFinderUtilTest {
     static interface GenericInterface<A, B, C> {
     }
 
-    static Class<?> getNthTypeInterface(final Class<?> clazz, final int n) {
+    static Class<?> getNthTypeInterface(@SuppressWarnings("rawtypes") final Class<? extends GenericInterface> clazz,
+        final int n) {
         return GenericTypeFinderUtil.getNthGenericType(clazz, GenericInterface.class, n);
     }
 
@@ -96,7 +97,8 @@ class GenericTypeFinderUtilTest {
         interface NonGenericInterface {
         }
 
-        class MultiImplementation implements  GenericInterface2<Long, Long, Long>, NonGenericInterface, GenericInterface<String, Integer, Boolean> {
+        class MultiImplementation implements GenericInterface2<Long, Long, Long>, NonGenericInterface,
+            GenericInterface<String, Integer, Boolean> {
 
         }
         final var first = getNthTypeInterface(MultiImplementation.class, 0);
@@ -107,8 +109,6 @@ class GenericTypeFinderUtilTest {
         assertThat(second).isEqualTo(Integer.class);
         assertThat(third).isEqualTo(Boolean.class);
     }
-
-
 
     @Test
     void testFindsGenericTypesForSuperInterface() {
@@ -121,7 +121,7 @@ class GenericTypeFinderUtilTest {
         interface SubSubInterface extends SubInterface<Integer> {
         }
 
-        class DeepImplementation implements  SubSubInterface {
+        class DeepImplementation implements SubSubInterface {
         }
 
         final var first = getNthTypeInterface(DeepImplementation.class, 0);
@@ -161,7 +161,8 @@ class GenericTypeFinderUtilTest {
     abstract class GenericSuperClass<A, B, C> {
     }
 
-    static Class<?> getNthTypeClass(final Class<?> clazz, final int n) {
+    static Class<?> getNthTypeClass(@SuppressWarnings("rawtypes") final Class<? extends GenericSuperClass> clazz,
+        final int n) {
         return GenericTypeFinderUtil.getNthGenericType(clazz, GenericSuperClass.class, n);
     }
 

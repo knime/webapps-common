@@ -63,23 +63,27 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -88,9 +92,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
@@ -198,21 +204,21 @@ final class UiSchemaOptionsGenerator {
             setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
         }
 
-        if(annotatedWidgets.contains(RichTextInputWidget.class)) {
+        if (annotatedWidgets.contains(RichTextInputWidget.class)) {
             options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
         }
 
         if (annotatedWidgets.contains(ButtonWidget.class)) {
             final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);
-            options.put(TAG_ACTION_HANDLER, buttonWidget.actionHandler().getName());
+            final var handler = buttonWidget.actionHandler();
+            options.put(TAG_ACTION_HANDLER, handler.getName());
             options.put(TAG_FORMAT, Format.BUTTON);
-            options.putObject("buttonTexts").put("invoke", buttonWidget.invokeButtonText())
-                .put("cancel", buttonWidget.cancelButtonText()).put("succeeded", buttonWidget.succeededButtonText());
+
+            final var states = options.putArray("states");
+            final var handlerInstance = InstantiationUtil.createInstance(handler);
+            generateStates(states, handlerInstance);
             options.put("displayErrorMessage", buttonWidget.displayErrorMessage());
-            options.put("isMultipleUse", buttonWidget.isMultipleUse());
             options.put("showTitleAndDescription", buttonWidget.showTitleAndDescription());
-            var cancelable = CancelableActionHandler.class.isAssignableFrom(buttonWidget.actionHandler());
-            options.put("isCancelable", cancelable);
             final var dependencies = options.putArray(TAG_DEPENDENCIES);
             addDependencies(dependencies, buttonWidget.actionHandler());
         }
@@ -255,6 +261,32 @@ final class UiSchemaOptionsGenerator {
         }
     }
 
+    private static <M extends Enum<M>> void generateStates(final ArrayNode states,
+        final ButtonActionHandler<?, ?, M> handler) {
+        final var stateMachine = handler.getStateMachine();
+        getEnumFields(stateMachine).forEach(pair -> addState(pair.getFirst(), pair.getSecond(), states, handler));
+    }
+
+    private static <M extends Enum<M>> List<Pair<Field, M>> getEnumFields(final Class<M> enumClass) {
+        return Arrays.asList(enumClass.getFields()).stream().filter(Field::isEnumConstant)
+            .map(f -> new Pair<>(f, getEnumConstant(f.getName(), enumClass.getEnumConstants()))).toList();
+    }
+
+    private static <M extends Enum<M>> M getEnumConstant(final String fieldName, final M[] enumConstants) {
+        return Stream.of(enumConstants).filter(m -> m.name().equals(fieldName)).findFirst().orElseThrow();
+    }
+
+    private static <M extends Enum<M>> void addState(final Field field, final M enumConst, final ArrayNode states,
+        final ButtonActionHandler<?, ?, M> handler) {
+        final var state = states.addObject();
+        state.put("id", field.getName());
+        final var buttonState = field.getAnnotation(ButtonState.class);
+        state.put("disabled", buttonState.disabled());
+        state.put("primary", buttonState.primary());
+        state.put("nextState", buttonState.nextState());
+        state.put("text", Optional.ofNullable(handler.overrideText(enumConst)).orElse(buttonState.defaultText()));
+    }
+
     private static void disableTimeFields(final ObjectNode options) {
         selectTimeFields(options, false, false, false);
     }
@@ -276,15 +308,14 @@ final class UiSchemaOptionsGenerator {
     }
 
     private void addDependencies(final ArrayNode dependencies,
-        final Class<? extends DialogDataServiceHandler<?, ?>> actionHandler) {
-        final var dependencyClass =
-            GenericTypeFinderUtil.getNthGenericType(actionHandler, DialogDataServiceHandler.class, 1);
+        final Class<? extends DependencyHandler<?>> actionHandler) {
+        final var dependencyClass = GenericTypeFinderUtil.getFirstGenericType(actionHandler, DependencyHandler.class);
         final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, dependencyClass);
-        final Consumer<Field> addNewDependency = getAddNewDependencyCallback(dependencies);
+        final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(dependencies);
         traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
     }
 
-    private Consumer<Field> getAddNewDependencyCallback(final ArrayNode dependencies) {
+    private Consumer<TraversedField> getAddNewDependencyCallback(final ArrayNode dependencies) {
         return field -> {
             final var searchScope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path());
             final var declaringDefaultNodeSettings = field.trackedAnnotations()

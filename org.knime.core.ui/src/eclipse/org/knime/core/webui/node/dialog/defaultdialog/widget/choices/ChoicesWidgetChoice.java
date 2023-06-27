@@ -55,7 +55,11 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
  * @author Paul Bärnreuther
  */
 public record ChoicesWidgetChoice(String id, String text) {
-    static ChoicesWidgetChoice fromId(final String id) {
+    /**
+     * @param id
+     * @return a choice whose text matches the given id.
+     */
+    public static ChoicesWidgetChoice fromId(final String id) {
         return new ChoicesWidgetChoice(id, id);
     }
 }

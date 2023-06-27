@@ -44,16 +44,53 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
- */
-/**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and different handlers in the backend. During initialization of the data service,
- * these handlers are parsed from a collection of supplied {@link DefaultNodeSettings}.
- *
- * @author Paul Bärnreuther
+ *   Jun 16, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+
+import java.util.function.Function;
+
+/**
+ * The result of the invocation of an {@link DialogDataServiceHandler}
+ *
+ * @param result the result of a successful response
+ * @param state the state of the result.
+ * @param message the error message in case of a failed response.
+ * @param <R> The type of the result
+ * @author Paul Bärnreuther
+ */
+public record Result<R>(R result, ResultState state, String message) {
+
+    /**
+     * @param result the value of the successful result
+     * @return an {@link Result} with state {@link ResultState#SUCCESS}
+     */
+    public static <R> Result<R> succeed(final R result) {
+        return new Result<>(result, ResultState.SUCCESS, null);
+    }
+
+    /**
+     * @param message the supplied error message
+     * @return an {@link Result} with state {@link ResultState#FAIL}
+     */
+    public static <R> Result<R> fail(final String message) {
+        return new Result<>(null, ResultState.FAIL, message);
+    }
+
+    /**
+     * @return an {@link Result} with state {@link ResultState#CANCELED}
+     */
+    public static <R> Result<R> cancel() {
+        return new Result<>(null, ResultState.CANCELED, null);
+    }
+
+    /**
+     * @param <T> target type of the result
+     * @param mapper mapping the current result to a new one of type T
+     * @return the new {@link Result}
+     */
+    public <T> Result<T> mapResult(final Function<? super R, ? extends T> mapper) {
+        return new Result<T>(mapper.apply(result), state, message);
+
+    }
+}

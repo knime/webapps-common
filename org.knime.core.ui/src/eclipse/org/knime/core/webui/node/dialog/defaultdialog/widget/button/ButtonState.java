@@ -44,40 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 19, 2023 (Paul Bärnreuther): created
+ *   Jun 27, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.util.concurrent.ExecutionException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
 /**
+ * An interface used to defining the underlying state machine of the action handler within a {@link ButtonWidget}. It
+ * targets the enum fields of {@link ButtonActionHandler#getStateMachine}.
  *
  * @author Paul Bärnreuther
  */
-@SuppressWarnings("java:S2698") // we accept assertions without messages
-class SynchronousActionHandlerTest {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface ButtonState {
 
-    @Test
-    void testSynchoronousActionHandler() throws InterruptedException, ExecutionException {
-        final DialogDataServiceHandler<String, Void> syncActionHandler =
-            new SynchronousActionHandler<String, Void>() {
+    /**
+     * @return the text displayed on the button This can be overwritten for individual {@link ButtonActionHandler}s by
+     *         using {@link ButtonActionHandler#overrideText} {@link ButtonText}.
+     */
+    String defaultText();
 
-                @Override
-                public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
-                    final Void noSettings, final SettingsCreationContext context) {
-                    return DialogDataServiceHandlerResult.succeed(buttonState);
-                }
-            };
-        final var payload = "myMode";
-        final var result = syncActionHandler.invoke(payload, null, null).get();
+    /**
+     * @return the next button state selected immediately on click. This might also target itself. The state can be
+     *         changed a second time (to a possibly different state) again defined by the result of the invoked action
+     *         (see {@link ButtonActionHandler#invoke}).
+     */
+    String nextState() default "";
 
-        assertThat(result.result()).isEqualTo(payload);
+    /**
+     * @return whether the button is disabled in this state.
+     */
+    boolean disabled() default false;
 
-    }
+    /**
+     * @return whether the button is in primary state
+     */
+    boolean primary() default true;
+
 }

@@ -68,10 +68,20 @@ public class GenericTypeFinderUtil {
     /**
      * @param clazz
      * @param genericSuperInterface the interface of clazz from which to take the generic types from
+     * @return the class of the first generic type of clazz with respect to the super interface
+     */
+    public static <T> Class<?> getFirstGenericType(final Class<? extends T> clazz,
+        final Class<T> genericSuperInterface) {
+        return getNthGenericType(clazz, genericSuperInterface, 0);
+    }
+
+    /**
+     * @param clazz
+     * @param genericSuperInterface the interface of clazz from which to take the generic types from
      * @param index the index of the generic type
      * @return the class of the index'th generic type of clazz with respect to the super interface
      */
-    public static Class<?> getNthGenericType(final Class<?> clazz, final Class<?> genericSuperInterface,
+    public static <T> Class<?> getNthGenericType(final Class<? extends T> clazz, final Class<T> genericSuperInterface,
         final int index) {
 
         final var genericTypes = getGenericTypes(clazz, genericSuperInterface);
@@ -101,7 +111,6 @@ public class GenericTypeFinderUtil {
 
         for (Type inter : interfaces) {
             final var fromInter = matchAndGetTypes(inter, goalType);
-
 
             if (fromInter.isPresent()) {
                 return fromInter;
@@ -145,13 +154,13 @@ public class GenericTypeFinderUtil {
     private static Optional<Type[]> repeatForSuperInterface(final Type superInterface, final Class<?> goalType) {
         if (superInterface instanceof ParameterizedType pt) {
             final var rawType = pt.getRawType();
-            final var clazz = (Class<?>) rawType;
+            final var clazz = (Class<?>)rawType;
             final var result = getFromInterface(clazz, goalType);
             if (result.isPresent()) {
                 return result.map(res -> replaceByActualType(clazz, res, pt));
             }
         } else {
-            final var result = getFromInterface((Class<?>) superInterface, goalType);
+            final var result = getFromInterface((Class<?>)superInterface, goalType);
             if (result.isPresent()) {
                 return result;
             }

@@ -107,10 +107,9 @@ const DropdownInput = defineComponent({
             }
             // TODO: UIEXT-1053: Hide this behind a (better) API
             const { result, state, message } = await this.jsonDataService.data({
-                method: 'invokeActionHandler',
+                method: 'update',
                 options: [
                     this.choicesUpdateHandler,
-                    null,
                     { ...newSettings.view, ...newSettings.model }
                 ]
             });

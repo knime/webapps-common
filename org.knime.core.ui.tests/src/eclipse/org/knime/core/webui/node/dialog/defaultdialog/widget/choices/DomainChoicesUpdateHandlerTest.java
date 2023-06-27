@@ -63,7 +63,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
 
 /**
  *
@@ -98,7 +98,7 @@ class DomainChoicesUpdateHandlerTest {
 
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
-        final var response = handler.invoke(null, new ColumnNameSupplier() {
+        final var response = handler.update(new ColumnNameSupplier() {
 
             @Override
             public String columnName() {
@@ -106,7 +106,7 @@ class DomainChoicesUpdateHandlerTest {
             }
         }, createContext(colName, List.of("foo", "bar"))).get();
         assertThat(response.result()).hasSize(2);
-        assertThat(response.state()).isEqualTo(DialogDataServiceHandlerResultState.SUCCESS);
+        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
 
     }
 
@@ -117,7 +117,7 @@ class DomainChoicesUpdateHandlerTest {
 
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
-        final var response = handler.invoke(null, new ColumnNameSupplier() {
+        final var response = handler.update(new ColumnNameSupplier() {
 
             @Override
             public String columnName() {
@@ -125,7 +125,7 @@ class DomainChoicesUpdateHandlerTest {
             }
         }, createContext(colName, List.of("foo", "bar"))).get();
         assertThat(response.result()).isEmpty();
-        assertThat(response.state()).isEqualTo(DialogDataServiceHandlerResultState.SUCCESS);
+        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
 
     }
 
@@ -136,7 +136,7 @@ class DomainChoicesUpdateHandlerTest {
 
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
-        final var response = handler.invoke(null, new ColumnNameSupplier() {
+        final var response = handler.update(new ColumnNameSupplier() {
 
             @Override
             public String columnName() {
@@ -144,7 +144,7 @@ class DomainChoicesUpdateHandlerTest {
             }
         }, new SettingsCreationContext(new PortObjectSpec[]{null}, null, null)).get();
         assertThat(response.result()).isEmpty();
-        assertThat(response.state()).isEqualTo(DialogDataServiceHandlerResultState.SUCCESS);
+        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
 
     }
 
@@ -155,7 +155,7 @@ class DomainChoicesUpdateHandlerTest {
 
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
-        final var response = handler.invoke(null, new ColumnNameSupplier() {
+        final var response = handler.update(new ColumnNameSupplier() {
 
             @Override
             public String columnName() {
@@ -163,7 +163,7 @@ class DomainChoicesUpdateHandlerTest {
             }
         }, createContextFromDomain(colName, null)).get();
         assertThat(response.result()).isNull();
-        assertThat(response.state()).isEqualTo(DialogDataServiceHandlerResultState.FAIL);
+        assertThat(response.state()).isEqualTo(ResultState.FAIL);
         assertThat(response.message()).isEqualTo(
             "No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
 

@@ -44,16 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jul 6, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+
 /**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and different handlers in the backend. During initialization of the data service,
- * these handlers are parsed from a collection of supplied {@link DefaultNodeSettings}.
+ * This interface enables the {@link ButtonActionHandler} to have button states as inputs for methods called by the
+ * frontend.
  *
+ * @param <M>
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+public interface ButtonStateMachineHandler<M extends Enum<M>> {
+
+    @SuppressWarnings("javadoc")
+    default M castToState(final String stateString) {
+        return Enum.valueOf(getStateMachine(), stateString);
+    }
+
+    /**
+     * This method is used for converting String parameters from the frontend dynamically to enum values.
+     *
+     * @return the class of the state machine.
+     */
+    Class<M> getStateMachine();
+
+}

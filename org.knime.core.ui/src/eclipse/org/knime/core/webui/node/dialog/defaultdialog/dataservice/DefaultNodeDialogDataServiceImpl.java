@@ -48,31 +48,20 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
-
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandler;
 
 /**
  *
@@ -83,7 +72,9 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
 
-    private Map<String, DialogDataServiceHandler<?, ?>> m_handlers = new HashMap<>();
+    private final ButtonWidgetHandlerHolder m_buttonService;
+
+    private final ChoicesWidgetHandlerHolder m_choicesService;
 
     private final Supplier<SettingsCreationContext> m_contextProvider;
 
@@ -95,97 +86,89 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses,
         final Supplier<SettingsCreationContext> contextProvider) {
         m_contextProvider = contextProvider;
-        final var handlerClasses = getActionHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
-        handlerClasses.forEach(handler -> m_handlers.put(handler.getName(), createInstance(handler)));
-    }
-
-    private static Collection<Class<? extends DialogDataServiceHandler<?, ?>>>
-        getActionHandlers(final Collection<Class<?>> settings, final ObjectMapper mapper) {
-        final Collection<Class<? extends DialogDataServiceHandler<?, ?>>> actionHandlerClasses = new HashSet<>();
-        final Consumer<Field> addActionHandlerClass = getAddActionHandlerClassCallback(actionHandlerClasses);
-        settings.forEach(settingsClass -> {
-            final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
-            generator.traverse(addActionHandlerClass);
-        });
-        return actionHandlerClasses;
-    }
-
-    private static Consumer<Field> getAddActionHandlerClassCallback(
-        final Collection<Class<? extends DialogDataServiceHandler<?, ?>>> actionHandlerClasses) {
-        return field -> {
-            final var handlerClass = getHandlerClass(field);
-            handlerClass.ifPresent(actionHandlerClasses::add);
-        };
-    }
-
-    private static Optional<Class<? extends DialogDataServiceHandler<?, ?>>> getHandlerClass(final Field field) {
-        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
-        if (buttonWidget != null) {
-            final var actionHandlerClass = buttonWidget.actionHandler();
-            validate(field, actionHandlerClass);
-            return Optional.of(actionHandlerClass);
-        }
-        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var updateHandler = choicesWidget.choicesUpdateHandler();
-            if (updateHandler != NoopChoicesUpdateHandler.class) {
-                return Optional.of(updateHandler);
-            }
-        }
-        return Optional.empty();
-
-    }
-
-    private static void validate(final Field field,
-        final Class<? extends DialogDataServiceHandler<?, ?>> actionHandlerClass) {
-        if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
-            throw new IllegalArgumentException(
-                String.format("Return type of action handler %s is not assignable to the type of the field %s.",
-                    actionHandlerClass.getSimpleName(), field.propertyWriter().getFullName()));
-        }
-    }
-
-    private static boolean isValidReturnType(final PropertyWriter field,
-        final Class<? extends DialogDataServiceHandler<?, ?>> actionHandlerClass) {
-        final var returnType =
-            GenericTypeFinderUtil.getNthGenericType(actionHandlerClass, DialogDataServiceHandler.class, 0);
-        final var fieldType = field.getType().getRawClass();
-        return fieldType.isAssignableFrom(returnType);
-
+        m_buttonService = new ButtonWidgetHandlerHolder(settingsClasses);
+        m_choicesService = new ChoicesWidgetHandlerHolder(settingsClasses);
     }
 
     @Override
-    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass, final String buttonState)
-        throws ExecutionException, InterruptedException {
-        return invokeActionHandler(handlerClass, buttonState, null);
-    }
-
-    @Override
-    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass, final String buttonState,
+    public Result<?> invokeButtonAction(final String handlerClass, final String buttonState,
         final Object objectSettings) throws ExecutionException, InterruptedException {
-        final DialogDataServiceHandler<?, ?> handler = m_handlers.get(handlerClass);
-        if (handler == null) {
-            throw new IllegalArgumentException(String
-                .format("No action handler found for class %s. Most likely an implementation error.", handlerClass));
+        final var handler = getButtonHandler(handlerClass);
+        final var convertedSettings = convertDependencies(objectSettings, handler);
+        return resolveFuture(handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()));
+
+    }
+
+    @Override
+    public Result<?> initializeButton(final String handlerClass, final Object currentValue)
+        throws InterruptedException, ExecutionException {
+        final var handler = getButtonHandler(handlerClass);
+        final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
+        final var convertedCurrentValue = convertValue(currentValue, resultType);
+        return resolveFuture(handler.castAndInitialize(convertedCurrentValue, m_contextProvider.get()));
+    }
+
+    private ButtonActionHandler<?, ?, ?> getButtonHandler(final String handlerClass) {
+        final var buttonHandler = m_buttonService.getHandler(handlerClass);
+        if (buttonHandler != null) {
+            return buttonHandler;
         }
-        final var settingsType =
-            GenericTypeFinderUtil.getNthGenericType(handler.getClass(), DialogDataServiceHandler.class, 1);
-        final var convertedSettings = JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
+        throw new NoHandlerFoundException(handlerClass);
+    }
+
+    @Override
+    public Result<?> update(final String handlerClass, final Object objectSettings)
+        throws InterruptedException, ExecutionException {
+        final var handler = getUpdateHandler(handlerClass);
+        final var convertedSettings = convertDependencies(objectSettings, handler);
+        return resolveFuture(handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
+    }
+
+    private UpdateHandler<?, ?> getUpdateHandler(final String handlerClass) {
+        final var buttonHandler = m_buttonService.getHandler(handlerClass);
+        if (buttonHandler != null) {
+            return buttonHandler;
+        }
+        final var choicesHandler = m_choicesService.getHandler(handlerClass);
+        if (choicesHandler != null) {
+            return choicesHandler;
+        }
+        throw new NoHandlerFoundException(handlerClass);
+    }
+
+    private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {
+        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), DependencyHandler.class);
+        return convertValue(objectSettings, settingsType);
+    }
+
+    private static Object convertValue(final Object objectSettings, final Class<?> settingsType) {
+        return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
+
+    }
+
+    private static <T> Result<T>
+        resolveFuture(final Future<Result<T>> future)
+            throws InterruptedException, ExecutionException {
         try {
-            return handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()).get();
+            return future.get();
         } catch (CancellationException ex) {
             LOGGER.info(ex);
-            return DialogDataServiceHandlerResult.cancel();
+            return Result.cancel();
+        } catch (ExecutionException ex) {
+            if(ex.getCause() instanceof CancellationException) {
+                LOGGER.info(ex);
+                return Result.cancel();
+            }
+            throw ex;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DialogDataServiceHandlerResult<?> invokeActionHandler(final String handlerClass)
-        throws ExecutionException, InterruptedException {
-        return invokeActionHandler(handlerClass, null);
+    static final class NoHandlerFoundException extends IllegalArgumentException {
+        private static final long serialVersionUID = 1L;
+
+        NoHandlerFoundException(final String handlerClass) {
+            super(String.format("No handler found for class %s. Most likely an implementation error.", handlerClass));
+        }
     }
 
 }

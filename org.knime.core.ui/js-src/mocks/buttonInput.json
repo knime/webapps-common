@@ -1,69 +1,78 @@
 {
   "result": {
     "name": "Button Input Mock Dialog",
-    "data": {
-      "success_button": "result"
-    },
     "schema": {
       "type": "object",
       "properties": {
-        "no_title": {
-          "title": "no title"
+        "primary_button": {
+          "title": "Primary state",
+          "description": "Click to toggle the primary state"
         },
-        "default_button": {
-          "title": "Takes 3 seconds for login",
-          "description": "Description"
+        "disabled_button": {
+          "title": "Disabled state"
         },
-        "success_button": {
-          "title": "Success state",
-          "description": "Displays the state of the button after a successfully invoked action"
+        "no_title_button": {
+          "title": "Button without title and description (i.e. this here is ignored)",
+          "description": "Description that will not be shown."
         }
       }
     },
     "ui_schema": {
       "elements": [
         {
+          "scope": "#/properties/primary_button",
+          "type": "Control",
+          "options": {
+            "format": "button",
+            "states": [
+              {
+                "id": "first",
+                "text": "Primary",
+                "primary": true,
+                "nextState": "second"
+              },
+              {
+                "id": "second",
+                "text": "Non-Primary",
+                "primary": false,
+                "nextState": "first"
+              }
+            ],
+            "showTitleAndDescription": true,
+            "actionHandler": "[Class name of ActionHandler]"
+          }
+        },
+        {
+          "scope": "#/properties/disabled_button",
+          "type": "Control",
+          "options": {
+            "format": "button",
+            "states": [
+              {
+                "id": "first",
+                "text": "Disabled button",
+                "disabled": true,
+                "nextState": "first"
+              }
+            ],
+            "showTitleAndDescription": true,
+            "actionHandler": "[Class name of ActionHandler]"
+          }
+        },
+        {
           "scope": "#/properties/no_title",
           "type": "Control",
           "options": {
             "format": "button",
-            "invokeButtonText": "No Title",
-            "cancelButtonText": "Cancel",
-            "succeededButtonText": "Logged in",
-            "isMultipleUse": false,
-            "displayErrorMessage": true,
-            "isCancelable": true,
+            "states": [
+              {
+                "id": "first",
+                "text": "Button without title",
+                "primary": true,
+                "nextState": "first"
+              }
+            ],
             "showTitleAndDescription": false,
-            "actionHandler": "[Class name of ActionHandler]"
-          }
-        },
-        {
-          "scope": "#/properties/default_button",
-          "type": "Control",
-          "options": {
-            "format": "button",
-            "invokeButtonText": "Login",
-            "cancelButtonText": "Cancel",
-            "succeededButtonText": "Logged in",
-            "isMultipleUse": false,
-            "displayErrorMessage": true,
-            "isCancelable": true,
-            "showTitleAndDescription": true,
-            "actionHandler": "[Class name of ActionHandler]"
-          }
-        },
-        {
-          "scope": "#/properties/success_button",
-          "type": "Control",
-          "options": {
-            "format": "button",
-            "invokeButtonText": "Login",
-            "cancelButtonText": "Cancel",
-            "succeededButtonText": "Logged in",
-            "isMultipleUse": false,
-            "displayErrorMessage": true,
-            "isCancelable": true,
-            "showTitleAndDescription": true,
             "actionHandler": "[Class name of ActionHandler]"
           }
         }

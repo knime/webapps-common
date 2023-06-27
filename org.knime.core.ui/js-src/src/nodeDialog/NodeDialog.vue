@@ -78,7 +78,6 @@ export default {
             });
             if (typeof init === 'function') {
                 await init(this.settings.data);
-                this.onSettingsChanged(this.settings.data);
             }
         },
         onSettingsChanged(data) {

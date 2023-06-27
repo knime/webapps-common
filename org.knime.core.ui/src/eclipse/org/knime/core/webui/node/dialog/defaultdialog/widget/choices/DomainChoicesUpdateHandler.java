@@ -56,20 +56,19 @@ import java.util.concurrent.Future;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
 
 /**
  *
  * @author Paul Bärnreuther
  * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DialogDataServiceHandler}.
+ *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
 public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
 
     @Override
-    public Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> invoke(final String state, final S settings,
-        final SettingsCreationContext context) {
+    public Future<Result<ChoicesWidgetChoice[]>> update(final S settings, final SettingsCreationContext context) {
         final var spec = context.getDataTableSpec(0);
         if (spec.isEmpty()) {
             return getEmptyResult();
@@ -90,17 +89,16 @@ public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements
         return wrapToResult(choices);
     }
 
-    private static Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> getEmptyResult() {
+    private static Future<Result<ChoicesWidgetChoice[]>> getEmptyResult() {
         return wrapToResult(new ChoicesWidgetChoice[0]);
     }
 
-    private static Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>>
-        wrapToResult(final ChoicesWidgetChoice[] choices) {
-        return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(choices));
+    private static Future<Result<ChoicesWidgetChoice[]>> wrapToResult(final ChoicesWidgetChoice[] choices) {
+        return CompletableFuture.supplyAsync(() -> Result.succeed(choices));
     }
 
-    private static Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> wrapToError(final String message) {
-        return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.fail(message));
+    private static Future<Result<ChoicesWidgetChoice[]>> wrapToError(final String message) {
+        return CompletableFuture.supplyAsync(() -> Result.fail(message));
     }
 
     /**

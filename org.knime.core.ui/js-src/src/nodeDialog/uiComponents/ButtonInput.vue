@@ -28,42 +28,18 @@ const ButtonInput = defineComponent({
     data() {
         return {
             jsonDataService: null,
-            isLoading: false,
+            numPendingRequests: 0,
             errorMessage: null,
-            currentSettings: {}
+            currentSettings: {},
+            currentState: {}
         };
     },
     computed: {
-        hasData() {
-            return this.control.data !== null && typeof this.control.data !== 'undefined';
-        },
-        buttonText() {
-            if (this.isLoading) {
-                return this.cancelButtonText;
-            }
-            return this.hasData ? this.succeededButtonText : this.invokeButtonText;
-        },
-        isButtonDisabled() {
-            return (this.hasData && !this.isMultipleUse) ||
-                (this.isLoading && !this.isCancelable);
-        },
-        invokeButtonText() {
-            return this.control.uischema.options?.buttonTexts?.invoke ?? 'Invoke action';
-        },
-        cancelButtonText() {
-            return this.control.uischema.options?.buttonTexts?.cancel ?? 'Cancel';
-        },
-        succeededButtonText() {
-            return this.control.uischema.options?.buttonTexts?.succeeded ?? 'Success';
+        states() {
+            return this.control.uischema.options?.states ?? [];
         },
         displayErrorMessage() {
             return this.control.uischema.options?.displayErrorMessage ?? true;
-        },
-        isMultipleUse() {
-            return this.control.uischema.options?.isMultipleUse ?? false;
-        },
-        isCancelable() {
-            return this.control.uischema.options?.isCancelable ?? true;
         },
         showTitleAndDescription() {
             return this.control.uischema.options?.showTitleAndDescription ?? true;
@@ -71,54 +47,72 @@ const ButtonInput = defineComponent({
     },
     mounted() {
         const dependencies = this.control.uischema.options?.dependencies || [];
+        this.jsonDataService = new JsonDataService(this.getKnimeService());
+        this.initialize();
         this.registerWatcher({
             transformSettings: this.onSettingsChange.bind(this),
             dependencies
         });
-        this.jsonDataService = new JsonDataService(this.getKnimeService());
     },
     methods: {
-        saveResult(result) {
-            // without setTimeout, the value is not updated when triggered via onSettigsChange
-            setTimeout(() => this.handleChange(this.control.path, result));
+        async initialize() {
+            await this.performRequest({
+                method: 'initializeButton',
+                options: [this.control.data]
+            });
         },
         async onClick() {
-            this.clearError();
-            if (this.isLoading) {
-                this.cancel();
-            } else {
-                this.isLoading = true;
-                const receivedData = await this.jsonDataService.data({
-                    method: 'invokeActionHandler',
-                    options: [this.control.uischema.options.actionHandler, 'click', this.currentSettings]
-                });
-                this.isLoading = false;
-                if (receivedData?.state === 'FAIL') {
-                    this.errorMessage = receivedData.message;
-                } else if (receivedData?.state === 'SUCCESS') {
-                    this.saveResult(receivedData?.result);
-                }
-            }
-        },
-        cancel() {
-            this.jsonDataService.data({
-                method: 'invokeActionHandler',
-                options: [this.control.uischema.options.actionHandler, 'cancel']
+            const { id, nextState } = this.currentState;
+            this.setButtonState(nextState);
+            await this.performRequest({
+                method: 'invokeButtonAction',
+                options: [id, this.currentSettings]
             });
-            this.isLoading = false;
-        },
-        clearError() {
-            this.errorMessage = null;
         },
         onSettingsChange(newSettings) {
             this.currentSettings = { ...newSettings.view, ...newSettings.model };
-            if (this.hasData) {
-                if (this.isLoading && this.isCancelable) {
-                    this.cancel();
-                }
-                this.saveResult(null);
+            this.performRequest({
+                method: 'update',
+                options: [this.currentSettings]
+            });
+        },
+        async performRequest({ method, options }) {
+            this.numPendingRequests += 1;
+            const receivedData = await this.jsonDataService.data({
+                method,
+                options: [this.control.uischema.options.actionHandler, ...options]
+            });
+            this.numPendingRequests -= 1;
+            this.handleDataServiceResult(receivedData);
+        },
+        handleDataServiceResult(receivedData) {
+            const { state, message, result } = receivedData;
+            if (state !== 'CANCELED') {
+                this.setNextState(result);
             }
+            if (state === 'FAIL') {
+                this.errorMessage = message;
+            }
+        },
+        setNextState(dataServiceResult) {
+            const { settingResult, saveResult, buttonState } = dataServiceResult;
+            if (saveResult) {
+                this.saveResult(settingResult);
+            }
+            this.setButtonState(buttonState);
+        },
+        saveResult(result) {
+            // without setTimeout, the value is not updated when triggered via onSettigsChange --> TODO UIEXT-1137: use new UIEXT-1015 logic
+            setTimeout(() => this.handleChange(this.control.path, result));
+        },
+        setButtonState(newButtonStateId) {
+            this.clearError();
+            this.currentState = this.states.find(({ id }) => id === newButtonStateId);
+        },
+        clearError() {
+            this.errorMessage = null;
         }
+        
     }
 });
 export default ButtonInput;
@@ -137,14 +131,14 @@ export default ButtonInput;
     >
       <div class="button-wrapper">
         <FunctionButton
-          :disabled="isButtonDisabled"
+          :disabled="currentState.disabled"
           class="button-input"
-          :primary="!isLoading"
+          :primary="currentState.primary"
           @click="onClick"
         >
-          <div class="button-input-text">{{ buttonText }} </div>
+          <div class="button-input-text">{{ currentState.text }} </div>
         </FunctionButton>
-        <LoadingIcon v-if="isLoading" />
+        <LoadingIcon v-if="numPendingRequests > 0" />
         <span
           v-if="errorMessage && displayErrorMessage"
           class="error-message"

@@ -44,16 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
+
 /**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and different handlers in the backend. During initialization of the data service,
- * these handlers are parsed from a collection of supplied {@link DefaultNodeSettings}.
+ * The holder of all {@link ButtonWidget#actionHandler}s.
  *
  * @author Paul Bärnreuther
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+public class ButtonWidgetHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
+
+    /**
+     * @param settingsClasses
+     */
+    public ButtonWidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
+        super(settingsClasses);
+    }
+
+    @Override
+    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
+        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
+        if (buttonWidget == null) {
+            return Optional.empty();
+
+        }
+        final var actionHandlerClass = buttonWidget.actionHandler();
+        validate(field, actionHandlerClass);
+        return Optional.of(actionHandlerClass);
+
+    }
+
+    private static void validate(final TraversedField field,
+        final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
+        if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
+            throw new IllegalArgumentException(
+                String.format("Return type of action handler %s is not assignable to the type of the field %s.",
+                    actionHandlerClass.getSimpleName(), field.propertyWriter().getFullName()));
+        }
+    }
+
+    private static boolean isValidReturnType(final PropertyWriter field,
+        final Class<? extends ButtonActionHandler<?, ?, ?>> handlerClass) {
+        final var returnType = GenericTypeFinderUtil.getFirstGenericType(handlerClass, ButtonActionHandler.class);
+        final var fieldType = field.getType().getRawClass();
+        return fieldType.isAssignableFrom(returnType);
+    }
+
+}

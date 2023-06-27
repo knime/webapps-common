@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl;
 import java.util.concurrent.Future;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
@@ -67,8 +67,7 @@ public final class NoopChoicesUpdateHandler implements ChoicesUpdateHandler<Void
      * This method should never be called, since the handler should never be used.
      */
     @Override
-    public Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> invoke(final String state, final Void settings,
-        final SettingsCreationContext context) {
+    public Future<Result<ChoicesWidgetChoice[]>> update(final Void settings, final SettingsCreationContext context) {
         return null;
     }
 }

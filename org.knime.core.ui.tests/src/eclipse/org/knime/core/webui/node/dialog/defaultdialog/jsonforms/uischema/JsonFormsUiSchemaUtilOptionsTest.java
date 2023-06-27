@@ -56,8 +56,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
@@ -68,10 +66,9 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResultState;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -86,9 +83,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
  *
@@ -465,26 +460,11 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
     }
 
-    static class SynchronousTestActionHandler extends SynchronousActionHandler<String, Void> {
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState, final Void otherSettings,
-            final SettingsCreationContext context) {
-            return new DialogDataServiceHandlerResult<String>("Result", DialogDataServiceHandlerResultState.SUCCESS,
-                "message");
-        }
+    static class EmptyButtonTestSettings {
+
     }
 
-    static class CancelableTestActionHandler extends CancelableActionHandler<String, Void> {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void settings,
-            final SettingsCreationContext context) {
-            return CompletableFuture.supplyAsync(() -> null);
-
-        }
+    static class ButtonActionHandlerWithoutDependencies extends TestButtonActionHandler<EmptyButtonTestSettings> {
 
     }
 
@@ -492,64 +472,78 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testDefaultButtonWidgetOptions() {
         class ButtonWidgetDefaultTestSettings {
 
-            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class)
+            @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
             String m_foo;
         }
 
         var response = buildTestUiSchema(ButtonWidgetDefaultTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
-            .isEqualTo(SynchronousTestActionHandler.class.getName());
+            .isEqualTo(ButtonActionHandlerWithoutDependencies.class.getName());
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("button");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts").isObject();
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.invoke").isString().isEqualTo("");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.cancel").isString().isEqualTo("");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.succeeded").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options.states").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].options.displayErrorMessage").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[0].options.isMultipleUse").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isTrue();
-    }
-
-    @Test
-    void testIsCancelableButtonWidget() {
-        class ButtonWidgetIsCancelableTestSettings {
-            @ButtonWidget(actionHandler = CancelableTestActionHandler.class)
-            String m_cancelable;
-
-            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class)
-            String m_notCancelable;
-        }
-
-        var response = buildTestUiSchema(ButtonWidgetIsCancelableTestSettings.class);
-        assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
-            .isEqualTo(CancelableTestActionHandler.class.getName());
-        assertThatJson(response).inPath("$.elements[0].options.isCancelable").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[1].options.actionHandler").isString()
-            .isEqualTo(SynchronousTestActionHandler.class.getName());
-        assertThatJson(response).inPath("$.elements[1].options.isCancelable").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(0);
     }
 
     @Test
     void testButtonWidgetOptions() {
         class ButtonWidgetOptionsTestSettings {
-            @ButtonWidget(actionHandler = SynchronousTestActionHandler.class, invokeButtonText = "Invoke",
-                cancelButtonText = "Cancel", succeededButtonText = "Success", displayErrorMessage = false,
-                isMultipleUse = true, showTitleAndDescription = false)
+            @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class, displayErrorMessage = false,
+                showTitleAndDescription = false)
             String m_foo;
         }
         var response = buildTestUiSchema(ButtonWidgetOptionsTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.actionHandler").isString()
-            .isEqualTo(SynchronousTestActionHandler.class.getName());
+            .isEqualTo(ButtonActionHandlerWithoutDependencies.class.getName());
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("button");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts").isObject();
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.invoke").isString().isEqualTo("Invoke");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.cancel").isString().isEqualTo("Cancel");
-        assertThatJson(response).inPath("$.elements[0].options.buttonTexts.succeeded").isString().isEqualTo("Success");
+        assertThatJson(response).inPath("$.elements[0].options.states").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].options.displayErrorMessage").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[0].options.isMultipleUse").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(0);
+    }
 
+    @Test
+    void testButtonStates() {
+        class ButtonWidgetDefaultTestSettings {
+            @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
+            String m_foo;
+        }
+
+        var response = buildTestUiSchema(ButtonWidgetDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].options.states").isArray().hasSize(3);
+
+        assertThatJson(response).inPath("$.elements[0].options.states[0]").isObject().containsKey("id")
+            .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
+        assertThatJson(response).inPath("$.elements[0].options.states[0].id").isString()
+            .isEqualTo(TestStates.READY.toString());
+        assertThatJson(response).inPath("$.elements[0].options.states[0].disabled").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.states[0].primary").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.states[0].nextState").isString()
+            .isEqualTo(TestStates.CANCEL.toString());
+        // Test fallback to defaultText() in @ButtonState
+        assertThatJson(response).inPath("$.elements[0].options.states[0].text").isString().isEqualTo("Ready");
+
+        assertThatJson(response).inPath("$.elements[0].options.states[1]").isObject().containsKey("id")
+            .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
+        assertThatJson(response).inPath("$.elements[0].options.states[1].id").isString()
+            .isEqualTo(TestStates.CANCEL.toString());
+        assertThatJson(response).inPath("$.elements[0].options.states[1].disabled").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.states[1].primary").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[0].options.states[1].nextState").isString()
+            .isEqualTo(TestStates.READY.toString());
+        assertThatJson(response).inPath("$.elements[0].options.states[1].text").isString().isEqualTo("Cancel Text");
+
+        assertThatJson(response).inPath("$.elements[0].options.states[2]").isObject().containsKey("id")
+            .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
+        assertThatJson(response).inPath("$.elements[0].options.states[2].id").isString()
+            .isEqualTo(TestStates.DONE.toString());
+        assertThatJson(response).inPath("$.elements[0].options.states[2].disabled").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.states[2].primary").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.states[2].nextState").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options.states[2].text").isString().isEqualTo("Done Text");
     }
 
     static class GroupOfSettings implements LayoutGroup {
@@ -559,7 +553,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithDependenciesTestSettings {
-        @ButtonWidget(actionHandler = TestActionHandlerWithDependencies.class)
+        @ButtonWidget(actionHandler = ButtonActionHandlerWithDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -586,13 +580,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class TestActionHandlerWithDependencies extends SynchronousActionHandler<String, OtherSettings> {
-
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState, final OtherSettings settings,
-            final SettingsCreationContext context) {
-            return null;
-        }
+    static class ButtonActionHandlerWithDependencies extends TestButtonActionHandler<OtherSettings> {
 
     }
 
@@ -610,7 +598,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithMissingDependenciesTestSettings {
-        @ButtonWidget(actionHandler = TestActionHandlerWithMissingDependencies.class)
+        @ButtonWidget(actionHandler = ButtonActionHandlerWithMissingDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -623,14 +611,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class TestActionHandlerWithMissingDependencies
-        extends SynchronousActionHandler<String, OtherSettingsWithMissing> {
-
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
-            final OtherSettingsWithMissing settings, final SettingsCreationContext context) {
-            return null;
-        }
+    static class ButtonActionHandlerWithMissingDependencies extends TestButtonActionHandler<OtherSettingsWithMissing> {
 
     }
 
@@ -641,7 +622,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithAmbigousDependenciesTestSettings implements DefaultNodeSettings {
-        @ButtonWidget(actionHandler = TestActionHandlerWithAmbigousDependencies.class)
+        @ButtonWidget(actionHandler = ButtonActionHandlerWithAmbiguousDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -657,14 +638,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class TestActionHandlerWithAmbigousDependencies
-        extends SynchronousActionHandler<String, OtherSettingsWithAmbigous> {
-
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
-            final OtherSettingsWithAmbigous settings, final SettingsCreationContext context) {
-            return null;
-        }
+    static class ButtonActionHandlerWithAmbiguousDependencies extends TestButtonActionHandler<OtherSettingsWithAmbigous> {
 
     }
 
@@ -676,7 +650,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithDisAmbigousDependenciesTestSettings {
-        @ButtonWidget(actionHandler = TestActionHandlerWithDisAmbigousDependencies.class)
+        @ButtonWidget(actionHandler = TestButtonActionHandlerWithDisAmbiguousDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -689,14 +663,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class TestActionHandlerWithDisAmbigousDependencies
-        extends SynchronousActionHandler<String, OtherSettingsWithSpecification> {
-
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
-            final OtherSettingsWithSpecification settings, final SettingsCreationContext context) {
-            return null;
-        }
+    static class TestButtonActionHandlerWithDisAmbiguousDependencies extends TestButtonActionHandler<OtherSettingsWithSpecification> {
 
     }
 
@@ -713,7 +680,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithWrongTypeDependenciesTestSettings {
-        @ButtonWidget(actionHandler = TestActionHandlerWithWrongTypeDependencies.class)
+        @ButtonWidget(actionHandler = TestButtonActionHandlerWithWrongType.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -723,14 +690,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
         String m_otherSetting1;
     }
 
-    static class TestActionHandlerWithWrongTypeDependencies
-        extends SynchronousActionHandler<String, OtherSettingsWithWrongType> {
-
-        @Override
-        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState,
-            final OtherSettingsWithWrongType settings, final SettingsCreationContext context) {
-            return null;
-        }
+    static class TestButtonActionHandlerWithWrongType extends TestButtonActionHandler<OtherSettingsWithWrongType> {
 
     }
 
@@ -806,5 +766,6 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
     }
+
 
 }

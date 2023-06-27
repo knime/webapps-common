@@ -44,56 +44,70 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 15, 2023 (Paul Bärnreuther): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.concurrent.ExecutionException;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandler;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * This class is used to supply handlers associated to specific widgets to the data service.
  *
+ * @param <H> The type of the handler class
  * @author Paul Bärnreuther
  */
-@SuppressWarnings("java:S1452") //Allow wildcard return values
-interface DefaultNodeDialogDataService {
+public abstract class WidgetHandlerHolder<H> {
+
+    private Map<String, H> m_handlers = new HashMap<>();
+
+    WidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
+        final var handlerClasses = getHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
+        handlerClasses.forEach(handler -> m_handlers.put(handler.getName(), createInstance(handler)));
+    }
+
+    private Collection<Class<? extends H>> getHandlers(final Collection<Class<?>> settings, final ObjectMapper mapper) {
+        final Collection<Class<? extends H>> actionHandlerClasses = new HashSet<>();
+        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback(actionHandlerClasses);
+        settings.forEach(settingsClass -> {
+            final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
+            generator.traverse(addActionHandlerClass);
+        });
+        return actionHandlerClasses;
+    }
+
+    private Consumer<TraversedField>
+        getAddActionHandlerClassCallback(final Collection<Class<? extends H>> handlerClasses) {
+        return field -> {
+            final var handlerClass = getHandlerClass(field);
+            handlerClass.ifPresent(handlerClasses::add);
+        };
+    }
 
     /**
-     * This method is triggered whenever a {@link ButtonWidget} is clicked.
      *
-     * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
-     * @param buttonState the id of the current state of the button
-     * @param objectSettings the settings the button depends on
-     * @return a {@link Result}
-     * @throws ExecutionException if an error is thrown during the invocation
-     * @throws InterruptedException if the used thread is interrupted
+     * @param field any traversed field in the supplied settings
+     * @return an optional of the persent handler or an empty optional
      */
-    Result<?> invokeButtonAction(String handlerClass, String buttonState, Object objectSettings)
-        throws ExecutionException, InterruptedException;
+    abstract Optional<Class<? extends H>> getHandlerClass(final TraversedField field);
 
     /**
-     * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
-     * @param currentValue the current value of the saved settings underlying the button.
-     * @return a {@link Result}
-     * @throws InterruptedException if an error is thrown during the invocation
-     * @throws ExecutionException if the used thread is interrupted
+     * @param handlerClassName the name of the handler class
+     * @return the present hander with that class name held by this class of null.
      */
-    Result<?> initializeButton(String handlerClass, Object currentValue)
-        throws InterruptedException, ExecutionException;
-
-    /**
-     * This method is to be triggered whenever settings that a widget with an associated {@link UpdateHandler} depends
-     * on change.
-     *
-     * @param handlerClass the class name of the {@link UpdateHandler} that is to be used.
-     * @param objectSettings the settings the widget depends on.
-     * @return a {@link Result}
-     * @throws ExecutionException if an error is thrown during the invocation
-     * @throws InterruptedException if the used thread is interrupted
-     */
-    Result<?> update(String handlerClass, Object objectSettings) throws InterruptedException, ExecutionException;
-
+    H getHandler(final String handlerClassName) {
+        return m_handlers.get(handlerClassName);
+    }
 }

@@ -44,41 +44,68 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   14 Jul 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+
+import java.util.concurrent.Future;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 
 /**
- * The result of the invocation of an {@link DialogDataServiceHandler}
  *
- * @param result the result of a succesful response
- * @param state the state of the result.
- * @param message the error message in case of a failed response.
- * @param <R> The type of the result
- * @author Paul Bärnreuther
+ * @author Rupert Ettrich
  */
-public record DialogDataServiceHandlerResult<R>(R result, DialogDataServiceHandlerResultState state, String message) {
+class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestStates> {
 
-    /**
-     * @param result the value of the successful result
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#SUCCESS}
-     */
-    public static <R>  DialogDataServiceHandlerResult<R> succeed(final R result) {
-        return new DialogDataServiceHandlerResult<>(result, DialogDataServiceHandlerResultState.SUCCESS, null);
+    static enum TestStates {
+            @ButtonState(defaultText = "Ready", nextState = "CANCEL")
+            READY, //
+            @ButtonState(defaultText = "Cancel", nextState = "READY", primary = false)
+            CANCEL, //
+            @ButtonState(defaultText = "Done", disabled = true)
+            DONE;
     }
 
-    /**
-     * @param message the supplied error message
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#FAIL}
-     */
-    public static <R> DialogDataServiceHandlerResult<R> fail(final String message) {
-        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.FAIL, message);
+    @Override
+    public Class<TestStates> getStateMachine() {
+        return TestStates.class;
     }
 
-    /**
-     * @return an {@link DialogDataServiceHandlerResult} with state {@link DialogDataServiceHandlerResultState#CANCELED}
-     */
-    public static <R> DialogDataServiceHandlerResult<R> cancel() {
-        return new DialogDataServiceHandlerResult<>(null, DialogDataServiceHandlerResultState.CANCELED, null);
+    @Override
+    public String overrideText(final TestStates state) {
+        switch (state) {
+            case CANCEL:
+                return "Cancel Text";
+            case DONE:
+                return "Done Text";
+            default:
+                // READY left out intentionally to test fallback behavior
+                return null;
+        }
     }
+
+    @Override
+    public Future<Result<ButtonChange<Object, TestStates>>> update(final S settings,
+        final SettingsCreationContext context) {
+        return null;
+    }
+
+    @Override
+    public Future<Result<ButtonChange<Object, TestStates>>> initialize(final Object currentValue,
+        final SettingsCreationContext context) {
+        return null;
+    }
+
+    @Override
+    public Future<Result<ButtonChange<Object, TestStates>>> invoke(final TestStates state, final S settings,
+        final SettingsCreationContext context) {
+        return null;
+    }
+
 }

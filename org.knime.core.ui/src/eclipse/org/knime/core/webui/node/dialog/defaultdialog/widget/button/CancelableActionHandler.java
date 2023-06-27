@@ -52,47 +52,27 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
 
 /**
- * An {@link DialogDataServiceHandler} with an asynchronous invocation whose result can be retrieved and canceled.
+ * An {@link ButtonActionHandler} with an asynchronous invocation whose result can be retrieved and canceled.
  *
  * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
  *            field has to be assignable from it.
  * @param <S> the type of the settings the invocation depends on
  * @author Paul Bärnreuther
  */
-public abstract class CancelableActionHandler<R, S> implements DialogDataServiceHandler<R, S> {
+public abstract class CancelableActionHandler<R, S> implements ButtonActionHandler<R, S, States> {
 
-    static final String CANCEL_BUTTON_STATE = "cancel";
-
-    private Future<DialogDataServiceHandlerResult<R>> m_lastInvocationResult;
+    private CompletableFuture<Result<R>> m_lastInvocationResult;
 
     /**
-     * @return the result of the last invocation or null if no invocation has taken place.
+     * @return whether the button should be in a disabled ("DONE") state when the request was successful once.
      */
-    protected Future<DialogDataServiceHandlerResult<R>> getLastInvokationResult() {
-        return m_lastInvocationResult;
-    }
-
-    @Override
-    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings,
-        final SettingsCreationContext context) {
-        if (CANCEL_BUTTON_STATE.equals(buttonState)) {
-            cancel();
-            return CompletableFuture.supplyAsync(() -> null);
-        } else {
-            m_lastInvocationResult = invoke(settings, context);
-            return m_lastInvocationResult;
-        }
-    }
-
-    /**
-     * Overwrite this method to implement more complex cancellations.
-     */
-    protected void cancel() {
-        m_lastInvocationResult.cancel(true);
+    protected boolean isMultiUse() {
+        return true;
     }
 
     /**
@@ -103,6 +83,85 @@ public abstract class CancelableActionHandler<R, S> implements DialogDataService
      *
      * @return the future result.
      */
-    protected abstract Future<DialogDataServiceHandlerResult<R>> invoke(S settings, SettingsCreationContext context);
+    protected abstract CompletableFuture<Result<R>> invoke(S settings, SettingsCreationContext context);
+
+    /**
+     * Overwrite this method to implement more complex cancellations.
+     */
+    protected void cancel() {
+        if (m_lastInvocationResult != null) {
+            m_lastInvocationResult.cancel(true);
+        }
+    }
+
+    /**
+     * @return the result of the last invocation or null if no invocation has taken place.
+     */
+    protected Future<Result<R>> getLastInvokationResult() {
+        return m_lastInvocationResult;
+    }
+
+    @Override
+    public Future<Result<ButtonChange<R, States>>> invoke(final States buttonState, final S settings,
+        final SettingsCreationContext context) {
+        if (States.CANCEL.equals(buttonState)) {
+            cancel();
+            return CompletableFuture.supplyAsync(this::resetAfterCancel);
+        } else {
+            m_lastInvocationResult = invoke(settings, context);
+            return m_lastInvocationResult.thenApply(this::toButtonStateResult);
+        }
+    }
+
+    private Result<ButtonChange<R, States>> toButtonStateResult(final Result<R> dataResult) {
+        if (dataResult.state().equals(ResultState.FAIL)) {
+            return dataResult.mapResult(result -> new ButtonChange<>(result, false, States.READY));
+        } else if (this.isMultiUse()) {
+            return dataResult.mapResult(result -> new ButtonChange<>(result, true, States.READY));
+        }
+        return dataResult.mapResult(result -> new ButtonChange<>(result, true, States.DONE));
+    }
+
+    /**
+     * Reset the button to the initial "Ready" state
+     */
+    private Result<ButtonChange<R, States>> resetAfterCancel() {
+        return Result.succeed(new ButtonChange<>(null, false, States.READY));
+    }
+
+    @Override
+    public Future<Result<ButtonChange<R, States>>> initialize(final R currentValue,
+        final SettingsCreationContext context) {
+        return CompletableFuture.supplyAsync(this::resetAfterCancel);
+    }
+
+    @Override
+    public Future<Result<ButtonChange<R, States>>> update(final S settings, final SettingsCreationContext context) {
+        cancel();
+        return CompletableFuture
+            .supplyAsync(() -> Result.succeed(new ButtonChange<R, States>(null, true, States.READY)));
+    }
+
+
+    @SuppressWarnings("javadoc")
+    public enum States {
+
+            /**
+             * The initial state of the button
+             */
+            @ButtonState(defaultText = "Ready", nextState = "CANCEL")
+            READY, //
+            /**
+             * The state of the button, once the initial state is clicked
+             */
+            @ButtonState(defaultText = "Cancel", nextState = "READY", primary = false)
+            CANCEL, //
+            /**
+             * This state is reached on a successful response if {@link CancelableActionHandler#isMultiUse} is false.
+             */
+            @ButtonState(defaultText = "Done", disabled = true)
+            DONE;
+
+    }
 
 }

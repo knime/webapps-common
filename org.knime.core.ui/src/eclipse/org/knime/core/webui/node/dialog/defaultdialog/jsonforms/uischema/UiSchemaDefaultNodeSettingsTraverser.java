@@ -61,7 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 
@@ -83,7 +83,7 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass) {
     }
 
-    private static record TraversalConsumerPayload(String scope, Field field, Class<?> rootClass) {
+    private static record TraversalConsumerPayload(String scope, TraversedField field, Class<?> rootClass) {
     }
 
     /**

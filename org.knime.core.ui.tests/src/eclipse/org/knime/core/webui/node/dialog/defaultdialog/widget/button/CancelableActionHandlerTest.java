@@ -48,16 +48,20 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
 
 /**
  *
@@ -66,39 +70,138 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServ
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class CancelableActionHandlerTest {
 
-    @Test
-    void testCancelableActionHandler() {
-        final DialogDataServiceHandler<String, Void> actionHandler =
-            new CancelableActionHandler<String, Void>() {
+    static class TestHandler extends CancelableActionHandler<String, Void> {
 
-                @Override
-                protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
-                    return new CompletableFuture<>();
-                }
-            };
-        final var result = actionHandler.invoke(null, null, null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE, null, null);
-        assertTrue(result.isCancelled());
+        static final String RESULT = "myResult";
+
+        @Override
+        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
+            final SettingsCreationContext context) {
+            return CompletableFuture.supplyAsync(() -> Result.succeed(RESULT));
+        }
+
+        @Override
+        public String overrideText(final States state) {
+            return null;
+        }
     }
 
     @Test
-    void testCancelableActionHandlerNotCanceledIfOverwritten() {
-        final DialogDataServiceHandler<String, Void> actionHandler =
-            new CancelableActionHandler<String, Void>() {
+    void testInvokeSuccess() throws InterruptedException, ExecutionException {
+        final var handler = new TestHandler();
+        final var result = handler.invoke(States.READY, null, null).get();
+        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
+        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.result().settingResult()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.result().saveResult()).isTrue();
+    }
 
-                @Override
-                protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
-                    return new CompletableFuture<>();
-                }
+    static class TestHandlerFail extends TestHandler {
+        static final String MESSAGE = "myMessage";
 
-                @Override
-                protected void cancel() {
-                    return;
-                }
-            };
-        final var result = actionHandler.invoke(null, null, null);
-        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE, null, null);
-        assertFalse(result.isCancelled());
+        @Override
+        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
+            final SettingsCreationContext context) {
+            return CompletableFuture.supplyAsync(() -> Result.fail(MESSAGE));
+        }
+    }
+
+    @Test
+    void testInvokeFail() throws InterruptedException, ExecutionException {
+        final var handler = new TestHandlerFail();
+        final var result = handler.invoke(States.READY, null, null).get();
+        assertThat(result.state()).isEqualTo(ResultState.FAIL);
+        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.message()).isEqualTo(TestHandlerFail.MESSAGE);
+        assertThat(result.result().saveResult()).isFalse();
+    }
+
+    static class SingleUseHandler extends TestHandler {
+
+        @Override
+        protected boolean isMultiUse() {
+            return false;
+        }
+    }
+
+    @Test
+    void testInvokeWithoutMultiUseAndSuccess() throws InterruptedException, ExecutionException {
+        final var handler = new SingleUseHandler();
+        final var result = handler.invoke(States.READY, null, null).get();
+        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
+        assertThat(result.result().buttonState()).isEqualTo(States.DONE);
+        assertThat(result.result().settingResult()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.result().saveResult()).isTrue();
+    }
+
+    static class SingleUseHandlerFail extends TestHandlerFail {
+
+        @Override
+        protected boolean isMultiUse() {
+            return false;
+        }
+    }
+
+    @Test
+    void testInvokeWithoutMultiUseAndFail() throws InterruptedException, ExecutionException {
+        final var handler = new SingleUseHandlerFail();
+        final var result = handler.invoke(States.READY, null, null).get();
+        assertThat(result.state()).isEqualTo(ResultState.FAIL);
+        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.message()).isEqualTo(TestHandlerFail.MESSAGE);
+        assertThat(result.result().saveResult()).isFalse();
+    }
+
+    static class TestCancelHandler extends CancelableActionHandler<String, Void> {
+
+        @Override
+        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
+            final SettingsCreationContext context) {
+            return new CompletableFuture<>();
+        }
+
+        @Override
+        public String overrideText(final States state) {
+            return null;
+        }
+    }
+
+    @Test
+    void testCancel() {
+        final var handler = new TestCancelHandler();
+        final var result = handler.invoke(States.READY, null, null);
+        handler.invoke(States.CANCEL, null, null);
+        expectCancelled(result);
+        ExecutionException exception = assertThrows(ExecutionException.class, () -> result.get(1, TimeUnit.SECONDS));
+        assertThat(exception.getCause().getClass()).isEqualTo(CancellationException.class);
+
+    }
+
+    @Test
+    void testUpdate() throws InterruptedException, ExecutionException {
+        final var handler = new TestCancelHandler();
+        final var previousInvocationResult = handler.invoke(States.READY, null, null);
+        final var result = handler.update(null, null).get();
+        expectCancelled(previousInvocationResult);
+        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
+        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.result().settingResult()).isNull();
+        assertThat(result.result().saveResult()).isTrue();
+    }
+
+    private static void expectCancelled(final Future<Result<ButtonChange<String, States>>> result) {
+        ExecutionException exception = assertThrows(ExecutionException.class, () -> result.get(1, TimeUnit.SECONDS));
+        assertThat(exception.getCause().getClass()).isEqualTo(CancellationException.class);
+    }
+
+    @Test
+    void testInitialize() throws InterruptedException, ExecutionException {
+        final var handler = new TestHandler();
+        final var result = handler.initialize(null, null).get();
+        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
+        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.result().settingResult()).isNull();
+        assertThat(result.result().saveResult()).isFalse();
     }
 
 }

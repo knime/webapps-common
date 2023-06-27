@@ -44,26 +44,78 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   Jul 14, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Future;
+
+import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+
 /**
- * The state a {@link DialogDataServiceHandlerResult} can have.
  *
  * @author Paul Bärnreuther
  */
-public enum DialogDataServiceHandlerResultState {
-        /**
-         * The invocation was succesful.
-         */
-        SUCCESS,
-        /**
-         * The invocation was canceled.
-         */
-        CANCELED,
-        /**
-         * The invocation yielded an expected error, which is explicitly caught.
-         */
-        FAIL
+public class ButtonWidgetDataServiceTest {
+
+    static class TestDefaultNodeSettings {
+    }
+
+    enum TestButtonStates {
+            FIRST, SECOND;
+    }
+
+    static class WrongResultTypeActionHandler
+        implements ButtonActionHandler<Integer, TestDefaultNodeSettings, TestButtonStates> {
+
+        @Override
+        public Class<TestButtonStates> getStateMachine() {
+            return TestButtonStates.class;
+        }
+
+        @Override
+        public String overrideText(final TestButtonStates state) {
+            return null;
+        }
+
+        @Override
+        public Future<Result<ButtonChange<Integer, TestButtonStates>>> update(final TestDefaultNodeSettings settings,
+            final SettingsCreationContext context) {
+            return null;
+        }
+
+        @Override
+        public Future<Result<ButtonChange<Integer, TestButtonStates>>> initialize(final Integer currentValue,
+            final SettingsCreationContext context) {
+            return null;
+        }
+
+        @Override
+        public Future<Result<ButtonChange<Integer, TestButtonStates>>> invoke(final TestButtonStates state,
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+            return null;
+        }
+
+    }
+
+    @Test
+    void testValidatesReturnType() {
+
+        class ButtonSettings {
+            @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
+            String m_button;
+        }
+
+        final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
+        assertThrows(IllegalArgumentException.class, () -> new ButtonWidgetHandlerHolder(settingsClasses));
+    }
+
 }

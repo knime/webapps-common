@@ -44,40 +44,67 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   Jun 27, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+
 /**
- * An {@link DialogDataServiceHandler} whose invocation is synchronous.
+ * The interface defining that a {@link ButtonWidget#actionHandler} has to extend. It is used for initializing the
+ * button, updating it when dependent settings change and invoking actions on click.
  *
- * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of
- *            the field has to be assignable from it.
- * @param <S>
  * @author Paul Bärnreuther
+ * @param <R> the type of the setting which is annotated by {@link ButtonWidget}
+ * @param <S> the type of the class representing all settings, this setting depends on (see {@link DependencyHandler})
+ * @param <M> the state machine of the action handler
  */
-public abstract class SynchronousActionHandler<R, S> implements DialogDataServiceHandler<R, S> {
+public interface ButtonActionHandler<R, S, M extends Enum<M>>
+    extends ButtonStateMachineHandler<M>, UpdateHandler<ButtonChange<R, M>, S> {
 
     /**
-     * @param buttonState of invocation. This can be ignored in simple cases.
-     * @param settings the settings the invocation depends on
+     * This method is called whenever the dialog is opened in order to determine the initial state of the button.
+     *
+     * @param currentValue the current set value of the button field
+     * @param settings the state of the dependency settings
      * @param context the current {@link SettingsCreationContext}
-     * @return the result of the invocation.
+     *
+     * @return the initial state of the button and its value.
      */
-    public abstract DialogDataServiceHandlerResult<R> invokeSync(String buttonState, S settings, SettingsCreationContext context);
+    Future<Result<ButtonChange<R, M>>> initialize(R currentValue, SettingsCreationContext context);
 
     /**
-     * {@inheritDoc}
+     * This method gets called when the button is clicked.
+     *
+     * @param state a string specified by the frontend in order to reuse the same invocation for multiple uses. E.g.
+     *            this can be used to cancel an invocation (refer to {@link CancelableActionHandler}.
+     * @param settings the settings of type {@code S} which the invocation depends on.
+     * @param context the current {@link SettingsCreationContext}
+     *
+     * @return an asynchronous result.
      */
-    @Override
-    public Future<DialogDataServiceHandlerResult<R>> invoke(final String buttonState, final S settings, final SettingsCreationContext context) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(buttonState, settings, context));
+    Future<Result<ButtonChange<R, M>>> invoke(M state, S settings, SettingsCreationContext context);
+
+    @SuppressWarnings({"javadoc"})
+    default Future<Result<ButtonChange<R, M>>> castAndInvoke(final String stateString, final Object settings,
+        final SettingsCreationContext context) {
+        return invoke(castToState(stateString), castToDependencies(settings), context);
     }
+
+    @SuppressWarnings({"javadoc", "unchecked"})
+    default Future<Result<ButtonChange<R, M>>> castAndInitialize(final Object currentValue,
+        final SettingsCreationContext context) {
+        return initialize((R)currentValue, context);
+    }
+
+    /**
+     * @param state from the associated state machine enum
+     * @return the text that should be displayed for that state. If {@code null} is returned, the value of
+     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
+     */
+    String overrideText(M state);
 
 }

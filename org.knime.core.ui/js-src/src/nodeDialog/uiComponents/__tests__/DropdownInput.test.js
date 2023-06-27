@@ -269,10 +269,9 @@ describe('DropdownInput.vue', () => {
         it('requests new data if dependencies change', () => {
             settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
             expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
-                method: 'invokeActionHandler',
+                method: 'update',
                 options: [
                     'UpdateHandler',
-                    null,
                     {
                         foo: 'foo',
                         bar: 'bar',

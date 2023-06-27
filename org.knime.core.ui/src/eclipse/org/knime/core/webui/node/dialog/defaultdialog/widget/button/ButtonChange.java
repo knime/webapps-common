@@ -44,16 +44,20 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jun 27, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+
 /**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and different handlers in the backend. During initialization of the data service,
- * these handlers are parsed from a collection of supplied {@link DefaultNodeSettings}.
  *
  * @author Paul Bärnreuther
+ * @param <R> the type of the annotated setting
+ * @param <M> the state machine of the button
+ * @param settingResult the value the setting should be set to if {@link ButtonChange#saveResult()} is true
+ * @param saveResult whether the result should be saved
+ * @param buttonState the state the button should be set to when retrieving this result.
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+public record ButtonChange<R, M extends Enum<M>>(R settingResult, boolean saveResult,
+    M buttonState) {
+
+}

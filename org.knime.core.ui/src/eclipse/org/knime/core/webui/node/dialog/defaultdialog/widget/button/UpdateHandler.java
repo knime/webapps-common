@@ -44,16 +44,35 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 2, 2023 (Paul Bärnreuther): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+
+import java.util.concurrent.Future;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+
 /**
- * THis package contains the rpc data service
- * {@link org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl} of a
- * {@link DefaultNodeDialog}. This data service is currently used to invoke actions from buttons (see
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget.button}). Hereby the data service serves as a layer
- * between the calls from the frontend and different handlers in the backend. During initialization of the data service,
- * these handlers are parsed from a collection of supplied {@link DefaultNodeSettings}.
  *
  * @author Paul Bärnreuther
+ * @param <R>
+ * @param <S>
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+public interface UpdateHandler<R, S> extends DependencyHandler<S> {
+    /**
+     * This method is called when one of the dependency settings defined by {@code S} changes in order to determine the
+     * immediate effect.
+     *
+     * @param settings the dependency settings on update
+     * @param context the current {@link SettingsCreationContext}
+     *
+     * @return the next value and state of the button.
+     */
+    Future<Result<R>> update(S settings, SettingsCreationContext context);
+
+    @SuppressWarnings({"javadoc"})
+    default Future<Result<R>> castAndUpdate(final Object settings, final SettingsCreationContext context) {
+        return update(castToDependencies(settings), context);
+    }
+}

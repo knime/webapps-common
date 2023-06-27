@@ -99,14 +99,14 @@ public class DefaultNodeSettingsFieldTraverser {
      * @param trackedAnnotations the tracked annotations for the field and its enclosing classes and fields.
      * @author Paul Bärnreuther
      */
-    public static record Field(PropertyWriter propertyWriter, List<String> path,
+    public static record TraversedField(PropertyWriter propertyWriter, List<String> path,
         FieldAnnotationsHolder trackedAnnotations) {
     }
 
     /**
      * @param fieldCallback a callback called with every field in the traversed order.
      */
-    public void traverse(final Consumer<Field> fieldCallback) {
+    public void traverse(final Consumer<TraversedField> fieldCallback) {
         traverse(fieldCallback, Collections.emptyList());
     }
 
@@ -115,13 +115,13 @@ public class DefaultNodeSettingsFieldTraverser {
      * @param trackedAnnotations the classes of the annotations which should be tracked and given with the field
      *            parameter.
      */
-    public void traverse(final Consumer<Field> fieldCallback,
+    public void traverse(final Consumer<TraversedField> fieldCallback,
         final Collection<Class<? extends Annotation>> trackedAnnotations) {
         final var annotations = new FieldAnnotationsHolder(trackedAnnotations);
         traverseClass(m_settingsClass, fieldCallback, Collections.emptyList(), annotations);
     }
 
-    private void traverseClass(final Class<?> clazz, final Consumer<Field> fieldCallback, final List<String> path,
+    private void traverseClass(final Class<?> clazz, final Consumer<TraversedField> fieldCallback, final List<String> path,
         final FieldAnnotationsHolder enclosingFieldAnnotations) {
         final var annotations = enclosingFieldAnnotations.toClassAnnotationsHolder(clazz);
         final var properties = getSerializableProperties(clazz);
@@ -138,7 +138,7 @@ public class DefaultNodeSettingsFieldTraverser {
         }
     }
 
-    private void traverseField(final Consumer<Field> fieldCallback, final List<String> parentPath,
+    private void traverseField(final Consumer<TraversedField> fieldCallback, final List<String> parentPath,
         final ClassAnnotationsHolder classAnnotations, final PropertyWriter field) {
         final var path = getPath(parentPath, field.getName());
         final var fieldType = field.getType().getRawClass();
@@ -146,7 +146,7 @@ public class DefaultNodeSettingsFieldTraverser {
         if (LayoutGroup.class.isAssignableFrom(fieldType)) {
             this.traverseClass(fieldType, fieldCallback, path, annotations);
         } else {
-            fieldCallback.accept(new Field(field, path, annotations));
+            fieldCallback.accept(new TraversedField(field, path, annotations));
         }
     }
 
