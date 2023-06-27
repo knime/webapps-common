@@ -64,6 +64,8 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResultState;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
@@ -75,8 +77,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvid
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ActionHandlerState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
@@ -449,18 +449,27 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
     }
 
-    static class SynchronousTestActionHandler extends SynchronousActionHandler<String> {
+    static class SynchronousTestActionHandler extends SynchronousActionHandler<String, Void> {
         @Override
-        public ActionHandlerResult<String> invokeSync(final String buttonState) {
-            return new ActionHandlerResult<String>("Result", ActionHandlerState.SUCCESS, "message");
+        public DialogDataServiceHandlerResult<String> invokeSync(final String buttonState, final Void otherSettings,
+            final SettingsCreationContext context) {
+            return new DialogDataServiceHandlerResult<String>("Result", DialogDataServiceHandlerResultState.SUCCESS,
+                "message");
         }
     }
 
-    static class CancelableTestActionHandler extends CancelableActionHandler<String> {
+    static class CancelableTestActionHandler extends CancelableActionHandler<String, Void> {
+
+        /**
+         * {@inheritDoc}
+         */
         @Override
-        protected Future<ActionHandlerResult<String>> invoke() {
+        protected Future<DialogDataServiceHandlerResult<String>> invoke(final Void settings,
+            final SettingsCreationContext context) {
             return CompletableFuture.supplyAsync(() -> null);
+
         }
+
     }
 
     @Test

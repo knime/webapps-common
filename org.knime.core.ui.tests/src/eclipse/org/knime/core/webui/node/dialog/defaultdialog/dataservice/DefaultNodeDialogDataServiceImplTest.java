@@ -64,10 +64,6 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResultState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
@@ -85,7 +81,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
     private static DefaultNodeDialogDataServiceImpl
         getDataServiceWithNullContext(final Collection<Class<?>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(settingsClasses, null);
+        return new DefaultNodeDialogDataServiceImpl(settingsClasses, () -> null);
     }
 
     static class TestHandler implements DialogDataServiceHandler<String, TestDefaultNodeSettings> {
@@ -349,7 +345,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Override
         public Future<DialogDataServiceHandlerResult<Boolean>> invoke(final String state,
             final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
-            return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(context == null));
+            return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(context != null));
         }
 
     }
@@ -375,7 +371,7 @@ class DefaultNodeDialogDataServiceImplTest {
                     }
                 };
 
-            m_context = null; //NOSONAR
+            m_context = null;
             final var dataService =
                 new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider);
 

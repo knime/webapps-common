@@ -120,8 +120,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         };
     }
 
-    private static void validate(Field field,
-        final Class<? extends DialogDataServiceHandler<?, ? extends DefaultNodeSettings>> actionHandlerClass) {
+    private static void validate(final Field field,
+        final Class<? extends DialogDataServiceHandler<?, ?>> actionHandlerClass) {
         if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
             throw new IllegalArgumentException(
                 String.format("Return type of action handler %s is not assignable to the type of the field %s.",

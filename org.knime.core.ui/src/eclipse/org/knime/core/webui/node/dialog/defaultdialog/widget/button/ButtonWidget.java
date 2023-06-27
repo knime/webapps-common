@@ -54,7 +54,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 
 /**
@@ -75,7 +74,7 @@ public @interface ButtonWidget {
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
      *         the setting that is implemented.
      */
-    Class<? extends DialogDataServiceHandler<?, ? extends DefaultNodeSettings>> actionHandler(); //NOSONAR
+    Class<? extends DialogDataServiceHandler<?, ?>> actionHandler(); //NOSONAR
 
     /**
      * @return the initial text shown on the button that should describe the invoked action.

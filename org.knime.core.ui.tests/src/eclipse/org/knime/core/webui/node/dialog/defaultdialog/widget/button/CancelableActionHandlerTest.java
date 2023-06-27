@@ -77,7 +77,7 @@ class CancelableActionHandlerTest {
                 }
             };
         final var result = actionHandler.invoke(null, null, null);
-        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null, null);
+        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE, null, null);
         assertTrue(result.isCancelled());
     }
 
@@ -97,7 +97,7 @@ class CancelableActionHandlerTest {
                 }
             };
         final var result = actionHandler.invoke(null, null, null);
-        actionHandler.invoke(CancelableActionHandler.cancelButtonState, null, null);
+        actionHandler.invoke(CancelableActionHandler.CANCEL_BUTTON_STATE, null, null);
         assertFalse(result.isCancelled());
     }
 
