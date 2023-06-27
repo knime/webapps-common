@@ -28,7 +28,6 @@
             },
             "dateTime": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time",
               "description": "Example of date & time input"
             },
@@ -44,7 +43,6 @@
             },
             "dateTimeTimezone": {
               "type": "string",
-              "format": "date-time",
               "title": "Date & Time with timezone",
               "description": "Example of date & time input with a specified timezone"
             },
