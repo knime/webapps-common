@@ -86,7 +86,7 @@ const ButtonInput = defineComponent({
                 this.isLoading = true;
                 const receivedData = await this.jsonDataService.data({
                     method: 'invokeActionHandler',
-                    options: [this.control.uischema.actionHandler, 'click', this.currentSettings]
+                    options: [this.control.uischema.options.actionHandler, 'click', this.currentSettings]
                 });
                 this.isLoading = false;
                 if (receivedData?.state === 'FAIL') {
@@ -99,7 +99,7 @@ const ButtonInput = defineComponent({
         cancel() {
             this.jsonDataService.data({
                 method: 'invokeActionHandler',
-                options: [this.control.uischema.actionHandler, 'cancel']
+                options: [this.control.uischema.options.actionHandler, 'cancel']
             });
             this.isLoading = false;
         },
