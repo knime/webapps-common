@@ -2,10 +2,11 @@
 import { JsonDataService, DialogService } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { JsonForms } from '@jsonforms/vue';
+import { toDataPath } from '@jsonforms/core';
 import { fallbackRenderers, defaultRenderers } from './renderers';
 import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, set, get } from 'lodash';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
@@ -25,7 +26,6 @@ export default {
             jsonDataService: null,
             settings: null,
             originalSettingsData: null,
-            allSettingsWatcherCallbacks: [],
             renderers: Object.freeze(renderers)
         };
     },
@@ -52,17 +52,27 @@ export default {
         getData() {
             return this.settings.data;
         },
-        registerWatcher(callback) {
-            this.allSettingsWatcherCallbacks.push(callback);
+        registerWatcher(callback, dependencies) {
+            const dataPaths = dependencies.map(toDataPath);
+            this.$watch(
+                () => {
+                    const data = {};
+                    dataPaths.forEach(path => {
+                        // path can be a string with points, e.g. "foo.bar.baz"
+                        set(data, path, get(this.settings.data, path));
+                    });
+                    return JSON.stringify(data);
+                },
+                (newData, oldData) => {
+                    if (oldData === newData) {
+                        return;
+                    }
+                    callback(JSON.parse(newData));
+                },
+                { immediate: true }
+            );
         },
         onSettingsChanged(data) {
-            if (this.allSettingsWatcherCallbacks.length) {
-                const copyOfOldData = JSON.parse(JSON.stringify(this.settings.data));
-                const copyOfNewData = JSON.parse(JSON.stringify(data.data));
-                this.allSettingsWatcherCallbacks.forEach(callback => {
-                    callback(copyOfOldData, copyOfNewData);
-                });
-            }
             if (data.data) {
                 this.settings.data = data.data;
                 // TODO: UIEXT-236 Move to dialog service

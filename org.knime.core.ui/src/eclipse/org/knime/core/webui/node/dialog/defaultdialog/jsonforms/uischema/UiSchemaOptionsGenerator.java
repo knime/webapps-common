@@ -261,7 +261,7 @@ final class UiSchemaOptionsGenerator {
                 && !control.field().getMember().getDeclaringClass().equals(declaringClassAnnotation.value())) {
                 return false;
             }
-            return control.scope().contains(searchScope);
+            return control.scope().endsWith(searchScope);
         }).map(JsonFormsControl::scope).toList();
         if (candidates.size() > 1) {
             throw new UiSchemaGenerationException(

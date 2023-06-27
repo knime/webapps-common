@@ -7,7 +7,6 @@ import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 
 import { JsonDataService } from '@knime/ui-extension-service';
-import { unset } from 'lodash';
 
 const ButtonInput = defineComponent({
     name: 'ButtonInput',
@@ -30,7 +29,7 @@ const ButtonInput = defineComponent({
             jsonDataService: null,
             isLoading: false,
             errorMessage: null,
-            currentSettings: null
+            currentSettings: {}
         };
     },
     computed: {
@@ -70,7 +69,7 @@ const ButtonInput = defineComponent({
         }
     },
     mounted() {
-        this.registerWatcher(this.onSettingsChange.bind(this));
+        this.registerWatcher(this.onSettingsChange.bind(this), this.control.uischema.options?.dependencies || []);
         this.jsonDataService = new JsonDataService(this.getKnimeService());
     },
     methods: {
@@ -106,29 +105,14 @@ const ButtonInput = defineComponent({
         clearError() {
             this.errorMessage = null;
         },
-        onSettingsChange(oldSettings, newSettings) {
+        onSettingsChange(newSettings) {
             this.currentSettings = { ...newSettings.view, ...newSettings.model };
-            if (this.hasData && this.otherSettingsChanged(oldSettings, newSettings)) {
+            if (this.hasData) {
                 if (this.isLoading && this.isCancelable) {
                     this.cancel();
                 }
                 this.saveResult(null);
             }
-        },
-        /**
-         * We only compare the other settings to avoid an infinite loops of updates
-         * @param {Object} oldSettings
-         * @param {Object} newSettings
-         * @returns {Boolean} whether something changed apart from the settings of the button.
-         */
-        otherSettingsChanged(oldSettings, newSettings) {
-            const restrictedOldSettings = this.restrictToOtherSettings(oldSettings);
-            const restrictedNewSettings = this.restrictToOtherSettings(newSettings);
-            return JSON.stringify(restrictedOldSettings) !== JSON.stringify(restrictedNewSettings);
-        },
-        restrictToOtherSettings(settings) {
-            unset(settings, this.control.path);
-            return settings;
         }
     }
 });

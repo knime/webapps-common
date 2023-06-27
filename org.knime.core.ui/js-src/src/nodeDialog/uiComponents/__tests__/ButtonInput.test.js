@@ -221,24 +221,30 @@ describe('ButtonInput', () => {
 
 
     describe('dependencies to other settings', () => {
-        let settingsChangeCallback, wrapper;
+        let settingsChangeCallback, wrapper, dependencies;
+
+        const dependenciesUischema = ['foo', 'bar'];
 
         beforeEach(() => {
             const props = getProps({ isCancelable: true });
+            props.control.uischema.options.dependencies = dependenciesUischema;
             const comp = mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             wrapper = comp.wrapper;
-            settingsChangeCallback = comp.callbacks[0];
+            const firstWatcherCall = comp.callbacks[0];
+            settingsChangeCallback = firstWatcherCall[0];
+            dependencies = firstWatcherCall[1];
             wrapper.vm.cancel = vi.fn();
             wrapper.vm.handleChange = vi.fn();
         });
 
         it('registers watcher', () => {
             expect(settingsChangeCallback).toBeDefined();
+            expect(dependencies).toStrictEqual(dependenciesUischema);
         });
 
         it('unpacks new data to current settings', () => {
-            settingsChangeCallback({ model: { foo: 1 } }, { model: { foo: 2, bar: 1 } });
-            expect(wrapper.vm.currentSettings).toStrictEqual({ foo: 2, bar: 1 });
+            settingsChangeCallback({ model: { foo: 2, bar: 1 }, view: { baz: 3 } });
+            expect(wrapper.vm.currentSettings).toStrictEqual({ foo: 2, bar: 1, baz: 3 });
         });
 
         it('cancels the current request and unsets data', async () => {
@@ -248,7 +254,7 @@ describe('ButtonInput', () => {
                 ...control,
                 data: 'nonEmptyData'
             } });
-            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            settingsChangeCallback({ foo: 2 });
             expect(wrapper.vm.cancel).toHaveBeenCalled();
             vi.runAllTimers();
             expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, null);
@@ -259,7 +265,7 @@ describe('ButtonInput', () => {
                 ...wrapper.vm.control,
                 data: 'nonEmptyData'
             } });
-            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            settingsChangeCallback({ foo: 2 });
             expect(wrapper.vm.cancel).not.toHaveBeenCalled();
         });
 
@@ -269,7 +275,7 @@ describe('ButtonInput', () => {
             await wrapper.setProps({ control: {
                 ...control
             } });
-            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            settingsChangeCallback({ foo: 2 });
             expect(wrapper.vm.cancel).not.toHaveBeenCalled();
             vi.runAllTimers();
             expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
@@ -289,20 +295,8 @@ describe('ButtonInput', () => {
                     }
                 }
             } });
-            settingsChangeCallback({ foo: 1 }, { foo: 2 });
+            settingsChangeCallback({ foo: 2 });
             expect(wrapper.vm.cancel).not.toHaveBeenCalled();
-        });
-
-        it('does not cancel the request or unset data if no change', async () => {
-            await wrapper.setData({ isLoading: true });
-            const control = wrapper.vm.control;
-            await wrapper.setProps({ control: {
-                ...control,
-                data: 'nonEmptyData'
-            } });
-            settingsChangeCallback({ foo: 1, [path]: 1 }, { foo: 1, [path]: 2 });
-            expect(wrapper.vm.cancel).not.toHaveBeenCalled();
-            expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
         });
     });
 });

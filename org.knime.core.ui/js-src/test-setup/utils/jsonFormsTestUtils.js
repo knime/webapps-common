@@ -23,7 +23,7 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules,
                         registerDataGetter: vi.fn(),
                         addEventCallback: vi.fn()
                     }),
-                    registerWatcher: (callback) => callbacks.push(callback)
+                    registerWatcher: (callback, dependencies) => callbacks.push([callback, dependencies])
                 },
                 stubs: {
                     DispatchRenderer: true

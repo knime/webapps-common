@@ -190,18 +190,63 @@ describe('NodeDialog.vue', () => {
             expect(Object.getOwnPropertyNames(wrapper.vm.$options.provide())).toContain('registerWatcher');
         });
 
-
-        it('calls registered callbacks on data update', async () => {
+        it('creates watcher when calling registerWatcher', async () => {
             const wrapper = shallowMount(NodeDialog, getOptions());
             await flushPromises();
-            const callbacks = [vi.fn(), vi.fn(), vi.fn()];
-            callbacks.forEach(c => {
-                wrapper.vm.registerWatcher(c);
+            wrapper.setData({ settings: {
+                data: {
+                    test: 'test',
+                    test2: 'test',
+                    otherTest: 'test'
+                }
+            } });
+
+            const callback = vi.fn();
+            const dependencies = ['#/properties/test', '#/properties/test2'];
+
+            wrapper.vm.registerWatcher(callback, dependencies);
+            expect(callback).toHaveBeenCalledWith({
+                test: 'test',
+                test2: 'test'
             });
-            const jsonformsStub = wrapper.getComponent(JsonForms);
-            const data = { ...dialogInitialData.data, yAxisScale: 'NEW_VALUE' };
-            jsonformsStub.vm.$emit('change', { data });
-            callbacks.forEach(c => expect(c).toHaveBeenCalledWith(dialogInitialData.data, data));
+            callback.mockClear();
+            
+            await wrapper.setData({ settings: {
+                data: {
+                    test: 'test2',
+                    test2: 'test',
+                    otherTest: 'test'
+                }
+            } });
+            expect(callback).toHaveBeenCalledWith({
+                test: 'test2',
+                test2: 'test'
+            });
+            callback.mockClear();
+
+            await wrapper.setData({ settings: {
+                data: {
+                    test: 'test2',
+                    test2: 'test',
+                    otherTest: 'test2'
+                }
+            } });
+
+            expect(callback).not.toHaveBeenCalled();
+
+
+            await wrapper.setData({ settings: {
+                data: {
+                    test: 'test2',
+                    test2: 'test2',
+                    otherTest: 'test2'
+                }
+            } });
+
+            expect(callback).toHaveBeenCalledWith({
+                test: 'test2',
+                test2: 'test2'
+            });
         });
     });
 });
