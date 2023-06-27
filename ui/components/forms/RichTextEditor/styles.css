@@ -119,6 +119,11 @@
   & ol {
     padding-left: 20px;
 
+    & li,
+    & li > p {
+      text-align: left !important;
+    }
+
     &:first-child {
       margin-top: 0;
     }
