@@ -44,66 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 5, 2023 (Paul Bärnreuther): created
+ *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.concurrent.Future;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandlerResult;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
 
 /**
- * A widget supplied with an array of possible values, which are the choices for a selection.
+ * Marker class that is only meant to serve as a default in {@link ChoicesWidget#choicesUpdateHandler}.
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface ChoicesWidget {
+public final class NoopChoicesUpdateHandler implements ChoicesUpdateHandler<Void> {
 
     /**
-     * @return the provider for the list of possible values. Use a {@link ColumnChoicesProvider} to supply additional
-     *         information like the type of a column alongside its name to the frontend. TODO UIEXT-907 use a separate
-     *         annotation instead for column choices.
+     * This method should never be called, since the handler should never be used.
      */
-    Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
-
-    /**
-     * TODO UIEXT-907 Make this only available for column choices.
-     *
-     * @return whether to show an additional choice "None" representing no selection.
-     */
-    boolean showNoneColumn() default false;
-
-    /**
-     * @return whether to show an additional choice "RowIDs" representing the row key column.
-     */
-    boolean showRowKeys() default false;
-
-    /**
-     * @return whether a search field should be shown for the {@link ColumnFilter}
-     */
-    boolean showSearch() default true;
-
-    /**
-     * @return whether the column filter mode selection should be displayed for the {@link ColumnFilter}. The possible
-     *         modes are defined by {@link ColumnFilterMode}.
-     */
-    boolean showMode() default true;
-
-    /**
-     * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible
-     *         values when such a dependency changes. On an update, if the current value is also part of the new values,
-     *         it is kept. Otherwise the first of the new possible values is taken.
-     */
-    @SuppressWarnings("rawtypes")
-    Class<? extends ChoicesUpdateHandler<?>> choicesUpdateHandler() default NoopChoicesUpdateHandler.class; // NOSONAR
-
+    @Override
+    public Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> invoke(final String state, final Void settings,
+        final SettingsCreationContext context) {
+        return null;
+    }
 }

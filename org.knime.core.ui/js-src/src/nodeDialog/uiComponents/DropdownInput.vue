@@ -6,6 +6,7 @@ import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
+import { JsonDataService, AlertTypes } from '@knime/ui-extension-service';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -14,6 +15,7 @@ const DropdownInput = defineComponent({
         LabeledInput,
         DialogComponentWrapper
     },
+    inject: ['registerWatcher', 'getKnimeService'],
     props: {
         ...rendererProps(),
         optionsGenerator: {
@@ -38,7 +40,8 @@ const DropdownInput = defineComponent({
     },
     data() {
         return {
-            options: null
+            options: null,
+            jsonDataService: null
         };
     },
     computed: {
@@ -57,9 +60,17 @@ const DropdownInput = defineComponent({
         },
         dropdownValue() {
             return this.controlDataToDropdownValue(this.control.data);
+        },
+        choicesUpdateHandler() {
+            return this.control.uischema.options?.choicesUpdateHandler;
         }
     },
     mounted() {
+        if (this.choicesUpdateHandler) {
+            const dependencies = this.control.uischema.options?.dependencies || [];
+            this.registerWatcher(this.updateOptions.bind(this), dependencies);
+        }
+        
         let options = this.optionsGenerator(this.control);
         this.options = options;
         this.updateInitialData();
@@ -74,6 +85,35 @@ const DropdownInput = defineComponent({
             if (!isDeepStrictEqual(initialData, updatedInitialData)) {
                 this.handleChange(this.control.path, updatedInitialData);
             }
+        },
+        async updateOptions(newSettings) {
+            if (!this.jsonDataService) {
+                this.jsonDataService = new JsonDataService(this.getKnimeService());
+            }
+            // TODO: UIEXT-1053: Hide this behind a (better) API
+            const { result, state, message } = await this.jsonDataService.data({
+                method: 'invokeActionHandler',
+                options: [
+                    this.choicesUpdateHandler,
+                    null,
+                    { ...newSettings.view, ...newSettings.model }
+                ]
+            });
+            if (result) {
+                this.handleResult(result);
+            }
+            if (state === 'FAIL') {
+                const knimeService = this.getKnimeService();
+                knimeService.sendWarning(knimeService.createAlert({
+                    type: AlertTypes.ERROR,
+                    message
+                }));
+                this.handleResult([]);
+            }
+        },
+        handleResult(result) {
+            this.options = result;
+            this.onChange(result.length > 0 ? result[0].id : null);
         },
         onChange(value) {
             this.handleChange(this.control.path, this.dropdownValueToControlData(this.control, value));

@@ -219,7 +219,6 @@ describe('ButtonInput', () => {
         });
     });
 
-
     describe('dependencies to other settings', () => {
         let settingsChangeCallback, wrapper, dependencies;
 

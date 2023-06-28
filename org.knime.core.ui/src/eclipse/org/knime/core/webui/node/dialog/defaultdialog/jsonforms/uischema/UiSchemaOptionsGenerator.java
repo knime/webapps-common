@@ -54,6 +54,8 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CHOICES_UPDATE_HANDLER;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
@@ -88,6 +90,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -205,7 +208,7 @@ final class UiSchemaOptionsGenerator {
             options.put("showTitleAndDescription", buttonWidget.showTitleAndDescription());
             var cancelable = CancelableActionHandler.class.isAssignableFrom(buttonWidget.actionHandler());
             options.put("isCancelable", cancelable);
-            final var dependencies = options.putArray("dependencies");
+            final var dependencies = options.putArray(TAG_DEPENDENCIES);
             addDependencies(dependencies, buttonWidget.actionHandler());
         }
 
@@ -235,6 +238,11 @@ final class UiSchemaOptionsGenerator {
             options.put("showRowKeys", choicesWidget.showRowKeys());
             options.put("showSearch", choicesWidget.showSearch());
             options.put("showMode", choicesWidget.showMode());
+            if (!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class)) {
+                options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
+                final var dependencies = options.putArray(TAG_DEPENDENCIES);
+                addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
+            }
         }
 
         if (isArrayOfObjects) {

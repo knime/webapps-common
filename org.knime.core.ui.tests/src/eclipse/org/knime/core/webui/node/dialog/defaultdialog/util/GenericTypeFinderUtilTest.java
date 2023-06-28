@@ -108,6 +108,31 @@ class GenericTypeFinderUtilTest {
         assertThat(third).isEqualTo(Boolean.class);
     }
 
+
+
+    @Test
+    void testFindsGenericTypesForSuperInterface() {
+
+        @SuppressWarnings("unused")
+        interface SubInterface<S> extends GenericInterface<String, S, Boolean> {
+        }
+
+        @SuppressWarnings("unused")
+        interface SubSubInterface extends SubInterface<Integer> {
+        }
+
+        class DeepImplementation implements  SubSubInterface {
+        }
+
+        final var first = getNthTypeInterface(DeepImplementation.class, 0);
+        final var second = getNthTypeInterface(DeepImplementation.class, 1);
+        final var third = getNthTypeInterface(DeepImplementation.class, 2);
+
+        assertThat(first).isEqualTo(String.class);
+        assertThat(second).isEqualTo(Integer.class);
+        assertThat(third).isEqualTo(Boolean.class);
+    }
+
     @Test
     void testFindsGenericTypesOfInterfaceForDescendants() {
 

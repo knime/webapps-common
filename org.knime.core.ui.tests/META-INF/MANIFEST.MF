@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.jetty.servlet-api;bundle-version="[4.0.6,5.0.0)",
  assertj-core;bundle-version="[3.19.0,4.0.0)",
  net.javacrumbs.json-unit.json-unit-assertj;bundle-version="[2.26.0,3.0.0)"
 Automatic-Module-Name: org.knime.core.ui.tests
+Import-Package: org.knime.core.webui.node.dialog.defaultdialog.widget.choices

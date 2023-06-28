@@ -64,8 +64,11 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -119,6 +122,35 @@ class DefaultNodeDialogDataServiceImplTest {
         final var mode = "myMode";
         final var result = dataService.invokeActionHandler(TestHandler.class.getName(), mode);
         assertThat(result.result()).isEqualTo(TestHandler.getResult(mode));
+    }
+
+    static class TestChoicesUpdateHandler implements ChoicesUpdateHandler<Void> {
+
+        @Override
+        public Future<DialogDataServiceHandlerResult<ChoicesWidgetChoice[]>> invoke(final String state,
+            final Void settings, final SettingsCreationContext context) {
+            return CompletableFuture.supplyAsync(TestChoicesUpdateHandler::getResult);
+        }
+
+        public static DialogDataServiceHandlerResult<ChoicesWidgetChoice[]> getResult() {
+            return DialogDataServiceHandlerResult.succeed(null);
+        }
+
+    }
+
+    @Test
+    void testInvokeActionHandlerCallsChoicesUpdateHandler() throws ExecutionException, InterruptedException {
+
+        class ChoicesSettings {
+
+            @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
+            String m_button;
+
+        }
+
+        final var dataService = getDataServiceWithNullContext(List.of(ChoicesSettings.class));
+        final var result = dataService.invokeActionHandler(TestChoicesUpdateHandler.class.getName());
+        assertThat(result).isEqualTo(TestChoicesUpdateHandler.getResult());
     }
 
     @Test
@@ -175,8 +207,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
         final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
         final var handlerName = OtherTestHandler.class.getName();
-        assertThrows(IllegalArgumentException.class,
-            () -> dataService.invokeActionHandler(handlerName));
+        assertThrows(IllegalArgumentException.class, () -> dataService.invokeActionHandler(handlerName));
 
     }
 
@@ -192,8 +223,7 @@ class DefaultNodeDialogDataServiceImplTest {
         }
         final var handlerName = NonStaticActionHandler.class.getName();
         final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
-        assertThrows(IllegalArgumentException.class,
-            () -> dataService.invokeActionHandler(handlerName));
+        assertThrows(IllegalArgumentException.class, () -> dataService.invokeActionHandler(handlerName));
 
     }
 
@@ -265,15 +295,15 @@ class DefaultNodeDialogDataServiceImplTest {
         }
 
         final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
-        assertThrows(IllegalArgumentException.class,
-            () -> getDataServiceWithNullContext(settingsClasses));
+        assertThrows(IllegalArgumentException.class, () -> getDataServiceWithNullContext(settingsClasses));
     }
 
     @SuppressWarnings("unused")
     static class IntermediateSuperType<A extends DefaultNodeSettings, B> implements DialogDataServiceHandler<B, A> {
 
         @Override
-        public Future<DialogDataServiceHandlerResult<B>> invoke(final String state, final A settings, final SettingsCreationContext context) {
+        public Future<DialogDataServiceHandlerResult<B>> invoke(final String state, final A settings,
+            final SettingsCreationContext context) {
             return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.succeed(null));
         }
 

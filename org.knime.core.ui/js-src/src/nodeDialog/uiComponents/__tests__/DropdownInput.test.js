@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
-    from '@@/test-setup/utils/jsonFormsTestUtils';
+import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore,
+    mountJsonFormsComponentWithCallbacks } from '@@/test-setup/utils/jsonFormsTestUtils';
 import DropdownInput from '../DropdownInput.vue';
 import LabeledInput from '../LabeledInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
+import flushPromises from 'flush-promises';
 
 describe('DropdownInput.vue', () => {
     let wrapper, onChangeSpy, defaultProps;
@@ -11,11 +12,13 @@ describe('DropdownInput.vue', () => {
     beforeAll(() => {
         onChangeSpy = vi.spyOn(DropdownInput.methods, 'onChange');
     });
-    
+
+    const path = 'test';
+
     beforeEach(async () => {
         defaultProps = {
             control: {
-                path: 'test',
+                path,
                 enabled: true,
                 visible: true,
                 data: 'Universe_0_0',
@@ -200,6 +203,99 @@ describe('DropdownInput.vue', () => {
         it('does not update initial data if they are current', async () => {
             wrapper = await mountJsonFormsComponent(DropdownInput, defaultProps);
             expect(wrapper.vm.handleChange).not.toHaveBeenCalled();
+        });
+    });
+
+
+    describe('dependencies to other settings', () => {
+        let settingsChangeCallback, wrapper, dependencies;
+
+        const dependenciesUischema = ['foo', 'bar'];
+
+        beforeEach(() => {
+            defaultProps.control.uischema.options.dependencies = dependenciesUischema;
+            defaultProps.control.uischema.options.choicesUpdateHandler = 'UpdateHandler';
+            const comp = mountJsonFormsComponentWithCallbacks(DropdownInput, { props: defaultProps });
+            wrapper = comp.wrapper;
+            wrapper.vm.jsonDataService = {
+                data: vi.fn(() => ({
+                    result: [{ id: 'first', text: 'First' }, { id: 'second', text: 'Second' }],
+                    state: 'SUCCESS',
+                    message: null
+                }))
+            };
+             
+            const firstWatcherCall = comp.callbacks[0];
+            settingsChangeCallback = firstWatcherCall[0];
+            dependencies = firstWatcherCall[1];
+            wrapper.vm.cancel = vi.fn();
+            wrapper.vm.handleChange = vi.fn();
+        });
+
+        it('registers watcher', () => {
+            expect(settingsChangeCallback).toBeDefined();
+            expect(dependencies).toStrictEqual(dependenciesUischema);
+        });
+
+        it('requests new data if dependencies change', () => {
+            settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
+            expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+                method: 'invokeActionHandler',
+                options: [
+                    'UpdateHandler',
+                    null,
+                    {
+                        foo: 'foo',
+                        bar: 'bar',
+                        baz: 'baz'
+                    }
+                ]
+            });
+        });
+
+        it('sets new options and selected the first option', async () => {
+            settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
+            await flushPromises();
+            expect(wrapper.vm.options).toStrictEqual(
+                [{ id: 'first', text: 'First' }, { id: 'second', text: 'Second' }]
+            );
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, 'first');
+        });
+
+        it('selects null if the fetched options are empty', async () => {
+            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+                result: [],
+                state: 'SUCCESS',
+                message: null
+            }));
+            settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
+            await flushPromises();
+            expect(wrapper.vm.options).toStrictEqual([]);
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, null);
+        });
+
+
+        it('sets empty options and warns about error on state FAIL', async () => {
+            const message = 'Error message';
+            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+                result: null,
+                state: 'FAIL',
+                message
+            }));
+            const knimeService = {
+                createAlert: vi.fn(() => 'Alert'),
+                sendWarning: vi.fn()
+            };
+            wrapper.vm.getKnimeService = () => knimeService;
+            settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
+            await flushPromises();
+            expect(wrapper.vm.options).toStrictEqual([]);
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, null);
+            expect(knimeService.createAlert).toHaveBeenCalledWith({
+                type: 'error',
+                message
+            });
+            expect(knimeService.sendWarning).toHaveBeenCalledWith('Alert');
         });
     });
 });
