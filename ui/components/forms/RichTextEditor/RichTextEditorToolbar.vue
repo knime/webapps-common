@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { Editor } from "@tiptap/vue-3";
 
+import PlusSmallIcon from "../../../assets/img/icons/plus-small.svg";
 import FunctionButton from "../../FunctionButton.vue";
+import type { MenuItem } from "../../MenuItems.vue";
+
+import SubMenu from "../../SubMenu.vue";
 import type { EditorTools } from "./types";
 
 interface Props {
@@ -10,23 +15,49 @@ interface Props {
   hotkeyFormatter: (hotkey: Array<string>) => string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const baseTools = computed(() => props.tools.filter(({ isExtra }) => !isExtra));
+const extraTools = computed(() => props.tools.filter(({ isExtra }) => isExtra));
+const extraToolsMenuItems = computed<MenuItem[]>(() =>
+  extraTools.value.map((tool) => ({
+    text: tool.name,
+    disabled: tool.disabled?.(),
+    hotkeyText: props.hotkeyFormatter(tool.hotkey ?? []),
+    icon: tool.icon,
+    id: tool.id,
+  }))
+);
+
+const onExtraToolClick = (_: any, { id }: { id: string }) => {
+  const foundTool = extraTools.value.find((tool) => tool.id === id);
+  foundTool?.onClick();
+};
 </script>
 
 <template>
   <div class="tools">
     <FunctionButton
-      v-for="tool of tools"
+      v-for="tool of baseTools"
       :key="tool.id"
       class="tool"
+      :data-testid="tool.id"
       :disabled="tool.disabled?.()"
       :active="tool.active?.()"
-      :title="hotkeyFormatter(tool.hotkey)"
+      :title="hotkeyFormatter(tool.hotkey ?? [])"
       compact
       @click.stop="tool.onClick"
     >
       <Component :is="tool.icon" />
     </FunctionButton>
+    <SubMenu
+      v-if="extraTools.length > 0"
+      :items="extraToolsMenuItems"
+      orientation="left"
+      @item-click="onExtraToolClick"
+    >
+      <PlusSmallIcon />
+    </SubMenu>
   </div>
 </template>
 

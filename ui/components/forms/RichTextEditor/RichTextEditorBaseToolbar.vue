@@ -9,6 +9,10 @@ import OrderedListIcon from "../../../assets/img/icons/ordered-list.svg";
 import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
+import BlockquoteIcon from "../../../assets/img/icons/blockquote.svg";
+import CodeIcon from "../../../assets/img/icons/code-html.svg";
+import StrikeThroughIcon from "../../../assets/img/icons/strikethrough.svg";
+import DividerIcon from "../../../assets/img/icons/divider.svg";
 
 import type {
   BaseExtensionsConfig,
@@ -71,7 +75,14 @@ const editorTools: EditorTools = [
     icon: BulletListIcon,
     hotkey: ["Ctrl", "Shift", "8"],
     active: () => props.editor.isActive("bulletList"),
-    onClick: () => props.editor.chain().focus().toggleBulletList().run(),
+    onClick: () => {
+      props.editor
+        .chain()
+        .focus()
+        .setTextAlign("left")
+        .toggleBulletList()
+        .run();
+    },
   }),
 
   ...registerTool("orderedList", {
@@ -80,7 +91,13 @@ const editorTools: EditorTools = [
     icon: OrderedListIcon,
     hotkey: ["Ctrl", "Shift", "7"],
     active: () => props.editor.isActive("orderedList"),
-    onClick: () => props.editor.chain().focus().toggleOrderedList().run(),
+    onClick: () =>
+      props.editor
+        .chain()
+        .focus()
+        .setTextAlign("left")
+        .toggleOrderedList()
+        .run(),
   }),
 
   ...registerTool("textAlign", {
@@ -88,7 +105,8 @@ const editorTools: EditorTools = [
     icon: AlignLeftIcon,
     name: "Align left",
     hotkey: ["Ctrl", "Shift", "L"],
-    active: () => props.editor.isActive({ textAlign: "left" }),
+    active: () =>
+      !isListActive() && props.editor.isActive({ textAlign: "left" }),
     onClick: () => props.editor.chain().focus().setTextAlign("left").run(),
     disabled: () => isListActive(),
   }),
@@ -98,7 +116,8 @@ const editorTools: EditorTools = [
     icon: AlignCenterIcon,
     name: "Align center",
     hotkey: ["Ctrl", "Shift", "E"],
-    active: () => props.editor.isActive({ textAlign: "center" }),
+    active: () =>
+      !isListActive() && props.editor.isActive({ textAlign: "center" }),
     onClick: () => props.editor.chain().focus().setTextAlign("center").run(),
     disabled: () => isListActive(),
   }),
@@ -108,9 +127,49 @@ const editorTools: EditorTools = [
     icon: AlignRightIcon,
     name: "Align right",
     hotkey: ["Ctrl", "Shift", "R"],
-    active: () => props.editor.isActive({ textAlign: "right" }),
+    active: () =>
+      !isListActive() && props.editor.isActive({ textAlign: "right" }),
     onClick: () => props.editor.chain().focus().setTextAlign("right").run(),
     disabled: () => isListActive(),
+  }),
+
+  ...registerTool("blockquote", {
+    id: "blockquote",
+    icon: BlockquoteIcon,
+    name: "Blockquote",
+    hotkey: ["Ctrl", "Shift", "B"],
+    active: () => props.editor.isActive("blockquote"),
+    onClick: () => props.editor.chain().focus().toggleBlockquote().run(),
+    isExtra: true,
+  }),
+
+  ...registerTool("codeBlock", {
+    id: "codeBlock",
+    icon: CodeIcon,
+    name: "Code block",
+    hotkey: ["Ctrl", "Alt", "C"],
+    active: () => props.editor.isActive("codeBlock"),
+    onClick: () => props.editor.chain().focus().toggleCodeBlock().run(),
+    isExtra: true,
+  }),
+
+  ...registerTool("strike", {
+    id: "strikethrough",
+    icon: StrikeThroughIcon,
+    name: "Strikethrough",
+    hotkey: ["Ctrl", "Shift", "X"],
+    active: () => props.editor.isActive("strike"),
+    onClick: () => props.editor.chain().focus().toggleStrike().run(),
+    isExtra: true,
+  }),
+
+  ...registerTool("horizontalRule", {
+    id: "horizontalRule",
+    icon: DividerIcon,
+    name: "Divider",
+    active: () => false,
+    onClick: () => props.editor.chain().focus().setHorizontalRule().run(),
+    isExtra: true,
   }),
 ];
 </script>

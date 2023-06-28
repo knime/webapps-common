@@ -9,7 +9,7 @@ import FunctionButton from "../../../FunctionButton.vue";
 import RichTextEditor from "../RichTextEditor.vue";
 
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
-const isActive = vi.fn();
+const mockEditorIsActive = vi.fn();
 
 const createMockEditor = (params: any) => {
   const actionNames = [
@@ -39,7 +39,7 @@ const createMockEditor = (params: any) => {
   }, {} as Actions);
 
   return shallowRef({
-    isActive,
+    isActive: mockEditorIsActive,
     chain: () => ({
       focus: () => ({
         ...actions,
@@ -224,6 +224,16 @@ describe("RichTextEditor.vue", () => {
   });
 
   describe("tool interactions", () => {
+    const findToolComponentById = (_wrapper: VueWrapper<any>, id: string) => {
+      const foundComponent = _wrapper
+        .findAllComponents(FunctionButton)
+        .find((_componentWrapper) => {
+          return _componentWrapper.find(`[data-testid="${id}"]`).exists();
+        });
+
+      return foundComponent;
+    };
+
     it("should render all tools", () => {
       const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
@@ -231,15 +241,37 @@ describe("RichTextEditor.vue", () => {
     });
 
     it("should set the active state correctly", () => {
-      isActive.mockImplementation((name) => name === "bold");
+      mockEditorIsActive.mockImplementation((name) => name === "bold");
       const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
-      expect(
-        wrapper.findAllComponents(FunctionButton).at(0)?.props("active")
-      ).toBe(true);
-      expect(
-        wrapper.findAllComponents(FunctionButton).at(1)?.props("active")
-      ).toBe(false);
+      expect(findToolComponentById(wrapper, "bold")?.props("active")).toBe(
+        true
+      );
+      expect(findToolComponentById(wrapper, "italic")?.props("active")).toBe(
+        false
+      );
+    });
+
+    it("should not allow text alignment when lists are active", () => {
+      // mock the isActive state of the editor to simulate both the
+      // lists and the text alignment as being active
+      mockEditorIsActive.mockImplementation((param) => {
+        // eslint-disable-next-line vitest/no-conditional-tests
+        return typeof param === "string"
+          ? // eslint-disable-next-line vitest/no-conditional-tests
+            param === "bulletList" || param === "orderedList"
+          : Boolean(param.textAlign);
+      });
+
+      const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
+
+      const textAlignLeft = findToolComponentById(wrapper, "align-left");
+      const textAlignCenter = findToolComponentById(wrapper, "align-center");
+      const textAlignRight = findToolComponentById(wrapper, "align-right");
+
+      expect(textAlignLeft?.props("active")).toBe(false);
+      expect(textAlignCenter?.props("active")).toBe(false);
+      expect(textAlignRight?.props("active")).toBe(false);
     });
 
     it("should execute the toolbar action", () => {

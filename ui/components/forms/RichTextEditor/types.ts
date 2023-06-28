@@ -4,10 +4,11 @@ export interface EditorToolItem {
   id: string;
   name: string;
   icon: FunctionalComponent<SVGAttributes>;
-  hotkey: Array<string>;
+  hotkey?: Array<string>;
   onClick: () => void;
   active?: () => boolean;
   disabled?: () => boolean;
+  isExtra?: boolean;
 }
 
 export type EditorTools = Array<EditorToolItem>;
