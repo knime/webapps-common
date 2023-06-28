@@ -114,13 +114,15 @@ final class UiSchemaOptionsGenerator {
 
     private final Collection<JsonFormsControl> m_fields;
 
+    private final String m_scope;
+
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
      * @param field the field for which options are to be added from {@link Style} annotations
      */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
-        final SettingsCreationContext context, final Collection<JsonFormsControl> fields) {
+        final SettingsCreationContext context, final Collection<JsonFormsControl> fields, final String scope) {
         m_mapper = mapper;
         m_field = field;
         m_fieldType = field.getType();
@@ -128,6 +130,7 @@ final class UiSchemaOptionsGenerator {
         m_fieldName = field.getName();
         m_settingsCreationContext = context;
         m_fields = fields;
+        m_scope = scope;
     }
 
     /**
@@ -252,7 +255,13 @@ final class UiSchemaOptionsGenerator {
             final var declaringClass = field.propertyWriter().getAnnotation(DeclaringClass.class);
             final var clazz = field.propertyWriter().getType().getRawClass();
             final var targetScope = findTargetScope(searchScope, declaringClass, clazz);
-            dependencies.add(targetScope);
+            /**
+             * exclude the field itself to enable using the current DefaultNodeSettings as the dependencies class to get
+             * a dependency from every other setting.
+             */
+            if (!targetScope.equals(m_scope)) {
+                dependencies.add(targetScope);
+            }
         };
     }
 

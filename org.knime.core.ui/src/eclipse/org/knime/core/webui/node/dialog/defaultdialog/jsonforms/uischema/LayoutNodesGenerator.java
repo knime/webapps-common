@@ -114,9 +114,10 @@ final class LayoutNodesGenerator {
     }
 
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
-        final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, controlElement.scope());
+        final var scope = controlElement.scope();
+        final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, scope);
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext, m_fields).addOptionsTo(control);
+        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext, m_fields, scope).addOptionsTo(control);
         new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

@@ -566,6 +566,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     static class OtherSettings {
+        String m_foo;
+
         Boolean m_otherSetting1;
 
         ColumnFilter m_otherSetting2;
