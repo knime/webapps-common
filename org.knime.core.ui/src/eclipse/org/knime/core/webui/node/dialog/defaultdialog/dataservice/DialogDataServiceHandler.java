@@ -75,7 +75,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousA
  *
  *            class OtherSettings {
  *                  &#64;DeclaringDefaultNodeSettings(MyNodeModelSettings.class) // referencing "MyNodeModelSettings#m_foo".
- *                  String m_foo;
+ *                  String m_bar;
  *            }
  *
  *            class MyActionHandler implements DialogDataServiceHandler<String, OtherSettings>
