@@ -84,7 +84,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringClass;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
@@ -630,14 +630,14 @@ class JsonFormsUiSchemaUtilOptionsTest {
             () -> buildTestUiSchema(ButtonWidgetWithMissingDependenciesTestSettings.class));
     }
 
-    class ButtonWidgetWithAmbigousDependenciesTestSettings {
+    class ButtonWidgetWithAmbigousDependenciesTestSettings implements DefaultNodeSettings {
         @ButtonWidget(actionHandler = TestActionHandlerWithAmbigousDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
     }
 
-    class SecondSettings {
+    class SecondSettings implements DefaultNodeSettings {
 
         Boolean m_otherSetting1;
     }
@@ -660,7 +660,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     @Test
     void testThrowsForButtonWidgetWithAmbigousDependencies() {
-        final var settingsClasses =
+        final Map<String, Class<?>> settingsClasses =
             Map.of("foo", ButtonWidgetWithAmbigousDependenciesTestSettings.class, "bar", SecondSettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settingsClasses));
     }
@@ -674,7 +674,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     static class OtherSettingsWithSpecification {
 
-        @DeclaringClass(SecondSettings.class)
+        @DeclaringDefaultNodeSettings(SecondSettings.class)
         Boolean m_otherSetting1;
 
     }
@@ -695,7 +695,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
         final var settingsClasses = new LinkedHashMap<String, Class<?>>();
         settingsClasses.put("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
         settingsClasses.put("bar", SecondSettings.class);
-        var response =buildUiSchema(settingsClasses);
+        var response = buildUiSchema(settingsClasses);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].options.dependencies[0]").isString()

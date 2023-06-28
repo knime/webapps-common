@@ -65,9 +65,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServ
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface DeclaringClass {
+public @interface DeclaringDefaultNodeSettings {
     /**
-     * @return the class in which the field that the annotated field should reference lies.
+     * @return the {@link DefaultNodeSettings} class in which the field that the annotated field should reference lies.
      */
-    Class<?> value();
+    Class<? extends DefaultNodeSettings> value();
 }

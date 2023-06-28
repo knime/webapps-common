@@ -62,6 +62,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServ
  * click, invokes an action specified by the given actionHandler. The returned value is set to the setting on a
  * successful response.
  *
+ *
+ *
  * @see org.knime.core.webui.node.dialog.defaultdialog.dataservice
  *
  * @author Paul Bärnreuther
@@ -72,7 +74,9 @@ public @interface ButtonWidget {
 
     /**
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
-     *         the setting that is implemented.
+     *         the setting that is implemented. The second generic type of the {@link DialogDataSerciceHandler} controls
+     *         which other settings trigger a reset of the button when they change (i.e. delete the saved value and
+     *         enable the button again). See there for further information on how to use this.
      */
     Class<? extends DialogDataServiceHandler<?, ?>> actionHandler(); //NOSONAR
 

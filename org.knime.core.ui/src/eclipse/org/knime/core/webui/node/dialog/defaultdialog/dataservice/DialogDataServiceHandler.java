@@ -50,17 +50,55 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import java.util.concurrent.Future;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SynchronousActionHandler;
 
 /**
- * The handler of an action invocation specified by a {@link ButtonWidget}.
- * TODO: Add a subinterface for buttons when this handler is also used for other cases.
+ * The handler of an action invocation specified by a {@link ButtonWidget}. TODO: Add a subinterface for buttons when
+ * this handler is also used for other cases.
  *
  * @author Paul Bärnreuther
- * @param <S> the type of the input to the invocation, i.e. the other settings, the handler is depending on.
+ * @param <S> the type of the input to the invocation, i.e. the other settings, the handler is depending on. The fields
+ *            specified in this class have to reference other settings of the current node settings. To reference a
+ *            setting, use the same name and the same type (for nested settings all names along the way have to match)
+ *            as the field that is to be referenced. If there is a field which is not unique with respect to its field
+ *            name and type, use the {@link DeclaringDefaultNodeSettings} annotation to further specify the specific
+ *            node settings class of the field. *
+ *            <p>
+ *            Example:
+ *
+ *            <pre>
+ *
+ *            class OtherSettings {
+ *                  &#64;DeclaringDefaultNodeSettings(MyNodeModelSettings.class) // referencing "MyNodeModelSettings#m_foo".
+ *                  String m_foo;
+ *            }
+ *
+ *            class MyActionHandler implements DialogDataServiceHandler<String, OtherSettings>
+ *
+ *            class MyNodeViewSettings extends DefaultNodeSettings {
+ *
+ *                &#64;ButtonWidget(actionHandler = MyActionHandler)
+ *                String m_foo;
+ *
+ *                String m_bar;
+ *
+ *            }
+ *
+ *            class MyNodeModelSettings extends DefaultNodeSettings {
+ *                String m_bar;
+ *            }
+ *
+ *            </pre>
+ *
+ *            For simple scenarios where there is only one {@link DefaultNodeSettings} class used and a setting should
+ *            depend on all other settings, the {@link DefaultNodeSettings} class itself can be directly used as the
+ *            generic class.
+ *
  * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
  *            field has to be assignable from it.
  */

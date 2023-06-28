@@ -68,6 +68,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DialogDataServiceHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
@@ -85,7 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringClass;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -246,15 +247,16 @@ final class UiSchemaOptionsGenerator {
             GenericTypeFinderUtil.getNthGenericType(actionHandler, DialogDataServiceHandler.class, 1);
         final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, dependencyClass);
         final Consumer<Field> addNewDependency = getAddNewDependencyCallback(dependencies);
-        traverser.traverse(addNewDependency);
+        traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
     }
 
     private Consumer<Field> getAddNewDependencyCallback(final ArrayNode dependencies) {
         return field -> {
             final var searchScope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path());
-            final var declaringClass = field.propertyWriter().getAnnotation(DeclaringClass.class);
+            final var declaringDefaultNodeSettings = field.trackedAnnotations()
+                .getInstance(DeclaringDefaultNodeSettings.class).map(DeclaringDefaultNodeSettings::value).orElse(null);
             final var clazz = field.propertyWriter().getType().getRawClass();
-            final var targetScope = findTargetScope(searchScope, declaringClass, clazz);
+            final var targetScope = findTargetScope(searchScope, declaringDefaultNodeSettings, clazz);
             /**
              * exclude the field itself to enable using the current DefaultNodeSettings as the dependencies class to get
              * a dependency from every other setting.
@@ -265,11 +267,10 @@ final class UiSchemaOptionsGenerator {
         };
     }
 
-    private String findTargetScope(final String searchScope, final DeclaringClass declaringClassAnnotation,
-        final Class<?> clazz) {
+    private String findTargetScope(final String searchScope,
+        final Class<? extends DefaultNodeSettings> declaringDefaultNodeSettings, final Class<?> clazz) {
         final var candidates = m_fields.stream().filter(control -> {
-            if (declaringClassAnnotation != null
-                && !control.field().getMember().getDeclaringClass().equals(declaringClassAnnotation.value())) {
+            if (declaringDefaultNodeSettings != null && !control.rootClass().equals(declaringDefaultNodeSettings)) {
                 return false;
             }
             boolean classEquals = control.field().getType().getRawClass().equals(clazz);
