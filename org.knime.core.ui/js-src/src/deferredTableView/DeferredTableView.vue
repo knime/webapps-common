@@ -8,7 +8,7 @@ import SplitButton from 'webapps-common/ui/components/SplitButton.vue';
 import CircleArrow from 'webapps-common/ui/assets/img/icons/circle-arrow-down.svg';
 import DropdownIcon from 'webapps-common/ui/assets/img/icons/arrow-dropdown.svg';
 
-const subMenuItems = [
+const baseSubMenuItems = [
     {
         text: '100',
         value: 100
@@ -39,7 +39,7 @@ export default {
             numRows: 100,
             tableViewInitialData: null,
             tableViewKey: 0,
-            subMenuItems
+            baseSubMenuItems
         };
     },
     computed: {
@@ -57,6 +57,15 @@ export default {
                 }
             }
             return this.numRows;
+        },
+        subMenuItems() {
+            return this.tableViewInitialData
+                ? [{
+                    text: 'Re-fetch data',
+                    disabled: true,
+                    separator: true
+                }, ...this.baseSubMenuItems]
+                : this.baseSubMenuItems;
         }
     },
     mounted() {
@@ -75,11 +84,9 @@ export default {
             this.tableViewInitialData = JSON.parse(tableViewInitialDataString);
             this.forceTableViewRender();
         },
-        onSubmenuItemClick(updatedNumRows, shouldReFetch = false) {
+        onSubmenuItemClick(updatedNumRows) {
             this.numRows = updatedNumRows;
-            if (shouldReFetch) {
-                this.fetchTableData();
-            }
+            this.fetchTableData();
         },
         forceTableViewRender() {
             // TODO fix this when refactoring the TableView (UIEXT-833)
@@ -96,7 +103,7 @@ export default {
         v-if="tableViewInitialData"
         :items="subMenuItems"
         orientation="left"
-        @item-click="(_, item) => onSubmenuItemClick(item.value, true)"
+        @item-click="(_, item) => onSubmenuItemClick(item.value)"
       >
         <span>
           Rows: {{ numDisplayedRows }}
