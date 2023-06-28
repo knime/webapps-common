@@ -160,7 +160,9 @@ public class DefaultNodeSettingsSnapshotTest {
             assertThatJson(jsonForms).isEqualTo(JsonFormsDataUtil.getMapper().readTree(expectedJsonFormsString));
         } catch (AssertionError e) {
             // write debug file if snapshot doesn't match
-            Files.writeString(debugFile, expectedJsonFormsString, StandardCharsets.UTF_8);
+            Files.writeString(debugFile,
+                JsonFormsDataUtil.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonForms),
+                StandardCharsets.UTF_8);
             throw e;
         }
         if (Files.exists(debugFile)) {
