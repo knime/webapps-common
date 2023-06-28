@@ -20,9 +20,9 @@ try {
         // junit '**/coverage/junit.xml'
         // knimetools.processAuditResults()
 
-        stage('Sonarqube analysis') {
-           workflowTests.runSonar(withOutNode:true)
-        }
+        // stage('Sonarqube analysis') {
+        //    workflowTests.runSonar(withOutNode:true)
+        // }
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'

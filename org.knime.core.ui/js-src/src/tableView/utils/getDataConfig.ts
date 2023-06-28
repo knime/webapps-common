@@ -96,7 +96,7 @@ export default ({
         columnIds.push(ROW_ID.id);
     }
     displayedColumns.forEach((columnName: string, index: number) => {
-        const columnFormatterDescription = columnFormatterDescriptions && columnFormatterDescriptions[index];
+        const columnFormatterDescription = columnFormatterDescriptions?.[index];
         const renderers = dataTypes[columnDataTypeIds?.[index]]?.renderers as any[] | undefined;
         // + 2: offset for the index and rowKey, because the first column
         // (index 0) always contains the indices and the second one the row keys

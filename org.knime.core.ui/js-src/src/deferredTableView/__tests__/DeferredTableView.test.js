@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import { JsonDataService } from '@knime/ui-extension-service';
 
 import DeferredTableView from '../DeferredTableView.vue';
-import TableView from '../../tableView/TableView.vue';
+import TableViewInteractive from '../../tableView/TableViewInteractive.vue';
 import Button from 'webapps-common/ui/components/Button.vue';
 import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
 import SplitButton from 'webapps-common/ui/components/SplitButton.vue';
@@ -27,7 +27,7 @@ describe('DeferredTableView.vue', () => {
                     getKnimeService: () => ({ extensionConfig: { resourceInfo: { baseUrl: 'http://localhost:8080/base.url/' } } })
                 },
                 stubs: {
-                    TableView: {
+                    TableViewInteractive: {
                         template: '<div/>'
                     }
                 }
@@ -74,7 +74,7 @@ describe('DeferredTableView.vue', () => {
         await wrapper.vm.$nextTick();
         expect(jsonDataServiceDataMock).toBeCalledWith({ method: 'getTableViewInitialData', options: [100] });
         await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(TableView).exists()).toBeTruthy();
+        expect(wrapper.findComponent(TableViewInteractive).exists()).toBeTruthy();
         expect(wrapper.findComponent(SubMenu).props()).toEqual({ allowOverflowMainAxis: false,
             buttonTitle: '',
             disabled: false,
@@ -108,7 +108,7 @@ describe('DeferredTableView.vue', () => {
         await wrapper.vm.$nextTick();
         expect(jsonDataServiceDataMock).toBeCalledWith({ method: 'getTableViewInitialData', options: [5000] });
         await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(TableView).exists()).toBeTruthy();
+        expect(wrapper.findComponent(TableViewInteractive).exists()).toBeTruthy();
     });
 
     it('refetches new data on click in table view', async () => {
@@ -119,6 +119,6 @@ describe('DeferredTableView.vue', () => {
         await wrapper.vm.$nextTick();
         expect(jsonDataServiceDataMock).toBeCalledWith({ method: 'getTableViewInitialData', options: [1000] });
         await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(TableView).exists()).toBeTruthy();
+        expect(wrapper.findComponent(TableViewInteractive).exists()).toBeTruthy();
     });
 });

@@ -51,7 +51,7 @@ export default ({
     enableColumnResizing: boolean
 }) => {
     const { enableSortingByHeader, enableGlobalSearch, enableColumnSearch,
-        publishSelection, subscribeToSelection, pageSize, enablePagination } = settings;
+        publishSelection, subscribeToSelection, pageSize, enablePagination, showTableSize } = settings;
     return {
         subMenuItems: [],
         showSelection: publishSelection || subscribeToSelection || false,
@@ -69,6 +69,7 @@ export default ({
             searchConfig: {
                 searchQuery: globalSearchQuery
             }
-        }
+        },
+        showTableSize
     };
 };

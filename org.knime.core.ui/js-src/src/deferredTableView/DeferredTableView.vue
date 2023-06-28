@@ -1,7 +1,7 @@
 // A table view which is not loaded immediately but on user request
 <script>
 import { JsonDataService } from '@knime/ui-extension-service';
-import TableView from '../tableView/TableView.vue';
+import TableViewInteractive from '../tableView/TableViewInteractive.vue';
 import Button from 'webapps-common/ui/components/Button.vue';
 import SubMenu from 'webapps-common/ui/components/SubMenu.vue';
 import SplitButton from 'webapps-common/ui/components/SplitButton.vue';
@@ -25,7 +25,7 @@ const baseSubMenuItems = [
 
 export default {
     components: {
-        TableView,
+        TableViewInteractive,
         Button,
         SubMenu,
         SplitButton,
@@ -117,7 +117,7 @@ export default {
         {{ `   |   Columns: ${columnCount}` }}
       </span>
     </div>
-    <TableView
+    <TableViewInteractive
       v-if="tableViewInitialData"
       :key="tableViewKey"
       :initial-data="tableViewInitialData"

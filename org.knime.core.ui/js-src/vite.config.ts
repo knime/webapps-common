@@ -77,7 +77,8 @@ export default defineConfig(({ mode }) => ({
                 'buildtools/', 'coverage/**', 'dist/**', 'webapps-common/**', 'lib/**', '**/*.d.ts', '**/__tests__/**',
                 'test-setup/**', '**/{vite,vitest,postcss}.config.{js,cjs,mjs,ts}',
                 '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
-            ]
+            ],
+            reporter: ['html', 'text', 'lcov']
         },
         outputFile: {
             junit: 'test-results/junit.xml' // needed for Bitbucket Pipeline, see https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/

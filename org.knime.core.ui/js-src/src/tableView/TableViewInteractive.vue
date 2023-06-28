@@ -16,6 +16,13 @@ export default {
         TableViewDisplay
     },
     inject: ['getKnimeService'],
+    props: {
+        initialData: {
+            type: Object,
+            default: null,
+            required: false
+        }
+    },
     data() {
         return {
             dataLoaded: false,
@@ -141,7 +148,7 @@ export default {
 
         this.jsonDataService = new JsonDataService(this.knimeService);
         this.jsonDataService.addOnDataChangeCallback(this.onViewSettingsChange.bind(this));
-        const initialData = await this.jsonDataService.initialData();
+        const initialData = this.initialData === null ? await this.jsonDataService.initialData() : this.initialData;
         this.selectionService = new SelectionService(this.knimeService);
         this.baseUrl = this.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
         if (initialData) {
