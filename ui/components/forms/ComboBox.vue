@@ -85,13 +85,15 @@ export default defineComponent({
      */
     allowNewValues: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
 
   emits: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     "update:selectedIds": (_payload: Array<string>) => true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    change: (_payload: Array<ComboBoxItem>) => true,
   },
 
   data(): ComponentData {
@@ -183,7 +185,9 @@ export default defineComponent({
     },
     onBackspace() {
       if (!this.searchValue) {
-        this.selectedIds.pop();
+        this.selectedIds = this.selectedIds.slice(0, -1);
+        this.$emit("update:selectedIds", this.selectedIds);
+        this.$emit("change", this.selectedValues);
       }
       // else regular backspace behavior
     },
@@ -207,6 +211,7 @@ export default defineComponent({
       const setSelectedIds = (value: Array<string>) => {
         this.selectedIds = uniq(value).filter(Boolean);
         this.$emit("update:selectedIds", this.selectedIds);
+        this.$emit("change", this.selectedValues);
       };
 
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
@@ -327,16 +332,15 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .multiselect {
-  border: 1px solid var(--knime-stone-gray);
-
-  &:focus-within {
-    border-color: var(--knime-masala);
-  }
-
   & .summary-input-icon-wrapper {
+    border: 1px solid var(--knime-stone-gray);
     display: flex;
     justify-content: space-between;
     max-width: 100%;
+
+    &:focus-within {
+      border-color: var(--knime-masala);
+    }
 
     &:focus {
       outline: none;

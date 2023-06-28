@@ -30,6 +30,7 @@ export default {
     return {
       codeExample,
       selected: [[], [], []],
+      selectedValues: [],
       values: [
         { id: "foo", text: "Foo" },
         { id: "bar", text: "Bar" },
@@ -69,9 +70,10 @@ export default {
             @update:selected-ids="
               (selectedValues) => (selected[0] = selectedValues)
             "
+            @change="selectedValues = $event"
           />
         </div>
-        <div class="grid-item-3">values: {{ selected[0] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[0] }}</div>
       </div>
       <br />
       <div class="grid-container">
@@ -84,9 +86,26 @@ export default {
             @update:selected-ids="
               (selectedValues) => (selected[1] = selectedValues)
             "
+            @change="selectedValues = $event"
           />
         </div>
-        <div class="grid-item-3">values: {{ selected[1] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[1] }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-3">allow new values</div>
+        <div class="grid-item-6">
+          <ComboBox
+            :possible-values="values"
+            :initial-selected-ids="selected[0]"
+            allow-new-values
+            @update:selected-ids="
+              (selectedValues) => (selected[0] = selectedValues)
+            "
+            @change="selectedValues = $event"
+          />
+        </div>
+        <div class="grid-item-3">selected-ids: {{ selected[0] }}</div>
       </div>
       <br />
       <div class="grid-container">
@@ -99,9 +118,13 @@ export default {
             @update:selected-ids="
               (selectedValues) => (selected[2] = selectedValues)
             "
+            @change="selectedValues = $event"
           />
         </div>
-        <div class="grid-item-3">values: {{ selected[2] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[2] }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">Selected Values: {{ selectedValues }}</div>
       </div>
     </section>
     <section>

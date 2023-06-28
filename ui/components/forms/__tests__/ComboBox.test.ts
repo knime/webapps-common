@@ -155,35 +155,56 @@ describe("ComboBox.vue", () => {
 
   describe("tag interactions", () => {
     it("creates a new tag", async () => {
-      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      const wrapper = doMount({
+        initialSelectedIds: ["test2", "test3"],
+        allowNewValues: true,
+      });
       await wrapper.find(".search-input").setValue("another");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
       expect(wrapper.findAll(".tag").length).toBe(3);
       expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("another");
+      expect(wrapper.emitted("change")?.[0][0]).toEqual([
+        { id: "test2", text: "test2" },
+        { id: "test3", text: "test3" },
+        { id: "another", text: "another" },
+      ]);
     });
 
     it("removes tags with backspace", async () => {
-      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      const wrapper = doMount({
+        initialSelectedIds: ["test2", "test3"],
+        allowNewValues: true,
+      });
 
       expect(wrapper.findAll(".tag").length).toBe(2);
 
       await wrapper.find(".search-input").trigger("keydown.backspace");
       expect(wrapper.findAll(".tag").length).toBe(1);
       expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test2");
+      expect(wrapper.emitted("change")?.[0][0]).toEqual([
+        { id: "test2", text: "test2" },
+      ]);
     });
 
     it("does not create tag when search is empty", async () => {
-      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      const wrapper = doMount({
+        initialSelectedIds: ["test2", "test3"],
+        allowNewValues: true,
+      });
       await wrapper.find(".search-input").setValue("");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
       expect(wrapper.findAll(".tag").length).toBe(2);
       expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test3");
+      expect(wrapper.emitted("change")).toBeUndefined();
     });
 
     it("does not create repeated tags", async () => {
-      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
+      const wrapper = doMount({
+        initialSelectedIds: ["test2", "test3"],
+        allowNewValues: true,
+      });
       await wrapper.find(".search-input").setValue("another");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
@@ -198,6 +219,9 @@ describe("ComboBox.vue", () => {
       const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
       await wrapper.findAll(".remove-tag-button").at(0)?.trigger("click");
       expect(updateSelectedIdsSpy).toHaveBeenCalledWith(["test3"]);
+      expect(wrapper.emitted("change")?.[0][0]).toEqual([
+        { id: "test3", text: "test3" },
+      ]);
     });
 
     it("clears all selected values and focusses the listBox on click of removeAllTags button", async () => {
@@ -210,6 +234,7 @@ describe("ComboBox.vue", () => {
       const summaryWrapper = wrapper.find({ ref: "listBox" });
       expect(summaryWrapper.element).toStrictEqual(document.activeElement);
       expect(updateSelectedIdsSpy).toHaveBeenCalledWith([]);
+      expect(wrapper.emitted("change")?.[0][0]).toEqual([]);
     });
   });
 
