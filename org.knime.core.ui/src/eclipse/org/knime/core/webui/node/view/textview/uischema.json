@@ -1,0 +1,11 @@
+{
+	"elements": [
+		{
+			"type": "Control",
+			"scope": "#/properties/view/properties/richTextContent",
+			"options": {
+				"format": "richTextInput"
+			}
+		}
+	]
+}

@@ -18,7 +18,9 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules,
             global: {
                 provide: {
                     getKnimeService: () => ({
-                        extensionConfig: {},
+                        extensionConfig: {
+                            nodeId: 'nodeId'
+                        },
                         callService: vi.fn().mockResolvedValue({}),
                         registerDataGetter: vi.fn(),
                         addEventCallback: vi.fn(),

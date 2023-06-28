@@ -22,20 +22,23 @@ const libraries = {
     DeferredTableView: {
         entry: fileURLToPath(new URL('./src/deferredTableView/DeferredTableView.vue', import.meta.url)),
         name: 'deferredtableview',
-        fileName: 'DeferredTableView',
+        fileName: 'DeferredTableView'
+    } as LibraryOptions,
+    TextView: {
+        entry: fileURLToPath(new URL('./src/textView/TextView.vue', import.meta.url)),
+        name: 'textview',
+        fileName: 'TextView',
         formats: ['umd']
     } as LibraryOptions
 };
 
 const getCurrentLibrary = (mode: string) => {
-    if (mode === 'NodeDialog' || mode === 'TableView' || mode === 'DeferredTableView') {
+    if (mode === 'NodeDialog' || mode === 'TableView' || mode === 'TextView' || mode === 'DeferredTableView') {
         return libraries[mode];
     }
     return false;
 };
 
-
-// https://vitejs.dev/config/
 // https://vitest.dev/config/
 export default defineConfig(({ mode }) => {
     const env = { ...process.env, ...loadEnv(mode, process.cwd()) };

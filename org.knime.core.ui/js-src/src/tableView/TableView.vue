@@ -11,7 +11,7 @@ const isReport = Boolean(knimeService.extensionConfig.generatedImageActionId);
 const store = useStore();
 const onRendered = () => {
     store.dispatch('pagebuilder/setReportingContent', {
-        nodeID: knimeService.extensionConfig.nodeId,
+        nodeId: knimeService.extensionConfig.nodeId,
         reportContent: false
     });
 };

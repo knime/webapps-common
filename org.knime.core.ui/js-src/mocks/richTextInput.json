@@ -1,0 +1,42 @@
+{
+  "result": {
+    "name": "New Node Dialog",
+    "data": {
+      "richTextContent": "test",
+      "checkbox": true
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "richTextContent": {
+          "type": "string",
+          "title": "Rich Text Content",
+          "description": "Test rich text Content",
+          "default": "Rich text content"
+        },
+        "checkbox": {
+          "type": "boolean",
+          "title": "checkbox"
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/richTextContent",
+          "options": {
+            "format": "richTextInput"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/checkbox",
+          "options": {
+            "format": "checkbox"
+          }
+        }
+      ]
+    }
+  }
+}

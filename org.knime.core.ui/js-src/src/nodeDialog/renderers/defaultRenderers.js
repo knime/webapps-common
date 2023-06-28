@@ -12,6 +12,7 @@ import { horizontalLayoutRenderer } from './horizontalLayoutRenderer';
 import { valueSwitchRenderer } from './valueSwitchRenderer';
 import { buttonRenderer } from './buttonRenderer';
 import { dateTimeRenderer } from './dateTimeRenderer';
+import { richTextInputRenderer } from './richTextInputRenderer';
 
 export const defaultRenderers = [
     sectionLayoutRenderer,
@@ -27,6 +28,7 @@ export const defaultRenderers = [
     arrayLayoutRenderer,
     horizontalLayoutRenderer,
     valueSwitchRenderer,
+    richTextInputRenderer,
     buttonRenderer,
     dateTimeRenderer
 ];

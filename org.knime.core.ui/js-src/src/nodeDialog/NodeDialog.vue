@@ -174,6 +174,19 @@ export default {
     padding: 0 20px;
     overflow: hidden;
     overflow-y: auto;
+
+    /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
+    & .vertical-layout:last-child {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+
+      & :deep(.vertical-layout-item:last-child) {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+    }
   }
 
   & .controls {
