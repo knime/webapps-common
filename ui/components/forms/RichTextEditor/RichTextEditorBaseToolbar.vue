@@ -10,21 +10,28 @@ import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
 
-import type { EnabledTools, EditorTools, EditorToolItem } from "./types";
+import type {
+  BaseExtensionsConfig,
+  EditorTools,
+  EditorToolItem,
+} from "./types";
 
 interface Props {
   editor: Editor;
-  enabledTools: EnabledTools | { all: true };
+  baseExtensions: BaseExtensionsConfig | { all: true };
 }
 
 const props = defineProps<Props>();
 
-const registerTool = (toolName: keyof EnabledTools, tool: EditorToolItem) => {
-  if ("all" in props.enabledTools) {
+const registerTool = (
+  toolName: keyof BaseExtensionsConfig,
+  tool: EditorToolItem
+) => {
+  if ("all" in props.baseExtensions) {
     return [tool];
   }
 
-  return props.enabledTools[toolName] ? [tool] : [];
+  return props.baseExtensions[toolName] ? [tool] : [];
 };
 
 const isListActive = () =>

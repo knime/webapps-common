@@ -79,7 +79,6 @@ describe("RichTextEditor.vue", () => {
 
   const defaultProps = {
     modelValue: "<p>Hello world</p>",
-    enabledTools: { all: true },
   };
 
   const doMount = ({
@@ -106,7 +105,7 @@ describe("RichTextEditor.vue", () => {
   };
 
   it("should initialize the editor correctly", () => {
-    doMount();
+    doMount({ props: { baseExtensions: { all: true } } });
 
     expect(useEditor).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -121,7 +120,7 @@ describe("RichTextEditor.vue", () => {
   });
 
   it("should emit an 'update:modelValue' event", () => {
-    const { wrapper } = doMount();
+    const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
     // trigger update function
     mockEditor.value.params.onUpdate();
@@ -129,13 +128,13 @@ describe("RichTextEditor.vue", () => {
     expect(wrapper.emitted("update:modelValue")).toBeDefined();
   });
 
-  describe("enabled tools", () => {
-    it("should not have tools enabled by default", () => {
+  describe("base extensions", () => {
+    it("should not have extensions enabled by default", () => {
       doMount({
-        props: { enabledTools: {} },
+        props: { baseExtensions: {} },
       });
 
-      const baseTools = [
+      const baseExtensions = [
         "bold",
         "italic",
         "bulletList",
@@ -145,7 +144,7 @@ describe("RichTextEditor.vue", () => {
 
       const [starterKitExtension] = mockEditor.value.params.extensions;
 
-      baseTools.forEach((toolName) => {
+      baseExtensions.forEach((toolName) => {
         expect(starterKitExtension.options[toolName]).toBe(false);
       });
 
@@ -170,7 +169,7 @@ describe("RichTextEditor.vue", () => {
       "should enable the tools specified via props (StarterKit)",
       (toolName) => {
         doMount({
-          props: { enabledTools: { [toolName]: true } },
+          props: { baseExtensions: { [toolName]: true } },
         });
 
         const [starterKitExtension] = mockEditor.value.params.extensions;
@@ -181,7 +180,7 @@ describe("RichTextEditor.vue", () => {
 
     it("should enable the underline tool", () => {
       doMount({
-        props: { enabledTools: { underline: true } },
+        props: { baseExtensions: { underline: true } },
       });
 
       const underlineExtension = mockEditor.value.params.extensions.find(
@@ -192,7 +191,7 @@ describe("RichTextEditor.vue", () => {
 
     it("should enable the textAlign tool", () => {
       doMount({
-        props: { enabledTools: { textAlign: true } },
+        props: { baseExtensions: { textAlign: true } },
       });
 
       const textAlignExtension = mockEditor.value.params.extensions.find(
@@ -203,7 +202,7 @@ describe("RichTextEditor.vue", () => {
   });
 
   it("should set editable state", async () => {
-    const { wrapper } = doMount();
+    const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
     expect(useEditor).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -217,7 +216,7 @@ describe("RichTextEditor.vue", () => {
   });
 
   it("should focus editor on mount", async () => {
-    doMount({ props: { autofocus: true } });
+    doMount({ props: { autofocus: true, baseExtensions: { all: true } } });
 
     await new Promise((r) => setTimeout(r, 0));
 
@@ -226,14 +225,14 @@ describe("RichTextEditor.vue", () => {
 
   describe("tool interactions", () => {
     it("should render all tools", () => {
-      const { wrapper } = doMount();
+      const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
       expect(wrapper.findAll(".tool").length).toBe(8);
     });
 
     it("should set the active state correctly", () => {
       isActive.mockImplementation((name) => name === "bold");
-      const { wrapper } = doMount();
+      const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
       expect(
         wrapper.findAllComponents(FunctionButton).at(0)?.props("active")
@@ -244,7 +243,7 @@ describe("RichTextEditor.vue", () => {
     });
 
     it("should execute the toolbar action", () => {
-      const { wrapper } = doMount();
+      const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
       const boldToolIndex = 0;
 
@@ -298,8 +297,11 @@ describe("RichTextEditor.vue", () => {
       const customToolbar = (props: any) =>
         h(getScopedComponent, { scope: props });
 
-      // @ts-ignore
-      const { wrapper } = doMount({ slots: { customToolbar } });
+      const { wrapper } = doMount({
+        // @ts-ignore
+        slots: { customToolbar },
+        props: { baseExtensions: { all: true } },
+      });
 
       expect(getSlottedStubProp({ wrapper, propName: "editor" })).toEqual(
         mockEditor.value

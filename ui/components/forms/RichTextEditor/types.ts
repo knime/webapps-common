@@ -12,7 +12,7 @@ export interface EditorToolItem {
 
 export type EditorTools = Array<EditorToolItem>;
 
-export type EnabledTools = {
+export type BaseExtensionsConfig = {
   bold?: true;
   italic?: true;
   underline?: true;
@@ -20,4 +20,9 @@ export type EnabledTools = {
   bulletList?: true;
   orderedList?: true;
   heading?: true;
+  blockquote?: true;
+  code?: true;
+  codeBlock?: true;
+  horizontalRule?: true;
+  strike?: true;
 };

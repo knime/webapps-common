@@ -51,8 +51,7 @@ export default defineComponent({
     return {
       compact: true,
       editable: true,
-      value: "<p><strong>Hello</strong> World</p>",
-      disableEditableTransition: false,
+      value: "<p><strong>Hello</strong> World</p> <br /><u>Underlined</u>",
       minHeight: 150,
       maxHeight: 300,
       code,
@@ -71,15 +70,11 @@ export default defineComponent({
           &nbsp;
           <Checkbox v-model="compact"> Compact </Checkbox>
           &nbsp;
-          <Checkbox v-model="disableEditableTransition">
-            Disable editable transition
-          </Checkbox>
           <div class="editor-wrapper">
             <RichTextEditor
               v-model="value"
               :compact="compact"
-              :disable-editable-transition="disableEditableTransition"
-              :enabled-tools="{ all: true }"
+              :base-extensions="{ all: true }"
               :editable="editable"
               :min-height="minHeight"
               :max-height="maxHeight"
@@ -106,7 +101,7 @@ export default defineComponent({
               :editable="editable"
               :min-height="minHeight"
               :max-height="maxHeight"
-              :enabled-tools="{ bold: true, italic: true, underline: true }"
+              :base-extensions="{ bold: true, italic: true }"
             >
               <template #customToolbar="{ tools }">
                 <div class="custom-toolbar">

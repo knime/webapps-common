@@ -6,17 +6,16 @@ import StarterKit from "@tiptap/starter-kit";
 
 import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
-import type { EnabledTools } from "./types";
+import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
 
-type EnabledToolsPropType =
-  | EnabledTools
-  | ({ [key in keyof EnabledTools]: never } & { all: boolean });
+type BaseExtensions =
+  | BaseExtensionsConfig
+  | ({ [key in keyof BaseExtensionsConfig]: never } & { all: boolean });
 
 interface Props {
   modelValue: string;
   editable?: boolean;
-  compact?: boolean;
   /**
    * Min height the editor should have. By default this is unset, so
    * the editor will fir the min content
@@ -29,10 +28,10 @@ interface Props {
    */
   maxHeight?: number | null;
   /**
-   * Tools that should be enabled. By default all tools are disabled and you
+   * Extensions that should be enabled. By default all are disabled and you
    * have to opt-in to use them
    */
-  enabledTools?: EnabledToolsPropType;
+  baseExtensions?: BaseExtensions;
   /**
    * Function to format the display value of each tool's hotkeys as a title when hovered.
    * Receives as parameter the key combinations of each tool and should return
@@ -40,30 +39,25 @@ interface Props {
    * @param hotkey
    */
   hotkeyFormatter?: (hotkey: Array<string>) => string;
-
+  /**
+   * Extra extensions that you want to use for the editor
+   */
   customExtensions?: Array<AnyExtension>;
   /**
    * Whether to automatically focus the editor on mount. Also applies when the
    * editable prop changes. False by default
    */
   autofocus?: boolean;
-  /**
-   * Whether to disable the expand transition when the editor goes into edit mode.
-   * False by default
-   */
-  disableEditableTransition?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   editable: true,
-  compact: false,
   minHeight: null,
   maxHeight: null,
-  enabledTools: () => ({} as EnabledToolsPropType),
+  baseExtensions: () => ({} as BaseExtensions),
   hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: false,
-  disableEditableTransition: false,
 });
 
 const slots = useSlots();
@@ -73,26 +67,33 @@ const emit = defineEmits<{
   (e: "update:modelValue", content: string): void;
 }>();
 
-const isToolEnabled = (toolName: keyof EnabledTools) => {
-  if ("all" in props.enabledTools) {
+const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
+  if ("all" in props.baseExtensions) {
     return true;
   }
 
-  return Boolean(props.enabledTools[toolName]);
+  return Boolean(props.baseExtensions[extensionName]);
+};
+
+const getStarterKitExtensionConfig = (
+  extensionName: keyof BaseExtensionsConfig
+) => {
+  // eslint-disable-next-line no-undefined
+  return isToolEnabled(extensionName) ? undefined : false;
 };
 
 const extensions = [
   StarterKit.configure({
-    // eslint-disable-next-line no-undefined
-    bold: isToolEnabled("bold") ? undefined : false,
-    // eslint-disable-next-line no-undefined
-    italic: isToolEnabled("italic") ? undefined : false,
-    // eslint-disable-next-line no-undefined
-    bulletList: isToolEnabled("bulletList") ? undefined : false,
-    // eslint-disable-next-line no-undefined
-    orderedList: isToolEnabled("orderedList") ? undefined : false,
-    // eslint-disable-next-line no-undefined
-    heading: isToolEnabled("heading") ? undefined : false,
+    bold: getStarterKitExtensionConfig("bold"),
+    italic: getStarterKitExtensionConfig("italic"),
+    bulletList: getStarterKitExtensionConfig("bulletList"),
+    orderedList: getStarterKitExtensionConfig("orderedList"),
+    heading: getStarterKitExtensionConfig("heading"),
+    blockquote: getStarterKitExtensionConfig("blockquote"),
+    code: getStarterKitExtensionConfig("code"),
+    codeBlock: getStarterKitExtensionConfig("codeBlock"),
+    horizontalRule: getStarterKitExtensionConfig("horizontalRule"),
+    strike: getStarterKitExtensionConfig("strike"),
   }),
   ...(isToolEnabled("underline") ? [UnderLine] : []),
 
@@ -164,23 +165,19 @@ onMounted(async () => {
 });
 
 const hasCustomToolbar = slots.customToolbar;
-const hasTools = computed(() => Object.keys(props.enabledTools).length !== 0);
+const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
 </script>
 
 <template>
   <div class="editor-wrapper">
-    <Transition
-      v-if="hasTools"
-      name="expand"
-      :css="!hasCustomToolbar && !disableEditableTransition"
-    >
+    <Transition v-if="hasTools" name="expand" :css="!hasCustomToolbar">
       <div
         v-if="editor && editable"
         :class="{ 'embedded-toolbar': !hasCustomToolbar }"
       >
         <RichTextEditorBaseToolbar
           :editor="editor"
-          :enabled-tools="enabledTools"
+          :base-extensions="baseExtensions"
         >
           <template #default="{ tools }">
             <slot name="customToolbar" :editor="editor" :tools="tools">
@@ -211,6 +208,7 @@ const hasTools = computed(() => Object.keys(props.enabledTools).length !== 0);
 
   --toolbar-height: 48px;
   --rich-text-editor-font-size: 12;
+  --rich-text-editor-padding: 4px;
 }
 
 .embedded-toolbar {
@@ -249,6 +247,7 @@ const hasTools = computed(() => Object.keys(props.enabledTools).length !== 0);
   height: 100%;
   max-height: v-bind("maxHeight");
   overflow-y: auto;
+  padding: var(--rich-text-editor-padding);
 
   &.editable {
     cursor: text;
@@ -264,7 +263,6 @@ const hasTools = computed(() => Object.keys(props.enabledTools).length !== 0);
   & :deep(.ProseMirror) {
     height: 100%;
     font-size: calc(var(--rich-text-editor-font-size) * 1px);
-    padding: v-bind("compact ? '4px' : '16px'");
     color: var(--knime-black);
 
     &:focus-visible,
