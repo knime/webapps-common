@@ -183,7 +183,7 @@ export default {
   
     & .column-count {
       color: var(--knime-dove-gray);
-      font-size: 14px;
+      font-size: 13px;
       font-family: "Roboto Condensed", sans-serif;
       white-space: pre;
     }

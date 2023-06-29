@@ -190,7 +190,7 @@ export default {
     justify-content: space-between;
     text-decoration: underline;
     margin-bottom: 20px;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     color: var(--knime-dove-gray);
 

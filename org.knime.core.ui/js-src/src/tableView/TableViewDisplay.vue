@@ -185,9 +185,9 @@ const columnResizeActive = useBoolean();
 <style lang="postcss" scoped>
 .table-title {
   margin: 0;
-  padding: 15px 0 5px 5px;
+  padding: 15px 0 0 0;
   color: rgb(70 70 70);
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .no-columns {
@@ -199,7 +199,7 @@ const columnResizeActive = useBoolean();
 
   & h4 {
     color: rgb(70 70 70);
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 
