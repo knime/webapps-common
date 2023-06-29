@@ -5,7 +5,8 @@ interface PageParams {
     columnCount: number,
 }
 
-const getPageConfig = (pageParams: PageParams | undefined, pageSize: number, enablePagination: boolean) => {
+const getPageConfig = (pageParams: PageParams | undefined, pageSize: number,
+    enablePagination: boolean, showTableSize: boolean) => {
     if (typeof pageParams === 'undefined') {
         return {
             pageConfig: false
@@ -22,7 +23,8 @@ const getPageConfig = (pageParams: PageParams | undefined, pageSize: number, ena
             tableSize: totalRowCount,
             pageSize: enablePagination ? pageSize : currentRowCount,
             currentPage,
-            columnCount
+            columnCount,
+            showTableSize
         }
     };
 };
@@ -57,7 +59,7 @@ export default ({
         showSelection: publishSelection || subscribeToSelection || false,
         enableColumnResizing,
         showColumnFilters: enableColumnSearch || false,
-        ...getPageConfig(pageParams, pageSize, enablePagination),
+        ...getPageConfig(pageParams, pageSize, enablePagination, showTableSize),
         enableVirtualScrolling,
         ...enableSortingByHeader && {
             sortConfig: {
@@ -69,7 +71,6 @@ export default ({
             searchConfig: {
                 searchQuery: globalSearchQuery
             }
-        },
-        showTableSize
+        }
     };
 };
