@@ -44,28 +44,22 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   28 Jun 2023 (Rupert Ettrich): created
+ *   29 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.view.textview;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- *
+ * Annotate a {@link String} setting with this widget to edit its content with a rich text editor.
+ * @author Rupert Ettrich
  */
-public class TextViewViewSettings implements DefaultNodeSettings {
-    /**
-     * The main content to be displayed
-     */
-    @Widget(title = "Rich Text Content", description = "The rich text content that is displayed in the view")
-    @RichTextInputWidget
-    public String m_richTextContent = "";
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface RichTextInputWidget {
 
-    /**
-     * Create a new {@link TextViewViewSettings} with default values
-     */
-    protected TextViewViewSettings() {
-    }
 }

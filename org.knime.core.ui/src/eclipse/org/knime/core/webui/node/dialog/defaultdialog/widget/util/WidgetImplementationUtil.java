@@ -63,6 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -125,7 +126,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(ChoicesWidget.class), //
         new WidgetAnnotation(ButtonWidget.class), //
         new WidgetAnnotation(List.of(String.class), DateTimeWidget.class), //
-        new WidgetAnnotation(List.of(LocalDate.class), DateWidget.class) //
+        new WidgetAnnotation(List.of(LocalDate.class), DateWidget.class), //
+        new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class) //
     };
 
     /**

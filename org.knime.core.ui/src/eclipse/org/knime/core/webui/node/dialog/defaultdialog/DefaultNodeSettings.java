@@ -80,6 +80,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -144,7 +145,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>Text Input</td>
  * <td>{@link ChoicesWidget} (twin-list)<br>
  * {@link TextInputWidget}<br>
- * {@link DateTimeWidget}</td>
+ * {@link DateTimeWidget}<br>
+ * {@link RichTextInputWidget}</td>
  * </tr>
  * <tr>
  * <td>LocalDate</td>

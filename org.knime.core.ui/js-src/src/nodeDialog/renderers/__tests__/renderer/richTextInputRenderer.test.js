@@ -21,7 +21,7 @@ describe('RichTextInput', () => {
             type: 'Controll',
             scope: '#/properties/richTextContent',
             options: {
-                format: inputFormats.markdown
+                format: inputFormats.richTextInput
             }
         };
         expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();

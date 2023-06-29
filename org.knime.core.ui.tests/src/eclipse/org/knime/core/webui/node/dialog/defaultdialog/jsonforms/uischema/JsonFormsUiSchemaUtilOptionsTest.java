@@ -82,6 +82,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvid
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -791,6 +792,19 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.minimum").isString().isEqualTo("2023-06-12");
         assertThatJson(response).inPath("$.elements[0].options.maximum").isString().isEqualTo("2023-06-14");
+    }
+
+    @Test
+    void testRichTextInputWidget() {
+        class RichTextInputWidgetSettings {
+            @RichTextInputWidget
+            String m_richTextContent;
+        }
+
+        var response = buildTestUiSchema(RichTextInputWidgetSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
     }
 
 }

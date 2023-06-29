@@ -85,6 +85,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -195,6 +196,10 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(DateWidget.class)) {
             final var dateWidget = m_field.getAnnotation(DateWidget.class);
             setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
+        }
+
+        if(annotatedWidgets.contains(RichTextInputWidget.class)) {
+            options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
         }
 
         if (annotatedWidgets.contains(ButtonWidget.class)) {
