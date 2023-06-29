@@ -100,6 +100,10 @@ describe.skip("DateTimeInput.vue", () => {
       expect(wrapper.isVisible()).toBeTruthy();
       expect(wrapper.find({ ref: "datePicker" }).isVisible()).toBeTruthy();
     });
+
+    it.skip("renders disabled state", () => {
+      // TODO add test for disabled state
+    });
   });
 
   describe("updates", () => {

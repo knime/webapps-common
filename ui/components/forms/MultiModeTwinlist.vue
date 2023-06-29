@@ -332,7 +332,6 @@ export default {
       :active="withModeLabel"
       :text="modeLabel"
       class="label"
-      compact
     >
       <ValueSwitch
         :id="labelForId"
@@ -349,7 +348,6 @@ export default {
       :active="withPatternLabel"
       :text="patternLabel"
       class="label"
-      compact
     >
       <SearchInput
         :id="labelForId"
@@ -376,7 +374,6 @@ export default {
       :active="withTypesLabel"
       :text="typesLabel"
       class="label"
-      compact
     >
       <Checkboxes
         :model-value="chosenTypes"

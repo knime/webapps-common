@@ -94,7 +94,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label #default="{ labelForId }" text="Integer (step-size = 1)">
+          <Label #default="{ labelForId }" text="Integer (step-size = 1)" large>
             <NumberInput
               :id="labelForId"
               ref="input1"
@@ -107,7 +107,7 @@ export default {
               @update:model-value="validate1"
             />
           </Label>
-          <Label #default="{ labelForId }" text="Double (step-size = .1)">
+          <Label #default="{ labelForId }" text="Double (step-size = .1)" large>
             <NumberInput
               :id="labelForId"
               ref="input2"
@@ -120,7 +120,7 @@ export default {
               @update:model-value="validate2"
             />
           </Label>
-          <Label #default="{ labelForId }" :text="input3Text">
+          <Label #default="{ labelForId }" :text="input3Text" large>
             <NumberInput
               :id="labelForId"
               ref="input3"
@@ -133,7 +133,7 @@ export default {
               @update:model-value="validate3"
             />
           </Label>
-          <Label #default="{ labelForId }" text="Disabled">
+          <Label #default="{ labelForId }" text="Disabled" large>
             <NumberInput
               :id="labelForId"
               v-model="inputValue1"

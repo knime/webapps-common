@@ -4,8 +4,9 @@
  */
 export default {
   provide: {
-    compactLabels: true,
+    largeLabels: false,
   },
+
   props: {
     text: {
       default: "",

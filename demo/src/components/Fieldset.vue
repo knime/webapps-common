@@ -57,7 +57,7 @@ export default {
         <div class="grid-item-12">
           <p>
             Fieldset can be used to group multiple form fields. Labels inside
-            Fieldsets automagically use their compact size.
+            Fieldsets automatically use their default size.
           </p>
         </div>
       </div>

@@ -70,7 +70,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label text="Hours">
+          <Label text="Hours" large>
             <TimePartInput
               v-model="hours"
               type="integer"
@@ -80,7 +80,7 @@ export default {
               @bounds="hoursBound"
             />
           </Label>
-          <Label text="Minutes">
+          <Label text="Minutes" large>
             <TimePartInput
               v-model="minutes"
               type="integer"
@@ -90,7 +90,7 @@ export default {
               @bounds="minutesBound"
             />
           </Label>
-          <Label text="Seconds">
+          <Label text="Seconds" large>
             <TimePartInput
               v-model="seconds"
               type="integer"
@@ -100,7 +100,7 @@ export default {
               @bounds="secondsBound"
             />
           </Label>
-          <Label text="Milliseconds">
+          <Label text="Milliseconds" large>
             <TimePartInput
               v-model="milliseconds"
               type="integer"
@@ -108,6 +108,14 @@ export default {
               :max="999"
               :min-digits="3"
               @bounds="millisecondsBound"
+            />
+          </Label>
+          <Label text="Disabled">
+            <TimePartInput
+              v-model="milliseconds"
+              disabled
+              type="integer"
+              :min-digits="3"
             />
           </Label>
         </div>
