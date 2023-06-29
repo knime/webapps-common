@@ -254,7 +254,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
         SettingsCreationContext settingsCreationContext = new SettingsCreationContext(
             new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
                 new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
-            null);
+            null, null);
 
         var response = buildTestUiSchema(ChoicesSettings.class, settingsCreationContext);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");

@@ -61,8 +61,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
@@ -207,9 +209,13 @@ public interface DefaultNodeSettings extends PersistableSettings {
 
         private final FlowObjectStack m_stack;
 
-        public SettingsCreationContext(final PortObjectSpec[] specs, final FlowObjectStack stack) {
+        private final CredentialsProvider m_credentialsProvider;
+
+        public SettingsCreationContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
+            final CredentialsProvider credentialsProvider) {
             m_specs = specs;
             m_stack = stack;
+            m_credentialsProvider = credentialsProvider;
         }
 
         /**
@@ -279,6 +285,14 @@ public interface DefaultNodeSettings extends PersistableSettings {
         public String[] getAvailableFlowVariableNames() {
             return m_stack != null ? m_stack.getAllAvailableFlowVariables().keySet().toArray(String[]::new)
                 : new String[0];
+        }
+
+        /**
+         * @return the {@link CredentialsProvider} associated with the node. Can be empty, e.g., if the node is a
+         *         component
+         */
+        Optional<CredentialsProvider> getCredentialsProvider() {
+            return Optional.ofNullable(m_credentialsProvider);
         }
 
     }
@@ -373,8 +387,15 @@ public interface DefaultNodeSettings extends PersistableSettings {
     static SettingsCreationContext createSettingsCreationContext(final PortObjectSpec[] specs) {
         Objects.requireNonNull(specs, () -> "Port object specs must not be null.");
         final var nodeContext = NodeContext.getContext();
-        return new SettingsCreationContext(specs,
-            nodeContext == null ? null : nodeContext.getNodeContainer().getFlowObjectStack());
+        if (nodeContext == null) {
+            return new SettingsCreationContext(specs, null, null);
+        }
+        var nc = nodeContext.getNodeContainer();
+        CredentialsProvider credentialsProvider = null;
+        if (nc instanceof NativeNodeContainer nnc) {
+            credentialsProvider = nnc.getNode().getCredentialsProvider();
+        }
+        return new SettingsCreationContext(specs, nc.getFlowObjectStack(), credentialsProvider);
     }
 
 }

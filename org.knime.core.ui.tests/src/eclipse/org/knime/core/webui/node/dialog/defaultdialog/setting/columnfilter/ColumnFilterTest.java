@@ -56,9 +56,6 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.TypeColumnFilter;
 import org.knime.testing.util.TableTestUtil;
 
 /**
@@ -72,7 +69,7 @@ class ColumnFilterTest {
     private static final DataColumnSpec COL_SPEC = TABLE_SPEC.getColumnSpec(0);
 
     private static final SettingsCreationContext CONTEXT =
-        new SettingsCreationContext(new PortObjectSpec[]{TABLE_SPEC}, null);
+        new SettingsCreationContext(new PortObjectSpec[]{TABLE_SPEC}, null, null);
 
     @Test
     void testGetSelectedByManualWithIncludeUnknownColumns() {

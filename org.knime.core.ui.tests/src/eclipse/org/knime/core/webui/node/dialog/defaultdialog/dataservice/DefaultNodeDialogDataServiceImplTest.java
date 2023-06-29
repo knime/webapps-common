@@ -379,7 +379,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 (Boolean)dataService.invokeActionHandler(SettingsCreationContextHandler.class.getName()).result();
             assertThat(firstResult).isFalse();
 
-            m_context = new SettingsCreationContext(new PortObjectSpec[0], null);
+            m_context = new SettingsCreationContext(new PortObjectSpec[0], null, null);
 
             final var secondResult =
                 (Boolean)dataService.invokeActionHandler(SettingsCreationContextHandler.class.getName()).result();
