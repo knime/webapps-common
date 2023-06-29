@@ -8,7 +8,7 @@ export interface EditorToolItem {
   onClick: () => void;
   active?: () => boolean;
   disabled?: () => boolean;
-  isExtra?: boolean;
+  secondary?: boolean;
 }
 
 export type EditorTools = Array<EditorToolItem>;

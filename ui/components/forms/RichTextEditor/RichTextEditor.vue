@@ -40,7 +40,7 @@ interface Props {
    */
   hotkeyFormatter?: (hotkey: Array<string>) => string;
   /**
-   * Extra extensions that you want to use for the editor
+   * Custom extensions that you want to use for the editor
    */
   customExtensions?: Array<AnyExtension>;
   /**

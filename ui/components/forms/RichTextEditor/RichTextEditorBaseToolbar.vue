@@ -137,10 +137,9 @@ const editorTools: EditorTools = [
     id: "blockquote",
     icon: BlockquoteIcon,
     name: "Blockquote",
-    hotkey: ["Ctrl", "Shift", "B"],
     active: () => props.editor.isActive("blockquote"),
     onClick: () => props.editor.chain().focus().toggleBlockquote().run(),
-    isExtra: true,
+    secondary: true,
   }),
 
   ...registerTool("codeBlock", {
@@ -150,7 +149,7 @@ const editorTools: EditorTools = [
     hotkey: ["Ctrl", "Alt", "C"],
     active: () => props.editor.isActive("codeBlock"),
     onClick: () => props.editor.chain().focus().toggleCodeBlock().run(),
-    isExtra: true,
+    secondary: true,
   }),
 
   ...registerTool("strike", {
@@ -160,7 +159,7 @@ const editorTools: EditorTools = [
     hotkey: ["Ctrl", "Shift", "X"],
     active: () => props.editor.isActive("strike"),
     onClick: () => props.editor.chain().focus().toggleStrike().run(),
-    isExtra: true,
+    secondary: true,
   }),
 
   ...registerTool("horizontalRule", {
@@ -169,7 +168,7 @@ const editorTools: EditorTools = [
     name: "Divider",
     active: () => false,
     onClick: () => props.editor.chain().focus().setHorizontalRule().run(),
-    isExtra: true,
+    secondary: true,
   }),
 ];
 </script>

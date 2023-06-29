@@ -17,10 +17,14 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const baseTools = computed(() => props.tools.filter(({ isExtra }) => !isExtra));
-const extraTools = computed(() => props.tools.filter(({ isExtra }) => isExtra));
-const extraToolsMenuItems = computed<MenuItem[]>(() =>
-  extraTools.value.map((tool) => ({
+const baseTools = computed(() =>
+  props.tools.filter(({ secondary }) => !secondary)
+);
+const secondaryTools = computed(() =>
+  props.tools.filter(({ secondary }) => secondary)
+);
+const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
+  secondaryTools.value.map((tool) => ({
     text: tool.name,
     disabled: tool.disabled?.(),
     hotkeyText: props.hotkeyFormatter(tool.hotkey ?? []),
@@ -29,8 +33,8 @@ const extraToolsMenuItems = computed<MenuItem[]>(() =>
   }))
 );
 
-const onExtraToolClick = (_: any, { id }: { id: string }) => {
-  const foundTool = extraTools.value.find((tool) => tool.id === id);
+const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
+  const foundTool = secondaryTools.value.find((tool) => tool.id === id);
   foundTool?.onClick();
 };
 </script>
@@ -51,10 +55,10 @@ const onExtraToolClick = (_: any, { id }: { id: string }) => {
       <Component :is="tool.icon" />
     </FunctionButton>
     <SubMenu
-      v-if="extraTools.length > 0"
-      :items="extraToolsMenuItems"
+      v-if="secondaryTools.length > 0"
+      :items="secondaryToolsMenuItems"
       orientation="left"
-      @item-click="onExtraToolClick"
+      @item-click="onSecondaryToolClick"
     >
       <PlusSmallIcon />
     </SubMenu>
