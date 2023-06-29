@@ -117,10 +117,11 @@ public final class TableViewUtil {
      */
     public static RpcDataService createRpcDataService(final TableViewDataService tableViewDataService,
         final String tableId) {
-        return RpcDataService.builder(tableViewDataService).onCleanup(() -> {
+        Runnable clearCache = () -> {
             tableViewDataService.clearCache();
             TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-        }).build();
+        };
+        return RpcDataService.builder(tableViewDataService).onDeactivate(clearCache).onDispose(clearCache).build();
     }
 
     /**
@@ -166,8 +167,28 @@ public final class TableViewUtil {
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
         final String tableId) {
+        return createInitialDataService(settingsSupplier, tableSupplier, tableId, null);
+    }
+
+    /**
+     * @param settingsSupplier
+     * @param tableSupplier
+     * @param tableId
+     * @param onDispose
+     * @return the table view initial data service
+     */
+    public static InitialDataService<TableViewInitialData> createInitialDataService(
+        final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
+        final String tableId, final Runnable onDispose) {
+        Runnable clearImageData = () -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
         return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), tableSupplier.get(), tableId)) //
-            .onCleanUp(() -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId)) //
+            .onDeactivate(clearImageData) //
+            .onDispose(() -> {
+                clearImageData.run();
+                if (onDispose != null) {
+                    onDispose.run();
+                }
+            }) //
             .serializer(new DefaultNodeSettingsSerializer<>()) //
             .build();
     }

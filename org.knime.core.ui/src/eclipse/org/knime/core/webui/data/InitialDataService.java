@@ -67,7 +67,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @since 4.5
  */
-public final class InitialDataService<D> {
+public final class InitialDataService<D> implements DataService {
 
     private final Supplier<D> m_dataSupplier;
 
@@ -75,9 +75,12 @@ public final class InitialDataService<D> {
 
     private Serializer<D> m_serializer;
 
-    private Runnable m_cleanUp;
+    private Runnable m_dispose;
+
+    private Runnable m_deactivate;
 
     private final NodeContainer m_nc;
+
 
     /**
      * @param dataSupplier
@@ -95,7 +98,8 @@ public final class InitialDataService<D> {
         } else {
             m_serializer = builder.m_serializer;
         }
-        m_cleanUp = builder.m_cleanUp;
+        m_dispose = builder.m_dispose;
+        m_deactivate = builder.m_deactivate;
         m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
@@ -135,16 +139,17 @@ public final class InitialDataService<D> {
         }
     }
 
-    /**
-     * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
-     * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
-     * later.
-     *
-     * TODO: this could also be turned into two suspend/resume life-cycle methods?
-     */
-    public void cleanUp() {
-        if (m_cleanUp != null) {
-            m_cleanUp.run();
+    @Override
+    public void dispose() {
+        if (m_dispose != null) {
+            m_dispose.run();
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        if (m_deactivate != null) {
+            m_deactivate.run();
         }
     }
 
@@ -163,24 +168,29 @@ public final class InitialDataService<D> {
      *
      * @param <D>
      */
-    public static final class InitialDataServiceBuilder<D> {
+    public static final class InitialDataServiceBuilder<D> implements DataServiceBuilder {
 
         private Supplier<D> m_dataSupplier;
 
         private Serializer<D> m_serializer;
 
-        private Runnable m_cleanUp;
+        private Runnable m_dispose;
+
+        private Runnable m_deactivate;
 
         private InitialDataServiceBuilder(final Supplier<D> dataSupplier) {
             m_dataSupplier = dataSupplier;
         }
 
-        /**
-         * @param cleanUp the logic to execute on clean-up, see {@link InitialDataService#cleanUp()}
-         * @return this builder
-         */
-        public InitialDataServiceBuilder<D> onCleanUp(final Runnable cleanUp) {
-            m_cleanUp = cleanUp;
+        @Override
+        public InitialDataServiceBuilder<D> onDispose(final Runnable dispose) {
+            m_dispose = dispose;
+            return this;
+        }
+
+        @Override
+        public InitialDataServiceBuilder<D> onDeactivate(final Runnable deactivate) {
+            m_deactivate = deactivate;
             return this;
         }
 

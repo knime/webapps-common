@@ -130,7 +130,7 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
         var applyData = new ApplyData(m_nc, m_settingsTypes, getNodeSettingsService(), getVariableSettingsService(),
             m_onApplyModifier);
         return Optional.of(ApplyDataService.builder(applyData::applyData) //
-            .onCleanUp(applyData::cleanUp) //
+            .onDeactivate(applyData::cleanUp) //
             .build());
     }
 

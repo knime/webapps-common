@@ -142,20 +142,20 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
     }
 
     /**
-     * Calls {@code cleanUp} on a data service if there is a data service instance available for the given node
+     * Calls {@code deactivate} on a data service if there is a data service instance available for the given node
      * (wrapper).
      *
      * @param nodeWrapper
      */
-    public final void cleanUpDataServices(final N nodeWrapper) {
+    public final void deactivateDataServices(final N nodeWrapper) {
         if (m_initialDataServices.containsKey(nodeWrapper)) {
-            m_initialDataServices.get(nodeWrapper).cleanUp();
+            m_initialDataServices.get(nodeWrapper).deactivate();
         }
         if (m_dataServices.containsKey(nodeWrapper)) {
-            m_dataServices.get(nodeWrapper).cleanUp();
+            m_dataServices.get(nodeWrapper).deactivate();
         }
         if (m_applyDataServices.containsKey(nodeWrapper)) {
-            m_applyDataServices.get(nodeWrapper).cleanUp();
+            m_applyDataServices.get(nodeWrapper).deactivate();
         }
     }
 
@@ -164,8 +164,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      */
     @Override
     public final String callInitialDataService(final N nodeWrapper) {
-        return getInitialDataService(nodeWrapper) // 
-            .filter(InitialDataService.class::isInstance) // 
+        return getInitialDataService(nodeWrapper) //
+            .filter(InitialDataService.class::isInstance) //
             .orElseThrow(() -> new IllegalStateException("No initial data service available")) //
             .getInitialData();
     }
@@ -176,8 +176,12 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
             ds = getWithContext(nodeWrapper,
                 () -> getDataServiceProvider(nodeWrapper).createInitialDataService().orElse(null));
             m_initialDataServices.put(nodeWrapper, ds);
-            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> m_initialDataServices.remove(nodeWrapper))
-                .cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
+            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                var dataService = m_initialDataServices.remove(nodeWrapper);
+                if (dataService != null) {
+                    dataService.dispose();
+                }
+            }).cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
         } else {
             ds = m_initialDataServices.get(nodeWrapper);
         }
@@ -206,7 +210,7 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);
                 if (dataService != null) {
-                    dataService.cleanUp();
+                    dataService.dispose();
                 }
             }).cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
         } else {
@@ -254,8 +258,12 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
         if (!m_applyDataServices.containsKey(nodeWrapper)) {
             ds = getDataServiceProvider(nodeWrapper).createApplyDataService().orElse(null);
             m_applyDataServices.put(nodeWrapper, ds);
-            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> m_applyDataServices.remove(nodeWrapper))
-                .cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
+            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                var dataService = m_applyDataServices.remove(nodeWrapper);
+                if (dataService != null) {
+                    dataService.dispose();
+                }
+            }).cleanUpOnNodeStateChange(shouldCleanUpPageAndDataServicesOnNodeStateChange()).build();
         } else {
             ds = m_applyDataServices.get(nodeWrapper);
         }

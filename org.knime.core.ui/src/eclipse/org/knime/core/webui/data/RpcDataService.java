@@ -68,11 +68,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @since 4.5
  */
-public final class RpcDataService {
+public final class RpcDataService implements DataService {
 
     private final RpcServer m_rpcServer;
 
-    private final Runnable m_cleanUp;
+    private Runnable m_deactivate;
+
+    private final Runnable m_dispose;
 
     private final NodeContainer m_nc;
 
@@ -82,7 +84,8 @@ public final class RpcDataService {
         } else {
             throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
         }
-        m_cleanUp = builder.m_cleanUp;
+        m_deactivate = builder.m_deactivate;
+        m_dispose = builder.m_dispose;
         m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
@@ -136,16 +139,17 @@ public final class RpcDataService {
             .set("params", paramsArrayNode).toPrettyString();
     }
 
-    /**
-     * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
-     * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
-     * later.
-     *
-     * TODO: this could also be turned into two suspend/resume life-cycle methods?
-     */
-    public void cleanUp() {
-        if (m_cleanUp != null) {
-            m_cleanUp.run();
+    @Override
+    public void dispose() {
+        if (m_dispose != null) {
+            m_dispose.run();
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        if (m_deactivate != null) {
+            m_deactivate.run();
         }
     }
 
@@ -162,22 +166,27 @@ public final class RpcDataService {
     /**
      * The builder.
      */
-    public static final class RpcDataServiceBuilder {
+    public static final class RpcDataServiceBuilder implements DataServiceBuilder {
 
         private final List<Object> m_handlers;
 
-        private Runnable m_cleanUp;
+        private Runnable m_dispose;
+
+        private Runnable m_deactivate;
 
         private RpcDataServiceBuilder(final Object handler) {
             m_handlers = Collections.singletonList(handler);
         }
 
-        /**
-         * @param cleanUp logic top run on clean-up; see {@link RpcDataService#cleanUp()}
-         * @return this builder
-         */
-        public RpcDataServiceBuilder onCleanup(final Runnable cleanUp) {
-            m_cleanUp = cleanUp;
+        @Override
+        public RpcDataServiceBuilder onDispose(final Runnable dispose) {
+            m_dispose = dispose;
+            return this;
+        }
+
+        @Override
+        public RpcDataServiceBuilder onDeactivate(final Runnable deactivate) {
+            m_deactivate = deactivate;
             return this;
         }
 
@@ -187,6 +196,8 @@ public final class RpcDataService {
         public RpcDataService build() {
             return new RpcDataService(this);
         }
+
+
 
     }
 
