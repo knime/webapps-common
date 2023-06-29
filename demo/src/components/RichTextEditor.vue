@@ -9,7 +9,6 @@ import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEdit
 const codeExample = `
 <RichTextEditor
   v-model="value"
-  compact
   :editable="editable"
   :enabled-tools={ all: true }
   :min-height="minHeight"
@@ -18,7 +17,6 @@ const codeExample = `
 
 <RichTextEditor
   v-model="value"
-  compact
   :editable="editable"
   :min-height="minHeight"
   :max-height="maxHeight"
@@ -66,7 +64,6 @@ export default defineComponent({
   },
   data() {
     return {
-      compact: true,
       editable: true,
       value:
         "<p><strong>Hello</strong> World</p> <br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>",
@@ -85,13 +82,9 @@ export default defineComponent({
       <div class="grid-container">
         <div class="grid-item-12">
           <Checkbox v-model="editable"> Editable </Checkbox>
-          &nbsp;
-          <Checkbox v-model="compact"> Compact </Checkbox>
-          &nbsp;
           <div class="editor-wrapper">
             <RichTextEditor
               v-model="value"
-              :compact="compact"
               :base-extensions="{ all: true }"
               :editable="editable"
               :min-height="minHeight"
@@ -115,7 +108,6 @@ export default defineComponent({
           <div class="editor-wrapper custom-toolbar-wrapper">
             <RichTextEditor
               v-model="value"
-              compact
               :editable="editable"
               :min-height="minHeight"
               :max-height="maxHeight"
