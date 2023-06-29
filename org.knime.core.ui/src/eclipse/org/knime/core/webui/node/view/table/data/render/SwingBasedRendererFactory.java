@@ -146,6 +146,14 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
             return m_renderer.getText();
         }
 
+        @Override
+        public DataCellContentType getContentType() {
+            if (m_renderer instanceof DataValueRenderer dvr) {
+                return dvr.getContentType();
+            }
+            return DataValueTextRenderer.super.getContentType();
+        }
+
     }
 
     static class SwingBasedImageRenderer implements DataValueImageRenderer {
