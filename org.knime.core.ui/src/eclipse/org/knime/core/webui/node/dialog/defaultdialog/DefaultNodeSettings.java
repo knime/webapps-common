@@ -76,6 +76,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -111,9 +112,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <p>
  * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
  * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
- * annotations} to supply additional information (e.g. description, domain info, ...).
- * Note that getters of at least 'package scope' will also be represented as dialog widgets. If this is not intended,
- * they can be annotated by an {@link JsonIgnore} annotation.
+ * annotations} to supply additional information (e.g. description, domain info, ...). Note that getters of at least
+ * 'package scope' will also be represented as dialog widgets. If this is not intended, they can be annotated by an
+ * {@link JsonIgnore} annotation.
  *
  * The table below lists all the supported type with
  * <ul>
@@ -146,13 +147,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * {@link DateTimeWidget}</td>
  * </tr>
  * <tr>
+ * <td>LocalDate</td>
+ * <td>Date Picker</td>
+ * <td>{@link DateWidget}</td>
+ * <tr>
  * <td>String[]</td>
  * <td></td>
  * <td>{@link ChoicesWidget} (drop-down)</td>
  * </tr>
  * <tr>
  * <td>Enums(*)</td>
- * <td>Drop Down </td>
+ * <td>Drop Down</td>
  * <td>{@link ValueSwitchWidget}<br>
  * {@link RadioButtonsWidget}</td>
  * </tr>
@@ -374,7 +379,6 @@ public interface DefaultNodeSettings extends PersistableSettings {
         CheckUtils.checkArgument(settingsClass.isInstance(settingsObject),
             "The provided settingsObject is not an instance of the provided settingsClass.");
         NodeSettingsPersistorFactory.getPersistor(settingsClass).save((S)settingsObject, settings);
-
     }
 
     /**

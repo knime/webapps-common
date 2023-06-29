@@ -50,6 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -84,12 +86,15 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> NodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
         final String configKey, final FieldPersistor impl) {
         if (impl != null) {
             return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
             return createEnumPersistor(configKey, fieldType);
+        } else if (fieldType.equals(LocalDate.class)) {
+            return (NodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -181,6 +186,36 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         @Override
         public void save(final E obj, final NodeSettingsWO settings) {
             settings.addString(m_configKey, obj == null ? null : obj.name());
+        }
+
+    }
+
+    private static NodeSettingsPersistor<LocalDate> createLocalDatePersistor(final String configKey) {
+        return new LocalDatePersistor(configKey);
+    }
+
+    static final class LocalDatePersistor implements NodeSettingsPersistor<LocalDate> {
+
+        static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        private final String m_configKey;
+
+        LocalDatePersistor(final String configKey) {
+            m_configKey = configKey;
+        }
+
+        @Override
+        public LocalDate load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var value = settings.getString(m_configKey);
+            if (value == null) {
+                return null;
+            }
+            return LocalDate.parse(value, DATE_FMT);
+        }
+
+        @Override
+        public void save(final LocalDate date, final NodeSettingsWO settings) {
+            settings.addString(m_configKey, date == null ? null : date.format(DATE_FMT));
         }
 
     }

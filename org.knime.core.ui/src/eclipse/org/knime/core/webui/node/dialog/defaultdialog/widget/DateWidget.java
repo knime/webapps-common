@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   26 Jun 2023 (Rupert Ettrich): created
+ *   Jun 29, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
@@ -55,34 +55,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * A widget annotation to display a date string as a date picker with several formatting options. Displays only the date
- * per default.
  *
- * @author Rupert Ettrich
+ * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface DateTimeWidget {
-
-    /**
-     * @return whether to show hours and minutes
-     */
-    boolean showTime() default false;
-
-    /**
-     * @return whether to show seconds
-     */
-    boolean showSeconds() default false;
-
-    /**
-     * @return whether to show milliseconds
-     */
-    boolean showMilliseconds() default false;
-
-    /**
-     * @return whether to use a specific timezone, e.g. "America/Dawson_Creek"
-     */
-    String timezone() default "";
+public @interface DateWidget {
 
     /**
      * @return no date before the specified minDate can be chosen
@@ -90,7 +68,7 @@ public @interface DateTimeWidget {
     String minDate() default "";
 
     /**
-     * @return no date after the specified minDate can be chosen
+     * @return no date after the specified maxDate can be chosen
      */
     String maxDate() default "";
 }

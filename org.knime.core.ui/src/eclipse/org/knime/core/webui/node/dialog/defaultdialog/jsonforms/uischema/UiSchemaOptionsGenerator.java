@@ -81,6 +81,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -160,6 +161,10 @@ final class UiSchemaOptionsGenerator {
                 case COLUMN_SELECTION:
                     options.put(TAG_FORMAT, Format.COLUMN_SELECTION);
                     break;
+                case LOCAL_DATE:
+                    options.put(TAG_FORMAT, Format.DATE_TIME);
+                    disableTimeFields(options);
+                    break;
             }
         }
 
@@ -173,24 +178,20 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        if(annotatedWidgets.contains(DateTimeWidget.class)) {
+        if (annotatedWidgets.contains(DateTimeWidget.class)) {
             final var dateTimeWidget = m_field.getAnnotation(DateTimeWidget.class);
             options.put(TAG_FORMAT, Format.DATE_TIME);
-            options.put("showTime", dateTimeWidget.showTime());
-            options.put("showSeconds", dateTimeWidget.showSeconds());
-            options.put("showMilliseconds", dateTimeWidget.showMilliseconds());
+            selectTimeFields(options, dateTimeWidget.showTime(), dateTimeWidget.showSeconds(),
+                dateTimeWidget.showMilliseconds());
             if (!dateTimeWidget.timezone().isEmpty()) {
                 options.put("timezone", dateTimeWidget.timezone());
             }
-            if (!dateTimeWidget.minDate().isEmpty()) {
-                options.put("minimum", dateTimeWidget.minDate());
-            }
-            if (!dateTimeWidget.timezone().isEmpty()) {
-                options.put("maximum", dateTimeWidget.maxDate());
-            }
-            if (!dateTimeWidget.dateFormat().isEmpty()) {
-                options.put("dateFormat", dateTimeWidget.dateFormat());
-            }
+            setMinAndMaxDate(options, dateTimeWidget.minDate(), dateTimeWidget.maxDate());
+        }
+
+        if (annotatedWidgets.contains(DateWidget.class)) {
+            final var dateWidget = m_field.getAnnotation(DateWidget.class);
+            setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
         }
 
         if (annotatedWidgets.contains(ButtonWidget.class)) {
@@ -238,6 +239,26 @@ final class UiSchemaOptionsGenerator {
 
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
+        }
+    }
+
+    private static void disableTimeFields(final ObjectNode options) {
+        selectTimeFields(options, false, false, false);
+    }
+
+    private static void selectTimeFields(final ObjectNode options, final boolean showTime, final boolean showSeconds,
+        final boolean showMilliseconds) {
+        options.put("showTime", showTime);
+        options.put("showSeconds", showSeconds);
+        options.put("showMilliseconds", showMilliseconds);
+    }
+
+    private static void setMinAndMaxDate(final ObjectNode options, final String minDate, final String maxDate) {
+        if (!minDate.isEmpty()) {
+            options.put("minimum", minDate);
+        }
+        if (!maxDate.isEmpty()) {
+            options.put("maximum", maxDate);
         }
     }
 

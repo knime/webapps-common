@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildUiSchema;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -79,6 +80,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -113,6 +115,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
             ColumnFilter m_columnFilter;
 
             ColumnSelection m_columnSelection;
+
+            LocalDate m_localDate;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
@@ -125,6 +129,11 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("columnFilter");
         assertThatJson(response).inPath("$.elements[4].scope").isString().contains("columnSelection");
         assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("columnSelection");
+        assertThatJson(response).inPath("$.elements[5].scope").isString().contains("localDate");
+        assertThatJson(response).inPath("$.elements[5].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[5].options.showTime").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[5].options.showSeconds").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[5].options.showMilliseconds").isBoolean().isFalse();
     }
 
     @Test
@@ -754,8 +763,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testDateTimeWidgetCustomOptions() {
         class DateTimeDefaultTestSettings {
 
-            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, dateFormat = "dd-MM-YYYY",
-                    minDate = "2023-06-12", maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
+            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true,
+                minDate = "2023-06-12", maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
             String m_dateTime;
         }
 
@@ -765,8 +774,21 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[0].options.dateFormat").isString().isEqualTo("dd-MM-YYYY");
         assertThatJson(response).inPath("$.elements[0].options.timezone").isString().isEqualTo("America/Dawson_Creek");
+        assertThatJson(response).inPath("$.elements[0].options.minimum").isString().isEqualTo("2023-06-12");
+        assertThatJson(response).inPath("$.elements[0].options.maximum").isString().isEqualTo("2023-06-14");
+    }
+
+    @Test
+    void testDateWidgetOptions() {
+        class DateTimeDefaultTestSettings {
+
+            @DateWidget(minDate = "2023-06-12", maxDate = "2023-06-14")
+            LocalDate m_date;
+        }
+
+        var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.minimum").isString().isEqualTo("2023-06-12");
         assertThatJson(response).inPath("$.elements[0].options.maximum").isString().isEqualTo("2023-06-14");
     }
