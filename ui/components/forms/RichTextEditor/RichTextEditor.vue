@@ -55,7 +55,25 @@ const props = withDefaults(defineProps<Props>(), {
   minHeight: null,
   maxHeight: null,
   baseExtensions: () => ({} as BaseExtensions),
-  hotkeyFormatter: (hotkey: any) => hotkey.join(" "),
+  hotkeyFormatter: (hotkey: string[]) => {
+    const isMac = () => navigator?.userAgent?.toLowerCase()?.includes("mac");
+
+    const MacOSkeyMap: Record<string, string> = {
+      Shift: "⇧",
+      Ctrl: "⌘",
+      Alt: "⌥",
+    };
+
+    const mapSymbols = (key: string) => MacOSkeyMap[key] || key;
+    const identityFn = (value: any) => value;
+
+    return (
+      hotkey
+        // map only for mac the symbols that should be displayed differently
+        .map(isMac() ? mapSymbols : identityFn)
+        .join(" ")
+    );
+  },
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: false,
 });
