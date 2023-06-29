@@ -207,7 +207,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
   height: 100%;
 
   --toolbar-height: 48px;
-  --rich-text-editor-font-size: 12;
+  --rich-text-editor-font-size: 12px;
   --rich-text-editor-padding: 4px;
 }
 
@@ -262,21 +262,13 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
   /* stylelint-disable-next-line selector-class-pattern */
   & :deep(.ProseMirror) {
     height: 100%;
-    font-size: calc(var(--rich-text-editor-font-size) * 1px);
-    color: var(--knime-black);
 
     &:focus-visible,
     &:focus {
       outline: transparent;
     }
 
-    @mixin rich-text-editor-headings;
-    @mixin rich-text-editor-hr;
-    @mixin rich-text-editor-p;
-    @mixin rich-text-editor-blockquote;
-    @mixin rich-text-editor-code;
-    @mixin rich-text-editor-lists;
-    @mixin rich-text-editor-links;
+    @mixin rich-text-editor-styles;
   }
 }
 </style>

@@ -38,6 +38,23 @@ const codeExample = `
     </div>
   </template>
 </RichTextEditor>
+
+<template>
+  <div class="manual-output" v-html="value" />
+</template>
+
+<!-- since the markup is set via v-html, the styles cannot be scoped -->
+<style lang="postcss">
+@import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
+
+.manual-output {
+  border: 1px solid var(--knime-masala);
+  border-radius: 4px;
+  padding: 4px;
+
+  @mixin rich-text-editor-styles;
+}
+</style>
 `;
 
 export default defineComponent({
@@ -51,7 +68,8 @@ export default defineComponent({
     return {
       compact: true,
       editable: true,
-      value: "<p><strong>Hello</strong> World</p> <br /><u>Underlined</u>",
+      value:
+        "<p><strong>Hello</strong> World</p> <br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>",
       minHeight: 150,
       maxHeight: 300,
       code,
@@ -123,6 +141,37 @@ export default defineComponent({
     </section>
     <section>
       <div class="grid-container">
+        <div class="grid-item-12 custom-toolbar-wrapper">
+          <h3>Render HTML using same styles</h3>
+
+          <div>
+            If you want to display a simple element that renders the markup
+            outputted by the editor, you are able to do so as well. This is
+            helpful, for example, on instances where you want to control
+            directly the rendering, like SSR, while at the same time retainig
+            the same styles that the editor itself uses (for consistency).
+            Here's an example:
+
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div class="manual-output" v-html="value" />
+
+            <div class="notice">
+              <strong>IMPORTANT NOTE!</strong>: Keep in mind that when using
+              this approach of manual rendering, you would then need to also
+              manually sanitize the content. This is because, by default, the
+              editor sanitizes any html it receives when initializing its
+              internal value, so that's something you don't have to take care of
+              (same as it also sanitizes the output upon user input). But when
+              using a manual approach you would then need to perform this
+              sanitization yourself just in case the html data was tampered
+              with.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{
             codeExample
@@ -136,6 +185,32 @@ export default defineComponent({
   </div>
 </template>
 
+<style lang="postcss">
+@import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
+
+.manual-output {
+  border: 1px solid var(--knime-masala);
+  border-radius: 4px;
+  padding: 4px;
+
+  /*
+  You can apply the styles individually
+
+  @mixin rich-text-editor-base;
+  @mixin rich-text-editor-headings;
+  @mixin rich-text-editor-hr;
+  @mixin rich-text-editor-p;
+  @mixin rich-text-editor-blockquote;
+  @mixin rich-text-editor-code;
+  @mixin rich-text-editor-lists;
+  @mixin rich-text-editor-links;
+  */
+
+  /* Or use this mixins that includes everything */
+  @mixin rich-text-editor-styles;
+}
+</style>
+
 <style lang="postcss" scoped>
 .editor-wrapper {
   max-width: 800px;
@@ -144,6 +219,22 @@ export default defineComponent({
 
 .output {
   padding: 18px;
+}
+
+@define-mixin TEST {
+  & p {
+    color: red;
+  }
+
+  @mixin-content;
+}
+
+.notice {
+  background-color: var(--knime-yellow);
+  color: var(--knime-masala);
+  font-size: 14px;
+  padding: 4px;
+  border: 1px solid var(--knime-masala);
 }
 
 .custom-toolbar-wrapper {

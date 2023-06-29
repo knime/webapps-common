@@ -1,3 +1,10 @@
+@define-mixin rich-text-editor-base {
+  font-size: var(--rich-text-editor-font-size, 12px);
+  color: var(--knime-black, hsl(0, 3%, 12%));
+
+  @mixin-content;
+}
+
 @define-mixin rich-text-editor-p {
   & p {
     padding: 0;
@@ -143,6 +150,19 @@
       color: var(--theme-text-link-foreground-color-hover);
     }
   }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-styles {
+  @mixin rich-text-editor-base;
+  @mixin rich-text-editor-headings;
+  @mixin rich-text-editor-hr;
+  @mixin rich-text-editor-p;
+  @mixin rich-text-editor-blockquote;
+  @mixin rich-text-editor-code;
+  @mixin rich-text-editor-lists;
+  @mixin rich-text-editor-links;
 
   @mixin-content;
 }
