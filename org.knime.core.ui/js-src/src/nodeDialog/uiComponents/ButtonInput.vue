@@ -151,7 +151,7 @@ export default ButtonInput;
   </DialogComponentWrapper>
 </template>
 
-<style>
+<style scoped>
 .button-input {
     min-width: 100px;
     text-align: center;
