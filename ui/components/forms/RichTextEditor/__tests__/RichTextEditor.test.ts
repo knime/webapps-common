@@ -105,7 +105,7 @@ describe("RichTextEditor.vue", () => {
   };
 
   it("should initialize the editor correctly", () => {
-    doMount({ props: { baseExtensions: { all: true } } });
+    const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
     expect(useEditor).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -117,6 +117,13 @@ describe("RichTextEditor.vue", () => {
     );
 
     expect(mockEditor.value.params.extensions.length).toBe(3);
+    expect(wrapper.classes("with-border")).toBeTruthy();
+  });
+
+  it("renders without border", () => {
+    const { wrapper } = doMount({ props: { withBorder: false } });
+
+    expect(wrapper.classes("with-border")).toBeFalsy();
   });
 
   it("should emit an 'update:modelValue' event", () => {

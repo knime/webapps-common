@@ -9,47 +9,44 @@ import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEdit
 const codeExample = `
 <RichTextEditor
   v-model="value"
+  :base-extensions="{ all: true }"
   :editable="editable"
-  :enabled-tools={ all: true }
   :min-height="minHeight"
   :max-height="maxHeight"
 />
 
-<RichTextEditor
-  v-model="value"
-  :editable="editable"
-  :min-height="minHeight"
-  :max-height="maxHeight"
-  :enabled-tools="{ bold: true, italic: true, underline: true }"
->
-  <template #customToolbar="{ tools }">
-    <div class="custom-toolbar">
-      <FunctionButton
-        v-for="tool of tools"
-        :key="tool.id"
-        class="tool"
-        :active="tool.active?.()"
-        @click="tool.onClick()"
-      >
-        <Component :is="tool.icon" />
-      </FunctionButton>
-    </div>
-  </template>
-</RichTextEditor>
+<div class="custom-toolbar-wrapper">
+  <RichTextEditor
+    v-model="value"
+    :editable="editable"
+    :min-height="minHeight"
+    :max-height="maxHeight"
+    :base-extensions="{ bold: true, italic: true }"
+  >
+    <template #customToolbar="{ tools }">
+      <div class="custom-toolbar">
+        <FunctionButton
+          v-for="tool of tools"
+          :key="tool.id"
+          class="tool"
+          :active="tool.active?.()"
+          @click="tool.onClick()"
+        >
+          <Component :is="tool.icon" />
+        </FunctionButton>
+      </div>
+    </template>
+  </RichTextEditor>
+</div>
 
 <template>
-  <div class="manual-output" v-html="value" />
+  <div class="static-output" v-html="value" />
 </template>
 
-<!-- since the markup is set via v-html, the styles cannot be scoped -->
-<style lang="postcss">
+<style lang="postcss" scoped>
 @import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
 
-.manual-output {
-  border: 1px solid var(--knime-masala);
-  border-radius: 4px;
-  padding: 4px;
-
+.static-output:deep() {
   @mixin rich-text-editor-styles;
 }
 </style>
@@ -80,32 +77,28 @@ export default defineComponent({
   <div>
     <section>
       <div class="grid-container">
-        <div class="grid-item-12">
+        <div class="grid-item-6">
           <Checkbox v-model="editable"> Editable </Checkbox>
-          <div class="editor-wrapper">
-            <RichTextEditor
-              v-model="value"
-              :base-extensions="{ all: true }"
-              :editable="editable"
-              :min-height="minHeight"
-              :max-height="maxHeight"
-            />
-          </div>
+          <RichTextEditor
+            v-model="value"
+            :base-extensions="{ all: true }"
+            :editable="editable"
+            :min-height="minHeight"
+            :max-height="maxHeight"
+          />
         </div>
-        <div class="grid-item-12">
-          <div class="output">
-            <h4>Output</h4>
-            {{ value }}
-          </div>
+        <div class="grid-item-6">
+          <strong>Output:</strong><br />
+          {{ value }}
         </div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12 custom-toolbar-wrapper">
-          <h3>Custom toolbar and opt-in tools</h3>
+          <h5>Custom toolbar and opt-in tools</h5>
 
-          <div class="editor-wrapper custom-toolbar-wrapper">
+          <div class="custom-toolbar-wrapper">
             <RichTextEditor
               v-model="value"
               :editable="editable"
@@ -133,31 +126,19 @@ export default defineComponent({
     </section>
     <section>
       <div class="grid-container">
-        <div class="grid-item-12 custom-toolbar-wrapper">
-          <h3>Render HTML using same styles</h3>
+        <div class="grid-item-12">
+          <h5>Render output HTML using same styles</h5>
 
-          <div>
-            If you want to display a simple element that renders the markup
-            outputted by the editor, you are able to do so as well. This is
-            helpful, for example, on instances where you want to control
-            directly the rendering, like SSR, while at the same time retainig
-            the same styles that the editor itself uses (for consistency).
-            Here's an example:
+          If you want to statically render the markup outputted by the editor,
+          you can do it like in this example:
 
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <div class="manual-output" v-html="value" />
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div class="static-output" v-html="value" />
 
-            <div class="notice">
-              <strong>IMPORTANT NOTE!</strong>: Keep in mind that when using
-              this approach of manual rendering, you would then need to also
-              manually sanitize the content. This is because, by default, the
-              editor sanitizes any html it receives when initializing its
-              internal value, so that's something you don't have to take care of
-              (same as it also sanitizes the output upon user input). But when
-              using a manual approach you would then need to perform this
-              sanitization yourself just in case the html data was tampered
-              with.
-            </div>
+          <div class="notice">
+            <strong>IMPORTANT!</strong>: When using the editor, it sanitizes any
+            HTML it receives. But when rendering the content without the editor,
+            you need to take care of sanitization.
           </div>
         </div>
       </div>
@@ -177,10 +158,10 @@ export default defineComponent({
   </div>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 @import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
 
-.manual-output {
+.static-output:deep() {
   border: 1px solid var(--knime-masala);
   border-radius: 4px;
   padding: 4px;
@@ -200,25 +181,6 @@ export default defineComponent({
 
   /* Or use this mixins that includes everything */
   @mixin rich-text-editor-styles;
-}
-</style>
-
-<style lang="postcss" scoped>
-.editor-wrapper {
-  max-width: 800px;
-  border: 1px solid var(--knime-masala);
-}
-
-.output {
-  padding: 18px;
-}
-
-@define-mixin TEST {
-  & p {
-    color: red;
-  }
-
-  @mixin-content;
 }
 
 .notice {

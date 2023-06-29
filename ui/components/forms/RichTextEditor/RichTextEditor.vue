@@ -48,6 +48,7 @@ interface Props {
    * editable prop changes. False by default
    */
   autofocus?: boolean;
+  withBorder?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,6 +77,7 @@ const props = withDefaults(defineProps<Props>(), {
   },
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: false,
+  withBorder: true,
 });
 
 const slots = useSlots();
@@ -187,7 +189,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
 </script>
 
 <template>
-  <div class="editor-wrapper">
+  <div :class="['editor-wrapper', { 'with-border': withBorder }]">
     <Transition v-if="hasTools" name="expand" :css="!hasCustomToolbar">
       <div
         v-if="editor && editable"
@@ -222,11 +224,19 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
 @import url("./styles.css");
 
 .editor-wrapper {
-  height: 100%;
-
   --toolbar-height: 48px;
-  --rich-text-editor-font-size: 12px;
-  --rich-text-editor-padding: 4px;
+  --rich-text-editor-font-size: 13px;
+  --rich-text-editor-padding: 10px;
+
+  &.with-border {
+    border: 1px solid var(--knime-stone-gray);
+    background-color: var(--theme-input-field-background-color);
+
+    /* stylelint-disable-next-line selector-class-pattern */
+    &:has(.ProseMirror-focused) {
+      border-color: var(--knime-masala);
+    }
+  }
 }
 
 .embedded-toolbar {
