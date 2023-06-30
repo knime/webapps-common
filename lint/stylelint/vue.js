@@ -64,5 +64,11 @@ module.exports = {
         ],
       },
     ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        ignoreAtRules: ["define-mixin", "mixin"],
+      },
+    ],
   },
 };
