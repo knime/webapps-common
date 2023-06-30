@@ -67,15 +67,4 @@ public interface PortView extends UIExtension, DataServiceProvider {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @return the dimension of the space the port view page is supposed to take. If not specified (empty), the maximum
-     *         available space will be taken
-     */
-    default Optional<Dimension> getDimension() {
-        return Optional.empty();
-    }
-
-    @SuppressWarnings("javadoc")
-    public record Dimension(int widthInPx, int heightInPx) {}
-
 }
