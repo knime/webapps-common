@@ -112,3 +112,4 @@ org.knime.core.ui/js-src/**/node/
 **/.flattened-pom.xml
 **/CHANGELOG.md
 .polyglot.build.properties
+.stylelintcache
