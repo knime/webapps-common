@@ -44,47 +44,19 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 18, 2022 (hornm): created
+ *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.gateway.api.entity;
-
-import org.knime.core.webui.node.NodePortWrapper;
-import org.knime.core.webui.node.PageResourceManager.PageType;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.port.PortViewManager;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 /**
- * Port view entity containing the info required by the UI (i.e. frontend) to be able to display a port view.
+ * A interface to communicate the columnName representing a setting to a dependent setting with an update handler.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
-
-    private final PortView m_portView;
+public interface ColumnNameSupplier {
 
     /**
-     * @param wrapper
-     * @param manager
-     * @param portView
+     * @return the name of a column in the first input port of the current settings creation context
      */
-    // Note on why we need to _pass_ a PortView-instance here instead of requesting it internally:
-    // It helps to avoid problems of deleting the respective node (or closing the workflow) while the
-    // PortViewEnt is being instantiated (which can take some time, e.g., when calculating statistics
-    // which is delivered with the initial data). With the change we avoid the creation of
-    // PortView-instances again (because it's now passed in).
-    public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager, final PortView portView) {
-        super(wrapper, manager, manager, PageType.PORT);
-        m_portView = portView;
-    }
-
-    /**
-     * @return custom styling of the iframe that displays the port view's page
-     */
-    public String getIFrameStyle() {
-        var dims = m_portView.getDimension().orElse(null);
-        var width = dims == null ? "100%" : (dims.widthInPx() + "px");
-        var height = dims == null ? "100%" : (dims.heightInPx() + "px");
-        return String.format("border:none;width:%s;height:%s;", width, height);
-    }
-
+    String columnName();
 }

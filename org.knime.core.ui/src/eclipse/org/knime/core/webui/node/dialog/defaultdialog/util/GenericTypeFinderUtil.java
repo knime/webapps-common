@@ -98,10 +98,17 @@ public class GenericTypeFinderUtil {
 
     private static Optional<Type[]> getFromInterface(final Class<?> clazz, final Class<?> goalType) {
         Type[] interfaces = clazz.getGenericInterfaces();
+
         for (Type inter : interfaces) {
             final var fromInter = matchAndGetTypes(inter, goalType);
+
+
             if (fromInter.isPresent()) {
                 return fromInter;
+            }
+            final var superResult = repeatForSuperInterface(inter, goalType);
+            if (superResult.isPresent()) {
+                return superResult;
             }
         }
         return Optional.empty();
@@ -128,12 +135,28 @@ public class GenericTypeFinderUtil {
     private static Type[] repeatForSuperclass(final Class<?> clazz, final Class<?> goalType) {
         final var superClass = clazz.getSuperclass();
         final var superClassResult = getGenericTypes(superClass, goalType);
-
         final var genericSuperClass = clazz.getGenericSuperclass();
         if (genericSuperClass instanceof ParameterizedType pt) {
             return replaceByActualType(superClass, superClassResult, pt);
         }
         return superClassResult;
+    }
+
+    private static Optional<Type[]> repeatForSuperInterface(final Type superInterface, final Class<?> goalType) {
+        if (superInterface instanceof ParameterizedType pt) {
+            final var rawType = pt.getRawType();
+            final var clazz = (Class<?>) rawType;
+            final var result = getFromInterface(clazz, goalType);
+            if (result.isPresent()) {
+                return result.map(res -> replaceByActualType(clazz, res, pt));
+            }
+        } else {
+            final var result = getFromInterface((Class<?>) superInterface, goalType);
+            if (result.isPresent()) {
+                return result;
+            }
+        }
+        return Optional.empty();
     }
 
     /**

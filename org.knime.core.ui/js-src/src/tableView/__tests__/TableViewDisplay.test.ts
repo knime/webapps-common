@@ -6,7 +6,6 @@ import { TableUI } from '@knime/knime-ui-table';
 import type { TableViewDisplayProps } from '../types';
 import { getDefaultProps, shallowMountDisplay } from './utils/display';
 import specialColumns from '../utils/specialColumns';
-import flushPromises from 'flush-promises';
 
 describe('TableViewDisplay.vue', () => {
     let props: TableViewDisplayProps;

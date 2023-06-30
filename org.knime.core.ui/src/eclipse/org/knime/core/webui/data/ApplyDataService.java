@@ -68,7 +68,7 @@ import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
  *
  * @since 4.5
  */
-public final class ApplyDataService<D> {
+public final class ApplyDataService<D> implements DataService {
 
     private final Applier<D> m_dataApplier;
 
@@ -80,13 +80,16 @@ public final class ApplyDataService<D> {
 
     private NodeID m_nodeId;
 
-    private Runnable m_cleanUp;
+    private Runnable m_dispose;
+
+    private Runnable m_deactivate;
 
     private final Deserializer<D> m_deserializer;
 
     private ApplyDataService(final ApplyDataServiceBuilder<D> builder) {
         m_dataApplier = builder.m_dataApplier;
-        m_cleanUp = builder.m_cleanUp;
+        m_dispose = builder.m_dispose;
+        m_deactivate = builder.m_deactivate;
         m_reExecutable = builder.m_reExecutable;
         m_dataValidator = builder.m_validator;
         if (builder.m_deserializer == null) {
@@ -137,14 +140,17 @@ public final class ApplyDataService<D> {
         }
     }
 
-    /**
-     * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
-     * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
-     * later.
-     */
-    public void cleanUp() {
-        if (m_cleanUp != null) {
-            m_cleanUp.run();
+    @Override
+    public void dispose() {
+        if (m_dispose != null) {
+            m_dispose.run();
+        }
+    }
+
+    @Override
+    public void deactivate() {
+        if (m_deactivate != null) {
+            m_deactivate.run();
         }
     }
 
@@ -199,13 +205,15 @@ public final class ApplyDataService<D> {
      * The builder.
      * @param <D>
      */
-    public static final class ApplyDataServiceBuilder<D> {
+    public static final class ApplyDataServiceBuilder<D> implements DataServiceBuilder {
 
         private Applier<D> m_dataApplier;
 
         private Function<D, String> m_validator;
 
-        private Runnable m_cleanUp;
+        private Runnable m_deactivate;
+
+        private Runnable m_dispose;
 
         private ReExecutable<D> m_reExecutable;
 
@@ -223,21 +231,24 @@ public final class ApplyDataService<D> {
             m_reExecutable = reExecutable;
         }
 
+        @Override
+        public ApplyDataServiceBuilder<D> onDispose(final Runnable dispose) {
+            m_dispose = dispose;
+            return this;
+        }
+
+        @Override
+        public ApplyDataServiceBuilder<D> onDeactivate(final Runnable deactivate) {
+            m_deactivate = deactivate;
+            return this;
+        }
+
         /**
          * @param validator logic that carries out the validation before apply
          * @return this builder
          */
         public ApplyDataServiceBuilder<D> validator(final Function<D, String> validator) {
             m_validator = validator;
-            return this;
-        }
-
-        /**
-         * @param cleanUp logic to run on clean-up; see {@link ApplyDataService#cleanUp()}
-         * @return this builder
-         */
-        public ApplyDataServiceBuilder<D> onCleanUp(final Runnable cleanUp) {
-            m_cleanUp = cleanUp;
             return this;
         }
 

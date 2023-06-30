@@ -21,7 +21,9 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules,
                         extensionConfig: {},
                         callService: vi.fn().mockResolvedValue({}),
                         registerDataGetter: vi.fn(),
-                        addEventCallback: vi.fn()
+                        addEventCallback: vi.fn(),
+                        createAlert: vi.fn(),
+                        sendWarning: vi.fn()
                     }),
                     registerWatcher: (callback, dependencies) => callbacks.push([callback, dependencies])
                 },

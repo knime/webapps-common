@@ -42,49 +42,12 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Jul 18, 2022 (hornm): created
  */
-package org.knime.gateway.api.entity;
-
-import org.knime.core.webui.node.NodePortWrapper;
-import org.knime.core.webui.node.PageResourceManager.PageType;
-import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.port.PortViewManager;
-
 /**
- * Port view entity containing the info required by the UI (i.e. frontend) to be able to display a port view.
+ * TODO UIEXT-1012: Move the {@link ChoicesWidget} and the {@link ChoicesProvider} to this package.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * For now this package contains update handlers used inside the {@link ChoicesWidget}.
+ *
+ * @author Paul Bärnreuther
  */
-public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
-
-    private final PortView m_portView;
-
-    /**
-     * @param wrapper
-     * @param manager
-     * @param portView
-     */
-    // Note on why we need to _pass_ a PortView-instance here instead of requesting it internally:
-    // It helps to avoid problems of deleting the respective node (or closing the workflow) while the
-    // PortViewEnt is being instantiated (which can take some time, e.g., when calculating statistics
-    // which is delivered with the initial data). With the change we avoid the creation of
-    // PortView-instances again (because it's now passed in).
-    public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager, final PortView portView) {
-        super(wrapper, manager, manager, PageType.PORT);
-        m_portView = portView;
-    }
-
-    /**
-     * @return custom styling of the iframe that displays the port view's page
-     */
-    public String getIFrameStyle() {
-        var dims = m_portView.getDimension().orElse(null);
-        var width = dims == null ? "100%" : (dims.widthInPx() + "px");
-        var height = dims == null ? "100%" : (dims.heightInPx() + "px");
-        return String.format("border:none;width:%s;height:%s;", width, height);
-    }
-
-}
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;

@@ -54,6 +54,8 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CHOICES_UPDATE_HANDLER;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
@@ -81,12 +83,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -160,6 +164,10 @@ final class UiSchemaOptionsGenerator {
                 case COLUMN_SELECTION:
                     options.put(TAG_FORMAT, Format.COLUMN_SELECTION);
                     break;
+                case LOCAL_DATE:
+                    options.put(TAG_FORMAT, Format.DATE_TIME);
+                    disableTimeFields(options);
+                    break;
             }
         }
 
@@ -173,24 +181,20 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        if(annotatedWidgets.contains(DateTimeWidget.class)) {
+        if (annotatedWidgets.contains(DateTimeWidget.class)) {
             final var dateTimeWidget = m_field.getAnnotation(DateTimeWidget.class);
             options.put(TAG_FORMAT, Format.DATE_TIME);
-            options.put("showTime", dateTimeWidget.showTime());
-            options.put("showSeconds", dateTimeWidget.showSeconds());
-            options.put("showMilliseconds", dateTimeWidget.showMilliseconds());
+            selectTimeFields(options, dateTimeWidget.showTime(), dateTimeWidget.showSeconds(),
+                dateTimeWidget.showMilliseconds());
             if (!dateTimeWidget.timezone().isEmpty()) {
                 options.put("timezone", dateTimeWidget.timezone());
             }
-            if (!dateTimeWidget.minDate().isEmpty()) {
-                options.put("minimum", dateTimeWidget.minDate());
-            }
-            if (!dateTimeWidget.timezone().isEmpty()) {
-                options.put("maximum", dateTimeWidget.maxDate());
-            }
-            if (!dateTimeWidget.dateFormat().isEmpty()) {
-                options.put("dateFormat", dateTimeWidget.dateFormat());
-            }
+            setMinAndMaxDate(options, dateTimeWidget.minDate(), dateTimeWidget.maxDate());
+        }
+
+        if (annotatedWidgets.contains(DateWidget.class)) {
+            final var dateWidget = m_field.getAnnotation(DateWidget.class);
+            setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
         }
 
         if (annotatedWidgets.contains(ButtonWidget.class)) {
@@ -204,7 +208,7 @@ final class UiSchemaOptionsGenerator {
             options.put("showTitleAndDescription", buttonWidget.showTitleAndDescription());
             var cancelable = CancelableActionHandler.class.isAssignableFrom(buttonWidget.actionHandler());
             options.put("isCancelable", cancelable);
-            final var dependencies = options.putArray("dependencies");
+            final var dependencies = options.putArray(TAG_DEPENDENCIES);
             addDependencies(dependencies, buttonWidget.actionHandler());
         }
 
@@ -234,10 +238,35 @@ final class UiSchemaOptionsGenerator {
             options.put("showRowKeys", choicesWidget.showRowKeys());
             options.put("showSearch", choicesWidget.showSearch());
             options.put("showMode", choicesWidget.showMode());
+            if (!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class)) {
+                options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
+                final var dependencies = options.putArray(TAG_DEPENDENCIES);
+                addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
+            }
         }
 
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
+        }
+    }
+
+    private static void disableTimeFields(final ObjectNode options) {
+        selectTimeFields(options, false, false, false);
+    }
+
+    private static void selectTimeFields(final ObjectNode options, final boolean showTime, final boolean showSeconds,
+        final boolean showMilliseconds) {
+        options.put("showTime", showTime);
+        options.put("showSeconds", showSeconds);
+        options.put("showMilliseconds", showMilliseconds);
+    }
+
+    private static void setMinAndMaxDate(final ObjectNode options, final String minDate, final String maxDate) {
+        if (!minDate.isEmpty()) {
+            options.put("minimum", minDate);
+        }
+        if (!maxDate.isEmpty()) {
+            options.put("maximum", maxDate);
         }
     }
 

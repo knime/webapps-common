@@ -248,7 +248,7 @@ public class NodeDialogTest {
         nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, initialModelSettings, initialViewSettings,
             initialViewSettings);
-        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        nodeDialogManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
 
         // Test that when settings are updated multiple times, the previous settings passed to the on apply modifier are
@@ -263,7 +263,7 @@ public class NodeDialogTest {
         nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(updatedModelSettings, updatedViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
             updatedViewSettings);
-        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        nodeDialogManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
 
         // Test that when settings are overridden by flow variables, these settings are always passed unchanged to the
@@ -287,7 +287,7 @@ public class NodeDialogTest {
         nodeDialogManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
             updatedViewSettings);
-        nodeDialogManager.cleanUpDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
+        nodeDialogManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
     }
 

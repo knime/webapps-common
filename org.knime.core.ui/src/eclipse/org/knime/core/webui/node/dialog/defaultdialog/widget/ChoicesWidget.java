@@ -56,6 +56,8 @@ import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 
 /**
  * A widget supplied with an array of possible values, which are the choices for a selection.
@@ -95,5 +97,13 @@ public @interface ChoicesWidget {
      *         modes are defined by {@link ColumnFilterMode}.
      */
     boolean showMode() default true;
+
+    /**
+     * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible
+     *         values when such a dependency changes. On an update, if the current value is also part of the new values,
+     *         it is kept. Otherwise the first of the new possible values is taken.
+     */
+    @SuppressWarnings("rawtypes")
+    Class<? extends ChoicesUpdateHandler<?>> choicesUpdateHandler() default NoopChoicesUpdateHandler.class; // NOSONAR
 
 }

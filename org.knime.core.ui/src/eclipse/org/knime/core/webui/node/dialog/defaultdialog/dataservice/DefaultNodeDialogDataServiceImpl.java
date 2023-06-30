@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -66,7 +67,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Field;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -110,14 +113,27 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     private static Consumer<Field> getAddActionHandlerClassCallback(
         final Collection<Class<? extends DialogDataServiceHandler<?, ?>>> actionHandlerClasses) {
         return field -> {
-            final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
-            if (buttonWidget == null) {
-                return;
-            }
+            final var handlerClass = getHandlerClass(field);
+            handlerClass.ifPresent(actionHandlerClasses::add);
+        };
+    }
+
+    private static Optional<Class<? extends DialogDataServiceHandler<?, ?>>> getHandlerClass(final Field field) {
+        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
+        if (buttonWidget != null) {
             final var actionHandlerClass = buttonWidget.actionHandler();
             validate(field, actionHandlerClass);
-            actionHandlerClasses.add(actionHandlerClass);
-        };
+            return Optional.of(actionHandlerClass);
+        }
+        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
+        if (choicesWidget != null) {
+            final var updateHandler = choicesWidget.choicesUpdateHandler();
+            if (updateHandler != NoopChoicesUpdateHandler.class) {
+                return Optional.of(updateHandler);
+            }
+        }
+        return Optional.empty();
+
     }
 
     private static void validate(final Field field,

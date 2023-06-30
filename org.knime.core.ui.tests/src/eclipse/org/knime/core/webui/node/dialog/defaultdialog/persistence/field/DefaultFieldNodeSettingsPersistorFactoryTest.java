@@ -52,6 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -121,6 +123,7 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
         testSaveLoad(TestEnum.class, null);
     }
 
+
     @Test
     void testInvalidEnumConstant() throws InvalidSettingsException {
         var persistor = createPersistor(TestEnum.class);
@@ -131,6 +134,13 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     private enum TestEnum {
             FOO, BAR;
+    }
+
+    @Test
+    void testLocalDate() throws InvalidSettingsException {
+        final var date = LocalDate.of(2000, 1, 1);
+        testSaveLoad(LocalDate.class, date);
+        testSaveLoad(LocalDate.class, null);
     }
 
     @Test

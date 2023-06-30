@@ -6,39 +6,7 @@ import HTMLRenderer from '../HtmlRenderer.vue';
 import { TableUI } from '@knime/knime-ui-table';
 import type { VueWrapper } from '@vue/test-utils';
 import type { TableViewDisplayProps } from '../types';
-
-// Stubbing TableUI with shallowMount is not working with script setup. Therefore we mount it instead.
-vi.mock('@knime/knime-ui-table', () => ({
-    constants: {
-        MIN_COLUMN_SIZE: 1,
-        SPECIAL_COLUMN_SIZE: 1
-    },
-    TableUI: {
-        template: `<div>
-            <slot
-                name="cellContent-3"
-                :data="{ cell: 'dummyImagePath.png', height: 20, width: 40 }"
-            />
-            <slot
-                name="cellContent-4"
-                :data="{ cell: '<h1>dummyHtml</h1>' }"
-            />
-        </div>`
-    }
-}));
-
-vi.mock('../ImageRenderer.vue', () => ({
-    default: {
-        template: '<div/>'
-    }
-}));
-
-
-vi.mock('../HtmlRenderer.vue', () => ({
-    default: {
-        template: '<div/>'
-    }
-}));
+import * as vuexModule from 'vuex';
 
 describe('slot rendering', () => {
     let wrapper: VueWrapper, props: TableViewDisplayProps, tableUI: any;
@@ -47,29 +15,35 @@ describe('slot rendering', () => {
         props = getDefaultProps();
         props.header.columnContentTypes = ['txt', 'img_path', 'html'];
         props.header.displayedColumns = ['col1', 'col2', 'col3'];
+        props.rows.top = [
+            ['0', 'Row0', 'cell(0,0)', 'dummyImagePath0.png', '<h1>dummyHtml0</h1>'],
+            ['1', 'Row1', 'cell(1,0)', 'dummyImagePath1.png', '<h1>dummyHtml1</h1>'],
+            ['2', 'Row2', 'cell(2,0)', 'dummyImagePath2.png', '<h1>dummyHtml2</h1>']
+        ];
+        vi.spyOn(vuexModule, 'useStore').mockReturnValue({ getters: { 'api/uiExtResourceLocation': vi.fn() } } as any);
         wrapper = await mountDisplay({ props });
         tableUI = wrapper.getComponent(TableUI);
     });
 
     it('creates the correct source urls', () => {
-        expect(tableUI.findComponent(ImageRenderer).attributes()).toMatchObject({
-            path: 'dummyImagePath.png',
+        expect(tableUI.findComponent(ImageRenderer).props()).toMatchObject({
+            path: 'dummyImagePath0.png',
             // @ts-ignore baseUrl not present in resourceInfo
-            'base-url': props.knimeService.extensionConfig.resourceInfo?.baseUrl,
-            height: '20',
-            width: '40',
-            update: 'true'
+            baseUrl: props.knimeService.extensionConfig.resourceInfo?.baseUrl,
+            height: 80,
+            width: 90,
+            update: true
         });
     });
 
     it('prevents size update if resizing is active', async () => {
         await tableUI.vm.$emit('columnResizeStart');
-        expect(tableUI.findComponent(ImageRenderer).attributes().update).toBe('false');
+        expect(tableUI.findComponent(ImageRenderer).props().update).toBe(false);
     });
 
     it('creates the correct content for html', () => {
-        expect(tableUI.findComponent(HTMLRenderer).attributes()).toMatchObject({
-            content: '<h1>dummyHtml</h1>'
+        expect(tableUI.findComponent(HTMLRenderer).props()).toMatchObject({
+            content: '<h1>dummyHtml0</h1>'
         });
     });
 });

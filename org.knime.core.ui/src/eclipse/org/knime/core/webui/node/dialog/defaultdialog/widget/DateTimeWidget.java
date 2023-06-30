@@ -85,11 +85,6 @@ public @interface DateTimeWidget {
     String timezone() default "";
 
     /**
-     * @return whether to use a specific format, e.g. "dd-MM-YYYY"
-     */
-    String dateFormat() default "";
-
-    /**
      * @return no date before the specified minDate can be chosen
      */
     String minDate() default "";
