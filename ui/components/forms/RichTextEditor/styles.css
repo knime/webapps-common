@@ -44,22 +44,22 @@
 
 @define-mixin rich-text-editor-headings {
   & h1 {
-    font-size: 48px;
+    font-size: 36px;
     margin: 32px 0 16px;
   }
 
   & h2 {
-    font-size: 36px;
+    font-size: 30px;
     margin: 24px 0 12px;
   }
 
   & h3 {
-    font-size: 30px;
+    font-size: 36px;
     margin: 20px 0 10px;
   }
 
   & h4 {
-    font-size: 24px;
+    font-size: 22px;
     margin: 16px 0 8px;
   }
 
@@ -69,7 +69,7 @@
   }
 
   & h6 {
-    font-size: 15px;
+    font-size: 13px;
     margin: 10px 0 5px;
   }
 
