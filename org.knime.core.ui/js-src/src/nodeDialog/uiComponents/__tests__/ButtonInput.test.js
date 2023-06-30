@@ -107,6 +107,19 @@ describe('ButtonInput', () => {
             expect(wrapper.find('.button-input-text').text()).toBe('Success');
         });
 
+        it('displays cancel button text when loading even if data are present', async () => {
+            const emptyUischemaOptions = {};
+    
+            props = getProps(emptyUischemaOptions);
+            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+            wrapper.vm.control.data = dataSuccess.result;
+            await wrapper.vm.$nextTick();
+            expect(wrapper.find('.button-input-text').text()).toBe('Success');
+            wrapper.vm.isLoading = true;
+            await wrapper.vm.$nextTick();
+            expect(wrapper.find('.button-input-text').text()).toBe('Cancel');
+        });
+
         it('shows loading spinner during loading', async () => {
             wrapper.vm.isLoading = true;
             await wrapper.vm.$nextTick();

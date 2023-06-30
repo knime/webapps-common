@@ -37,10 +37,10 @@ const ButtonInput = defineComponent({
             return this.control.data !== null && typeof this.control.data !== 'undefined';
         },
         buttonText() {
-            if (this.hasData) {
-                return this.succeededButtonText;
+            if (this.isLoading) {
+                return this.cancelButtonText;
             }
-            return this.isLoading ? this.cancelButtonText : this.invokeButtonText;
+            return this.hasData ? this.succeededButtonText : this.invokeButtonText;
         },
         isButtonDisabled() {
             return (this.hasData && !this.isMultipleUse) ||
