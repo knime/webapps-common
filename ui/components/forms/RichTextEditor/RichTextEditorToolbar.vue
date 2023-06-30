@@ -9,6 +9,8 @@ import type { MenuItem } from "../../MenuItems.vue";
 import SubMenu from "../../SubMenu.vue";
 import type { EditorTools } from "./types";
 
+import LinkTool from "./LinkTool.vue";
+
 interface Props {
   editor: Editor;
   tools: EditorTools;
@@ -54,6 +56,13 @@ const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
     >
       <Component :is="tool.icon" />
     </FunctionButton>
+
+    <LinkTool
+      class="tool"
+      :editor="editor"
+      :hotkey-formatter="hotkeyFormatter"
+    />
+
     <SubMenu
       v-if="secondaryTools.length > 0"
       :items="secondaryToolsMenuItems"

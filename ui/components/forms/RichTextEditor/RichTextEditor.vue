@@ -8,6 +8,7 @@ import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
+import { ControlClickLink, URL_REGEX } from "./custom-link";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -125,6 +126,10 @@ const extensions = [
         }),
       ]
     : []),
+
+  ControlClickLink.configure({
+    validate: (href) => URL_REGEX.test(href),
+  }),
 
   ...props.customExtensions,
 ];
