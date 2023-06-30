@@ -31,7 +31,7 @@ const props = defineProps<TableViewDisplayProps>();
 
 const root: Ref<null|HTMLElement> = ref(null);
 
-const totalWidth = ref(0);
+const availableWidth = ref(0);
 const baseUrl = ref('');
 
 onMounted(() => {
@@ -40,7 +40,7 @@ onMounted(() => {
     if (root.value === null) {
         return;
     }
-    totalWidth.value = root.value.getBoundingClientRect().width;
+    availableWidth.value = root.value.getBoundingClientRect().width;
 });
 
 const numberOfDisplayedIdColumns = computed(() => {
@@ -65,7 +65,7 @@ const columnSizes = computed(() => getColumnSizes({
     displayedColumns: props.header.displayedColumns,
     indicateRemainingColumnsSkipped: props.header.indicateRemainingColumnsSkipped,
     settings: props.settings,
-    totalWidth: props.header.totalWidth || totalWidth.value
+    availableWidth: props.header.availableWidth || availableWidth.value
 }));
 
 const dataConfig = computed(() => {
@@ -145,6 +145,7 @@ const columnResizeActive = useBoolean();
       @column-resize-start="columnResizeActive.setTrue"
       @column-resize-end="columnResizeActive.setFalse"
       @all-columns-resize="(...args: any[]) => $emit('all-columns-resize', ...args)"
+      @update:available-width="(...args: any[]) => $emit('update:available-width', ...args)"
       @header-sub-menu-item-selection="
         (item: any, colIndex: number) => $emit('header-sub-menu-item-selection', item, getColumnId(colIndex))"
     >

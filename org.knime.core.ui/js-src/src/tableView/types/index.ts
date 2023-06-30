@@ -20,7 +20,7 @@ export interface TableViewDisplayProps {
         columnContentTypes: ('txt' | 'img_path' | 'html')[],
         columnSizeOverrides?: Record<string | symbol, number>,
         defaultColumnSizeOverride?: number
-        totalWidth?: number,
+        availableWidth?: number,
         dataTypes: Record<string, DataType>,
         columnDataTypeIds: string[],
         colNameSelectedRendererId?: Record<string, string>,

@@ -1708,23 +1708,20 @@ describe('TableViewInteractive.vue', () => {
 
         const setColumnWidthSettings = async (
             wrapper,
-            { clientWidth, enableColumnSearch = false, showSelection = false }
+            { availableWidth }
         ) => {
             await wrapper.setData({
-                clientWidth,
+                currentAvailableWidth: availableWidth,
                 settings: {
                     ...wrapper.vm.settings,
-                    enableColumnSearch,
-                    publishSelection: showSelection,
-                    subscribeToSelection: showSelection,
                     showRowIndices: true,
                     showRowKeys: true
                 }
             });
-            await wrapper.vm.$nextTick(); // needed for the computation of wrapper.vm.columnSizes
+            await flushPromises(); // needed for the computation of wrapper.vm.currentAvailableWidth
         };
 
-        const clientWidth = 1002;
+        const availableWidth = 1002;
 
         beforeEach(async () => {
             wrapper = await shallowMountInteractive(context);
@@ -1739,11 +1736,8 @@ describe('TableViewInteractive.vue', () => {
 
         // TODO UIEXT-525 lets rethink these tests
         it.each([
-            [{ clientWidth: 0 }, DEFAULT_COLUMN_SIZE],
-            [{ clientWidth }, 225.5],
-            [{ clientWidth, enableColumnSearch: true }, 218],
-            [{ clientWidth, showSelection: true }, 218],
-            [{ clientWidth, enableColumnSearch: true, showSelection: true }, 210.5]
+            [{ availableWidth: 0 }, DEFAULT_COLUMN_SIZE],
+            [{ availableWidth }, 225.5]
         ])('divides available width into equal sizes',
             async (settings, columnWidth) => {
                 await setColumnWidthSettings(wrapper, settings);
@@ -1772,9 +1766,7 @@ describe('TableViewInteractive.vue', () => {
         });
 
         it('correctly overrides column sizes', async () => {
-            await setColumnWidthSettings(wrapper, { clientWidth });
-            
-            
+            await setColumnWidthSettings(wrapper, { availableWidth });
             await setColumnWidth(0, 1);
             await setColumnWidth(1, 2);
             await setColumnWidth(2, 1);
@@ -1789,7 +1781,7 @@ describe('TableViewInteractive.vue', () => {
         });
 
         it('correctly overrides all column sizes', async () => {
-            await setColumnWidthSettings(wrapper, { clientWidth });
+            await setColumnWidthSettings(wrapper, { availableWidth });
             await setColumnWidth(0, 1); // not overwritten since this is the index column
             await setColumnWidth(2, 1); // this will be overwritten
             const defaultSizeOverride = 30;
@@ -1818,92 +1810,39 @@ describe('TableViewInteractive.vue', () => {
             ]);
         });
 
-        it('adds / removes intersection observer / resize listener and updates client width accordingly', async () => {
-            const intersectionObserverObserve = vi.fn();
-            const intersectionObserverUnobserve = vi.fn();
-            window.IntersectionObserver = vi.fn(() => ({
-                observe: intersectionObserverObserve,
-                unobserve: intersectionObserverUnobserve
-            }));
-            const resizeObserverObserve = vi.fn();
-            const resizeObserverDisconnect = vi.fn();
-
-            global.ResizeObserver = vi.fn().mockImplementation(() => ({
-                observe: resizeObserverObserve,
-                disconnect: resizeObserverDisconnect
-            }));
-            
+        it('updates column sizes from availableWidth', async () => {
             const wrapper = await shallowMountInteractive(context);
-            expect(wrapper.vm.clientWidth).toBe(0);
-            expect(window.IntersectionObserver).toHaveBeenCalledTimes(1);
-            expect(intersectionObserverObserve).toHaveBeenCalledTimes(1);
-            expect(intersectionObserverObserve).toHaveBeenCalledWith(wrapper.vm.$el);
 
-            let clientWidth = 100;
-            const mockedEntries = [{
-                target: null
-            }, {
-                target: wrapper.vm.$el,
-                boundingClientRect: { width: 0 }
-            }, {
-                target: wrapper.vm.$el,
-                boundingClientRect: { width: clientWidth }
-            }];
-            const [callback] = window.IntersectionObserver.mock.calls[0];
-            callback(mockedEntries, window.IntersectionObserver.mock.results[0].value);
-            expect(wrapper.vm.clientWidth).toBe(clientWidth);
-            expect(intersectionObserverUnobserve).toHaveBeenCalledTimes(1);
-            expect(intersectionObserverUnobserve).toHaveBeenCalledWith(wrapper.vm.$el);
-            expect(resizeObserverObserve).toHaveBeenCalledTimes(1);
-            expect(resizeObserverObserve).toHaveBeenCalledWith(wrapper.vm.$el);
+            let availableWidth = 100;
+            wrapper.vm.updateAvailableWidth(availableWidth);
+            expect(wrapper.vm.currentAvailableWidth).toBe(availableWidth);
 
-            const defaultColumnSizeOverride = 123;
-            await wrapper.findComponent(TableUI).vm.$emit('all-columns-resize', defaultColumnSizeOverride);
-            wrapper.vm.$el.getBoundingClientRect = function () {
-                return { width: 0 };
-            };
-            expect(wrapper.vm.defaultColumnSizeOverride).toBe(123);
-            window.dispatchEvent(new Event('resize'));
-            
-            expect(wrapper.vm.clientWidth).toBe(clientWidth);
-            expect(window.IntersectionObserver).toHaveBeenCalledTimes(2);
-            expect(intersectionObserverObserve).toHaveBeenCalledTimes(2);
-            expect(intersectionObserverObserve).toHaveBeenLastCalledWith(wrapper.vm.$el);
+            const allColumnsResizeSize = 123;
 
-            callback(mockedEntries, window.IntersectionObserver.mock.results[0].value);
-            expect(wrapper.vm.clientWidth).toBe(clientWidth);
-            expect(intersectionObserverUnobserve).toHaveBeenCalledTimes(2);
-            expect(intersectionObserverUnobserve).toHaveBeenLastCalledWith(wrapper.vm.$el);
+            await wrapper.findComponent(TableUI).vm.$emit('all-columns-resize', allColumnsResizeSize);
             expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 0,
                 0,
-                defaultColumnSizeOverride,
-                defaultColumnSizeOverride,
-                defaultColumnSizeOverride,
-                defaultColumnSizeOverride
+                allColumnsResizeSize,
+                allColumnsResizeSize,
+                allColumnsResizeSize,
+                allColumnsResizeSize
             ]);
 
-            clientWidth = 200;
-            wrapper.vm.$el.getBoundingClientRect = function () {
-                return { width: clientWidth };
-            };
-            window.dispatchEvent(new Event('resize'));
-
-            expect(wrapper.vm.clientWidth).toBe(clientWidth);
+            availableWidth = 200;
+            wrapper.vm.updateAvailableWidth(availableWidth);
+            expect(wrapper.vm.currentAvailableWidth).toBe(availableWidth);
             await flushPromises();
             expect(wrapper.findComponent(TableViewDisplay).vm.columnSizes).toStrictEqual([
                 0,
                 0,
-                defaultColumnSizeOverride * 2,
-                defaultColumnSizeOverride * 2,
-                defaultColumnSizeOverride * 2,
-                defaultColumnSizeOverride * 2
+                allColumnsResizeSize * 2,
+                allColumnsResizeSize * 2,
+                allColumnsResizeSize * 2,
+                allColumnsResizeSize * 2
             ]);
-
-            wrapper.unmount();
-            expect(resizeObserverDisconnect).toHaveBeenCalledTimes(1);
         });
-
+        
         it('sets columnResizeActive state', () => {
             const columnResizeActive = wrapper.findComponent(TableViewDisplay).vm.columnResizeActive;
             expect(columnResizeActive.state).toBeFalsy();

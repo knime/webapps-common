@@ -12,19 +12,6 @@ const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 const DEFAULT_COLUMN_SIZE = 100;
 const SKIPPED_REMAINING_COLUMNS_COLUMN_MIN_WIDTH = 200;
 
-// The avaliable space for all resizable columns (i.e. table columns, but also index, rowKey, ...)
-const getAvailableWidth = ({
-    totalWidth,
-    settings
-}: {
-    totalWidth: number,
-    settings: any
-}) => {
-    const specialColumnsSizeTotal = (settings.enableColumnSearch ? SPECIAL_COLUMNS_SIZE : 0) +
-        (settings.publishSelection || settings.subscribeToSelection ? SPECIAL_COLUMNS_SIZE : 0);
-    return totalWidth - specialColumnsSizeTotal;
-};
-
 const getDataColumnSizes = ({
     availableSpace,
     displayedColumns,
@@ -62,20 +49,19 @@ const stretchOneColumnToFillAvailableSpace = ({
 
 export default ({
     settings,
-    totalWidth,
+    availableWidth,
     columnSizeOverrides,
     indicateRemainingColumnsSkipped,
     displayedColumns,
     defaultColumnSizeOverride
 }: {
     settings: any,
-    totalWidth: number,
+    availableWidth: number,
     columnSizeOverrides: Record<string | symbol, number>
     indicateRemainingColumnsSkipped: boolean,
     displayedColumns: string[],
     defaultColumnSizeOverride?: number
 }) => {
-    const availableWidth = getAvailableWidth({ totalWidth, settings });
     const initialIndexColumnSize = settings.showRowIndices ? MIN_COLUMN_SIZE : 0;
     const initialRowKeyColumnSize = settings.showRowKeys ? MIN_COLUMN_SIZE : 0;
     const initialRemainingSkippedColumnSize = indicateRemainingColumnsSkipped

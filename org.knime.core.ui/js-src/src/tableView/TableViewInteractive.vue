@@ -51,7 +51,7 @@ export default {
             searchTerm: '',
             columnFiltersMap: new Map(),
             baseUrl: null,
-            clientWidth: 0,
+            currentAvailableWidth: 0,
             columnSizeOverrides: {},
             defaultColumnSizeOverride: null,
             scopeSize: MIN_SCOPE_SIZE,
@@ -65,10 +65,7 @@ export default {
             columnContentTypes: null,
             // a counter which is used to ignore all requests which were not the last sent one
             lastUpdateHash: 0,
-            link: '',
-            wrapperResizeObserver: new ResizeObserver(() => {
-                this.onResize();
-            })
+            link: ''
         };
     },
     computed: {
@@ -137,15 +134,6 @@ export default {
         }
     },
     async mounted() {
-        const clientWidth = this.$el.getBoundingClientRect().width;
-        this.wrapperResizeObserver.observe(this.$el);
-        // clientWidth can be 0, e.g., if table is not visible (yet)
-        if (clientWidth) {
-            this.clientWidth = clientWidth;
-        } else {
-            this.observeTableIntersection();
-        }
-
         this.jsonDataService = new JsonDataService(this.knimeService);
         this.jsonDataService.addOnDataChangeCallback(this.onViewSettingsChange.bind(this));
         const initialData = this.initialData === null ? await this.jsonDataService.initialData() : this.initialData;
@@ -174,9 +162,6 @@ export default {
             this.dataLoaded = true;
             this.columnFiltersMap = this.getDefaultFilterConfigsMap(this.displayedColumns);
         }
-    },
-    beforeUnmount() {
-        this.wrapperResizeObserver.disconnect();
     },
     methods: {
         async initializeLazyLoading(params) {
@@ -622,24 +607,10 @@ export default {
                 delete this.columnSizeOverrides[columnName];
             });
         },
-        observeTableIntersection() {
-            new IntersectionObserver((entries, observer) => {
-                entries.forEach((entry) => {
-                    if (entry.target === this.$el && entry.boundingClientRect.width) {
-                        this.clientWidth = entry.boundingClientRect.width;
-                        // observer is either removed here or on garbage collection
-                        observer.unobserve(entry.target);
-                        window.addEventListener('resize', this.onResize);
-                    }
-                });
-            }).observe(this.$el);
-        },
-        onResize: throttle(function () {
-            /* eslint-disable no-invalid-this */
-            const updatedClientWidth = this.$el.getBoundingClientRect().width;
-            if (updatedClientWidth) {
-                // also update all overridden column widths according to the relative change in client width
-                const ratio = updatedClientWidth / this.clientWidth;
+        updateAvailableWidth(newAvailableWidth) {
+            if (this.currentAvailableWidth) {
+                // update all overridden column widths according to the relative change of the available width
+                const ratio = newAvailableWidth / this.currentAvailableWidth;
                 Object.keys(this.columnSizeOverrides).forEach(key => {
                     this.columnSizeOverrides[key] *= ratio;
                 });
@@ -649,12 +620,9 @@ export default {
                 if (this.defaultColumnSizeOverride) {
                     this.defaultColumnSizeOverride *= ratio;
                 }
-                this.clientWidth = updatedClientWidth;
-            } else {
-                this.observeTableIntersection();
-                window.removeEventListener('resize', this.onResize);
             }
-        }),
+            this.currentAvailableWidth = newAvailableWidth;
+        },
         onHeaderSubMenuItemSelection(item, columnName) {
             if (item.section === 'dataRendering') {
                 this.colNameSelectedRendererId[columnName] = item.id;
@@ -786,7 +754,7 @@ export default {
       columnContentTypes,
       columnSizeOverrides,
       defaultColumnSizeOverride,
-      totalWidth: clientWidth,
+      availableWidth: currentAvailableWidth,
       colNameSelectedRendererId,
       dataTypes,
       columnDataTypeIds,
@@ -825,6 +793,7 @@ export default {
     @all-columns-resize="onAllColumnsResize"
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
+    @update:available-width="updateAvailableWidth"
   />
 </template>
 

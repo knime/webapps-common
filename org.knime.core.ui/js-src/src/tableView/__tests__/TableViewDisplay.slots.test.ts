@@ -18,6 +18,15 @@ describe('slot rendering', () => {
     };
 
     beforeEach(() => {
+        // TableUI uses ResizeObserver, which is not available in jsdom
+        Object.defineProperty(window, 'ResizeObserver', {
+            writable: true,
+            value: vi.fn().mockImplementation(() => ({
+                observe: vi.fn(),
+                unobserve: vi.fn(),
+                disconnect: vi.fn()
+            }))
+        });
         props = getDefaultProps();
         props.header.columnContentTypes = ['txt', 'img_path', 'html'];
         props.header.displayedColumns = ['col1', 'col2', 'col3'];
