@@ -75,7 +75,7 @@ export default defineConfig(({ mode }) => ({
             all: true,
             exclude: [
                 'buildtools/', 'coverage/**', 'dist/**', 'webapps-common/**', 'lib/**', '**/*.d.ts', '**/__tests__/**',
-                'test-setup/**', '**/{vite,vitest,postcss}.config.{js,cjs,mjs,ts}',
+                'test-setup/**', '**/{vite,vitest,postcss}.config.{js,cjs,mjs,ts}', '**/dev/**',
                 '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
             ],
             reporter: ['html', 'text', 'lcov']
