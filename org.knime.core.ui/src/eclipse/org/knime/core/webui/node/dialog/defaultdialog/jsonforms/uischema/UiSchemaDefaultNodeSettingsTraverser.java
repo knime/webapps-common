@@ -109,16 +109,13 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         return new TraversalResult(layoutPartToControls, signals, fields);
     }
 
-    private void traverseSettingsClass(final Consumer<TraversalConsumerPayload> addLayout,
+    private void traverseSettingsClass(final Consumer<TraversalConsumerPayload> addField,
         final Consumer<TraversalConsumerPayload> addSignal, final String settingsKey, final Class<?> setting) {
         final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, setting);
         traverser.traverse(field -> {
-            if (field.trackedAnnotations().getInstance(Hidden.class).isPresent()) {
-                return;
-            }
             final var scope = toScope(field.path(), settingsKey);
             final var payload = new TraversalConsumerPayload(scope, field, setting);
-            addLayout.accept(payload);
+            addField.accept(payload);
             addSignal.accept(payload);
         }, List.of(Layout.class, Hidden.class));
     }
@@ -163,6 +160,9 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     private static Consumer<TraversalConsumerPayload> getAddFieldConsumer(final Collection<JsonFormsControl> fields,
         final Map<Class<?>, List<JsonFormsControl>> layoutControls) {
         return payload -> {
+            if (payload.field().trackedAnnotations().getInstance(Hidden.class).isPresent()) {
+                return;
+            }
             final var layout =
                 payload.field().trackedAnnotations().getInstance(Layout.class).map(Layout::value).orElse(null);
             final var newJsonFormsControl =
