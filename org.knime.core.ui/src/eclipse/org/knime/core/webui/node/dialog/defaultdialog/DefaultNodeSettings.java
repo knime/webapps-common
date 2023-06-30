@@ -296,7 +296,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
          * @return the {@link CredentialsProvider} associated with the node. Can be empty, e.g., if the node is a
          *         component
          */
-        Optional<CredentialsProvider> getCredentialsProvider() {
+        public Optional<CredentialsProvider> getCredentialsProvider() {
             return Optional.ofNullable(m_credentialsProvider);
         }
 
