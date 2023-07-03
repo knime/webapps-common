@@ -72,7 +72,7 @@ import org.knime.core.webui.page.Page;
 public final class TextViewView implements NodeView {
     private TextViewViewSettings m_settings;
 
-    private final FlowObjectStack m_flowObjectStack;
+    private final Supplier<FlowObjectStack> m_flowObjectStackSupplier;
 
     // Note on the 'static' page id: the entire TextView-page can be considered 'completely static'
     // because the page, represented by a vue component, is just a file (won't change at runtime)
@@ -85,10 +85,11 @@ public final class TextViewView implements NodeView {
         Page.builder(TextViewView.class, "js-src/dist", "TextView.umd.js").markAsReusable(TEXT_VIEW_PAGE_ID).build();
 
     /**
-     * @param flowObjectStack
+     * @param flowObjectStackSupplier the supplier of the {@link FlowObjectStack} that is passed to the
+     *            {@link TextViewInitialDataServiceImpl}
      */
-    public TextViewView(final FlowObjectStack flowObjectStack) {
-        m_flowObjectStack = flowObjectStack;
+    public TextViewView(final Supplier<FlowObjectStack> flowObjectStackSupplier) {
+        m_flowObjectStackSupplier = flowObjectStackSupplier;
     }
 
     @Override
@@ -102,7 +103,7 @@ public final class TextViewView implements NodeView {
         if (m_settings == null) {
             m_settings = new TextViewViewSettings();
         }
-        return Optional.of(createInitialDataService(() -> m_settings, m_flowObjectStack));
+        return Optional.of(createInitialDataService(() -> m_settings, m_flowObjectStackSupplier));
     }
 
     @Override
@@ -135,8 +136,10 @@ public final class TextViewView implements NodeView {
     }
 
     static InitialDataService<TextViewInitialData> createInitialDataService(
-        final Supplier<TextViewViewSettings> settingsSupplier, final FlowObjectStack flowObjectStack) {
-        return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), flowObjectStack)) //
+        final Supplier<TextViewViewSettings> settingsSupplier,
+        final Supplier<FlowObjectStack> flowObjectStackSupplier) {
+        return InitialDataService
+            .builder(() -> createInitialData(settingsSupplier.get(), flowObjectStackSupplier.get())) //
             .serializer(new DefaultNodeSettingsSerializer<>()) //
             .build();
     }

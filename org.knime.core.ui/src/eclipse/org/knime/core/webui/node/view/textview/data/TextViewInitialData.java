@@ -51,6 +51,8 @@ package org.knime.core.webui.node.view.textview.data;
 import java.util.Map;
 
 /**
+ * Interface for the initial data of the Text View node. Provides the initial rich text content of the view and a
+ * map of available flow variable keys to their escaped string values
  *
  * @author Rupert Ettrich
  */

@@ -58,8 +58,8 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.webui.node.view.textview.TextViewViewSettings;
 
 /**
- * Implementation of TextViewInitialData. Returns {@link TextViewData}, consisting of the initial content and the
- * sanitized flow variable mappings.
+ * Implementation of TextViewInitialData. Returns the initial rich text content and the escaped flow variable
+ * mappings.
  *
  * @author Rupert Ettrich
  */
