@@ -17,9 +17,9 @@ export default {
     async mounted() {
         this.jsonDataService = new JsonDataService(this.knimeService);
         this.jsonDataService.addOnDataChangeCallback(this.onViewSettingsChange.bind(this));
-        const initialData = await this.jsonDataService.initialData();
-        this.richTextContent = initialData.content;
-        this.flowVariablesMap = initialData.flowVariablesMap;
+        const { content, flowVariablesMap } = await this.jsonDataService.initialData();
+        this.flowVariablesMap = flowVariablesMap;
+        this.richTextContent = this.replaceFlowVariablesInContent(content);
         // TODO needs to be removed as soon as we have a reporting service
         const isReporting = this.knimeService.extensionConfig?.generatedImageActionId === 'generatingReportContent';
         if (isReporting) {
@@ -31,14 +31,16 @@ export default {
     },
     methods: {
         onViewSettingsChange(event) {
+            this.richTextContent = this.replaceFlowVariablesInContent(event.data.data.view.richTextContent);
+        },
+        replaceFlowVariablesInContent(newRichTextContent) {
             if (this.flowVariablesMap === null) {
-                return;
+                return newRichTextContent;
             }
-            let newText = event.data.data.view.richTextContent;
             Object.entries(this.flowVariablesMap).forEach(([key, value]) => {
-                newText = newText.replaceAll(`$$[${key}]`, value);
+                newRichTextContent = newRichTextContent.replaceAll(`$$[${key}]`, value);
             });
-            this.richTextContent = newText;
+            return newRichTextContent;
         }
     }
 };

@@ -6,28 +6,40 @@ import { JsonDataService } from '@knime/ui-extension-service';
 describe('TextView.vue', () => {
     let wrapper, initialDataSpy, addOnDataChangeCallbackSpy, setReportingContentMock;
 
-    beforeEach(() => {
-        const jsonDataServiceMock = {
-            initialData: vi.fn(() => ({
-                content: 'test data',
-                flowVariablesMap: {
-                    key1: 'value1',
-                    key2: 'value2'
-                }
-            })),
-            addOnDataChangeCallback: vi.fn()
-        };
+    const defaultContent = 'test data';
+    const defaultFlowVariablesMap = {
+        key1: 'value1',
+        key2: 'value2'
+    };
+
+    const createJsonDataServiceMock = (content = defaultContent, flowVariablesMap = defaultFlowVariablesMap) => ({
+        initialData: vi.fn(() => ({
+            content,
+            flowVariablesMap
+        })),
+        addOnDataChangeCallback: vi.fn()
+    });
+
+    const createSpies = (jsonDataServiceMock) => {
         JsonDataService.mockImplementation(() => jsonDataServiceMock);
         initialDataSpy = vi.spyOn(jsonDataServiceMock, 'initialData');
         addOnDataChangeCallbackSpy = vi.spyOn(jsonDataServiceMock, 'addOnDataChangeCallback');
         setReportingContentMock = vi.fn();
+    };
 
+    const mountWrapper = () => {
         wrapper = mountJsonFormsComponentWithStore(TextView, false, {
             pagebuilder: {
                 actions: { setReportingContent: setReportingContentMock },
                 namespaced: true
             }
         });
+    };
+
+    beforeEach(() => {
+        const jsonDataServiceMock = createJsonDataServiceMock();
+        createSpies(jsonDataServiceMock);
+        mountWrapper();
     });
 
     afterEach(() => {
@@ -59,8 +71,17 @@ describe('TextView.vue', () => {
         expect(wrapper.vm.richTextContent).toStrictEqual(data.data.view.richTextContent);
     });
 
-    it('replaces flow variables in text content', async () => {
-        const flowVariableMap = {
+    it('replaces flow variables in text content on mount', async () => {
+        const content = '$$[key1] $$[key2]';
+        const jsonDataServiceMock = createJsonDataServiceMock(content);
+        createSpies(jsonDataServiceMock);
+        mountWrapper();
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.richTextContent).toBe('value1 value2');
+    });
+
+    it('replaces flow variables in text content on view settings change', async () => {
+        const flowVariablesMap = {
             key1: 'value1',
             key2: 'value2'
         };
@@ -71,9 +92,9 @@ describe('TextView.vue', () => {
                 }
             }
         };
-        wrapper.vm.flowVariableMap = flowVariableMap;
+        wrapper.vm.flowVariablesMap = flowVariablesMap;
         await wrapper.vm.onViewSettingsChange({ data });
-        expect(wrapper.vm.richTextContent).toBe(`${flowVariableMap.key1} abc ${flowVariableMap.key2}`);
+        expect(wrapper.vm.richTextContent).toBe(`${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`);
     });
 
     // TODO enable once we have a propper way to get the reporting state
