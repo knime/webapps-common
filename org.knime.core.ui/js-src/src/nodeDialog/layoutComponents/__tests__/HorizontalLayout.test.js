@@ -30,8 +30,9 @@ describe('HorizontalLayout.vue', () => {
 
     let wrapper;
 
-    beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps);
+    beforeEach(() => {
+        const component = mountJsonFormsComponent(HorizontalLayout, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -46,15 +47,15 @@ describe('HorizontalLayout.vue', () => {
         initializesJsonFormsLayout(wrapper);
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.layout.uischema.options = { isAdvanced: true };
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(HorizontalLayout, defaultProps);
         expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.layout.uischema.options = { isAdvanced: true };
-        wrapper = await mountJsonFormsComponent(HorizontalLayout, defaultProps, true);
+        const { wrapper } = mountJsonFormsComponent(HorizontalLayout, defaultProps, true);
         expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(true);
     });
 });

@@ -1,6 +1,6 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
 import Checkbox from 'webapps-common/ui/components/forms/Checkbox.vue';
 import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
@@ -8,6 +8,7 @@ import FlowVariableIcon from './FlowVariableIcon.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import DescriptionPopover from './DescriptionPopover.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const CheckboxInput = defineComponent({
     name: 'CheckboxInput',
@@ -23,7 +24,7 @@ const CheckboxInput = defineComponent({
         ...rendererProps()
     },
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     data() {
         return {

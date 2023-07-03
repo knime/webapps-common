@@ -1,12 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
+import { initializesJsonFormsControl, mountJsonFormsComponent } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ColumnSelect from '../ColumnSelect.vue';
 import DropdownInput from '../DropdownInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 
-
 describe('ColumnSelect.vue', () => {
-    let wrapper, props, path;
+    let wrapper, props, path, component, updateData;
 
     beforeEach(async () => {
         path = 'control path mock';
@@ -60,7 +59,9 @@ describe('ColumnSelect.vue', () => {
                 }
             }
         };
-        wrapper = await mountJsonFormsComponent(ColumnSelect, props);
+        component = await mountJsonFormsComponent(ColumnSelect, props);
+        wrapper = component.wrapper;
+        updateData = component.updateData;
     });
 
     afterEach(() => {
@@ -78,26 +79,37 @@ describe('ColumnSelect.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(DropdownInput));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(DropdownInput),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 
     describe('compatible types', () => {
         it('updates compatible types when mounted', () => {
-            const dropdownInput = wrapper.findComponent(DropdownInput);
-            expect(dropdownInput.vm.handleChange).toHaveBeenCalledWith(path, {
-                selected: 'Universe_0_0',
-                compatibleTypes: ['Type_0_0', 'OtherType_0_0']
-            });
+            expect(updateData).toHaveBeenCalledWith(
+                expect.anything(),
+                path,
+                {
+                    selected: 'Universe_0_0',
+                    compatibleTypes: ['Type_0_0', 'OtherType_0_0']
+                }
+            );
         });
 
         it('updates compatible types on value change', () => {
             const dropdownInput = wrapper.findComponent(DropdownInput);
             const dropdown = dropdownInput.findComponent(Dropdown);
             dropdown.vm.$emit('update:modelValue', 'Universe_1_1');
-            expect(dropdownInput.vm.handleChange).toHaveBeenNthCalledWith(2, path, {
-                selected: 'Universe_1_1',
-                compatibleTypes: ['Type_1_1', 'OtherType_1_1']
-            });
+            expect(updateData).toHaveBeenNthCalledWith(
+                2,
+                expect.anything(),
+                path,
+                {
+                    selected: 'Universe_1_1',
+                    compatibleTypes: ['Type_1_1', 'OtherType_1_1']
+                }
+            );
         });
     });
 

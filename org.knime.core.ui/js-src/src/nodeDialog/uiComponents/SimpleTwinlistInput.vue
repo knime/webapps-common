@@ -1,10 +1,11 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import { getFlowVariablesMap, isModelSettingAndHasNodeView, getPossibleValuesFromUiSchema } from '../utils';
 import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = 'Excludes';
@@ -42,7 +43,7 @@ const SimpleTwinlistInput = defineComponent({
         }
     },
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     data() {
         return {

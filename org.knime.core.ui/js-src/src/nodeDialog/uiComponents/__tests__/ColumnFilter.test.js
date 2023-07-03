@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountJsonFormsComponent, initializesJsonFormsControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ColumnFilter from '../ColumnFilter.vue';
 import TwinlistInput from '../TwinlistInput.vue';
@@ -123,14 +123,11 @@ describe('ColumnFilter.vue', () => {
         }
     };
 
-    let wrapper;
-
-    beforeAll(() => {
-        TwinlistInput.methods.handleChange = vi.fn();
-    });
+    let wrapper, component;
 
     beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(ColumnFilter, defaultProps);
+        component = await mountJsonFormsComponent(ColumnFilter, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -149,6 +146,9 @@ describe('ColumnFilter.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(TwinlistInput));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(TwinlistInput),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 });

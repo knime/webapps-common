@@ -6,13 +6,13 @@ import LabeledInput from '../LabeledInput.vue';
 import DateTimeInputBase from 'webapps-common/ui/components/forms/DateTimeInput.vue';
 
 describe('DateTimeInput.vue', () => {
-    let defaultProps, wrapper, onChangeSpy;
+    let defaultProps, wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(DateTimeInput.methods, 'onChange');
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
         defaultProps = {
             control: {
                 path: 'test',
@@ -44,7 +44,8 @@ describe('DateTimeInput.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(DateTimeInput, defaultProps);
+        component = mountJsonFormsComponent(DateTimeInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -58,27 +59,29 @@ describe('DateTimeInput.vue', () => {
     });
 
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
-    it('calls onChange when text input is changed', async () => {
+    it('calls onChange when text input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(DateTimeInput, defaultProps, {
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(DateTimeInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
         const changedDateTimeInput = new Date('2022-12-12T20:22:22.000Z');
-        localWrapper.findComponent(DateTimeInputBase).vm.$emit('update:modelValue', changedDateTimeInput);
+        wrapper.findComponent(DateTimeInputBase).vm.$emit('update:modelValue', changedDateTimeInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedDateTimeInput);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedDateTimeInput);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedDateTimeInput
+        );
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
-    it('indicates model settings change when model setting is changed', async () => {
+    it('indicates model settings change when model setting is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(
             DateTimeInput,
             {
                 ...defaultProps,
@@ -98,9 +101,11 @@ describe('DateTimeInput.vue', () => {
             }
         );
         const changedDateTimeInput = 'Shaken not stirred';
-        localWrapper.findComponent(DateTimeInputBase).vm.$emit('update:modelValue', changedDateTimeInput);
+        wrapper.findComponent(DateTimeInputBase).vm.$emit('update:modelValue', changedDateTimeInput);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedDateTimeInput);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedDateTimeInput
+        );
     });
 
     it('sets correct initial value', () => {
@@ -122,8 +127,8 @@ describe('DateTimeInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(DateTimeInput, localDefaultProps);
-        expect(localWrapper.vm.disabled).toBeTruthy();
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, localDefaultProps);
+        expect(wrapper.vm.disabled).toBeTruthy();
     });
 
     it('does not render content of DateTimeInput when visible is false', async () => {
@@ -132,16 +137,16 @@ describe('DateTimeInput.vue', () => {
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(DateTimeInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, defaultProps);
         expect(wrapper.getComponent(DateTimeInput).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(DateTimeInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, defaultProps);
         expect(wrapper.getComponent(DateTimeInput).isVisible()).toBe(true);
     });
 });

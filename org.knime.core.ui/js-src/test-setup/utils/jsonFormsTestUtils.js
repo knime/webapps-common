@@ -7,10 +7,16 @@ import { expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createStore } from 'vuex';
 
-import { useJsonFormsControl, useJsonFormsLayout, useJsonFormsArrayControl } from '@jsonforms/vue';
+import { useJsonFormsLayout, useJsonFormsArrayControl } from '@jsonforms/vue';
 
-const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules, showAdvanced = false) => {
+import * as jsonFormsControlWithUpdateModule from '@/nodeDialog/uiComponents/composables/jsonFormsControlWithUpdate';
+
+const mountJsonFormsComponentWithStoreAndCallbacks = (
+    component, props, modules, showAdvanced = false
+) => {
+    const useJsonFormsControlSpy = vi.spyOn(jsonFormsControlWithUpdateModule, 'useJsonFormsControlWithUpdate');
     const callbacks = [];
+    const updateData = vi.fn((handleChange, path, value) => handleChange(path, value));
     const wrapper = mount(
         component,
         {
@@ -27,7 +33,10 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules,
                         createAlert: vi.fn(),
                         sendWarning: vi.fn()
                     }),
-                    registerWatcher: (callback, dependencies) => callbacks.push([callback, dependencies])
+                    registerWatcher: (
+                        { transformSettings, init, dependencies }
+                    ) => callbacks.push({ transformSettings, init, dependencies }),
+                    updateData
                 },
                 stubs: {
                     DispatchRenderer: true
@@ -47,20 +56,19 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (component, props, modules,
             }
         }
     );
-    return { wrapper, callbacks };
+    return { wrapper, callbacks, updateData, useJsonFormsControlSpy };
 };
 
 export const mountJsonFormsComponentWithStore = (
     component, props, modules, showAdvanced = false
 ) => mountJsonFormsComponentWithStoreAndCallbacks(
     component, props, modules, showAdvanced
-).wrapper;
-
+);
 
 export const mountJsonFormsComponentWithCallbacks = (
-    component, { props }
+    component, { props }, modules = null
 ) => mountJsonFormsComponentWithStoreAndCallbacks(
-    component, props, null, false
+    component, props, modules, false
 );
 
 // eslint-disable-next-line arrow-body-style
@@ -74,13 +82,13 @@ const hasBasicProps = (props) => {
     expect(props.hasOwnProperty('path')).toBe(true);
 };
 
-export const initializesJsonFormsControl = (wrapper) => {
+export const initializesJsonFormsControl = ({ wrapper, useJsonFormsControlSpy }) => {
     const props = wrapper.props();
     hasBasicProps(props);
     expect(props.hasOwnProperty('control')).toBe(true);
     expect(props.control.schema).toBeDefined();
     expect(props.control.uischema).toBeDefined();
-    expect(useJsonFormsControl).toHaveBeenCalled();
+    expect(useJsonFormsControlSpy).toHaveBeenCalled();
 };
 
 export const initializesJsonFormsLayout = (wrapper) => {

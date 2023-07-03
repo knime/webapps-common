@@ -8,7 +8,7 @@ import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 import Label from 'webapps-common/ui/components/forms/Label.vue';
 
 describe('ButtonInput', () => {
-    let wrapper, props;
+    let wrapper, props, component;
     const defaultOptions = {
         format: 'button',
         buttonTexts: {
@@ -61,8 +61,8 @@ describe('ButtonInput', () => {
     beforeEach(async () => {
         props = getProps(defaultOptions);
         vi.useFakeTimers();
-        const comp = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
-        wrapper = comp.wrapper;
+        component = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -71,7 +71,7 @@ describe('ButtonInput', () => {
     });
 
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
     describe('renders', () => {
@@ -243,8 +243,8 @@ describe('ButtonInput', () => {
             const comp = mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
             wrapper = comp.wrapper;
             const firstWatcherCall = comp.callbacks[0];
-            settingsChangeCallback = firstWatcherCall[0];
-            dependencies = firstWatcherCall[1];
+            settingsChangeCallback = firstWatcherCall.transformSettings;
+            dependencies = firstWatcherCall.dependencies;
             wrapper.vm.cancel = vi.fn();
             wrapper.vm.handleChange = vi.fn();
         });

@@ -4,7 +4,7 @@ import AnyOfTwinlist from '../AnyOfTwinlist.vue';
 import SimpleTwinlistInput from '../SimpleTwinlistInput.vue';
 
 describe('AnyOfTwinlist.vue', () => {
-    let wrapper, props;
+    let wrapper, props, component;
 
     beforeEach(async () => {
         props = {
@@ -39,7 +39,8 @@ describe('AnyOfTwinlist.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(AnyOfTwinlist, props);
+        component = await mountJsonFormsComponent(AnyOfTwinlist, props);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -57,7 +58,10 @@ describe('AnyOfTwinlist.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(SimpleTwinlistInput));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(SimpleTwinlistInput),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 
     it('optionsGenerator correctly transforms the data', async () => {

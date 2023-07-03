@@ -1,12 +1,14 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import { getFlowVariablesMap, getPossibleValuesFromUiSchema, isModelSettingAndHasNodeView } from '../utils';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
 import { JsonDataService, AlertTypes } from '@knime/ui-extension-service';
+import { set } from 'lodash';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -36,11 +38,11 @@ const DropdownInput = defineComponent({
 
     },
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     data() {
         return {
-            options: null,
+            options: [],
             jsonDataService: null
         };
     },
@@ -66,16 +68,29 @@ const DropdownInput = defineComponent({
         }
     },
     mounted() {
+        // TODO: UIEXT-1053: Hide this behind a (better) API
         if (this.choicesUpdateHandler) {
             const dependencies = this.control.uischema.options?.dependencies || [];
-            this.registerWatcher(this.updateOptions.bind(this), dependencies);
+            this.registerWatcher({
+                transformSettings: this.updateOptions.bind(this),
+                init: this.fetchInitialOptions.bind(this),
+                dependencies
+            });
+        } else {
+            this.setInitialOption();
         }
-        
-        let options = this.optionsGenerator(this.control);
-        this.options = options;
         this.updateInitialData();
     },
     methods: {
+        setInitialOption() {
+            let options = this.optionsGenerator(this.control);
+            this.options = options;
+        },
+        async fetchInitialOptions(newSettings) {
+            // initially only fetch possible values, but do not set a value
+            // instead, use value from initial data
+            await this.updateOptions(newSettings, false);
+        },
         updateInitialData() {
             const initialData = this.control.data;
             const updatedInitialData = this.dropdownValueToControlData(
@@ -86,7 +101,7 @@ const DropdownInput = defineComponent({
                 this.handleChange(this.control.path, updatedInitialData);
             }
         },
-        async updateOptions(newSettings) {
+        async updateOptions(newSettings, setNewValue = true) {
             if (!this.jsonDataService) {
                 this.jsonDataService = new JsonDataService(this.getKnimeService());
             }
@@ -100,20 +115,26 @@ const DropdownInput = defineComponent({
                 ]
             });
             if (result) {
-                this.handleResult(result);
+                this.handleResult(result, newSettings, setNewValue);
             }
+            // TODO: UIEXT-1053: Hide this behind a (better) API
             if (state === 'FAIL') {
                 const knimeService = this.getKnimeService();
                 knimeService.sendWarning(knimeService.createAlert({
                     type: AlertTypes.ERROR,
                     message
                 }));
-                this.handleResult([]);
+                this.handleResult([], newSettings, setNewValue);
             }
         },
-        handleResult(result) {
+        handleResult(result, newSettings, setNewValue = true) {
             this.options = result;
-            this.onChange(result.length > 0 ? result[0].id : null);
+            if (setNewValue) {
+                set(newSettings, this.control.path, this.getFirstValueFromDropdownOrNull(result));
+            }
+        },
+        getFirstValueFromDropdownOrNull(result) {
+            return this.dropdownValueToControlData(this.control, result.length > 0 ? result[0].id : null);
         },
         onChange(value) {
             this.handleChange(this.control.path, this.dropdownValueToControlData(this.control, value));
@@ -139,7 +160,6 @@ export default DropdownInput;
       :description="control.description"
     >
       <Dropdown
-        v-if="options"
         :aria-label="control.label"
         :disabled="disabled"
         :model-value="dropdownValue"

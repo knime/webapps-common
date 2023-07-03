@@ -51,7 +51,7 @@ describe('RadioInput.vue', () => {
     });
 
     it('renders', async () => {
-        const wrapper = await mountJsonFormsComponent(RadioInput, props);
+        const { wrapper } = await mountJsonFormsComponent(RadioInput, props);
         expect(wrapper.getComponent(RadioInput).exists()).toBe(true);
         expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
@@ -60,13 +60,13 @@ describe('RadioInput.vue', () => {
     });
 
     it('sets correct type prop', async () => {
-        const wrapper = await mountJsonFormsComponent(RadioInput, props);
+        const { wrapper } = await mountJsonFormsComponent(RadioInput, props);
         expect(wrapper.findComponent(RadioInputBase).props().type).toBe('radio');
     });
 
     it('tests that component is set correctly to render vertical', async () => {
         props.control.uischema.options.radioLayout = 'vertical';
-        const wrapper = await mountJsonFormsComponent(RadioInput, props);
+        const { wrapper } = await mountJsonFormsComponent(RadioInput, props);
         expect(wrapper.findComponent(RadioInputBase).vm.alignment).toBe('vertical');
     });
 });

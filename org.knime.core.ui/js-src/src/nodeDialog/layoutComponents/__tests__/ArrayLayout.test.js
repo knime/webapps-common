@@ -116,7 +116,8 @@ describe('ArrayLayout.vue', () => {
                 }
             }
         };
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+        const component = await mountJsonFormsComponent(ArrayLayout, props);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -145,7 +146,7 @@ describe('ArrayLayout.vue', () => {
 
     it('renders an add button', () => {
         const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
-        wrapper = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         const addButton = wrapper.find('.array > button');
         expect(addButton.text()).toBe('New');
         addButton.element.click();
@@ -156,28 +157,28 @@ describe('ArrayLayout.vue', () => {
     it('sets add button text', () => {
         const customAddButtonText = 'My add button text';
         props.control.uischema.options.addButtonText = customAddButtonText;
-        wrapper = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         const addButton = wrapper.find('.array > button');
         expect(addButton.text()).toBe(customAddButtonText);
     });
 
-    it('adds default item', async () => {
+    it('adds default item', () => {
         const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         wrapper.vm.addDefaultItem();
         expect(addItemSpy).toHaveBeenCalled();
     });
 
 
-    it('deletes item', async () => {
+    it('deletes item', () => {
         const deleteItemSpy = ArrayLayout.methods.deleteItem = vi.fn().mockReturnValue(() => false);
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         wrapper.vm.deleteItem();
         expect(deleteItemSpy).toHaveBeenCalled();
     });
 
-    it('does not render sort buttons when showSortButtons is not present or false', async () => {
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+    it('does not render sort buttons when showSortButtons is not present or false', () => {
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         const numberDataItems = props.control.data.length;
         const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
 
@@ -197,15 +198,15 @@ describe('ArrayLayout.vue', () => {
         expect(itemControlsWithTrash).toHaveLength(numberDataItems);
     });
 
-    it('renders headers', async () => {
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+    it('renders headers', () => {
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         expect(wrapper.find('.item-header').exists()).toBeTruthy();
         expect(wrapper.find('.item-header').text()).toBe('ElementTitle 1');
     });
 
-    it('does not render headers but renders controls if arrayElementTitle is missing', async () => {
+    it('does not render headers but renders controls if arrayElementTitle is missing', () => {
         delete props.control.uischema.options.arrayElementTitle;
-        wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         expect(wrapper.find('.item-header').exists()).toBeFalsy();
         const numberDataItems = props.control.data.length;
         const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
@@ -221,9 +222,9 @@ describe('ArrayLayout.vue', () => {
             moveDownDisabled: false },
         { button: 'move down button', position: 'the last', itemNum: 2, moveUpDisabled: false, moveDownDisabled: true }
     ])('disables $button for $position item when showSortButtons is true',
-        async ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
+        ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
             props.control.uischema.options.showSortButtons = true;
-            wrapper = await mountJsonFormsComponent(ArrayLayout, props);
+            const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
             const itemControls = wrapper.findAll('.item-controls');
             const itemControlsButtons = itemControls.at(itemNum).findAllComponents(FunctionButton);
             expect(itemControlsButtons.at(0).vm.disabled).toBe(moveUpDisabled);

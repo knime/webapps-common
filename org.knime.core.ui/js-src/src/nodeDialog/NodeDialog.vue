@@ -6,7 +6,7 @@ import { toDataPath } from '@jsonforms/core';
 import { fallbackRenderers, defaultRenderers } from './renderers';
 import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
-import { cloneDeep, set, get } from 'lodash';
+import { cloneDeep, set } from 'lodash';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
@@ -18,14 +18,17 @@ export default {
     inject: ['getKnimeService'],
     provide() {
         return {
-            registerWatcher: this.registerWatcher
+            registerWatcher: this.registerWatcher,
+            updateData: this.updateData
         };
     },
     data() {
         return {
             jsonDataService: null,
             settings: null,
-            renderers: Object.freeze(renderers)
+            originalSettingsData: null,
+            renderers: Object.freeze(renderers),
+            registeredWatchers: []
         };
     },
     // TODO: UIEXT-236 Move to dialog service
@@ -49,25 +52,34 @@ export default {
         getData() {
             return this.settings.data;
         },
-        registerWatcher(callback, dependencies) {
-            const dataPaths = dependencies.map(toDataPath);
-            this.$watch(
-                () => {
-                    const data = {};
-                    dataPaths.forEach(path => {
-                        // path can be a string with points, e.g. "foo.bar.baz"
-                        set(data, path, get(this.settings.data, path));
-                    });
-                    return JSON.stringify(data);
-                },
-                (newData, oldData) => {
-                    if (oldData === newData) {
-                        return;
-                    }
-                    callback(JSON.parse(newData));
-                },
-                { immediate: true }
-            );
+        /**
+         * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
+         * @param {string} path The path of the setting that is changed
+         * @param {any} data The new data that should be stored at the path
+         * @returns {void}
+         */
+        async updateData(handleChange, path, data) {
+            const triggeredWatchers = this.registeredWatchers.filter(({ dataPaths }) => dataPaths.includes(path));
+            if (triggeredWatchers.length === 0) {
+                handleChange(path, data);
+                return;
+            }
+            const newData = cloneDeep(this.settings.data);
+            set(newData, path, data);
+            for (const watcher of triggeredWatchers) {
+                await watcher.transformSettings(newData);
+            }
+            handleChange('', newData);
+        },
+        async registerWatcher({ transformSettings, init, dependencies }) {
+            this.registeredWatchers.push({
+                transformSettings,
+                dataPaths: dependencies.map(toDataPath)
+            });
+            if (typeof init === 'function') {
+                await init(this.settings.data);
+                this.onSettingsChanged(this.settings.data);
+            }
         },
         onSettingsChanged(data) {
             if (data.data) {

@@ -1,12 +1,13 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 
 import { JsonDataService } from '@knime/ui-extension-service';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const ButtonInput = defineComponent({
     name: 'ButtonInput',
@@ -22,7 +23,7 @@ const ButtonInput = defineComponent({
         ...rendererProps()
     },
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     data() {
         return {
@@ -69,7 +70,11 @@ const ButtonInput = defineComponent({
         }
     },
     mounted() {
-        this.registerWatcher(this.onSettingsChange.bind(this), this.control.uischema.options?.dependencies || []);
+        const dependencies = this.control.uischema.options?.dependencies || [];
+        this.registerWatcher({
+            transformSettings: this.onSettingsChange.bind(this),
+            dependencies
+        });
         this.jsonDataService = new JsonDataService(this.getKnimeService());
     },
     methods: {

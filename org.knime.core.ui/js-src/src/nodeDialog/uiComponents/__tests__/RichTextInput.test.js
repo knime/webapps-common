@@ -6,13 +6,13 @@ import RichTextInput from '../RichTextInput.vue';
 import { inputFormats } from '@/nodeDialog/constants';
 
 describe('RichTextInput.vue', () => {
-    let props, wrapper, onChangeSpy;
+    let props, wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(RichTextInput.methods, 'onChange');
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
         props = {
             control: {
                 path: 'richTextContent',
@@ -42,7 +42,8 @@ describe('RichTextInput.vue', () => {
             }
             
         };
-        wrapper = await mountJsonFormsComponent(RichTextInput, props);
+        component = mountJsonFormsComponent(RichTextInput, props);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -55,21 +56,23 @@ describe('RichTextInput.vue', () => {
     });
 
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
     it('calls onChange when html content is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(RichTextInput, props, {
+        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RichTextInput, props, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
         const changedRichTextInput = 'abcdefg';
-        localWrapper.findComponent(RichTextEditor).vm.$emit('update:modelValue', changedRichTextInput);
+        wrapper.findComponent(RichTextEditor).vm.$emit('update:modelValue', changedRichTextInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedRichTextInput);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(props.control.path, changedRichTextInput);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), props.control.path, changedRichTextInput
+        );
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 

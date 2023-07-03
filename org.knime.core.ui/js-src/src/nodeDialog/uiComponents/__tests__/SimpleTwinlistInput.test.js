@@ -39,7 +39,7 @@ describe('SimpleTwinlistInput.vue', () => {
         }
     };
 
-    let wrapper, onChangeSpy;
+    let wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(SimpleTwinlistInput.methods, 'onChange');
@@ -47,7 +47,8 @@ describe('SimpleTwinlistInput.vue', () => {
     });
     
     beforeEach(() => {
-        wrapper = mountJsonFormsComponent(SimpleTwinlistInput, defaultProps);
+        component = mountJsonFormsComponent(SimpleTwinlistInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -61,25 +62,25 @@ describe('SimpleTwinlistInput.vue', () => {
     });
     
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
     it('calls onChange when twinlist input is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, defaultProps, {
+        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
+        await wrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(
+        const { wrapper } = await mountJsonFormsComponentWithStore(
             SimpleTwinlistInput,
             {
                 ...defaultProps,
@@ -98,7 +99,7 @@ describe('SimpleTwinlistInput.vue', () => {
                 }
             }
         );
-        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
+        await wrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
@@ -137,24 +138,24 @@ describe('SimpleTwinlistInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(SimpleTwinlistInput, localDefaultProps);
-        expect(localWrapper.vm.disabled).toBeTruthy();
+        const { wrapper } = mountJsonFormsComponent(SimpleTwinlistInput, localDefaultProps);
+        expect(wrapper.vm.disabled).toBeTruthy();
     });
 
     it('moves missing values correctly', async () => {
         const dirtySettingsMock = vi.fn();
         const localProps = { ...defaultProps, control: { ...defaultProps.control, data: ['missing'] } };
-        const localWrapper = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, localProps, {
+        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, localProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        expect(localWrapper.props().control.data).toStrictEqual(['missing']);
-        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllLeft' }).trigger('click');
-        await localWrapper.vm.$nextTick();
+        expect(wrapper.props().control.data).toStrictEqual(['missing']);
+        await wrapper.findComponent(Twinlist).find({ ref: 'moveAllLeft' }).trigger('click');
+        await wrapper.vm.$nextTick();
         expect(onChangeSpy).toBeCalledWith([]);
-        await localWrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
+        await wrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalledWith(['test_1', 'test_2', 'test_3']);
     });
 

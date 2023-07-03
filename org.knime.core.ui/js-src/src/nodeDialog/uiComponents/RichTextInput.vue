@@ -1,9 +1,10 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
 import RichTextEditor from 'webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue';
 import LabeledInput from './LabeledInput.vue';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const RichTextInput = defineComponent({
     name: 'RichTextInput',
@@ -16,7 +17,7 @@ const RichTextInput = defineComponent({
     },
     emits: ['update'],
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     computed: {
         isModelSettingAndHasNodeView() {

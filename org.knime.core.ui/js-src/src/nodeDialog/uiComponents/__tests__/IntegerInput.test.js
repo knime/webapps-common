@@ -5,7 +5,7 @@ import NumberInputBase from '../NumberInputBase.vue';
 import ErrorMessage from '../ErrorMessage.vue';
 
 describe('IntegerInput.vue', () => {
-    let defaultProps, wrapper;
+    let defaultProps, wrapper, component;
 
     beforeEach(async () => {
         defaultProps = {
@@ -29,7 +29,8 @@ describe('IntegerInput.vue', () => {
                 }
             }
         };
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
+        component = await mountJsonFormsComponent(IntegerInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -48,19 +49,22 @@ describe('IntegerInput.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(NumberInputBase));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(NumberInputBase),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(IntegerInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(IntegerInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(IntegerInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

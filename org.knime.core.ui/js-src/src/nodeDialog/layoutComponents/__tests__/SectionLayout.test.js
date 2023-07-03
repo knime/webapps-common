@@ -40,7 +40,8 @@ describe('SectionLayout.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps);
+        const component = await mountJsonFormsComponent(SectionLayout, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -57,13 +58,13 @@ describe('SectionLayout.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', async () => {
         defaultProps.layout.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps);
+        const { wrapper } = await mountJsonFormsComponent(SectionLayout, defaultProps);
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
         defaultProps.layout.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(SectionLayout, defaultProps, true);
+        const { wrapper } = await mountJsonFormsComponent(SectionLayout, defaultProps, true);
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(true);
     });
 });

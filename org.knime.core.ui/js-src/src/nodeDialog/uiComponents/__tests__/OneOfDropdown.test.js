@@ -4,7 +4,7 @@ import OneOfDropdown from '../OneOfDropdown.vue';
 import DropdownInput from '../DropdownInput.vue';
 
 describe('OneOfDropdown.vue', () => {
-    let wrapper, props;
+    let wrapper, props, component;
 
     beforeEach(async () => {
         props = {
@@ -39,7 +39,8 @@ describe('OneOfDropdown.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(OneOfDropdown, props);
+        component = await mountJsonFormsComponent(OneOfDropdown, props);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -57,7 +58,10 @@ describe('OneOfDropdown.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(DropdownInput));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(DropdownInput),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 
     it('optionsGenerator correctly transforms the data', async () => {

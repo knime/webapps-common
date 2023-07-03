@@ -1,10 +1,11 @@
 <script>
 import { defineComponent } from 'vue';
-import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
+import { rendererProps } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
 import NumberInput from 'webapps-common/ui/components/forms/NumberInput.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
+import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const NumberInputBase = defineComponent({
     name: 'NumberInputBase',
@@ -22,7 +23,7 @@ const NumberInputBase = defineComponent({
         }
     },
     setup(props) {
-        return useJsonFormsControl(props);
+        return useJsonFormsControlWithUpdate(props);
     },
     computed: {
         isModelSettingAndHasNodeView() {

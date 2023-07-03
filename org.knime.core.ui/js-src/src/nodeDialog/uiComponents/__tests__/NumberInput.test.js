@@ -7,14 +7,13 @@ import ErrorMessage from '../ErrorMessage.vue';
 import LabeledInput from '../LabeledInput.vue';
 
 describe('NumberInput.vue', () => {
-    let defaultProps, wrapper, onChangeSpy;
+    let defaultProps, wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(NumberInputBase.methods, 'onChange');
-        NumberInputBase.methods.handleChange = vi.fn();
     });
 
-    beforeEach(async () => {
+    beforeEach(() => {
         defaultProps = {
             control: {
                 path: 'test',
@@ -43,7 +42,8 @@ describe('NumberInput.vue', () => {
             }
         };
         
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
+        component = mountJsonFormsComponent(NumberInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -63,25 +63,28 @@ describe('NumberInput.vue', () => {
     });
 
     it('initializes jsonforms on pass-through component', () => {
-        initializesJsonFormsControl(wrapper.getComponent(NumberInputBase));
+        initializesJsonFormsControl({
+            wrapper: wrapper.getComponent(NumberInputBase),
+            useJsonFormsControlSpy: component.useJsonFormsControlSpy
+        });
     });
 
-    it('calls onChange of NumberInputBase when number input is changed', async () => {
+    it('calls onChange of NumberInputBase when number input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(NumberInput, defaultProps, {
+        const { wrapper } = mountJsonFormsComponentWithStore(NumberInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
-        localWrapper.findComponent(NumberInputBase).find('input').trigger('input');
+        wrapper.findComponent(NumberInputBase).find('input').trigger('input');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
-    it('indicates model settings change when model setting is changed', async () => {
+    it('indicates model settings change when model setting is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(
+        const { wrapper } = mountJsonFormsComponentWithStore(
             NumberInput,
             {
                 ...defaultProps,
@@ -100,7 +103,7 @@ describe('NumberInput.vue', () => {
                 }
             }
         );
-        localWrapper.findComponent(NumberInputBase).find('input').trigger('input');
+        wrapper.findComponent(NumberInputBase).find('input').trigger('input');
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     });
 
@@ -118,8 +121,8 @@ describe('NumberInput.vue', () => {
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(NumberInput, localDefaultProps);
-        expect(localWrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
+        const { wrapper } = mountJsonFormsComponent(NumberInput, localDefaultProps);
+        expect(wrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
     });
 
     it('does not render content of NumberInputBase when visible is false', async () => {
@@ -128,16 +131,16 @@ describe('NumberInput.vue', () => {
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(NumberInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(NumberInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(NumberInput, defaultProps);
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

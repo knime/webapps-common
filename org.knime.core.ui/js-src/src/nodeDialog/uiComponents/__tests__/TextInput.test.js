@@ -6,7 +6,7 @@ import LabeledInput from '../LabeledInput.vue';
 import InputField from 'webapps-common/ui/components/forms/InputField.vue';
 
 describe('TextInput.vue', () => {
-    let defaultProps, wrapper, onChangeSpy;
+    let defaultProps, wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(TextInput.methods, 'onChange');
@@ -43,7 +43,8 @@ describe('TextInput.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(TextInput, defaultProps);
+        component = await mountJsonFormsComponent(TextInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -57,27 +58,29 @@ describe('TextInput.vue', () => {
     });
     
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
-    it('calls onChange when text input is changed', async () => {
+    it('calls onChange when text input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(TextInput, defaultProps, {
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(TextInput, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
         const changedTextInput = 'Shaken not stirred';
-        localWrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
+        wrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
         expect(onChangeSpy).toHaveBeenCalledWith(changedTextInput);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedTextInput
+        );
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
-    it('indicates model settings change when model setting is changed', async () => {
+    it('indicates model settings change when model setting is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(
             TextInput,
             {
                 ...defaultProps,
@@ -97,9 +100,11 @@ describe('TextInput.vue', () => {
             }
         );
         const changedTextInput = 'Shaken not stirred';
-        localWrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
+        wrapper.findComponent(InputField).vm.$emit('update:modelValue', changedTextInput);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedTextInput);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedTextInput
+        );
     });
 
     it('sets correct initial value', () => {
@@ -119,8 +124,8 @@ describe('TextInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const localWrapper = mountJsonFormsComponent(TextInput, localDefaultProps);
-        expect(localWrapper.vm.disabled).toBeTruthy();
+        const { wrapper } = mountJsonFormsComponent(TextInput, localDefaultProps);
+        expect(wrapper.vm.disabled).toBeTruthy();
     });
 
     it('does not render content of TextInput when visible is false', async () => {
@@ -129,16 +134,16 @@ describe('TextInput.vue', () => {
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(TextInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(TextInput, defaultProps);
         expect(wrapper.getComponent(TextInput).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(TextInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(TextInput, defaultProps);
         expect(wrapper.getComponent(TextInput).isVisible()).toBe(true);
     });
 });

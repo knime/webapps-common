@@ -171,9 +171,10 @@ describe('NodeDialog.vue', () => {
             expect(Object.getOwnPropertyNames(wrapper.vm.$options.provide())).toContain('registerWatcher');
         });
 
-        it('creates watcher when calling registerWatcher', async () => {
+        it('adds watcher when calling registerWatcher', async () => {
             const wrapper = shallowMount(NodeDialog, getOptions());
             await flushPromises();
+
             wrapper.setData({ settings: {
                 data: {
                     test: 'test',
@@ -182,51 +183,87 @@ describe('NodeDialog.vue', () => {
                 }
             } });
 
-            const callback = vi.fn();
+            const transformSettings = vi.fn();
+            const init = vi.fn();
             const dependencies = ['#/properties/test', '#/properties/test2'];
 
-            wrapper.vm.registerWatcher(callback, dependencies);
-            expect(callback).toHaveBeenCalledWith({
-                test: 'test',
-                test2: 'test'
-            });
-            callback.mockClear();
+            await wrapper.vm.registerWatcher({ transformSettings, dependencies });
             
-            await wrapper.setData({ settings: {
-                data: {
-                    test: 'test2',
-                    test2: 'test',
-                    otherTest: 'test'
-                }
-            } });
-            expect(callback).toHaveBeenCalledWith({
-                test: 'test2',
-                test2: 'test'
+            expect(wrapper.vm.registeredWatchers.length).toBe(1);
+            expect(wrapper.vm.registeredWatchers[0]).toStrictEqual({
+                transformSettings, dataPaths: ['test', 'test2']
             });
-            callback.mockClear();
+            expect(init).not.toHaveBeenCalled();
 
-            await wrapper.setData({ settings: {
-                data: {
-                    test: 'test2',
-                    test2: 'test',
-                    otherTest: 'test2'
+            await wrapper.vm.registerWatcher({ transformSettings, init, dependencies });
+
+            expect(wrapper.vm.registeredWatchers.length).toBe(2);
+            expect(wrapper.vm.registeredWatchers[1]).toStrictEqual({
+                transformSettings, dataPaths: ['test', 'test2']
+            });
+            expect(init).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateData', () => {
+        let wrapper, handleChange, registeredWatchers;
+
+        const settingsData = { settings: {
+            data: {
+                test1: 'test',
+                test2: 'test',
+                test3: 'test',
+                test4: 'test'
+            }
+        } };
+
+        beforeEach(async () => {
+            wrapper = shallowMount(NodeDialog, getOptions());
+            await flushPromises();
+
+            wrapper.setData(settingsData);
+
+            registeredWatchers = [
+                {
+                    transformSettings: vi.fn((data) => {
+                        data.test4 = 'transformed';
+                    }),
+                    dependencies: ['#/properties/test1', '#/properties/test2']
+                },
+                {
+                    transformSettings: vi.fn(),
+                    dependencies: ['#/properties/test2', '#/properties/test3']
                 }
-            } });
+            ];
+            handleChange = vi.fn(() => {
 
-            expect(callback).not.toHaveBeenCalled();
+            });
+            registeredWatchers.forEach(async watcher => {
+                await wrapper.vm.registerWatcher(watcher);
+            });
+        });
 
+        it('updates data normally if no watchers are triggered', async () => {
+            const path = 'test4';
+            const data = 'some data';
+            await wrapper.vm.updateData(handleChange, path, data);
+            registeredWatchers.forEach(({ transformSettings }) => {
+                expect(transformSettings).not.toHaveBeenCalled();
+            });
+            expect(handleChange).toHaveBeenCalledWith(path, data);
+        });
 
-            await wrapper.setData({ settings: {
-                data: {
-                    test: 'test2',
-                    test2: 'test2',
-                    otherTest: 'test2'
-                }
-            } });
-
-            expect(callback).toHaveBeenCalledWith({
-                test: 'test2',
-                test2: 'test2'
+        it('transforms settings for triggered watchers and updates data', async () => {
+            const path = 'test2';
+            const data = 'some data';
+            await wrapper.vm.updateData(handleChange, path, data);
+            registeredWatchers.forEach(({ transformSettings }) => {
+                expect(transformSettings).toHaveBeenCalled();
+            });
+            expect(handleChange).toHaveBeenCalledWith('', {
+                ...wrapper.vm.settings.data,
+                test2: data,
+                test4: 'transformed'
             });
         });
     });

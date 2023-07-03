@@ -103,7 +103,11 @@ public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements
         return CompletableFuture.supplyAsync(() -> DialogDataServiceHandlerResult.fail(message));
     }
 
-    private static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
+    /**
+     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
+     * @return the possible domain values of the given {@link DataColumnSpec}
+     */
+    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
         var colDomain = colSpec.getDomain().getValues();
         if (colDomain == null) {
             return Optional.empty();

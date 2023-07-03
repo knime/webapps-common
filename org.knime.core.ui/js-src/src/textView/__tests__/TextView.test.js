@@ -28,12 +28,13 @@ describe('TextView.vue', () => {
     };
 
     const mountWrapper = () => {
-        wrapper = mountJsonFormsComponentWithStore(TextView, false, {
+        const component = mountJsonFormsComponentWithStore(TextView, false, {
             pagebuilder: {
                 actions: { setReportingContent: setReportingContentMock },
                 namespaced: true
             }
         });
+        wrapper = component.wrapper;
     };
 
     beforeEach(() => {

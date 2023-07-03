@@ -43,7 +43,8 @@ describe('ValueSwitchInput.vue', () => {
     let wrapper;
 
     beforeEach(async () => {
-        wrapper = await mountJsonFormsComponent(ValueSwitchInput, defaultProps);
+        const component = await mountJsonFormsComponent(ValueSwitchInput, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {

@@ -11,7 +11,7 @@ import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-vari
 import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
 
 describe('RadioInputBase.vue', () => {
-    let defaultProps, wrapper, onChangeSpy;
+    let defaultProps, wrapper, onChangeSpy, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(RadioInputBase.methods, 'onChange');
@@ -53,7 +53,8 @@ describe('RadioInputBase.vue', () => {
             }
         };
 
-        wrapper = await mountJsonFormsComponent(RadioInputBase, defaultProps);
+        component = await mountJsonFormsComponent(RadioInputBase, defaultProps);
+        wrapper = component.wrapper;
     });
 
     afterEach(() => {
@@ -68,26 +69,23 @@ describe('RadioInputBase.vue', () => {
     });
 
     it('initializes jsonforms', () => {
-        initializesJsonFormsControl(wrapper);
+        initializesJsonFormsControl(component);
     });
 
-    const createTypedWrapper = async (type) => {
-        const wrapper = await mountJsonFormsComponentWithStore(
-            RadioInputBase,
-            {
-                ...defaultProps,
-                type,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.schema,
-                        scope: '#/properties/model/properties/testColumn'
-                    }
+    const createTypedWrapper = (type) => mountJsonFormsComponentWithStore(
+        RadioInputBase,
+        {
+            ...defaultProps,
+            type,
+            control: {
+                ...defaultProps.control,
+                uischema: {
+                    ...defaultProps.control.schema,
+                    scope: '#/properties/model/properties/testColumn'
                 }
             }
-        );
-        return wrapper;
-    };
+        }
+    );
 
     const testTypes = [
         ['radio', RadioButtons],
@@ -95,37 +93,39 @@ describe('RadioInputBase.vue', () => {
         ['unknown', RadioButtons]
     ];
 
-    it.each(testTypes)('renders explicit type %s', async (type, component) => {
-        const localWrapper = await createTypedWrapper(type);
-        expect(localWrapper.getComponent(RadioInputBase).exists()).toBe(true);
-        expect(localWrapper.findComponent(LabeledInput).exists()).toBe(true);
-        expect(localWrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
-        expect(localWrapper.getComponent(component).exists()).toBe(true);
+    it.each(testTypes)('renders explicit type %s', async (type, comp) => {
+        const { wrapper } = await createTypedWrapper(type);
+        expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
+        expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
+        expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
+        expect(wrapper.getComponent(comp).exists()).toBe(true);
     });
 
-    it.each(testTypes)('initializes jsonforms for type %s', async (type, component) => {
-        const localWrapper = await createTypedWrapper(type);
-        initializesJsonFormsControl(localWrapper);
+    it.each(testTypes)('initializes jsonforms for type %s', async (type, comp) => {
+        const component = await createTypedWrapper(type);
+        initializesJsonFormsControl(component);
     });
 
     it('calls onChange when radio button is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(RadioInputBase, defaultProps, {
+        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RadioInputBase, defaultProps, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
             }
         });
         const changedRadioInputBase = 'Shaken not stirred';
-        localWrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
+        wrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(onChangeSpy).toHaveBeenCalledWith(changedRadioInputBase);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedRadioInputBase
+        );
         expect(dirtySettingsMock).not.toHaveBeenCalled();
     });
 
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const localWrapper = await mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(
             RadioInputBase,
             {
                 ...defaultProps,
@@ -145,9 +145,11 @@ describe('RadioInputBase.vue', () => {
             }
         );
         const changedRadioInputBase = 'Shaken not stirred';
-        await localWrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
+        await wrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-        expect(localWrapper.vm.handleChange).toHaveBeenCalledWith(defaultProps.control.path, changedRadioInputBase);
+        expect(updateData).toHaveBeenCalledWith(
+            expect.anything(), defaultProps.control.path, changedRadioInputBase
+        );
     });
 
     it('sets correct initial value', () => {
@@ -173,8 +175,8 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(RadioInputBase, localDefaultProps);
-        expect(localWrapper.vm.disabled).toBeTruthy();
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, localDefaultProps);
+        expect(wrapper.vm.disabled).toBeTruthy();
     });
 
     it('does not disable radioInput when not controlled by a flow variable', () => {
@@ -192,8 +194,8 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(RadioInputBase, defaultProps);
-        const icon = localWrapper.findComponent(BothFlowVariables);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const icon = wrapper.findComponent(BothFlowVariables);
         expect(icon.exists()).toBe(true);
     });
 
@@ -206,8 +208,8 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(RadioInputBase, defaultProps);
-        const icon = localWrapper.findComponent(ExposeFlowVariable);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const icon = wrapper.findComponent(ExposeFlowVariable);
         expect(icon.exists()).toBe(true);
     });
 
@@ -220,8 +222,8 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const localWrapper = mountJsonFormsComponent(RadioInputBase, defaultProps);
-        const icon = localWrapper.findComponent(OnlyFlowVariable);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const icon = wrapper.findComponent(OnlyFlowVariable);
         expect(icon.exists()).toBe(true);
     });
 
@@ -231,16 +233,16 @@ describe('RadioInputBase.vue', () => {
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
-    it('checks that it is not rendered if it is an advanced setting', async () => {
+    it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
         expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(false);
     });
 
-    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
+    it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        wrapper = await mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
         expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(true);
     });
 });
