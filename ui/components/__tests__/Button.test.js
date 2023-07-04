@@ -41,6 +41,20 @@ describe("Button.vue", () => {
     );
   });
 
+  it("renders classes according to props", () => {
+    const wrapper = shallowMount(Button, {
+      props: {
+        primary: true,
+        compact: true,
+        withBorder: true,
+        withWarning: true
+      },
+    });
+    expect(wrapper.classes().sort()).toEqual(
+      ["button", "primary", "compact", "with-border", "with-warning", "on-dark"].sort()
+    );
+  });
+
   it("renders disabled state", () => {
     let wrapper = shallowMount(Button, {
       props: {

@@ -11,51 +11,57 @@ export default defineComponent({
      * @see {@link BaseButton.vue}
      */
 
-    /**
-     * show button with border
-     */
-    withBorder: {
-      type: Boolean,
-      default: false,
+        /**
+         * show button with border
+         */
+        withBorder: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * switches colors to use button on a dark background
+         */
+        onDark: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * switches colors
+         */
+        primary: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * smaller font size and padding
+         */
+        compact: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * show button in an error state
+         * - requires withBorder
+         * - doesnt work onDark
+         */
+         withWarning: {
+              type: Boolean,
+              default: false
+        },
     },
-    /**
-     * switches colors to use button on a dark background
-     */
-    onDark: {
-      type: Boolean,
-      default: false,
-    },
-    /**
-     * switches colors
-     */
-    primary: {
-      type: Boolean,
-      default: false,
-    },
-    /**
-     * smaller font size and padding
-     */
-    compact: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    classes() {
-      return [
-        "button",
-        { primary: this.primary },
-        { "with-border": this.withBorder },
-        { "on-dark": this.onDark },
-        { compact: this.compact },
-      ];
-    },
-  },
-});
+    computed: {
+        classes() {
+            return [
+                'button',
+                { primary: this.primary },
+                { 'with-border': this.withBorder },
+                { 'with-warning': this.withWarning },
+                { 'on-dark': this.onDark },
+                { compact: this.compact }
+            ];
+        }
+    }
+};
 </script>
 
 <template>
@@ -173,6 +179,15 @@ export default defineComponent({
   &.with-border {
     &.compact {
       border-radius: var(--theme-button-small-border-radius);
+    }
+
+    &.with-warning {
+      border-color: var(--theme-color-error);
+      color: var(--theme-color-error);
+
+      & >>> svg {
+        stroke: var(--theme-color-error);
+      }
     }
 
     &:hover {
