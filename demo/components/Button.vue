@@ -4,6 +4,7 @@ import Button from '../../ui/components/Button.vue';
 import buttonCode from '!!raw-loader!../../ui/components/Button';
 import baseButtonCode from '!!raw-loader!../../ui/components/BaseButton';
 import PlayIcon from '../../ui/assets/img/icons/circle-play.svg';
+import LightningIcon from '../../ui/assets/img/icons/lightning.svg';
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>
@@ -19,6 +20,7 @@ export default {
     components: {
         Button,
         PlayIcon,
+        LightningIcon,
         CodeExample
     },
     data() {
@@ -177,6 +179,24 @@ export default {
             </Button>
           </div>
         </div>
+        <h5>Warning buttons</h5>
+        <div class="wrapper">
+          <p>In some cases, we want to indicate a warning. Example: Forceful action with potential damaging effects.
+            Use <code>with-border</code> and <code>with-warning</code>.</p>
+          <Button
+            with-border
+            with-warning
+          >
+            <LightningIcon />Forceful action
+          </Button>
+          <Button
+            with-border
+            with-warning
+            compact
+          >
+            <LightningIcon />Forceful action
+          </Button>
+        </div>
         <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
         <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
         <CodeExample summary="Show BaseButton.vue source code">{{ baseButtonCode }}</CodeExample>
@@ -191,6 +211,7 @@ export default {
   grid-template-columns: repeat(5, max-content);
   gap: 20px;
   max-width: 100%;
+  margin-bottom: 40px;
   align-items: center;
   justify-items: center;
 
@@ -198,6 +219,14 @@ export default {
     grid-template-columns: repeat(1, max-content);
   }
 }
+
+h5 {
+  margin-bottom: 0;
+}
+p {
+  margin: 0;
+}
+
 
 .background {
   padding: 10px 10px;

@@ -33,8 +33,20 @@ describe('Button.vue', () => {
                 onDark: true
             }
         });
-        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border', 'on-dark'].sort());
+        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border','on-dark'].sort());
     });
+
+    it('renders classes according to props', () => {
+      const wrapper = shallowMount(Button, {
+          propsData: {
+              primary: true,
+              compact: true,
+              withBorder: true,
+              withWarning: true
+          }
+      });
+      expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border','with-warning'].sort());
+  });
 
     it('renders disabled state', () => {
         let wrapper = shallowMount(Button, {
