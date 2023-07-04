@@ -43,10 +43,10 @@ export default {
          * - requires withBorder
          * - doesnt work onDark
          */
-         withWarning: {
+        withWarning: {
             type: Boolean,
             default: false
-        },
+        }
     },
     computed: {
         classes() {

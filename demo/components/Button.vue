@@ -181,8 +181,10 @@ export default {
         </div>
         <h5>Warning buttons</h5>
         <div class="wrapper">
-          <p>In some cases, we want to indicate a warning. Example: Forceful action with potential damaging effects.
-            Use <code>with-border</code> and <code>with-warning</code>.</p>
+          <p>
+            In some cases, we want to indicate a warning. Example: Forceful action with potential damaging effects.
+            Use <code>with-border</code> and <code>with-warning</code>.
+          </p>
           <Button
             with-border
             with-warning
