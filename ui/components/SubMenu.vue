@@ -103,7 +103,7 @@ export default {
       validator: (value: string) => ["fixed", "absolute"].includes(value),
     },
   },
-  emits: ["item-click", "toggle"],
+  emits: ["item-click", "toggle", "open", "close"],
   setup(props) {
     const { orientation } = toRefs(props);
     const submenu = ref(null);
@@ -178,6 +178,8 @@ export default {
         : () => {};
 
       this.$emit("toggle", event, toggleCallback);
+      const openOrCloseEvent = this.expanded ? "open" : "close";
+      this.$emit(openOrCloseEvent);
 
       this.updatePopper();
     },

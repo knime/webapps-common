@@ -294,4 +294,32 @@ describe("SubMenu.vue", () => {
       expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
     });
   });
+
+  it("emits open and close events", async () => {
+    const items = [
+      {
+        href: "https://www.google.com/slash",
+        text: "Google Slash",
+        randomProp: "test",
+      },
+      {
+        href: "https://www.link.me.in",
+        text: "Linked Thing",
+        anotherProp: "foo",
+      },
+    ];
+    const id = "testfoobar543";
+
+    const wrapper = mount(SubMenu, {
+      props: { items, id },
+    });
+    // assumes MenuItems use <li>
+    await wrapper.find(".submenu-toggle").trigger("click");
+
+    expect(wrapper.emitted("open")).toBeDefined();
+
+    await wrapper.find(".submenu-toggle").trigger("click");
+
+    expect(wrapper.emitted("close")).toBeDefined();
+  });
 });
