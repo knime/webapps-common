@@ -4,7 +4,7 @@ import Button from "webapps-common/ui/components/Button.vue";
 import buttonCode from "webapps-common/ui/components/Button.vue?raw";
 import baseButtonCode from "webapps-common/ui/components/BaseButton.vue?raw";
 import PlayIcon from "webapps-common/ui/assets/img/icons/circle-play.svg";
-import LightningIcon from 'webapps-common/ui/assets/img/icons/lightning.svg';
+import LightningIcon from "webapps-common/ui/assets/img/icons/lightning.svg";
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>
@@ -112,19 +112,15 @@ export default {
         </div>
         <h5>Warning buttons</h5>
         <div class="wrapper">
-          <p>In some cases, we want to indicate a warning. Example: Forceful action with potential damaging effects.
-            Use <code>with-border</code> and <code>with-warning</code>.</p>
-          <Button
-            with-border
-            with-warning
-          >
+          <p>
+            In some cases, we want to indicate a warning. Example: Forceful
+            action with potential damaging effects. Use
+            <code>with-border</code> and <code>with-warning</code>.
+          </p>
+          <Button with-border with-warning>
             <LightningIcon />Forceful action
           </Button>
-          <Button
-            with-border
-            with-warning
-            compact
-          >
+          <Button with-border with-warning compact>
             <LightningIcon />Forceful action
           </Button>
         </div>
@@ -160,10 +156,10 @@ export default {
 h5 {
   margin-bottom: 0;
 }
+
 p {
   margin: 0;
 }
-
 
 .background {
   padding: 10px;

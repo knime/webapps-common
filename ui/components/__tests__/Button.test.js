@@ -27,7 +27,7 @@ describe("Button.vue", () => {
     expect(wrapper.findComponent(BaseButton).props("href")).toBe("test-href");
   });
 
-  it("renders classes according to props", () => {
+  it("renders classes according to props on dark", () => {
     const wrapper = shallowMount(Button, {
       props: {
         primary: true,
@@ -41,17 +41,17 @@ describe("Button.vue", () => {
     );
   });
 
-  it("renders classes according to props", () => {
+  it("renders classes according to props with warning", () => {
     const wrapper = shallowMount(Button, {
       props: {
         primary: true,
         compact: true,
         withBorder: true,
-        withWarning: true
+        withWarning: true,
       },
     });
     expect(wrapper.classes().sort()).toEqual(
-      ["button", "primary", "compact", "with-border", "with-warning", "on-dark"].sort()
+      ["button", "primary", "compact", "with-border", "with-warning"].sort()
     );
   });
 
