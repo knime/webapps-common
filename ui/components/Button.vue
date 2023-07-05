@@ -188,7 +188,7 @@ export default defineComponent({
       border-color: var(--theme-color-error);
       color: var(--theme-color-error);
 
-      & >>> svg {
+      & :deep(svg) {
         stroke: var(--theme-color-error);
       }
     }
@@ -212,6 +212,10 @@ export default defineComponent({
       & :slotted(svg) {
         stroke: var(--theme-button-foreground-color-focus);
       }
+    }
+
+    &.with-warning:hover {
+      border-color: var(--theme-button-background-color-hover);
     }
   }
 
