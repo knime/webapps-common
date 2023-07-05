@@ -10,7 +10,6 @@ export default defineComponent({
     /**
      * @see {@link BaseButton.vue}
      */
-
     /**
      * show button with border
      */
@@ -39,6 +38,15 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    /**
+     * show button in an error state
+     * - requires withBorder
+     * - doesnt work onDark
+     */
+    withWarning: {
+      type: Boolean,
+      default: false,
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -50,6 +58,7 @@ export default defineComponent({
         "button",
         { primary: this.primary },
         { "with-border": this.withBorder },
+        { "with-warning": this.withWarning },
         { "on-dark": this.onDark },
         { compact: this.compact },
       ];
@@ -173,6 +182,15 @@ export default defineComponent({
   &.with-border {
     &.compact {
       border-radius: var(--theme-button-small-border-radius);
+    }
+
+    &.with-warning {
+      border-color: var(--theme-color-error);
+      color: var(--theme-color-error);
+
+      & >>> svg {
+        stroke: var(--theme-color-error);
+      }
     }
 
     &:hover {
