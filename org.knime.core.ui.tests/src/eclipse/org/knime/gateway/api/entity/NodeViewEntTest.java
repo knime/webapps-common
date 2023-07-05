@@ -53,7 +53,6 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.Duration.FIVE_SECONDS;
 import static org.awaitility.Duration.ONE_HUNDRED_MILLISECONDS;
 import static org.knime.core.webui.data.InitialDataServiceTestUtil.parseResult;
-import static org.knime.core.webui.node.view.NodeViewManagerTest.runOnExecutor;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -72,6 +71,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -123,6 +124,31 @@ import org.knime.testing.util.WorkflowManagerUtil;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class NodeViewEntTest {
 
+    private static final String JAVA_AWT_HEADLESS = "java.awt.headless";
+
+    private WorkflowManager m_wfm;
+
+    private String m_javaAwtHeadlessSysPropValue;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        m_javaAwtHeadlessSysPropValue = System.getProperty(JAVA_AWT_HEADLESS);
+        // we assume that all test are run in 'headful' mode
+        System.clearProperty(JAVA_AWT_HEADLESS);
+    }
+
+    @AfterEach
+    void tearDown() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+        m_wfm = null;
+        if (m_javaAwtHeadlessSysPropValue == null) {
+            System.clearProperty(JAVA_AWT_HEADLESS);
+        } else {
+            System.setProperty(JAVA_AWT_HEADLESS, m_javaAwtHeadlessSysPropValue);
+        }
+    }
+
     /**
      * Tests the creation of {@link NodeViewEnt} instances.
      *
@@ -132,15 +158,14 @@ class NodeViewEntTest {
     @Test
     @SuppressWarnings("java:S5961") // Allow too big number of assertions
     void testNodeViewEnt() throws IOException, InvalidSettingsException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
 
         NativeNodeContainer nncWithoutNodeView =
-            WorkflowManagerUtil.createAndAddNode(wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
+            WorkflowManagerUtil.createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         Assertions.assertThatThrownBy(() -> NodeViewEnt.create(nncWithoutNodeView))
             .isInstanceOf(IllegalArgumentException.class);
 
         Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeView();
-        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
+        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
 
         // test entity  when node is _not_ executed
         var ent = NodeViewEnt.create(nnc, null, "test_action_id");
@@ -186,8 +211,8 @@ class NodeViewEntTest {
             Page p = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.js").build();
             return NodeViewTest.createNodeView(p);
         };
-        nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        wfm.executeAllAndWaitUntilDone();
+        nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
+        m_wfm.executeAllAndWaitUntilDone();
         ent = NodeViewEnt.create(nnc, null);
         resourceInfo = ent.getResourceInfo();
         assertThat(ent.getInitialData()).isNull();
@@ -203,7 +228,6 @@ class NodeViewEntTest {
             assertThat(ent2.getResourceInfo().getBaseUrl()).isNull();
         });
 
-        WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
     /**
@@ -213,23 +237,21 @@ class NodeViewEntTest {
      */
     @Test
     void testCanExecuteNodeViewEnt() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-
         // node view node with one unconnected input
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 1));
+        var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 1));
         var ent = NodeViewEnt.create(nnc, null);
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("idle");
         assertThat(ent.getNodeInfo().isCanExecute()).isFalse();
 
         // test node view with available input spec
-        var nnc2 = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(0, 1));
-        wfm.addConnection(nnc2.getID(), 1, nnc.getID(), 1);
+        var nnc2 = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(0, 1));
+        m_wfm.addConnection(nnc2.getID(), 1, nnc.getID(), 1);
         ent = NodeViewEnt.create(nnc, null);
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("configured");
         assertThat(ent.getNodeInfo().isCanExecute()).isTrue();
 
         // test node view with available input spec but failing configure-call (i.e. node is idle but input spec available)
-        var nnc3 = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0) {
+        var nnc3 = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 0) {
 
             @Override
             public NodeViewNodeModel createNodeModel() {
@@ -241,13 +263,34 @@ class NodeViewEntTest {
                 };
             }
         });
-        wfm.addConnection(nnc2.getID(), 1, nnc3.getID(), 1);
+        m_wfm.addConnection(nnc2.getID(), 1, nnc3.getID(), 1);
         ent = NodeViewEnt.create(nnc3, null);
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("idle");
         assertThat(ent.getNodeInfo().isCanExecute()).isTrue();
         assertThat(ent.getNodeInfo().getNodeWarnMessage()).isEqualTo("problem");
+    }
 
-        WorkflowManagerUtil.disposeWorkflow(wfm);
+    /**
+     * Tests whether {@link ResourceInfoEnt#getBaseUrl()} is present or not depending on at least two conditions.
+     */
+    @Test
+    void testBaseUrlInNodeViewEnt() {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeView();
+        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
+        m_wfm.executeAllAndWaitUntilDone();
+
+        var ent = NodeViewEnt.create(nnc, null);
+        assertThat(ent.getResourceInfo().getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+
+        // base url is _not_ expected to be set if run within 'executor' unless
+        // the NodeViewEnt is used for image generation
+        runOnExecutor(() -> {
+            var ent2 = NodeViewEnt.create(nnc, null);
+            assertThat(ent2.getResourceInfo().getBaseUrl()).isNull();
+
+            var ent3 = NodeViewEnt.create(nnc, null, "blub");
+            assertThat(ent3.getResourceInfo().getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
+        });
 
     }
 
@@ -529,5 +572,20 @@ class NodeViewEntTest {
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
         return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", specProvider);
     }
+
+    /**
+     * Simulates to run stuff as if it was run on the executor (which usually means to run the AP headless).
+     *
+     * @param r
+     */
+    private static void runOnExecutor(final Runnable r) {
+        System.setProperty(JAVA_AWT_HEADLESS, "true");
+        try {
+            r.run();
+        } finally {
+            System.clearProperty(JAVA_AWT_HEADLESS);
+        }
+    }
+
 
 }

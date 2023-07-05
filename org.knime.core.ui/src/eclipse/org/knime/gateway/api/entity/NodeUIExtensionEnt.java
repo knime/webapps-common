@@ -85,6 +85,18 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
      */
     protected NodeUIExtensionEnt(final N nodeWrapper, final PageResourceManager<N> pageResourceManager,
         final DataServiceManager<N> dataServiceManager, final PageType pageType) {
+        this(nodeWrapper, pageResourceManager, dataServiceManager, pageType, isRunAsDesktopApplication());
+    }
+
+    /**
+     * @param nodeWrapper
+     * @param pageResourceManager
+     * @param dataServiceManager
+     * @param pageType
+     * @param includeBaseUrl whether to set the base url for {@link ResourceInfoEnt#getBaseUrl()} or not
+     */
+    protected NodeUIExtensionEnt(final N nodeWrapper, final PageResourceManager<N> pageResourceManager,
+        final DataServiceManager<N> dataServiceManager, final PageType pageType, final boolean includeBaseUrl) {
         var nc = nodeWrapper.get();
         WorkflowManager wfm = nc.getParent();
         WorkflowManager projectWfm = wfm.getProjectWFM();
@@ -93,9 +105,9 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
 
         NodeContainerParent ncParent = wfm.getDirectNCParent();
         boolean isComponentProject = projectWfm.isComponentProjectWFM();
-        if (ncParent instanceof SubNodeContainer) {
+        if (ncParent instanceof SubNodeContainer snc) {
             // it's a component's workflow
-            m_workflowId = new NodeIDEnt(((SubNodeContainer)ncParent).getID(), isComponentProject).toString();
+            m_workflowId = new NodeIDEnt(snc.getID(), isComponentProject).toString();
         } else {
             m_workflowId = new NodeIDEnt(wfm.getID(), isComponentProject).toString();
         }
@@ -109,7 +121,7 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
         }
 
         if (pageResourceManager != null) {
-            var baseUrl = pageResourceManager.getBaseUrl().orElse(null);
+            var baseUrl = includeBaseUrl ? pageResourceManager.getBaseUrl() : null;
             var debugUrl = pageResourceManager.getDebugUrl(nodeWrapper).orElse(null);
             var path = pageResourceManager.getPagePath(nodeWrapper);
             var page = pageResourceManager.getPage(nodeWrapper);
@@ -120,6 +132,10 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
         }
 
         m_pageType = pageType;
+    }
+
+    static boolean isRunAsDesktopApplication() {
+        return !"true".equals(System.getProperty("java.awt.headless"));
     }
 
     /**

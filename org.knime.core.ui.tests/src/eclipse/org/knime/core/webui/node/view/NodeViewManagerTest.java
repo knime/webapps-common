@@ -101,8 +101,6 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 public class NodeViewManagerTest {
 
-    private static final String JAVA_AWT_HEADLESS = "java.awt.headless";
-
     private WorkflowManager m_wfm;
 
     /**
@@ -232,17 +230,15 @@ public class NodeViewManagerTest {
             .isEqualTo(path4);
         assertThat(path).isEqualTo("uiext-view/"
             + NodeViewNodeFactory.getNodeWrapperTypeIdStatic((NativeNodeContainer)nnc.get()) + "/page.html");
-        String baseUrl = nodeViewManager.getBaseUrl().orElse(null);
+        String baseUrl = nodeViewManager.getBaseUrl();
         assertThat(baseUrl).isEqualTo("http://org.knime.core.ui.view/");
-
-        runOnExecutor(() -> assertThat(nodeViewManager.getBaseUrl()).isEmpty());
     }
 
     /**
      * Tests {@link NodeViewManager#getPagePath(NodeWrapper)}.
      */
     @Test
-    public void testGetNodeViewPagePathOnExecutor() {
+    public void testGetNodeViewPageResource() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
@@ -254,22 +250,20 @@ public class NodeViewManagerTest {
         assertThat(nodeViewManager.getPagePath(NodeWrapper.of(nnc)))
             .isEqualTo("uiext-view/" + NodeViewNodeFactory.getNodeWrapperTypeIdStatic(nnc) + "/page.html");
 
-        runOnExecutor(() -> { // NOSONAR
-            String path = nodeViewManager.getPagePath(NodeWrapper.of(nnc));
-            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix1 = "uiext-view/" + NodeViewNodeFactory.getNodeWrapperTypeIdStatic(nnc);
-            assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
-            testGetNodeViewPageResource(resourcePrefix1);
+        String path = nodeViewManager.getPagePath(NodeWrapper.of(nnc));
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
+        var resourcePrefix1 = "uiext-view/" + NodeViewNodeFactory.getNodeWrapperTypeIdStatic(nnc);
+        assertThat(path).isEqualTo(resourcePrefix1 + "/page.html");
+        testGetNodeViewPageResource(resourcePrefix1);
 
-            nodeViewManager.clearCaches();
+        nodeViewManager.clearCaches();
 
-            String path2 = nodeViewManager.getPagePath(NodeWrapper.of(nnc2));
-            assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
-            var resourcePrefix2 = "uiext-view/" + nnc2.getID().toString().replace(":", "_") + "/"
-                + System.identityHashCode(nnc2.getNodeAndBundleInformation());
-            assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
-            testGetNodeViewPageResource(resourcePrefix2);
-        });
+        String path2 = nodeViewManager.getPagePath(NodeWrapper.of(nnc2));
+        assertThat(nodeViewManager.getPageCacheSize()).isEqualTo(1);
+        var resourcePrefix2 = "uiext-view/" + nnc2.getID().toString().replace(":", "_") + "/"
+            + System.identityHashCode(nnc2.getNodeAndBundleInformation());
+        assertThat(path2).isEqualTo(resourcePrefix2 + "/page.html");
+        testGetNodeViewPageResource(resourcePrefix2);
 
         m_wfm.removeNode(nnc.getID());
         // make sure that the pages are removed from the cache after the node has been deleted)
@@ -460,20 +454,6 @@ public class NodeViewManagerTest {
     private static NativeNodeContainer createNodeWithNodeView(final WorkflowManager wfm,
         final Function<NodeViewNodeModel, NodeView> nodeViewCreator, final BooleanSupplier hasView) {
         return createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator, hasView));
-    }
-
-    /**
-     * Simulates to run stuff as if it was run on the executor (which usually means to run the AP headless).
-     *
-     * @param r
-     */
-    public static void runOnExecutor(final Runnable r) {
-        System.setProperty(JAVA_AWT_HEADLESS, "true");
-        try {
-            r.run();
-        } finally {
-            System.clearProperty(JAVA_AWT_HEADLESS);
-        }
     }
 
     public static class TestService {

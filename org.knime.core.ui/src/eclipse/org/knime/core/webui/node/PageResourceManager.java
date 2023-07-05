@@ -128,15 +128,15 @@ public interface PageResourceManager<N extends NodeWrapper> {
     String getPageId(N nodeWrapper);
 
     /**
-     * The base url for the page and associated resources. It is usually only available if the AP is run as a desktop
-     * application
+     * The base url for the page and associated resources. It is only required if the AP is run as a desktop application
+     * or the page resource used for image/report generation.
      *
-     * It's <b>not</b> available if run within an 'executor' as part of the server infrastructure - in this case the
-     * base url needs to be determined by the frontend.
+     * It's <b>not</b> required if run within an 'executor' as part of the server infrastructure - in this case the base
+     * url needs to be determined by the frontend.
      *
-     * @return the base url or an empty optional if not available
+     * @return the base url
      */
-    Optional<String> getBaseUrl();
+    String getBaseUrl();
 
     /**
      * Optionally returns a debug url for a view (dialog etc.) which is controlled by a system property.

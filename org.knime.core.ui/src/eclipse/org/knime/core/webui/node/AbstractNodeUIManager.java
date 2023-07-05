@@ -387,12 +387,8 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
      * {@inheritDoc}
      */
     @Override
-    public final Optional<String> getBaseUrl() {
-        if (isRunAsDesktopApplication()) {
-            return Optional.of(m_baseUrl);
-        } else {
-            return Optional.empty();
-        }
+    public final String getBaseUrl() {
+        return m_baseUrl;
     }
 
     @Override
@@ -457,10 +453,6 @@ public abstract class AbstractNodeUIManager<N extends NodeWrapper>
 
     private String getResourceIdFromUrl(final String url) {
         return url.replace(m_baseUrl, "");
-    }
-
-    private static boolean isRunAsDesktopApplication() {
-        return !"true".equals(System.getProperty("java.awt.headless"));
     }
 
 }
