@@ -185,7 +185,7 @@ const columnResizeActive = useBoolean();
 <style lang="postcss" scoped>
 .table-title {
   margin: 0;
-  padding: 15px 0 0;
+  padding: 15px 0 5px;
   color: rgb(70 70 70);
   font-size: 18px;
 }
