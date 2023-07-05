@@ -67,8 +67,7 @@
     "postcss-import": "*",
     "postcss-preset-env": "*",
     "postcss-url": "*",
-    "stylelint": "10.x - 15.x",
-    "stylelint-config-standard": "18.x - 20.x",
+    "stylelint": "15.x",
     "v-calendar": "2.0.1"
   },
   "private": true,
