@@ -24,7 +24,7 @@ describe('Button.vue', () => {
         expect(wrapper.find(BaseButton).props('href')).toEqual('test-href');
     });
 
-    it('renders classes according to props', () => {
+    it('renders classes according to props on dark', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
                 primary: true,
@@ -33,10 +33,11 @@ describe('Button.vue', () => {
                 onDark: true
             }
         });
-        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border', 'on-dark'].sort());
+        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact',
+            'with-border', 'on-dark'].sort());
     });
 
-    it('renders classes according to props', () => {
+    it('renders classes according to props with warning', () => {
         const wrapper = shallowMount(Button, {
             propsData: {
                 primary: true,
@@ -45,8 +46,8 @@ describe('Button.vue', () => {
                 withWarning: true
             }
         });
-        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact', 'with-border',
-            'with-warning'].sort());
+        expect(wrapper.classes().sort()).toEqual(['button', 'primary', 'compact',
+            'with-border', 'with-warning'].sort());
     });
 
     it('renders disabled state', () => {
