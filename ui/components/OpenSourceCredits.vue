@@ -46,7 +46,7 @@ export default {
             packages.concat(this.additionalPackages).forEach(pkg => {
                 const alreadyExists = allUniquePackages.some(
                     firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
+                        firstPkg.repository?.toLowerCase() === pkg.repository?.toLowerCase() &&
                         firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
                 );
 
