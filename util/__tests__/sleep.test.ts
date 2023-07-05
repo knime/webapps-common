@@ -1,31 +1,31 @@
-import { expect, describe, beforeAll, afterAll, it, vi } from 'vitest';
-import flushPromises from 'flush-promises';
+import { expect, describe, beforeAll, afterAll, it, vi } from "vitest";
+import flushPromises from "flush-promises";
 
-import sleep from '../sleep';
+import sleep from "../sleep";
 
-describe('sleep', () => {
-    beforeAll(() => {
-        vi.useFakeTimers();
+describe("sleep", () => {
+  beforeAll(() => {
+    vi.useFakeTimers();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it("resolves after ms", async () => {
+    let sleepFinished = false;
+    sleep(2000).then(() => {
+      sleepFinished = true;
     });
 
-    afterAll(() => {
-        vi.useRealTimers();
-    });
+    expect(sleepFinished).toBe(false);
 
-    it('resolves after ms', async () => {
-        let sleepFinished = false;
-        sleep(2000).then(() => {
-            sleepFinished = true;
-        });
+    vi.advanceTimersByTime(1000);
+    await flushPromises();
+    expect(sleepFinished).toBe(false);
 
-        expect(sleepFinished).toBe(false);
-        
-        vi.advanceTimersByTime(1000);
-        await flushPromises();
-        expect(sleepFinished).toBe(false);
-        
-        vi.advanceTimersByTime(1000);
-        await flushPromises();
-        expect(sleepFinished).toBe(true);
-    });
+    vi.advanceTimersByTime(1000);
+    await flushPromises();
+    expect(sleepFinished).toBe(true);
+  });
 });

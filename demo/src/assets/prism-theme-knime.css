@@ -30,7 +30,7 @@ pre[class*="language-"] {
 /* Code blocks */
 pre[class*="language-"] {
   background-color: var(--knime-white);
-  box-shadow: 1px 1px 4px 0 var(--knime-gray-dark-semi);
+  box-shadow: var(--shadow-elevation-1);
   padding: 0.4em 0.7em;
   margin: 0.5em 0;
   overflow: auto;

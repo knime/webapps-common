@@ -14,60 +14,61 @@ let labelForId = 0;
  * as the input's `id`.
  */
 export default {
-    inject: {
-        compactLabels: { // provided e.g. by Fieldset.vue
-            default: false
-        }
+  inject: {
+    largeLabels: {
+      // provided e.g. by Fieldset.vue
+      default: false,
     },
-    props: {
-        generateId: {
-            type: Boolean,
-            default: true
-        },
-        idPrefix: {
-            type: String,
-            default: 'comp'
-        },
-        text: {
-            default: '',
-            type: String
-        },
-        /**
-         * smaller font size and margin
-         */
-        compact: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * Whether to show the label or only its content.
-         */
-        active: {
-            type: Boolean,
-            default: true
-        }
+  },
+  props: {
+    generateId: {
+      type: Boolean,
+      default: true,
     },
-    computed: {
-        labelFor() {
-            if (this.generateId) {
-                return `${this.idPrefix}-${this.labelForId}`;
-            }
-            return null;
-        },
-        labelId() {
-            if (this.generateId) {
-                return `label-${this.labelFor}`;
-            }
-            return null;
-        },
-        isCompact() {
-            return this.compact || this.compactLabels;
-        }
+    idPrefix: {
+      type: String,
+      default: "comp",
     },
-    beforeCreate() {
-        labelForId += 1;
-        this.labelForId = labelForId;
-    }
+    text: {
+      default: "",
+      type: String,
+    },
+    /**
+     * smaller font size and margin
+     */
+    large: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Whether to show the label or only its content.
+     */
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  computed: {
+    labelFor() {
+      if (this.generateId) {
+        return `${this.idPrefix}-${this.labelForId}`;
+      }
+      return null;
+    },
+    labelId() {
+      if (this.generateId) {
+        return `label-${this.labelFor}`;
+      }
+      return null;
+    },
+    isLarge() {
+      return this.large || this.largeLabels;
+    },
+  },
+  beforeCreate() {
+    labelForId += 1;
+    this.labelForId = labelForId;
+  },
 };
 </script>
 
@@ -77,7 +78,7 @@ export default {
       v-if="active"
       :id="labelId"
       :for="labelFor"
-      :class="['label-text', {compact: isCompact}]"
+      :class="['label-text', { large: isLarge }]"
       v-text="text"
     />
     <slot :label-for-id="labelFor" />
@@ -90,25 +91,25 @@ export default {
 }
 
 .label-text {
-  font-weight: 700;
-  font-size: 16px;
-  font-family: var(--theme-text-bold-font-family);
-  color: var(--theme-text-bold-color);
-  line-height: 20px;
+  font-weight: 500;
+  font-size: 13px;
+  font-family: var(--theme-text-medium-font-family);
+  color: var(--theme-text-medium-color);
+  line-height: 18px;
   display: block;
   width: max-content;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
 
-  &.compact {
-    font-weight: 500;
-    font-size: 13px;
-    font-family: var(--theme-text-medium-font-family);
-    color: var(--theme-text-medium-color);
-    line-height: 18px;
-    margin-bottom: 3px;
+  &.large {
+    font-weight: 700;
+    font-size: 16px;
+    font-family: var(--theme-text-bold-font-family);
+    color: var(--theme-text-bold-color);
+    line-height: 20px;
+    margin-bottom: 10px;
   }
 }
 </style>

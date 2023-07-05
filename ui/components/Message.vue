@@ -1,140 +1,135 @@
 <script>
-import BaseMessage from './BaseMessage.vue';
-import MessageTitle from './MessageTitle.vue';
-import Collapser from './Collapser.vue';
-import MessageLink from './MessageLink.vue';
-import CopyIcon from '../assets/img/icons/copy.svg';
-import { copyText } from '../../util/copyText';
+import BaseMessage from "./BaseMessage.vue";
+import MessageTitle from "./MessageTitle.vue";
+import Collapser from "./Collapser.vue";
+import MessageLink from "./MessageLink.vue";
+import CopyIcon from "../assets/img/icons/copy.svg";
+import { copyText } from "../../util/copyText";
 
 /**
  * Message banner component with close button
  */
 export default {
-    components: {
-        BaseMessage,
-        MessageTitle,
-        Collapser,
-        MessageLink,
-        CopyIcon
+  components: {
+    BaseMessage,
+    MessageTitle,
+    Collapser,
+    MessageLink,
+    CopyIcon,
+  },
+  props: {
+    /**
+     * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
+     * This has no implication on functionality, only styling
+     */
+    type: {
+      type: String,
+      default: "info",
+      validator(type = "info") {
+        return ["info", "error", "success", "warn"].includes(type);
+      },
     },
-    props: {
-        /**
-         * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.
-         * This has no implication on functionality, only styling
-         */
-        type: {
-            type: String,
-            default: 'info',
-            validator(type = 'info') {
-                return ['info', 'error', 'success', 'warn'].includes(type);
-            }
-        },
-        /**
-         * Enable / disable rendering of close button.
-         * Defaults to `true`.
-         */
-        showCloseButton: {
-            type: Boolean,
-            default: true
-        },
-        /**
-         * Enable / disable collapser for details.
-         * If true, details will be down inside of the collapser content area and accessed by clicking on the
-         * expand icon.
-         * If false, details will be shown in the main message body below the message itself.
-         * This property has no effect if the message does not have details.
-         * Defaults to `true`.
-         */
-        showCollapser: {
-            type: Boolean,
-            default: true
-        },
-        /**
-         * Optional button text.
-         * If set, renders a button instead of the 'x' that is used for closing the Message.
-         * If left blank, the 'x' is rendered.
-         * This property has no effect if `showCloseButton` is `false`.
-         */
-        button: {
-            type: String,
-            default: null
-        },
-        count: {
-            type: Number,
-            default: 1
-        },
-        details: {
-            type: [String, Object],
-            default: ''
-        }
+    /**
+     * Enable / disable rendering of close button.
+     * Defaults to `true`.
+     */
+    showCloseButton: {
+      type: Boolean,
+      default: true,
     },
-    emits: ['copied', 'dismiss'],
-    data() {
-        return {
-            active: true
-        };
+    /**
+     * Enable / disable collapser for details.
+     * If true, details will be down inside of the collapser content area and accessed by clicking on the
+     * expand icon.
+     * If false, details will be shown in the main message body below the message itself.
+     * This property has no effect if the message does not have details.
+     * Defaults to `true`.
+     */
+    showCollapser: {
+      type: Boolean,
+      default: true,
     },
-    computed: {
-        detailsText() {
-            let detailsText = this.details;
-            if (detailsText && typeof detailsText !== 'string') {
-                detailsText = this.details.text;
-            }
-            return detailsText;
-        },
-        detailsLink() {
-            if (!this.detailsText) {
-                return false;
-            }
-            // avoid passing a Vue watcher function (which can be picked up a truthy).
-            return this.details.link && this.details.link.text ? this.details.link : false;
-        },
-        showDetailsCollapser() {
-            return this.detailsText && this.showCollapser;
-        }
+    /**
+     * Optional button text.
+     * If set, renders a button instead of the 'x' that is used for closing the Message.
+     * If left blank, the 'x' is rendered.
+     * This property has no effect if `showCloseButton` is `false`.
+     */
+    button: {
+      type: String,
+      default: null,
     },
-    methods: {
-        onDismiss() {
-            consola.trace('dismissing message');
-            this.active = false;
-            /**
-             * Dismiss event. Fired when the close button / 'x' is clicked.
-             * The embedding component should use this to clean up the instance.
-             * Otherwise the message will be visually hidden, but still in memory.
-             *
-             * @event dismiss
-             */
-            this.$emit('dismiss');
-        },
-        copyMessage(event) {
-            copyText(this.details);
-            /**
-             * copied event. Fired when the copy button in the detail area is clicked.
-             * The embedding component should use this to notify the user that the message was copied successfully.
-             *
-             * @event copied
-             */
-            this.$emit('copied');
-            event.target.focus();
-        }
-    }
+    count: {
+      type: Number,
+      default: 1,
+    },
+    details: {
+      type: [String, Object],
+      default: "",
+    },
+  },
+  emits: ["copied", "dismiss"],
+  data() {
+    return {
+      active: true,
+    };
+  },
+  computed: {
+    detailsText() {
+      let detailsText = this.details;
+      if (detailsText && typeof detailsText !== "string") {
+        detailsText = this.details.text;
+      }
+      return detailsText;
+    },
+    detailsLink() {
+      if (!this.detailsText) {
+        return false;
+      }
+      // avoid passing a Vue watcher function (which can be picked up a truthy).
+      return this.details.link && this.details.link.text
+        ? this.details.link
+        : false;
+    },
+    showDetailsCollapser() {
+      return this.detailsText && this.showCollapser;
+    },
+  },
+  methods: {
+    onDismiss() {
+      consola.trace("dismissing message");
+      this.active = false;
+      /**
+       * Dismiss event. Fired when the close button / 'x' is clicked.
+       * The embedding component should use this to clean up the instance.
+       * Otherwise the message will be visually hidden, but still in memory.
+       *
+       * @event dismiss
+       */
+      this.$emit("dismiss");
+    },
+    copyMessage(event) {
+      copyText(this.details);
+      /**
+       * copied event. Fired when the copy button in the detail area is clicked.
+       * The embedding component should use this to notify the user that the message was copied successfully.
+       *
+       * @event copied
+       */
+      this.$emit("copied");
+      event.target.focus();
+    },
+  },
 };
 </script>
 
 <template>
-  <BaseMessage
-    v-if="active"
-    :type="type"
-    :class="type"
-  >
+  <BaseMessage v-if="active" :type="type" :class="type">
     <Component
       :is="showDetailsCollapser ? 'Collapser' : 'div'"
       :class="showDetailsCollapser ? 'collapser' : 'banner'"
     >
-      <template
-        v-if="showDetailsCollapser"
-        #title
-      >
+      <template v-if="showDetailsCollapser" #title>
         <MessageTitle
           :type="type"
           :button="button"
@@ -148,10 +143,7 @@ export default {
           <slot />
         </MessageTitle>
       </template>
-      <div
-        v-if="!showDetailsCollapser"
-        class="title"
-      >
+      <div v-if="!showDetailsCollapser" class="title">
         <MessageTitle
           :type="type"
           :button="button"
@@ -165,17 +157,11 @@ export default {
           <slot />
         </MessageTitle>
       </div>
-      
-      <div
-        v-if="detailsText"
-        class="details"
-      >
+
+      <div v-if="detailsText" class="details">
         <span class="detail-text">
           {{ detailsText }}
-          <MessageLink
-            v-if="detailsLink"
-            :link="detailsLink"
-          />
+          <MessageLink v-if="detailsLink" :link="detailsLink" />
         </span>
         <div
           v-if="showCollapser"
@@ -268,7 +254,8 @@ export default {
     display: flex;
     align-content: center;
     margin-top: 15px;
-    padding: 10px calc(3 * var(--grid-gap-width)) 5px calc(3 * var(--grid-gap-width));
+    padding: 10px calc(3 * var(--grid-gap-width)) 5px
+      calc(3 * var(--grid-gap-width));
     position: relative;
     left: calc((100% - 100vw) / 2);
 
@@ -279,7 +266,9 @@ export default {
       overflow-y: auto;
       width: 100%;
       margin: 0 auto;
-      max-width: calc(var(--grid-max-width) - 6 * var(--grid-gap-width)); /* same as grid-container */
+      max-width: calc(
+        var(--grid-max-width) - 6 * var(--grid-gap-width)
+      ); /* same as grid-container */
 
       & .detail-text {
         display: inline-block;
@@ -318,7 +307,7 @@ export default {
   }
 }
 
-@media only screen and (max-width: 1180px) {
+@media only screen and (width <= 1180px) {
   .collapser {
     & :deep(.panel) {
       padding-left: var(--grid-gap-width);

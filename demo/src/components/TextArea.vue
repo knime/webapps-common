@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import TextArea from 'webapps-common/ui/components/forms/TextArea.vue';
-import code from 'webapps-common/ui/components/forms/TextArea.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
+import code from "webapps-common/ui/components/forms/TextArea.vue?raw";
 
 const codeExample = `<TextArea
   v-model="inputValue"
@@ -23,24 +23,25 @@ const codeExample = `<TextArea
 />`;
 
 export default {
-    components: {
-        TextArea,
-        CodeExample
+  components: {
+    TextArea,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      inputValue: "Default settings",
+      inputValue2: "",
+      inputValue3: "Invalid style",
+      inputValue4:
+        "I have 8 rows (4 is default) and 48 columns (12 is the default).",
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample,
-            inputValue: 'Default settings',
-            inputValue2: '',
-            inputValue3: 'Invalid style',
-            inputValue4: 'I have 8 rows (4 is default) and 48 columns (12 is the default).'
-        };
-    },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -49,28 +50,19 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>TextArea</h2>
           <p>
-            Multi-line string input with optional invalid styling.
-            It acts as a form element, so it emits <code>input</code> events and it has a <code>value</code>.
+            Multi-line string input with optional invalid styling. It acts as a
+            form element, so it emits <code>input</code> events and it has a
+            <code>value</code>.
           </p>
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <TextArea
-            v-model="inputValue"
-            title="Insert text"
-          />
-          <TextArea
-            v-model="inputValue2"
-            placeholder="I'm a placeholder."
-          />
-          <TextArea
-            v-model="inputValue3"
-            :is-valid="false"
-          />
-          <br>
+          <TextArea v-model="inputValue" title="Insert text" />
+          <TextArea v-model="inputValue2" placeholder="I'm a placeholder." />
+          <TextArea v-model="inputValue3" :is-valid="false" />
+          <br />
           <TextArea
             v-model="inputValue4"
             placeholder="I'm a placeholder."
@@ -80,11 +72,11 @@ export default {
         </div>
         <div class="grid-item-6">
           Input 1: {{ inputValue }}
-          <br>
+          <br />
           Input 2: {{ inputValue2 }}
-          <br>
+          <br />
           Input 3: {{ inputValue3 }}
-          <br>
+          <br />
           Input 4: {{ inputValue4 }}
         </div>
       </div>
@@ -92,8 +84,12 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show TextArea.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show TextArea.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>

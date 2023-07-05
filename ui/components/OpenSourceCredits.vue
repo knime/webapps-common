@@ -1,7 +1,7 @@
 <script>
-import packages from '../../buildtools/opensourcecredits/used-packages.json';
-import Description from '../components/Description.vue';
-import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
+import packages from "../../buildtools/opensourcecredits/used-packages.json";
+import Description from "../components/Description.vue";
+import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses
@@ -14,68 +14,70 @@ import ArrowNextIcon from '../assets/img/icons/arrow-next.svg';
  * file. For additional information @see file:webapps-common/buildtools.
  */
 export default {
-    components: {
-        Description,
-        ArrowNextIcon
+  components: {
+    Description,
+    ArrowNextIcon,
+  },
+  props: {
+    /**
+     * Additional packages may be provided for display. The packages (provided in an array)
+     * will be combined with the packages imported from the `packages` import. They will
+     * be sorted and de-duplicated before being displayed.
+     *
+     * The packages should be the correct format when provided as a prop. For information
+     * @see file:webapps-common/buildtools/opensourcecredits/collect-packages-format.json
+     *
+     * Additionally, packages can have a `repository` property with a URL to their source.
+     */
+    additionalPackages: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * Additional packages may be provided for display. The packages (provided in an array)
-         * will be combined with the packages imported from the `packages` import. They will
-         * be sorted and de-duplicated before being displayed.
-         *
-         * The packages should be the correct format when provided as a prop. For information
-         * @see file:webapps-common/buildtools/opensourcecredits/collect-packages-format.json
-         *
-         * Additionally, packages can have a `repository` property with a URL to their source.
-         */
-        additionalPackages: {
-            type: Array,
-            default: () => []
-        }
-    },
-    data() {
-        return {
-            title: 'Open Source Credits'
-        };
-    },
-    computed: {
-        packages() {
-            let allUniquePackages = [];
+  },
+  data() {
+    return {
+      title: "Open Source Credits",
+    };
+  },
+  computed: {
+    packages() {
+      let allUniquePackages = [];
 
-            packages.concat(this.additionalPackages).forEach(pkg => {
-                const alreadyExists = allUniquePackages.some(
-                    firstPkg => firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
-                        firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
-                        firstPkg.licenseText.replace(/\s+/g, '') === pkg.licenseText.replace(/\s+/g, '')
-                );
+      packages.concat(this.additionalPackages).forEach((pkg) => {
+        const alreadyExists = allUniquePackages.some(
+          (firstPkg) =>
+            firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
+            firstPkg.repository.toLowerCase() ===
+              pkg.repository.toLowerCase() &&
+            firstPkg.licenseText.replace(/\s+/g, "") ===
+              pkg.licenseText.replace(/\s+/g, "")
+        );
 
-                if (!alreadyExists) {
-                    allUniquePackages.push(pkg);
-                }
-            });
-
-            // sort packages by name
-            allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
-            return allUniquePackages;
+        if (!alreadyExists) {
+          allUniquePackages.push(pkg);
         }
+      });
+
+      // sort packages by name
+      allUniquePackages.sort((a, b) => a.name.localeCompare(b.name));
+      return allUniquePackages;
     },
-    methods: {
-        toggleDetails(e) {
-            let expanded = e.target.getAttribute('aria-expanded') === 'true';
-            e.target.setAttribute('aria-expanded', (!expanded).toString());
-            e.target.parentElement.parentElement.classList[expanded ? 'remove' : 'add']('open');
-        }
-    }
+  },
+  methods: {
+    toggleDetails(e) {
+      let expanded = e.target.getAttribute("aria-expanded") === "true";
+      e.target.setAttribute("aria-expanded", (!expanded).toString());
+      e.target.parentElement.parentElement.classList[
+        expanded ? "remove" : "add"
+      ]("open");
+    },
+  },
 };
 </script>
 
 <template>
   <main>
-    <slot
-      name="header"
-      :title="title"
-    />
+    <slot name="header" :title="title" />
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
@@ -84,16 +86,9 @@ export default {
             and acknowledge their work. Here we list all components which may be contained in portions in this web
             application. Please refer to the individual component source for detailed information."
           />
-          <dl
-            v-for="(pkg, index) of packages"
-            :key="index"
-          >
+          <dl v-for="(pkg, index) of packages" :key="index">
             <dt>
-              <button
-                aria-expanded="false"
-                tabindex="0"
-                @click="toggleDetails"
-              >
+              <button aria-expanded="false" tabindex="0" @click="toggleDetails">
                 <ArrowNextIcon />
                 {{ pkg.name }}
               </button>
@@ -114,7 +109,6 @@ export default {
     </section>
   </main>
 </template>
-
 
 <style lang="postcss" scoped>
 section:not(:first-child) {

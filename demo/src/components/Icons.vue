@@ -1,10 +1,10 @@
 <script>
-import ImagePreviews from './demo/ImagePreviews.vue';
-import CodeExample from './demo/CodeExample.vue';
-import ListNumbersIcon from 'webapps-common/ui/assets/img/icons/list-numbers.svg';
-import FolderIcon from 'webapps-common/ui/assets/img/icons/folder.svg';
-import svgWithTitle from 'webapps-common/ui/util/svgWithTitle';
-import InputField from 'webapps-common/ui/components/forms/InputField.vue';
+import ImagePreviews from "./demo/ImagePreviews.vue";
+import CodeExample from "./demo/CodeExample.vue";
+import ListNumbersIcon from "webapps-common/ui/assets/img/icons/list-numbers.svg";
+import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
+import svgWithTitle from "webapps-common/ui/util/svgWithTitle";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 const codeExample1 = `<script>
 import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg';
@@ -113,35 +113,43 @@ export default {
 </template>`;
 
 export default {
-    components: {
-        ListNumbersIcon,
-        FolderIcon,
-        ListNumbersIconWithTip: svgWithTitle(ListNumbersIcon, 'This is a list with numbers'),
-        ImagePreviews,
-        CodeExample,
-        InputField
-    },
-    data() {
-        return {
-            codeExample1,
-            codeExample2,
-            codeExampleTooltip,
-            iconFilterTerm: ''
-        };
-    },
-    computed: {
-        icons() {
-            const files = import.meta.glob('@@/../ui/assets/img/icons/*.svg', { as: 'url', eager: true });
+  components: {
+    ListNumbersIcon,
+    FolderIcon,
+    ListNumbersIconWithTip: svgWithTitle(
+      ListNumbersIcon,
+      "This is a list with numbers"
+    ),
+    ImagePreviews,
+    CodeExample,
+    InputField,
+  },
+  data() {
+    return {
+      codeExample1,
+      codeExample2,
+      codeExampleTooltip,
+      iconFilterTerm: "",
+    };
+  },
+  computed: {
+    icons() {
+      const files = import.meta.glob("@@/../ui/assets/img/icons/*.svg", {
+        as: "url",
+        eager: true,
+      });
 
-            return Object.keys(files).map(file => ({
-                name: file.replace('../ui/assets/img/icons/', ''),
-                src: files[file]
-            }));
-        },
-        filteredIcons() {
-            return this.icons.filter(icon => icon.name.includes(this.iconFilterTerm));
-        }
-    }
+      return Object.keys(files).map((file) => ({
+        name: file.replace("../ui/assets/img/icons/", ""),
+        src: files[file],
+      }));
+    },
+    filteredIcons() {
+      return this.icons.filter((icon) =>
+        icon.name.includes(this.iconFilterTerm)
+      );
+    },
+  },
 };
 </script>
 
@@ -150,32 +158,38 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Icons</h2>
           <InputField
             v-model="iconFilterTerm"
             class="filter-icons-input"
             type="text"
             placeholder="Filter Icons"
           />
-          <ImagePreviews
-            :images="filteredIcons"
-            width="60px"
-            height="60px"
-          />
+          <ImagePreviews :images="filteredIcons" width="60px" height="60px" />
           <p>
-            The SVG icons have an original size of 32x32px. It's recommended to inline the icons as Vue components which
-            also supports to change e.g. the stroke color and width via CSS:
+            The SVG icons have an original size of 32x32px. It's recommended to
+            inline the icons as Vue components which also supports to change
+            e.g. the stroke color and width via CSS:
           </p>
           <FolderIcon class="hover" /> Normal case
-          <CodeExample summary="Show icon as Vue component code example">{{ codeExample1 }}</CodeExample>
+          <CodeExample summary="Show icon as Vue component code example">{{
+            codeExample1
+          }}</CodeExample>
 
-          <ListNumbersIcon class="hover" /> With numbers or text (be sure to set the <code>.text</code>
+          <ListNumbersIcon class="hover" /> With numbers or text (be sure to set
+          the <code>.text</code>
           class with a fill and stroke to none)
-          <CodeExample summary="Show icon with text as Vue component code example">{{ codeExample2 }}</CodeExample>
+          <CodeExample
+            summary="Show icon with text as Vue component code example"
+            >{{ codeExample2 }}</CodeExample
+          >
 
           <ListNumbersIconWithTip />
-          With title via <code>webapps-common/ui/util/svgWithTitle.js</code> (hover to show the title)
-          <CodeExample summary="Show icon with tooltip code example">{{ codeExampleTooltip }}</CodeExample>
+          With title via
+          <code>webapps-common/ui/util/svgWithTitle.js</code> (hover to show the
+          title)
+          <CodeExample summary="Show icon with tooltip code example">{{
+            codeExampleTooltip
+          }}</CodeExample>
         </div>
       </div>
     </section>

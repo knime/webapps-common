@@ -1,11 +1,11 @@
 <script>
-import Modal from 'webapps-common/ui/components/Modal.vue';
-import PlayIcon from 'webapps-common/ui/assets/img/icons/circle-play.svg';
-import Button from 'webapps-common/ui/components/Button.vue';
-import CodeExample from './demo/CodeExample.vue';
+import Modal from "webapps-common/ui/components/Modal.vue";
+import PlayIcon from "webapps-common/ui/assets/img/icons/circle-play.svg";
+import Button from "webapps-common/ui/components/Button.vue";
+import CodeExample from "./demo/CodeExample.vue";
 
-import code from 'webapps-common/ui/components/Modal.vue?raw';
-import baseModalCode from 'webapps-common/ui/components/BaseModal.vue?raw';
+import code from "webapps-common/ui/components/Modal.vue?raw";
+import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal.vue';
@@ -59,21 +59,21 @@ export default {
 `;
 
 export default {
-    components: {
-        Modal,
-        PlayIcon,
-        Button,
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample,
-            code,
-            baseModalCode,
-            modalActive: false,
-            modalStyleType: 'info'
-        };
-    }
+  components: {
+    Modal,
+    PlayIcon,
+    Button,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+      code,
+      baseModalCode,
+      modalActive: false,
+      modalStyleType: "info",
+    };
+  },
 };
 </script>
 
@@ -82,26 +82,25 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Modal</h2>
           <p>
             Offers multiple optional slots for content to show inside a
-            <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a>.
-            Multiple styles are supported by the <code>styleType</code> prop. See source code for possible values.
-            The modal emits a <code>cancel</code> event which is triggered by clicking
-            the overlay, the ESC key or the close button. Also on tab, the focus is trapped inside the modal.
+            <a href="https://en.wikipedia.org/wiki/Modal_window">modal dialog</a
+            >. Multiple styles are supported by the <code>styleType</code> prop.
+            See source code for possible values. The modal emits a
+            <code>cancel</code> event which is triggered by clicking the
+            overlay, the ESC key or the close button. Also on tab, the focus is
+            trapped inside the modal.
           </p>
           <p>
-            For the rare cases where more design freedom is needed, please use the <code>BaseModal</code> component
-            which comes without a header and styled slots. But please be aware of
-            <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html">W3C best practices
-              for modal dialogs</a>.
+            For the rare cases where more design freedom is needed, please use
+            the <code>BaseModal</code> component which comes without a header
+            and styled slots. But please be aware of
+            <a
+              href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/dialog-modal/dialog.html"
+              >W3C best practices for modal dialogs</a
+            >.
           </p>
-          <Button
-            primary
-            @click="modalActive = true"
-          >
-            Trigger modal
-          </Button>
+          <Button primary @click="modalActive = true"> Trigger modal </Button>
 
           <Modal
             :active="modalActive"
@@ -112,12 +111,11 @@ export default {
           >
             <template #icon><PlayIcon /></template>
             <template #notice>This is the notice slot.</template>
-            <template #confirmation>And this is content in the confirmation slot.</template>
+            <template #confirmation
+              >And this is content in the confirmation slot.</template
+            >
             <template #controls>
-              <Button
-                primary
-                @click="modalActive = false"
-              >
+              <Button primary @click="modalActive = false">
                 Accept and close
               </Button>
             </template>
@@ -128,9 +126,15 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Modal.vue source code">{{ code }}</CodeExample>
-          <CodeExample summary="Show BaseModal.vue source code">{{ baseModalCode }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Modal.vue source code">{{
+            code
+          }}</CodeExample>
+          <CodeExample summary="Show BaseModal.vue source code">{{
+            baseModalCode
+          }}</CodeExample>
         </div>
       </div>
     </section>

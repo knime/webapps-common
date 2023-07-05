@@ -1,15 +1,22 @@
 <script>
-import { parse, isValid, setHours, setMinutes, setSeconds, setMilliseconds } from 'date-fns';
-import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import { DatePicker } from 'v-calendar';
+import {
+  parse,
+  isValid,
+  setHours,
+  setMinutes,
+  setSeconds,
+  setMilliseconds,
+} from "date-fns";
+import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
+import { DatePicker } from "v-calendar";
 
-import { resolveClientOnlyComponent } from '../../util/nuxtComponentResolver';
-import CalendarIcon from '../../assets/img/icons/calendar.svg';
-import updateDate from '../../../util/updateDate';
-import { isBeforeMinDate, isAfterMaxDate } from '../../../util/dateMinMaxCheck';
-import getLocalTimeZone from '../../../util/localTimezone';
+import { resolveClientOnlyComponent } from "../../util/nuxtComponentResolver";
+import CalendarIcon from "../../assets/img/icons/calendar.svg";
+import updateDate from "../../../util/updateDate";
+import { isBeforeMinDate, isAfterMaxDate } from "../../../util/dateMinMaxCheck";
+import getLocalTimeZone from "../../../util/localTimezone";
 
-import TimePartInput from './TimePartInput.vue';
+import TimePartInput from "./TimePartInput.vue";
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented
@@ -17,291 +24,308 @@ import TimePartInput from './TimePartInput.vue';
  * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
 export default {
-    components: {
-        CalendarIcon,
-        TimePartInput,
-        DatePicker
+  components: {
+    CalendarIcon,
+    TimePartInput,
+    DatePicker,
+  },
+  props: {
+    /**
+     * @type Date - date time in UTC.
+     */
+    modelValue: {
+      type: Date,
+      required: true,
     },
-    props: {
-        /**
-         * @type Date - date time in UTC.
-         */
-        modelValue: {
-            type: Date,
-            required: true
-        },
-        /**
-         * @type String - id of the <input> element; can be used with Label component.
-         */
-        id: {
-            type: String,
-            default: null
-        },
-        /**
-         * Date format in unicode, only date not time!
-         * @see https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
-         */
-        dateFormat: {
-            type: String,
-            default: 'yyyy-MM-dd'
-        },
-        /**
-         * Date time format in unicode, only time not date!
-         * @see https://www.unicode.org/reports/tr35/tr35-dates.html#dfst-hour
-         */
-        timeFormat: {
-            type: String,
-            default: 'HH:mm:ss'
-        },
-        min: {
-            default: null,
-            type: Date
-        },
-        max: {
-            default: null,
-            type: Date
-        },
-        /**
-         * Validity controlled by the parent component to be flexible.
-         */
-        isValid: {
-            default: true,
-            type: Boolean
-        },
-        showSeconds: {
-            default: true,
-            type: Boolean
-        },
-        showMilliseconds: {
-            default: false,
-            type: Boolean
-        },
-        showTime: {
-            default: true,
-            type: Boolean
-        },
-        showDate: {
-            default: true,
-            type: Boolean
-        },
-        required: {
-            default: false,
-            type: Boolean
-        },
-        /**
-         * @type String - tz db timezone name.
-         * @see https://www.iana.org/time-zones / https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-         */
-        timezone: {
-            type: String,
-            default: getLocalTimeZone()
+    /**
+     * @type String - id of the <input> element; can be used with Label component.
+     */
+    id: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Date format in unicode, only date not time!
+     * @see https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+     */
+    dateFormat: {
+      type: String,
+      default: "yyyy-MM-dd",
+    },
+    /**
+     * Date time format in unicode, only time not date!
+     * @see https://www.unicode.org/reports/tr35/tr35-dates.html#dfst-hour
+     */
+    timeFormat: {
+      type: String,
+      default: "HH:mm:ss",
+    },
+    min: {
+      default: null,
+      type: Date,
+    },
+    max: {
+      default: null,
+      type: Date,
+    },
+    /**
+     * Validity controlled by the parent component to be flexible.
+     */
+    isValid: {
+      default: true,
+      type: Boolean,
+    },
+    showSeconds: {
+      default: true,
+      type: Boolean,
+    },
+    showMilliseconds: {
+      default: false,
+      type: Boolean,
+    },
+    showTime: {
+      default: true,
+      type: Boolean,
+    },
+    showDate: {
+      default: true,
+      type: Boolean,
+    },
+    required: {
+      default: false,
+      type: Boolean,
+    },
+    /**
+     * @type String - tz db timezone name.
+     * @see https://www.iana.org/time-zones / https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+     */
+    timezone: {
+      type: String,
+      default: getLocalTimeZone(),
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
+  },
+  emits: ["update:modelValue"],
+  data() {
+    return {
+      popoverIsVisible: false,
+      isInvalid: false,
+      isAfterMax: false,
+      isBeforeMin: false,
+      // last invalid entered value (for error message)
+      invalidValue: null,
+      // internal value guarded by watcher to prevent invalid values (min/max, null etc.)
+      // time in the given timezone (default: browser local) for correct display
+      localValue: new Date(""),
+    };
+  },
+  computed: {
+    clientOnlyComponent() {
+      return resolveClientOnlyComponent();
+    },
+    legacyDateFormat() {
+      // see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
+      // this only works for simple patterns and turn the unicode format into the moment.js de-facto standard
+      return this.dateFormat.toUpperCase();
+    },
+    dateTimeHours() {
+      return this.localValue.getHours();
+    },
+    dateTimeMinutes() {
+      return this.localValue.getMinutes();
+    },
+    dateTimeSeconds() {
+      return this.localValue.getSeconds();
+    },
+    dateTimeMilliseconds() {
+      return this.localValue.getMilliseconds();
+    },
+  },
+  watch: {
+    modelValue: {
+      // validates against min/max and sets appropriate state
+      handler(newValue) {
+        // update internal value if min/max bounds are kept and value is valid
+        this.checkMinMax(newValue);
+        if (this.checkIsValid(newValue)) {
+          // convert to zoned time
+          this.localValue = utcToZonedTime(newValue, this.timezone);
         }
+      },
+      immediate: true,
     },
-    emits: ['update:modelValue'],
-    data() {
-        return {
-            popoverIsVisible: false,
-            isInvalid: false,
-            isAfterMax: false,
-            isBeforeMin: false,
-            // last invalid entered value (for error message)
-            invalidValue: null,
-            // internal value guarded by watcher to prevent invalid values (min/max, null etc.)
-            // time in the given timezone (default: browser local) for correct display
-            localValue: new Date('')
-        };
+  },
+  methods: {
+    formatDate(date) {
+      // time and date
+      if (this.showTime && this.showDate) {
+        return format(date, `${this.dateFormat} ${this.timeFormat}`);
+      }
+      // only time
+      if (this.showTime) {
+        return format(date, this.timeFormat);
+      }
+      // only date
+      return format(date, this.dateFormat);
     },
-    computed: {
-        clientOnlyComponent() {
-            return resolveClientOnlyComponent();
-        },
-        legacyDateFormat() {
-            // see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md
-            // this only works for simple patterns and turn the unicode format into the moment.js de-facto standard
-            return this.dateFormat.toUpperCase();
-        },
-        dateTimeHours() {
-            return this.localValue.getHours();
-        },
-        dateTimeMinutes() {
-            return this.localValue.getMinutes();
-        },
-        dateTimeSeconds() {
-            return this.localValue.getSeconds();
-        },
-        dateTimeMilliseconds() {
-            return this.localValue.getMilliseconds();
-        }
+    emitInput(value) {
+      // check min/max
+      this.checkMinMax(value);
+      this.$emit("update:modelValue", zonedTimeToUtc(value, this.timezone));
     },
-    watch: {
-        modelValue: {
-            // validates against min/max and sets appropriate state
-            handler(newValue) {
-                // update internal value if min/max bounds are kept and value is valid
-                this.checkMinMax(newValue);
-                if (this.checkIsValid(newValue)) {
-                    // convert to zoned time
-                    this.localValue = utcToZonedTime(newValue, this.timezone);
-                }
-            },
-            immediate: true
-        }
+    onDatePickerInput(date) {
+      this.emitInput(updateDate(this.localValue, date));
     },
-    methods: {
-        formatDate(date) {
-            // time and date
-            if (this.showTime && this.showDate) {
-                return format(date, `${this.dateFormat} ${this.timeFormat}`);
-            }
-            // only time
-            if (this.showTime) {
-                return format(date, this.timeFormat);
-            }
-            // only date
-            return format(date, this.dateFormat);
-        },
-        emitInput(value) {
-            // check min/max
-            this.checkMinMax(value);
-            this.$emit('update:modelValue', zonedTimeToUtc(value, this.timezone));
-        },
-        onDatePickerInput(date) {
-            this.emitInput(updateDate(this.localValue, date));
-        },
-        onTextInputChange($event, hidePopoverFunction) {
-            // parse the input
-            let date = parse($event.target.value, this.dateFormat, new Date());
+    onTextInputChange($event, hidePopoverFunction) {
+      // parse the input
+      let date = parse($event.target.value, this.dateFormat, new Date());
 
-            // ignore invalid or unparseable input
-            if (!this.checkIsValid(date)) {
-                date = this.localValue;
-            }
+      // ignore invalid or unparseable input
+      if (!this.checkIsValid(date)) {
+        date = this.localValue;
+      }
 
-            // use time set in value
-            let value = updateDate(this.localValue, date);
+      // use time set in value
+      let value = updateDate(this.localValue, date);
 
-            // hide popover (if open)
-            hidePopoverFunction();
+      // hide popover (if open)
+      hidePopoverFunction();
 
-            // trigger input event which will set value again and update picker
-            // and trigger validation even if the value did not change
-            this.onDatePickerInput(value);
-        },
-        checkIsValid(date) {
-            if (isValid(date)) {
-                return true;
-            }
-            this.isInvalid = true;
-            this.invalidValue = date;
-            return false;
-        },
-        checkMinMax(date) {
-            // skip check if no min and max is set
-            if (!this.min && !this.max) {
-                return true;
-            }
+      // trigger input event which will set value again and update picker
+      // and trigger validation even if the value did not change
+      this.onDatePickerInput(value);
+    },
+    checkIsValid(date) {
+      if (isValid(date)) {
+        return true;
+      }
+      this.isInvalid = true;
+      this.invalidValue = date;
+      return false;
+    },
+    checkMinMax(date) {
+      // skip check if no min and max is set
+      if (!this.min && !this.max) {
+        return true;
+      }
 
-            this.isBeforeMin = isBeforeMinDate(date, this.min, this.showDate, this.showTime);
-            this.isAfterMax = isAfterMaxDate(date, this.max, this.showDate, this.showTime);
+      this.isBeforeMin = isBeforeMinDate(
+        date,
+        this.min,
+        this.showDate,
+        this.showTime
+      );
+      this.isAfterMax = isAfterMaxDate(
+        date,
+        this.max,
+        this.showDate,
+        this.showTime
+      );
 
-            if (this.isBeforeMin || this.isAfterMax) {
-                this.invalidValue = date;
-                return false;
-            }
-            return true;
-        },
-        onTimeHoursBounds(bounds) {
-            // skip this handler if date is not shown
-            if (!this.showDate) {
-                return;
-            }
-            if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setHours(new Date(this.localValue), bounds.input));
-            } else {
-                this.emitInput(this.localValue);
-            }
-        },
-        onTimeMinutesBounds(bounds) {
-            if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setMinutes(new Date(this.localValue), bounds.input));
-            } else {
-                this.emitInput(this.localValue);
-            }
-        },
-        onTimeSecondsBounds(bounds) {
-            if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setSeconds(new Date(this.localValue), bounds.input));
-            } else {
-                this.emitInput(this.localValue);
-            }
-        },
-        onTimeMillisecondsBounds(bounds) {
-            if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setMilliseconds(new Date(this.localValue), bounds.input));
-            } else {
-                this.emitInput(this.localValue);
-            }
-        },
-        onTimeHoursChange(hours) {
-            let date = new Date(this.localValue);
-            if (Number.isSafeInteger(hours)) {
-                date = setHours(date, hours);
-            }
-            this.emitInput(date);
-        },
-        onTimeMinutesChange(minutes) {
-            let date = new Date(this.localValue);
-            if (Number.isSafeInteger(minutes)) {
-                date = setMinutes(date, minutes);
-            }
-            this.emitInput(date);
-        },
-        onTimeSecondsChange(seconds) {
-            let date = new Date(this.localValue);
-            if (Number.isSafeInteger(seconds)) {
-                date = setSeconds(date, seconds);
-            }
-            this.emitInput(date);
-        },
-        onTimeMillisecondsChange(milliseconds) {
-            let date = new Date(this.localValue);
-            if (Number.isSafeInteger(milliseconds)) {
-                date = setMilliseconds(date, milliseconds);
-            }
-            this.emitInput(date);
-        },
-        validate() {
-            let isValid = true;
-            let errorMessage;
-            if (this.required && this.isInvalid) {
-                isValid = false;
-                errorMessage = 'Please input a valid date';
-            }
-            if (this.isAfterMax) {
-                isValid = false;
-                // eslint-disable-next-line max-len
-                errorMessage = `${this.formatDate(this.invalidValue)} is after maximum ${this.formatDate(this.max)}`;
-            }
-            if (this.isBeforeMin) {
-                isValid = false;
-                // eslint-disable-next-line max-len
-                errorMessage = `${this.formatDate(this.invalidValue)} is before minimum ${this.formatDate(this.min)}`;
-            }
-            return {
-                isValid,
-                errorMessage
-            };
-        }
-    }
+      if (this.isBeforeMin || this.isAfterMax) {
+        this.invalidValue = date;
+        return false;
+      }
+      return true;
+    },
+    onTimeHoursBounds(bounds) {
+      // skip this handler if date is not shown
+      if (!this.showDate) {
+        return;
+      }
+      if (["min", "max"].includes(bounds.type)) {
+        this.emitInput(setHours(new Date(this.localValue), bounds.input));
+      } else {
+        this.emitInput(this.localValue);
+      }
+    },
+    onTimeMinutesBounds(bounds) {
+      if (["min", "max"].includes(bounds.type)) {
+        this.emitInput(setMinutes(new Date(this.localValue), bounds.input));
+      } else {
+        this.emitInput(this.localValue);
+      }
+    },
+    onTimeSecondsBounds(bounds) {
+      if (["min", "max"].includes(bounds.type)) {
+        this.emitInput(setSeconds(new Date(this.localValue), bounds.input));
+      } else {
+        this.emitInput(this.localValue);
+      }
+    },
+    onTimeMillisecondsBounds(bounds) {
+      if (["min", "max"].includes(bounds.type)) {
+        this.emitInput(
+          setMilliseconds(new Date(this.localValue), bounds.input)
+        );
+      } else {
+        this.emitInput(this.localValue);
+      }
+    },
+    onTimeHoursChange(hours) {
+      let date = new Date(this.localValue);
+      if (Number.isSafeInteger(hours)) {
+        date = setHours(date, hours);
+      }
+      this.emitInput(date);
+    },
+    onTimeMinutesChange(minutes) {
+      let date = new Date(this.localValue);
+      if (Number.isSafeInteger(minutes)) {
+        date = setMinutes(date, minutes);
+      }
+      this.emitInput(date);
+    },
+    onTimeSecondsChange(seconds) {
+      let date = new Date(this.localValue);
+      if (Number.isSafeInteger(seconds)) {
+        date = setSeconds(date, seconds);
+      }
+      this.emitInput(date);
+    },
+    onTimeMillisecondsChange(milliseconds) {
+      let date = new Date(this.localValue);
+      if (Number.isSafeInteger(milliseconds)) {
+        date = setMilliseconds(date, milliseconds);
+      }
+      this.emitInput(date);
+    },
+    validate() {
+      let isValid = true;
+      let errorMessage;
+      if (this.required && this.isInvalid) {
+        isValid = false;
+        errorMessage = "Please input a valid date";
+      }
+      if (this.isAfterMax) {
+        isValid = false;
+        // eslint-disable-next-line max-len
+        errorMessage = `${this.formatDate(
+          this.invalidValue
+        )} is after maximum ${this.formatDate(this.max)}`;
+      }
+      if (this.isBeforeMin) {
+        isValid = false;
+        // eslint-disable-next-line max-len
+        errorMessage = `${this.formatDate(
+          this.invalidValue
+        )} is before minimum ${this.formatDate(this.min)}`;
+      }
+      return {
+        isValid,
+        errorMessage,
+      };
+    },
+  },
 };
 </script>
 
 <template>
   <div class="date-time-input">
-    <div
-      v-if="showDate"
-      class="date-picker"
-    >
+    <div v-if="showDate" :class="['date-picker', { disabled }]">
       <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
@@ -309,8 +333,8 @@ export default {
           :is-required="true"
           :is-dark="false"
           color="masala"
-          :popover="{ placement: 'bottom', visibility: 'click'}"
-          :masks="{L: legacyDateFormat}"
+          :popover="{ placement: 'bottom', visibility: 'click' }"
+          :masks="{ L: legacyDateFormat }"
           :max-date="max"
           :min-date="min"
           @popover-will-hide="popoverIsVisible = false"
@@ -318,18 +342,21 @@ export default {
           @update:model-value="onDatePickerInput"
         >
           <!--Custom Input Slot-->
-          <template #default="{ inputValue, inputEvents, hidePopover, togglePopover }">
+          <template
+            #default="{ inputValue, inputEvents, hidePopover, togglePopover }"
+          >
             <div>
               <input
                 :id="id"
                 :value="inputValue"
+                :disabled="disabled"
                 v-on="inputEvents"
                 @change="onTextInputChange($event, hidePopover)"
                 @blur="hidePopover"
-              >
+              />
               <span
-                :class="['button', {'active': popoverIsVisible}]"
-                @click="togglePopover"
+                :class="['button', { active: popoverIsVisible, disabled }]"
+                @click="disabled ? () => {} : togglePopover()"
               >
                 <CalendarIcon />
               </span>
@@ -337,15 +364,9 @@ export default {
           </template>
         </DatePicker>
       </Component>
-      <span
-        v-if="!isValid"
-        class="invalid-marker"
-      />
+      <span v-if="!isValid" class="invalid-marker" />
     </div>
-    <div
-      v-if="showTime"
-      class="time"
-    >
+    <div v-if="showTime" class="time">
       <TimePartInput
         ref="hours"
         type="integer"
@@ -353,6 +374,7 @@ export default {
         :max="23"
         :min-digits="2"
         :model-value="dateTimeHours"
+        :disabled="disabled"
         @bounds="onTimeHoursBounds"
         @update:model-value="onTimeHoursChange"
       />
@@ -364,13 +386,11 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeMinutes"
+        :disabled="disabled"
         @bounds="onTimeMinutesBounds"
         @update:model-value="onTimeMinutesChange"
       />
-      <span
-        v-if="showSeconds"
-        class="time-colon"
-      >:</span>
+      <span v-if="showSeconds" class="time-colon">:</span>
       <TimePartInput
         v-if="showSeconds"
         ref="seconds"
@@ -379,13 +399,11 @@ export default {
         :max="59"
         :min-digits="2"
         :model-value="dateTimeSeconds"
+        :disabled="disabled"
         @bounds="onTimeSecondsBounds"
         @update:model-value="onTimeSecondsChange"
       />
-      <span
-        v-if="showMilliseconds"
-        class="time-colon"
-      >.</span>
+      <span v-if="showMilliseconds" class="time-colon">.</span>
       <TimePartInput
         v-if="showMilliseconds"
         ref="milliseconds"
@@ -394,6 +412,7 @@ export default {
         :max="999"
         :min-digits="3"
         :model-value="dateTimeMilliseconds"
+        :disabled="disabled"
         @bounds="onTimeMillisecondsBounds"
         @update:model-value="onTimeMillisecondsChange"
       />
@@ -438,6 +457,10 @@ export default {
   }
 
   & .date-picker {
+    &.disabled {
+      opacity: 0.5;
+    }
+
     /* v-calendar theme
        new 1.1+ theme with css-vars see https://github.com/nathanreyes/v-calendar/blob/master/src/styles/base.css */
 
@@ -455,13 +478,17 @@ export default {
       --popover-transition-time: 0.1s ease-in-out;
     }
 
+    & :deep(.vc-day-content.is-disabled) {
+      opacity: 0.5;
+    }
+
     & :deep(.vc-container) {
       /* remove roundness */
       --rounded: 0;
       --rounded-lg: 0;
 
       /* popover box shadow */
-      --shadow-lg: 0 1px 4px 0 var(--theme-date-input-box-shadow-color);
+      --shadow-lg: var(--shadow-elevation-1);
 
       /* color prop value (in our case 'masala' see above) and vc-COLOR-PROP-NAME need to be defined */
       --masala-100: var(--theme-date-input-accent-100);
@@ -515,7 +542,6 @@ export default {
     position: relative;
     border: 1px solid var(--theme-date-input-border-color);
 
-
     &:focus-within {
       border-color: var(--theme-date-input-border-focus-color);
     }
@@ -524,7 +550,7 @@ export default {
       font-size: 13px;
       font-weight: 300;
       letter-spacing: inherit;
-      height: 40px;
+      height: 38px;
       line-height: normal;
       border: 0;
       margin: 0;
@@ -539,7 +565,11 @@ export default {
         box-shadow: none; /* override default browser styling */
       }
 
-      &:hover:not(:focus) {
+      &:disabled {
+        opacity: 0.5;
+      }
+
+      &:hover:not(:focus, :disabled) {
         background-color: var(--theme-date-input-input-hover-background);
       }
     }
@@ -559,12 +589,12 @@ export default {
       position: absolute;
       z-index: 1;
       width: 32px;
-      height: 40px;
+      height: 38px;
       padding-left: 10px;
       padding-right: 9px;
-      cursor: pointer;
 
-      &:hover {
+      &:hover:not(.disabled) {
+        cursor: pointer;
         background-color: var(--theme-date-input-input-hover-background);
       }
 
@@ -573,10 +603,14 @@ export default {
         height: 100%;
         stroke-width: 1.5px;
       }
+
+      &.disabled {
+        opacity: 0.5;
+      }
     }
 
-    & .button:active,
-    & .button.active {
+    & .button:active:not(.disabled),
+    & .button.active:not(.disabled) {
       color: var(--theme-date-input-white);
       background-color: var(--theme-date-input-button-active-color);
 

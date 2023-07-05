@@ -1,143 +1,270 @@
-<script>
-import Multiselect from './Multiselect.vue';
-import FunctionButton from '../FunctionButton.vue';
-import CloseIcon from '../../assets/img/icons/close.svg';
+<script lang="ts">
+import { defineComponent, type PropType } from "vue";
+import { kebabCase, uniq } from "lodash";
 
-export default {
-    components: {
-        Multiselect,
-        FunctionButton,
-        CloseIcon
-    },
-    props: {
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property. Some optional properties
-         * can be used that are specified in Multiselect.vue.
-         */
-        possibleValues: {
-            type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
-        },
-        /**
-         * List of initial selected ids.
-         */
-        initialSelectedIds: {
-            type: Array,
-            default: () => []
-        },
-        /**
-         * Limit the number of visible options in the dropdown.
-         */
-        sizeVisibleOptions: {
-            type: Number,
-            default: 5,
-            validator(value) {
-                return value >= 0;
-            }
-        },
-        /**
-         * Close the dropdown when an entry was selected.
-         */
-        closeDropdownOnSelection: {
-            type: Boolean,
-            default: false
-        },
-        isValid: {
-            type: Boolean,
-            default: true
+import Multiselect from "./Multiselect.vue";
+import FunctionButton from "../FunctionButton.vue";
+import CloseIcon from "../../assets/img/icons/close.svg";
+
+const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
+
+interface ComboBoxItem {
+  id: string;
+  text: string;
+}
+
+interface ComponentData {
+  selectedIds: Array<string>;
+  searchValue: string;
+  inputOrOptionsFocussed: boolean;
+  /*
+   * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
+   * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
+   * it needs to be passed to the Multiselect component.
+   */
+  focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
+  allPossibleItems: Array<ComboBoxItem>;
+}
+
+type MultiselectRef = InstanceType<typeof Multiselect>;
+
+export default defineComponent({
+  components: {
+    Multiselect,
+    FunctionButton,
+    CloseIcon,
+  },
+  props: {
+    /**
+     * List of possible values. Each item must have an `id` and a `text` property. Some optional properties
+     * can be used that are specified in Multiselect.vue.
+     */
+    possibleValues: {
+      type: Array as PropType<Array<ComboBoxItem>>,
+      default: () => [],
+      validator(values) {
+        if (!Array.isArray(values)) {
+          return false;
         }
+        return values.every(
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+        );
+      },
     },
-    emits: ['update:selectedIds'],
-    data() {
-        return {
-            selectedIds: this.initialSelectedIds,
-            searchValue: '',
-            inputOrOptionsFocussed: false,
-            /*
-             * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
-             * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
-             * it needs to be passed to the Multiselect component.
-             */
-            focusElement: null,
-            refocusElement: null
-        };
+    /**
+     * List of initial selected ids.
+     */
+    initialSelectedIds: {
+      type: Array as PropType<Array<string>>,
+      default: () => [],
     },
-    computed: {
-        filteredValues() {
-            return this.possibleValues.filter(value => value.text.includes(this.searchValue));
-        },
-        hasSelection() {
-            return this.selectedValues.length > 0;
-        },
-        inputWidth() {
-            return this.inputOrOptionsFocussed && this.filteredValues.length > 0 ? {} : { width: '0%' };
-        },
-        selectedValues() {
-            return this.selectedIds.length === 0
-                ? []
-                : this.possibleValues.filter(ele => this.selectedIds.includes(ele.id));
-        },
-        maxSizeVisibleOptions() {
-            return this.filteredValues.length < this.sizeVisibleOptions
-                ? this.filteredValues.length
-                : this.sizeVisibleOptions;
-        }
+    /**
+     * Limit the number of visible options in the dropdown.
+     */
+    sizeVisibleOptions: {
+      type: Number,
+      default: 5,
+      validator(value: number) {
+        return value >= 0;
+      },
     },
-    mounted() {
-        this.focusElement = this.$refs.searchInput;
-        this.refocusElement = this.$refs.listBox;
+    /**
+     * Close the dropdown when an entry was selected.
+     */
+    closeDropdownOnSelection: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-        focusInput() {
-            this.$refs.searchInput.focus();
-        },
-        onDown() {
-            this.$refs.combobox.onDown();
-        },
-        onFocusOutside() {
-            this.inputOrOptionsFocussed = false;
-            this.searchValue = '';
-        },
-        onInput() {
-            this.$refs.combobox.updateFocusOptions();
-        },
-        onInputFocus() {
-            if (!this.inputOrOptionsFocussed) {
-                this.$refs.combobox.toggle();
-            }
-            this.inputOrOptionsFocussed = true;
-            this.$refs.combobox.updateFocusOptions();
-        },
-        onInputEscape() {
-            this.$refs.combobox.closeOptions();
-        },
-        updateSelectedIds(selectedIds) {
-            this.selectedIds = selectedIds;
-            this.$emit('update:selectedIds', this.selectedIds);
-        },
-        removeTag(idToRemove) {
-            this.updateSelectedIds(this.selectedIds.filter(id => id !== idToRemove));
-            this.$refs.combobox.closeOptions();
-        },
-        removeAllTags() {
-            this.updateSelectedIds([]);
-            this.$refs.combobox.closeOptions();
-        }
-    }
-};
+    isValid: {
+      type: Boolean,
+      default: true,
+    },
+    /**
+     * Allow adding and selecting new tags, not just possible values
+     */
+    allowNewValues: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "update:selectedIds": (_payload: Array<string>) => true,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    change: (_payload: Array<ComboBoxItem>) => true,
+  },
+
+  data(): ComponentData {
+    return {
+      selectedIds: this.initialSelectedIds,
+      searchValue: "",
+      inputOrOptionsFocussed: false,
+      /*
+       * Multiselect behavior: options close on clickaway except when focussing specific multiselect elements
+       * When the searchInput of this component is focussed then they shouldn't be closed either, which is why
+       * it needs to be passed to the Multiselect component.
+       */
+      focusElement: null,
+      refocusElement: null,
+      allPossibleItems: this.possibleValues,
+    };
+  },
+
+  computed: {
+    isSearchEmpty() {
+      return !this.searchValue.trim();
+    },
+
+    searchResults() {
+      const hasExactSearchMatch = this.allPossibleItems.some(
+        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase()
+      );
+
+      const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
+        text.toLowerCase().includes(this.searchValue.toLowerCase())
+      );
+
+      if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
+        // add a preview for a non existing items
+        return [
+          { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
+          ...fuzzyMatchedItems,
+        ];
+      }
+
+      return fuzzyMatchedItems;
+    },
+
+    hasSelection() {
+      return this.selectedValues.length > 0;
+    },
+
+    inputWidth() {
+      return this.inputOrOptionsFocussed && this.searchResults.length > 0
+        ? {}
+        : { width: "0%" };
+    },
+
+    selectedValues() {
+      return this.selectedIds.length === 0
+        ? []
+        : this.selectedIds.map((id) => {
+            const item = this.allPossibleItems.find((item) => item.id === id);
+            return item || { id, text: id };
+          });
+    },
+
+    maxSizeVisibleOptions() {
+      return this.searchResults.length < this.sizeVisibleOptions
+        ? this.searchResults.length
+        : this.sizeVisibleOptions;
+    },
+  },
+
+  mounted() {
+    this.focusElement = this.$refs.searchInput as HTMLInputElement;
+    this.refocusElement = this.$refs.listBox as HTMLDivElement;
+  },
+
+  methods: {
+    focusInput() {
+      (this.$refs.searchInput as HTMLInputElement).focus();
+    },
+    onDown() {
+      (this.$refs.combobox as MultiselectRef).onDown();
+    },
+    onEnter() {
+      if (this.isSearchEmpty) {
+        return;
+      }
+
+      this.updateSelectedIds([...this.selectedIds, this.searchResults[0]?.id]);
+      this.searchValue = "";
+    },
+    onBackspace() {
+      if (!this.searchValue) {
+        this.selectedIds = this.selectedIds.slice(0, -1);
+        this.$emit("update:selectedIds", this.selectedIds);
+        this.$emit("change", this.selectedValues);
+      }
+      // else regular backspace behavior
+    },
+    onFocusOutside() {
+      this.inputOrOptionsFocussed = false;
+      this.searchValue = "";
+    },
+    onInput() {
+      (this.$refs.combobox as MultiselectRef).updateFocusOptions();
+    },
+    onInputFocus() {
+      if (!this.inputOrOptionsFocussed) {
+        (this.$refs.combobox as MultiselectRef).toggle();
+      }
+
+      this.inputOrOptionsFocussed = true;
+      (this.$refs.combobox as MultiselectRef).updateFocusOptions();
+    },
+
+    updateSelectedIds(selectedIds: Array<string>) {
+      const setSelectedIds = (value: Array<string>) => {
+        this.selectedIds = uniq(value).filter(Boolean);
+        this.$emit("update:selectedIds", this.selectedIds);
+        this.$emit("change", this.selectedValues);
+      };
+
+      const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
+
+      if (!hasNewItem) {
+        setSelectedIds(selectedIds);
+        return;
+      }
+
+      const newItem: ComboBoxItem = {
+        id: kebabCase(this.searchValue),
+        text: this.searchValue.trim(),
+      };
+
+      const isDuplicateItem = this.allPossibleItems.some(
+        (item) => item.id === newItem.id
+      );
+
+      if (isDuplicateItem) {
+        return;
+      }
+
+      this.allPossibleItems.push(newItem);
+
+      setSelectedIds(
+        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id))
+      );
+    },
+
+    removeTag(idToRemove: string) {
+      this.updateSelectedIds(
+        this.selectedIds.filter((id) => id !== idToRemove)
+      );
+      this.closeOptions();
+    },
+
+    removeAllTags() {
+      this.updateSelectedIds([]);
+      this.closeOptions();
+    },
+
+    closeOptions() {
+      (this.$refs.combobox as MultiselectRef).closeOptions();
+    },
+  },
+});
 </script>
 
 <template>
   <Multiselect
     ref="combobox"
     :model-value="selectedIds"
-    :possible-values="filteredValues"
+    :possible-values="searchResults"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
     :parent-focus-element="focusElement"
@@ -155,11 +282,14 @@ export default {
         @keydown.enter.prevent.self="focusInput"
       >
         <div
-          :class="['summary-input-wrapper', {'with-icon-right': hasSelection}]"
+          :class="[
+            'summary-input-wrapper',
+            { 'with-icon-right': hasSelection },
+          ]"
           @click.stop="focusInput"
         >
           <div
-            v-for="item, index in selectedValues"
+            v-for="(item, index) in selectedValues"
             :key="`item.id${index}`"
             class="tag"
             :title="item.text"
@@ -180,14 +310,13 @@ export default {
             :style="inputWidth"
             @focus="onInputFocus"
             @input="onInput"
+            @keydown.enter.prevent="onEnter"
+            @keydown.backspace="onBackspace"
             @keydown.down.stop.prevent="onDown"
-            @keydown.esc.stop.prevent="onInputEscape"
-          >
+            @keydown.esc.stop.prevent="closeOptions"
+          />
         </div>
-        <div
-          v-show="hasSelection"
-          class="icon-right"
-        >
+        <div v-show="hasSelection" class="icon-right">
           <FunctionButton
             ref="removeAllTags"
             class="remove-all-tags-button"
@@ -203,16 +332,15 @@ export default {
 
 <style lang="postcss" scoped>
 .multiselect {
-  border: 1px solid var(--knime-dove-gray);
-
-  &:focus-within {
-    border-color: var(--knime-masala);
-  }
-
   & .summary-input-icon-wrapper {
+    border: 1px solid var(--knime-stone-gray);
     display: flex;
     justify-content: space-between;
     max-width: 100%;
+
+    &:focus-within {
+      border-color: var(--knime-masala);
+    }
 
     &:focus {
       outline: none;
@@ -238,7 +366,7 @@ export default {
         font-size: 13px;
         font-weight: 300;
         line-height: normal;
-        flex: 1
+        flex: 1;
       }
 
       & .tag {
@@ -264,14 +392,14 @@ export default {
 
         & .remove-tag-button {
           padding: 2px;
-          
+
           & :deep(svg) {
             --icon-size: 10;
 
             width: calc(var(--icon-size) * 1px);
             height: calc(var(--icon-size) * 1px);
             stroke-width: calc(32px / var(--icon-size));
-           }
+          }
         }
       }
     }

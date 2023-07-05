@@ -7,14 +7,17 @@
 <style lang="postcss" scoped>
 div {
   display: inline-flex;
-  border-radius: var(--theme-button-split-border-radius); /* needed for correct :hover style trigger below */
+  border-radius: var(
+    --theme-button-split-border-radius
+  ); /* needed for correct :hover style trigger below */
 
   & :deep(.button.primary) {
     position: relative;
     margin-bottom: 0;
 
     /* best way to ensure flexible 1/4 corners */
-    border-radius: var(--theme-button-split-border-radius) 0 0 var(--theme-button-split-border-radius);
+    border-radius: var(--theme-button-split-border-radius) 0 0
+      var(--theme-button-split-border-radius);
 
     &::after {
       content: "";
@@ -26,6 +29,12 @@ div {
       top: 5px;
       background-color: var(--theme-button-split-divider-color);
     }
+  }
+
+  & :deep(.button.primary.compact) {
+    /* best way to ensure flexible 1/4 corners also for a button in compact mode */
+    border-radius: var(--theme-button-split-border-radius) 0 0
+      var(--theme-button-split-border-radius);
   }
 
   &:hover,
@@ -41,7 +50,8 @@ div {
     display: inline-flex;
 
     /* best way to ensure flexible 1/4 corners */
-    border-radius: 0 var(--theme-button-split-border-radius) var(--theme-button-split-border-radius) 0;
+    border-radius: 0 var(--theme-button-split-border-radius)
+      var(--theme-button-split-border-radius) 0;
 
     & .submenu-toggle {
       width: 32px;

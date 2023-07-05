@@ -1,10 +1,10 @@
 <script>
-import Description from 'webapps-common/ui/components/Description.vue';
+import Description from "webapps-common/ui/components/Description.vue";
 
 export default {
-    components: {
-        Description
-    }
+  components: {
+    Description,
+  },
 };
 </script>
 
@@ -13,14 +13,15 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Grid System</h2>
           <p>
-            The grid system consists of 12 columns. You can use it by nesting a <code>&lt;section&gt;</code> and a
-            <code>.grid-container</code> with up to twelve <code>.grid-item</code>s as shown below.
+            The grid system consists of 12 columns. You can use it by nesting a
+            <code>&lt;section&gt;</code> and a <code>.grid-container</code> with
+            up to twelve <code>.grid-item</code>s as shown below.
           </p>
           <p>
-            The section stretches across the whole screen, and can be used for background-colors. The grid container
-            limits the width of the actual content. The grid items need not necessarily add up to 12 columns.
+            The section stretches across the whole screen, and can be used for
+            background-colors. The grid container limits the width of the actual
+            content. The grid items need not necessarily add up to 12 columns.
           </p>
           <p>Grids items can be nested in another grid container.</p>
         </div>
@@ -71,16 +72,13 @@ export default {
         <Description class="grid-item-12">
           <h5>Responsiveness</h5>
           <p>
-            The grid has a responsive design. Therefore two breakpoints are set. This reduces the number of columns
-            the consists of to four (at 1180px) and two (at 900px) respectively.
-            Grid items will be grouped together equally to fit the scheme.
+            The grid has a responsive design. Therefore two breakpoints are set.
+            This reduces the number of columns the consists of to four (at
+            1180px) and two (at 900px) respectively. Grid items will be grouped
+            together equally to fit the scheme.
           </p>
           <figure>
-            <figcaption
-              class="h7"
-              role="heading"
-              aria-level="7"
-            >
+            <figcaption class="h7" role="heading" aria-level="7">
               Grid item sizes at given resolution
             </figcaption>
             <table>

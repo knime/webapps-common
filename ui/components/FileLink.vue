@@ -1,96 +1,98 @@
 <script>
-import { partial } from 'filesize';
-import { icons } from '../util/fileTypeIcons';
+import { partial } from "filesize";
+import { icons } from "../util/fileTypeIcons";
 
 export default {
-    components: {
-        ...icons
+  components: {
+    ...icons,
+  },
+  props: {
+    /** display text for the download link */
+    text: {
+      type: String,
+      required: true,
     },
-    props: {
-        /** display text for the download link */
-        text: {
-            type: String,
-            required: true
-        },
-        href: {
-            type: String,
-            required: true
-        },
-        /** extension based file type: exe, txt, zip, docx etc. */
-        fileExt: {
-            type: String,
-            default: ''
-        },
-        mimeType: {
-            type: String,
-            default: 'application/octet-stream'
-        },
-        /** size in kilobytes */
-        size: {
-            type: Number,
-            default: 0
-        }
+    href: {
+      type: String,
+      required: true,
     },
-    computed: {
-        icon() {
-            let candidate = `${this.fileExt}Icon`;
-            return this.fileExt && this.$options.components[candidate] ? candidate : 'fileIcon';
-        },
-        humanFileSizeObject() {
-            return partial({
-                output: 'object',
-                standard: 'jedec',
-                base: 2
-            })(this.size);
-        },
-        humanFileSizeUnitFull() {
-            return partial({
-                output: 'object',
-                standard: 'jedec',
-                base: 2,
-                fullform: true
-            })(this.size).symbol;
-        },
-        hasFileInfo() {
-            return this.size || this.fileExt;
-        },
-        fileInfoText() {
-            let infoText = '';
-            if (!this.hasFileInfo) {
-                return infoText;
-            }
-            if (this.fileExt) {
-                infoText += this.fileExt;
-            }
-            if (this.size) {
-                infoText += `, ${this.humanFileSizeObject.value} `;
-            }
-            return infoText;
-        },
-        linkHtmlTitle() {
-            let titleText = this.text;
-            if (this.fileInfoText) {
-                titleText += ` (${this.fileInfoText}${this.size ? this.humanFileSizeObject.symbol : ''})`;
-            }
-            return titleText;
-        }
-    }
+    /** extension based file type: exe, txt, zip, docx etc. */
+    fileExt: {
+      type: String,
+      default: "",
+    },
+    mimeType: {
+      type: String,
+      default: "application/octet-stream",
+    },
+    /** size in kilobytes */
+    size: {
+      type: Number,
+      default: 0,
+    },
+  },
+  computed: {
+    icon() {
+      let candidate = `${this.fileExt}Icon`;
+      return this.fileExt && this.$options.components[candidate]
+        ? candidate
+        : "fileIcon";
+    },
+    humanFileSizeObject() {
+      return partial({
+        output: "object",
+        standard: "jedec",
+        base: 2,
+      })(this.size);
+    },
+    humanFileSizeUnitFull() {
+      return partial({
+        output: "object",
+        standard: "jedec",
+        base: 2,
+        fullform: true,
+      })(this.size).symbol;
+    },
+    hasFileInfo() {
+      return this.size || this.fileExt;
+    },
+    fileInfoText() {
+      let infoText = "";
+      if (!this.hasFileInfo) {
+        return infoText;
+      }
+      if (this.fileExt) {
+        infoText += this.fileExt;
+      }
+      if (this.size) {
+        infoText += `, ${this.humanFileSizeObject.value} `;
+      }
+      return infoText;
+    },
+    linkHtmlTitle() {
+      let titleText = this.text;
+      if (this.fileInfoText) {
+        titleText += ` (${this.fileInfoText}${
+          this.size ? this.humanFileSizeObject.symbol : ""
+        })`;
+      }
+      return titleText;
+    },
+  },
 };
 </script>
 
 <template>
   <figure class="file-link">
-    <a
-      :href="href"
-      download
-      :title="linkHtmlTitle"
-      :type="mimeType"
-    ><Component :is="icon" />{{ text || 'Download File' }}</a>
+    <a :href="href" download :title="linkHtmlTitle" :type="mimeType"
+      ><Component :is="icon" />{{ text || "Download File" }}</a
+    >
     <figcaption v-if="hasFileInfo">
-      ({{ fileInfoText }}<abbr
-        v-if="size"
-        :title="humanFileSizeUnitFull"
-      >{{ humanFileSizeObject.symbol }}</abbr>)
+      ({{ fileInfoText
+      }}<abbr v-if="size" :title="humanFileSizeUnitFull">{{
+        humanFileSizeObject.symbol
+      }}</abbr
+      >)
     </figcaption>
   </figure>
 </template>

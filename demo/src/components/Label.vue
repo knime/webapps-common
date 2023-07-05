@@ -1,8 +1,8 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import InputField from 'webapps-common/ui/components/forms/InputField.vue';
-import Label from 'webapps-common/ui/components/forms/Label.vue';
-import code from 'webapps-common/ui/components/forms/Label.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
+import code from "webapps-common/ui/components/forms/Label.vue?raw";
 
 const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>
 <Label
@@ -18,8 +18,8 @@ const codeExample = `<!-- The labelForId syntax is used to associate the label w
 </Label>
 <Label
   #default="{ labelForId }"
-  text="Compact label for a field"
-  compact
+  text="Large label for a field"
+  large
 >
   <InputField
     :id="labelForId"
@@ -40,21 +40,21 @@ const codeExample = `<!-- The labelForId syntax is used to associate the label w
 </Label>`;
 
 export default {
-    components: {
-        InputField,
-        Label,
-        CodeExample
+  components: {
+    InputField,
+    Label,
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+    };
+  },
+  computed: {
+    code() {
+      return code;
     },
-    data() {
-        return {
-            codeExample
-        };
-    },
-    computed: {
-        code() {
-            return code;
-        }
-    }
+  },
 };
 </script>
 
@@ -63,21 +63,20 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Label</h2>
           <p>
-            Labels for form fields. Beside their default size, they come with a smaller one as well which can be enabled
-            by setting the <code>compact</code> prop or
-            <a href="https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection">providing</a>&nbsp;
-            <code>compactLabels: true</code>.
+            Labels for form fields. Beside their default size, they come with a
+            larger one as well which can be enabled by setting the
+            <code>large</code> prop or
+            <a
+              href="https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection"
+              >providing</a
+            >&nbsp; <code>largeLabels: true</code>.
           </p>
         </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Label
-            #default="{ labelForId }"
-            text="Label for a field"
-          >
+          <Label #default="{ labelForId }" text="Label for a field">
             <InputField
               :id="labelForId"
               type="text"
@@ -86,11 +85,7 @@ export default {
           </Label>
         </div>
         <div class="grid-item-6">
-          <Label
-            #default="{ labelForId }"
-            text="Compact label for a field"
-            compact
-          >
+          <Label #default="{ labelForId }" text="Large label for a field" large>
             <InputField
               :id="labelForId"
               type="text"
@@ -127,8 +122,12 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Label.vue source code">{{ code }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
+          <CodeExample summary="Show Label.vue source code">{{
+            code
+          }}</CodeExample>
         </div>
       </div>
     </section>
@@ -144,5 +143,4 @@ export default {
     flex-grow: 1;
   }
 }
-
 </style>

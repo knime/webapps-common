@@ -1,49 +1,49 @@
 <script>
-import ArrowNext from '../assets/img/icons/arrow-next.svg';
-import { resolveNuxtLinkComponent } from '../util/nuxtComponentResolver';
+import ArrowNext from "../assets/img/icons/arrow-next.svg";
+import { resolveNuxtLinkComponent } from "../util/nuxtComponentResolver";
 
 export default {
-    components: {
-        ArrowNext
+  components: {
+    ArrowNext,
+  },
+  props: {
+    /**
+     * items as array with a 'text' and optional properties 'href', 'icon' and 'clickable'
+     *
+     * Having "href" set will make the element behave as a link. Having the "clickable" property
+     * set will make the component emit a "click-item" event when the corresponding item is clicked. "href" takes
+     * precedence over "clickable"
+     *
+     * e.g.
+     * [
+     *   { text: 'KNIME Hub', href: '/', icon: Icon },
+     *   { text: 'John Doe', href: '/john.doe' },
+     *   { text: 'Public Space', href: '/john.doe/space' },
+     *   { text: 'Examples', clickable: true },
+     *   { text: 'Sentiment Prediction via REST' }
+     * ]
+     */
+    items: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        /**
-         * items as array with a 'text' and optional properties 'href', 'icon' and 'clickable'
-         *
-         * Having "href" set will make the element behave as a link. Having the "clickable" property
-         * set will make the component emit a "click-item" event when the corresponding item is clicked. "href" takes
-         * precedence over "clickable"
-         *
-         * e.g.
-         * [
-         *   { text: 'KNIME Hub', href: '/', icon: Icon },
-         *   { text: 'John Doe', href: '/john.doe' },
-         *   { text: 'Public Space', href: '/john.doe/space' },
-         *   { text: 'Examples', clickable: true },
-         *   { text: 'Sentiment Prediction via REST' }
-         * ]
-         */
-        items: {
-            type: Array,
-            default: () => []
-        },
-        /**
-         * focus and hover style can be switched by changing this value:
-         * true - darker background, normal font
-         * false - transparent background, bold font
-         */
-        greyStyle: {
-            type: Boolean,
-            default: false
-        }
+    /**
+     * focus and hover style can be switched by changing this value:
+     * true - darker background, normal font
+     * false - transparent background, bold font
+     */
+    greyStyle: {
+      type: Boolean,
+      default: false,
     },
-    emits: ['click-item'],
-    computed: {
-        // TODO: Can be made into a composition function
-        linkComponent() {
-            return resolveNuxtLinkComponent();
-        }
-    }
+  },
+  emits: ["click-item"],
+  computed: {
+    // TODO: Can be made into a composition function
+    linkComponent() {
+      return resolveNuxtLinkComponent();
+    },
+  },
 };
 </script>
 
@@ -53,10 +53,7 @@ export default {
     :class="['breadcrumb', { 'grey-style': greyStyle }]"
   >
     <ul>
-      <li
-        v-for="(breadcrumbItem, i) in items"
-        :key="i"
-      >
+      <li v-for="(breadcrumbItem, i) in items" :key="i">
         <Component
           :is="linkComponent"
           v-if="breadcrumbItem.href"
@@ -74,19 +71,18 @@ export default {
           :class="{ clickable: breadcrumbItem.clickable }"
           :role="breadcrumbItem.clickable ? 'button' : null"
           :title="breadcrumbItem.title"
-          @click="breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)"
+          @click="
+            breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)
+          "
         >
           <Component
             :is="breadcrumbItem.icon"
             v-if="breadcrumbItem.icon"
             class="breadcrumb-icon"
           />
-          {{ breadcrumbItem.text }}
-        </span><!-- no whitespace
-        --><ArrowNext
-          v-if="i !== items.length - 1"
-          class="arrow"
-        />
+          {{ breadcrumbItem.text }} </span
+        ><!-- no whitespace
+        --><ArrowNext v-if="i !== items.length - 1" class="arrow" />
       </li>
     </ul>
   </nav>
@@ -194,4 +190,3 @@ export default {
   }
 }
 </style>
-

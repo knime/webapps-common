@@ -1,55 +1,55 @@
 <script>
 export default {
-    props: {
-        modelValue: {
-            default: '',
-            type: [Number, String]
-        },
-        id: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
-        /**
-         * Validity controlled by the parent component to be flexible.
-         */
-        isValid: {
-            default: true,
-            type: Boolean
-        },
-        cols: {
-            default: 12,
-            type: Number
-        },
-        rows: {
-            default: 4,
-            type: Number
-        },
-        placeholder: {
-            default: null,
-            type: String
-        },
-        inputClasses: {
-            default: '',
-            type: String
-        },
-        title: {
-            default: null,
-            type: String
-        }
+  props: {
+    modelValue: {
+      default: "",
+      type: [Number, String],
     },
-    emits: ['update:modelValue'],
-    methods: {
-        getValue() {
-            return this.$refs.input.value;
-        },
-        onInput() {
-            this.$emit('update:modelValue', this.getValue());
-        }
-    }
+    id: {
+      type: String,
+      default: null,
+    },
+    name: {
+      type: String,
+      default: null,
+    },
+    /**
+     * Validity controlled by the parent component to be flexible.
+     */
+    isValid: {
+      default: true,
+      type: Boolean,
+    },
+    cols: {
+      default: 12,
+      type: Number,
+    },
+    rows: {
+      default: 4,
+      type: Number,
+    },
+    placeholder: {
+      default: null,
+      type: String,
+    },
+    inputClasses: {
+      default: "",
+      type: String,
+    },
+    title: {
+      default: null,
+      type: String,
+    },
+  },
+  emits: ["update:modelValue"],
+  methods: {
+    getValue() {
+      return this.$refs.input.value;
+    },
+    onInput() {
+      this.$emit("update:modelValue", this.getValue());
+    },
+  },
 };
 </script>
 
@@ -67,10 +67,7 @@ export default {
       :placeholder="placeholder"
       @input="onInput"
     />
-    <span
-      v-if="!isValid"
-      class="invalid-marker"
-    />
+    <span v-if="!isValid" class="invalid-marker" />
   </div>
 </template>
 
@@ -117,6 +114,4 @@ div {
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 }
-
 </style>
-

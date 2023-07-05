@@ -1,7 +1,8 @@
-const { preset } = require('./webpack/webpack.postcss.config');
+const { preset } = require("./config/postcss.config");
 
 module.exports = {
-    plugins: {
-        'postcss-preset-env': preset
-    }
+  plugins: {
+    "postcss-mixins": {},
+    "postcss-preset-env": preset,
+  },
 };

@@ -1,4 +1,4 @@
-import { h as createElement } from 'vue';
+import { h as createElement } from "vue";
 
 /**
  * Higher order component that decorates a SVG component (loaded with vue-svg-loader) with a `<title>` element
@@ -19,13 +19,13 @@ import { h as createElement } from 'vue';
  * @returns { Vue.component } The component with a title inserted as the first child of `<svg>`
  */
 export default (SvgComponent, title) => ({
-    render() {
-        const renderedComponent = SvgComponent.render.apply(this, createElement);
+  render() {
+    const renderedComponent = SvgComponent.render.apply(this, createElement);
 
-        const titleEl = createElement('title', title);
-        titleEl.ns = 'svg';
-        
-        renderedComponent.children.unshift(titleEl);
-        return renderedComponent;
-    }
+    const titleEl = createElement("title", title);
+    titleEl.ns = "svg";
+
+    renderedComponent.children.unshift(titleEl);
+    return renderedComponent;
+  },
 });

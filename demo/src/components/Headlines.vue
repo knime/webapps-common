@@ -1,5 +1,5 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
+import CodeExample from "./demo/CodeExample.vue";
 
 const codeExample = `<h1>Headline 1</h1>
 <h2>Headline 2</h2>
@@ -19,14 +19,14 @@ cf. https://www.w3.org/WAI/GL/wiki/Using_role%3Dheading#Example_2 -->
 `;
 
 export default {
-    components: {
-        CodeExample
-    },
-    data() {
-        return {
-            codeExample
-        };
-    }
+  components: {
+    CodeExample,
+  },
+  data() {
+    return {
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -35,8 +35,10 @@ export default {
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <h2>Headlines</h2>
-          <p>There are seven pre-defined headline sizes. There is no need to use dedicated components.</p>
+          <p>
+            There are seven pre-defined headline sizes. There is no need to use
+            dedicated components.
+          </p>
         </div>
       </div>
     </section>
@@ -49,20 +51,16 @@ export default {
           <h4>Headline 4</h4>
           <h5>Headline 5</h5>
           <h6>Headline 6</h6>
-          <div
-            class="h7"
-            role="heading"
-            aria-level="7"
-          >
-            Headline 7
-          </div>
+          <div class="h7" role="heading" aria-level="7">Headline 7</div>
         </div>
       </div>
     </section>
     <section>
       <div class="grid-container">
         <div class="grid-item-12">
-          <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
+          <CodeExample summary="Show usage example">{{
+            codeExample
+          }}</CodeExample>
         </div>
       </div>
     </section>

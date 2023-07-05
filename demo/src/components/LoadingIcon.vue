@@ -1,7 +1,7 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
-import code from 'webapps-common/ui/components/LoadingIcon.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import code from "webapps-common/ui/components/LoadingIcon.vue?raw";
 
 const codeExample = `
 <script>
@@ -29,16 +29,16 @@ export default {
 </style>
 `;
 export default {
-    components: {
-        LoadingIcon,
-        CodeExample
-    },
-    data() {
-        return {
-            code,
-            codeExample
-        };
-    }
+  components: {
+    LoadingIcon,
+    CodeExample,
+  },
+  data() {
+    return {
+      code,
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -46,11 +46,14 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>LoadingIcon</h2>
         <p>Animated loading icon</p>
         <LoadingIcon class="loading-icon" />
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show LoadingIcon.vue source code">{{ code }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show LoadingIcon.vue source code">{{
+          code
+        }}</CodeExample>
       </div>
     </div>
   </section>

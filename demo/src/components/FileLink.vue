@@ -1,10 +1,9 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import FileLink from 'webapps-common/ui/components/FileLink.vue';
-import fileLinkCode from 'webapps-common/ui/components/FileLink.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import FileLink from "webapps-common/ui/components/FileLink.vue";
+import fileLinkCode from "webapps-common/ui/components/FileLink.vue?raw";
 
-const codeExample =
-`
+const codeExample = `
 <FileLink
   href="https://example.com/file.pdf"
   file-ext="pdf"
@@ -33,16 +32,16 @@ const codeExample =
 `;
 
 export default {
-    components: {
-        FileLink,
-        CodeExample
-    },
-    data() {
-        return {
-            fileLinkCode,
-            codeExample
-        };
-    }
+  components: {
+    FileLink,
+    CodeExample,
+  },
+  data() {
+    return {
+      fileLinkCode,
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -50,9 +49,9 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>FileLink</h2>
         <p>
-          The file link is a regular link with support for file icons and size display.
+          The file link is a regular link with support for file icons and size
+          display.
         </p>
         <div>
           <FileLink
@@ -82,8 +81,12 @@ export default {
           />
         </div>
 
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show FileLink.vue source code">{{ fileLinkCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show FileLink.vue source code">{{
+          fileLinkCode
+        }}</CodeExample>
       </div>
     </div>
   </section>

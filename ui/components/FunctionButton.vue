@@ -1,55 +1,55 @@
 <script>
-import BaseButton from './BaseButton.vue';
+import BaseButton from "./BaseButton.vue";
 
 /**
  * Works with an icon & text combination or a single icon.
  */
 export default {
-    components: {
-        BaseButton
-    },
-    props: {
-        /**
-         * @see {@link BaseButton.vue}
-         */
+  components: {
+    BaseButton,
+  },
+  props: {
+    /**
+     * @see {@link BaseButton.vue}
+     */
 
-        /**
-         * Switches the active style of the component
-         */
-        active: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches colors
-         */
-        primary: {
-            type: Boolean,
-            default: false
-        },
-        disabled: {
-            type: Boolean,
-            default: false
-        }
+    /**
+     * Switches the active style of the component
+     */
+    active: {
+      type: Boolean,
+      default: false,
     },
-    computed: {
-        single() {
-            return this.$slots.default().length === 1;
-        }
+    /**
+     * switches colors
+     */
+    primary: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-        focus() {
-            // This can be called from outside via focus on a $ref */
-            this.$refs.baseButton.focus();
-        }
-    }
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    single() {
+      return this.$slots.default().length === 1;
+    },
+  },
+  methods: {
+    focus() {
+      // This can be called from outside via focus on a $ref */
+      this.$refs.baseButton.focus();
+    },
+  },
 };
 </script>
 
 <template>
   <BaseButton
-    v-bind="$attrs"
     ref="baseButton"
+    :disabled="disabled"
     :class="['function-button', { single, active, primary, disabled }]"
   >
     <slot />
@@ -86,7 +86,6 @@ export default {
       margin-right: 0;
     }
   }
-
 
   &.single {
     padding: 6px;
@@ -187,7 +186,8 @@ export default {
     }
   }
 
-  &.disabled { /* via class since <a> elements don't have a native disabled attribute */
+  &.disabled {
+    /* via class since <a> elements don't have a native disabled attribute */
     opacity: 0.5;
     pointer-events: none;
   }

@@ -8,27 +8,32 @@
   --theme-color-kudos: hsl(339.1, 88.4%, 43.9%) /* #D30D52 */;
 
   --theme-color-error-semi: hsla(357.5, 71.6%, 45.5%, 0.2); /* #C72128 */
-  --theme-color-action-required-semi: hsla(29.3, 100%, 59.8%, 0.2); /* #FF9632 */
+  --theme-color-action-required-semi: hsla(
+    29.3,
+    100%,
+    59.8%,
+    0.2
+  ); /* #FF9632 */
 
   /* Header */
-  --theme-header-font-family: 'Roboto', sans-serif;
+  --theme-header-font-family: "Roboto", sans-serif;
   --theme-header-font-weight: 300;
   --theme-header-foreground-color: var(--knime-white);
   --theme-header-background-color: var(--knime-masala);
 
   /* Headlines */
-  --theme-headlines-font-family: 'Roboto', sans-serif;
+  --theme-headlines-font-family: "Roboto", sans-serif;
   --theme-headlines-color: var(--knime-masala);
   --theme-headlines-font-weight: 700;
 
   /* Text */
-  --theme-text-normal-font-family: 'Roboto', sans-serif;
+  --theme-text-normal-font-family: "Roboto", sans-serif;
   --theme-text-normal-color: var(--knime-masala);
 
-  --theme-text-medium-font-family: 'Roboto', sans-serif;
+  --theme-text-medium-font-family: "Roboto", sans-serif;
   --theme-text-medium-color: var(--knime-masala);
 
-  --theme-text-bold-font-family: 'Roboto', sans-serif;
+  --theme-text-bold-font-family: "Roboto", sans-serif;
   --theme-text-bold-color: var(--knime-masala);
 
   /* Text Area */
@@ -138,7 +143,9 @@
   --theme-checkbox-background-color-hover: var(--knime-silver-sand-semi);
   --theme-checkbox-background-color-selected: var(--knime-masala);
   --theme-checkbox-background-color-selected-focus: var(--knime-white);
-  --theme-checkbox-background-color-selected-hover: var(--knime-silver-sand-semi);
+  --theme-checkbox-background-color-selected-hover: var(
+    --knime-silver-sand-semi
+  );
   --theme-checkbox-foreground-color-selected: var(--knime-white);
   --theme-checkbox-foreground-color-selected-focus: var(--knime-masala);
   --theme-checkbox-foreground-color-selected-hover: var(--knime-masala);
@@ -189,7 +196,6 @@
   --theme-slider-background-color: var(--knime-yellow);
 
   /* DateInput */
-  --theme-date-input-box-shadow-color: var(--knime-masala-semi);
   --theme-date-input-day-content-background: rgba(192, 196, 198, 0.5);
   --theme-date-input-border-color: var(--knime-stone-gray);
   --theme-date-input-border-focus-color: var(--knime-masala);
@@ -211,14 +217,20 @@
   --theme-date-input-white: var(--knime-white);
 
   --theme-date-input-gray-100: var(--theme-date-input-accent-100);
-  --theme-date-input-gray-200: var(--knime-silver-sand-semi); /* arrow hover background color */
+  --theme-date-input-gray-200: var(
+    --knime-silver-sand-semi
+  ); /* arrow hover background color */
   --theme-date-input-gray-300: var(--theme-date-input-accent-300);
   --theme-date-input-gray-400: var(--theme-date-input-accent-400);
   --theme-date-input-gray-500: var(--knime-masala); /* weekday font color */
   --theme-date-input-gray-600: var(--knime-masala); /* color arrow */
   --theme-date-input-gray-700: var(--theme-date-input-accent-700);
-  --theme-date-input-gray-800: var(--knime-masala); /* background of month/year popout and font color title */
-  --theme-date-input-gray-900: var(--knime-black-semi); /* hover background of month/year in popout */
+  --theme-date-input-gray-800: var(
+    --knime-masala
+  ); /* background of month/year popout and font color title */
+  --theme-date-input-gray-900: var(
+    --knime-black-semi
+  ); /* hover background of month/year in popout */
 
   /* Time Part Input */
   --theme-time-part-input-background-color: var(--knime-white);

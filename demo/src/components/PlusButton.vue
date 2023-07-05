@@ -1,11 +1,10 @@
 <script>
-import CodeExample from './demo/CodeExample.vue';
-import PlusButton from 'webapps-common/ui/components/PlusButton.vue';
-import PlusButtonCode from 'webapps-common/ui/components/PlusButton.vue?raw';
-import buttonCode from 'webapps-common/ui/components/Button.vue?raw';
+import CodeExample from "./demo/CodeExample.vue";
+import PlusButton from "webapps-common/ui/components/PlusButton.vue";
+import PlusButtonCode from "webapps-common/ui/components/PlusButton.vue?raw";
+import buttonCode from "webapps-common/ui/components/Button.vue?raw";
 
-const codeExample =
-`
+const codeExample = `
   <PlusButton title="Plus button"/>
 
   <PlusButton
@@ -33,17 +32,17 @@ const codeExample =
 `;
 
 export default {
-    components: {
-        PlusButton,
-        CodeExample
-    },
-    data() {
-        return {
-            PlusButtonCode,
-            buttonCode,
-            codeExample
-        };
-    }
+  components: {
+    PlusButton,
+    CodeExample,
+  },
+  data() {
+    return {
+      PlusButtonCode,
+      buttonCode,
+      codeExample,
+    };
+  },
 };
 </script>
 
@@ -51,7 +50,6 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>PlusButton</h2>
         <div class="wrapper">
           <PlusButton title="Plus button" />
           <div class="background">
@@ -61,10 +59,7 @@ export default {
               with-border
             />
           </div>
-          <PlusButton
-            title="Primary plus button"
-            primary
-          />
+          <PlusButton title="Primary plus button" primary />
           <div class="background">
             <PlusButton
               title="Primary plus button on dark"
@@ -72,15 +67,17 @@ export default {
               :on-dark="true"
             />
           </div>
-          <PlusButton
-            title="Disabled plus button"
-            primary
-            disabled
-          />
+          <PlusButton title="Disabled plus button" primary disabled />
         </div>
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show PlusButton.vue source code">{{ PlusButtonCode }}</CodeExample>
-        <CodeExample summary="Show Button.vue source code">{{ buttonCode }}</CodeExample>
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show PlusButton.vue source code">{{
+          PlusButtonCode
+        }}</CodeExample>
+        <CodeExample summary="Show Button.vue source code">{{
+          buttonCode
+        }}</CodeExample>
       </div>
     </div>
   </section>
@@ -95,7 +92,7 @@ export default {
   align-items: center;
   justify-items: center;
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     grid-template-columns: repeat(1, max-content);
   }
 }

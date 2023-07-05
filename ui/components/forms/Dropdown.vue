@@ -1,7 +1,7 @@
 <script>
-import { mixin as VueClickAway } from 'vue3-click-away';
+import { mixin as VueClickAway } from "vue3-click-away";
 
-import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
+import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -14,256 +14,260 @@ const KEY_ENTER = 13;
 const TYPING_TIMEOUT = 1000; // in ms
 
 export default {
-    components: {
-        DropdownIcon
+  components: {
+    DropdownIcon,
+  },
+  mixins: [VueClickAway],
+  props: {
+    id: {
+      type: String,
+      default() {
+        return `Dropdown-${count++}`;
+      },
     },
-    mixins: [VueClickAway],
-    props: {
-        id: {
-            type: String,
-            default() {
-                return `Dropdown-${count++}`;
-            }
-        },
-        modelValue: {
-            type: String,
-            default: null
-        },
-        name: {
-            type: String,
-            default: null
-        },
-        placeholder: {
-            type: String,
-            default: null
-        },
-        ariaLabel: {
-            type: String,
-            required: true
-        },
-        isValid: {
-            default: true,
-            type: Boolean
-        },
-        disabled: {
-            default: false,
-            type: Boolean
-        },
-        /**
-         * List of possible values. Each item must have an `id` and a `text` property
-         * @example
-         * [{
-         *   id: 'pdf',
-         *   text: 'PDF'
-         * }, {
-         *   id: 'XLS',
-         *   text: 'Excel',
-         * }]
-         */
-        possibleValues: {
-            type: Array,
-            default: () => [],
-            validator(values) {
-                if (!Array.isArray(values)) {
-                    return false;
-                }
-                return values.every(item => item.hasOwnProperty('id') && item.hasOwnProperty('text'));
-            }
+    modelValue: {
+      type: String,
+      default: null,
+    },
+    name: {
+      type: String,
+      default: null,
+    },
+    placeholder: {
+      type: String,
+      default: null,
+    },
+    ariaLabel: {
+      type: String,
+      required: true,
+    },
+    isValid: {
+      default: true,
+      type: Boolean,
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
+    /**
+     * List of possible values. Each item must have an `id` and a `text` property
+     * @example
+     * [{
+     *   id: 'pdf',
+     *   text: 'PDF'
+     * }, {
+     *   id: 'XLS',
+     *   text: 'Excel',
+     * }]
+     */
+    possibleValues: {
+      type: Array,
+      default: () => [],
+      validator(values) {
+        if (!Array.isArray(values)) {
+          return false;
         }
+        return values.every(
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+        );
+      },
     },
-    emits: ['update:modelValue'],
-    data() {
-        return {
-            isExpanded: false,
-            searchQuery: ''
-        };
+  },
+  emits: ["update:modelValue"],
+  data() {
+    return {
+      isExpanded: false,
+      searchQuery: "",
+    };
+  },
+  computed: {
+    selectedIndex() {
+      return this.possibleValues.map((x) => x.id).indexOf(this.modelValue);
     },
-    computed: {
-        selectedIndex() {
-            return this.possibleValues.map(x => x.id).indexOf(this.modelValue);
-        },
-        showPlaceholder() {
-            return !this.modelValue;
-        },
-        displayTextMap() {
-            let map = {};
-            for (let value of this.possibleValues) {
-                map[value.id] = value.text;
-            }
-            return map;
-        },
-        displayText() {
-            if (this.showPlaceholder) {
-                return this.placeholder;
-            } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
-                return this.displayTextMap[this.modelValue];
-            } else {
-                return `(MISSING) ${this.modelValue}`;
-            }
-        },
-        isMissing() {
-            return this.modelValue && !this.displayTextMap.hasOwnProperty(this.modelValue);
+    showPlaceholder() {
+      return !this.modelValue;
+    },
+    displayTextMap() {
+      let map = {};
+      for (let value of this.possibleValues) {
+        map[value.id] = value.text;
+      }
+      return map;
+    },
+    displayText() {
+      if (this.showPlaceholder) {
+        return this.placeholder;
+      } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
+        return this.displayTextMap[this.modelValue];
+      } else {
+        return `(MISSING) ${this.modelValue}`;
+      }
+    },
+    isMissing() {
+      return (
+        this.modelValue && !this.displayTextMap.hasOwnProperty(this.modelValue)
+      );
+    },
+  },
+  created() {
+    this.typingTimeout = null;
+  },
+  methods: {
+    isCurrentValue(candidate) {
+      return this.modelValue === candidate;
+    },
+    setSelected(id) {
+      consola.trace("ListBox setSelected on", id);
+
+      /**
+       * Fired when the selection changes.
+       */
+      this.$emit("update:modelValue", id);
+    },
+    onOptionClick(id) {
+      this.setSelected(id);
+      this.isExpanded = false;
+      this.$refs.button.focus();
+    },
+    scrollTo(optionIndex) {
+      let listBoxNode = this.$refs.ul;
+      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
+        let element = this.$refs.options[optionIndex];
+        let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
+        let elementBottom = element.offsetTop + element.offsetHeight;
+        if (elementBottom > scrollBottom) {
+          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
+        } else if (element.offsetTop < listBoxNode.scrollTop) {
+          listBoxNode.scrollTop = element.offsetTop;
         }
+      }
     },
-    created() {
-        this.typingTimeout = null;
+    onArrowDown() {
+      let next = this.selectedIndex + 1;
+      if (next >= this.possibleValues.length) {
+        return;
+      }
+      this.setSelected(this.possibleValues[next].id);
+      this.scrollTo(next);
     },
-    methods: {
-        isCurrentValue(candidate) {
-            return this.modelValue === candidate;
-        },
-        setSelected(id) {
-            consola.trace('ListBox setSelected on', id);
+    onArrowUp() {
+      let next = this.selectedIndex - 1;
+      if (next < 0) {
+        return;
+      }
+      this.setSelected(this.possibleValues[next].id);
+      this.scrollTo(next);
+    },
+    onEndKey() {
+      let next = this.possibleValues.length - 1;
+      this.setSelected(this.possibleValues[next].id);
+      this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
+    },
+    onHomeKey() {
+      let next = 0;
+      this.setSelected(this.possibleValues[next].id);
+      this.$refs.ul.scrollTop = 0;
+    },
+    toggleExpanded() {
+      if (this.disabled) {
+        return;
+      }
+      this.isExpanded = !this.isExpanded;
+      if (this.isExpanded) {
+        this.$nextTick(() => this.$refs.ul.focus());
+      }
+    },
+    handleKeyDownList(e) {
+      /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
+      if (e.keyCode === KEY_DOWN) {
+        this.onArrowDown();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_UP) {
+        this.onArrowUp();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_END) {
+        this.onEndKey();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_HOME) {
+        this.onHomeKey();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_ESC) {
+        this.isExpanded = false;
+        this.$refs.ul.blur();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_ENTER) {
+        this.isExpanded = false;
+        this.$refs.button.focus();
+        e.preventDefault();
+        return;
+      }
+      this.searchItem(e);
+    },
+    handleKeyDownButton(e) {
+      if (e.keyCode === KEY_ENTER) {
+        this.toggleExpanded();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_DOWN) {
+        this.onArrowDown();
+        e.preventDefault();
+        return;
+      }
+      if (e.keyCode === KEY_UP) {
+        this.onArrowUp();
+        e.preventDefault();
+        return;
+      }
+      this.searchItem(e);
+    },
+    searchItem(e) {
+      clearTimeout(this.typingTimeout);
+      this.typingTimeout = setTimeout(() => {
+        this.searchQuery = "";
+      }, TYPING_TIMEOUT);
+      this.searchQuery += e.key;
 
-            /**
-             * Fired when the selection changes.
-             */
-            this.$emit('update:modelValue', id);
-        },
-        onOptionClick(id) {
-            this.setSelected(id);
-            this.isExpanded = false;
-            this.$refs.button.focus();
-        },
-        scrollTo(optionIndex) {
-            let listBoxNode = this.$refs.ul;
-            if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-                let element = this.$refs.options[optionIndex];
-                let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-                let elementBottom = element.offsetTop + element.offsetHeight;
-                if (elementBottom > scrollBottom) {
-                    listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
-                } else if (element.offsetTop < listBoxNode.scrollTop) {
-                    listBoxNode.scrollTop = element.offsetTop;
-                }
-            }
-        },
-        onArrowDown() {
-            let next = this.selectedIndex + 1;
-            if (next >= this.possibleValues.length) {
-                return;
-            }
-            this.setSelected(this.possibleValues[next].id);
-            this.scrollTo(next);
-        },
-        onArrowUp() {
-            let next = this.selectedIndex - 1;
-            if (next < 0) {
-                return;
-            }
-            this.setSelected(this.possibleValues[next].id);
-            this.scrollTo(next);
-        },
-        onEndKey() {
-            let next = this.possibleValues.length - 1;
-            this.setSelected(this.possibleValues[next].id);
-            this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
-        },
-        onHomeKey() {
-            let next = 0;
-            this.setSelected(this.possibleValues[next].id);
-            this.$refs.ul.scrollTop = 0;
-        },
-        toggleExpanded() {
-            if (this.disabled) {
-                return;
-            }
-            this.isExpanded = !this.isExpanded;
-            if (this.isExpanded) {
-                this.$nextTick(() => this.$refs.ul.focus());
-            }
-        },
-        handleKeyDownList(e) {
-            /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
-            if (e.keyCode === KEY_DOWN) {
-                this.onArrowDown();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_UP) {
-                this.onArrowUp();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_END) {
-                this.onEndKey();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_HOME) {
-                this.onHomeKey();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_ESC) {
-                this.isExpanded = false;
-                this.$refs.ul.blur();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_ENTER) {
-                this.isExpanded = false;
-                this.$refs.button.focus();
-                e.preventDefault();
-                return;
-            }
-            this.searchItem(e);
-        },
-        handleKeyDownButton(e) {
-            if (e.keyCode === KEY_ENTER) {
-                this.toggleExpanded();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_DOWN) {
-                this.onArrowDown();
-                e.preventDefault();
-                return;
-            }
-            if (e.keyCode === KEY_UP) {
-                this.onArrowUp();
-                e.preventDefault();
-                return;
-            }
-            this.searchItem(e);
-        },
-        searchItem(e) {
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = setTimeout(() => {
-                this.searchQuery = '';
-            }, TYPING_TIMEOUT);
-            this.searchQuery += e.key;
+      consola.trace(`Searching for ${this.searchQuery}`);
 
-            consola.trace(`Searching for ${this.searchQuery}`);
-
-            const candidate = this.possibleValues.find(
-                item => item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase())
-            );
-            if (candidate) {
-                this.setSelected(candidate.id);
-            }
-        },
-        hasSelection() {
-            return this.selectedIndex >= 0;
-        },
-        getCurrentSelectedId() {
-            try {
-                return this.possibleValues[this.selectedIndex].id;
-            } catch (e) {
-                return '';
-            }
-        },
-        generateId(node, itemId) {
-            if (!itemId) {
-                return `${node}-${this.id}`;
-            }
-            let cleanId = String(itemId).replace(/[^\w]/gi, '');
-            return `${node}-${this.id}-${cleanId}`;
-        },
-        clickAway() {
-            this.isExpanded = false;
-        }
-    }
+      const candidate = this.possibleValues.find((item) =>
+        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase())
+      );
+      if (candidate) {
+        this.setSelected(candidate.id);
+      }
+    },
+    hasSelection() {
+      return this.selectedIndex >= 0;
+    },
+    getCurrentSelectedId() {
+      try {
+        return this.possibleValues[this.selectedIndex].id;
+      } catch (e) {
+        return "";
+      }
+    },
+    generateId(node, itemId) {
+      if (!itemId) {
+        return `${node}-${this.id}`;
+      }
+      let cleanId = String(itemId).replace(/[^\w]/gi, "");
+      return `${node}-${this.id}-${cleanId}`;
+    },
+    clickAway() {
+      this.isExpanded = false;
+    },
+  },
 };
 </script>
 
@@ -271,7 +275,10 @@ export default {
   <div
     :id="id"
     v-click-away="clickAway"
-    :class="['dropdown' , { collapsed: !isExpanded, invalid: !isValid, disabled }]"
+    :class="[
+      'dropdown',
+      { collapsed: !isExpanded, invalid: !isValid, disabled },
+    ]"
   >
     <div
       :id="generateId('button')"
@@ -279,7 +286,7 @@ export default {
       role="button"
       tabindex="0"
       aria-haspopup="listbox"
-      :class="{'placeholder': showPlaceholder, 'missing': isMissing}"
+      :class="{ placeholder: showPlaceholder, missing: isMissing }"
       :aria-label="ariaLabel"
       :aria-labelledby="generateId('button')"
       :aria-expanded="isExpanded"
@@ -294,7 +301,9 @@ export default {
       ref="ul"
       role="listbox"
       tabindex="-1"
-      :aria-activedescendant="isExpanded ? generateId('option', getCurrentSelectedId()) : false"
+      :aria-activedescendant="
+        isExpanded ? generateId('option', getCurrentSelectedId()) : false
+      "
       @keydown="handleKeyDownList"
     >
       <li
@@ -304,19 +313,18 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': item.text.trim() === '' }"
+        :class="{
+          focused: isCurrentValue(item.id),
+          noselect: true,
+          empty: item.text.trim() === '',
+        }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
         {{ item.text }}
       </li>
     </ul>
-    <input
-      :id="id"
-      type="hidden"
-      :name="name"
-      :value="modelValue"
-    >
+    <input :id="id" type="hidden" :name="name" :value="modelValue" />
   </div>
 </template>
 
@@ -412,7 +420,7 @@ export default {
     padding: 0;
     margin: -1px 0 1px;
     background: var(--theme-dropdown-background-color);
-    box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
+    box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
   }
 

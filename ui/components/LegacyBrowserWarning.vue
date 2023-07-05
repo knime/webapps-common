@@ -5,15 +5,15 @@
  */
 // TODO add to demo page
 export default {
-    props: {
-        text: {
-            type: String,
-            default: 'You are using an outdated browser.'
-        }
+  props: {
+    text: {
+      type: String,
+      default: "You are using an outdated browser.",
     },
-    data() {
-        return {
-            banner: `<template>
+  },
+  data() {
+    return {
+      banner: `<template>
                 <input id="close-legacy-browser-warning" class="visually-hidden" type="checkbox">
                 <div class="legacy-browser-wrapper">
                   <label for="close-legacy-browser-warning">
@@ -24,18 +24,14 @@ export default {
                     <a href="https://browser-update.org/update-browser.html" rel="noopener">Please update your browser</a>
                   </div>
                 </div>
-              </template>`
-        };
-    }
+              </template>`,
+    };
+  },
 };
 </script>
 
 <template>
-  <div
-    v-once
-    class="legacy-browser-warning"
-    v-html="banner"
-  />
+  <div v-once class="legacy-browser-warning" v-html="banner" />
 </template>
 
 <style lang="postcss">
@@ -78,7 +74,9 @@ export default {
   }
 }
 
-.legacy-browser-warning input[type="checkbox"]:checked ~ .legacy-browser-wrapper {
+.legacy-browser-warning
+  input[type="checkbox"]:checked
+  ~ .legacy-browser-wrapper {
   display: none;
 }
 </style>

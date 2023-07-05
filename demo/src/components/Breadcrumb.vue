@@ -1,9 +1,9 @@
 <script>
-import { markRaw } from 'vue';
-import CodeExample from './demo/CodeExample.vue';
-import FolderIcon from 'webapps-common/ui/assets/img/icons/folder.svg';
-import Breadcrumb from 'webapps-common/ui/components/Breadcrumb.vue';
-import breadcrumbCode from 'webapps-common/ui/components/Breadcrumb.vue?raw';
+import { markRaw } from "vue";
+import CodeExample from "./demo/CodeExample.vue";
+import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
+import Breadcrumb from "webapps-common/ui/components/Breadcrumb.vue";
+import breadcrumbCode from "webapps-common/ui/components/Breadcrumb.vue?raw";
 
 const codeExample = `<Breadcrumb
   :items="[
@@ -18,30 +18,30 @@ const codeExample = `<Breadcrumb
 `;
 
 export default {
-    components: {
-        Breadcrumb,
-        CodeExample
+  components: {
+    Breadcrumb,
+    CodeExample,
+  },
+  data() {
+    const FolderIconRef = markRaw(FolderIcon);
+    return {
+      breadcrumbCode,
+      breadcrumbItems: [
+        { text: "KNIME Hub", href: "/" },
+        { text: "John Doe", href: "/john.doe" },
+        { text: "Public Space", href: "/john.doe/space", icon: FolderIconRef },
+        { text: "Examples (clickable)", icon: FolderIconRef, clickable: true },
+        { text: "Sentiment Prediction via REST" },
+        { title: "only an icon with no text but a title", icon: FolderIcon },
+      ],
+      codeExample,
+    };
+  },
+  methods: {
+    onItemClicked({ text }) {
+      window.alert(`You clicked on item ${JSON.stringify({ text })}`);
     },
-    data() {
-        const FolderIconRef = markRaw(FolderIcon);
-        return {
-            breadcrumbCode,
-            breadcrumbItems: [
-                { text: 'KNIME Hub', href: '/' },
-                { text: 'John Doe', href: '/john.doe' },
-                { text: 'Public Space', href: '/john.doe/space', icon: FolderIconRef },
-                { text: 'Examples (clickable)', icon: FolderIconRef, clickable: true },
-                { text: 'Sentiment Prediction via REST' },
-                { title: 'only an icon with no text but a title', icon: FolderIcon }
-            ],
-            codeExample
-        };
-    },
-    methods: {
-        onItemClicked({ text }) {
-            window.alert(`You clicked on item ${JSON.stringify({ text })}`);
-        }
-    }
+  },
 };
 </script>
 
@@ -49,20 +49,20 @@ export default {
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <h2>Breadcrumb</h2>
-        <p>Breadcrumbs can have different focus/hover styles, these can be toggled via the "greyStyle"-property</p>
+        <p>
+          Breadcrumbs can have different focus/hover styles, these can be
+          toggled via the "greyStyle"-property
+        </p>
         <span>Default style:</span>
-        <Breadcrumb
-          :items="breadcrumbItems"
-          @click-item="onItemClicked"
-        />
+        <Breadcrumb :items="breadcrumbItems" @click-item="onItemClicked" />
         <span>"greyStyle" enabled:</span>
-        <Breadcrumb
-          :items="breadcrumbItems"
-          grey-style
-        />
-        <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-        <CodeExample summary="Show Breadcrumb.vue source code">{{ breadcrumbCode }}</CodeExample>
+        <Breadcrumb :items="breadcrumbItems" grey-style />
+        <CodeExample summary="Show usage example">{{
+          codeExample
+        }}</CodeExample>
+        <CodeExample summary="Show Breadcrumb.vue source code">{{
+          breadcrumbCode
+        }}</CodeExample>
       </div>
     </div>
   </section>

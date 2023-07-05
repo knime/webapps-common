@@ -1,65 +1,65 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
-import BaseButton from './BaseButton.vue';
+import { defineComponent } from "vue";
+import BaseButton from "./BaseButton.vue";
 
 export default defineComponent({
-    components: {
-        BaseButton
-    },
-    inheritAttrs: false,
-    props: {
-        /**
-         * @see {@link BaseButton.vue}
-         */
+  components: {
+    BaseButton,
+  },
+  props: {
+    /**
+     * @see {@link BaseButton.vue}
+     */
 
-        /**
-         * show button with border
-         */
-        withBorder: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches colors to use button on a dark background
-         */
-        onDark: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * switches colors
-         */
-        primary: {
-            type: Boolean,
-            default: false
-        },
-        /**
-         * smaller font size and padding
-         */
-        compact: {
-            type: Boolean,
-            default: false
-        }
+    /**
+     * show button with border
+     */
+    withBorder: {
+      type: Boolean,
+      default: false,
     },
-    computed: {
-        classes() {
-            return [
-                'button',
-                { primary: this.primary },
-                { 'with-border': this.withBorder },
-                { 'on-dark': this.onDark },
-                { compact: this.compact }
-            ];
-        }
-    }
+    /**
+     * switches colors to use button on a dark background
+     */
+    onDark: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * switches colors
+     */
+    primary: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * smaller font size and padding
+     */
+    compact: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    classes() {
+      return [
+        "button",
+        { primary: this.primary },
+        { "with-border": this.withBorder },
+        { "on-dark": this.onDark },
+        { compact: this.compact },
+      ];
+    },
+  },
 });
 </script>
 
 <template>
-  <BaseButton
-    v-bind="$attrs"
-    :class="classes"
-  >
+  <BaseButton :class="classes" :disabled="disabled">
     <slot />
   </BaseButton>
 </template>

@@ -4,21 +4,18 @@
  */
 
 export default {
-    props: {
-        isExpanded: {
-            type: Boolean,
-            default: false
-        }
-    }
+  props: {
+    isExpanded: {
+      type: Boolean,
+      default: false,
+    },
+  },
 };
 </script>
 
 <template>
   <Transition name="slide">
-    <div
-      v-if="isExpanded"
-      class="side-drawer"
-    >
+    <div v-if="isExpanded" class="side-drawer">
       <div class="content">
         <slot />
       </div>
@@ -34,7 +31,9 @@ export default {
 
 .slide-enter-from,
 .slide-leave-to {
-  transform: translateX(calc(100% + 10px)); /* extra 10px to hide box shadow when collapsed */
+  transform: translateX(
+    calc(100% + 10px)
+  ); /* extra 10px to hide box shadow when collapsed */
 }
 
 .side-drawer {
@@ -47,7 +46,7 @@ export default {
   background: var(--knime-porcelain);
   z-index: var(--z-index-common-side-drawer, 60);
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     z-index: var(--z-index-common-mobile-side-drawer, 60);
   }
 
@@ -55,7 +54,7 @@ export default {
     height: 100%;
   }
 
-  @media only screen and (max-width: 900px) {
+  @media only screen and (width <= 900px) {
     width: 100%;
   }
 }
