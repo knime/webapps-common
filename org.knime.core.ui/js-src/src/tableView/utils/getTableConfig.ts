@@ -9,7 +9,11 @@ const getPageConfig = (pageParams: PageParams | undefined, pageSize: number,
     enablePagination: boolean, showTableSize: boolean) => {
     if (typeof pageParams === 'undefined') {
         return {
-            pageConfig: false
+            pageConfig: {
+                showTableSize: false,
+                currentSize: 0,
+                pageSize: 0
+            }
         };
     }
     const { currentRowCount,
@@ -59,7 +63,7 @@ export default ({
         showSelection: publishSelection || subscribeToSelection || false,
         enableColumnResizing,
         showColumnFilters: enableColumnSearch || false,
-        ...getPageConfig(pageParams, pageSize, enablePagination, showTableSize),
+        ...getPageConfig(pageParams, pageSize, enablePagination, enablePagination || showTableSize),
         enableVirtualScrolling,
         ...enableSortingByHeader && {
             sortConfig: {

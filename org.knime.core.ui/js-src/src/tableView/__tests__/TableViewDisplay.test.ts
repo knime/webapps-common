@@ -303,7 +303,11 @@ describe('TableViewDisplay.vue', () => {
                 expect(tableConfig).toMatchObject({
                     enableColumnResizing: false,
                     enableVirtualScrolling: false,
-                    pageConfig: false,
+                    pageConfig: {
+                        showTableSize: false,
+                        currentSize: 0,
+                        pageSize: 0
+                    },
                     showColumnFilters: false,
                     showSelection: false,
                     subMenuItems: []
@@ -370,8 +374,27 @@ describe('TableViewDisplay.vue', () => {
                         currentSize: 2,
                         pageSize: 2,
                         tableSize: 3,
-                        columnCount: 4
+                        columnCount: 4,
+                        showTableSize: false
                     }
+                });
+            });
+
+            it('does not hide table sizes in case of pagination', () => {
+                props.page = {
+                    currentPage: 1,
+                    currentRowCount: 2,
+                    totalRowCount: 3,
+                    columnCount: 4
+                };
+                props.settings.enablePagination = true;
+                props.settings.showTableSize = false;
+                const wrapper = shallowMountDisplay({ props });
+                const tableConfig = getTableConfig(wrapper);
+                expect(tableConfig).toMatchObject({
+                    pageConfig: expect.objectContaining({
+                        showTableSize: true
+                    })
                 });
             });
 

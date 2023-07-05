@@ -129,7 +129,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Show table size",
         description = "Whether to display the number of rows " + "and columns above the table or not.")
     @Persist(optional = true)
-    @Effect(signals = IsPaginationEnabled.class, type = EffectType.DISABLE)
+    @Effect(signals = IsPaginationEnabled.class, type = EffectType.HIDE)
     @Layout(DataSection.class)
     public boolean m_showTableSize = true;
 
@@ -237,13 +237,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Hidden
     @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
-
-    /**
-     * Whether to show the table dimensions (number of rows and columns).
-     */
-    @Hidden
-    @Persist(hidden = true, optional = true)
-    public boolean m_showTableSize = true;
 
     /**
      * Create a new {@link TableViewViewSettings} with default values

@@ -53,7 +53,8 @@ export const getDefaultProps = () : TableViewDisplayProps => {
         },
         settings: {
             showRowKeys: false,
-            showRowIndices: false
+            showRowIndices: false,
+            showTableSize: false
         },
         globalSearchQuery: '',
         enableVirtualScrolling: false,
