@@ -22,7 +22,8 @@ const libraries = {
     DeferredTableView: {
         entry: fileURLToPath(new URL('./src/deferredTableView/DeferredTableView.vue', import.meta.url)),
         name: 'deferredtableview',
-        fileName: 'DeferredTableView'
+        fileName: 'DeferredTableView',
+        formats: ['umd']
     } as LibraryOptions,
     TextView: {
         entry: fileURLToPath(new URL('./src/textView/TextView.vue', import.meta.url)),
