@@ -110,11 +110,21 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
 
     @Override
     protected final NodeDescription createNodeDescription() throws SAXException, IOException, XmlException {
-        return createNodeDescription(m_configuration.getName(), m_configuration.getIcon(),
-            m_configuration.getInPortDescriptions(), m_configuration.getOutPortDescriptions(),
-            m_configuration.getShortDescription(), m_configuration.getFullDescription(),
-            m_configuration.getModelSettingsClass(), null, null, m_configuration.getNodeType(),
-            m_configuration.getKeywords(), m_configuration.getSinceVersion());
+        return createNodeDescription(m_configuration);
+    }
+
+    /**
+     * TODO
+     *
+     * @param configuration
+     * @return
+     */
+    public static NodeDescription createNodeDescription(final WebUINodeConfiguration configuration) {
+        return createNodeDescription(configuration.getName(), configuration.getIcon(),
+            configuration.getInPortDescriptions(), configuration.getOutPortDescriptions(),
+            configuration.getShortDescription(), configuration.getFullDescription(),
+            configuration.getModelSettingsClass(), null, null, configuration.getNodeType(), configuration.getKeywords(),
+            configuration.getSinceVersion());
     }
 
     /**

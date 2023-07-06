@@ -105,6 +105,21 @@ public final class DefaultNodeDialog implements NodeDialog {
     /**
      * Creates a new instance.
      *
+     * @param settingsType the type of settings this dialog provides
+     * @param settingsClass the class which defining the dialog
+     * @param onApplyModifier an {@link org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier} that will be
+     *            invoked when cleaning up the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     */
+    public DefaultNodeDialog(final SettingsType settingsType, final Class<? extends DefaultNodeSettings> settingsClass,
+        final OnApplyNodeModifier onApplyModifier) {
+        super(onApplyModifier, settingsType);
+        m_settingsClasses = List.of(settingsClass);
+        m_settingsDataService = new DefaultNodeSettingsService(Map.of(settingsType, settingsClass));
+    }
+
+    /**
+     * Creates a new instance.
+     *
      * @param settingsType1 a settings type this dialog is able to provide
      * @param settingsClass1 dialog definition for the first settings type
      * @param settingsType2 another settings type this dialog is able to provide
