@@ -4,11 +4,10 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStore } from 'vuex';
-
-import * as vuexModule from 'vuex';
-
+import * as imagesModule from '../utils/images';
 
 import ImageRenderer from '../ImageRenderer.vue';
+import flushPromises from 'flush-promises';
 
 
 describe('ImageRenderer.vue', () => {
@@ -17,7 +16,7 @@ describe('ImageRenderer.vue', () => {
     const getUiExtResourceLocation = vi.fn(({ resourceInfo }) => resourceInfo.baseUrl + resourceInfo.path);
 
     beforeEach(() => {
-        props = { baseUrl: 'baseUrl', path: 'path' };
+        props = { baseUrl: 'baseUrl', path: 'path', includeDataInHtml: false };
         const store = createStore({
             modules: {
                 api: {
@@ -29,17 +28,7 @@ describe('ImageRenderer.vue', () => {
                 }
             }
         });
-
-        vi.spyOn(vuexModule, 'useStore').mockReturnValue(store);
-
-        context = {
-            props,
-            global: {
-                mocks: {
-                    $store: store
-                }
-            }
-        };
+        context = { props, global: { provide: { store } } };
     });
 
     it('sets url', () => {
@@ -92,5 +81,32 @@ describe('ImageRenderer.vue', () => {
         expect(wrapper.find('img').attributes().src).toBe(
             `${getUiExtResourceLocation({ resourceInfo })}?w=${newProps.width}&h=${newProps.height}`
         );
+    });
+
+    describe("when 'includeDataInHtml' is true", () => {
+        const fetchedImageData = 'fetchedImageData';
+
+        beforeEach(() => {
+            vi.spyOn(imagesModule, 'fetchImage').mockResolvedValue(fetchedImageData);
+        });
+
+        it('includes data in html', async () => {
+            props.includeDataInHtml = true;
+            const wrapper = mount(ImageRenderer, context);
+            expect(wrapper.find('img').exists()).toBeFalsy();
+            await flushPromises();
+            const img = wrapper.find('img');
+            expect(img.exists()).toBeTruthy();
+            expect(img.attributes().src).toBe(fetchedImageData);
+        });
+
+        it('emits pending and rendered events when image is loaded', async () => {
+            props.includeDataInHtml = true;
+            const wrapper = mount(ImageRenderer, context);
+            expect(wrapper.emitted('pending')[0]).toStrictEqual([expect.stringContaining('Image')]);
+            expect(wrapper.emitted('rendered')).toBeFalsy();
+            await flushPromises();
+            expect(wrapper.emitted('rendered')[0]).toStrictEqual([expect.stringContaining('Image')]);
+        });
     });
 });

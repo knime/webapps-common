@@ -8,7 +8,6 @@ const knimeService = getKnimeService();
 const settings: Ref<any> = ref({});
 const dataTypes: Ref<any> = ref(null);
 const columnDataTypeIds: Ref<any> = ref(null);
-const columnDomainValues = ref(null);
 const dataLoaded = ref(false);
 const table: Ref<{
   rows: any[],
@@ -22,8 +21,7 @@ onMounted(async () => {
     if (initialData) {
         dataTypes.value = initialData.dataTypes;
         columnDataTypeIds.value = initialData.table.columnDataTypeIds;
-        columnDomainValues.value = initialData.columnDomainValues;
-
+        
         settings.value = {
             ...initialData.settings,
             publishSelection: false,
@@ -69,7 +67,6 @@ watch(ready, () => ready.value && emit('rendered'));
 
 <template>
   <TableViewDisplay
-    class="table-view-display"
     :settings="settings"
     :rows="{
       loaded: dataLoaded,

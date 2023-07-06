@@ -223,7 +223,10 @@ describe('TableViewInteractive.vue', () => {
                 sortConfig: {
                     sortColumn: null,
                     sortDirection: null
-                }
+                },
+                enableVirtualScrolling: true,
+                showSelection: true,
+                enableColumnResizing: true
             });
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const headline = { sectionHeadline: true, separator: true, text: 'Data renderer' };
