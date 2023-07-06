@@ -174,11 +174,9 @@ export default {
   }
 
   & .submenu-wrapper {
-    position: absolute;
-    top: 50px;
-    left: 5px;
+    padding-left: 5px;
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
   
     & .column-count {
