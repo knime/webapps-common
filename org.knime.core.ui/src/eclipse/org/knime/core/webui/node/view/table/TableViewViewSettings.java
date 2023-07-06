@@ -252,7 +252,8 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * @param spec
      */
     public TableViewViewSettings(final DataTableSpec spec) {
-        m_displayedColumns = new ColumnFilter(spec.getColumnNames());
+        final String[] allColumnNames = spec == null ? new String[0] : spec.getColumnNames();
+        m_displayedColumns = new ColumnFilter(allColumnNames);
     }
 
     @SuppressWarnings("javadoc")
