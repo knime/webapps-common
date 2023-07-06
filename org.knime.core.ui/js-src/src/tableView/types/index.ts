@@ -47,5 +47,6 @@ export interface TableViewDisplayProps {
     enableColumnResizing: boolean,
     enableRowResizing: boolean,
     includeImageResources: boolean,
-    knimeService: KnimeService
+    knimeService: KnimeService,
+    forceHideTableSizes?: boolean
 }

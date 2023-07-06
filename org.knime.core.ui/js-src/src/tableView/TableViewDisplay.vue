@@ -86,7 +86,8 @@ const tableConfig = computed(() => getTableConfig({
 
     globalSearchQuery: props.globalSearchQuery,
     enableVirtualScrolling: props.enableVirtualScrolling,
-    enableColumnResizing: props.enableColumnResizing
+    enableColumnResizing: props.enableColumnResizing,
+    forceHideTableSizes: props.forceHideTableSizes || false
 }));
 
 // data

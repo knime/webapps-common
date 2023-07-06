@@ -121,6 +121,7 @@ export default {
       v-if="tableViewInitialData"
       :key="tableViewKey"
       :initial-data="tableViewInitialData"
+      force-hide-table-sizes="true"
     />
     <div
       v-else
@@ -174,7 +175,7 @@ export default {
   }
 
   & .submenu-wrapper {
-    padding-left: 5px;
+    padding: 5px;
     display: flex;
     justify-content: left;
     align-items: center;

@@ -20,6 +20,11 @@ export default {
             type: Object,
             default: null,
             required: false
+        },
+        forceHideTableSizes: {
+            type: Boolean,
+            default: false,
+            required: false
         }
     },
     data() {
@@ -779,6 +784,7 @@ export default {
     :enable-row-resizing="true"
     :include-image-resources="false"
     :knime-service="knimeService"
+    :force-hide-table-sizes="forceHideTableSizes"
     @page-change="onPageChange"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"

@@ -39,7 +39,8 @@ export default ({
     sortParams,
     globalSearchQuery,
     enableVirtualScrolling,
-    enableColumnResizing
+    enableColumnResizing,
+    forceHideTableSizes
 } : {
     settings: any,
     pageParams?: {
@@ -54,7 +55,8 @@ export default ({
     },
     globalSearchQuery: string,
     enableVirtualScrolling: boolean,
-    enableColumnResizing: boolean
+    enableColumnResizing: boolean,
+    forceHideTableSizes: boolean
 }) => {
     const { enableSortingByHeader, enableGlobalSearch, enableColumnSearch,
         publishSelection, subscribeToSelection, pageSize, enablePagination, showTableSize } = settings;
@@ -63,7 +65,8 @@ export default ({
         showSelection: publishSelection || subscribeToSelection || false,
         enableColumnResizing,
         showColumnFilters: enableColumnSearch || false,
-        ...getPageConfig(pageParams, pageSize, enablePagination, enablePagination || showTableSize),
+        ...getPageConfig(pageParams, pageSize, enablePagination,
+            forceHideTableSizes ? false : enablePagination || showTableSize),
         enableVirtualScrolling,
         ...enableSortingByHeader && {
             sortConfig: {
