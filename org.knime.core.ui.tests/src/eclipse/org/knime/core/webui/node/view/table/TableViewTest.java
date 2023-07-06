@@ -102,7 +102,7 @@ import org.knime.core.node.workflow.virtual.VirtualNodeInput;
 import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
-import org.knime.core.webui.node.view.PageFormat.AspectRatio;
+import org.knime.core.webui.node.view.PageFormat;
 import org.knime.core.webui.node.view.table.data.Cell;
 import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 import org.knime.core.webui.node.view.table.data.Renderer;
@@ -572,7 +572,7 @@ class TableViewTest {
 
         var nodeView = NodeViewManager.getInstance().getNodeView(nnc);
         var pageFormat = nodeView.getDefaultPageFormat();
-        assertThat(pageFormat.getAspectRatio().get()).isEqualTo(AspectRatio.RATIO_4BY3);
+        assertThat(pageFormat).isEqualTo(PageFormat.ASPECT_RATIO_4BY3);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }

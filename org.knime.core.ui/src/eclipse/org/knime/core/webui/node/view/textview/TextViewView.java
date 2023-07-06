@@ -60,6 +60,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSerializer;
 import org.knime.core.webui.node.view.NodeView;
+import org.knime.core.webui.node.view.PageFormat;
 import org.knime.core.webui.node.view.textview.data.TextViewInitialData;
 import org.knime.core.webui.node.view.textview.data.TextViewInitialDataImpl;
 import org.knime.core.webui.page.Page;
@@ -95,6 +96,11 @@ public final class TextViewView implements NodeView {
     @Override
     public Page getPage() {
         return PAGE;
+    }
+
+    @Override
+    public PageFormat getDefaultPageFormat() {
+        return PageFormat.AUTO;
     }
 
     @SuppressWarnings("unchecked")

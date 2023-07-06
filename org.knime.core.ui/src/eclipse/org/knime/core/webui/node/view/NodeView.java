@@ -85,7 +85,7 @@ public interface NodeView extends UIExtension, DataServiceProvider {
      * @return the page format
      */
     default PageFormat getDefaultPageFormat() {
-        return PageFormat.DEFAULT;
+        return PageFormat.ASPECT_RATIO_4BY3;
     }
 
 

@@ -48,37 +48,22 @@
  */
 package org.knime.core.webui.node.view;
 
-import java.util.Optional;
-
 /**
  * Helps to determined the size of a page if it's composed with other pages (e.g. a composite view).
+ *
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Daniel Bogenrieder, KNIME GmbH, Konstanz, Germany
  */
-public final class PageFormat {
+public enum PageFormat {
 
-    /**
-     * The default page format.
-     */
-    public static final PageFormat DEFAULT = new PageFormat();
+        /**
+         * Keeps an aspect ration of 4x3 for the view page.
+         */
+        ASPECT_RATIO_4BY3,
 
-    private AspectRatio m_aspectRatio = AspectRatio.RATIO_4BY3;
-
-    private PageFormat() {
-        // TODO to be instantiated with a 'page format builder'
-    }
-
-    /**
-     * Available aspect ratios.
-     */
-    @SuppressWarnings("javadoc")
-    public enum AspectRatio {
-            RATIO_4BY3
-    }
-
-    /**
-     * @return the aspect ratio or an empty optional if the page format is not determined by an aspect ratio
-     */
-    public Optional<AspectRatio> getAspectRatio() {
-        return Optional.ofNullable(m_aspectRatio);
-    }
+        /**
+         * The view page uses the entire available space.
+         */
+        AUTO
 
 }
