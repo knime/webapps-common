@@ -62,9 +62,11 @@ import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -132,8 +134,9 @@ public final class JsonFormsSchemaUtil {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
         final var properties = root.putObject(TAG_PROPERTIES);
-        settingsClasses.entrySet().stream()
-            .forEach(e -> properties.set(e.getKey(), buildSchema(e.getValue(), context, mapper)));
+        settingsClasses.entrySet().stream() //
+            .sorted(Comparator.comparing(Entry::getKey)) //
+            .forEachOrdered(e -> properties.set(e.getKey(), buildSchema(e.getValue(), context, mapper)));
         return root;
     }
 

@@ -50,7 +50,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -160,7 +162,9 @@ public final class JsonFormsDataUtil {
 
     static JsonNode toCombinedJsonData(final Map<String, DefaultNodeSettings> settings) {
         final var root = getMapper().createObjectNode();
-        settings.entrySet().stream().forEach(e -> root.set(e.getKey(), toJsonData(e.getValue())));
+        settings.entrySet().stream() //
+            .sorted(Comparator.comparing(Entry::getKey)) //
+            .forEachOrdered(e -> root.set(e.getKey(), toJsonData(e.getValue())));
         return root;
     }
 
