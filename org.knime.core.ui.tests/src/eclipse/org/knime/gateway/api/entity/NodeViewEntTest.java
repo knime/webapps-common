@@ -570,7 +570,8 @@ class NodeViewEntTest {
         Function<NodeViewNodeModel, NodeView> nodeViewCreator =
             m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", specProvider);
+        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", specProvider,
+            true);
     }
 
     /**

@@ -91,19 +91,26 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final String generatedImageActionId) {
+        return create(nnc, initialSelection, generatedImageActionId, generatedImageActionId != null);
+    }
+
+    private static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
+        final String generatedImageActionId, final boolean isUsedForImageOrReportGeneration) {
         final var state = nnc.getNodeContainerState();
         if (state.isExecuted()
             || (generatedImageActionId != null && state.isExecutionInProgress() && !state.isWaitingToBeExecuted())) {
             try {
                 NodeViewManager.getInstance().updateNodeViewSettings(nnc);
                 return new NodeViewEnt(nnc, initialSelection, NodeViewManager.getInstance(), null,
-                    generatedImageActionId);
+                    generatedImageActionId, isUsedForImageOrReportGeneration);
             } catch (InvalidSettingsException ex) {
                 NodeLogger.getLogger(NodeViewEnt.class).error("Failed to update node view settings", ex);
-                return new NodeViewEnt(nnc, null, null, ex.getMessage(), generatedImageActionId);
+                return new NodeViewEnt(nnc, null, null, ex.getMessage(), generatedImageActionId,
+                    isUsedForImageOrReportGeneration);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, null);
+            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, null,
+                isUsedForImageOrReportGeneration);
         }
     }
 
@@ -118,6 +125,18 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     /**
+     * @param nnc the Native node container to create the node view entity for
+     * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
+     *            not be called, if the node is not executed)
+     * @param isUsedForReportGeneration indicates whether this view-ent is used for report generation
+     * @return a new instance
+     */
+    public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
+        final boolean isUsedForReportGeneration) {
+        return create(nnc, initialSelection, null, isUsedForReportGeneration);
+    }
+
+    /**
      * Creates a new instances without a initial selection and without the underlying node being registered with the
      * selection event source.
      *
@@ -129,9 +148,10 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     private NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId) {
+        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
+        final boolean isUsedForImageOrReportGeneration) {
         this(nnc, initialSelection, nodeViewManager, customErrorMessage, generatedImageActionId,
-            createSpecProvider(nnc));
+            createSpecProvider(nnc), isUsedForImageOrReportGeneration);
     }
 
     private static Function<NodeTableView, DataTableSpec> createSpecProvider(final NativeNodeContainer nnc) {
@@ -150,9 +170,9 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
-        final Function<NodeTableView, DataTableSpec> specProvider) {
+        final Function<NodeTableView, DataTableSpec> specProvider, final boolean isUsedForImageOrReportGeneration) {
         super(NodeWrapper.of(nnc), nodeViewManager, nodeViewManager, PageType.VIEW,
-            isRunAsDesktopApplication() || generatedImageActionId != null);
+            isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
