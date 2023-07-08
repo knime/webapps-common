@@ -76,7 +76,12 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class WizardPageUtil2Test {
+// NOTE on the class name:
+// This class actually tests class which lives in org.knime.core (knime-core repo) because the test requires
+// core-ui classes which aren't available there and can't be made available due to circular dependencies.
+// And it seems that this test can't be named exactly after the 'placeholder-test' in org.knime.core.tests
+// (this test won't execute). Hence the trailing '2'.j
+public class WizardPageUtilTest2 {
 
     private WorkflowManager m_wfm;
 
@@ -233,6 +238,9 @@ public class WizardPageUtil2Test {
             .containsExactlyInAnyOrder("NodeView", "NodeView");
     }
 
+    /**
+     * Tests {@link WizardPageUtil#getSuccessorWizardPageNodesWithinComponent(WorkflowManager, NodeID, NodeID)}.
+     */
     @Test
     void testGetSuccessorWizardPageNodesWithinComponent() {
 
@@ -281,14 +289,14 @@ public class WizardPageUtil2Test {
         n8 = doubleNestedComponentWfm.getID().createChild(n8.getIndex());
 
         // the actual tests
+
         var nodes = WizardPageUtil.getSuccessorWizardPageNodesWithinComponent(m_wfm, component, n1)
             .map(Pair::getSecond).map(NodeContainer::getID).collect(Collectors.toList());
         assertThat(nodes).containsExactlyInAnyOrder(n1, n3, n4, n7, n8);
 
-        // TODO
-//        nodes = WizardPageUtil.getSuccessorWizardPageNodesWithinComponent(componentWfm, component, n2)
-//            .map(Pair::getSecond).map(NodeContainer::getID).map(NodeID::toString).collect(Collectors.toList());
-//        assertThat(nodes).containsExactlyInAnyOrder(" ", "");
+        nodes = WizardPageUtil.getSuccessorWizardPageNodesWithinComponent(m_wfm, component, n2).map(Pair::getSecond)
+            .map(NodeContainer::getID).collect(Collectors.toList());
+        assertThat(nodes).containsExactly(n2);
 
     }
 
