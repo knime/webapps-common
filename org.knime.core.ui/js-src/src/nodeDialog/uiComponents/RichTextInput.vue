@@ -3,11 +3,13 @@ import { defineComponent } from 'vue';
 import { rendererProps, useJsonFormsControl } from '@jsonforms/vue';
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
 import RichTextEditor from 'webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue';
+import LabeledInput from './LabeledInput.vue';
 
 const RichTextInput = defineComponent({
     name: 'RichTextInput',
     components: {
-        RichTextEditor
+        RichTextEditor,
+        LabeledInput
     },
     props: {
         ...rendererProps()
@@ -44,39 +46,56 @@ export default RichTextInput;
 </script>
 
 <template>
-  <RichTextEditor
-    class="editor"
-    :min-height="400"
-    :model-value="control.data"
-    :base-extensions="{
-      bold: true,
-      italic: true,
-      underline: true,
-      textAlign: true,
-      bulletList: true,
-      orderedList: true,
-      heading: true,
-      blockQuote: true,
-      code: true,
-      codeBlock: true,
-      horizontalRule: true,
-      strike: true
-    }"
-    @update:model-value="onChange"
-  />
+  <LabeledInput
+    :text="control.label"
+    :description="control.description"
+    :errors="[control.errors]"
+    :scope="control.uischema.scope"
+    :flow-settings="flowSettings"
+    class="input-wrapper"
+  >
+    <RichTextEditor
+      class="editor"
+      :class="{'editor-editable': !disabled}"
+      :min-height="400"
+      :model-value="control.data"
+      :editable="!disabled"
+      :base-extensions="{
+        bold: true,
+        italic: true,
+        underline: true,
+        textAlign: true,
+        bulletList: true,
+        orderedList: true,
+        heading: true,
+        blockQuote: true,
+        code: true,
+        codeBlock: true,
+        horizontalRule: true,
+        strike: true
+      }"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>
 
 <style lang="postcss" scoped>
 
 .editor {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
+    height: calc(100% - 20px);
+}
 
+.editor-editable {
     &:deep(.rich-text-editor) {
-        height: auto;
-        flex: 1;
+        height: calc(100% - var(--toolbar-height));
+    }
+}
+
+.input-wrapper {
+    height: 100%;
+
+    &:deep(.label-wrapper) {
+        height: 100%;
     }
 }
 

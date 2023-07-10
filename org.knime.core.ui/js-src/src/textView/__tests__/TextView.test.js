@@ -59,42 +59,69 @@ describe('TextView.vue', () => {
         expect(addOnDataChangeCallbackSpy).toHaveBeenCalled();
     });
 
-    it('updates content on view settings change', async () => {
-        const data = {
-            data: {
-                view: {
-                    richTextContent: 'abcdefg'
+    describe('onViewSettingsChange', () => {
+        it('updates content on view settings change', async () => {
+            const data = {
+                data: {
+                    view: {
+                        richTextContent: 'abcdefg'
+                    }
+                },
+                schema: {
+                    flowVariablesMap: {}
                 }
-            }
-        };
-        await wrapper.vm.onViewSettingsChange({ data });
-        expect(wrapper.vm.richTextContent).toStrictEqual(data.data.view.richTextContent);
+            };
+            await wrapper.vm.onViewSettingsChange({ data });
+            expect(wrapper.vm.richTextContent).toStrictEqual(data.data.view.richTextContent);
+        });
+
+        it('replaces flow variables in text content on view settings change', async () => {
+            const flowVariablesMap = {
+                key1: 'value1',
+                key2: 'value2'
+            };
+            const data = {
+                data: {
+                    view: {
+                        richTextContent: '$$["key1"] abc $$["key2"]'
+                    }
+                },
+                schema: {
+                    flowVariablesMap: {}
+                }
+            };
+            wrapper.vm.flowVariablesMap = flowVariablesMap;
+            await wrapper.vm.onViewSettingsChange({ data });
+            expect(wrapper.vm.richTextContent).toBe(`${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`);
+        });
+
+        it('does not change richTextContent if it is controlled by flow variable', async () => {
+            const data = {
+                data: {
+                    view: {
+                        richTextContent: 'abcdefg'
+                    }
+                },
+                schema: {
+                    flowVariablesMap: {
+                        'view.richTextContent': {
+                            controllingFlowVariableAvailable: true
+                        }
+                    }
+                }
+            };
+            await wrapper.vm.onViewSettingsChange({ data });
+            expect(wrapper.vm.richTextContent).toStrictEqual(defaultContent);
+        });
     });
 
     it('replaces flow variables in text content on mount', async () => {
-        const content = '$$[key1] $$[key2]';
+        const content = '$$["key1"] $$["key2"]';
         const jsonDataServiceMock = createJsonDataServiceMock(content);
         createSpies(jsonDataServiceMock);
         mountWrapper();
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.richTextContent).toBe('value1 value2');
-    });
-
-    it('replaces flow variables in text content on view settings change', async () => {
-        const flowVariablesMap = {
-            key1: 'value1',
-            key2: 'value2'
-        };
-        const data = {
-            data: {
-                view: {
-                    richTextContent: '$$[key1] abc $$[key2]'
-                }
-            }
-        };
-        wrapper.vm.flowVariablesMap = flowVariablesMap;
-        await wrapper.vm.onViewSettingsChange({ data });
-        expect(wrapper.vm.richTextContent).toBe(`${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`);
     });
 
     // TODO enable once we have a propper way to get the reporting state

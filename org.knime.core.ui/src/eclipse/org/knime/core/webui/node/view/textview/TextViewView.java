@@ -64,6 +64,8 @@ import org.knime.core.webui.node.view.PageFormat;
 import org.knime.core.webui.node.view.textview.data.TextViewInitialData;
 import org.knime.core.webui.node.view.textview.data.TextViewInitialDataImpl;
 import org.knime.core.webui.page.Page;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 
 /**
  * A {@link NodeView} implementation for displaying tables.
@@ -74,6 +76,11 @@ public final class TextViewView implements NodeView {
     private TextViewViewSettings m_settings;
 
     private final Supplier<FlowObjectStack> m_flowObjectStackSupplier;
+
+    private static PolicyFactory sanitizationPolicy = new HtmlPolicyBuilder()
+            .allowCommonInlineFormattingElements()
+            .allowCommonBlockElements()
+            .toFactory();
 
     // Note on the 'static' page id: the entire TextView-page can be considered 'completely static'
     // because the page, represented by a vue component, is just a file (won't change at runtime)
@@ -121,6 +128,10 @@ public final class TextViewView implements NodeView {
     public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
         try {
             m_settings = DefaultNodeSettings.loadSettings(settings, TextViewViewSettings.class);
+            if (m_settings.m_richTextContent != null) {
+                m_settings.m_richTextContent =
+                    sanitizationPolicy.sanitize(m_settings.m_richTextContent);
+            }
         } catch (InvalidSettingsException ex) {
             throw new IllegalStateException("The settings should have been validated first.", ex);
         }

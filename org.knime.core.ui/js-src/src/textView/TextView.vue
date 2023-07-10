@@ -12,6 +12,12 @@ export default {
     computed: {
         knimeService() {
             return this.getKnimeService();
+        },
+        disabled() {
+            return this.flowSettings?.controllingFlowVariableAvailable;
+        },
+        flowSettings() {
+            return getFlowVariablesMap(this.control);
         }
     },
     async mounted() {
@@ -31,6 +37,10 @@ export default {
     },
     methods: {
         onViewSettingsChange(event) {
+            // TODO: Can be removed once we have frontend sanitization
+            if (event.data.schema.flowVariablesMap['view.richTextContent']?.controllingFlowVariableAvailable) {
+                return;
+            }
             this.richTextContent = this.replaceFlowVariablesInContent(event.data.data.view.richTextContent);
         },
         replaceFlowVariablesInContent(newRichTextContent) {
@@ -38,7 +48,7 @@ export default {
                 return newRichTextContent;
             }
             Object.entries(this.flowVariablesMap).forEach(([key, value]) => {
-                newRichTextContent = newRichTextContent.replaceAll(`$$[${key}]`, value);
+                newRichTextContent = newRichTextContent.replaceAll(`$$["${key}"]`, value);
             });
             return newRichTextContent;
         }

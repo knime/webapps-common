@@ -59,7 +59,14 @@ public class TextViewViewSettings implements DefaultNodeSettings {
     /**
      * The main content to be displayed
      */
-    @Widget(title = "Rich Text Content", description = "The rich text content that is displayed in the view")
+    @Widget(title = "Rich Text Content", description = "The rich text content that is displayed in the view. "
+        + "Formatting options can be selected in the menu bar on the top of the editor. <br/><br/>"
+        + "To create a heading, add number signs (#), followed by a space, in front of a word or phrase. "
+        + "The number of number signs you use should correspond to the heading level (&lt;h1&gt; to &lt;h6&gt;). <br/>"
+        + "To revert heading styling to normal text, the shortcut Command + Options + 0 (MacOS) or "
+        + "Control + Alt + 0 (Windows/Linux) can be used. <br/>"
+        + "The contents of flow variables can be inserted by using the replacement syntax "
+        + "\"$$[\"flow-variable-name\"]\".")
     @RichTextInputWidget
     public String m_richTextContent = "";
 

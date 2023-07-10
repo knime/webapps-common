@@ -17,6 +17,7 @@ describe('RichTextInput.vue', () => {
             control: {
                 path: 'richTextContent',
                 visible: true,
+                enabled: true,
                 data: 'test',
                 schema: {
                     properties: {
@@ -79,5 +80,30 @@ describe('RichTextInput.vue', () => {
     it('sets editor to editable', () => {
         const editorComponent = wrapper.findComponent(RichTextEditor);
         expect(editorComponent.vm.editable).toBeTruthy();
+    });
+
+    it('disables editor if content is overwritten by flow variable', async () => {
+        props = {
+            ...props,
+            control: {
+                ...props.control,
+                rootSchema: {
+                    ...props.control.rootSchema,
+                    flowVariablesMap: {
+                        richTextContent: {
+                            leaf: true,
+                            controllingFlowVariableAvailable: true,
+                            controllingFlowVariableName: 'string-input',
+                            exposedFlowVariableName: null
+                        }
+                    }
+                }
+            }
+            
+        };
+        wrapper = await mountJsonFormsComponent(RichTextInput, props);
+        expect(wrapper.vm.disabled).toBeTruthy();
+        const editorComponent = wrapper.findComponent(RichTextEditor);
+        expect(editorComponent.vm.editable).toBeFalsy();
     });
 });
