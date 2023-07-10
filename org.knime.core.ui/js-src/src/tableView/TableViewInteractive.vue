@@ -3,7 +3,6 @@
 import { JsonDataService, SelectionService } from '@knime/ui-extension-service';
 import TableViewDisplay from './TableViewDisplay.vue';
 import { createDefaultFilterConfig, arrayEquals } from '@/tableView/utils';
-import throttle from 'raf-throttle';
 import specialColumns from './utils/specialColumns';
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys

@@ -13,11 +13,6 @@ import specialColumns from '../utils/specialColumns';
 const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
 
-// eslint-disable-next-line no-invalid-this
-vi.mock('raf-throttle', () => ({
-    default: vi.fn(fn => fn)
-}));
-
 const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
 
 describe('TableViewInteractive.vue', () => {
