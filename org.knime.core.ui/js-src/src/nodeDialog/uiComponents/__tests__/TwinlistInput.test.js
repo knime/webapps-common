@@ -207,6 +207,7 @@ describe('TwinlistInput.vue', () => {
                 namespaced: true
             }
         });
+        expect(dirtySettingsMock).not.toHaveBeenCalled();
         await wrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
         expect(onChangeSpy).toBeCalled();
         expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);

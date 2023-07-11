@@ -42,7 +42,8 @@ const TwinlistInput = defineComponent({
     data() {
         return {
             possibleValues: null,
-            previouslySelectedTypes: null
+            previouslySelectedTypes: null,
+            selectedUpdated: false
         };
     },
     computed: {
@@ -85,9 +86,10 @@ const TwinlistInput = defineComponent({
                     ? { manualFilter: { manuallySelected: selected, manuallyDeselected: deselected } }
                     : {}
             });
-            if (this.isModelSettingAndHasNodeView) {
+            if (this.isModelSettingAndHasNodeView && this.selectedUpdated) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
+            this.selectedUpdated = true;
         },
         onIncludeUnknownColumnsChange(includeUnknownColumns) {
             this.onChange({ manualFilter: { includeUnknownColumns } });
