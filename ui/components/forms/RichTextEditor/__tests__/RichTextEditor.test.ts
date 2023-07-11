@@ -196,15 +196,34 @@ describe("RichTextEditor.vue", () => {
       expect(underlineExtension).toBeDefined();
     });
 
-    it("should enable the textAlign tool", () => {
-      doMount({
-        props: { baseExtensions: { textAlign: true } },
+    describe("textAlign", () => {
+      it("should enable the textAlign tool (with heading)", () => {
+        doMount({
+          props: { baseExtensions: { textAlign: true, heading: true } },
+        });
+
+        const textAlignExtension = mockEditor.value.params.extensions.find(
+          (extension: any) => extension.name === "textAlign"
+        );
+
+        expect(textAlignExtension).toBeDefined();
+        expect(textAlignExtension.options.types).toEqual([
+          "heading",
+          "paragraph",
+        ]);
       });
 
-      const textAlignExtension = mockEditor.value.params.extensions.find(
-        (extension: any) => extension.name === "textAlign"
-      );
-      expect(textAlignExtension).toBeDefined();
+      it("should enable the textAlign tool (without heading)", () => {
+        doMount({
+          props: { baseExtensions: { textAlign: true } },
+        });
+
+        const textAlignExtension = mockEditor.value.params.extensions.find(
+          (extension: any) => extension.name === "textAlign"
+        );
+        expect(textAlignExtension).toBeDefined();
+        expect(textAlignExtension.options.types).toEqual(["paragraph"]);
+      });
     });
   });
 
@@ -281,23 +300,74 @@ describe("RichTextEditor.vue", () => {
       expect(textAlignRight?.props("active")).toBe(false);
     });
 
-    it("should execute the toolbar action", () => {
-      const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
+    describe("execute", () => {
+      it("should execute the toolbar action", () => {
+        const { wrapper } = doMount({
+          props: { baseExtensions: { all: true } },
+        });
 
-      const boldToolIndex = 0;
+        findToolComponentById(wrapper, "bold")?.vm.$emit("click", {
+          stopPropagation: vi.fn(),
+        });
 
-      wrapper
-        .findAllComponents(FunctionButton)
-        .at(boldToolIndex)
-        ?.vm.$emit("click", { stopPropagation: vi.fn() });
+        // bold is called
+        expect(mockEditor.value.chain().focus().toggleBold).toHaveBeenCalled();
 
-      // bold is called
-      expect(mockEditor.value.chain().focus().toggleBold).toHaveBeenCalled();
+        // another tool is not
+        expect(
+          mockEditor.value.chain().focus().toggleBulletList
+        ).not.toHaveBeenCalled();
+      });
 
-      // another tool is not
-      expect(
-        mockEditor.value.chain().focus().toggleBulletList
-      ).not.toHaveBeenCalled();
+      it.each([
+        ["bulletList", "toggleBulletList"] as const,
+        ["orderedList", "toggleOrderedList"] as const,
+      ])(
+        "should call textAlign left when toggling %s",
+        (extensionName, commandName) => {
+          const { wrapper } = doMount({
+            props: {
+              baseExtensions: { [extensionName]: true, textAlign: true },
+            },
+          });
+
+          findToolComponentById(wrapper, extensionName)?.vm.$emit("click", {
+            stopPropagation: vi.fn(),
+          });
+
+          expect(
+            mockEditor.value.chain().focus().setTextAlign
+          ).toHaveBeenCalled();
+          expect(
+            mockEditor.value.chain().focus()[commandName]
+          ).toHaveBeenCalled();
+        }
+      );
+
+      it.each([
+        ["bulletList", "toggleBulletList"] as const,
+        ["orderedList", "toggleOrderedList"] as const,
+      ])(
+        "should not call textAlign left when toggling %s",
+        (extensionName, commandName) => {
+          const { wrapper } = doMount({
+            props: {
+              baseExtensions: { [extensionName]: true },
+            },
+          });
+
+          findToolComponentById(wrapper, extensionName)?.vm.$emit("click", {
+            stopPropagation: vi.fn(),
+          });
+
+          expect(
+            mockEditor.value.chain().focus().setTextAlign
+          ).not.toHaveBeenCalled();
+          expect(
+            mockEditor.value.chain().focus()[commandName]
+          ).toHaveBeenCalled();
+        }
+      );
     });
   });
 

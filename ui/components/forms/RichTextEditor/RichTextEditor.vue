@@ -120,7 +120,11 @@ const extensions = [
   ...(isToolEnabled("textAlign")
     ? [
         CustomTextAlign.configure({
-          types: ["heading", "paragraph"],
+          types: [
+            props.baseExtensions.heading ? "heading" : "",
+            "paragraph",
+          ].filter(Boolean),
+
           alignments: ["left", "right", "center"],
         }),
       ]
