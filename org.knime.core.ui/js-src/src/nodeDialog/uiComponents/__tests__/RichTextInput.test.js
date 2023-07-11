@@ -102,11 +102,11 @@ describe('RichTextInput.vue', () => {
                     }
                 }
             }
-            
         };
-        wrapper = await mountJsonFormsComponent(RichTextInput, props);
-        expect(wrapper.vm.disabled).toBeTruthy();
-        const editorComponent = wrapper.findComponent(RichTextEditor);
+        let localComponent = await mountJsonFormsComponent(RichTextInput, props);
+        let localWrapper = localComponent.wrapper;
+        expect(localWrapper.vm.disabled).toBeTruthy();
+        const editorComponent = localWrapper.findComponent(RichTextEditor);
         expect(editorComponent.vm.editable).toBeFalsy();
     });
 });
