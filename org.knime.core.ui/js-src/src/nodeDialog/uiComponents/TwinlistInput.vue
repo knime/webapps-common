@@ -42,8 +42,7 @@ const TwinlistInput = defineComponent({
     data() {
         return {
             possibleValues: null,
-            previouslySelectedTypes: null,
-            selectedUpdated: false
+            previouslySelectedTypes: null
         };
     },
     computed: {
@@ -79,17 +78,20 @@ const TwinlistInput = defineComponent({
             let newData = mergeDeep(this.control.data, obj);
             this.handleChange(this.control.path, newData);
         },
-        onSelectedChange({ selected, isManual, deselected }) {
+        onSelectedChange({ selected, isManual, isFirstInput, deselected }) {
             this.onChange({
                 selected,
                 ...isManual
                     ? { manualFilter: { manuallySelected: selected, manuallyDeselected: deselected } }
                     : {}
             });
-            if (this.isModelSettingAndHasNodeView && this.selectedUpdated) {
+            /**
+             * TODO: UIEXT-1122 do not use isFirstInput anymore but instead compare the value with the initial one,
+             * once the initial value is set correctly in the backend.
+             * */
+            if (this.isModelSettingAndHasNodeView && !isFirstInput) {
                 this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
             }
-            this.selectedUpdated = true;
         },
         onIncludeUnknownColumnsChange(includeUnknownColumns) {
             this.onChange({ manualFilter: { includeUnknownColumns } });
