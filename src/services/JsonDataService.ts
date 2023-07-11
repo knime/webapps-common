@@ -7,6 +7,7 @@ import {
   EventTypes,
 } from "src/types";
 import { AlertTypes } from "src/types/AlertTypes";
+import { DialogSettings } from "src/types/DialogSettings";
 import { createJsonRpcRequest } from "src/utils";
 import { KnimeService } from "./KnimeService";
 
@@ -79,6 +80,18 @@ export class JsonDataService<T = any> {
       this.handleWarnings(warningMessages);
     }
     return Promise.resolve(result);
+  }
+
+  /**
+   * The state of the settings in a coexisting dialog (if any) when the extension is first loaded.
+   * More precisely, this is the state of the settings on the last clean state of the dialog before
+   * the initialization of the knime service.
+   * It is null if there is no dialog or there was no such state before the initialization.
+   * In particular it is null if the knime service of the view and the dialog are consturcted at the same time.
+   * @returns {DialogSettings | null} the initial dialog state
+   */
+  getDialogSettings(): DialogSettings | null {
+    return this.knimeService.extensionConfig?.dialogSettings || null;
   }
 
   /**

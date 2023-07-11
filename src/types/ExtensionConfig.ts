@@ -1,4 +1,5 @@
 import { ColorModel } from "./ColorModel";
+import { DialogSettings } from "./DialogSettings";
 import { ExtensionTypes } from "./ExtensionTypes";
 import { FlowVariableSettings } from "./FlowVariableSettings";
 import { NodeInfo } from "./NodeInfo";
@@ -19,6 +20,7 @@ import { ResourceInfo } from "./ResourceInfo";
  * @property {ExtensionTypes} extensionType - the type of the extension (effects the api behavior).
  * @property {T} [initialData] - optional initial data to provide directly to the UI Extension.
  * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
+ * @property {DialogSettings} dialogSettings - optional initial dialog state supplying the UI Extension with the state of a dialog if present.
  * @property {FlowVariableSettings} [flowVariableSettings]
  * @property {boolean} hasNodeView
  * @property {string} generatedImageActionId - optional action-id to communicate the generated image back to Java.
@@ -37,6 +39,7 @@ export type ExtensionConfig<T = any> = {
   extensionType: ExtensionTypes;
   initialData?: T;
   initialSelection?: T;
+  dialogSettings?: DialogSettings;
   flowVariableSettings?: FlowVariableSettings;
   hasNodeView: boolean;
   generatedImageActionId?: string;

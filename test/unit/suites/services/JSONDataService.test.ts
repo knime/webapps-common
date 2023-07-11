@@ -424,4 +424,20 @@ describe("JsonDataService", () => {
       expect(sentMessage.message).toContain("Line1\n\tLine2");
     });
   });
+
+  describe("dialog settings", () => {
+    it("returns the supplied dialog settings", () => {
+      const dialogSettings = { view: { foo: "bar" } };
+      const localExtensionConfig = { ...extensionConfig, dialogSettings };
+      const { knimeService } = getKnimeService(localExtensionConfig);
+      const jsonDataService = new JsonDataService(knimeService);
+      expect(jsonDataService.getDialogSettings()).toStrictEqual(dialogSettings);
+    });
+
+    it("returns null if no dialog settings are supplied", () => {
+      const { knimeService } = getKnimeService();
+      const jsonDataService = new JsonDataService(knimeService);
+      expect(jsonDataService.getDialogSettings()).toBeNull();
+    });
+  });
 });
