@@ -158,7 +158,7 @@ class TableViewInitialDataTest {
         var booleanType = dataTypes.get(String.valueOf(BooleanCell.TYPE.hashCode()));
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
         assertRendererNames(booleanType.getRenderers(), "Default", "Default", "Standard Double", "Percentage",
-            "Full Precision", "Gray Scale", "Bars", "Standard Complex Number", "Default");
+            "Full Precision", "Gray Scale", "Bars", "Default");
 
         var imageType = dataTypes.get(String.valueOf(new PNGImageCellFactory().getDataType().hashCode()));
         assertThat(imageType.getName()).isEqualTo("PNG Image");

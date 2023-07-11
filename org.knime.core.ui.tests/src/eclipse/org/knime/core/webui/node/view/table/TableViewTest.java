@@ -513,12 +513,12 @@ class TableViewTest {
         var doubleType = dataTypes.get(table.getColumnDataTypeIds()[3]);
         assertThat(doubleType.getName()).isEqualTo("Number (double)");
         assertRendererNames(doubleType.getRenderers(), "Standard Double", "Percentage", "Full Precision", "Gray Scale",
-            "Bars", "Standard Complex Number", "Default");
+            "Bars", "Default");
 
         var booleanType = dataTypes.get(table.getColumnDataTypeIds()[5]);
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
         assertRendererNames(booleanType.getRenderers(), "Default", "Default", "Standard Double", "Percentage",
-            "Full Precision", "Gray Scale", "Bars", "Standard Complex Number", "Default");
+            "Full Precision", "Gray Scale", "Bars", "Default");
 
         var imageType = dataTypes.get(table.getColumnDataTypeIds()[6]);
         assertThat(imageType.getName()).isEqualTo("PNG Image");
