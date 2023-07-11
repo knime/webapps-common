@@ -62,6 +62,7 @@ export default defineComponent({
   data() {
     return {
       editable: true,
+      disabled: false,
       value:
         "<p><strong>Hello</strong> World</p> <br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>",
       minHeight: 150,
@@ -78,11 +79,13 @@ export default defineComponent({
     <section>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Checkbox v-model="editable"> Editable </Checkbox>
+          <Checkbox v-model="editable"> Editable </Checkbox><br />
+          <Checkbox v-model="disabled"> Disabled </Checkbox>
           <RichTextEditor
             v-model="value"
             :base-extensions="{ all: true }"
             :editable="editable"
+            :disabled="disabled"
             :min-height="minHeight"
             :max-height="maxHeight"
           />
@@ -102,6 +105,7 @@ export default defineComponent({
             <RichTextEditor
               v-model="value"
               :editable="editable"
+              :disabled="disabled"
               :min-height="minHeight"
               :max-height="maxHeight"
               :base-extensions="{ bold: true, italic: true }"

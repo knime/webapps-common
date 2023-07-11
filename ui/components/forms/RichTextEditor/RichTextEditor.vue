@@ -49,6 +49,12 @@ interface Props {
    */
   autofocus?: boolean;
   withBorder?: boolean;
+  /**
+   * Whether the editor is in a disabled state. This state changes its style, sets the
+   * editor to non-editable and hides the toolbar. In the disabled state, the editor won't
+   * react to changes of the editable prop.
+   */
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -78,10 +84,11 @@ const props = withDefaults(defineProps<Props>(), {
   customExtensions: () => [] as Array<AnyExtension>,
   autofocus: false,
   withBorder: true,
+  disabled: false,
 });
 
 const slots = useSlots();
-const { modelValue, editable } = toRefs(props);
+const { modelValue, editable, disabled } = toRefs(props);
 
 const emit = defineEmits<{
   (e: "update:modelValue", content: string): void;
@@ -135,7 +142,7 @@ const extensions = [
 
 const editor = useEditor({
   content: props.modelValue,
-  editable: props.editable,
+  editable: props.editable && !props.disabled,
   autofocus: props.autofocus,
   extensions,
   onUpdate: () => emit("update:modelValue", editor.value?.getHTML() ?? ""),
@@ -169,17 +176,25 @@ watch(modelValue, (_value) => {
   editor.value.commands.setContent(_value);
 });
 
-watch(editable, (value) => {
-  if (!editor.value) {
-    return;
-  }
+watch(
+  [editable, disabled],
+  ([newEditable, newDisabled], [oldEditable, oldDisabled]) => {
+    if (!editor.value) {
+      return;
+    }
+    const oldValue = oldEditable && !oldDisabled;
+    const newValue = newEditable && !newDisabled;
+    if (oldValue === newValue) {
+      return;
+    }
 
-  editor.value.setEditable(value);
+    editor.value.setEditable(newValue);
 
-  if (props.autofocus) {
-    focus();
+    if (props.autofocus) {
+      focus();
+    }
   }
-});
+);
 
 onMounted(async () => {
   if (props.editable && props.autofocus) {
@@ -189,14 +204,14 @@ onMounted(async () => {
 });
 
 const hasCustomToolbar = slots.customToolbar;
-const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
+const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 </script>
 
 <template>
-  <div :class="['editor-wrapper', { 'with-border': withBorder }]">
+  <div :class="['editor-wrapper', { 'with-border': withBorder, disabled }]">
     <Transition v-if="hasTools" name="expand" :css="!hasCustomToolbar">
       <div
-        v-if="editor && editable"
+        v-if="editor && editable && !disabled"
         :class="{ 'embedded-toolbar': !hasCustomToolbar }"
       >
         <RichTextEditorBaseToolbar
@@ -219,7 +234,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
     <EditorContent
       class="rich-text-editor"
       :editor="editor"
-      :class="{ editable }"
+      :class="{ editable: editable && !disabled }"
     />
   </div>
 </template>
@@ -240,6 +255,10 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length !== 0);
     &:has(.ProseMirror-focused) {
       border-color: var(--knime-masala);
     }
+  }
+
+  &.disabled {
+    opacity: 0.5;
   }
 }
 
