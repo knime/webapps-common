@@ -61,6 +61,7 @@ export default RichTextInput;
       :min-height="400"
       :model-value="control.data"
       :editable="!disabled"
+      :disabled="disabled"
       :base-extensions="{
         bold: true,
         italic: true,
