@@ -112,7 +112,7 @@ const tableUI: Ref<null | TableUI> = ref(null);
 
 defineExpose({
     refreshScroller: () => {
-        if (tableUI.value) {
+        if (tableUI.value?.refreshScroller) {
             tableUI.value.refreshScroller();
         }
     }

@@ -382,6 +382,13 @@ describe('TableViewInteractive.vue', () => {
                     expect(wrapper.vm.currentScopeEndIndex).toBe(dataRequestResult.rowCount);
                 });
             });
+
+            it('refreshes the scroller when refreshing the table', () => {
+                const tableUI = findTableUI(wrapper);
+                tableUI.vm.refreshScroller = vi.fn();
+                wrapper.vm.refreshTable();
+                expect(tableUI.vm.refreshScroller).toHaveBeenCalled();
+            });
             
             describe('on data update', () => {
                 beforeEach(() => {
