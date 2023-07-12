@@ -38,6 +38,14 @@ const registerTool = (
   return props.baseExtensions[toolName] ? [tool] : [];
 };
 
+const isToolRegistered = (toolName: keyof BaseExtensionsConfig) => {
+  if ("all" in props.baseExtensions) {
+    return true;
+  }
+
+  return Boolean(props.baseExtensions[toolName]);
+};
+
 const isListActive = () =>
   props.editor.isActive("orderedList") || props.editor.isActive("bulletList");
 
@@ -70,34 +78,35 @@ const editorTools: EditorTools = [
   }),
 
   ...registerTool("bulletList", {
-    id: "bullet-list",
+    id: "bulletList",
     name: "Bullet list",
     icon: BulletListIcon,
     hotkey: ["Ctrl", "Shift", "8"],
     active: () => props.editor.isActive("bulletList"),
     onClick: () => {
-      props.editor
-        .chain()
-        .focus()
-        .setTextAlign("left")
-        .toggleBulletList()
-        .run();
+      const commandChain = props.editor.chain().focus();
+      if (isToolRegistered("textAlign")) {
+        commandChain.setTextAlign("left");
+      }
+
+      commandChain.toggleBulletList().run();
     },
   }),
 
   ...registerTool("orderedList", {
-    id: "ordered-list",
+    id: "orderedList",
     name: "Ordered list",
     icon: OrderedListIcon,
     hotkey: ["Ctrl", "Shift", "7"],
     active: () => props.editor.isActive("orderedList"),
-    onClick: () =>
-      props.editor
-        .chain()
-        .focus()
-        .setTextAlign("left")
-        .toggleOrderedList()
-        .run(),
+    onClick: () => {
+      const commandChain = props.editor.chain().focus();
+      if (isToolRegistered("textAlign")) {
+        commandChain.setTextAlign("left");
+      }
+
+      commandChain.toggleOrderedList().run();
+    },
   }),
 
   ...registerTool("textAlign", {

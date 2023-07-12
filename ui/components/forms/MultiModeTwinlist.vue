@@ -179,6 +179,7 @@ export default {
       caseSensitivePattern: this.initialCaseSensitivePattern,
       inversePattern: this.initialInversePattern,
       includeUnknownValues: this.initialIncludeUnknownValues,
+      isFirstInput: true,
     };
   },
   computed: {
@@ -259,11 +260,20 @@ export default {
           oldVal.some((item, i) => item !== newVal[i])
         ) {
           const isManual = this.mode === "manual";
-          const event = { selected: this.selectedValues, isManual };
+          /**
+           * TODO: UIEXT-1122 remove isFirstInput once it is not used anymore
+           * */
+          const isFirstInput = this.isFirstInput;
+          const event = {
+            selected: this.selectedValues,
+            isManual,
+            isFirstInput,
+          };
           if (isManual) {
             event.deselected = this.deselectedValues;
           }
           this.$emit("input", event);
+          this.isFirstInput = false;
         }
       },
     },
