@@ -108,6 +108,16 @@ const getColumnId = (colIndex: number) => dataConfig.value.columnIds[colIndex];
 const getContentType = (index: number) => props.header.columnContentTypes[index - 2];
 const columnResizeActive = useBoolean();
 
+const tableUI: Ref<null | TableUI> = ref(null);
+
+defineExpose({
+    refreshScroller: () => {
+        if (tableUI.value) {
+            tableUI.value.refreshScroller();
+        }
+    }
+});
+
 </script>
 
 <template>

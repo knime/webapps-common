@@ -481,10 +481,7 @@ export default {
         },
         refreshTable(params) {
             let { updateDisplayedColumns = false, resetPage = false, updateTotalSelected = false } = params || {};
-            const tableUI = this.$refs.tableUI;
-            if (tableUI) {
-                tableUI.refreshScroller();
-            }
+            this.$refs.tableViewDisplay.refreshScroller();
             if (resetPage) {
                 this.currentPage = 1;
                 this.currentIndex = 0;
@@ -738,6 +735,7 @@ export default {
 
 <template>
   <TableViewDisplay
+    ref="tableViewDisplay"
     class="table-view-display"
     :settings="settings"
     :rows="{
