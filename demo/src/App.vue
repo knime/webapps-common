@@ -7,12 +7,17 @@ import ImageIcon from "webapps-common/ui/assets/img/icons/media-image.svg";
 import InteractiveIcon from "webapps-common/ui/assets/img/icons/interactive.svg";
 import PaletteIcon from "webapps-common/ui/assets/img/icons/color-palette.svg";
 import CheckboxIcon from "webapps-common/ui/assets/img/icons/checkboxes.svg";
-import TooltipIcon from "webapps-common/ui/assets/img/icons/tooltip.svg";
+import ViewListIcon from "webapps-common/ui/assets/img/icons/view-list.svg";
 import UnknownIcon from "webapps-common/ui/assets/img/icons/file-question.svg";
 import ListThumbs from "webapps-common/ui/assets/img/icons/list-thumbs.svg";
 import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 
 import SearchInputComponent from "webapps-common/ui/components/forms/SearchInput.vue";
+
+import {
+  ToastStack,
+  ToastServiceProvider,
+} from "webapps-common/ui/services/toast";
 
 import NpmLink from "./components/demo/NpmLink.vue";
 
@@ -70,9 +75,10 @@ const demoComponents = {
       import("./components/DonutChart.vue"),
     ),
   },
-  messages: {
-    Message: defineAsyncComponent(() => import("./components/Message.vue")),
-    Messages: defineAsyncComponent(() => import("./components/Messages.vue")),
+  toasts: {
+    "Toast Service": defineAsyncComponent(() =>
+      import("./components/ToastService.vue"),
+    ),
   },
   forms: {
     Label: defineAsyncComponent(() => import("./components/Label.vue")),
@@ -168,11 +174,16 @@ const components = {
   TabBarComponent,
   HeadlineWithAnchorLink,
   SearchInputComponent,
+  ToastStack,
   ...flattenComponents(demoComponents),
 };
 
 export default {
   components,
+  setup() {
+    const toastServiceProvider = new ToastServiceProvider();
+    toastServiceProvider.useToastService();
+  },
   data() {
     return {
       searchQuery: "",
@@ -225,9 +236,9 @@ export default {
           icon: CheckboxIcon,
         },
         {
-          value: "messages",
-          label: "Messages",
-          icon: TooltipIcon,
+          value: "toasts",
+          label: "Toasts",
+          icon: ViewListIcon,
         },
         {
           value: "misc",
@@ -317,6 +328,7 @@ export default {
         </div>
       </template>
     </main>
+    <ToastStack />
   </div>
 </template>
 
