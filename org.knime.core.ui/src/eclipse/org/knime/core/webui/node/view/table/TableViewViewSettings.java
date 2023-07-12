@@ -156,7 +156,8 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * If true only a certain number of rows is shown
      */
     @Widget(title = "Pagination",
-        description = "Enables or disables the ability to only show a certain number of rows.")
+        description = "Enables or disables the ability to only show a certain number of rows. "
+        + "Enabling pagination hides the option “Show table size”.")
     @Persist(optional = true)
     @Layout(ViewSection.class)
     @Signal(id = IsPaginationEnabled.class, condition = TrueCondition.class)
