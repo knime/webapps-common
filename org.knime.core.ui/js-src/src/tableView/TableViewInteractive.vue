@@ -775,7 +775,7 @@ export default {
       columnSortIndex,
       columnSortDirection
     }"
-    global-search-query="1"
+    global-search-query=""
     :enable-virtual-scrolling="true"
     :enable-column-resizing="true"
     :enable-row-resizing="true"
