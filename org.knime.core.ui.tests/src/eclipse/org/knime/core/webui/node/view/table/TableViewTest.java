@@ -522,7 +522,7 @@ class TableViewTest {
 
         var imageType = dataTypes.get(table.getColumnDataTypeIds()[6]);
         assertThat(imageType.getName()).isEqualTo("PNG Image");
-        assertRendererNames(imageType.getRenderers(), "PNG Image", "Default");
+        assertRendererNames(imageType.getRenderers(), "PNG Image", "Image");
     }
 
     private static void assertRendererNames(final Renderer[] renderers, final String... expectedRendererNames) {
