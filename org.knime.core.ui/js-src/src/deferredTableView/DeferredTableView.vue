@@ -184,7 +184,7 @@ export default {
       color: var(--knime-dove-gray);
       font-size: 13px;
       font-weight: 500;
-      font-family: "Roboto", sans-serif;
+      font-family: Roboto, sans-serif;
       white-space: pre;
     }
   }

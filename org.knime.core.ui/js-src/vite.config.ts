@@ -87,7 +87,7 @@ export default defineConfig(({ mode }) => {
                 exclude: [
                     'buildtools/', 'coverage/**', 'dist/**', 'webapps-common/**', 'lib/**', '**/*.d.ts',
                     '**/__tests__/**', 'test-setup/**', '**/{vite,vitest,postcss}.config.{js,cjs,mjs,ts}',
-                    '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}'
+                    '**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}', '**/types/**'
                 ],
                 reporter: ['html', 'text', 'lcov']
             },

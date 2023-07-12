@@ -118,7 +118,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * Whether to show the data type of every column in the header or not
      */
     @Widget(title = "Show column data type in header",
-        description = "Whether to display the data type of the " + "columns in the header or not")
+        description = "Whether to display the data type of the columns in the header or not")
     @Persist(optional = true)
     @Layout(DataSection.class)
     public boolean m_showColumnDataType = true;

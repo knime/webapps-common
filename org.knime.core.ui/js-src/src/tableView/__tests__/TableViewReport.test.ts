@@ -82,6 +82,7 @@ describe('TableViewReport.vue', () => {
                 globalSearchQuery: '',
                 knimeService: knimeSeviceMock,
                 enableVirtualScrolling: false,
+                forceHideTableSizes: false,
                 includeImageResources: true,
                 page: undefined,
                 selection: undefined,
