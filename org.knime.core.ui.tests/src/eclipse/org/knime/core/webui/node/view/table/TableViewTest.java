@@ -517,7 +517,7 @@ class TableViewTest {
 
         var booleanType = dataTypes.get(table.getColumnDataTypeIds()[5]);
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
-        assertRendererNames(booleanType.getRenderers(), "Default", "Default", "Standard Double", "Percentage",
+        assertRendererNames(booleanType.getRenderers(), "Boolean", "Integer", "Standard Double", "Percentage",
             "Full Precision", "Gray Scale", "Bars", "Default");
 
         var imageType = dataTypes.get(table.getColumnDataTypeIds()[6]);

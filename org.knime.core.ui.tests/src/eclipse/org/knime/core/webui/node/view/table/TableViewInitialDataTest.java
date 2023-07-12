@@ -153,7 +153,7 @@ class TableViewInitialDataTest {
         var doubleType = dataTypes.get(String.valueOf(DoubleCell.TYPE.hashCode()));
         assertThat(doubleType.getName()).isEqualTo("Number (double)");
         assertRendererNames(doubleType.getRenderers(), "Standard Double", "Percentage", "Full Precision", "Gray Scale",
-            "Bars", "Standard Complex Number", "Default");
+            "Bars", "Default");
 
         var booleanType = dataTypes.get(String.valueOf(BooleanCell.TYPE.hashCode()));
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
