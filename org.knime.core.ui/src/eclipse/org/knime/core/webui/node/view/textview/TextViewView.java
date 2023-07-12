@@ -80,6 +80,7 @@ public final class TextViewView implements NodeView {
     private static PolicyFactory sanitizationPolicy = new HtmlPolicyBuilder()
             .allowCommonInlineFormattingElements()
             .allowCommonBlockElements()
+            .allowElements("hr", "pre", "code")
             .toFactory();
 
     // Note on the 'static' page id: the entire TextView-page can be considered 'completely static'

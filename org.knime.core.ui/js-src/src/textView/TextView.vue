@@ -66,10 +66,6 @@ export default {
 <style lang="postcss" scoped>
 @import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
 
-.text-view-container {
-    padding: 12px;
-}
-
 .text-view-container:deep() {
     @mixin rich-text-editor-styles;
 
