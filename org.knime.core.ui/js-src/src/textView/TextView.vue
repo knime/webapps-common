@@ -50,6 +50,7 @@ export default {
             }
             Object.entries(this.flowVariablesMap).forEach(([key, value]) => {
                 newRichTextContent = newRichTextContent.replaceAll(`$$["${key}"]`, value);
+                newRichTextContent = newRichTextContent.replaceAll(`$$[&#34;${key}&#34;]`, value);
             });
             return newRichTextContent;
         }

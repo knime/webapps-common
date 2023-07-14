@@ -96,6 +96,26 @@ describe('TextView.vue', () => {
             expect(wrapper.vm.richTextContent).toBe(`${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`);
         });
 
+        it('replaces flow variables in text for escaped quotes', async () => {
+            const flowVariablesMap = {
+                key1: 'value1',
+                key2: 'value2'
+            };
+            const data = {
+                data: {
+                    view: {
+                        richTextContent: '$$[&#34;key1&#34;] abc $$[&#34;key2&#34;]'
+                    }
+                },
+                schema: {
+                    flowVariablesMap: {}
+                }
+            };
+            wrapper.vm.flowVariablesMap = flowVariablesMap;
+            await wrapper.vm.onViewSettingsChange({ data });
+            expect(wrapper.vm.richTextContent).toBe(`${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`);
+        });
+
         it('does not change richTextContent if it is controlled by flow variable', async () => {
             const data = {
                 data: {
