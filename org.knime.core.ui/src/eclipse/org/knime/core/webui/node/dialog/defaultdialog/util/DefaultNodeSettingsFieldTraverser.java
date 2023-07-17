@@ -101,6 +101,12 @@ public class DefaultNodeSettingsFieldTraverser {
      */
     public static record TraversedField(PropertyWriter propertyWriter, List<String> path,
         FieldAnnotationsHolder trackedAnnotations) {
+        /**
+         * @return a unique deterministic id.
+         */
+        public String getId() {
+            return propertyWriter.getFullName().toString();
+        }
     }
 
     /**
@@ -121,8 +127,8 @@ public class DefaultNodeSettingsFieldTraverser {
         traverseClass(m_settingsClass, fieldCallback, Collections.emptyList(), annotations);
     }
 
-    private void traverseClass(final Class<?> clazz, final Consumer<TraversedField> fieldCallback, final List<String> path,
-        final FieldAnnotationsHolder enclosingFieldAnnotations) {
+    private void traverseClass(final Class<?> clazz, final Consumer<TraversedField> fieldCallback,
+        final List<String> path, final FieldAnnotationsHolder enclosingFieldAnnotations) {
         final var annotations = enclosingFieldAnnotations.toClassAnnotationsHolder(clazz);
         final var properties = getSerializableProperties(clazz);
         properties.forEachRemaining(field -> traverseField(fieldCallback, path, annotations, field));

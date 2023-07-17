@@ -49,11 +49,16 @@
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
@@ -76,11 +81,12 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private final ChoicesWidgetHandlerHolder m_choicesService;
 
+    private final Map<String, Future<?>> m_pendingRequests = new HashMap<>();
+
     private final Supplier<SettingsCreationContext> m_contextProvider;
 
     /**
-     * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the
-     *            {@link DialogDataServiceHandler} classes from.
+     * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the handler classes from.
      * @param contextProvider providing the current {@link SettingsCreationContext}
      */
     public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses,
@@ -91,49 +97,52 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     @Override
-    public Result<?> invokeButtonAction(final String handlerClass, final String buttonState,
-        final Object objectSettings) throws ExecutionException, InterruptedException {
-        final var handler = getButtonHandler(handlerClass);
+    public Result<?> invokeButtonAction(final String widgetId, final String buttonState, final Object objectSettings)
+        throws ExecutionException, InterruptedException {
+        final var handler = getButtonHandler(widgetId);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        return resolveFuture(handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()));
+        return handleRequest(widgetId,
+            () -> handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()));
 
     }
 
     @Override
-    public Result<?> initializeButton(final String handlerClass, final Object currentValue)
+    public Result<?> initializeButton(final String widgetId, final Object currentValue)
         throws InterruptedException, ExecutionException {
-        final var handler = getButtonHandler(handlerClass);
+        final var handler = getButtonHandler(widgetId);
         final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
         final var convertedCurrentValue = convertValue(currentValue, resultType);
-        return resolveFuture(handler.castAndInitialize(convertedCurrentValue, m_contextProvider.get()));
+
+        return handleRequest(widgetId, () -> handler.castAndInitialize(convertedCurrentValue, m_contextProvider.get()));
+
     }
 
-    private ButtonActionHandler<?, ?, ?> getButtonHandler(final String handlerClass) {
-        final var buttonHandler = m_buttonService.getHandler(handlerClass);
+    private ButtonActionHandler<?, ?, ?> getButtonHandler(final String widgetId) {
+        final var buttonHandler = m_buttonService.getHandler(widgetId);
         if (buttonHandler != null) {
             return buttonHandler;
         }
-        throw new NoHandlerFoundException(handlerClass);
+        throw new NoHandlerFoundException(widgetId);
     }
 
     @Override
-    public Result<?> update(final String handlerClass, final Object objectSettings)
+    public Result<?> update(final String widgetId, final Object objectSettings)
         throws InterruptedException, ExecutionException {
-        final var handler = getUpdateHandler(handlerClass);
+        final var handler = getUpdateHandler(widgetId);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        return resolveFuture(handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
+        return handleRequest(widgetId, () -> handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
     }
 
-    private UpdateHandler<?, ?> getUpdateHandler(final String handlerClass) {
-        final var buttonHandler = m_buttonService.getHandler(handlerClass);
+    private UpdateHandler<?, ?> getUpdateHandler(final String widgetId) {
+        final var buttonHandler = m_buttonService.getHandler(widgetId);
         if (buttonHandler != null) {
             return buttonHandler;
         }
-        final var choicesHandler = m_choicesService.getHandler(handlerClass);
+        final var choicesHandler = m_choicesService.getHandler(widgetId);
         if (choicesHandler != null) {
             return choicesHandler;
         }
-        throw new NoHandlerFoundException(handlerClass);
+        throw new NoHandlerFoundException(widgetId);
     }
 
     private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {
@@ -146,16 +155,20 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     }
 
-    private static <T> Result<T>
-        resolveFuture(final Future<Result<T>> future)
-            throws InterruptedException, ExecutionException {
+    private <T> Result<T> handleRequest(final String widgetId, final Callable<Result<T>> callback)
+        throws InterruptedException, ExecutionException {
+        final var future = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(callback);
+        Optional.ofNullable(m_pendingRequests.get(widgetId)).ifPresent(pendingFuture -> pendingFuture.cancel(true));
+        m_pendingRequests.put(widgetId, future);
         try {
-            return future.get();
+            final var result = future.get();
+            m_pendingRequests.remove(widgetId);
+            return result;
         } catch (CancellationException ex) {
             LOGGER.info(ex);
             return Result.cancel();
         } catch (ExecutionException ex) {
-            if(ex.getCause() instanceof CancellationException) {
+            if (ex.getCause() instanceof CancellationException) {
                 LOGGER.info(ex);
                 return Result.cancel();
             }
@@ -166,8 +179,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     static final class NoHandlerFoundException extends IllegalArgumentException {
         private static final long serialVersionUID = 1L;
 
-        NoHandlerFoundException(final String handlerClass) {
-            super(String.format("No handler found for class %s. Most likely an implementation error.", handlerClass));
+        NoHandlerFoundException(final String widgetId) {
+            super(String.format("No handler found for component %s. Most likely an implementation error.", widgetId));
         }
     }
 

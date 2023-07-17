@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.concurrent.Future;
-
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
 
@@ -69,10 +67,10 @@ public interface UpdateHandler<R, S> extends DependencyHandler<S> {
      *
      * @return a future of a result defining state changes in the fronted.
      */
-    Future<Result<R>> update(S settings, SettingsCreationContext context);
+    Result<R> update(S settings, SettingsCreationContext context);
 
     @SuppressWarnings({"javadoc"})
-    default Future<Result<R>> castAndUpdate(final Object settings, final SettingsCreationContext context) {
+    default Result<R> castAndUpdate(final Object settings, final SettingsCreationContext context) {
         return update(castToDependencies(settings), context);
     }
 }

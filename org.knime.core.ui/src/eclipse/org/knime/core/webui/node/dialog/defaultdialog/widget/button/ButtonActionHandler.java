@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.concurrent.Future;
-
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
 
@@ -74,7 +72,7 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      *
      * @return the initial state of the button and its value.
      */
-    Future<Result<ButtonChange<R, M>>> initialize(R currentValue, SettingsCreationContext context);
+    Result<ButtonChange<R, M>> initialize(R currentValue, SettingsCreationContext context);
 
     /**
      * This method gets called when the button is clicked.
@@ -86,16 +84,16 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      *
      * @return an asynchronous result.
      */
-    Future<Result<ButtonChange<R, M>>> invoke(M state, S settings, SettingsCreationContext context);
+    Result<ButtonChange<R, M>> invoke(M state, S settings, SettingsCreationContext context);
 
     @SuppressWarnings({"javadoc"})
-    default Future<Result<ButtonChange<R, M>>> castAndInvoke(final String stateString, final Object settings,
+    default Result<ButtonChange<R, M>> castAndInvoke(final String stateString, final Object settings,
         final SettingsCreationContext context) {
         return invoke(castToState(stateString), castToDependencies(settings), context);
     }
 
     @SuppressWarnings({"javadoc", "unchecked"})
-    default Future<Result<ButtonChange<R, M>>> castAndInitialize(final Object currentValue,
+    default Result<ButtonChange<R, M>> castAndInitialize(final Object currentValue,
         final SettingsCreationContext context) {
         return initialize((R)currentValue, context);
     }

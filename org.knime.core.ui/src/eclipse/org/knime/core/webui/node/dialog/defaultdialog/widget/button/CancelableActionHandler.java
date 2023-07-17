@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
@@ -85,16 +83,7 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
      *
      * @return the future result.
      */
-    protected abstract Future<Result<R>> invoke(S settings, SettingsCreationContext context);
-
-    /**
-     * Overwrite this method to implement more complex cancellations.
-     */
-    protected void cancel() {
-        if (m_lastInvocationResult != null) {
-            m_lastInvocationResult.cancel(true);
-        }
-    }
+    protected abstract Result<R> invoke(S settings, SettingsCreationContext context);
 
     /**
      * @return the result of the last invocation or null if no invocation has taken place.
@@ -104,20 +93,12 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     }
 
     @Override
-    public Future<Result<ButtonChange<R, States>>> invoke(final States buttonState, final S settings,
+    public Result<ButtonChange<R, States>> invoke(final States buttonState, final S settings,
         final SettingsCreationContext context) {
         if (States.CANCEL.equals(buttonState)) {
-            cancel();
-            return CompletableFuture.supplyAsync(this::resetAfterCancel);
+            return resetAfterCancel();
         } else {
-            m_lastInvocationResult = invoke(settings, context);
-            return CompletableFuture.supplyAsync(() -> m_lastInvocationResult).thenCompose(result -> {
-                try {
-                    return CompletableFuture.completedFuture(toButtonStateResult(result.get()));
-                } catch (InterruptedException | ExecutionException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
+            return toButtonStateResult(invoke(settings, context));
         }
     }
 
@@ -136,16 +117,13 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     }
 
     @Override
-    public Future<Result<ButtonChange<R, States>>> initialize(final R currentValue,
-        final SettingsCreationContext context) {
-        return CompletableFuture.supplyAsync(this::resetAfterCancel);
+    public Result<ButtonChange<R, States>> initialize(final R currentValue, final SettingsCreationContext context) {
+        return resetAfterCancel();
     }
 
     @Override
-    public Future<Result<ButtonChange<R, States>>> update(final S settings, final SettingsCreationContext context) {
-        cancel();
-        return CompletableFuture
-            .supplyAsync(() -> Result.succeed(new ButtonChange<R, States>(null, true, States.READY)));
+    public Result<ButtonChange<R, States>> update(final S settings, final SettingsCreationContext context) {
+        return Result.succeed(new ButtonChange<R, States>(null, true, States.READY));
     }
 
     @Override

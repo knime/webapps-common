@@ -52,7 +52,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationU
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -74,25 +73,23 @@ public abstract class WidgetHandlerHolder<H> {
     private Map<String, H> m_handlers = new HashMap<>();
 
     WidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
-        final var handlerClasses = getHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
-        handlerClasses.forEach(handler -> m_handlers.put(handler.getName(), createInstance(handler)));
+        addHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
     }
 
-    private Collection<Class<? extends H>> getHandlers(final Collection<Class<?>> settings, final ObjectMapper mapper) {
-        final Collection<Class<? extends H>> actionHandlerClasses = new HashSet<>();
-        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback(actionHandlerClasses);
+    private void addHandlers(final Collection<Class<?>> settings, final ObjectMapper mapper) {
+        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
         settings.forEach(settingsClass -> {
             final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
             generator.traverse(addActionHandlerClass);
         });
-        return actionHandlerClasses;
     }
 
-    private Consumer<TraversedField>
-        getAddActionHandlerClassCallback(final Collection<Class<? extends H>> handlerClasses) {
+    private Consumer<TraversedField> getAddActionHandlerClassCallback() {
         return field -> {
-            final var handlerClass = getHandlerClass(field);
-            handlerClass.ifPresent(handlerClasses::add);
+            final var optionalHandlerClass = getHandlerClass(field);
+            optionalHandlerClass.ifPresent(handlerClass -> {
+                m_handlers.put(handlerClass.getName(), createInstance(handlerClass));
+            });
         };
     }
 
@@ -107,7 +104,7 @@ public abstract class WidgetHandlerHolder<H> {
      * @param handlerClassName the name of the handler class
      * @return the present hander with that class name held by this class of null.
      */
-    H getHandler(final String handlerClassName) {
-        return m_handlers.get(handlerClassName);
+    H getHandler(final String widgetId) {
+        return m_handlers.get(widgetId);
     }
 }
