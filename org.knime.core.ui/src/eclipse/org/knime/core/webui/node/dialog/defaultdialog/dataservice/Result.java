@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import java.util.function.Function;
 
 /**
- * The result of the invocation of an {@link DialogDataServiceHandler}
+ * The result of the invocation of a data service method from a dialog component.
  *
  * @param result the result of a successful response
  * @param state the state of the result.

@@ -94,6 +94,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
@@ -281,10 +282,13 @@ final class UiSchemaOptionsGenerator {
         final var state = states.addObject();
         state.put("id", field.getName());
         final var buttonState = field.getAnnotation(ButtonState.class);
-        state.put("disabled", buttonState.disabled());
-        state.put("primary", buttonState.primary());
+        final var buttonStateOverride = new ButtonStateOverride(buttonState);
+
+        handler.overrideState(enumConst, buttonStateOverride);
+        state.put("disabled", buttonStateOverride.isDisabled());
+        state.put("primary", buttonStateOverride.isPrimary());
         state.put("nextState", buttonState.nextState());
-        state.put("text", Optional.ofNullable(handler.overrideText(enumConst)).orElse(buttonState.defaultText()));
+        state.put("text", buttonStateOverride.getText());
     }
 
     private static void disableTimeFields(final ObjectNode options) {

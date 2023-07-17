@@ -91,7 +91,7 @@ class CancelableActionHandlerTest {
         final var handler = new TestHandler();
         final var result = handler.invoke(States.READY, null, null).get();
         assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
-        assertThat(result.result().buttonState()).isEqualTo(States.READY);
+        assertThat(result.result().buttonState()).isEqualTo(States.DONE);
         assertThat(result.result().settingResult()).isEqualTo(TestHandler.RESULT);
         assertThat(result.result().saveResult()).isTrue();
     }
@@ -155,8 +155,7 @@ class CancelableActionHandlerTest {
     static class TestCancelHandler extends CancelableActionHandler<String, Void> {
 
         @Override
-        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
-            final SettingsCreationContext context) {
+        protected Future<Result<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
             return new CompletableFuture<>();
         }
 

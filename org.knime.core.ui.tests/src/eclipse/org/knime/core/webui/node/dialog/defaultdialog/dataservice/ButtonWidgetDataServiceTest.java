@@ -82,11 +82,6 @@ public class ButtonWidgetDataServiceTest {
         }
 
         @Override
-        public String overrideText(final TestButtonStates state) {
-            return null;
-        }
-
-        @Override
         public Future<Result<ButtonChange<Integer, TestButtonStates>>> update(final TestDefaultNodeSettings settings,
             final SettingsCreationContext context) {
             return null;

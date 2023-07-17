@@ -519,8 +519,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
             .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
         assertThatJson(response).inPath("$.elements[0].options.states[0].id").isString()
             .isEqualTo(TestStates.READY.toString());
-        assertThatJson(response).inPath("$.elements[0].options.states[0].disabled").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[0].options.states[0].primary").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.states[0].disabled").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.states[0].primary").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.states[0].nextState").isString()
             .isEqualTo(TestStates.CANCEL.toString());
         // Test fallback to defaultText() in @ButtonState

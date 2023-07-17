@@ -56,6 +56,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestBut
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
 
 /**
  *
@@ -78,15 +79,18 @@ class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestS
     }
 
     @Override
-    public String overrideText(final TestStates state) {
+    public void overrideState(final TestStates state, final ButtonStateOverride override) {
         switch (state) {
             case CANCEL:
-                return "Cancel Text";
+                override.setText("Cancel Text");
+                return;
             case DONE:
-                return "Done Text";
-            default:
-                // READY left out intentionally to test fallback behavior
-                return null;
+                override.setText("Done Text");
+                return;
+            case READY:
+                override.setDisabled(true);
+                override.setPrimary(false);
+                return;
         }
     }
 

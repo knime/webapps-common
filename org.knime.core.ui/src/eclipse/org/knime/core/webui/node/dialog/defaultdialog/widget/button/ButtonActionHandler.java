@@ -101,10 +101,12 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
     }
 
     /**
+     * Use the setter methods of the override argument to alter the state associated to the given enum field.
+     *
      * @param state from the associated state machine enum
-     * @return the text that should be displayed for that state. If {@code null} is returned, the value of
-     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
+     * @param override an override initialized with the {@link ButtonState} associated to the state machine enum field.
      */
-    String overrideText(M state);
+    default void overrideState(final M state, final ButtonStateOverride override) {
+    }
 
 }

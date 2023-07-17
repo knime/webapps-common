@@ -44,35 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jul 17, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
-
-import java.util.concurrent.Future;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
 
 /**
  *
  * @author Paul Bärnreuther
- * @param <R> the return type
- * @param <S> the settings, this update handler depends on (see {@link DependencyHandler}).
  */
-public interface UpdateHandler<R, S> extends DependencyHandler<S> {
-    /**
-     * This method is called when one of the dependency settings defined by {@code S} changes in order to determine the
-     * immediate effect.
-     *
-     * @param settings the dependency settings on update
-     * @param context the current {@link SettingsCreationContext}
-     *
-     * @return a future of a result defining state changes in the fronted.
-     */
-    Future<Result<R>> update(S settings, SettingsCreationContext context);
+public final class ButtonStateOverride {
 
-    @SuppressWarnings({"javadoc"})
-    default Future<Result<R>> castAndUpdate(final Object settings, final SettingsCreationContext context) {
-        return update(castToDependencies(settings), context);
+    private String m_text;
+
+    private boolean m_disabled;
+
+    private boolean m_primary;
+
+    public ButtonStateOverride(final ButtonState state) {
+        m_text = state.defaultText();
+        m_disabled = state.disabled();
+        m_primary = state.primary();
     }
+
+    public void setText(final String text) {
+        if (text != null) {
+            m_text = text;
+        }
+    }
+
+    public void setDisabled(final boolean isDisabled) {
+        m_disabled = isDisabled;
+    }
+
+    public void setPrimary(final boolean isPrimary) {
+        m_primary = isPrimary;
+    }
+
+    public String getText() {
+        return m_text;
+    }
+
+    public boolean isDisabled() {
+        return m_disabled;
+    }
+
+    public boolean isPrimary() {
+        return m_primary;
+    }
+
 }

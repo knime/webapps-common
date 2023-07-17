@@ -142,11 +142,6 @@ class DefaultNodeDialogDataServiceImplTest {
                 return TestButtonStates.class;
             }
 
-            @Override
-            public String overrideText(final TestButtonStates state) {
-                return null;
-            }
-
         }
 
         static class GenericTypesTestHandler extends IntermediateSuperType<TestDefaultNodeSettings, String> {
@@ -349,8 +344,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
                 CompletableFuture<Result<ChoicesWidgetChoice[]>> future = new CompletableFuture<>();
                 future.cancel(true);
-                future.complete(
-                    new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
+                future.complete(new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
                 return future;
             }
 
@@ -378,8 +372,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
                 CompletableFuture<Result<ChoicesWidgetChoice[]>> future = new CompletableFuture<>();
                 future.cancel(true);
-                future.complete(
-                    new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
+                future.complete(new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
                 return future.thenApplyAsync(Function.identity()).thenApplyAsync(Function.identity());
             }
 

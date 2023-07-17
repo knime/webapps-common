@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
@@ -66,10 +67,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableAc
  */
 public abstract class CancelableActionHandler<R, S> implements ButtonActionHandler<R, S, States> {
 
-    private CompletableFuture<Result<R>> m_lastInvocationResult;
+    private Future<Result<R>> m_lastInvocationResult;
 
     /**
-     * @return whether the button should be in a disabled ("DONE") state when the request was successful once.
+     * @return whether the button should be in an enabled state when the request was successful (i.e. if the "DONE"
+     *         state should be enabled).
      */
     protected boolean isMultiUse() {
         return true;
@@ -83,7 +85,7 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
      *
      * @return the future result.
      */
-    protected abstract CompletableFuture<Result<R>> invoke(S settings, SettingsCreationContext context);
+    protected abstract Future<Result<R>> invoke(S settings, SettingsCreationContext context);
 
     /**
      * Overwrite this method to implement more complex cancellations.
@@ -109,15 +111,19 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
             return CompletableFuture.supplyAsync(this::resetAfterCancel);
         } else {
             m_lastInvocationResult = invoke(settings, context);
-            return m_lastInvocationResult.thenApply(this::toButtonStateResult);
+            return CompletableFuture.supplyAsync(() -> m_lastInvocationResult).thenCompose(result -> {
+                try {
+                    return CompletableFuture.completedFuture(toButtonStateResult(result.get()));
+                } catch (InterruptedException | ExecutionException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
         }
     }
 
     private Result<ButtonChange<R, States>> toButtonStateResult(final Result<R> dataResult) {
         if (dataResult.state().equals(ResultState.FAIL)) {
             return dataResult.mapResult(result -> new ButtonChange<>(result, false, States.READY));
-        } else if (this.isMultiUse()) {
-            return dataResult.mapResult(result -> new ButtonChange<>(result, true, States.READY));
         }
         return dataResult.mapResult(result -> new ButtonChange<>(result, true, States.DONE));
     }
@@ -142,6 +148,25 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
             .supplyAsync(() -> Result.succeed(new ButtonChange<R, States>(null, true, States.READY)));
     }
 
+    @Override
+    public Class<States> getStateMachine() {
+        return States.class;
+    }
+
+    /**
+     * @param state - a field from the associated state machine enum.
+     * @return the text that should be displayed for that state. If {@code null} is returned, the value of
+     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
+     */
+    abstract protected String overrideText(final States state);
+
+    @Override
+    public void overrideState(final States state, final ButtonStateOverride override) {
+        if (States.DONE.equals(state)) {
+            override.setDisabled(!isMultiUse());
+        }
+        override.setText(overrideText(state));
+    }
 
     @SuppressWarnings("javadoc")
     public enum States {
@@ -157,9 +182,10 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
             @ButtonState(defaultText = "Cancel", nextState = "READY", primary = false)
             CANCEL, //
             /**
-             * This state is reached on a successful response if {@link CancelableActionHandler#isMultiUse} is false.
+             * This state is reached on a successful response. If {@link CancelableActionHandler#isMultiUse} is true, it
+             * is enabled.
              */
-            @ButtonState(defaultText = "Done", disabled = true)
+            @ButtonState(defaultText = "Done", nextState = "CANCEL", disabled = true)
             DONE;
 
     }
