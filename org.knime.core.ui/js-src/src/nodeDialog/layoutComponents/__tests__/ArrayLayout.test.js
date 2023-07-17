@@ -116,7 +116,7 @@ describe('ArrayLayout.vue', () => {
                 }
             }
         };
-        const component = await mountJsonFormsComponent(ArrayLayout, props);
+        const component = await mountJsonFormsComponent(ArrayLayout, { props });
         wrapper = component.wrapper;
     });
 
@@ -146,7 +146,7 @@ describe('ArrayLayout.vue', () => {
 
     it('renders an add button', () => {
         const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         const addButton = wrapper.find('.array > button');
         expect(addButton.text()).toBe('New');
         addButton.element.click();
@@ -157,14 +157,14 @@ describe('ArrayLayout.vue', () => {
     it('sets add button text', () => {
         const customAddButtonText = 'My add button text';
         props.control.uischema.options.addButtonText = customAddButtonText;
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         const addButton = wrapper.find('.array > button');
         expect(addButton.text()).toBe(customAddButtonText);
     });
 
     it('adds default item', () => {
         const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         wrapper.vm.addDefaultItem();
         expect(addItemSpy).toHaveBeenCalled();
     });
@@ -172,13 +172,13 @@ describe('ArrayLayout.vue', () => {
 
     it('deletes item', () => {
         const deleteItemSpy = ArrayLayout.methods.deleteItem = vi.fn().mockReturnValue(() => false);
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         wrapper.vm.deleteItem();
         expect(deleteItemSpy).toHaveBeenCalled();
     });
 
     it('does not render sort buttons when showSortButtons is not present or false', () => {
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         const numberDataItems = props.control.data.length;
         const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
 
@@ -199,14 +199,14 @@ describe('ArrayLayout.vue', () => {
     });
 
     it('renders headers', () => {
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         expect(wrapper.find('.item-header').exists()).toBeTruthy();
         expect(wrapper.find('.item-header').text()).toBe('ElementTitle 1');
     });
 
     it('does not render headers but renders controls if arrayElementTitle is missing', () => {
         delete props.control.uischema.options.arrayElementTitle;
-        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
         expect(wrapper.find('.item-header').exists()).toBeFalsy();
         const numberDataItems = props.control.data.length;
         const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
@@ -224,7 +224,7 @@ describe('ArrayLayout.vue', () => {
     ])('disables $button for $position item when showSortButtons is true',
         ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
             props.control.uischema.options.showSortButtons = true;
-            const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+            const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
             const itemControls = wrapper.findAll('.item-controls');
             const itemControlsButtons = itemControls.at(itemNum).findAllComponents(FunctionButton);
             expect(itemControlsButtons.at(0).vm.disabled).toBe(moveUpDisabled);

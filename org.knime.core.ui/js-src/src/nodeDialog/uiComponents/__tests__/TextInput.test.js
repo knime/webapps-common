@@ -43,7 +43,7 @@ describe('TextInput.vue', () => {
             }
         };
 
-        component = await mountJsonFormsComponent(TextInput, defaultProps);
+        component = await mountJsonFormsComponent(TextInput, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -63,7 +63,7 @@ describe('TextInput.vue', () => {
 
     it('calls onChange when text input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(TextInput, defaultProps, {
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(TextInput, { props: defaultProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -82,7 +82,7 @@ describe('TextInput.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper, updateData } = mountJsonFormsComponentWithStore(
             TextInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -91,7 +91,7 @@ describe('TextInput.vue', () => {
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -124,7 +124,7 @@ describe('TextInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const { wrapper } = mountJsonFormsComponent(TextInput, localDefaultProps);
+        const { wrapper } = mountJsonFormsComponent(TextInput, { props: localDefaultProps });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
@@ -136,14 +136,14 @@ describe('TextInput.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(TextInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(TextInput, { props: defaultProps });
         expect(wrapper.getComponent(TextInput).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(TextInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(TextInput, { props: defaultProps });
         expect(wrapper.getComponent(TextInput).isVisible()).toBe(true);
     });
 });

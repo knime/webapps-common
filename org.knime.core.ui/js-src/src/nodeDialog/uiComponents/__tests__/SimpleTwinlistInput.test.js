@@ -47,7 +47,7 @@ describe('SimpleTwinlistInput.vue', () => {
     });
     
     beforeEach(() => {
-        component = mountJsonFormsComponent(SimpleTwinlistInput, defaultProps);
+        component = mountJsonFormsComponent(SimpleTwinlistInput, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -67,7 +67,7 @@ describe('SimpleTwinlistInput.vue', () => {
 
     it('calls onChange when twinlist input is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, defaultProps, {
+        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, { props: defaultProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -82,7 +82,7 @@ describe('SimpleTwinlistInput.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper } = await mountJsonFormsComponentWithStore(
             SimpleTwinlistInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -91,7 +91,7 @@ describe('SimpleTwinlistInput.vue', () => {
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -138,14 +138,14 @@ describe('SimpleTwinlistInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const { wrapper } = mountJsonFormsComponent(SimpleTwinlistInput, localDefaultProps);
+        const { wrapper } = mountJsonFormsComponent(SimpleTwinlistInput, { props: localDefaultProps });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
     it('moves missing values correctly', async () => {
         const dirtySettingsMock = vi.fn();
         const localProps = { ...defaultProps, control: { ...defaultProps.control, data: ['missing'] } };
-        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, localProps, {
+        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, { props: localProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true

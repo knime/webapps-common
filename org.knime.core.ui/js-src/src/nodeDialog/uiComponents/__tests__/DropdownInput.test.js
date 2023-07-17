@@ -7,7 +7,7 @@ import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import flushPromises from 'flush-promises';
 
 describe('DropdownInput.vue', () => {
-    let wrapper, onChangeSpy, defaultProps, component;
+    let wrapper, onChangeSpy, props, component;
 
     beforeAll(() => {
         onChangeSpy = vi.spyOn(DropdownInput.methods, 'onChange');
@@ -16,7 +16,7 @@ describe('DropdownInput.vue', () => {
     const path = 'test';
 
     beforeEach(async () => {
-        defaultProps = {
+        props = {
             control: {
                 path,
                 enabled: true,
@@ -66,7 +66,7 @@ describe('DropdownInput.vue', () => {
                 }
             }
         };
-        component = await mountJsonFormsComponent(DropdownInput, defaultProps);
+        component = await mountJsonFormsComponent(DropdownInput, { props });
         wrapper = component.wrapper;
     });
 
@@ -98,7 +98,7 @@ describe('DropdownInput.vue', () => {
         it('calls onChange when input is changed', async () => {
             const { wrapper, updateData } = await mountJsonFormsComponentWithCallbacks(
                 DropdownInput,
-                { props: defaultProps },
+                { props },
                 {
                     'pagebuilder/dialog': {
                         actions: { dirtySettings: dirtySettingsMock },
@@ -110,7 +110,7 @@ describe('DropdownInput.vue', () => {
             wrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
             expect(onChangeSpy).toHaveBeenCalledWith(changedDropdownInput);
             expect(updateData).toHaveBeenCalledWith(
-                expect.anything(), defaultProps.control.path, changedDropdownInput
+                expect.anything(), props.control.path, changedDropdownInput
             );
             expect(dirtySettingsMock).not.toHaveBeenCalled();
         });
@@ -119,11 +119,11 @@ describe('DropdownInput.vue', () => {
             const { wrapper, updateData } = await mountJsonFormsComponentWithCallbacks(
                 DropdownInput,
                 { props: {
-                    ...defaultProps,
+                    ...props,
                     control: {
-                        ...defaultProps.control,
+                        ...props.control,
                         uischema: {
-                            ...defaultProps.control.schema,
+                            ...props.control.schema,
                             scope: '#/properties/model/properties/yAxisColumn'
                         }
                     }
@@ -139,34 +139,34 @@ describe('DropdownInput.vue', () => {
             wrapper.findComponent(Dropdown).vm.$emit('update:modelValue', changedDropdownInput);
             expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
             expect(updateData).toHaveBeenCalledWith(
-                expect.anything(), defaultProps.control.path, changedDropdownInput
+                expect.anything(), props.control.path, changedDropdownInput
             );
         });
     });
     
 
     it('sets correct initial value', () => {
-        expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(defaultProps.control.data);
+        expect(wrapper.findComponent(Dropdown).vm.modelValue).toBe(props.control.data);
     });
 
     it('sets correct label', () => {
-        expect(wrapper.find('label').text()).toBe(defaultProps.control.label);
+        expect(wrapper.find('label').text()).toBe(props.control.label);
     });
 
     it('checks that placeholder text is correctly set if no possible values are present', () => {
-        defaultProps.control.uischema.options.possibleValues = [];
+        props.control.uischema.options.possibleValues = [];
         const { wrapper } = mountJsonFormsComponentWithStore(
             DropdownInput,
-            defaultProps
+            { props }
         );
         expect(wrapper.vm.placeholderText).toBe('No values present');
     });
 
     it('checks that placeholder text is correctly set if there are possible values present', () => {
-        defaultProps.control.data = '';
+        props.control.data = '';
         const { wrapper } = mountJsonFormsComponentWithStore(
             DropdownInput,
-            defaultProps
+            { props }
         );
         expect(wrapper.vm.placeholderText).toBe('No value selected');
     });
@@ -177,60 +177,57 @@ describe('DropdownInput.vue', () => {
     });
 
     it('does not disable dropdown when not controlled by a flow variable', async () => {
-        delete defaultProps.control.rootSchema.flowVariablesMap;
-        const { wrapper } = await mountJsonFormsComponent(DropdownInput, defaultProps);
+        delete props.control.rootSchema.flowVariablesMap;
+        const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
         expect(wrapper.vm.disabled).toBeFalsy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeFalsy();
     });
 
     it('disables dropdown when there are no possible values', async () => {
-        defaultProps.control.uischema.options.possibleValues = [];
-        const { wrapper } = await mountJsonFormsComponent(DropdownInput, defaultProps);
+        props.control.uischema.options.possibleValues = [];
+        const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
         expect(wrapper.vm.disabled).toBeTruthy();
         expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
     });
 
     it('does not render content of DropdownInput when visible is false', () => {
-        defaultProps.control.visible = false;
-        const { wrapper } = mountJsonFormsComponent(DropdownInput, defaultProps);
+        props.control.visible = false;
+        const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
         expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
     });
 
     it('checks that it is not rendered if it is an advanced setting', () => {
-        defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(DropdownInput, defaultProps);
+        props.control.uischema.options.isAdvanced = true;
+        const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
         expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
-        defaultProps.control.rootSchema = { showAdvancedSettings: true };
-        defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(DropdownInput, defaultProps);
+        props.control.rootSchema = { showAdvancedSettings: true };
+        props.control.uischema.options.isAdvanced = true;
+        const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
         expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);
     });
     
     describe('update initial data', () => {
         it('updates initial data on change', async () => {
             const updatedValue = 'Universe_0_1 (updated value)';
-            const props = {
-                ...defaultProps,
-                dropdownValueToControlData: () => updatedValue
-            };
+            props.dropdownValueToControlData = () => updatedValue;
             const { updateData } = await mountJsonFormsComponentWithCallbacks(DropdownInput, { props }, null, false);
             expect(updateData).toHaveBeenCalledWith(
-                expect.anything(), defaultProps.control.path, updatedValue
+                expect.anything(), props.control.path, updatedValue
             );
         });
 
         it('does not update initial data if they are current', async () => {
-            const { updateData } = await mountJsonFormsComponentWithCallbacks(DropdownInput, { props: defaultProps });
+            const { updateData } = await mountJsonFormsComponentWithCallbacks(DropdownInput, { props });
             expect(updateData).not.toHaveBeenCalled();
         });
     });
 
 
     describe('dependencies to other settings', () => {
-        let settingsChangeCallback, initialSettingsChangeCallback, wrapper, dependencies, handleResultSpy;
+        let settingsChangeCallback, initialSettingsChangeCallback, wrapper, dependencies, handleResultSpy, getDataMock, sendAlert;
 
         const dependenciesUischema = ['foo', 'bar'];
         const result = [{ id: 'first', text: 'First' }, { id: 'second', text: 'Second' }];
@@ -241,17 +238,19 @@ describe('DropdownInput.vue', () => {
         });
 
         beforeEach(() => {
-            defaultProps.control.uischema.options.dependencies = dependenciesUischema;
-            defaultProps.control.uischema.options.choicesUpdateHandler = 'UpdateHandler';
-            const comp = mountJsonFormsComponentWithCallbacks(DropdownInput, { props: defaultProps });
+            props.control.uischema.options.dependencies = dependenciesUischema;
+            props.control.uischema.options.choicesUpdateHandler = 'UpdateHandler';
+            getDataMock = vi.fn(() => ({
+                result,
+                state: 'SUCCESS',
+                message: null
+            }));
+            const comp = mountJsonFormsComponentWithCallbacks(DropdownInput, {
+                props,
+                provide: { getDataMock }
+            });
             wrapper = comp.wrapper;
-            wrapper.vm.jsonDataService = {
-                data: vi.fn(() => ({
-                    result,
-                    state: 'SUCCESS',
-                    message: null
-                }))
-            };
+            sendAlert = comp.sendAlert;
             
             const callbacks = comp.callbacks;
             const firstWatcherCall = callbacks[0];
@@ -268,7 +267,7 @@ describe('DropdownInput.vue', () => {
 
         it('requests new data if dependencies change', () => {
             settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
-            expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+            expect(getDataMock).toHaveBeenCalledWith({
                 method: 'update',
                 options: [
                     'UpdateHandler',
@@ -301,7 +300,7 @@ describe('DropdownInput.vue', () => {
         });
 
         it('selects null if the fetched options are empty', async () => {
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getDataMock.mockImplementation(() => ({
                 result: [],
                 state: 'SUCCESS',
                 message: null
@@ -316,25 +315,19 @@ describe('DropdownInput.vue', () => {
 
         it('sets empty options and warns about error on state FAIL', async () => {
             const message = 'Error message';
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getDataMock.mockImplementation(() => ({
                 result: null,
                 state: 'FAIL',
                 message
             }));
-            const knimeService = {
-                createAlert: vi.fn(() => 'Alert'),
-                sendWarning: vi.fn()
-            };
-            wrapper.vm.getKnimeService = () => knimeService;
             settingsChangeCallback(newSettings);
             await flushPromises();
             expect(wrapper.vm.options).toStrictEqual([]);
             expect(handleResultSpy).toHaveBeenCalledWith([], newSettings, true);
-            expect(knimeService.createAlert).toHaveBeenCalledWith({
-                type: 'error',
-                message
+            expect(sendAlert).toHaveBeenCalledWith({
+                message: 'Error message',
+                type: 'error'
             });
-            expect(knimeService.sendWarning).toHaveBeenCalledWith('Alert');
         });
     });
 });

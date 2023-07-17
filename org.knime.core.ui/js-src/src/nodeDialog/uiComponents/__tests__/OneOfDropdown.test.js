@@ -39,7 +39,7 @@ describe('OneOfDropdown.vue', () => {
             }
         };
 
-        component = await mountJsonFormsComponent(OneOfDropdown, props);
+        component = await mountJsonFormsComponent(OneOfDropdown, { props });
         wrapper = component.wrapper;
     });
 

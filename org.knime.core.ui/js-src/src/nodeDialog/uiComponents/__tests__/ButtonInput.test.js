@@ -6,11 +6,8 @@ import DialogComponentWrapper from '../DialogComponentWrapper.vue';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 import Label from 'webapps-common/ui/components/forms/Label.vue';
-import { JsonDataService } from '@knime/ui-extension-service';
 
 describe('ButtonInput', () => {
-    let wrapper, props, component;
-
     const states = [{
         id: 'A',
         text: 'Text_A',
@@ -76,13 +73,17 @@ describe('ButtonInput', () => {
         }
     });
 
+    const mountButtonInput = ({ props, getDataMock }) => mountJsonFormsComponentWithCallbacks(
+        ButtonInput, { props, provide: { getDataMock } }
+    );
+
+    let wrapper, props, component, getData;
+
     beforeEach(async () => {
         props = getProps(defaultOptions);
         vi.useFakeTimers();
-        JsonDataService.mockImplementation(() => ({
-            data: vi.fn(() => dataSuccess)
-        }));
-        component = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+        getData = vi.fn(() => dataSuccess);
+        component = await mountButtonInput({ props, getDataMock: getData });
         wrapper = component.wrapper;
     });
 
@@ -116,7 +117,7 @@ describe('ButtonInput', () => {
         it('does not render label if showTitleAndDescription is set to false', async () => {
             const hideTitleUischemaOptions = { showTitleAndDescription: false };
             props = getProps(hideTitleUischemaOptions);
-            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+            const { wrapper } = await mountButtonInput({ props, getDataMock: getData });
             expect(wrapper.findComponent(Label).exists()).toBeFalsy();
         });
     });
@@ -128,7 +129,7 @@ describe('ButtonInput', () => {
                 currentSettings
             });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
-            expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+            expect(getData).toHaveBeenCalledWith({
                 method: 'invokeButtonAction',
                 options: [uischema.options.actionHandler, states[1].id, currentSettings]
             });
@@ -141,7 +142,7 @@ describe('ButtonInput', () => {
 
         it('sets next state specified by the returned value', async () => {
             const nextState = states[0];
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'SUCCESS',
                 result: { buttonState: nextState.id }
             }));
@@ -150,7 +151,7 @@ describe('ButtonInput', () => {
         });
 
         it('calls handleChange if the result should be applied', async () => {
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'SUCCESS',
                 result: { settingResult: 'token', saveResult: true, buttonState: states[1].id }
             }));
@@ -161,7 +162,7 @@ describe('ButtonInput', () => {
         });
 
         it('does not call handleChange if the result should not be applied', async () => {
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'SUCCESS',
                 result: { settingResult: 'token', saveResult: false, buttonState: states[1].id }
             }));
@@ -174,16 +175,14 @@ describe('ButtonInput', () => {
     });
     
     describe('errors', () => {
-        const makeJsonDataServiceReturnError = (wrapper) => {
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
-                state: 'FAIL',
-                message: 'some error',
-                result: { buttonState: states[1].id, saveResult: false, settingResult: null }
-            }));
+        const errorReult = {
+            state: 'FAIL',
+            message: 'some error',
+            result: { buttonState: states[1].id, saveResult: false, settingResult: null }
         };
 
         beforeEach(() => {
-            makeJsonDataServiceReturnError(wrapper);
+            getData.mockImplementation(() => errorReult);
         });
 
         it('displays error message on FAIL', async () => {
@@ -195,8 +194,8 @@ describe('ButtonInput', () => {
         it('displays no error message if displayErrorMessage is false', async () => {
             const noErrorUischema = { displayErrorMessage: false };
             props = getProps(noErrorUischema);
-            const { wrapper } = await mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
-            makeJsonDataServiceReturnError(wrapper);
+            getData = vi.fn(() => dataSuccess);
+            const { wrapper } = await mountButtonInput({ props, getDataMock: vi.fn(() => errorReult) });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
             expect(wrapper.find('.button-wrapper').text()).not.contains('Error: some error');
         });
@@ -218,7 +217,8 @@ describe('ButtonInput', () => {
         beforeEach(() => {
             const props = getProps({ isCancelable: true });
             props.control.uischema.options.dependencies = dependenciesUischema;
-            const comp = mountJsonFormsComponentWithCallbacks(ButtonInput, { props });
+            getData = vi.fn(() => dataSuccess);
+            const comp = mountButtonInput({ props, getDataMock: getData });
             wrapper = comp.wrapper;
             const firstWatcherCall = comp.callbacks[0];
             settingsChangeCallback = firstWatcherCall.transformSettings;
@@ -240,7 +240,7 @@ describe('ButtonInput', () => {
         it('applies new state defined by the update callback', async () => {
             const settingResult = 'updateSettingResult';
             const nextState = states[0];
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'SUCCESS',
                 result: {
                     settingResult,
@@ -249,7 +249,7 @@ describe('ButtonInput', () => {
                 }
             }));
             await settingsChangeCallback({ model: { foo: 2, bar: 1 }, view: { baz: 3 } });
-            expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+            expect(getData).toHaveBeenCalledWith({
                 method: 'update',
                 options: [uischema.options.actionHandler, { foo: 2, bar: 1, baz: 3 }]
             });

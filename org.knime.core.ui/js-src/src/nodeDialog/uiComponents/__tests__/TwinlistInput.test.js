@@ -166,7 +166,7 @@ describe('TwinlistInput.vue', () => {
     });
 
     beforeEach(() => {
-        component = mountJsonFormsComponent(TwinlistInput, props);
+        component = mountJsonFormsComponent(TwinlistInput, { props });
         wrapper = component.wrapper;
         updateData = component.updateData;
     });
@@ -187,7 +187,7 @@ describe('TwinlistInput.vue', () => {
 
     it('calls onChange when twinlist input is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = mountJsonFormsComponentWithStore(TwinlistInput, props, {
+        const { wrapper } = mountJsonFormsComponentWithStore(TwinlistInput, { props }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -201,7 +201,7 @@ describe('TwinlistInput.vue', () => {
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
         props.control.uischema.scope = '#/properties/model/properties/yAxisColumn';
-        const { wrapper } = await mountJsonFormsComponentWithStore(TwinlistInput, props, {
+        const { wrapper } = await mountJsonFormsComponentWithStore(TwinlistInput, { props }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -369,7 +369,7 @@ describe('TwinlistInput.vue', () => {
                 }
             });
 
-            const { updateData } = mountJsonFormsComponent(TwinlistInput, localProps);
+            const { updateData } = mountJsonFormsComponent(TwinlistInput, { props: localProps });
             expect(updateData).toHaveBeenCalledWith(
                 expect.anything(),
                 localProps.control.path,
@@ -403,7 +403,7 @@ describe('TwinlistInput.vue', () => {
                     }
                 }
             });
-            const { updateData } = mountJsonFormsComponent(TwinlistInput, localProps);
+            const { updateData } = mountJsonFormsComponent(TwinlistInput, { props: localProps });
             expect(updateData).toHaveBeenCalledWith(
                 expect.anything(),
                 localProps.control.path,
@@ -444,7 +444,7 @@ describe('TwinlistInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const { wrapper } = mountJsonFormsComponent(TwinlistInput, localprops);
+        const { wrapper } = mountJsonFormsComponent(TwinlistInput, { props: localprops });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
@@ -462,7 +462,7 @@ describe('TwinlistInput.vue', () => {
                     } }
             }
         };
-        const { wrapper } = mountJsonFormsComponentWithStore(TwinlistInput, localProps, {
+        const { wrapper } = mountJsonFormsComponentWithStore(TwinlistInput, { props: localProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true

@@ -5,8 +5,6 @@ import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
-
-import { JsonDataService } from '@knime/ui-extension-service';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
 const ButtonInput = defineComponent({
@@ -17,7 +15,7 @@ const ButtonInput = defineComponent({
         LabeledInput,
         LoadingIcon
     },
-    inject: ['getKnimeService', 'registerWatcher'],
+    inject: ['registerWatcher', 'getData'],
     inheritAttrs: false,
     props: {
         ...rendererProps()
@@ -27,7 +25,6 @@ const ButtonInput = defineComponent({
     },
     data() {
         return {
-            jsonDataService: null,
             numPendingRequests: 0,
             errorMessage: null,
             currentSettings: {},
@@ -47,19 +44,29 @@ const ButtonInput = defineComponent({
     },
     mounted() {
         const dependencies = this.control.uischema.options?.dependencies || [];
-        this.jsonDataService = new JsonDataService(this.getKnimeService());
-        this.initialize();
         this.registerWatcher({
             transformSettings: this.onSettingsChange.bind(this),
+            init: this.initialize.bind(this),
             dependencies
         });
     },
     methods: {
-        async initialize() {
+        async initialize(newSettings) {
+            this.saveCurrentSettings(newSettings);
             await this.performRequest({
                 method: 'initializeButton',
                 options: [this.control.data]
             });
+        },
+        onSettingsChange(newSettings) {
+            this.saveCurrentSettings(newSettings);
+            this.performRequest({
+                method: 'update',
+                options: [this.currentSettings]
+            });
+        },
+        saveCurrentSettings(newSettings) {
+            this.currentSettings = { ...newSettings.view, ...newSettings.model };
         },
         async onClick() {
             const { id, nextState } = this.currentState;
@@ -77,16 +84,9 @@ const ButtonInput = defineComponent({
                 options: [id, this.currentSettings]
             }, resetCallback);
         },
-        onSettingsChange(newSettings) {
-            this.currentSettings = { ...newSettings.view, ...newSettings.model };
-            this.performRequest({
-                method: 'update',
-                options: [this.currentSettings]
-            });
-        },
-        async performRequest({ method, options }, resetCallback = () => {}) {
+        async performRequest({ method, options }) {
             this.numPendingRequests += 1;
-            const receivedData = await this.jsonDataService.data({
+            const receivedData = await this.getData({
                 method,
                 options: [this.control.uischema.options.actionHandler, ...options]
             });

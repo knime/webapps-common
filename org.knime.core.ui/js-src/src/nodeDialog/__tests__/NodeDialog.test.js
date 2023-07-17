@@ -11,7 +11,7 @@ import flushPromises from 'flush-promises';
 window.closeCEFWindow = () => {};
 
 describe('NodeDialog.vue', () => {
-    const getOptions = ({ setApplySettingsMock } = {}) => {
+    const getOptions = ({ setApplySettingsMock, createAlertMock, sendWarningMock } = {}) => {
         const dialogStoreOptions = {
             actions: {
                 setApplySettings: setApplySettingsMock || vi.fn()
@@ -25,7 +25,9 @@ describe('NodeDialog.vue', () => {
                         extensionConfig: {},
                         callService: vi.fn().mockResolvedValue({}),
                         registerDataGetter: vi.fn(),
-                        addEventCallback: vi.fn()
+                        addEventCallback: vi.fn(),
+                        createAlert: createAlertMock || vi.fn(),
+                        sendWarning: sendWarningMock || vi.fn()
                     })
                 },
                 mocks: {
@@ -162,6 +164,24 @@ describe('NodeDialog.vue', () => {
         wrapper.vm.closeDialog();
 
         expect(spy).toHaveBeenCalledWith();
+    });
+
+    it("provides 'getData' method", () => {
+        const wrapper = shallowMount(NodeDialog, getOptions());
+        const callParams = { method: 'foo', options: ['bar'] };
+        wrapper.vm.callDataService(callParams);
+        expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith(callParams);
+    });
+
+    it("provides 'sendAlert' method", () => {
+        const createAlertMock = vi.fn(() => 'myAlert');
+        const sendWarningMock = vi.fn();
+        const options = getOptions({ createAlertMock, sendWarningMock });
+        const wrapper = shallowMount(NodeDialog, options);
+        const callParams = { type: 'error', message: 'message' };
+        wrapper.vm.sendAlert(callParams);
+        expect(createAlertMock).toHaveBeenCalledWith(callParams);
+        expect(sendWarningMock).toHaveBeenCalledWith('myAlert');
     });
 
     describe('registerWatcher', () => {

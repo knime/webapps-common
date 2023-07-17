@@ -42,7 +42,7 @@ describe('RichTextInput.vue', () => {
             }
             
         };
-        component = mountJsonFormsComponent(RichTextInput, props);
+        component = mountJsonFormsComponent(RichTextInput, { props });
         wrapper = component.wrapper;
     });
 
@@ -61,7 +61,7 @@ describe('RichTextInput.vue', () => {
 
     it('calls onChange when html content is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RichTextInput, props, {
+        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RichTextInput, { props }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -103,7 +103,7 @@ describe('RichTextInput.vue', () => {
                 }
             }
         };
-        let localComponent = await mountJsonFormsComponent(RichTextInput, props);
+        let localComponent = await mountJsonFormsComponent(RichTextInput, { props });
         let localWrapper = localComponent.wrapper;
         expect(localWrapper.vm.disabled).toBeTruthy();
         const editorComponent = localWrapper.findComponent(RichTextEditor);

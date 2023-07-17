@@ -53,7 +53,7 @@ describe('RadioInputBase.vue', () => {
             }
         };
 
-        component = await mountJsonFormsComponent(RadioInputBase, defaultProps);
+        component = await mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -74,7 +74,7 @@ describe('RadioInputBase.vue', () => {
 
     const createTypedWrapper = (type) => mountJsonFormsComponentWithStore(
         RadioInputBase,
-        {
+        { props: {
             ...defaultProps,
             type,
             control: {
@@ -84,7 +84,7 @@ describe('RadioInputBase.vue', () => {
                     scope: '#/properties/model/properties/testColumn'
                 }
             }
-        }
+        } }
     );
 
     const testTypes = [
@@ -108,12 +108,13 @@ describe('RadioInputBase.vue', () => {
 
     it('calls onChange when radio button is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RadioInputBase, defaultProps, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
-            }
-        });
+        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RadioInputBase, { props: defaultProps },
+            {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
+            });
         const changedRadioInputBase = 'Shaken not stirred';
         wrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(onChangeSpy).toHaveBeenCalledWith(changedRadioInputBase);
@@ -127,7 +128,7 @@ describe('RadioInputBase.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper, updateData } = await mountJsonFormsComponentWithStore(
             RadioInputBase,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -136,7 +137,7 @@ describe('RadioInputBase.vue', () => {
                         scope: '#/properties/model/properties/testColumn'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -175,7 +176,7 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, localDefaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: localDefaultProps });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
@@ -194,7 +195,7 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         const icon = wrapper.findComponent(BothFlowVariables);
         expect(icon.exists()).toBe(true);
     });
@@ -208,7 +209,7 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         const icon = wrapper.findComponent(ExposeFlowVariable);
         expect(icon.exists()).toBe(true);
     });
@@ -222,7 +223,7 @@ describe('RadioInputBase.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         const icon = wrapper.findComponent(OnlyFlowVariable);
         expect(icon.exists()).toBe(true);
     });
@@ -235,14 +236,14 @@ describe('RadioInputBase.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(RadioInputBase, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(RadioInputBase, { props: defaultProps });
         expect(wrapper.getComponent(RadioInputBase).isVisible()).toBe(true);
     });
 });

@@ -39,7 +39,7 @@ describe('AnyOfTwinlist.vue', () => {
             }
         };
 
-        component = await mountJsonFormsComponent(AnyOfTwinlist, props);
+        component = await mountJsonFormsComponent(AnyOfTwinlist, { props });
         wrapper = component.wrapper;
     });
 

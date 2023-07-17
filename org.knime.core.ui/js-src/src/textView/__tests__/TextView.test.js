@@ -28,7 +28,7 @@ describe('TextView.vue', () => {
     };
 
     const mountWrapper = () => {
-        const component = mountJsonFormsComponentWithStore(TextView, false, {
+        const component = mountJsonFormsComponentWithStore(TextView, { }, {
             pagebuilder: {
                 actions: { setReportingContent: setReportingContentMock },
                 namespaced: true

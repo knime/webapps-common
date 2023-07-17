@@ -1,5 +1,5 @@
 <script>
-import { JsonDataService, DialogService } from '@knime/ui-extension-service';
+import { JsonDataService, DialogService, AlertTypes } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { JsonForms } from '@jsonforms/vue';
 import { toDataPath } from '@jsonforms/core';
@@ -19,7 +19,9 @@ export default {
     provide() {
         return {
             registerWatcher: this.registerWatcher,
-            updateData: this.updateData
+            updateData: this.updateData,
+            getData: this.callDataService,
+            sendAlert: this.sendAlert
         };
     },
     data() {
@@ -51,6 +53,13 @@ export default {
     methods: {
         getData() {
             return this.settings.data;
+        },
+        callDataService({ method, options }) {
+            return this.jsonDataService.data({ method, options });
+        },
+        sendAlert({ type, message }) {
+            const knimeService = this.getKnimeService();
+            knimeService.sendWarning(knimeService.createAlert({ type, message }));
         },
         /**
          * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting

@@ -42,7 +42,7 @@ describe('NumberInput.vue', () => {
             }
         };
         
-        component = mountJsonFormsComponent(NumberInput, defaultProps);
+        component = mountJsonFormsComponent(NumberInput, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -71,7 +71,7 @@ describe('NumberInput.vue', () => {
 
     it('calls onChange of NumberInputBase when number input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = mountJsonFormsComponentWithStore(NumberInput, defaultProps, {
+        const { wrapper } = mountJsonFormsComponentWithStore(NumberInput, { props: defaultProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -86,7 +86,7 @@ describe('NumberInput.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper } = mountJsonFormsComponentWithStore(
             NumberInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -95,7 +95,7 @@ describe('NumberInput.vue', () => {
                         scope: '#/properties/model/properties/yAxisColumn'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -121,7 +121,7 @@ describe('NumberInput.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(NumberInput, localDefaultProps);
+        const { wrapper } = mountJsonFormsComponent(NumberInput, { props: localDefaultProps });
         expect(wrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
     });
 
@@ -133,14 +133,14 @@ describe('NumberInput.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(NumberInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(NumberInput, { props: defaultProps });
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(NumberInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(NumberInput, { props: defaultProps });
         expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
     });
 });

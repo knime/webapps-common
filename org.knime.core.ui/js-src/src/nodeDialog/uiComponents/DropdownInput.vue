@@ -6,7 +6,7 @@ import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 import LabeledInput from './LabeledInput.vue';
 import DialogComponentWrapper from './DialogComponentWrapper.vue';
 import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
-import { JsonDataService, AlertTypes } from '@knime/ui-extension-service';
+import { AlertTypes } from '@knime/ui-extension-service';
 import { set } from 'lodash';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
 
@@ -17,7 +17,7 @@ const DropdownInput = defineComponent({
         LabeledInput,
         DialogComponentWrapper
     },
-    inject: ['registerWatcher', 'getKnimeService'],
+    inject: ['registerWatcher', 'getKnimeService', 'getData', 'sendAlert'],
     props: {
         ...rendererProps(),
         optionsGenerator: {
@@ -42,8 +42,7 @@ const DropdownInput = defineComponent({
     },
     data() {
         return {
-            options: [],
-            jsonDataService: null
+            options: []
         };
     },
     computed: {
@@ -102,11 +101,7 @@ const DropdownInput = defineComponent({
             }
         },
         async updateOptions(newSettings, setNewValue = true) {
-            if (!this.jsonDataService) {
-                this.jsonDataService = new JsonDataService(this.getKnimeService());
-            }
-            // TODO: UIEXT-1053: Hide this behind a (better) API
-            const { result, state, message } = await this.jsonDataService.data({
+            const { result, state, message } = await this.getData({
                 method: 'update',
                 options: [
                     this.choicesUpdateHandler,
@@ -116,13 +111,11 @@ const DropdownInput = defineComponent({
             if (result) {
                 this.handleResult(result, newSettings, setNewValue);
             }
-            // TODO: UIEXT-1053: Hide this behind a (better) API
             if (state === 'FAIL') {
-                const knimeService = this.getKnimeService();
-                knimeService.sendWarning(knimeService.createAlert({
+                this.sendAlert({
                     type: AlertTypes.ERROR,
                     message
-                }));
+                });
                 this.handleResult([], newSettings, setNewValue);
             }
         },

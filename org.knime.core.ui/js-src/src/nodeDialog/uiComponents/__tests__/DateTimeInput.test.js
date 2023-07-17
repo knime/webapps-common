@@ -44,7 +44,7 @@ describe('DateTimeInput.vue', () => {
             }
         };
 
-        component = mountJsonFormsComponent(DateTimeInput, defaultProps);
+        component = mountJsonFormsComponent(DateTimeInput, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -64,7 +64,7 @@ describe('DateTimeInput.vue', () => {
 
     it('calls onChange when text input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(DateTimeInput, defaultProps, {
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(DateTimeInput, { props: defaultProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -83,7 +83,7 @@ describe('DateTimeInput.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper, updateData } = mountJsonFormsComponentWithStore(
             DateTimeInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -92,7 +92,7 @@ describe('DateTimeInput.vue', () => {
                         scope: '#/properties/model/properties/dateTime'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -127,7 +127,7 @@ describe('DateTimeInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const { wrapper } = mountJsonFormsComponent(DateTimeInput, localDefaultProps);
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, { props: localDefaultProps });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
@@ -139,14 +139,14 @@ describe('DateTimeInput.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(DateTimeInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, { props: defaultProps });
         expect(wrapper.getComponent(DateTimeInput).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(DateTimeInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(DateTimeInput, { props: defaultProps });
         expect(wrapper.getComponent(DateTimeInput).isVisible()).toBe(true);
     });
 });

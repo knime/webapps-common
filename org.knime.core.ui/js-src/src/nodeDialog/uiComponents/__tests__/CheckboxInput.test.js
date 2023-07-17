@@ -47,7 +47,7 @@ describe('CheckboxInput.vue', () => {
                 }
             }
         };
-        component = await mountJsonFormsComponent(CheckboxInput, defaultProps);
+        component = await mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         wrapper = component.wrapper;
     });
 
@@ -75,7 +75,7 @@ describe('CheckboxInput.vue', () => {
 
     it('calls onChange when checkbox is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(CheckboxInput, defaultProps, {
+        const { wrapper, updateData } = mountJsonFormsComponentWithStore(CheckboxInput, { props: defaultProps }, {
             'pagebuilder/dialog': {
                 actions: { dirtySettings: dirtySettingsMock },
                 namespaced: true
@@ -93,7 +93,7 @@ describe('CheckboxInput.vue', () => {
         const dirtySettingsMock = vi.fn();
         const { wrapper, updateData } = await mountJsonFormsComponentWithStore(
             CheckboxInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -102,7 +102,7 @@ describe('CheckboxInput.vue', () => {
                         scope: '#/properties/model/filterMissingValues'
                     }
                 }
-            },
+            } },
             {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
@@ -121,7 +121,7 @@ describe('CheckboxInput.vue', () => {
     it('checks that re-execution icon is present if it is a model setting', async () => {
         const { wrapper } = await mountJsonFormsComponent(
             CheckboxInput,
-            {
+            { props: {
                 ...defaultProps,
                 control: {
                     ...defaultProps.control,
@@ -130,7 +130,7 @@ describe('CheckboxInput.vue', () => {
                         scope: '#/properties/model/filterMissingValues'
                     }
                 }
-            }
+            } }
         );
         expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(true);
     });
@@ -151,7 +151,7 @@ describe('CheckboxInput.vue', () => {
                 exposedFlowVariableName: 'test',
                 leaf: true
             };
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(wrapper.vm.disabled).toBeTruthy();
     });
 
@@ -164,7 +164,7 @@ describe('CheckboxInput.vue', () => {
                 leaf: true
             };
         
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable)).toBe(true);
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable)).toBe(true);
         
@@ -181,7 +181,7 @@ describe('CheckboxInput.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable)).toBe(false);
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable)).toBe(true);
         
@@ -198,7 +198,7 @@ describe('CheckboxInput.vue', () => {
                 leaf: true
             };
 
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable)).toBe(true);
         expect(Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable)).toBe(false);
 
@@ -219,14 +219,14 @@ describe('CheckboxInput.vue', () => {
 
     it('checks that it is not rendered if it is an advanced setting', () => {
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(wrapper.getComponent(CheckboxInput).isVisible()).toBe(false);
     });
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.control.rootSchema = { showAdvancedSettings: true };
         defaultProps.control.uischema.options.isAdvanced = true;
-        const { wrapper } = mountJsonFormsComponent(CheckboxInput, defaultProps);
+        const { wrapper } = mountJsonFormsComponent(CheckboxInput, { props: defaultProps });
         expect(wrapper.getComponent(CheckboxInput).isVisible()).toBe(true);
     });
 });

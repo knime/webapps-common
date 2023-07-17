@@ -126,7 +126,7 @@ describe('ColumnFilter.vue', () => {
     let wrapper, component;
 
     beforeEach(async () => {
-        component = await mountJsonFormsComponent(ColumnFilter, defaultProps);
+        component = await mountJsonFormsComponent(ColumnFilter, { props: defaultProps });
         wrapper = component.wrapper;
     });
 

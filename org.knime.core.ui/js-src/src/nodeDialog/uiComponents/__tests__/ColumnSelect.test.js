@@ -59,7 +59,7 @@ describe('ColumnSelect.vue', () => {
                 }
             }
         };
-        component = await mountJsonFormsComponent(ColumnSelect, props);
+        component = await mountJsonFormsComponent(ColumnSelect, { props });
         wrapper = component.wrapper;
         updateData = component.updateData;
     });
