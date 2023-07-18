@@ -63,12 +63,12 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-public class ButtonWidgetActionHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
+class ButtonWidgetActionHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
 
     /**
      * @param settingsClasses
      */
-    public ButtonWidgetActionHandlerHolder(final Collection<Class<?>> settingsClasses) {
+    ButtonWidgetActionHandlerHolder(final Collection<Class<?>> settingsClasses) {
         super(settingsClasses);
     }
 

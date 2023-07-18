@@ -44,29 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 27, 2023 (Paul Bärnreuther): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
- * An annotation to specify which setting exactly a setting with an attached {@link DependencyHandler} is dependent of
- * in case the path of the field exists in more than one of the supplied {@link DefaultNodeSettings}
+ * This interface is used for defining any kind of update of settings values or context information (e.g. possible
+ * values in a {@link ChoicesWidget} whenever one setting depends on at least one other setting. The update handler is
+ * linked to the target of such a dependency by annotations.
+ *
+ * @param <R> the return type of the update method. This is the information that is transmitted to the frontend on an
+ *            update, i.e. its shape depends on what this update handler is used for there.
+ * @param <S> the settings, the targeted setting depends on (see {@link DependencyHandler}).
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface DeclaringDefaultNodeSettings {
+public interface UpdateHandler<R, S> extends DependencyHandler<S> {
     /**
-     * @return the {@link DefaultNodeSettings} class in which the field that the annotated field should reference lies.
+     * This method is called when one of the dependency settings defined by {@code S} changes in order to determine the
+     * immediate effect.
+     *
+     * @param settings the dependency settings on update
+     * @param context the current {@link SettingsCreationContext}
+     *
+     * @return result defining state changes in the fronted.
+     * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    Class<? extends DefaultNodeSettings> value();
+    R update(S settings, SettingsCreationContext context) throws WidgetHandlerException;
+
+    @SuppressWarnings({"javadoc"})
+    default R castAndUpdate(final Object settings, final SettingsCreationContext context)
+        throws WidgetHandlerException {
+        return update(castToDependencies(settings), context);
+    }
 }

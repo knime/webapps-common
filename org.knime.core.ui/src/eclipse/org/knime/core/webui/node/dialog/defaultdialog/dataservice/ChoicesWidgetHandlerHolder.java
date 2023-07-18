@@ -61,12 +61,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopCh
  *
  * @author Paul Bärnreuther
  */
-public class ChoicesWidgetHandlerHolder extends WidgetHandlerHolder<ChoicesUpdateHandler<?>> {
+class ChoicesWidgetHandlerHolder extends WidgetHandlerHolder<ChoicesUpdateHandler<?>> {
 
     /**
      * @param settingsClasses
      */
-    public ChoicesWidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
+    ChoicesWidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
         super(settingsClasses);
     }
 

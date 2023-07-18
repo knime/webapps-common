@@ -54,8 +54,8 @@ import java.util.Optional;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
@@ -66,8 +66,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHa
 public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
 
     @Override
-    public ChoicesWidgetChoice[] update(final S settings, final SettingsCreationContext context)
-        throws RequestFailureException {
+    public PossibleValue[] update(final S settings, final SettingsCreationContext context)
+        throws WidgetHandlerException {
         final var spec = context.getDataTableSpec(0);
         if (spec.isEmpty()) {
             return getEmptyResult();
@@ -79,16 +79,16 @@ public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements
         }
         final var domainValues = getDomainValues(colSpec);
         if (domainValues.isEmpty()) {
-            throw new RequestFailureException(String.format(
+            throw new WidgetHandlerException(String.format(
                 "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
                 columnName));
         }
-        return domainValues.get().stream().map(ChoicesWidgetChoice::fromId).toArray(ChoicesWidgetChoice[]::new);
+        return domainValues.get().stream().map(PossibleValue::fromId).toArray(PossibleValue[]::new);
 
     }
 
-    private static ChoicesWidgetChoice[] getEmptyResult() {
-        return new ChoicesWidgetChoice[0];
+    private static PossibleValue[] getEmptyResult() {
+        return new PossibleValue[0];
     }
 
     /**

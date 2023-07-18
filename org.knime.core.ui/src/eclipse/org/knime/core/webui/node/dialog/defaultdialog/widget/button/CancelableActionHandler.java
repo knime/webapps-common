@@ -48,16 +48,18 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
+import java.lang.annotation.Annotation;
+
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  * An {@link ButtonActionHandler} with an asynchronous invocation whose result can be retrieved and canceled.
  *
  * @param <R> the type of the returned result. For widgets which set this as the value of the field, the type of the
  *            field has to be assignable from it.
- * @param <S> the type of the settings the invocation depends on
+ * @param <S> the type of the settings the invocation depends on.
  * @author Paul Bärnreuther
  */
 public abstract class CancelableActionHandler<R, S> implements ButtonActionHandler<R, S, States> {
@@ -69,9 +71,9 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
      * @param context the current {@link SettingsCreationContext}
      *
      * @return the future result.
-     * @throws RequestFailureException if the request should fail providing the error message to the frontend
+     * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    protected abstract R invoke(S settings, SettingsCreationContext context) throws RequestFailureException;
+    protected abstract R invoke(S settings, SettingsCreationContext context) throws WidgetHandlerException;
 
     /**
      * @return whether the button should be in an enabled state when the request was successful (i.e. if the "DONE"
@@ -84,17 +86,17 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     /**
      * @param state - a field from the associated state machine enum.
      * @return the text that should be displayed for that state. If {@code null} is returned, the value of
-     *         {@link ButtonState#text} from the annotation of the respective state is used instead.
+     *         {@link ButtonState#text} from the annotation of the respective state in {@link States} is used instead.
      */
-    abstract protected String overrideText(final States state);
+    protected abstract String getButtonText(final States state);
 
     @Override
     public ButtonChange<R, States> invoke(final States buttonState, final S settings,
-        final SettingsCreationContext context) throws RequestFailureException {
-        if (States.CANCEL.equals(buttonState)) {
+        final SettingsCreationContext context) throws WidgetHandlerException {
+        if (States.CANCEL == buttonState) {
             return null;
         } else {
-            return new ButtonChange<>(invoke(settings, context), true, States.DONE);
+            return new ButtonChange<>(invoke(settings, context), States.DONE);
         }
     }
 
@@ -103,20 +105,12 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
      */
     @Override
     public ButtonChange<R, States> initialize(final R currentValue, final SettingsCreationContext context) {
-        return new ButtonChange<>(null, false, States.READY);
+        return new ButtonChange<>(States.READY);
     }
 
     @Override
     public Class<States> getStateMachine() {
         return States.class;
-    }
-
-    @Override
-    public void overrideState(final States state, final ButtonStateOverride override) {
-        if (States.DONE.equals(state)) {
-            override.setDisabled(!isMultiUse());
-        }
-        override.setText(overrideText(state));
     }
 
     @SuppressWarnings("javadoc")
@@ -141,6 +135,41 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
 
     }
 
+    @Override
+    public ButtonState overrideButtonState(final States state, final ButtonState buttonStateAnnotation) {
+        var text = getButtonText(state);
+        return new ButtonState() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return ButtonState.class;
+            }
+
+            @Override
+            public String text() {
+                return (text != null) ? text : buttonStateAnnotation.text();
+            }
+
+            @Override
+            public boolean primary() {
+                return buttonStateAnnotation.primary();
+            }
+
+            @Override
+            public String nextState() {
+                return buttonStateAnnotation.nextState();
+            }
+
+            @Override
+            public boolean disabled() {
+                if (States.DONE == state) {
+                    return !isMultiUse();
+                }
+                return buttonStateAnnotation.disabled();
+            }
+        };
+    }
+
     /**
      * A simple update handler which will reset the current state of the button to the ready state when a triggering
      * setting changes.
@@ -156,8 +185,8 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
          */
         @Override
         public ButtonChange<R, States> update(final S settings, final SettingsCreationContext context)
-            throws RequestFailureException {
-            return new ButtonChange<>(null, true, States.READY);
+            throws WidgetHandlerException {
+            return new ButtonChange<>(null, States.READY);
         }
 
     }

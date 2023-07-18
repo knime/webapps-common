@@ -49,13 +49,15 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 /**
  * A handler for updating the possible values of a {@link ChoicesWidget}
- * @author Paul Bärnreuther
+ *
  * @param <S> the dependency settings (see {@link DependencyHandler})
+ *
+ * @author Paul Bärnreuther
  */
-public interface ChoicesUpdateHandler<S> extends UpdateHandler<ChoicesWidgetChoice[], S> {
+public interface ChoicesUpdateHandler<S> extends UpdateHandler<PossibleValue[], S> {
 }

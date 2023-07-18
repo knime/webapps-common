@@ -94,12 +94,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -289,17 +288,15 @@ final class UiSchemaOptionsGenerator {
         final ButtonActionHandler<?, ?, M> handler) {
         final var state = states.addObject();
         state.put("id", field.getName());
-        final var buttonState = field.getAnnotation(ButtonState.class);
-        final var buttonStateOverride = new ButtonStateOverride(buttonState);
-
-        handler.overrideState(enumConst, buttonStateOverride);
-        state.put("disabled", buttonStateOverride.isDisabled());
-        state.put("primary", buttonStateOverride.isPrimary());
+        var buttonState = field.getAnnotation(ButtonState.class);
+        buttonState = handler.overrideButtonState(enumConst, buttonState);
+        state.put("disabled", buttonState.disabled());
+        state.put("primary", buttonState.primary());
         final var nextState = buttonState.nextState();
         if (!nextState.isEmpty()) {
             state.put("nextState", nextState);
         }
-        state.put("text", buttonStateOverride.getText());
+        state.put("text", buttonState.text());
     }
 
     private static void disableTimeFields(final ObjectNode options) {

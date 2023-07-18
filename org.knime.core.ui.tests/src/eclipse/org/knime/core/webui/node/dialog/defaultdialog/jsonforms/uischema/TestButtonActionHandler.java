@@ -48,12 +48,13 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import java.lang.annotation.Annotation;
+
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
 
 /**
  *
@@ -76,19 +77,52 @@ class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestS
     }
 
     @Override
-    public void overrideState(final TestStates state, final ButtonStateOverride override) {
-        switch (state) {
-            case CANCEL:
-                override.setText("Cancel Text");
-                return;
-            case DONE:
-                override.setText("Done Text");
-                return;
-            case READY:
-                override.setDisabled(true);
-                override.setPrimary(false);
-                return;
-        }
+    public ButtonState overrideButtonState(final TestStates state, final ButtonState buttonStateAnnotation) {
+        return new ButtonState() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return ButtonState.class;
+            }
+
+            @Override
+            public String text() {
+                switch (state) {
+                    case CANCEL:
+                        return "Cancel Text";
+
+                    case DONE:
+                        return "Done Text";
+                    default:
+                        return buttonStateAnnotation.text();
+                }
+            }
+
+            @Override
+            public boolean primary() {
+                switch (state) {
+                    case READY:
+                        return false;
+                    default:
+                        return buttonStateAnnotation.primary();
+                }
+            }
+
+            @Override
+            public String nextState() {
+                return buttonStateAnnotation.nextState();
+            }
+
+            @Override
+            public boolean disabled() {
+                switch (state) {
+                    case READY:
+                        return true;
+                    default:
+                        return buttonStateAnnotation.disabled();
+                }
+            }
+        };
     }
 
     @Override

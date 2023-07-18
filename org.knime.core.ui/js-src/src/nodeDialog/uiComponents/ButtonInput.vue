@@ -6,6 +6,7 @@ import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import getFlattenedSettings from '../utils/getFlattenedSettings';
 import { v4 as uuidv4 } from 'uuid';
 
 const ButtonInput = defineComponent({
@@ -70,16 +71,12 @@ const ButtonInput = defineComponent({
         onUpdate(newSettings) {
             this.performRequest({
                 method: 'update',
-                options: [this.getFlattenedSettings(newSettings)],
+                options: [getFlattenedSettings(newSettings)],
                 handler: this.control.uischema.options.updateOptions.updateHandler
             });
         },
         saveCurrentSettings(newSettings) {
-            this.currentSettings = this.getFlattenedSettings(newSettings);
-        },
-
-        getFlattenedSettings(newSettings) {
-            return { ...newSettings.view, ...newSettings.model };
+            this.currentSettings = getFlattenedSettings(newSettings);
         },
         async onClick() {
             const { id, nextState } = this.currentState;
@@ -122,15 +119,15 @@ const ButtonInput = defineComponent({
             if (dataServiceResult === null) {
                 return;
             }
-            const { settingResult, saveResult, buttonState } = dataServiceResult;
-            if (saveResult) {
-                this.saveResult(settingResult);
+            const { settingValue, setSettingValue, buttonState } = dataServiceResult;
+            if (setSettingValue) {
+                this.saveResult(settingValue);
             }
             this.setButtonState(buttonState);
         },
-        saveResult(result) {
-            // without setTimeout, the value is not updated when triggered via onSettigsChange --> TODO UIEXT-1137: use new UIEXT-1015 logic
-            setTimeout(() => this.handleChange(this.control.path, result));
+        saveResult(newVal) {
+            // without setTimeout, the value is not updated when triggered via onUpdate
+            setTimeout(() => this.handleChange(this.control.path, newVal));
         },
         setButtonState(newButtonStateId) {
             this.clearError();

@@ -42,24 +42,11 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
-
 /**
+ * Handler-logic shared by multiple widgets. Handler for a widgets allow one to handle user actions in the frontend
+ * (e.g. settings changes or a button click).
  *
- * @param id the id which is saved on selection
- * @param text the displayed text
- * @author Paul Bärnreuther
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public record ChoicesWidgetChoice(String id, String text) {
-    /**
-     * @param id
-     * @return a choice whose text matches the given id.
-     */
-    public static ChoicesWidgetChoice fromId(final String id) {
-        return new ChoicesWidgetChoice(id, id);
-    }
-}
+package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;

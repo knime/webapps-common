@@ -57,13 +57,13 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
  * @param <R> The type of the result
  * @author Paul Bärnreuther
  */
-public record Result<R>(R result, ResultState state, String message) {
+record Result<R>(R result, ResultState state, String message) {
 
     /**
      * @param result the value of the successful result
      * @return an {@link Result} with state {@link ResultState#SUCCESS}
      */
-    public static <R> Result<R> succeed(final R result) {
+    static <R> Result<R> succeed(final R result) {
         return new Result<>(result, ResultState.SUCCESS, null);
     }
 
@@ -71,14 +71,14 @@ public record Result<R>(R result, ResultState state, String message) {
      * @param message the supplied error message
      * @return an {@link Result} with state {@link ResultState#FAIL}
      */
-    public static <R> Result<R> fail(final String message) {
+    static <R> Result<R> fail(final String message) {
         return new Result<>(null, ResultState.FAIL, message);
     }
 
     /**
      * @return an {@link Result} with state {@link ResultState#CANCELED}
      */
-    public static <R> Result<R> cancel() {
+    static <R> Result<R> cancel() {
         return new Result<>(null, ResultState.CANCELED, null);
     }
 }

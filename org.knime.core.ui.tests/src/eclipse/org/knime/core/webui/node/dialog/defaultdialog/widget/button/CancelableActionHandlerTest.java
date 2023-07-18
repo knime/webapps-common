@@ -55,8 +55,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
@@ -71,23 +71,23 @@ class CancelableActionHandlerTest {
 
         @Override
         protected String invoke(final Void noSettings, final SettingsCreationContext context)
-            throws RequestFailureException {
+            throws WidgetHandlerException {
             return RESULT;
         }
 
         @Override
-        public String overrideText(final States state) {
+        public String getButtonText(final States state) {
             return null;
         }
     }
 
     @Test
-    void testInvokeSuccess() throws RequestFailureException {
+    void testInvokeSuccess() throws WidgetHandlerException {
         final var handler = new TestHandler();
         final var result = handler.invoke(States.READY, null, null);
         assertThat(result.buttonState()).isEqualTo(States.DONE);
-        assertThat(result.settingResult()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.saveResult()).isTrue();
+        assertThat(result.settingsValue()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.setSettingsValue()).isTrue();
     }
 
     static class TestHandlerFail extends TestHandler {
@@ -95,8 +95,8 @@ class CancelableActionHandlerTest {
 
         @Override
         protected String invoke(final Void noSettings, final SettingsCreationContext context)
-            throws RequestFailureException {
-            throw new RequestFailureException(MESSAGE);
+            throws WidgetHandlerException {
+            throw new WidgetHandlerException(MESSAGE);
         }
     }
 
@@ -104,7 +104,7 @@ class CancelableActionHandlerTest {
     void testInvokeFail() throws InterruptedException, ExecutionException {
         final var handler = new TestHandlerFail();
         final var exception =
-            assertThrows(RequestFailureException.class, () -> handler.invoke(States.READY, null, null));
+            assertThrows(WidgetHandlerException.class, () -> handler.invoke(States.READY, null, null));
         assertThat(exception.getMessage()).isEqualTo(TestHandlerFail.MESSAGE);
 
     }
@@ -118,16 +118,16 @@ class CancelableActionHandlerTest {
     }
 
     @Test
-    void testInvokeWithoutMultiUse() throws RequestFailureException {
+    void testInvokeWithoutMultiUse() throws WidgetHandlerException {
         final var handler = new SingleUseHandler();
         final var result = handler.invoke(States.READY, null, null);
         assertThat(result.buttonState()).isEqualTo(States.DONE);
-        assertThat(result.settingResult()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.saveResult()).isTrue();
+        assertThat(result.settingsValue()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.setSettingsValue()).isTrue();
     }
 
     @Test
-    void testCancel() throws RequestFailureException {
+    void testCancel() throws WidgetHandlerException {
         final var handler = new TestHandler();
         final var result = handler.invoke(States.CANCEL, null, null);
         assertThat(result).isNull();
@@ -135,12 +135,12 @@ class CancelableActionHandlerTest {
     }
 
     @Test
-    void testUpdate() throws RequestFailureException {
+    void testUpdate() throws WidgetHandlerException {
         final var handler = new CancelableActionHandler.UpdateHandler<String, Void>();
         final var result = handler.update(null, null);
         assertThat(result.buttonState()).isEqualTo(States.READY);
-        assertThat(result.settingResult()).isNull();
-        assertThat(result.saveResult()).isTrue();
+        assertThat(result.settingsValue()).isNull();
+        assertThat(result.setSettingsValue()).isTrue();
     }
 
     @Test
@@ -148,8 +148,8 @@ class CancelableActionHandlerTest {
         final var handler = new TestHandler();
         final var result = handler.initialize(null, null);
         assertThat(result.buttonState()).isEqualTo(States.READY);
-        assertThat(result.settingResult()).isNull();
-        assertThat(result.saveResult()).isFalse();
+        assertThat(result.settingsValue()).isNull();
+        assertThat(result.setSettingsValue()).isFalse();
     }
 
 }

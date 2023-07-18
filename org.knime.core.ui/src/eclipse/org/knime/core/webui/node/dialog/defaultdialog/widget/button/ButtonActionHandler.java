@@ -49,19 +49,21 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  * The interface defining that a {@link ButtonWidget#actionHandler} has to extend. It is used for initializing the
  * button, updating it when dependent settings change and invoking actions on click.
  *
- * @author Paul Bärnreuther
  * @param <R> the type of the setting which is annotated by {@link ButtonWidget}
  * @param <S> the type of the class representing all settings, this setting depends on (see {@link DependencyHandler})
- * @param <M> the state machine of the action handler
+ * @param <M> the state machine of the action handler. It is an enum where each field has to have a {@link ButtonState}
+ *            annotation.
+ *
+ * @author Paul Bärnreuther
  */
-public interface ButtonActionHandler<R, S, M extends Enum<M>>
-    extends ButtonStateMachineHandler<M>, DependencyHandler<S> {
+public interface ButtonActionHandler<R, S, M extends Enum<M>> extends DependencyHandler<S> {
 
     /**
      * This method is called whenever the dialog is opened in order to determine the initial state of the button.
@@ -71,10 +73,9 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      * @param context the current {@link SettingsCreationContext}
      *
      * @return the initial state of the button and its value.
-     * @throws RequestFailureException if the request should fail providing the error message to the frontend
+     * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    ButtonChange<R, M> initialize(R currentValue, SettingsCreationContext context)
-        throws RequestFailureException;
+    ButtonChange<R, M> initialize(R currentValue, SettingsCreationContext context) throws WidgetHandlerException;
 
     /**
      * This method gets called when the button is clicked.
@@ -84,31 +85,55 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      * @param settings the settings of type {@code S} which the invocation depends on.
      * @param context the current {@link SettingsCreationContext}
      *
-     * @return an asynchronous result.
-     * @throws RequestFailureException if the request should fail providing the error message to the frontend
+     * @return a representation of how the button is going to change or {@code null} if no change should happen due to
+     *         this call.
+     * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    ButtonChange<R, M> invoke(M state, S settings, SettingsCreationContext context)
-        throws RequestFailureException;
+    ButtonChange<R, M> invoke(M state, S settings, SettingsCreationContext context) throws WidgetHandlerException;
 
     @SuppressWarnings({"javadoc"})
     default ButtonChange<R, M> castAndInvoke(final String stateString, final Object settings,
-        final SettingsCreationContext context) throws RequestFailureException {
+        final SettingsCreationContext context) throws WidgetHandlerException {
         return invoke(castToState(stateString), castToDependencies(settings), context);
     }
 
     @SuppressWarnings({"javadoc", "unchecked"})
-    default ButtonChange<R, M> castAndInitialize(final Object currentValue,
-        final SettingsCreationContext context) throws RequestFailureException {
+    default ButtonChange<R, M> castAndInitialize(final Object currentValue, final SettingsCreationContext context)
+        throws WidgetHandlerException {
         return initialize((R)currentValue, context);
     }
 
     /**
-     * Use the setter methods of the override argument to alter the state associated to the given enum field.
+     * Override this method in order to adjust the states of the state machine. This might be useful if the same state
+     * machine should be used in different contexts (e.g. with different texts).
      *
-     * @param state from the associated state machine enum
-     * @param override an override initialized with the {@link ButtonState} associated to the state machine enum field.
+     * @param stateField enum field from the associated state machine
+     * @param buttonState the {@link ButtonState} annotation present at the enum field
+     * @return the {@link ButtonState} that should be used instead of the annotated one.
      */
-    default void overrideState(final M state, final ButtonStateOverride override) {
+    default ButtonState overrideButtonState(final M stateField, final ButtonState buttonState) {
+        return buttonState;
     }
+
+    @SuppressWarnings("javadoc")
+    default M castToState(final String stateString) {
+        return Enum.valueOf(getStateMachine(), stateString);
+    }
+
+    /**
+     * The button has an associated state machine defined by the generic type. It is an enum where every enum field
+     * needs to have a {@link ButtonState} annotations We need the class of this generic type returned by this method
+     * in. order to
+     * <ol>
+     * <li>serialize the state machine (i.e. the enum value and their {@link ButtonState}) with the initial data sent to
+     * the front-end</li>
+     * <li>map the string parameter sent by the front-end to their respective enum values</li>
+     * </ol>
+     *
+     * We need this method to make the class of the state
+     *
+     * @return the class of the state machine.
+     */
+    Class<M> getStateMachine();
 
 }

@@ -68,7 +68,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -91,8 +92,8 @@ class DefaultNodeDialogDataServiceImplTest {
     class ChoicesDataServiceTest {
         static class TestChoicesUpdateHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
-            public final static ChoicesWidgetChoice[] getResult(final String id) {
-                return new ChoicesWidgetChoice[]{ChoicesWidgetChoice.fromId(id)};
+            public final static PossibleValue[] getResult(final String id) {
+                return new PossibleValue[]{PossibleValue.fromId(id)};
 
             }
 
@@ -100,7 +101,7 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
+            public PossibleValue[] update(final TestDefaultNodeSettings settings,
                 final SettingsCreationContext context) {
                 return getResult(settings.m_foo);
             }
@@ -152,14 +153,14 @@ class DefaultNodeDialogDataServiceImplTest {
             @Override
             public ButtonChange<String, TestButtonStates> initialize(final String currentValue,
                 final SettingsCreationContext context) {
-                return new ButtonChange<>(currentValue, false, TestButtonStates.FIRST);
+                return new ButtonChange<>(currentValue, TestButtonStates.FIRST);
 
             }
 
             @Override
             public ButtonChange<String, TestButtonStates> invoke(final TestButtonStates state,
                 final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
-                return new ButtonChange<>(settings.m_foo, false, state);
+                return new ButtonChange<>(settings.m_foo, state);
             }
 
         }
@@ -168,8 +169,8 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             public ButtonChange<String, TestButtonStates> update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) throws RequestFailureException {
-                return new ButtonChange<>(settings.m_foo, false, TestButtonStates.SECOND);
+                final SettingsCreationContext context) throws WidgetHandlerException {
+                return new ButtonChange<>(settings.m_foo, TestButtonStates.SECOND);
             }
 
         }
@@ -188,7 +189,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 dataService.initializeButton("widgetId", GenericTypesTestHandler.class.getName(), currentState);
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
-            assertThat(buttonChange.settingResult()).isEqualTo(currentState);
+            assertThat(buttonChange.settingsValue()).isEqualTo(currentState);
         }
 
         @Test
@@ -206,7 +207,7 @@ class DefaultNodeDialogDataServiceImplTest {
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.buttonState()).isEqualTo(TestButtonStates.FIRST);
-            assertThat(buttonChange.settingResult()).isEqualTo(testDepenenciesFooValue);
+            assertThat(buttonChange.settingsValue()).isEqualTo(testDepenenciesFooValue);
         }
 
         @Test
@@ -224,7 +225,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
-            assertThat(buttonChange.settingResult()).isEqualTo(testDepenenciesFooValue);
+            assertThat(buttonChange.settingsValue()).isEqualTo(testDepenenciesFooValue);
         }
     }
 
@@ -236,9 +237,9 @@ class DefaultNodeDialogDataServiceImplTest {
             String getResult();
 
             @Override
-            default public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
+            default public PossibleValue[] update(final TestDefaultNodeSettings settings,
                 final SettingsCreationContext context) {
-                return new ChoicesWidgetChoice[]{ChoicesWidgetChoice.fromId(getResult())};
+                return new PossibleValue[]{PossibleValue.fromId(getResult())};
 
             }
 
@@ -280,8 +281,8 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
-            assertThat(((ChoicesWidgetChoice[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
-            assertThat(((ChoicesWidgetChoice[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
+            assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
+            assertThat(((PossibleValue[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
 
         @Test
@@ -330,8 +331,8 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class, OtherTestSettings.class));
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
-            assertThat(((ChoicesWidgetChoice[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
-            assertThat(((ChoicesWidgetChoice[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
+            assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
+            assertThat(((PossibleValue[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
     }
 
@@ -341,9 +342,9 @@ class DefaultNodeDialogDataServiceImplTest {
          * We only use this method to find out if the settings creation context is null. {@inheritDoc}
          */
         @Override
-        public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
+        public PossibleValue[] update(final TestDefaultNodeSettings settings,
             final SettingsCreationContext context) {
-            return context == null ? null : new ChoicesWidgetChoice[0];
+            return context == null ? null : new PossibleValue[0];
         }
 
     }

@@ -60,7 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUp
  *
  * @author Paul Bärnreuther
  */
-public class ButtonWidgetUpdateHandlerHolder extends WidgetHandlerHolder<ButtonUpdateHandler<?, ?, ?>> {
+class ButtonWidgetUpdateHandlerHolder extends WidgetHandlerHolder<ButtonUpdateHandler<?, ?, ?>> {
 
     /**
      * @param settingsClasses

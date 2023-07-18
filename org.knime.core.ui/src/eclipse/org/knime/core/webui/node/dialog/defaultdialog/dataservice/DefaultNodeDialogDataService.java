@@ -50,11 +50,15 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import java.util.concurrent.ExecutionException;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandler;
 
 /**
+ * This is the interface for the rpc data service of the {@link DefaultNodeDialog}. Its use enables e.g. lazyloaded data
+ * for individual dialog components, cases where one setting should influence the value of another one and other backend
+ * calls triggered by frontend components (e.g. button clicks).
  *
  * @author Paul Bärnreuther
  */
@@ -68,7 +72,8 @@ interface DefaultNodeDialogDataService {
      * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
      * @param buttonState the id of the current state of the button
      * @param objectSettings the settings the button depends on
-     * @return a {@link Result}
+     * @return the result of the called invocation handler together with additional information about the status of the
+     *         request.
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
@@ -79,7 +84,8 @@ interface DefaultNodeDialogDataService {
      * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
      * @param currentValue the current value of the saved settings underlying the button.
-     * @return a {@link Result}
+     * @return the result of the called invocation handler together with additional information about the status of the
+     *         request.
      * @throws InterruptedException if an error is thrown during the invocation
      * @throws ExecutionException if the used thread is interrupted
      */
@@ -89,13 +95,16 @@ interface DefaultNodeDialogDataService {
     /**
      * This method is to be triggered whenever settings that a widget with an associated {@link UpdateHandler} depends
      * on change.
+     *
      * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param handlerClass the class name of the {@link UpdateHandler} that is to be used.
      * @param objectSettings the settings the widget depends on.
-     * @return a {@link Result}
+     * @return the result of the called update handler together with additional information about the status of the
+     *         request.
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
-    Result<?> update(String widgetId, String handlerClass, Object objectSettings) throws InterruptedException, ExecutionException;
+    Result<?> update(String widgetId, String handlerClass, Object objectSettings)
+        throws InterruptedException, ExecutionException;
 
 }

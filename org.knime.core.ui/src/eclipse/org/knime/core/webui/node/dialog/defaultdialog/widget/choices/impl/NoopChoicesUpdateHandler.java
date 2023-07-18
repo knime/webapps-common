@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
 
 /**
  * Marker class that is only meant to serve as a default in {@link ChoicesWidget#choicesUpdateHandler}.
@@ -64,7 +64,7 @@ public final class NoopChoicesUpdateHandler implements ChoicesUpdateHandler<Void
      * This method should never be called, since the handler should never be used.
      */
     @Override
-    public ChoicesWidgetChoice[] update(final Void settings, final SettingsCreationContext context) {
+    public PossibleValue[] update(final Void settings, final SettingsCreationContext context) {
         return null;
     }
 }

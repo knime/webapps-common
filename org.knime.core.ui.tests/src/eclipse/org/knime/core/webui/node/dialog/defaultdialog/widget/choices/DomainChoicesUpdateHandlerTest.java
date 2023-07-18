@@ -64,7 +64,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
@@ -93,7 +93,7 @@ class DomainChoicesUpdateHandlerTest {
     }
 
     @Test
-    void testChoicesUpdateHandler() throws RequestFailureException {
+    void testChoicesUpdateHandler() throws WidgetHandlerException {
 
         final var colName = "colName";
 
@@ -111,7 +111,7 @@ class DomainChoicesUpdateHandlerTest {
     }
 
     @Test
-    void testChoicesUpdateHandlerNonMissingColumn() throws RequestFailureException {
+    void testChoicesUpdateHandlerNonMissingColumn() throws WidgetHandlerException {
 
         final var colName = "colName";
 
@@ -129,7 +129,7 @@ class DomainChoicesUpdateHandlerTest {
     }
 
     @Test
-    void testChoicesUpdateHandlerMissingSpec() throws RequestFailureException {
+    void testChoicesUpdateHandlerMissingSpec() throws WidgetHandlerException {
 
         final var colName = "colName";
 
@@ -153,7 +153,7 @@ class DomainChoicesUpdateHandlerTest {
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
         final var exception =
-            assertThrows(RequestFailureException.class, () -> handler.update(new ColumnNameSupplier() {
+            assertThrows(WidgetHandlerException.class, () -> handler.update(new ColumnNameSupplier() {
 
                 @Override
                 public String columnName() {

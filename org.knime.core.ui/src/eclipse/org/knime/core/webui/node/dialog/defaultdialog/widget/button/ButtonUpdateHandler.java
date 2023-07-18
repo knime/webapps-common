@@ -48,6 +48,9 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+
 /**
  * A handler for updating the button state when another setting changes its value.
  *

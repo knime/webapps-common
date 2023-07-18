@@ -58,6 +58,7 @@ import java.util.concurrent.Future;
 
 import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  * This class is responsible for handling the threads of the dialogs data service. Every widget should use one thread so
@@ -66,10 +67,10 @@ import org.knime.core.node.NodeLogger;
  *
  * @author Paul Bärnreuther
  */
-public class DataServiceRequestHandler {
+class DataServiceRequestHandler {
     private final Map<String, Future<?>> m_pendingRequests = new HashMap<>();
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DataServiceRequestHandler.class);
 
     <T> Result<T> handleRequest(final String widgetId, final Callable<T> callback)
         throws InterruptedException, ExecutionException {
@@ -85,7 +86,7 @@ public class DataServiceRequestHandler {
             return Result.cancel();
         } catch (ExecutionException ex) {
             final var cause = ex.getCause();
-            if (cause instanceof RequestFailureException) {
+            if (cause instanceof WidgetHandlerException) {
                 return Result.fail(cause.getMessage());
             }
             throw ex;

@@ -54,6 +54,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+
 /**
  *
  * This annotation can be applied to a field of any serializable type, in order to display a button widget which, on

@@ -46,24 +46,20 @@
  * History
  *   Jul 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 /**
  *
- * @author Paul Bärnreuther
- * @param <S> the settings, the handler is depending on. The fields specified in this class have to reference other
- *            settings of the current node settings. To reference a setting, use the same name and the same type (for
- *            nested settings all names along the way have to match) as the field that is to be referenced. If there is
- *            a field which is not unique with respect to its field name and type, use the
- *            {@link DeclaringDefaultNodeSettings} annotation to further specify the specific node settings class of the
- *            field. *
- *            <p>
- *            Example:
+ * The fields specified in this class have to reference other settings of the current node settings. To reference a
+ * setting, use the same name and the same type (for nested settings all names along the way have to match) as the field
+ * that is to be referenced. If there is a field which is not unique with respect to its field name and type, use the
+ * {@link DeclaringDefaultNodeSettings} annotation to further specify the specific node settings class of the field. *
+ * <p>
+ * Example:
  *
- *            <pre>
- *
+ * <pre>
  *            class OtherSettings {
  *                  &#64;DeclaringDefaultNodeSettings(MyNodeModelSettings.class) // referencing "MyNodeModelSettings#m_foo".
  *                  String m_bar;
@@ -84,11 +80,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
  *                String m_bar;
  *            }
  *
- *            </pre>
+ * </pre>
  *
- *            For simple scenarios where there is only one {@link DefaultNodeSettings} class used and a setting should
- *            depend on all other settings, the {@link DefaultNodeSettings} class itself can be directly used as the
- *            generic class.
+ * For simple scenarios where there is only one {@link DefaultNodeSettings} class used and a setting should depend on
+ * all other settings, the {@link DefaultNodeSettings} class itself can be directly used as the generic class.
+ *
+ * @param <S> the settings, the handler is depending on.
+ *
+ * @author Paul Bärnreuther
  *
  */
 public interface DependencyHandler<S> {

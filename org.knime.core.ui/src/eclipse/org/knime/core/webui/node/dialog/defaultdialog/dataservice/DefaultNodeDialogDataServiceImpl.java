@@ -56,9 +56,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 /**
  *

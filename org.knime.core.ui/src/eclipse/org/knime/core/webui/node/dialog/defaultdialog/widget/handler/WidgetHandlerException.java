@@ -46,20 +46,20 @@
  * History
  *   Jul 18, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public class RequestFailureException extends Exception {
+public class WidgetHandlerException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * @param message
      */
-    public RequestFailureException(final String message) {
+    public WidgetHandlerException(final String message) {
         super(message);
     }
 

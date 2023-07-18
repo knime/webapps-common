@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @param <H> The type of the handler class
  * @author Paul Bärnreuther
  */
-public abstract class WidgetHandlerHolder<H> {
+abstract class WidgetHandlerHolder<H> {
 
     private Map<String, H> m_handlers = new HashMap<>();
 

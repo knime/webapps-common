@@ -44,29 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 6, 2023 (Paul Bärnreuther): created
+ *   Jun 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 /**
- * This interface enables the {@link ButtonActionHandler} to have button states as inputs for methods called by the
- * frontend.
+ * An annotation to specify which setting exactly a setting with an attached {@link DependencyHandler} is dependent of
+ * in case the path of the field exists in more than one of the supplied {@link DefaultNodeSettings}
  *
- * @param <M>
  * @author Paul Bärnreuther
  */
-public interface ButtonStateMachineHandler<M extends Enum<M>> {
-
-    @SuppressWarnings("javadoc")
-    default M castToState(final String stateString) {
-        return Enum.valueOf(getStateMachine(), stateString);
-    }
-
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface DeclaringDefaultNodeSettings {
     /**
-     * This method is used for converting String parameters from the frontend dynamically to enum values.
-     *
-     * @return the class of the state machine.
+     * @return the {@link DefaultNodeSettings} class in which the field that the annotated field should reference lies.
      */
-    Class<M> getStateMachine();
-
+    Class<? extends DefaultNodeSettings> value();
 }

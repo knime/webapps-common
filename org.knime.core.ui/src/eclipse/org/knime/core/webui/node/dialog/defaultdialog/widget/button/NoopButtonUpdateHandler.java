@@ -49,8 +49,8 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler.NoopEnum;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  * Marker class that is only meant to serve as a default in {@link ButtonWidget#updateHandler}.
@@ -68,8 +68,7 @@ public final class NoopButtonUpdateHandler implements ButtonUpdateHandler<Void, 
      */
     @Override
     public ButtonChange<Void, NoopEnum> update(final Void settings, final SettingsCreationContext context)
-        throws RequestFailureException {
-        // TODO Auto-generated method stub
+        throws WidgetHandlerException {
         return null;
     }
 

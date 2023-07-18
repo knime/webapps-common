@@ -60,6 +60,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
@@ -84,7 +85,7 @@ public class DataServiceRequestHandlerTest {
         final var requestHandler = new DataServiceRequestHandler();
         final var message = "myMessage";
         final Callable<String> callable = () -> {
-            throw new RequestFailureException(message);
+            throw new WidgetHandlerException(message);
         };
         final var result = requestHandler.handleRequest("foo", callable);
         assertThat(result.state()).isEqualTo(ResultState.FAIL);

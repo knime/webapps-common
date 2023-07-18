@@ -44,35 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 /**
+ * This represents one of the possible values within a {@link ChoicesWidget}.
+ *
+ * @param id the id which is saved on selection
+ * @param text the displayed text
  *
  * @author Paul Bärnreuther
- * @param <R> the return type
- * @param <S> the settings, this update handler depends on (see {@link DependencyHandler}).
  */
-public interface UpdateHandler<R, S> extends DependencyHandler<S> {
+public record PossibleValue(String id, String text) {
     /**
-     * This method is called when one of the dependency settings defined by {@code S} changes in order to determine the
-     * immediate effect.
-     *
-     * @param settings the dependency settings on update
-     * @param context the current {@link SettingsCreationContext}
-     *
-     * @return a future of a result defining state changes in the fronted.
-     * @throws RequestFailureException if the request should fail providing the error message to the frontend
+     * @param id
+     * @return a choice whose text matches the given id.
      */
-    R update(S settings, SettingsCreationContext context) throws RequestFailureException;
-
-    @SuppressWarnings({"javadoc"})
-    default R castAndUpdate(final Object settings, final SettingsCreationContext context)
-        throws RequestFailureException {
-        return update(castToDependencies(settings), context);
+    public static PossibleValue fromId(final String id) {
+        return new PossibleValue(id, id);
     }
 }

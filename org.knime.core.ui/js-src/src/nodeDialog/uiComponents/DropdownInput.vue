@@ -9,6 +9,7 @@ import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
 import { AlertTypes } from '@knime/ui-extension-service';
 import { set } from 'lodash';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import getFlattenedSettings from '../utils/getFlattenedSettings';
 import { v4 as uuidv4 } from 'uuid';
 
 const DropdownInput = defineComponent({
@@ -107,7 +108,7 @@ const DropdownInput = defineComponent({
                 options: [
                     this.widgetId,
                     this.choicesUpdateHandler,
-                    { ...newSettings.view, ...newSettings.model }
+                    getFlattenedSettings(newSettings)
                 ]
             });
             if (result) {

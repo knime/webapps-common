@@ -70,8 +70,8 @@ public @interface ChoicesWidget {
 
     /**
      * @return the provider for the list of possible values. Use a {@link ColumnChoicesProvider} to supply additional
-     *         information like the type of a column alongside its name to the frontend. TODO UIEXT-907 use a separate
-     *         annotation instead for column choices.
+     *         information like the type of a column alongside its name to the frontend.
+     *         TODO UIEXT-907 use a separate annotation instead for column choices.
      */
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 
@@ -103,7 +103,6 @@ public @interface ChoicesWidget {
      *         values when such a dependency changes. On an update, if the current value is also part of the new values,
      *         it is kept. Otherwise the first of the new possible values is taken.
      */
-    @SuppressWarnings("rawtypes")
     Class<? extends ChoicesUpdateHandler<?>> choicesUpdateHandler() default NoopChoicesUpdateHandler.class; // NOSONAR
 
 }

@@ -48,8 +48,8 @@ describe('ButtonInput', () => {
     const dataSuccess = {
         state: 'SUCCESS',
         result: {
-            settingResult: 'token',
-            saveResult: true,
+            settingValue: 'token',
+            setSettingValue: true,
             buttonState: states[1].id
         }
     };
@@ -152,10 +152,22 @@ describe('ButtonInput', () => {
             expect(wrapper.vm.currentState).toStrictEqual(nextState);
         });
 
+
+        it('does not change the state if null is returned successfully', async () => {
+            getData.mockImplementation(() => ({
+                state: 'SUCCESS',
+                result: null
+            }));
+            wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            const stateAfterClick = wrapper.vm.currentState;
+            await wrapper.vm.$nextTick();
+            expect(wrapper.vm.currentState).toStrictEqual(stateAfterClick);
+        });
+
         it('calls handleChange if the result should be applied', async () => {
             getData.mockImplementation(() => ({
                 state: 'SUCCESS',
-                result: { settingResult: 'token', saveResult: true, buttonState: states[1].id }
+                result: { settingValue: 'token', setSettingValue: true, buttonState: states[1].id }
             }));
             wrapper.vm.handleChange = vi.fn();
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
@@ -166,7 +178,7 @@ describe('ButtonInput', () => {
         it('does not call handleChange if the result should not be applied', async () => {
             getData.mockImplementation(() => ({
                 state: 'SUCCESS',
-                result: { settingResult: 'token', saveResult: false, buttonState: states[1].id }
+                result: { settingValue: 'token', setSettingValue: false, buttonState: states[1].id }
             }));
             vi.runAllTimers();
             wrapper.vm.handleChange = vi.fn();
@@ -180,7 +192,7 @@ describe('ButtonInput', () => {
         const errorReult = {
             state: 'FAIL',
             message: 'some error',
-            result: { buttonState: states[1].id, saveResult: false, settingResult: null }
+            result: { buttonState: states[1].id, setSettingValue: false, settingValue: null }
         };
 
         beforeEach(() => {
@@ -270,13 +282,13 @@ describe('ButtonInput', () => {
         });
 
         it('applies new state defined by the update callback', async () => {
-            const settingResult = 'updateSettingResult';
+            const settingValue = 'updateSettingResult';
             const nextState = states[0];
             getData.mockImplementation(() => ({
                 state: 'SUCCESS',
                 result: {
-                    settingResult,
-                    saveResult: true,
+                    settingValue,
+                    setSettingValue: true,
                     buttonState: nextState.id
                 }
             }));
@@ -289,7 +301,7 @@ describe('ButtonInput', () => {
             });
             expect(wrapper.vm.currentState).toBe(nextState);
             vi.runAllTimers();
-            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, settingResult);
+            expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, settingValue);
         });
     });
 
