@@ -98,6 +98,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateO
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
@@ -222,6 +223,13 @@ final class UiSchemaOptionsGenerator {
             options.put("showTitleAndDescription", buttonWidget.showTitleAndDescription());
             final var dependencies = options.putArray(TAG_DEPENDENCIES);
             addDependencies(dependencies, buttonWidget.actionHandler());
+            final var updateHandlerClass = buttonWidget.updateHandler();
+            if (updateHandlerClass != NoopButtonUpdateHandler.class) {
+                final var updateOptions = options.putObject("updateOptions");
+                updateOptions.put("updateHandler", updateHandlerClass.getName());
+                final var updateDependencies = updateOptions.putArray(TAG_DEPENDENCIES);
+                addDependencies(updateDependencies, updateHandlerClass);
+            }
         }
 
         if (annotatedWidgets.contains(ValueSwitchWidget.class)) {

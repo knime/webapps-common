@@ -44,63 +44,66 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   14 Jul 2023 (Rupert Ettrich): created
+ *   Jul 14, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
 /**
  *
- * @author Rupert Ettrich
+ * @author Paul Bärnreuther
  */
-class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestStates> {
+public class ButtonWidgetActionHandlerHolderTest {
 
-    static enum TestStates {
-            @ButtonState(text = "Ready", nextState = "CANCEL")
-            READY, //
-            @ButtonState(text = "Cancel", primary = false)
-            CANCEL, //
-            @ButtonState(text = "Done", disabled = true)
-            DONE;
+    static class TestDefaultNodeSettings {
     }
 
-    @Override
-    public Class<TestStates> getStateMachine() {
-        return TestStates.class;
+    enum TestButtonStates {
+            FIRST, SECOND;
     }
 
-    @Override
-    public void overrideState(final TestStates state, final ButtonStateOverride override) {
-        switch (state) {
-            case CANCEL:
-                override.setText("Cancel Text");
-                return;
-            case DONE:
-                override.setText("Done Text");
-                return;
-            case READY:
-                override.setDisabled(true);
-                override.setPrimary(false);
-                return;
+    static class WrongResultTypeActionHandler
+        implements ButtonActionHandler<Integer, TestDefaultNodeSettings, TestButtonStates> {
+
+        @Override
+        public Class<TestButtonStates> getStateMachine() {
+            return TestButtonStates.class;
         }
+
+        @Override
+        public ButtonChange<Integer, TestButtonStates> initialize(final Integer currentValue,
+            final SettingsCreationContext context) {
+            return null;
+        }
+
+        @Override
+        public ButtonChange<Integer, TestButtonStates> invoke(final TestButtonStates state,
+            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+            return null;
+        }
+
     }
 
-    @Override
-    public ButtonChange<Object, TestStates> initialize(final Object currentValue,
-        final SettingsCreationContext context) {
-        return null;
-    }
+    @Test
+    void testValidatesReturnType() {
 
-    @Override
-    public ButtonChange<Object, TestStates> invoke(final TestStates state, final S settings,
-        final SettingsCreationContext context) {
-        return null;
+        class ButtonSettings {
+            @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
+            String m_button;
+        }
+
+        final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
+        assertThrows(IllegalArgumentException.class, () -> new ButtonWidgetActionHandlerHolder(settingsClasses));
     }
 
 }

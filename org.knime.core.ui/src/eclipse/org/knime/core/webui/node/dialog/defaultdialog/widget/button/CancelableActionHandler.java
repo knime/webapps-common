@@ -84,7 +84,7 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     /**
      * @param state - a field from the associated state machine enum.
      * @return the text that should be displayed for that state. If {@code null} is returned, the value of
-     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
+     *         {@link ButtonState#text} from the annotation of the respective state is used instead.
      */
     abstract protected String overrideText(final States state);
 
@@ -104,11 +104,6 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     @Override
     public ButtonChange<R, States> initialize(final R currentValue, final SettingsCreationContext context) {
         return new ButtonChange<>(null, false, States.READY);
-    }
-
-    @Override
-    public ButtonChange<R, States> update(final S settings, final SettingsCreationContext context) {
-        return new ButtonChange<R, States>(null, true, States.READY);
     }
 
     @Override
@@ -143,6 +138,27 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
              */
             @ButtonState(text = "Done", nextState = "CANCEL", disabled = true)
             DONE;
+
+    }
+
+    /**
+     * A simple update handler which will reset the current state of the button to the ready state when a triggering
+     * setting changes.
+     *
+     * @author Paul Bärnreuther
+     * @param <R> the field type
+     * @param <S> the triggering settings
+     */
+    public static class UpdateHandler<R, S> implements ButtonUpdateHandler<R, S, States> {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public ButtonChange<R, States> update(final S settings, final SettingsCreationContext context)
+            throws RequestFailureException {
+            return new ButtonChange<>(null, true, States.READY);
+        }
 
     }
 

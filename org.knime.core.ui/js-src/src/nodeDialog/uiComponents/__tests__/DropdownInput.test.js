@@ -229,7 +229,8 @@ describe('DropdownInput.vue', () => {
 
 
     describe('dependencies to other settings', () => {
-        let settingsChangeCallback, initialSettingsChangeCallback, wrapper, dependencies, handleResultSpy, getDataMock, sendAlert;
+        let settingsChangeCallback, initialSettingsChangeCallback, wrapper, dependencies, handleResultSpy,
+            getDataMock, sendAlert;
 
         const dependenciesUischema = ['foo', 'bar'];
         const result = [{ id: 'first', text: 'First' }, { id: 'second', text: 'Second' }];
@@ -239,9 +240,11 @@ describe('DropdownInput.vue', () => {
             handleResultSpy = vi.spyOn(DropdownInput.methods, 'handleResult');
         });
 
+        const updateHandler = 'UpdateHandler';
+
         beforeEach(() => {
             props.control.uischema.options.dependencies = dependenciesUischema;
-            props.control.uischema.options.choicesUpdateHandler = 'UpdateHandler';
+            props.control.uischema.options.choicesUpdateHandler = updateHandler;
             getDataMock = vi.fn(() => ({
                 result,
                 state: 'SUCCESS',
@@ -268,11 +271,14 @@ describe('DropdownInput.vue', () => {
         });
 
         it('requests new data if dependencies change', () => {
+            const widgetId = 'widgetId';
+            wrapper.setData({ widgetId });
             settingsChangeCallback({ view: { foo: 'foo', bar: 'bar' }, model: { baz: 'baz' } });
             expect(getDataMock).toHaveBeenCalledWith({
                 method: 'update',
                 options: [
-                    'UpdateHandler',
+                    widgetId,
+                    updateHandler,
                     {
                         foo: 'foo',
                         bar: 'bar',

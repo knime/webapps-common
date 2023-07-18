@@ -66,6 +66,7 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
@@ -82,6 +83,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DeclaringDefaultNodeSettings;
 
@@ -503,6 +506,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.displayErrorMessage").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.showTitleAndDescription").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(0);
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("updateOptions");
     }
 
     @Test
@@ -550,7 +554,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     class ButtonWidgetWithDependenciesTestSettings {
-        @ButtonWidget(actionHandler = ButtonActionHandlerWithDependencies.class)
+        @ButtonWidget(actionHandler = ButtonActionHandlerWithDependencies.class,
+            updateHandler = ButtonUpdateHandlerWithDependencies.class)
         String m_foo;
 
         Boolean m_otherSetting1;
@@ -581,6 +586,17 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
+    static class ButtonUpdateHandlerWithDependencies
+        implements ButtonUpdateHandler<String, OtherSettings, TestButtonActionHandler.TestStates> {
+
+        @Override
+        public ButtonChange<String, TestStates> update(final OtherSettings settings,
+            final SettingsCreationContext context) throws RequestFailureException {
+            return null;
+        }
+
+    }
+
     @Test
     void testButtonWidgetDependencies() {
         var response = buildTestUiSchema(ButtonWidgetWithDependenciesTestSettings.class);
@@ -592,6 +608,16 @@ class JsonFormsUiSchemaUtilOptionsTest {
             .isEqualTo("#/properties/test/properties/otherSetting2");
         assertThatJson(response).inPath("$.elements[0].options.dependencies[2]").isString()
             .isEqualTo("#/properties/test/properties/otherSetting3/properties/sub2");
+    }
+
+    @Test
+    void testButtonWidgetUpdateDependencies() {
+        var response = buildTestUiSchema(ButtonWidgetWithDependenciesTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.updateOptions.updateHandler").isString()
+            .isEqualTo(ButtonUpdateHandlerWithDependencies.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.updateOptions.dependencies").isArray().hasSize(3);
+
     }
 
     class ButtonWidgetWithMissingDependenciesTestSettings {

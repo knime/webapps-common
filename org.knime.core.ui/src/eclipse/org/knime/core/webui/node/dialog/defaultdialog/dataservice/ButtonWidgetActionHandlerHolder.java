@@ -44,63 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   14 Jul 2023 (Rupert Ettrich): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
+import java.util.Collection;
+import java.util.Optional;
+
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
+ * The holder of all {@link ButtonWidget#actionHandler}s.
  *
- * @author Rupert Ettrich
+ * @author Paul Bärnreuther
  */
-class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestStates> {
+public class ButtonWidgetActionHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
 
-    static enum TestStates {
-            @ButtonState(text = "Ready", nextState = "CANCEL")
-            READY, //
-            @ButtonState(text = "Cancel", primary = false)
-            CANCEL, //
-            @ButtonState(text = "Done", disabled = true)
-            DONE;
+    /**
+     * @param settingsClasses
+     */
+    public ButtonWidgetActionHandlerHolder(final Collection<Class<?>> settingsClasses) {
+        super(settingsClasses);
     }
 
     @Override
-    public Class<TestStates> getStateMachine() {
-        return TestStates.class;
+    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
+        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
+        if (buttonWidget == null) {
+            return Optional.empty();
+
+        }
+        final var actionHandlerClass = buttonWidget.actionHandler();
+        validate(field, actionHandlerClass);
+        return Optional.of(actionHandlerClass);
+
     }
 
-    @Override
-    public void overrideState(final TestStates state, final ButtonStateOverride override) {
-        switch (state) {
-            case CANCEL:
-                override.setText("Cancel Text");
-                return;
-            case DONE:
-                override.setText("Done Text");
-                return;
-            case READY:
-                override.setDisabled(true);
-                override.setPrimary(false);
-                return;
+    private static void validate(final TraversedField field,
+        final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
+        if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
+            throw new IllegalArgumentException(
+                String.format("Return type of action handler %s is not assignable to the type of the field %s.",
+                    actionHandlerClass.getSimpleName(), field.propertyWriter().getFullName()));
         }
     }
 
-    @Override
-    public ButtonChange<Object, TestStates> initialize(final Object currentValue,
-        final SettingsCreationContext context) {
-        return null;
-    }
-
-    @Override
-    public ButtonChange<Object, TestStates> invoke(final TestStates state, final S settings,
-        final SettingsCreationContext context) {
-        return null;
+    private static boolean isValidReturnType(final PropertyWriter field,
+        final Class<? extends ButtonActionHandler<?, ?, ?>> handlerClass) {
+        final var returnType = GenericTypeFinderUtil.getFirstGenericType(handlerClass, ButtonActionHandler.class);
+        final var fieldType = field.getType().getRawClass();
+        return fieldType.isAssignableFrom(returnType);
     }
 
 }

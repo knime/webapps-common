@@ -124,14 +124,16 @@ describe('ButtonInput', () => {
 
     describe('actions', () => {
         it('invokes action on click', async () => {
+            const widgetId = 'widgetId';
             const currentSettings = { foo: 'bar' };
             await wrapper.setData({
-                currentSettings
+                currentSettings,
+                widgetId
             });
             await wrapper.findComponent(FunctionButton).find('button').trigger('click');
             expect(getData).toHaveBeenCalledWith({
                 method: 'invokeButtonAction',
-                options: [uischema.options.actionHandler, states[1].id, currentSettings]
+                options: [widgetId, uischema.options.actionHandler, states[1].id, currentSettings]
             });
         });
 
@@ -210,7 +212,7 @@ describe('ButtonInput', () => {
     });
 
     describe('dependencies to other settings', () => {
-        let settingsChangeCallback, wrapper, dependencies;
+        let settingsChangeCallback, wrapper, dependencies, callbacks;
 
         const dependenciesUischema = ['foo', 'bar'];
 
@@ -220,21 +222,51 @@ describe('ButtonInput', () => {
             getData = vi.fn(() => dataSuccess);
             const comp = mountButtonInput({ props, getDataMock: getData });
             wrapper = comp.wrapper;
-            const firstWatcherCall = comp.callbacks[0];
-            settingsChangeCallback = firstWatcherCall.transformSettings;
-            dependencies = firstWatcherCall.dependencies;
+            callbacks = comp.callbacks;
+            settingsChangeCallback = callbacks[0].transformSettings;
+            dependencies = callbacks[0].dependencies;
             wrapper.vm.cancel = vi.fn();
             wrapper.vm.handleChange = vi.fn();
         });
 
-        it('registers watcher', () => {
+        it('registers one watcher', () => {
             expect(settingsChangeCallback).toBeDefined();
             expect(dependencies).toStrictEqual(dependenciesUischema);
+            expect(callbacks.length).toBe(1);
         });
 
         it('unpacks new data to current settings', () => {
             settingsChangeCallback({ model: { foo: 2, bar: 1 }, view: { baz: 3 } });
             expect(wrapper.vm.currentSettings).toStrictEqual({ foo: 2, bar: 1, baz: 3 });
+        });
+    });
+
+    describe('updates triggered by other settings', () => {
+        let settingsChangeCallback, wrapper, dependencies, callbacks;
+
+        const dependenciesUpdateHandler = ['foo', 'bar'];
+        const updateHandler = 'updateHandler';
+
+        beforeEach(() => {
+            const props = getProps({ isCancelable: true });
+            props.control.uischema.options.updateOptions = {
+                updateHandler,
+                dependencies: dependenciesUpdateHandler
+            };
+            getData = vi.fn(() => dataSuccess);
+            const comp = mountButtonInput({ props, getDataMock: getData });
+            wrapper = comp.wrapper;
+            callbacks = comp.callbacks;
+            settingsChangeCallback = callbacks[1].transformSettings;
+            dependencies = callbacks[1].dependencies;
+            wrapper.vm.cancel = vi.fn();
+            wrapper.vm.handleChange = vi.fn();
+        });
+
+        it('registers one watcher', () => {
+            expect(settingsChangeCallback).toBeDefined();
+            expect(dependencies).toStrictEqual(dependenciesUpdateHandler);
+            expect(callbacks.length).toBe(2);
         });
 
         it('applies new state defined by the update callback', async () => {
@@ -248,10 +280,12 @@ describe('ButtonInput', () => {
                     buttonState: nextState.id
                 }
             }));
+            const widgetId = 'widgetId';
+            await wrapper.setData({ widgetId });
             await settingsChangeCallback({ model: { foo: 2, bar: 1 }, view: { baz: 3 } });
             expect(getData).toHaveBeenCalledWith({
                 method: 'update',
-                options: [uischema.options.actionHandler, { foo: 2, bar: 1, baz: 3 }]
+                options: [widgetId, updateHandler, { foo: 2, bar: 1, baz: 3 }]
             });
             expect(wrapper.vm.currentState).toBe(nextState);
             vi.runAllTimers();

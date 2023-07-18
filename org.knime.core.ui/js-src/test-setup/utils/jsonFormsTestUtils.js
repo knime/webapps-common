@@ -40,7 +40,9 @@ export const mountJsonFormsComponent = (
                         { transformSettings, init, dependencies }
                     ) => {
                         callbacks.push({ transformSettings, init, dependencies });
-                        init({});
+                        if (typeof init === 'function') {
+                            init({});
+                        }
                     },
                     updateData,
                     getData,

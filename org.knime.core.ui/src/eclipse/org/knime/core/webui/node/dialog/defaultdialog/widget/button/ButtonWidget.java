@@ -71,10 +71,23 @@ public @interface ButtonWidget {
     /**
      * @return the action handler that is to be triggered on click. A successful result should be of the same type as
      *         the setting that is implemented. The second generic type of the {@link ButtonActionHandler} controls
-     *         which other settings trigger a reset of the button when they change (i.e. delete the saved value and
-     *         enable the button again). See there for further information on how to use this.
+     *         which other settings are available during the invocation. Without a {@link ButtonWidget#updateHandler}
+     *         set, this does not mean that the buttons state gets changed when one of these settings is changed.
+     *
+     *         See {@link DependencyHandler} for further information on how to define these other settings.
      */
     Class<? extends ButtonActionHandler<?, ?, ?>> actionHandler(); //NOSONAR
+
+    /**
+     * @return a handler that controls which other settings trigger a reset of the button when they change (i.e. delete
+     *         the saved value and enable the button again). See there for further information on how to use this. While
+     *         the first and third generic type have to agree with the ones of {@link ButtonWidget#actionHandler}, the
+     *         second one can, in principle, be different if the settings triggering an update and the settings used on
+     *         invocation differ.
+     *
+     *         See {@link DependencyHandler} for further information on how to define these other settings.
+     */
+    Class<? extends ButtonUpdateHandler<?, ?, ?>> updateHandler() default NoopButtonUpdateHandler.class; //NOSONAR
 
     /**
      * @return if set to true, error messages are displayed besides the button.

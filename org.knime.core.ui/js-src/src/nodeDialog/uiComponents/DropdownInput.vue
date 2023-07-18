@@ -9,6 +9,7 @@ import { isDeepStrictEqual } from 'is-deep-strict-equal-x';
 import { AlertTypes } from '@knime/ui-extension-service';
 import { set } from 'lodash';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { v4 as uuidv4 } from 'uuid';
 
 const DropdownInput = defineComponent({
     name: 'DropdownInput',
@@ -42,7 +43,8 @@ const DropdownInput = defineComponent({
     },
     data() {
         return {
-            options: []
+            options: [],
+            widgetId: uuidv4()
         };
     },
     computed: {
@@ -67,7 +69,6 @@ const DropdownInput = defineComponent({
         }
     },
     mounted() {
-        // TODO: UIEXT-1053: Hide this behind a (better) API
         if (this.choicesUpdateHandler) {
             const dependencies = this.control.uischema.options?.dependencies || [];
             this.registerWatcher({
@@ -104,6 +105,7 @@ const DropdownInput = defineComponent({
             const { result, state, message } = await this.getData({
                 method: 'update',
                 options: [
+                    this.widgetId,
                     this.choicesUpdateHandler,
                     { ...newSettings.view, ...newSettings.model }
                 ]

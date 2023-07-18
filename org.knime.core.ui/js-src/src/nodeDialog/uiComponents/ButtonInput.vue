@@ -6,6 +6,7 @@ import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import LabeledInput from './LabeledInput.vue';
 import LoadingIcon from 'webapps-common/ui/components/LoadingIcon.vue';
 import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { v4 as uuidv4 } from 'uuid';
 
 const ButtonInput = defineComponent({
     name: 'ButtonInput',
@@ -28,7 +29,8 @@ const ButtonInput = defineComponent({
             numPendingRequests: 0,
             errorMessage: null,
             currentSettings: {},
-            currentState: {}
+            currentState: {},
+            widgetId: uuidv4()
         };
     },
     computed: {
@@ -43,30 +45,41 @@ const ButtonInput = defineComponent({
         }
     },
     mounted() {
-        const dependencies = this.control.uischema.options?.dependencies || [];
         this.registerWatcher({
-            transformSettings: this.onSettingsChange.bind(this),
             init: this.initialize.bind(this),
-            dependencies
+            transformSettings: this.saveCurrentSettings.bind(this),
+            dependencies: this.control.uischema.options?.dependencies || []
         });
+        const updateOptions = this.control.uischema?.options?.updateOptions;
+        if (typeof updateOptions !== 'undefined') {
+            this.registerWatcher({
+                transformSettings: this.onUpdate.bind(this),
+                dependencies: updateOptions.dependencies
+            });
+        }
     },
     methods: {
         async initialize(newSettings) {
             this.saveCurrentSettings(newSettings);
             await this.performRequest({
                 method: 'initializeButton',
-                options: [this.control.data]
+                options: [this.control.data],
+                handler: this.control.uischema.options.actionHandler
             });
         },
-        onSettingsChange(newSettings) {
-            this.saveCurrentSettings(newSettings);
+        onUpdate(newSettings) {
             this.performRequest({
                 method: 'update',
-                options: [this.currentSettings]
+                options: [this.getFlattenedSettings(newSettings)],
+                handler: this.control.uischema.options.updateOptions.updateHandler
             });
         },
         saveCurrentSettings(newSettings) {
-            this.currentSettings = { ...newSettings.view, ...newSettings.model };
+            this.currentSettings = this.getFlattenedSettings(newSettings);
+        },
+
+        getFlattenedSettings(newSettings) {
+            return { ...newSettings.view, ...newSettings.model };
         },
         async onClick() {
             const { id, nextState } = this.currentState;
@@ -81,14 +94,15 @@ const ButtonInput = defineComponent({
             }
             await this.performRequest({
                 method: 'invokeButtonAction',
-                options: [id, this.currentSettings]
+                options: [id, this.currentSettings],
+                handler: this.control.uischema.options.actionHandler
             }, resetCallback);
         },
-        async performRequest({ method, options }, resetCallback = () => {}) {
+        async performRequest({ method, options, handler }, resetCallback = () => {}) {
             this.numPendingRequests += 1;
             const receivedData = await this.getData({
                 method,
-                options: [this.control.uischema.options.actionHandler, ...options]
+                options: [this.widgetId, handler, ...options]
             });
             this.numPendingRequests -= 1;
             this.handleDataServiceResult(receivedData, resetCallback);

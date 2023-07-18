@@ -67,7 +67,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandle
 @SuppressWarnings("java:S1452") //Allow wildcard return values
 public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
 
-    private final ButtonWidgetHandlerHolder m_buttonService;
+    private final ButtonWidgetUpdateHandlerHolder m_buttonUpdateHandlers;
+
+    private final ButtonWidgetActionHandlerHolder m_buttonActionHandlers;
 
     private final ChoicesWidgetHandlerHolder m_choicesService;
 
@@ -82,15 +84,16 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses,
         final Supplier<SettingsCreationContext> contextProvider) {
         m_contextProvider = contextProvider;
-        m_buttonService = new ButtonWidgetHandlerHolder(settingsClasses);
+        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
+        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesService = new ChoicesWidgetHandlerHolder(settingsClasses);
         m_requestHandler = new DataServiceRequestHandler();
     }
 
     @Override
-    public Result<?> invokeButtonAction(final String widgetId, final String buttonState, final Object objectSettings)
-        throws ExecutionException, InterruptedException {
-        final var handler = getButtonHandler(widgetId);
+    public Result<?> invokeButtonAction(final String widgetId, final String handlerClass, final String buttonState,
+        final Object objectSettings) throws ExecutionException, InterruptedException {
+        final var handler = getButtonActionHandler(handlerClass);
         final var convertedSettings = convertDependencies(objectSettings, handler);
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()));
@@ -98,9 +101,9 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     @Override
-    public Result<?> initializeButton(final String widgetId, final Object currentValue)
+    public Result<?> initializeButton(final String widgetId, final String handlerClass, final Object currentValue)
         throws InterruptedException, ExecutionException {
-        final var handler = getButtonHandler(widgetId);
+        final var handler = getButtonActionHandler(handlerClass);
         final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
         final var convertedCurrentValue = convertValue(currentValue, resultType);
 
@@ -109,8 +112,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     }
 
-    private ButtonActionHandler<?, ?, ?> getButtonHandler(final String widgetId) {
-        final var buttonHandler = m_buttonService.getHandler(widgetId);
+    private ButtonActionHandler<?, ?, ?> getButtonActionHandler(final String widgetId) {
+        final var buttonHandler = m_buttonActionHandlers.getHandler(widgetId);
         if (buttonHandler != null) {
             return buttonHandler;
         }
@@ -118,16 +121,16 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     @Override
-    public Result<?> update(final String widgetId, final Object objectSettings)
+    public Result<?> update(final String widgetId, final String handlerClass, final Object objectSettings)
         throws InterruptedException, ExecutionException {
-        final var handler = getUpdateHandler(widgetId);
+        final var handler = getUpdateHandler(handlerClass);
         final var convertedSettings = convertDependencies(objectSettings, handler);
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
     }
 
     private UpdateHandler<?, ?> getUpdateHandler(final String widgetId) {
-        final var buttonHandler = m_buttonService.getHandler(widgetId);
+        final var buttonHandler = m_buttonUpdateHandlers.getHandler(widgetId);
         if (buttonHandler != null) {
             return buttonHandler;
         }

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jul 18, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
@@ -52,53 +52,35 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
 
 /**
- * The holder of all {@link ButtonWidget#actionHandler}s.
  *
  * @author Paul Bärnreuther
  */
-public class ButtonWidgetHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
+public class ButtonWidgetUpdateHandlerHolder extends WidgetHandlerHolder<ButtonUpdateHandler<?, ?, ?>> {
 
     /**
      * @param settingsClasses
      */
-    public ButtonWidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
+    ButtonWidgetUpdateHandlerHolder(final Collection<Class<?>> settingsClasses) {
         super(settingsClasses);
     }
 
     @Override
-    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
+    Optional<Class<? extends ButtonUpdateHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
         final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
         if (buttonWidget == null) {
             return Optional.empty();
-
         }
-        final var actionHandlerClass = buttonWidget.actionHandler();
-        validate(field, actionHandlerClass);
-        return Optional.of(actionHandlerClass);
-
-    }
-
-    private static void validate(final TraversedField field,
-        final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
-        if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
-            throw new IllegalArgumentException(
-                String.format("Return type of action handler %s is not assignable to the type of the field %s.",
-                    actionHandlerClass.getSimpleName(), field.propertyWriter().getFullName()));
+        final var updateHandlerClass = buttonWidget.updateHandler();
+        if (updateHandlerClass == NoopButtonUpdateHandler.class) {
+            return Optional.empty();
         }
-    }
+        return Optional.of(updateHandlerClass);
 
-    private static boolean isValidReturnType(final PropertyWriter field,
-        final Class<? extends ButtonActionHandler<?, ?, ?>> handlerClass) {
-        final var returnType = GenericTypeFinderUtil.getFirstGenericType(handlerClass, ButtonActionHandler.class);
-        final var fieldType = field.getType().getRawClass();
-        return fieldType.isAssignableFrom(returnType);
     }
 
 }

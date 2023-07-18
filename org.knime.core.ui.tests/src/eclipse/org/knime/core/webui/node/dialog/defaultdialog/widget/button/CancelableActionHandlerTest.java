@@ -135,8 +135,8 @@ class CancelableActionHandlerTest {
     }
 
     @Test
-    void testUpdate() {
-        final var handler = new TestHandler();
+    void testUpdate() throws RequestFailureException {
+        final var handler = new CancelableActionHandler.UpdateHandler<String, Void>();
         final var result = handler.update(null, null);
         assertThat(result.buttonState()).isEqualTo(States.READY);
         assertThat(result.settingResult()).isNull();

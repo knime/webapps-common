@@ -61,7 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailure
  * @param <M> the state machine of the action handler
  */
 public interface ButtonActionHandler<R, S, M extends Enum<M>>
-    extends ButtonStateMachineHandler<M>, UpdateHandler<ButtonChange<R, M>, S> {
+    extends ButtonStateMachineHandler<M>, DependencyHandler<S> {
 
     /**
      * This method is called whenever the dialog is opened in order to determine the initial state of the button.

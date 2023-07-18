@@ -44,63 +44,18 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   14 Jul 2023 (Rupert Ettrich): created
+ *   Jul 18, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateOverride;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 /**
+ * A handler for updating the button state when another setting changes its value.
  *
- * @author Rupert Ettrich
+ * @param <R> the type of the setting which is annotated by {@link ButtonWidget}
+ * @param <S> the settings which should trigger an update of the button (see {@link DependencyHandler})
+ * @param <M> the state machine of the button. This has to be the same one as for the {@link ButtonWidget#actionHandler}
+ * @author Paul Bärnreuther
  */
-class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestStates> {
-
-    static enum TestStates {
-            @ButtonState(text = "Ready", nextState = "CANCEL")
-            READY, //
-            @ButtonState(text = "Cancel", primary = false)
-            CANCEL, //
-            @ButtonState(text = "Done", disabled = true)
-            DONE;
-    }
-
-    @Override
-    public Class<TestStates> getStateMachine() {
-        return TestStates.class;
-    }
-
-    @Override
-    public void overrideState(final TestStates state, final ButtonStateOverride override) {
-        switch (state) {
-            case CANCEL:
-                override.setText("Cancel Text");
-                return;
-            case DONE:
-                override.setText("Done Text");
-                return;
-            case READY:
-                override.setDisabled(true);
-                override.setPrimary(false);
-                return;
-        }
-    }
-
-    @Override
-    public ButtonChange<Object, TestStates> initialize(final Object currentValue,
-        final SettingsCreationContext context) {
-        return null;
-    }
-
-    @Override
-    public ButtonChange<Object, TestStates> invoke(final TestStates state, final S settings,
-        final SettingsCreationContext context) {
-        return null;
-    }
+public interface ButtonUpdateHandler<R, S, M extends Enum<M>> extends UpdateHandler<ButtonChange<R, M>, S> {
 
 }

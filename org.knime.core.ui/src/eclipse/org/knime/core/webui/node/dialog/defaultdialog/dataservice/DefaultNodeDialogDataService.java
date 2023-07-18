@@ -64,6 +64,7 @@ interface DefaultNodeDialogDataService {
     /**
      * This method is triggered whenever a {@link ButtonWidget} is clicked.
      *
+     * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
      * @param buttonState the id of the current state of the button
      * @param objectSettings the settings the button depends on
@@ -71,29 +72,30 @@ interface DefaultNodeDialogDataService {
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
-    Result<?> invokeButtonAction(String handlerClass, String buttonState, Object objectSettings)
+    Result<?> invokeButtonAction(String widgetId, String handlerClass, String buttonState, Object objectSettings)
         throws ExecutionException, InterruptedException;
 
     /**
+     * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param handlerClass the class name of the {@link ButtonActionHandler} that is to be used.
      * @param currentValue the current value of the saved settings underlying the button.
      * @return a {@link Result}
      * @throws InterruptedException if an error is thrown during the invocation
      * @throws ExecutionException if the used thread is interrupted
      */
-    Result<?> initializeButton(String handlerClass, Object currentValue)
+    Result<?> initializeButton(String widgetId, String handlerClass, Object currentValue)
         throws InterruptedException, ExecutionException;
 
     /**
      * This method is to be triggered whenever settings that a widget with an associated {@link UpdateHandler} depends
      * on change.
-     *
+     * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param handlerClass the class name of the {@link UpdateHandler} that is to be used.
      * @param objectSettings the settings the widget depends on.
      * @return a {@link Result}
      * @throws ExecutionException if an error is thrown during the invocation
      * @throws InterruptedException if the used thread is interrupted
      */
-    Result<?> update(String handlerClass, Object objectSettings) throws InterruptedException, ExecutionException;
+    Result<?> update(String widgetId, String handlerClass, Object objectSettings) throws InterruptedException, ExecutionException;
 
 }

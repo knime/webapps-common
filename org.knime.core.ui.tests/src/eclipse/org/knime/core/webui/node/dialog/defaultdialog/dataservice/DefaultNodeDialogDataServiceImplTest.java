@@ -65,6 +65,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Settin
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesWidgetChoice;
@@ -118,8 +119,8 @@ class DefaultNodeDialogDataServiceImplTest {
 
             final String testDepenenciesFooValue = "custom value";
             final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
-            final var result =
-                dataService.update(TestChoicesUpdateHandler.class.getName(), Map.of("foo", testDepenenciesFooValue));
+            final var result = dataService.update("widgetId", TestChoicesUpdateHandler.class.getName(),
+                Map.of("foo", testDepenenciesFooValue));
             assertThat(result.result()).isEqualTo(TestChoicesUpdateHandler.getResult(testDepenenciesFooValue));
         }
     }
@@ -141,6 +142,11 @@ class DefaultNodeDialogDataServiceImplTest {
 
         }
 
+        abstract static class IntermediateSuperUpdateHandler<A, B>
+            implements ButtonUpdateHandler<B, A, TestButtonStates> {
+
+        }
+
         static class GenericTypesTestHandler extends IntermediateSuperType<TestDefaultNodeSettings, String> {
 
             @Override
@@ -156,10 +162,14 @@ class DefaultNodeDialogDataServiceImplTest {
                 return new ButtonChange<>(settings.m_foo, false, state);
             }
 
+        }
+
+        static class GenericTypesUpdateHandler extends IntermediateSuperUpdateHandler<TestDefaultNodeSettings, String> {
+
             @Override
             public ButtonChange<String, TestButtonStates> update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) {
-                return new ButtonChange<>(settings.m_foo, false, TestButtonStates.FIRST);
+                final SettingsCreationContext context) throws RequestFailureException {
+                return new ButtonChange<>(settings.m_foo, false, TestButtonStates.SECOND);
             }
 
         }
@@ -174,7 +184,8 @@ class DefaultNodeDialogDataServiceImplTest {
 
             final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
             final String currentState = "currentState";
-            final var result = dataService.initializeButton(GenericTypesTestHandler.class.getName(), currentState);
+            final var result =
+                dataService.initializeButton("widgetId", GenericTypesTestHandler.class.getName(), currentState);
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.settingResult()).isEqualTo(currentState);
@@ -190,8 +201,8 @@ class DefaultNodeDialogDataServiceImplTest {
 
             final var testDepenenciesFooValue = "custom value";
             final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
-            final var result = dataService.invokeButtonAction(GenericTypesTestHandler.class.getName(), "FIRST",
-                Map.of("foo", testDepenenciesFooValue));
+            final var result = dataService.invokeButtonAction("widgetId", GenericTypesTestHandler.class.getName(),
+                "FIRST", Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.buttonState()).isEqualTo(TestButtonStates.FIRST);
@@ -202,14 +213,15 @@ class DefaultNodeDialogDataServiceImplTest {
         void testUpdate() throws ExecutionException, InterruptedException {
 
             class ButtonSettings {
-                @ButtonWidget(actionHandler = GenericTypesTestHandler.class)
+                @ButtonWidget(actionHandler = GenericTypesTestHandler.class,
+                    updateHandler = GenericTypesUpdateHandler.class)
                 String m_button;
             }
 
             final var testDepenenciesFooValue = "custom value";
             final var dataService = getDataServiceWithNullContext(List.of(ButtonSettings.class));
-            final var result =
-                dataService.update(GenericTypesTestHandler.class.getName(), Map.of("foo", testDepenenciesFooValue));
+            final var result = dataService.update("widgetId", GenericTypesUpdateHandler.class.getName(),
+                Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.settingResult()).isEqualTo(testDepenenciesFooValue);
@@ -266,8 +278,8 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
-            final var firstResult = dataService.update(FirstTestHandler.class.getName(), null);
-            final var secondResult = dataService.update(SecondTestHandler.class.getName(), null);
+            final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
+            final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
             assertThat(((ChoicesWidgetChoice[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
             assertThat(((ChoicesWidgetChoice[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
@@ -282,7 +294,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
             final var handlerName = SecondTestHandler.class.getName();
-            assertThrows(IllegalArgumentException.class, () -> dataService.update(handlerName, null));
+            assertThrows(IllegalArgumentException.class, () -> dataService.update("widgetId", handlerName, null));
 
         }
 
@@ -298,7 +310,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
             final var handlerName = NonStaticHandler.class.getName();
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
-            assertThrows(IllegalArgumentException.class, () -> dataService.update(handlerName, null));
+            assertThrows(IllegalArgumentException.class, () -> dataService.update("widgetId", handlerName, null));
 
         }
 
@@ -316,14 +328,12 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class, OtherTestSettings.class));
-            final var firstResult = dataService.update(FirstTestHandler.class.getName(), null);
-            final var secondResult = dataService.update(SecondTestHandler.class.getName(), null);
+            final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
+            final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
             assertThat(((ChoicesWidgetChoice[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
             assertThat(((ChoicesWidgetChoice[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
     }
-
-
 
     static class SettingsCreationContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
@@ -363,12 +373,14 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService =
                 new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider);
 
-            final var firstResult = dataService.update(SettingsCreationContextHandler.class.getName(), null).result();
+            final var firstResult =
+                dataService.update("widgetId", SettingsCreationContextHandler.class.getName(), null).result();
             assertThat(firstResult).isNull();
 
             m_context = new SettingsCreationContext(new PortObjectSpec[0], null, null);
 
-            final var secondResult = dataService.update(SettingsCreationContextHandler.class.getName(), null).result();
+            final var secondResult =
+                dataService.update("widgetId", SettingsCreationContextHandler.class.getName(), null).result();
             assertThat(secondResult).isNotNull();
 
         }
