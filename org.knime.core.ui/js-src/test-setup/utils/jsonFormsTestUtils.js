@@ -11,8 +11,8 @@ import { useJsonFormsLayout, useJsonFormsArrayControl } from '@jsonforms/vue';
 
 import * as jsonFormsControlWithUpdateModule from '@/nodeDialog/uiComponents/composables/jsonFormsControlWithUpdate';
 
-const mountJsonFormsComponentWithStoreAndCallbacks = (
-    component, { props, provide }, modules, showAdvanced = false
+export const mountJsonFormsComponent = (
+    component, { props, provide, modules = null, showAdvanced = false }
 ) => {
     const useJsonFormsControlSpy = vi.spyOn(jsonFormsControlWithUpdateModule, 'useJsonFormsControlWithUpdate');
     const callbacks = [];
@@ -65,23 +65,6 @@ const mountJsonFormsComponentWithStoreAndCallbacks = (
         }
     );
     return { wrapper, callbacks, updateData, useJsonFormsControlSpy, sendAlert, getData };
-};
-
-export const mountJsonFormsComponentWithStore = (
-    component, { props, provide }, modules, showAdvanced = false
-) => mountJsonFormsComponentWithStoreAndCallbacks(
-    component, { props, provide }, modules, showAdvanced
-);
-
-export const mountJsonFormsComponentWithCallbacks = (
-    component, { props, provide }, modules = null
-) => mountJsonFormsComponentWithStoreAndCallbacks(
-    component, { props, provide }, modules, false
-);
-
-// eslint-disable-next-line arrow-body-style
-export const mountJsonFormsComponent = (component, { props }, showAdvanced) => {
-    return mountJsonFormsComponentWithStore(component, { props }, null, showAdvanced);
 };
 
 const hasBasicProps = (props) => {

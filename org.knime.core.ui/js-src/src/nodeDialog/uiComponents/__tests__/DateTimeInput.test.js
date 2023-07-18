@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
+import { mountJsonFormsComponent, initializesJsonFormsControl }
     from '@@/test-setup/utils/jsonFormsTestUtils';
 import DateTimeInput from '../DateTimeInput.vue';
 import LabeledInput from '../LabeledInput.vue';
@@ -64,10 +64,13 @@ describe('DateTimeInput.vue', () => {
 
     it('calls onChange when text input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(DateTimeInput, { props: defaultProps }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper, updateData } = mountJsonFormsComponent(DateTimeInput, {
+            props: defaultProps,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         const changedDateTimeInput = new Date('2022-12-12T20:22:22.000Z');
@@ -81,22 +84,24 @@ describe('DateTimeInput.vue', () => {
 
     it('indicates model settings change when model setting is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = mountJsonFormsComponent(
             DateTimeInput,
-            { props: {
-                ...defaultProps,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.schema,
-                        scope: '#/properties/model/properties/dateTime'
-                    }
-                }
-            } },
             {
-                'pagebuilder/dialog': {
-                    actions: { dirtySettings: dirtySettingsMock },
-                    namespaced: true
+                props: {
+                    ...defaultProps,
+                    control: {
+                        ...defaultProps.control,
+                        uischema: {
+                            ...defaultProps.control.schema,
+                            scope: '#/properties/model/properties/dateTime'
+                        }
+                    }
+                },
+                modules: {
+                    'pagebuilder/dialog': {
+                        actions: { dirtySettings: dirtySettingsMock },
+                        namespaced: true
+                    }
                 }
             }
         );

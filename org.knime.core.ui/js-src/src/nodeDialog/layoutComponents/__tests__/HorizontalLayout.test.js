@@ -55,7 +55,7 @@ describe('HorizontalLayout.vue', () => {
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', () => {
         defaultProps.layout.uischema.options = { isAdvanced: true };
-        const { wrapper } = mountJsonFormsComponent(HorizontalLayout, { props: defaultProps }, true);
+        const { wrapper } = mountJsonFormsComponent(HorizontalLayout, { props: defaultProps, showAdvanced: true });
         expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(true);
     });
 });

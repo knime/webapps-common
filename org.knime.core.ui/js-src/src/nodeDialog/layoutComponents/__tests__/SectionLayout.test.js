@@ -64,7 +64,7 @@ describe('SectionLayout.vue', () => {
 
     it('checks that it is rendered if it is an advanced setting and advanced settings are shown', async () => {
         defaultProps.layout.uischema.options.isAdvanced = true;
-        const { wrapper } = await mountJsonFormsComponent(SectionLayout, { props: defaultProps }, true);
+        const { wrapper } = await mountJsonFormsComponent(SectionLayout, { props: defaultProps, showAdvanced: true });
         expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(true);
     });
 });

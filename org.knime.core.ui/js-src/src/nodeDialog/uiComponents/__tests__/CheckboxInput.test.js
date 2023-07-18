@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore } from
+import { mountJsonFormsComponent, initializesJsonFormsControl } from
     '@@/test-setup/utils/jsonFormsTestUtils';
 import CheckboxInput from '../CheckboxInput.vue';
 import ErrorMessage from '../ErrorMessage.vue';
@@ -75,10 +75,13 @@ describe('CheckboxInput.vue', () => {
 
     it('calls onChange when checkbox is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = mountJsonFormsComponentWithStore(CheckboxInput, { props: defaultProps }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper, updateData } = mountJsonFormsComponent(CheckboxInput, {
+            props: defaultProps,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         await wrapper.findComponent(Checkbox).vm.$emit('update:modelValue', true);
@@ -91,22 +94,24 @@ describe('CheckboxInput.vue', () => {
 
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = await mountJsonFormsComponent(
             CheckboxInput,
-            { props: {
-                ...defaultProps,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.schema,
-                        scope: '#/properties/model/filterMissingValues'
-                    }
-                }
-            } },
             {
-                'pagebuilder/dialog': {
-                    actions: { dirtySettings: dirtySettingsMock },
-                    namespaced: true
+                props: {
+                    ...defaultProps,
+                    control: {
+                        ...defaultProps.control,
+                        uischema: {
+                            ...defaultProps.control.schema,
+                            scope: '#/properties/model/filterMissingValues'
+                        }
+                    }
+                },
+                modules: {
+                    'pagebuilder/dialog': {
+                        actions: { dirtySettings: dirtySettingsMock },
+                        namespaced: true
+                    }
                 }
             }
         );

@@ -84,7 +84,7 @@ const ButtonInput = defineComponent({
                 options: [id, this.currentSettings]
             }, resetCallback);
         },
-        async performRequest({ method, options }) {
+        async performRequest({ method, options }, resetCallback = () => {}) {
             this.numPendingRequests += 1;
             const receivedData = await this.getData({
                 method,

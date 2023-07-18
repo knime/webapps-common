@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore,
-    mountJsonFormsComponentWithCallbacks } from '@@/test-setup/utils/jsonFormsTestUtils';
+import { mountJsonFormsComponent, initializesJsonFormsControl }
+    from '@@/test-setup/utils/jsonFormsTestUtils';
 import DropdownInput from '../DropdownInput.vue';
 import LabeledInput from '../LabeledInput.vue';
 import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
@@ -96,7 +96,7 @@ describe('DropdownInput.vue', () => {
         });
 
         it('calls onChange when input is changed', async () => {
-            const { wrapper, updateData } = await mountJsonFormsComponentWithCallbacks(
+            const { wrapper, updateData } = await mountJsonFormsComponent(
                 DropdownInput,
                 { props },
                 {
@@ -116,22 +116,24 @@ describe('DropdownInput.vue', () => {
         });
     
         it('indicates model settings change when model setting is changed', async () => {
-            const { wrapper, updateData } = await mountJsonFormsComponentWithCallbacks(
+            const { wrapper, updateData } = await mountJsonFormsComponent(
                 DropdownInput,
-                { props: {
-                    ...props,
-                    control: {
-                        ...props.control,
-                        uischema: {
-                            ...props.control.schema,
-                            scope: '#/properties/model/properties/yAxisColumn'
-                        }
-                    }
-                } },
                 {
-                    'pagebuilder/dialog': {
-                        actions: { dirtySettings: dirtySettingsMock },
-                        namespaced: true
+                    props: {
+                        ...props,
+                        control: {
+                            ...props.control,
+                            uischema: {
+                                ...props.control.schema,
+                                scope: '#/properties/model/properties/yAxisColumn'
+                            }
+                        }
+                    },
+                    modules: {
+                        'pagebuilder/dialog': {
+                            actions: { dirtySettings: dirtySettingsMock },
+                            namespaced: true
+                        }
                     }
                 }
             );
@@ -155,7 +157,7 @@ describe('DropdownInput.vue', () => {
 
     it('checks that placeholder text is correctly set if no possible values are present', () => {
         props.control.uischema.options.possibleValues = [];
-        const { wrapper } = mountJsonFormsComponentWithStore(
+        const { wrapper } = mountJsonFormsComponent(
             DropdownInput,
             { props }
         );
@@ -164,7 +166,7 @@ describe('DropdownInput.vue', () => {
 
     it('checks that placeholder text is correctly set if there are possible values present', () => {
         props.control.data = '';
-        const { wrapper } = mountJsonFormsComponentWithStore(
+        const { wrapper } = mountJsonFormsComponent(
             DropdownInput,
             { props }
         );
@@ -213,14 +215,14 @@ describe('DropdownInput.vue', () => {
         it('updates initial data on change', async () => {
             const updatedValue = 'Universe_0_1 (updated value)';
             props.dropdownValueToControlData = () => updatedValue;
-            const { updateData } = await mountJsonFormsComponentWithCallbacks(DropdownInput, { props }, null, false);
+            const { updateData } = await mountJsonFormsComponent(DropdownInput, { props }, null, false);
             expect(updateData).toHaveBeenCalledWith(
                 expect.anything(), props.control.path, updatedValue
             );
         });
 
         it('does not update initial data if they are current', async () => {
-            const { updateData } = await mountJsonFormsComponentWithCallbacks(DropdownInput, { props });
+            const { updateData } = await mountJsonFormsComponent(DropdownInput, { props });
             expect(updateData).not.toHaveBeenCalled();
         });
     });
@@ -245,7 +247,7 @@ describe('DropdownInput.vue', () => {
                 state: 'SUCCESS',
                 message: null
             }));
-            const comp = mountJsonFormsComponentWithCallbacks(DropdownInput, {
+            const comp = mountJsonFormsComponent(DropdownInput, {
                 props,
                 provide: { getDataMock }
             });

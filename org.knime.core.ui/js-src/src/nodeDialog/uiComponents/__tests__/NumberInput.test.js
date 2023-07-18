@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
+import { mountJsonFormsComponent, initializesJsonFormsControl }
     from '@@/test-setup/utils/jsonFormsTestUtils';
 import NumberInput from '../NumberInput.vue';
 import NumberInputBase from '../NumberInputBase.vue';
@@ -71,10 +71,13 @@ describe('NumberInput.vue', () => {
 
     it('calls onChange of NumberInputBase when number input is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = mountJsonFormsComponentWithStore(NumberInput, { props: defaultProps }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper } = mountJsonFormsComponent(NumberInput, {
+            props: defaultProps,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         wrapper.findComponent(NumberInputBase).find('input').trigger('input');
@@ -84,22 +87,24 @@ describe('NumberInput.vue', () => {
 
     it('indicates model settings change when model setting is changed', () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = mountJsonFormsComponentWithStore(
+        const { wrapper } = mountJsonFormsComponent(
             NumberInput,
-            { props: {
-                ...defaultProps,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.schema,
-                        scope: '#/properties/model/properties/yAxisColumn'
-                    }
-                }
-            } },
             {
-                'pagebuilder/dialog': {
-                    actions: { dirtySettings: dirtySettingsMock },
-                    namespaced: true
+                props: {
+                    ...defaultProps,
+                    control: {
+                        ...defaultProps.control,
+                        uischema: {
+                            ...defaultProps.control.schema,
+                            scope: '#/properties/model/properties/yAxisColumn'
+                        }
+                    }
+                },
+                modules: {
+                    'pagebuilder/dialog': {
+                        actions: { dirtySettings: dirtySettingsMock },
+                        namespaced: true
+                    }
                 }
             }
         );

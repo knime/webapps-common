@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
+import { mountJsonFormsComponent, initializesJsonFormsControl }
     from '@@/test-setup/utils/jsonFormsTestUtils';
 import RadioInputBase from '../RadioInputBase.vue';
 import LabeledInput from '../LabeledInput.vue';
@@ -72,19 +72,21 @@ describe('RadioInputBase.vue', () => {
         initializesJsonFormsControl(component);
     });
 
-    const createTypedWrapper = (type) => mountJsonFormsComponentWithStore(
+    const createTypedWrapper = (type) => mountJsonFormsComponent(
         RadioInputBase,
-        { props: {
-            ...defaultProps,
-            type,
-            control: {
-                ...defaultProps.control,
-                uischema: {
-                    ...defaultProps.control.schema,
-                    scope: '#/properties/model/properties/testColumn'
+        {
+            props: {
+                ...defaultProps,
+                type,
+                control: {
+                    ...defaultProps.control,
+                    uischema: {
+                        ...defaultProps.control.schema,
+                        scope: '#/properties/model/properties/testColumn'
+                    }
                 }
             }
-        } }
+        }
     );
 
     const testTypes = [
@@ -108,13 +110,15 @@ describe('RadioInputBase.vue', () => {
 
     it('calls onChange when radio button is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RadioInputBase, { props: defaultProps },
-            {
+        const { wrapper, updateData } = await mountJsonFormsComponent(RadioInputBase, {
+            props: defaultProps,
+            modules: {
                 'pagebuilder/dialog': {
                     actions: { dirtySettings: dirtySettingsMock },
                     namespaced: true
                 }
-            });
+            }
+        });
         const changedRadioInputBase = 'Shaken not stirred';
         wrapper.findComponent(RadioButtons).vm.$emit('update:modelValue', changedRadioInputBase);
         expect(onChangeSpy).toHaveBeenCalledWith(changedRadioInputBase);
@@ -126,22 +130,24 @@ describe('RadioInputBase.vue', () => {
 
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(
+        const { wrapper, updateData } = await mountJsonFormsComponent(
             RadioInputBase,
-            { props: {
-                ...defaultProps,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.schema,
-                        scope: '#/properties/model/properties/testColumn'
-                    }
-                }
-            } },
             {
-                'pagebuilder/dialog': {
-                    actions: { dirtySettings: dirtySettingsMock },
-                    namespaced: true
+                props: {
+                    ...defaultProps,
+                    control: {
+                        ...defaultProps.control,
+                        uischema: {
+                            ...defaultProps.control.schema,
+                            scope: '#/properties/model/properties/testColumn'
+                        }
+                    }
+                },
+                modules: {
+                    'pagebuilder/dialog': {
+                        actions: { dirtySettings: dirtySettingsMock },
+                        namespaced: true
+                    }
                 }
             }
         );

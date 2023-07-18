@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
+import { mountJsonFormsComponent, initializesJsonFormsControl }
     from '@@/test-setup/utils/jsonFormsTestUtils';
 import RichTextEditor from 'webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue';
 import RichTextInput from '../RichTextInput.vue';
@@ -61,10 +61,13 @@ describe('RichTextInput.vue', () => {
 
     it('calls onChange when html content is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper, updateData } = await mountJsonFormsComponentWithStore(RichTextInput, { props }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper, updateData } = await mountJsonFormsComponent(RichTextInput, {
+            props,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         const changedRichTextInput = 'abcdefg';

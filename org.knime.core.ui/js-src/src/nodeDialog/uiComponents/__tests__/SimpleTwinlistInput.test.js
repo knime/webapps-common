@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, beforeAll, describe, expect, it, vi } from 'vitest';
-import { mountJsonFormsComponent, initializesJsonFormsControl, mountJsonFormsComponentWithStore }
+import { mountJsonFormsComponent, initializesJsonFormsControl }
     from '@@/test-setup/utils/jsonFormsTestUtils';
 import SimpleTwinlistInput from '../SimpleTwinlistInput.vue';
 import LabeledInput from '../LabeledInput.vue';
@@ -67,10 +67,13 @@ describe('SimpleTwinlistInput.vue', () => {
 
     it('calls onChange when twinlist input is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, { props: defaultProps }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper } = await mountJsonFormsComponent(SimpleTwinlistInput, {
+            props: defaultProps,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         await wrapper.findComponent(Twinlist).find({ ref: 'moveAllRight' }).trigger('click');
@@ -80,22 +83,24 @@ describe('SimpleTwinlistInput.vue', () => {
 
     it('indicates model settings change when model setting is changed', async () => {
         const dirtySettingsMock = vi.fn();
-        const { wrapper } = await mountJsonFormsComponentWithStore(
+        const { wrapper } = await mountJsonFormsComponent(
             SimpleTwinlistInput,
-            { props: {
-                ...defaultProps,
-                control: {
-                    ...defaultProps.control,
-                    uischema: {
-                        ...defaultProps.control.uischema,
-                        scope: '#/properties/model/properties/yAxisColumn'
-                    }
-                }
-            } },
             {
-                'pagebuilder/dialog': {
-                    actions: { dirtySettings: dirtySettingsMock },
-                    namespaced: true
+                props: {
+                    ...defaultProps,
+                    control: {
+                        ...defaultProps.control,
+                        uischema: {
+                            ...defaultProps.control.uischema,
+                            scope: '#/properties/model/properties/yAxisColumn'
+                        }
+                    }
+                },
+                modules: {
+                    'pagebuilder/dialog': {
+                        actions: { dirtySettings: dirtySettingsMock },
+                        namespaced: true
+                    }
                 }
             }
         );
@@ -145,10 +150,13 @@ describe('SimpleTwinlistInput.vue', () => {
     it('moves missing values correctly', async () => {
         const dirtySettingsMock = vi.fn();
         const localProps = { ...defaultProps, control: { ...defaultProps.control, data: ['missing'] } };
-        const { wrapper } = await mountJsonFormsComponentWithStore(SimpleTwinlistInput, { props: localProps }, {
-            'pagebuilder/dialog': {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true
+        const { wrapper } = await mountJsonFormsComponent(SimpleTwinlistInput, {
+            props: localProps,
+            modules: {
+                'pagebuilder/dialog': {
+                    actions: { dirtySettings: dirtySettingsMock },
+                    namespaced: true
+                }
             }
         });
         expect(wrapper.props().control.data).toStrictEqual(['missing']);

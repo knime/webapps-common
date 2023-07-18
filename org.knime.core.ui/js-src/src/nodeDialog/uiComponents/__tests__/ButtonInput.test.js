@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { initializesJsonFormsControl, mountJsonFormsComponentWithCallbacks } from
+import { initializesJsonFormsControl, mountJsonFormsComponent } from
     '@@/test-setup/utils/jsonFormsTestUtils';
 import ButtonInput from '../ButtonInput.vue';
 import DialogComponentWrapper from '../DialogComponentWrapper.vue';
@@ -73,7 +73,7 @@ describe('ButtonInput', () => {
         }
     });
 
-    const mountButtonInput = ({ props, getDataMock }) => mountJsonFormsComponentWithCallbacks(
+    const mountButtonInput = ({ props, getDataMock }) => mountJsonFormsComponent(
         ButtonInput, { props, provide: { getDataMock } }
     );
 
@@ -262,7 +262,7 @@ describe('ButtonInput', () => {
     describe('reset current state', () => {
         it('resets current state after failed request on click', async () => {
             const nextState = states[0];
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'FAIL',
                 result: {
                     buttonState: nextState.id
@@ -274,7 +274,7 @@ describe('ButtonInput', () => {
 
         it('resets current state after canceled request on click', async () => {
             const nextState = states[0];
-            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+            getData.mockImplementation(() => ({
                 state: 'CANCELED',
                 result: {
                     buttonState: nextState.id

@@ -1,9 +1,6 @@
 // @ts-ignore
 import { constants as tableUIConstants } from '@knime/knime-ui-table';
-const { MIN_COLUMN_SIZE, SPECIAL_COLUMNS_SIZE } = tableUIConstants as {
-    MIN_COLUMN_SIZE: number,
-    SPECIAL_COLUMNS_SIZE: number
-};
+const { MIN_COLUMN_SIZE } = tableUIConstants as { MIN_COLUMN_SIZE: number };
 
 
 import specialColumns from './specialColumns';

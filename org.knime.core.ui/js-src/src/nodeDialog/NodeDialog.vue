@@ -1,5 +1,5 @@
 <script>
-import { JsonDataService, DialogService, AlertTypes } from '@knime/ui-extension-service';
+import { JsonDataService, DialogService } from '@knime/ui-extension-service';
 import { vanillaRenderers } from '@jsonforms/vue-vanilla';
 import { JsonForms } from '@jsonforms/vue';
 import { toDataPath } from '@jsonforms/core';

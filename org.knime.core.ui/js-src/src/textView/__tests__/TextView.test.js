@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect, vi, afterEach } from 'vitest';
 import TextView from '../TextView.vue';
-import { mountJsonFormsComponentWithStore } from '@@/test-setup/utils/jsonFormsTestUtils';
+import { mountJsonFormsComponent } from '@@/test-setup/utils/jsonFormsTestUtils';
 import { JsonDataService } from '@knime/ui-extension-service';
 
 describe('TextView.vue', () => {
@@ -28,10 +28,13 @@ describe('TextView.vue', () => {
     };
 
     const mountWrapper = () => {
-        const component = mountJsonFormsComponentWithStore(TextView, { }, {
-            pagebuilder: {
-                actions: { setReportingContent: setReportingContentMock },
-                namespaced: true
+        const component = mountJsonFormsComponent(TextView, {
+            props: false,
+            modules: {
+                pagebuilder: {
+                    actions: { setReportingContent: setReportingContentMock },
+                    namespaced: true
+                }
             }
         });
         wrapper = component.wrapper;
@@ -145,7 +148,7 @@ describe('TextView.vue', () => {
         expect(wrapper.vm.richTextContent).toBe('value1 value2');
     });
 
-    // TODO enable once we have a propper way to get the reporting state
+    // TODO UIEXT-1052 enable once we have a propper way to get the reporting state
     // eslint-disable-next-line vitest/no-skipped-tests
     it.skip('notifies pagebuilder when component is mounted if it is in reporting context', () => {
         expect(setReportingContentMock).toHaveBeenCalledWith(expect.anything(), {
