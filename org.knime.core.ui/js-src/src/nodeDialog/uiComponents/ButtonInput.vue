@@ -63,11 +63,19 @@ const ButtonInput = defineComponent({
         },
         async onClick() {
             const { id, nextState } = this.currentState;
-            this.setButtonState(nextState);
+            const lastSuccessfulState = this.currentState;
+            const resetCallback = () => {
+                if (nextState === this.currentState.id) {
+                    this.currentState = lastSuccessfulState;
+                }
+            };
+            if (typeof nextState !== 'undefined') {
+                this.setButtonState(nextState);
+            }
             await this.performRequest({
                 method: 'invokeButtonAction',
                 options: [id, this.currentSettings]
-            });
+            }, resetCallback);
         },
         onSettingsChange(newSettings) {
             this.currentSettings = { ...newSettings.view, ...newSettings.model };
@@ -76,25 +84,30 @@ const ButtonInput = defineComponent({
                 options: [this.currentSettings]
             });
         },
-        async performRequest({ method, options }) {
+        async performRequest({ method, options }, resetCallback = () => {}) {
             this.numPendingRequests += 1;
             const receivedData = await this.jsonDataService.data({
                 method,
                 options: [this.control.uischema.options.actionHandler, ...options]
             });
             this.numPendingRequests -= 1;
-            this.handleDataServiceResult(receivedData);
+            this.handleDataServiceResult(receivedData, resetCallback);
         },
-        handleDataServiceResult(receivedData) {
+        handleDataServiceResult(receivedData, resetCallback = () => {}) {
             const { state, message, result } = receivedData;
-            if (state !== 'CANCELED') {
+            if (state === 'SUCCESS') {
                 this.setNextState(result);
+                return;
             }
             if (state === 'FAIL') {
                 this.errorMessage = message;
             }
+            resetCallback();
         },
         setNextState(dataServiceResult) {
+            if (dataServiceResult === null) {
+                return;
+            }
             const { settingResult, saveResult, buttonState } = dataServiceResult;
             if (saveResult) {
                 this.saveResult(settingResult);

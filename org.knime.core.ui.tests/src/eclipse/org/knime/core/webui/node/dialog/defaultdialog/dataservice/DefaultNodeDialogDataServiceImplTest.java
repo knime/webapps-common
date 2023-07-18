@@ -54,10 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Nested;
@@ -102,9 +99,9 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public Future<Result<ChoicesWidgetChoice[]>> update(final TestDefaultNodeSettings settings,
+            public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
                 final SettingsCreationContext context) {
-                return CompletableFuture.supplyAsync(() -> Result.succeed(getResult(settings.m_foo)));
+                return getResult(settings.m_foo);
             }
         }
 
@@ -146,30 +143,23 @@ class DefaultNodeDialogDataServiceImplTest {
 
         static class GenericTypesTestHandler extends IntermediateSuperType<TestDefaultNodeSettings, String> {
 
-            private static <T> Future<Result<T>> wrap(final T t) {
-                return CompletableFuture.supplyAsync(() -> Result.succeed(t));
-            }
-
             @Override
-            public Future<Result<ButtonChange<String, TestButtonStates>>> initialize(final String currentValue,
+            public ButtonChange<String, TestButtonStates> initialize(final String currentValue,
                 final SettingsCreationContext context) {
-                final var buttonChange = new ButtonChange<>(currentValue, false, TestButtonStates.FIRST);
-                return wrap(buttonChange);
+                return new ButtonChange<>(currentValue, false, TestButtonStates.FIRST);
 
             }
 
             @Override
-            public Future<Result<ButtonChange<String, TestButtonStates>>> invoke(final TestButtonStates state,
+            public ButtonChange<String, TestButtonStates> invoke(final TestButtonStates state,
                 final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
-                final var buttonChange = new ButtonChange<>(settings.m_foo, false, state);
-                return wrap(buttonChange);
+                return new ButtonChange<>(settings.m_foo, false, state);
             }
 
             @Override
-            public Future<Result<ButtonChange<String, TestButtonStates>>> update(final TestDefaultNodeSettings settings,
+            public ButtonChange<String, TestButtonStates> update(final TestDefaultNodeSettings settings,
                 final SettingsCreationContext context) {
-                final var buttonChange = new ButtonChange<>(settings.m_foo, false, TestButtonStates.FIRST);
-                return wrap(buttonChange);
+                return new ButtonChange<>(settings.m_foo, false, TestButtonStates.FIRST);
             }
 
         }
@@ -234,10 +224,9 @@ class DefaultNodeDialogDataServiceImplTest {
             String getResult();
 
             @Override
-            default public Future<Result<ChoicesWidgetChoice[]>> update(final TestDefaultNodeSettings settings,
+            default public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
                 final SettingsCreationContext context) {
-                return CompletableFuture.supplyAsync(
-                    () -> Result.succeed(new ChoicesWidgetChoice[]{ChoicesWidgetChoice.fromId(getResult())}));
+                return new ChoicesWidgetChoice[]{ChoicesWidgetChoice.fromId(getResult())};
 
             }
 
@@ -334,63 +323,7 @@ class DefaultNodeDialogDataServiceImplTest {
         }
     }
 
-    @Nested
-    class CancelRequestTest {
-        static class CanceledResponseHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
-            @Override
-            public Future<Result<ChoicesWidgetChoice[]>> update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) {
-
-                CompletableFuture<Result<ChoicesWidgetChoice[]>> future = new CompletableFuture<>();
-                future.cancel(true);
-                future.complete(new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
-                return future;
-            }
-
-        }
-
-        @Test
-        void testCanceledResponse() throws ExecutionException, InterruptedException {
-
-            class TestSettings {
-                @ChoicesWidget(choicesUpdateHandler = CanceledResponseHandler.class)
-                String m_button;
-            }
-
-            final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
-            final var result = dataService.update(CanceledResponseHandler.class.getName(), null);
-            assertThat(result.state()).isEqualTo(ResultState.CANCELED);
-        }
-
-        static class FailedResponseWithNestedCanceledCauseHandler
-            implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
-
-            @Override
-            public Future<Result<ChoicesWidgetChoice[]>> update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) {
-
-                CompletableFuture<Result<ChoicesWidgetChoice[]>> future = new CompletableFuture<>();
-                future.cancel(true);
-                future.complete(new Result<ChoicesWidgetChoice[]>(null, ResultState.SUCCESS, null));
-                return future.thenApplyAsync(Function.identity()).thenApplyAsync(Function.identity());
-            }
-
-        }
-
-        @Test
-        void testFailedResponseWithNestedCanceledCause() throws ExecutionException, InterruptedException {
-
-            class TestSettings {
-                @ChoicesWidget(choicesUpdateHandler = FailedResponseWithNestedCanceledCauseHandler.class)
-                String m_button;
-            }
-
-            final var dataService = getDataServiceWithNullContext(List.of(TestSettings.class));
-            final var result = dataService.update(FailedResponseWithNestedCanceledCauseHandler.class.getName(), null);
-            assertThat(result.state()).isEqualTo(ResultState.CANCELED);
-        }
-    }
 
     static class SettingsCreationContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
@@ -398,10 +331,9 @@ class DefaultNodeDialogDataServiceImplTest {
          * We only use this method to find out if the settings creation context is null. {@inheritDoc}
          */
         @Override
-        public Future<Result<ChoicesWidgetChoice[]>> update(final TestDefaultNodeSettings settings,
+        public ChoicesWidgetChoice[] update(final TestDefaultNodeSettings settings,
             final SettingsCreationContext context) {
-            final var choices = context == null ? null : new ChoicesWidgetChoice[0];
-            return CompletableFuture.supplyAsync(() -> Result.succeed(choices));
+            return context == null ? null : new ChoicesWidgetChoice[0];
         }
 
     }

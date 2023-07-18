@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.function.Function;
-
 /**
  * The result of the invocation of a data service method from a dialog component.
  *
@@ -82,15 +80,5 @@ public record Result<R>(R result, ResultState state, String message) {
      */
     public static <R> Result<R> cancel() {
         return new Result<>(null, ResultState.CANCELED, null);
-    }
-
-    /**
-     * @param <T> target type of the result
-     * @param mapper mapping the current result to a new one of type T
-     * @return the new {@link Result}
-     */
-    public <T> Result<T> mapResult(final Function<? super R, ? extends T> mapper) {
-        return new Result<T>(mapper.apply(result), state, message);
-
     }
 }

@@ -51,16 +51,11 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
 
 /**
@@ -75,9 +70,9 @@ class CancelableActionHandlerTest {
         static final String RESULT = "myResult";
 
         @Override
-        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
-            final SettingsCreationContext context) {
-            return CompletableFuture.supplyAsync(() -> Result.succeed(RESULT));
+        protected String invoke(final Void noSettings, final SettingsCreationContext context)
+            throws RequestFailureException {
+            return RESULT;
         }
 
         @Override
@@ -87,33 +82,31 @@ class CancelableActionHandlerTest {
     }
 
     @Test
-    void testInvokeSuccess() throws InterruptedException, ExecutionException {
+    void testInvokeSuccess() throws RequestFailureException {
         final var handler = new TestHandler();
-        final var result = handler.invoke(States.READY, null, null).get();
-        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
-        assertThat(result.result().buttonState()).isEqualTo(States.DONE);
-        assertThat(result.result().settingResult()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.result().saveResult()).isTrue();
+        final var result = handler.invoke(States.READY, null, null);
+        assertThat(result.buttonState()).isEqualTo(States.DONE);
+        assertThat(result.settingResult()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.saveResult()).isTrue();
     }
 
     static class TestHandlerFail extends TestHandler {
         static final String MESSAGE = "myMessage";
 
         @Override
-        protected CompletableFuture<Result<String>> invoke(final Void noSettings,
-            final SettingsCreationContext context) {
-            return CompletableFuture.supplyAsync(() -> Result.fail(MESSAGE));
+        protected String invoke(final Void noSettings, final SettingsCreationContext context)
+            throws RequestFailureException {
+            throw new RequestFailureException(MESSAGE);
         }
     }
 
     @Test
     void testInvokeFail() throws InterruptedException, ExecutionException {
         final var handler = new TestHandlerFail();
-        final var result = handler.invoke(States.READY, null, null).get();
-        assertThat(result.state()).isEqualTo(ResultState.FAIL);
-        assertThat(result.result().buttonState()).isEqualTo(States.READY);
-        assertThat(result.message()).isEqualTo(TestHandlerFail.MESSAGE);
-        assertThat(result.result().saveResult()).isFalse();
+        final var exception =
+            assertThrows(RequestFailureException.class, () -> handler.invoke(States.READY, null, null));
+        assertThat(exception.getMessage()).isEqualTo(TestHandlerFail.MESSAGE);
+
     }
 
     static class SingleUseHandler extends TestHandler {
@@ -125,82 +118,38 @@ class CancelableActionHandlerTest {
     }
 
     @Test
-    void testInvokeWithoutMultiUseAndSuccess() throws InterruptedException, ExecutionException {
+    void testInvokeWithoutMultiUse() throws RequestFailureException {
         final var handler = new SingleUseHandler();
-        final var result = handler.invoke(States.READY, null, null).get();
-        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
-        assertThat(result.result().buttonState()).isEqualTo(States.DONE);
-        assertThat(result.result().settingResult()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.result().saveResult()).isTrue();
-    }
-
-    static class SingleUseHandlerFail extends TestHandlerFail {
-
-        @Override
-        protected boolean isMultiUse() {
-            return false;
-        }
-    }
-
-    @Test
-    void testInvokeWithoutMultiUseAndFail() throws InterruptedException, ExecutionException {
-        final var handler = new SingleUseHandlerFail();
-        final var result = handler.invoke(States.READY, null, null).get();
-        assertThat(result.state()).isEqualTo(ResultState.FAIL);
-        assertThat(result.result().buttonState()).isEqualTo(States.READY);
-        assertThat(result.message()).isEqualTo(TestHandlerFail.MESSAGE);
-        assertThat(result.result().saveResult()).isFalse();
-    }
-
-    static class TestCancelHandler extends CancelableActionHandler<String, Void> {
-
-        @Override
-        protected Future<Result<String>> invoke(final Void noSettings, final SettingsCreationContext context) {
-            return new CompletableFuture<>();
-        }
-
-        @Override
-        public String overrideText(final States state) {
-            return null;
-        }
-    }
-
-    @Test
-    void testCancel() {
-        final var handler = new TestCancelHandler();
         final var result = handler.invoke(States.READY, null, null);
-        handler.invoke(States.CANCEL, null, null);
-        expectCancelled(result);
-        ExecutionException exception = assertThrows(ExecutionException.class, () -> result.get(1, TimeUnit.SECONDS));
-        assertThat(exception.getCause().getClass()).isEqualTo(CancellationException.class);
+        assertThat(result.buttonState()).isEqualTo(States.DONE);
+        assertThat(result.settingResult()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.saveResult()).isTrue();
+    }
+
+    @Test
+    void testCancel() throws RequestFailureException {
+        final var handler = new TestHandler();
+        final var result = handler.invoke(States.CANCEL, null, null);
+        assertThat(result).isNull();
 
     }
 
     @Test
-    void testUpdate() throws InterruptedException, ExecutionException {
-        final var handler = new TestCancelHandler();
-        final var previousInvocationResult = handler.invoke(States.READY, null, null);
-        final var result = handler.update(null, null).get();
-        expectCancelled(previousInvocationResult);
-        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
-        assertThat(result.result().buttonState()).isEqualTo(States.READY);
-        assertThat(result.result().settingResult()).isNull();
-        assertThat(result.result().saveResult()).isTrue();
-    }
-
-    private static void expectCancelled(final Future<Result<ButtonChange<String, States>>> result) {
-        ExecutionException exception = assertThrows(ExecutionException.class, () -> result.get(1, TimeUnit.SECONDS));
-        assertThat(exception.getCause().getClass()).isEqualTo(CancellationException.class);
+    void testUpdate() {
+        final var handler = new TestHandler();
+        final var result = handler.update(null, null);
+        assertThat(result.buttonState()).isEqualTo(States.READY);
+        assertThat(result.settingResult()).isNull();
+        assertThat(result.saveResult()).isTrue();
     }
 
     @Test
     void testInitialize() throws InterruptedException, ExecutionException {
         final var handler = new TestHandler();
-        final var result = handler.initialize(null, null).get();
-        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
-        assertThat(result.result().buttonState()).isEqualTo(States.READY);
-        assertThat(result.result().settingResult()).isNull();
-        assertThat(result.result().saveResult()).isFalse();
+        final var result = handler.initialize(null, null);
+        assertThat(result.buttonState()).isEqualTo(States.READY);
+        assertThat(result.settingResult()).isNull();
+        assertThat(result.saveResult()).isFalse();
     }
 
 }

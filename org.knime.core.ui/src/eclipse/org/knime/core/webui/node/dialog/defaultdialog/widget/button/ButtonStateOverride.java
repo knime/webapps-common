@@ -61,7 +61,7 @@ public final class ButtonStateOverride {
     private boolean m_primary;
 
     public ButtonStateOverride(final ButtonState state) {
-        m_text = state.defaultText();
+        m_text = state.text();
         m_disabled = state.disabled();
         m_primary = state.primary();
     }

@@ -287,7 +287,10 @@ final class UiSchemaOptionsGenerator {
         handler.overrideState(enumConst, buttonStateOverride);
         state.put("disabled", buttonStateOverride.isDisabled());
         state.put("primary", buttonStateOverride.isPrimary());
-        state.put("nextState", buttonState.nextState());
+        final var nextState = buttonState.nextState();
+        if (!nextState.isEmpty()) {
+            state.put("nextState", nextState);
+        }
         state.put("text", buttonStateOverride.getText());
     }
 

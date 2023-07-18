@@ -44,63 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   Jul 18, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
+import org.knime.core.node.KNIMEConstants;
+import org.knime.core.node.NodeLogger;
 
 /**
+ * This class is responsible for handling the threads of the dialogs data service. Every widget should use one thread so
+ * that pending requests are canceled by subsequent requests. Furthermore this class wraps the results returned from the
+ * various callables in a {@link Result}.
  *
  * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public class DataServiceRequestHandler {
+    private final Map<String, Future<?>> m_pendingRequests = new HashMap<>();
 
-    @Override
-    public ChoicesWidgetChoice[] update(final S settings, final SettingsCreationContext context)
-        throws RequestFailureException {
-        final var spec = context.getDataTableSpec(0);
-        if (spec.isEmpty()) {
-            return getEmptyResult();
-        }
-        final var columnName = settings.columnName();
-        final var colSpec = spec.get().getColumnSpec(columnName);
-        if (colSpec == null) {
-            return getEmptyResult();
-        }
-        final var domainValues = getDomainValues(colSpec);
-        if (domainValues.isEmpty()) {
-            throw new RequestFailureException(String.format(
-                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
-                columnName));
-        }
-        return domainValues.get().stream().map(ChoicesWidgetChoice::fromId).toArray(ChoicesWidgetChoice[]::new);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
 
-    }
-
-    private static ChoicesWidgetChoice[] getEmptyResult() {
-        return new ChoicesWidgetChoice[0];
+    <T> Result<T> handleRequest(final String widgetId, final Callable<T> callback)
+        throws InterruptedException, ExecutionException {
+        final var future = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(callback);
+        getPendingRequest(widgetId).ifPresent(pendingFuture -> pendingFuture.cancel(true));
+        m_pendingRequests.put(widgetId, future);
+        try {
+            final var result = future.get();
+            m_pendingRequests.remove(widgetId);
+            return Result.succeed(result);
+        } catch (CancellationException ex) {
+            LOGGER.info(ex);
+            return Result.cancel();
+        } catch (ExecutionException ex) {
+            final var cause = ex.getCause();
+            if (cause instanceof RequestFailureException) {
+                return Result.fail(cause.getMessage());
+            }
+            throw ex;
+        }
     }
 
     /**
-     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
-     * @return the possible domain values of the given {@link DataColumnSpec}
+     * package scoped for test purposes
      */
-    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
-        var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
-            return Optional.empty();
-        }
-        return Optional.of(colDomain.stream().map(cell -> ((StringCell)cell).getStringValue()).toList());
+    Optional<Future<?>> getPendingRequest(final String widgetId) {
+        return Optional.ofNullable(m_pendingRequests.get(widgetId));
     }
-
 }

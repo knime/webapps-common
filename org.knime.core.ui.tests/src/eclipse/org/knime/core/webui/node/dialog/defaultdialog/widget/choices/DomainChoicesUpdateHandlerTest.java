@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -63,7 +64,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 
 /**
  *
@@ -92,7 +93,7 @@ class DomainChoicesUpdateHandlerTest {
     }
 
     @Test
-    void testChoicesUpdateHandler() throws InterruptedException, ExecutionException {
+    void testChoicesUpdateHandler() throws RequestFailureException {
 
         final var colName = "colName";
 
@@ -104,14 +105,13 @@ class DomainChoicesUpdateHandlerTest {
             public String columnName() {
                 return colName;
             }
-        }, createContext(colName, List.of("foo", "bar"))).get();
-        assertThat(response.result()).hasSize(2);
-        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
+        }, createContext(colName, List.of("foo", "bar")));
+        assertThat(response).hasSize(2);
 
     }
 
     @Test
-    void testChoicesUpdateHandlerNonMissingColumn() throws InterruptedException, ExecutionException {
+    void testChoicesUpdateHandlerNonMissingColumn() throws RequestFailureException {
 
         final var colName = "colName";
 
@@ -123,14 +123,13 @@ class DomainChoicesUpdateHandlerTest {
             public String columnName() {
                 return "missing column name";
             }
-        }, createContext(colName, List.of("foo", "bar"))).get();
-        assertThat(response.result()).isEmpty();
-        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
+        }, createContext(colName, List.of("foo", "bar")));
+        assertThat(response).isEmpty();
 
     }
 
     @Test
-    void testChoicesUpdateHandlerMissingSpec() throws InterruptedException, ExecutionException {
+    void testChoicesUpdateHandlerMissingSpec() throws RequestFailureException {
 
         final var colName = "colName";
 
@@ -142,10 +141,8 @@ class DomainChoicesUpdateHandlerTest {
             public String columnName() {
                 return colName;
             }
-        }, new SettingsCreationContext(new PortObjectSpec[]{null}, null, null)).get();
-        assertThat(response.result()).isEmpty();
-        assertThat(response.state()).isEqualTo(ResultState.SUCCESS);
-
+        }, new SettingsCreationContext(new PortObjectSpec[]{null}, null, null));
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -155,16 +152,15 @@ class DomainChoicesUpdateHandlerTest {
 
         final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
 
-        final var response = handler.update(new ColumnNameSupplier() {
+        final var exception =
+            assertThrows(RequestFailureException.class, () -> handler.update(new ColumnNameSupplier() {
 
-            @Override
-            public String columnName() {
-                return colName;
-            }
-        }, createContextFromDomain(colName, null)).get();
-        assertThat(response.result()).isNull();
-        assertThat(response.state()).isEqualTo(ResultState.FAIL);
-        assertThat(response.message()).isEqualTo(
+                @Override
+                public String columnName() {
+                    return colName;
+                }
+            }, createContextFromDomain(colName, null)));
+        assertThat(exception.getMessage()).isEqualTo(
             "No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
 
     }

@@ -48,11 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.concurrent.Future;
-
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ResultState;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableActionHandler.States;
 
 /**
@@ -65,7 +62,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.CancelableAc
  */
 public abstract class CancelableActionHandler<R, S> implements ButtonActionHandler<R, S, States> {
 
-    private Future<Result<R>> m_lastInvocationResult;
+    /**
+     * An invocation which is triggered if a request which is not a cancel request is sent.
+     *
+     * @param settings the settings the invocation depends on
+     * @param context the current {@link SettingsCreationContext}
+     *
+     * @return the future result.
+     * @throws RequestFailureException if the request should fail providing the error message to the frontend
+     */
+    protected abstract R invoke(S settings, SettingsCreationContext context) throws RequestFailureException;
 
     /**
      * @return whether the button should be in an enabled state when the request was successful (i.e. if the "DONE"
@@ -76,67 +82,39 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
     }
 
     /**
-     * An invocation which is triggered if a request which is not a cancel request is sent.
-     *
-     * @param settings the settings the invocation depends on
-     * @param context the current {@link SettingsCreationContext}
-     *
-     * @return the future result.
+     * @param state - a field from the associated state machine enum.
+     * @return the text that should be displayed for that state. If {@code null} is returned, the value of
+     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
      */
-    protected abstract Result<R> invoke(S settings, SettingsCreationContext context);
-
-    /**
-     * @return the result of the last invocation or null if no invocation has taken place.
-     */
-    protected Future<Result<R>> getLastInvokationResult() {
-        return m_lastInvocationResult;
-    }
+    abstract protected String overrideText(final States state);
 
     @Override
-    public Result<ButtonChange<R, States>> invoke(final States buttonState, final S settings,
-        final SettingsCreationContext context) {
+    public ButtonChange<R, States> invoke(final States buttonState, final S settings,
+        final SettingsCreationContext context) throws RequestFailureException {
         if (States.CANCEL.equals(buttonState)) {
-            return resetAfterCancel();
+            return null;
         } else {
-            return toButtonStateResult(invoke(settings, context));
+            return new ButtonChange<>(invoke(settings, context), true, States.DONE);
         }
-    }
-
-    private Result<ButtonChange<R, States>> toButtonStateResult(final Result<R> dataResult) {
-        if (dataResult.state().equals(ResultState.FAIL)) {
-            return dataResult.mapResult(result -> new ButtonChange<>(result, false, States.READY));
-        }
-        return dataResult.mapResult(result -> new ButtonChange<>(result, true, States.DONE));
     }
 
     /**
-     * Reset the button to the initial "Ready" state
+     * Set the button to the initial "Ready" state
      */
-    private Result<ButtonChange<R, States>> resetAfterCancel() {
-        return Result.succeed(new ButtonChange<>(null, false, States.READY));
+    @Override
+    public ButtonChange<R, States> initialize(final R currentValue, final SettingsCreationContext context) {
+        return new ButtonChange<>(null, false, States.READY);
     }
 
     @Override
-    public Result<ButtonChange<R, States>> initialize(final R currentValue, final SettingsCreationContext context) {
-        return resetAfterCancel();
-    }
-
-    @Override
-    public Result<ButtonChange<R, States>> update(final S settings, final SettingsCreationContext context) {
-        return Result.succeed(new ButtonChange<R, States>(null, true, States.READY));
+    public ButtonChange<R, States> update(final S settings, final SettingsCreationContext context) {
+        return new ButtonChange<R, States>(null, true, States.READY);
     }
 
     @Override
     public Class<States> getStateMachine() {
         return States.class;
     }
-
-    /**
-     * @param state - a field from the associated state machine enum.
-     * @return the text that should be displayed for that state. If {@code null} is returned, the value of
-     *         {@link ButtonState#defaultText} from the annotation of the respective state is used instead.
-     */
-    abstract protected String overrideText(final States state);
 
     @Override
     public void overrideState(final States state, final ButtonStateOverride override) {
@@ -152,18 +130,18 @@ public abstract class CancelableActionHandler<R, S> implements ButtonActionHandl
             /**
              * The initial state of the button
              */
-            @ButtonState(defaultText = "Ready", nextState = "CANCEL")
+            @ButtonState(text = "Ready", nextState = "CANCEL")
             READY, //
             /**
              * The state of the button, once the initial state is clicked
              */
-            @ButtonState(defaultText = "Cancel", nextState = "READY", primary = false)
+            @ButtonState(text = "Cancel", primary = false)
             CANCEL, //
             /**
              * This state is reached on a successful response. If {@link CancelableActionHandler#isMultiUse} is true, it
              * is enabled.
              */
-            @ButtonState(defaultText = "Done", nextState = "CANCEL", disabled = true)
+            @ButtonState(text = "Done", nextState = "CANCEL", disabled = true)
             DONE;
 
     }

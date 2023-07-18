@@ -237,7 +237,7 @@ describe('ButtonInput', () => {
             expect(wrapper.vm.currentSettings).toStrictEqual({ foo: 2, bar: 1, baz: 3 });
         });
 
-        it('cancels the current request and unsets data', async () => {
+        it('applies new state defined by the update callback', async () => {
             const settingResult = 'updateSettingResult';
             const nextState = states[0];
             wrapper.vm.jsonDataService.data = vi.fn(() => ({
@@ -257,6 +257,40 @@ describe('ButtonInput', () => {
             vi.runAllTimers();
             expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, settingResult);
         });
+    });
+
+    describe('reset current state', () => {
+        it('resets current state after failed request on click', async () => {
+            const nextState = states[0];
+            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+                state: 'FAIL',
+                result: {
+                    buttonState: nextState.id
+                }
+            }));
+            await wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            expect(wrapper.vm.currentState).toBe(states[1]);
+        });
+
+        it('resets current state after canceled request on click', async () => {
+            const nextState = states[0];
+            wrapper.vm.jsonDataService.data = vi.fn(() => ({
+                state: 'CANCELED',
+                result: {
+                    buttonState: nextState.id
+                }
+            }));
+            await wrapper.findComponent(FunctionButton).find('button').trigger('click');
+            expect(wrapper.vm.currentState).toBe(states[1]);
+        });
+    });
+
+
+    it('does not switch to next state on click when none exists', () => {
+        wrapper.vm.currentState = states[2];
+        expect(wrapper.vm.currentState).toBe(states[2]);
+        wrapper.findComponent(FunctionButton).find('button').trigger('click');
+        expect(wrapper.vm.currentState).toBe(states[2]);
     });
 
     describe('current state', () => {

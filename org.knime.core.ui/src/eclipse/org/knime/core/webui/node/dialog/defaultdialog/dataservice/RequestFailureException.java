@@ -44,63 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   Jul 18, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.DependencyHandler;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 /**
  *
  * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public class RequestFailureException extends Exception {
 
-    @Override
-    public ChoicesWidgetChoice[] update(final S settings, final SettingsCreationContext context)
-        throws RequestFailureException {
-        final var spec = context.getDataTableSpec(0);
-        if (spec.isEmpty()) {
-            return getEmptyResult();
-        }
-        final var columnName = settings.columnName();
-        final var colSpec = spec.get().getColumnSpec(columnName);
-        if (colSpec == null) {
-            return getEmptyResult();
-        }
-        final var domainValues = getDomainValues(colSpec);
-        if (domainValues.isEmpty()) {
-            throw new RequestFailureException(String.format(
-                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
-                columnName));
-        }
-        return domainValues.get().stream().map(ChoicesWidgetChoice::fromId).toArray(ChoicesWidgetChoice[]::new);
-
-    }
-
-    private static ChoicesWidgetChoice[] getEmptyResult() {
-        return new ChoicesWidgetChoice[0];
-    }
+    private static final long serialVersionUID = 1L;
 
     /**
-     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
-     * @return the possible domain values of the given {@link DataColumnSpec}
+     * @param message
      */
-    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
-        var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
-            return Optional.empty();
-        }
-        return Optional.of(colDomain.stream().map(cell -> ((StringCell)cell).getStringValue()).toList());
+    public RequestFailureException(final String message) {
+        super(message);
     }
 
 }

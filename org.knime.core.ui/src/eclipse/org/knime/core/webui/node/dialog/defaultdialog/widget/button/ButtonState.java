@@ -58,6 +58,9 @@ import java.lang.annotation.Target;
  * An interface used to defining the underlying state machine of the action handler within a {@link ButtonWidget}. It
  * targets the enum fields of {@link ButtonActionHandler#getStateMachine}.
  *
+ * Certain individual properties can be overwritten from within a {@link ButtonActionHandler}s by using
+ * {@link ButtonActionHandler#overrideState}.
+ *
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
@@ -65,15 +68,14 @@ import java.lang.annotation.Target;
 public @interface ButtonState {
 
     /**
-     * @return the text displayed on the button This can be overwritten for individual {@link ButtonActionHandler}s by
-     *         using {@link ButtonActionHandler#overrideText} {@link ButtonText}.
+     * @return the text displayed on the button.
      */
-    String defaultText();
+    String text();
 
     /**
-     * @return the next button state selected immediately on click. This might also target itself. The state can be
-     *         changed a second time (to a possibly different state) again defined by the result of the invoked action
-     *         (see {@link ButtonActionHandler#invoke}).
+     * @return the next button state selected immediately on click. Use the default to not change the state of the
+     *         button. The state can be changed a second time (to a possibly different state) again defined by the
+     *         result of the invoked action (see {@link ButtonActionHandler#invoke}).
      */
     String nextState() default "";
 

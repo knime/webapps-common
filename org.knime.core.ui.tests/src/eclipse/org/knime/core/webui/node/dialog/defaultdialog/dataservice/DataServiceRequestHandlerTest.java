@@ -44,72 +44,86 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 14, 2023 (Paul Bärnreuther): created
+ *   Jul 18, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public class ButtonWidgetDataServiceTest {
+public class DataServiceRequestHandlerTest {
 
-    static class TestDefaultNodeSettings {
+    @Test
+    void testSuccessfulResponse() throws InterruptedException, ExecutionException {
+
+        final var requestHandler = new DataServiceRequestHandler();
+        final var callableResult = "myResult";
+        final Callable<String> callable = () -> callableResult;
+        final var result = requestHandler.handleRequest("foo", callable);
+        assertThat(result.state()).isEqualTo(ResultState.SUCCESS);
+        assertThat(result.result()).isEqualTo(callableResult);
     }
 
-    enum TestButtonStates {
-            FIRST, SECOND;
-    }
+    @Test
+    void testFailedResponse() throws InterruptedException, ExecutionException {
 
-    static class WrongResultTypeActionHandler
-        implements ButtonActionHandler<Integer, TestDefaultNodeSettings, TestButtonStates> {
-
-        @Override
-        public Class<TestButtonStates> getStateMachine() {
-            return TestButtonStates.class;
-        }
-
-        @Override
-        public ButtonChange<Integer, TestButtonStates> update(final TestDefaultNodeSettings settings,
-            final SettingsCreationContext context) {
-            return null;
-        }
-
-        @Override
-        public ButtonChange<Integer, TestButtonStates> initialize(final Integer currentValue,
-            final SettingsCreationContext context) {
-            return null;
-        }
-
-        @Override
-        public ButtonChange<Integer, TestButtonStates> invoke(final TestButtonStates state,
-            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
-            return null;
-        }
+        final var requestHandler = new DataServiceRequestHandler();
+        final var message = "myMessage";
+        final Callable<String> callable = () -> {
+            throw new RequestFailureException(message);
+        };
+        final var result = requestHandler.handleRequest("foo", callable);
+        assertThat(result.state()).isEqualTo(ResultState.FAIL);
+        assertThat(result.message()).isEqualTo(message);
 
     }
 
     @Test
-    void testValidatesReturnType() {
+    void testFailedResponseWithNonExpectedException() {
 
-        class ButtonSettings {
-            @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
-            String m_button;
-        }
+        final var requestHandler = new DataServiceRequestHandler();
+        final Callable<String> callable = () -> {
+            throw new RuntimeException();
+        };
+        assertThrows(ExecutionException.class, () -> requestHandler.handleRequest("foo", callable));
+    }
 
-        final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
-        assertThrows(IllegalArgumentException.class, () -> new ButtonWidgetHandlerHolder(settingsClasses));
+    @Test
+    void cancelPendingRequestsOfSameId() throws InterruptedException, ExecutionException {
+
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        final var requestHandler = new DataServiceRequestHandler();
+        final Callable<String> callable = () -> {
+            Thread.sleep(1);
+            return null;
+        };
+
+        CompletionService<Result<String>> completionService = new ExecutorCompletionService<>(executorService);
+
+        Future<Result<String>> future1 = completionService.submit(() -> requestHandler.handleRequest("foo", callable));
+        Future<Result<String>> future2 = completionService.submit(() -> requestHandler.handleRequest("foo", callable));
+
+        final var result1 = future1.get();
+        final var result2 = future2.get();
+
+        assertThat(result1.state()).isEqualTo(ResultState.CANCELED);
+        assertThat(result2.state()).isEqualTo(ResultState.SUCCESS);
+
     }
 
 }

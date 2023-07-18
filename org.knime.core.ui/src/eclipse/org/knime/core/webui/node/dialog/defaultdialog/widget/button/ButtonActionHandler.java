@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 
 /**
  * The interface defining that a {@link ButtonWidget#actionHandler} has to extend. It is used for initializing the
@@ -71,8 +71,10 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      * @param context the current {@link SettingsCreationContext}
      *
      * @return the initial state of the button and its value.
+     * @throws RequestFailureException if the request should fail providing the error message to the frontend
      */
-    Result<ButtonChange<R, M>> initialize(R currentValue, SettingsCreationContext context);
+    ButtonChange<R, M> initialize(R currentValue, SettingsCreationContext context)
+        throws RequestFailureException;
 
     /**
      * This method gets called when the button is clicked.
@@ -83,18 +85,20 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>>
      * @param context the current {@link SettingsCreationContext}
      *
      * @return an asynchronous result.
+     * @throws RequestFailureException if the request should fail providing the error message to the frontend
      */
-    Result<ButtonChange<R, M>> invoke(M state, S settings, SettingsCreationContext context);
+    ButtonChange<R, M> invoke(M state, S settings, SettingsCreationContext context)
+        throws RequestFailureException;
 
     @SuppressWarnings({"javadoc"})
-    default Result<ButtonChange<R, M>> castAndInvoke(final String stateString, final Object settings,
-        final SettingsCreationContext context) {
+    default ButtonChange<R, M> castAndInvoke(final String stateString, final Object settings,
+        final SettingsCreationContext context) throws RequestFailureException {
         return invoke(castToState(stateString), castToDependencies(settings), context);
     }
 
     @SuppressWarnings({"javadoc", "unchecked"})
-    default Result<ButtonChange<R, M>> castAndInitialize(final Object currentValue,
-        final SettingsCreationContext context) {
+    default ButtonChange<R, M> castAndInitialize(final Object currentValue,
+        final SettingsCreationContext context) throws RequestFailureException {
         return initialize((R)currentValue, context);
     }
 

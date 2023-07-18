@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.RequestFailureException;
 
 /**
  *
@@ -66,11 +66,13 @@ public interface UpdateHandler<R, S> extends DependencyHandler<S> {
      * @param context the current {@link SettingsCreationContext}
      *
      * @return a future of a result defining state changes in the fronted.
+     * @throws RequestFailureException if the request should fail providing the error message to the frontend
      */
-    Result<R> update(S settings, SettingsCreationContext context);
+    R update(S settings, SettingsCreationContext context) throws RequestFailureException;
 
     @SuppressWarnings({"javadoc"})
-    default Result<R> castAndUpdate(final Object settings, final SettingsCreationContext context) {
+    default R castAndUpdate(final Object settings, final SettingsCreationContext context)
+        throws RequestFailureException {
         return update(castToDependencies(settings), context);
     }
 }

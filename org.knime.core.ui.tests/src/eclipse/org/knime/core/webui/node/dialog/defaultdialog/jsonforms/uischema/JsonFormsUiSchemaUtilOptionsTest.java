@@ -527,22 +527,19 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.states[0].text").isString().isEqualTo("Ready");
 
         assertThatJson(response).inPath("$.elements[0].options.states[1]").isObject().containsKey("id")
-            .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
+            .containsKey("disabled").containsKey("primary").containsKey("text").doesNotContainKey("nextState");
         assertThatJson(response).inPath("$.elements[0].options.states[1].id").isString()
             .isEqualTo(TestStates.CANCEL.toString());
         assertThatJson(response).inPath("$.elements[0].options.states[1].disabled").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.states[1].primary").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[0].options.states[1].nextState").isString()
-            .isEqualTo(TestStates.READY.toString());
         assertThatJson(response).inPath("$.elements[0].options.states[1].text").isString().isEqualTo("Cancel Text");
 
         assertThatJson(response).inPath("$.elements[0].options.states[2]").isObject().containsKey("id")
-            .containsKey("disabled").containsKey("primary").containsKey("nextState").containsKey("text");
+            .containsKey("disabled").containsKey("primary").containsKey("text").doesNotContainKey("nextState");
         assertThatJson(response).inPath("$.elements[0].options.states[2].id").isString()
             .isEqualTo(TestStates.DONE.toString());
         assertThatJson(response).inPath("$.elements[0].options.states[2].disabled").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.states[2].primary").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.elements[0].options.states[2].nextState").isString().isEqualTo("");
         assertThatJson(response).inPath("$.elements[0].options.states[2].text").isString().isEqualTo("Done Text");
     }
 
@@ -638,7 +635,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class ButtonActionHandlerWithAmbiguousDependencies extends TestButtonActionHandler<OtherSettingsWithAmbigous> {
+    static class ButtonActionHandlerWithAmbiguousDependencies
+        extends TestButtonActionHandler<OtherSettingsWithAmbigous> {
 
     }
 
@@ -663,7 +661,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    static class TestButtonActionHandlerWithDisAmbiguousDependencies extends TestButtonActionHandler<OtherSettingsWithSpecification> {
+    static class TestButtonActionHandlerWithDisAmbiguousDependencies
+        extends TestButtonActionHandler<OtherSettingsWithSpecification> {
 
     }
 
@@ -724,8 +723,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testDateTimeWidgetCustomOptions() {
         class DateTimeDefaultTestSettings {
 
-            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true,
-                minDate = "2023-06-12", maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
+            @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, minDate = "2023-06-12",
+                maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
             String m_dateTime;
         }
 
@@ -766,6 +765,5 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
     }
-
 
 }

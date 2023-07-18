@@ -48,10 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.concurrent.Future;
-
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.Result;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -65,11 +62,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonStateO
 class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestStates> {
 
     static enum TestStates {
-            @ButtonState(defaultText = "Ready", nextState = "CANCEL")
+            @ButtonState(text = "Ready", nextState = "CANCEL")
             READY, //
-            @ButtonState(defaultText = "Cancel", nextState = "READY", primary = false)
+            @ButtonState(text = "Cancel", primary = false)
             CANCEL, //
-            @ButtonState(defaultText = "Done", disabled = true)
+            @ButtonState(text = "Done", disabled = true)
             DONE;
     }
 
@@ -95,19 +92,19 @@ class TestButtonActionHandler<S> implements ButtonActionHandler<Object, S, TestS
     }
 
     @Override
-    public Future<Result<ButtonChange<Object, TestStates>>> update(final S settings,
+    public ButtonChange<Object, TestStates> update(final S settings,
         final SettingsCreationContext context) {
         return null;
     }
 
     @Override
-    public Future<Result<ButtonChange<Object, TestStates>>> initialize(final Object currentValue,
+    public ButtonChange<Object, TestStates> initialize(final Object currentValue,
         final SettingsCreationContext context) {
         return null;
     }
 
     @Override
-    public Future<Result<ButtonChange<Object, TestStates>>> invoke(final TestStates state, final S settings,
+    public ButtonChange<Object, TestStates> invoke(final TestStates state, final S settings,
         final SettingsCreationContext context) {
         return null;
     }

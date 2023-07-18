@@ -49,17 +49,9 @@
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
-import org.knime.core.node.KNIMEConstants;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -75,15 +67,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.UpdateHandle
 @SuppressWarnings("java:S1452") //Allow wildcard return values
 public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeDialogDataServiceImpl.class);
-
     private final ButtonWidgetHandlerHolder m_buttonService;
 
     private final ChoicesWidgetHandlerHolder m_choicesService;
 
-    private final Map<String, Future<?>> m_pendingRequests = new HashMap<>();
-
     private final Supplier<SettingsCreationContext> m_contextProvider;
+
+    private final DataServiceRequestHandler m_requestHandler;
 
     /**
      * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the handler classes from.
@@ -94,6 +84,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         m_contextProvider = contextProvider;
         m_buttonService = new ButtonWidgetHandlerHolder(settingsClasses);
         m_choicesService = new ChoicesWidgetHandlerHolder(settingsClasses);
+        m_requestHandler = new DataServiceRequestHandler();
     }
 
     @Override
@@ -101,7 +92,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         throws ExecutionException, InterruptedException {
         final var handler = getButtonHandler(widgetId);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        return handleRequest(widgetId,
+        return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInvoke(buttonState, convertedSettings, m_contextProvider.get()));
 
     }
@@ -113,7 +104,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
         final var convertedCurrentValue = convertValue(currentValue, resultType);
 
-        return handleRequest(widgetId, () -> handler.castAndInitialize(convertedCurrentValue, m_contextProvider.get()));
+        return m_requestHandler.handleRequest(widgetId,
+            () -> handler.castAndInitialize(convertedCurrentValue, m_contextProvider.get()));
 
     }
 
@@ -130,7 +122,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         throws InterruptedException, ExecutionException {
         final var handler = getUpdateHandler(widgetId);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        return handleRequest(widgetId, () -> handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
+        return m_requestHandler.handleRequest(widgetId,
+            () -> handler.castAndUpdate(convertedSettings, m_contextProvider.get()));
     }
 
     private UpdateHandler<?, ?> getUpdateHandler(final String widgetId) {
@@ -153,27 +146,6 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     private static Object convertValue(final Object objectSettings, final Class<?> settingsType) {
         return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
 
-    }
-
-    private <T> Result<T> handleRequest(final String widgetId, final Callable<Result<T>> callback)
-        throws InterruptedException, ExecutionException {
-        final var future = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(callback);
-        Optional.ofNullable(m_pendingRequests.get(widgetId)).ifPresent(pendingFuture -> pendingFuture.cancel(true));
-        m_pendingRequests.put(widgetId, future);
-        try {
-            final var result = future.get();
-            m_pendingRequests.remove(widgetId);
-            return result;
-        } catch (CancellationException ex) {
-            LOGGER.info(ex);
-            return Result.cancel();
-        } catch (ExecutionException ex) {
-            if (ex.getCause() instanceof CancellationException) {
-                LOGGER.info(ex);
-                return Result.cancel();
-            }
-            throw ex;
-        }
     }
 
     static final class NoHandlerFoundException extends IllegalArgumentException {
