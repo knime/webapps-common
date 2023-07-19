@@ -84,7 +84,7 @@
             },
             "publishSelection": {
               "type": "boolean",
-              "title": "Publish Selection",
+              "title": "Publish selection",
               "description": "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
               "default": true
             },
@@ -102,7 +102,7 @@
             },
             "subscribeToSelection": {
               "type": "boolean",
-              "title": "Subscribe to Selection",
+              "title": "Subscribe to selection",
               "description": "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
               "default": true
             },

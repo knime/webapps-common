@@ -215,7 +215,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If this view notifies other views when the users do a selection action
      */
-    @Widget(title = "Publish Selection",
+    @Widget(title = "Publish selection",
         description = "When checked, the view notifies other interactive views when the user changes the selection in"
             + " the current view.")
     @Persist(optional = true)
@@ -225,7 +225,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If this view should react on selection events from other views
      */
-    @Widget(title = "Subscribe to Selection",
+    @Widget(title = "Subscribe to selection",
         description = "When checked, the view reacts on notifications from other interactive views that the selection"
             + " has been changed.")
     @Persist(optional = true)
