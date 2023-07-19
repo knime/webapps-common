@@ -1137,7 +1137,7 @@ describe('TableViewInteractive.vue', () => {
             expect(tableUIWithAutoSizeCalculation.vm.tableConfig.pageConfig.columnCount)
                 .toBe(dataRequestResult.columnCount);
             expect(tableUIWithAutoSizeCalculation.vm.data[0][0]).toStrictEqual(
-                ['2', 'row2', 'entry2col1', 'entry2col2', '<h1>2</h1>', 'view_x_y/datacell/hash2.png', 'â€¦']
+                ['2', 'row2', 'entry2col1', 'entry2col2', '<h1>2</h1>', 'view_x_y/datacell/hash2.png', '…']
             );
         });
 
