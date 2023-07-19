@@ -1,0 +1,455 @@
+{
+  "data" : {
+    "view" : {
+      "displayedColumns" : {
+        "mode" : "MANUAL",
+        "patternFilter" : {
+          "pattern" : "",
+          "isCaseSensitive" : false,
+          "isInverted" : false
+        },
+        "manualFilter" : {
+          "manuallySelected" : [ "test1", "test2" ],
+          "manuallyDeselected" : [ ],
+          "includeUnknownColumns" : false
+        },
+        "typeFilter" : {
+          "selectedTypes" : [ ],
+          "typeDisplays" : [ ]
+        }
+      },
+      "showRowIndices" : false,
+      "showRowKeys" : true,
+      "showColumnDataType" : true,
+      "showTableSize" : true,
+      "title" : "Table View",
+      "showTitle" : true,
+      "enablePagination" : false,
+      "pageSize" : 10,
+      "autoSizeColumnsToContent" : "FIXED",
+      "compactMode" : false,
+      "enableGlobalSearch" : true,
+      "enableColumnSearch" : true,
+      "enableSortingByHeader" : true,
+      "enableRendererSelection" : true,
+      "publishSelection" : true,
+      "subscribeToSelection" : true,
+      "skipRemainingColumns" : false
+    }
+  },
+  "schema" : {
+    "type" : "object",
+    "properties" : {
+      "view" : {
+        "type" : "object",
+        "properties" : {
+          "autoSizeColumnsToContent" : {
+            "oneOf" : [ {
+              "const" : "FIXED",
+              "title" : "Fixed"
+            }, {
+              "const" : "FIT_CONTENT",
+              "title" : "Fit content"
+            }, {
+              "const" : "FIT_CONTENT_AND_HEADER",
+              "title" : "Fit content and header"
+            } ],
+            "title" : "Columns sizing",
+            "description" : "Fixed, the column sizing is fixed. Fit content, the columns are sized according to the largest element in the column within the first 10 rows or within the current page when the page size is smaller than 10. Fit content and header, the content and the headers are considered for the size calculation of the columns.",
+            "default" : "FIXED",
+            "configKeys" : [ "autoSizeColumnsToContent" ]
+          },
+          "compactMode" : {
+            "type" : "boolean",
+            "title" : "Compact rows",
+            "description" : "Whether to display the rows in a more compact form or not",
+            "default" : false,
+            "configKeys" : [ "compactMode" ]
+          },
+          "displayedColumns" : {
+            "type" : "object",
+            "properties" : {
+              "manualFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "includeUnknownColumns" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "manuallyDeselected" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "manuallySelected" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  }
+                },
+                "default" : {
+                  "manuallySelected" : [ ],
+                  "manuallyDeselected" : [ ],
+                  "includeUnknownColumns" : false
+                }
+              },
+              "mode" : {
+                "oneOf" : [ {
+                  "const" : "MANUAL",
+                  "title" : "Manual"
+                }, {
+                  "const" : "REGEX",
+                  "title" : "Regex"
+                }, {
+                  "const" : "WILDCARD",
+                  "title" : "Wildcard"
+                }, {
+                  "const" : "TYPE",
+                  "title" : "Type"
+                } ],
+                "default" : "MANUAL"
+              },
+              "patternFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "isCaseSensitive" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "isInverted" : {
+                    "type" : "boolean",
+                    "default" : false
+                  },
+                  "pattern" : {
+                    "type" : "string",
+                    "default" : ""
+                  }
+                },
+                "default" : {
+                  "pattern" : "",
+                  "isCaseSensitive" : false,
+                  "isInverted" : false
+                }
+              },
+              "selected" : {
+                "configKeys" : [ "selected_Internals" ],
+                "type" : "array",
+                "items" : {
+                  "type" : "string",
+                  "configKeys" : [ "selected_Internals" ]
+                }
+              },
+              "typeFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "selectedTypes" : {
+                    "default" : [ ],
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "typeDisplays" : {
+                    "default" : [ ],
+                    "type" : "array",
+                    "items" : {
+                      "type" : "object",
+                      "properties" : {
+                        "id" : {
+                          "type" : "string"
+                        },
+                        "text" : {
+                          "type" : "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "default" : {
+                  "selectedTypes" : [ ],
+                  "typeDisplays" : [ ]
+                }
+              }
+            },
+            "title" : "Displayed columns",
+            "description" : "Select the columns that should be displayed in the table",
+            "default" : {
+              "mode" : "MANUAL",
+              "patternFilter" : {
+                "pattern" : "",
+                "isCaseSensitive" : false,
+                "isInverted" : false
+              },
+              "manualFilter" : {
+                "manuallySelected" : [ "test1", "test2" ],
+                "manuallyDeselected" : [ ],
+                "includeUnknownColumns" : false
+              },
+              "typeFilter" : {
+                "selectedTypes" : [ ],
+                "typeDisplays" : [ ]
+              }
+            },
+            "configKeys" : [ "displayedColumns" ]
+          },
+          "enableColumnSearch" : {
+            "type" : "boolean",
+            "title" : "Enable column search",
+            "description" : "Enables or disables the ability to perform a column search inside the table.",
+            "default" : true
+          },
+          "enableGlobalSearch" : {
+            "type" : "boolean",
+            "title" : "Enable global search",
+            "description" : "Enables or disables the ability to perform a global search inside the table.",
+            "default" : true
+          },
+          "enablePagination" : {
+            "type" : "boolean",
+            "title" : "Pagination",
+            "description" : "Enables or disables the ability to only show a certain number of rows. Enabling pagination hides the option “Show table size”.",
+            "default" : false,
+            "configKeys" : [ "enablePagination" ]
+          },
+          "enableRendererSelection" : {
+            "type" : "boolean",
+            "title" : "Enable selection of column renderer",
+            "description" : "Whether to enable the selection of a column renderer in the header or not",
+            "default" : true,
+            "configKeys" : [ "enableRendererSelection" ]
+          },
+          "enableSortingByHeader" : {
+            "type" : "boolean",
+            "title" : "Enable sorting by header",
+            "description" : "Enables or disables the ability to sort the table by clicking on the column headers",
+            "default" : true,
+            "configKeys" : [ "enableSortingByHeader" ]
+          },
+          "pageSize" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Page size",
+            "description" : "Select the amount of rows shown per page",
+            "default" : 10,
+            "minimum" : 1,
+            "configKeys" : [ "pageSize" ]
+          },
+          "publishSelection" : {
+            "type" : "boolean",
+            "title" : "Publish selection",
+            "description" : "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
+            "default" : true,
+            "configKeys" : [ "publishSelection" ]
+          },
+          "showColumnDataType" : {
+            "type" : "boolean",
+            "title" : "Show column data type in header",
+            "description" : "Whether to display the data type of the columns in the header or not",
+            "default" : true,
+            "configKeys" : [ "showColumnDataType" ]
+          },
+          "showRowIndices" : {
+            "type" : "boolean",
+            "title" : "Show row numbers",
+            "description" : "Whether to display the row numbers or not",
+            "default" : false,
+            "configKeys" : [ "showRowIndices" ]
+          },
+          "showRowKeys" : {
+            "type" : "boolean",
+            "title" : "Show RowIDs",
+            "description" : "Whether to display the RowIDs or not",
+            "default" : true,
+            "configKeys" : [ "showRowKeys" ]
+          },
+          "showTableSize" : {
+            "type" : "boolean",
+            "title" : "Show table size",
+            "description" : "Whether to display the number of rows and columns above the table or not.",
+            "default" : true,
+            "configKeys" : [ "showTableSize" ]
+          },
+          "showTitle" : {
+            "type" : "boolean",
+            "title" : "Show title",
+            "description" : "Whether to display the title or not.",
+            "default" : true,
+            "configKeys" : [ "showTitle" ]
+          },
+          "skipRemainingColumns" : {
+            "type" : "boolean",
+            "default" : false,
+            "configKeys" : [ "skipRemainingColumns_Internals" ]
+          },
+          "subscribeToSelection" : {
+            "type" : "boolean",
+            "title" : "Subscribe to selection",
+            "description" : "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
+            "default" : true,
+            "configKeys" : [ "subscribeToSelection" ]
+          },
+          "title" : {
+            "type" : "string",
+            "title" : "Title",
+            "description" : "The title of the table shown above the generated image. If left blank, no title will be shown.",
+            "default" : "Table View"
+          }
+        }
+      }
+    }
+  },
+  "ui_schema" : {
+    "elements" : [ {
+      "label" : "Data",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/displayedColumns",
+        "options" : {
+          "format" : "columnFilter",
+          "possibleValues" : [ {
+            "id" : "test1",
+            "text" : "test1",
+            "type" : {
+              "id" : "org.knime.core.data.DoubleValue",
+              "text" : "Number (double)"
+            },
+            "compatibleTypes" : [ "org.knime.core.data.DoubleValue", "org.knime.core.data.DataValue", "org.knime.core.data.ComplexNumberValue", "org.knime.core.data.FuzzyNumberValue", "org.knime.core.data.FuzzyIntervalValue", "org.knime.core.data.BoundedValue" ]
+          }, {
+            "id" : "test2",
+            "text" : "test2",
+            "type" : {
+              "id" : "org.knime.core.data.StringValue",
+              "text" : "String"
+            },
+            "compatibleTypes" : [ "org.knime.core.data.StringValue", "org.knime.core.data.DataValue", "org.knime.core.data.NominalValue" ]
+          } ],
+          "showNoneColumn" : false,
+          "showRowKeys" : false,
+          "showSearch" : true,
+          "showMode" : true
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showRowIndices",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showRowKeys",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showColumnDataType",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showTableSize",
+        "options" : {
+          "format" : "checkbox"
+        },
+        "rule" : {
+          "effect" : "HIDE",
+          "condition" : {
+            "scope" : "#/properties/view/properties/enablePagination",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      } ]
+    }, {
+      "label" : "View",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/title",
+        "options" : { }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showTitle",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enablePagination",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/pageSize",
+        "options" : { },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/view/properties/enablePagination",
+            "schema" : {
+              "const" : true
+            }
+          }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/autoSizeColumnsToContent",
+        "options" : {
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/compactMode",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    }, {
+      "label" : "Interactivity",
+      "type" : "Section",
+      "elements" : [ {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enableGlobalSearch",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enableColumnSearch",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enableSortingByHeader",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enableRendererSelection",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/publishSelection",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/subscribeToSelection",
+        "options" : {
+          "format" : "checkbox"
+        }
+      } ]
+    } ]
+  }
+}
