@@ -308,8 +308,11 @@ describe('TableViewDisplay.vue', () => {
                     enableVirtualScrolling: false,
                     pageConfig: {
                         showTableSize: false,
-                        currentSize: 0,
-                        pageSize: 0
+                        currentSize: 4,
+                        pageSize: 4,
+                        columnCount: 3,
+                        currentPage: 1,
+                        tableSize: 6
                     },
                     showColumnFilters: false,
                     showSelection: false,

@@ -5,6 +5,13 @@ export interface DataType {
     renderers: { name: string, id: string }[]
 }
 
+export interface PageParams {
+    currentRowCount: number,
+    totalRowCount?: number,
+    currentPage: number,
+    columnCount: number,
+}
+
 interface AutoColumnSizesOptions {
     fixedSizes: Record<string | symbol, number>,
     calculateForBody: boolean,
@@ -38,12 +45,7 @@ export interface TableViewDisplayProps {
         bottom: any[][],
         totalSelected: boolean
     },
-    page?: {
-        currentRowCount: number,
-        totalRowCount: number,
-        currentPage: number,
-        columnCount: number
-    },
+    page: PageParams,
     sorting?: {
         columnSortIndex: number,
         columnSortDirection: number

@@ -84,7 +84,6 @@ describe('TableViewReport.vue', () => {
                 enableVirtualScrolling: false,
                 forceHideTableSizes: false,
                 includeImageResources: true,
-                page: undefined,
                 selection: undefined,
                 sorting: undefined,
                 autoColumnSizesOptions: undefined,
@@ -97,6 +96,11 @@ describe('TableViewReport.vue', () => {
                     enableGlobalSearch: false,
                     enableRendererSelection: false
 
+                },
+                page: {
+                    columnCount: 0,
+                    currentPage: 1,
+                    currentRowCount: 2
                 },
                 header: expect.objectContaining({
                     columnDataTypeIds: initialDataMock.table.columnDataTypeIds,
@@ -127,12 +131,14 @@ describe('TableViewReport.vue', () => {
     it('fetches new data if pagination is disabled', async () => {
         initialDataMock.settings.enablePagination = false;
         initialDataMock.settings.displayedColumns = { selected: ['col1', 'col2', 'col3'] };
+        const columnCount = 1;
         const getDataReturnValue = {
             rows: [
                 ['row1col1'],
                 ['row2col1'],
                 ['row3col1']
             ],
+            columnCount,
             displayedColumns: ['col1'],
             columnContentTypes: ['txt']
         };
@@ -151,6 +157,11 @@ describe('TableViewReport.vue', () => {
                 rows: {
                     loaded: true,
                     top: getDataReturnValue.rows
+                },
+                page: {
+                    columnCount,
+                    currentPage: 1,
+                    currentRowCount: 3
                 }
             }
         );

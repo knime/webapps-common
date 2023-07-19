@@ -56,6 +56,12 @@ export const getDefaultProps = () : TableViewDisplayProps => {
             showRowIndices: false,
             showTableSize: false
         },
+        page: {
+            currentRowCount: 4,
+            totalRowCount: 6,
+            currentPage: 1,
+            columnCount: 3
+        },
         globalSearchQuery: '',
         enableVirtualScrolling: false,
         enableColumnResizing: false,
