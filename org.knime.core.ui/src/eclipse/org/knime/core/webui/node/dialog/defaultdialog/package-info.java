@@ -57,7 +57,20 @@
  * <li>A <b>UISchema</b> specifying the UI.</li>
  * </ul>
  *
+ * See {@link org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings DefaultNodeSettings} on how to define
+ * the dialog via a declarative API.
+ *
+ * <h4>Known limitations</h4>
+ * <ol>
+ * <li>Updates between settings are not possible if either the source or the target setting is nested within an array
+ * layout setting.</li>
+ * <li>Dependency chains are not possible, i.e. if setting A gets updated by setting B and setting B gets updated by setting C, an update of setting C does not
+ * influence A. In order to circumvent this, it is currently necessary to have a direct dependency from A to C, too.</li>
+ * <li>The order in which updates due to dependencies between settings are resolved is non-deterministic.</li>
+ * </ol>
+ *
  * @see org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl
+ *
  * @author Paul Bärnreuther
  */
 package org.knime.core.webui.node.dialog.defaultdialog;

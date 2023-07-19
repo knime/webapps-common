@@ -90,7 +90,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
- * declare the dialog's settings and widgets in a compact manner.
+ * declare the dialog's settings and widgets in a compact manner. See
+ * {@link org.knime.core.webui.node.dialog.defaultdialog package.info} for some known limitations.
  *
  * <h3>Constructors and fields</h3>
  * <p>
