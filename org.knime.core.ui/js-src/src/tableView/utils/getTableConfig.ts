@@ -1,25 +1,13 @@
-interface PageParams {
-    currentRowCount: number,
-    totalRowCount: number,
-    currentPage: number,
-    columnCount: number,
-}
+import type { PageParams } from '../types';
 
-const getPageConfig = (pageParams: PageParams | undefined, pageSize: number,
+const getPageConfig = (pageParams: PageParams, pageSize: number,
     enablePagination: boolean, showTableSize: boolean) => {
-    if (typeof pageParams === 'undefined') {
-        return {
-            pageConfig: {
-                showTableSize: false,
-                currentSize: 0,
-                pageSize: 0
-            }
-        };
-    }
-    const { currentRowCount,
+    const {
+        currentRowCount,
         totalRowCount,
         currentPage,
-        columnCount } = pageParams;
+        columnCount
+    } = pageParams;
 
     return {
         pageConfig: {
@@ -43,12 +31,7 @@ export default ({
     forceHideTableSizes
 } : {
     settings: any,
-    pageParams?: {
-        currentRowCount: number,
-        totalRowCount: number,
-        currentPage: number,
-        columnCount: number,
-    },
+    pageParams: PageParams,
     sortParams?: {
         columnSortIndex: number,
         columnSortDirection: number

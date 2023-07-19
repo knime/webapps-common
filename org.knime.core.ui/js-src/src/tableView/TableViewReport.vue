@@ -11,6 +11,8 @@ const columnDataTypeIds: Ref<any> = ref(null);
 const dataLoaded = ref(false);
 const table: Ref<{
   rows: any[],
+  rowCount: number,
+  columnCount: number,
   displayedColumns: string[],
   columnContentTypes: ('txt' | 'img_path' | 'html')[]
 } | null> = ref(null);
@@ -78,6 +80,11 @@ watch(ready, () => ready.value && emit('rendered'));
       dataTypes,
       columnDataTypeIds,
       indicateRemainingColumnsSkipped: false
+    }"
+    :page="{
+      currentRowCount: table?.rows.length || 0,
+      currentPage: 1,
+      columnCount: table?.columnCount || 0
     }"
     :enable-virtual-scrolling="false"
     :enable-column-resizing="false"

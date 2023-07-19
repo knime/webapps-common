@@ -208,7 +208,7 @@ describe('TableViewInteractive.vue', () => {
             const { data, currentSelection, dataConfig, tableConfig } = tableUIWithAutoSizeCalculation.vm.$props;
             expect(data).toEqual([initialDataMock.table.rows]);
             expect(currentSelection).toEqual(Array(1).fill(Array(rowCount).fill(false)));
-            expect(tableConfig).toMatchObject({
+            expect(tableConfig).toStrictEqual({
                 subMenuItems: [],
                 pageConfig: {
                     currentSize: 4,
@@ -218,13 +218,17 @@ describe('TableViewInteractive.vue', () => {
                     columnCount: 4,
                     showTableSize: true
                 },
+                searchConfig: {
+                    searchQuery: ''
+                },
                 sortConfig: {
                     sortColumn: null,
                     sortDirection: null
                 },
                 enableVirtualScrolling: true,
                 showSelection: true,
-                enableColumnResizing: true
+                enableColumnResizing: true,
+                showColumnFilters: true
             });
             const expectedColumnSize = DEFAULT_COLUMN_SIZE;
             const headline = { sectionHeadline: true, separator: true, text: 'Data renderer' };
