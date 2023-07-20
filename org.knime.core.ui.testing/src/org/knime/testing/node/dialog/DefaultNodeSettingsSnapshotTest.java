@@ -113,7 +113,7 @@ public class DefaultNodeSettingsSnapshotTest {
     }
 
     @Test
-    void testSnapshot() throws IOException {
+    protected void testSnapshot() throws IOException {
         // create an instance of the settings-class and save to node settings
         var settingsObjects = m_settingsClasses.entrySet().stream().map(e -> {
             var nodeSettings = new NodeSettings("ignore");
