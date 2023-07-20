@@ -85,7 +85,7 @@ public @interface ChoicesWidget {
     /**
      * @return whether to show an additional choice "RowIDs" representing the row key column.
      */
-    boolean showRowKeys() default false;
+    boolean showRowKeysColumn() default false;
 
     /**
      * @return whether a search field should be shown for the {@link ColumnFilter}

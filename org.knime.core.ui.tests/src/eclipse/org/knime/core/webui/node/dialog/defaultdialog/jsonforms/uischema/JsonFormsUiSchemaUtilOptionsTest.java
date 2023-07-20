@@ -364,7 +364,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     void testChoicesWidgetShowRowKeys() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
-            @ChoicesWidget(showRowKeys = true)
+            @ChoicesWidget(showRowKeysColumn = true)
             ColumnSelection m_foo;
 
             @ChoicesWidget()

@@ -254,7 +254,7 @@ final class UiSchemaOptionsGenerator {
                 options.put(TAG_FORMAT, format);
             }
             options.put("showNoneColumn", choicesWidget.showNoneColumn());
-            options.put("showRowKeys", choicesWidget.showRowKeys());
+            options.put("showRowKeys", choicesWidget.showRowKeysColumn());
             options.put("showSearch", choicesWidget.showSearch());
             options.put("showMode", choicesWidget.showMode());
             if (!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class)) {
