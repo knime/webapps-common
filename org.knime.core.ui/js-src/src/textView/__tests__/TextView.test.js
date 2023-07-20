@@ -1,13 +1,11 @@
 import { describe, it, beforeEach, expect, vi, afterEach } from "vitest";
 import TextView from "../TextView.vue";
-import { mountJsonFormsComponent } from "@@/test-setup/utils/jsonFormsTestUtils";
 import { JsonDataService } from "@knime/ui-extension-service";
+import shallowMountReportingComponent from "@@/test-setup/utils/shallowMountReportingComponent";
+import flushPromises from "flush-promises";
 
 describe("TextView.vue", () => {
-  let wrapper,
-    initialDataSpy,
-    addOnDataChangeCallbackSpy,
-    setReportingContentMock;
+  let wrapper, initialDataSpy, addOnDataChangeCallbackSpy;
 
   const defaultContent = "test data";
   const defaultFlowVariablesMap = {
@@ -33,19 +31,10 @@ describe("TextView.vue", () => {
       jsonDataServiceMock,
       "addOnDataChangeCallback",
     );
-    setReportingContentMock = vi.fn();
   };
 
   const mountWrapper = () => {
-    const component = mountJsonFormsComponent(TextView, {
-      props: false,
-      modules: {
-        pagebuilder: {
-          actions: { setReportingContent: setReportingContentMock },
-          namespaced: true,
-        },
-      },
-    });
+    const component = shallowMountReportingComponent(TextView);
     wrapper = component.wrapper;
   };
 
@@ -163,11 +152,13 @@ describe("TextView.vue", () => {
     expect(wrapper.vm.richTextContent).toBe("value1 value2");
   });
 
-  // TODO UIEXT-1052 enable once we have a propper way to get the reporting state
-  it.skip("notifies pagebuilder when component is mounted if it is in reporting context", () => {
-    expect(setReportingContentMock).toHaveBeenCalledWith(expect.anything(), {
-      nodeId: "nodeId",
-      reportContent: false,
-    });
+  it("notifies pagebuilder when component is mounted if it is in reporting context", async () => {
+    const { wrapper, setRenderCompleted } = shallowMountReportingComponent(
+      TextView,
+      true,
+    );
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    expect(setRenderCompleted).toHaveBeenCalled();
   });
 });
