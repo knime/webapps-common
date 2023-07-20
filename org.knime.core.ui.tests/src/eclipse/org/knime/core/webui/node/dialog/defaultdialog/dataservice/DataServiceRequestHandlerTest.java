@@ -52,9 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -66,7 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
  *
  * @author Paul Bärnreuther
  */
-public class DataServiceRequestHandlerTest {
+class DataServiceRequestHandlerTest {
 
     @Test
     void testSuccessfulResponse() throws InterruptedException, ExecutionException {
@@ -106,21 +104,27 @@ public class DataServiceRequestHandlerTest {
     @Test
     void cancelPendingRequestsOfSameId() throws InterruptedException, ExecutionException {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService1 = Executors.newSingleThreadExecutor();
+        ExecutorService executorService2 = Executors.newSingleThreadExecutor();
 
         final var requestHandler = new DataServiceRequestHandler();
-        final Callable<String> callable = () -> {
-            Thread.sleep(1);
-            return null;
-        };
 
-        CompletionService<Result<String>> completionService = new ExecutorCompletionService<>(executorService);
-
-        Future<Result<String>> future1 = completionService.submit(() -> requestHandler.handleRequest("foo", callable));
-        Future<Result<String>> future2 = completionService.submit(() -> requestHandler.handleRequest("foo", callable));
+        Future<Result<String>> future1 = executorService1.submit(() -> requestHandler.handleRequest("foo", () -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    return null;
+                }
+            }
+        }));
+        Thread.sleep(100);
+        Future<Result<String>> future2 = executorService2.submit(() -> requestHandler.handleRequest("foo", () -> null));
 
         final var result1 = future1.get();
         final var result2 = future2.get();
+        executorService1.shutdown();
+        executorService2.shutdown();
 
         assertThat(result1.state()).isEqualTo(ResultState.CANCELED);
         assertThat(result2.state()).isEqualTo(ResultState.SUCCESS);
