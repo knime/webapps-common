@@ -85,7 +85,7 @@ describe("TableViewReport.vue", () => {
       includeImageResources: true,
       selection: undefined,
       sorting: undefined,
-      autoColumnSizesOptions: undefined,
+      firstRowImageDimensions: {},
       settings: {
         ...initialDataMock.settings,
         publishSelection: false,
@@ -170,6 +170,8 @@ describe("TableViewReport.vue", () => {
 
   it("emits rendered", async () => {
     const wrapper = await shallowMountTableViewReportAndWait();
+    const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
+    await tableViewDisplay.vm.$emit("table-is-ready");
     expect(wrapper.emitted()).toStrictEqual({ rendered: [[]] });
   });
 
@@ -191,6 +193,24 @@ describe("TableViewReport.vue", () => {
     expect(wrapper.emitted()).toStrictEqual({});
     await tableViewDisplay.vm.$emit("rendered-image", "id2");
 
+    tableViewDisplay.vm.$emit("table-is-ready");
+    await wrapper.vm.$nextTick();
     expect(wrapper.emitted()).toStrictEqual({ rendered: [[]] });
+  });
+
+  it("does not emit rendered until the table is ready", async () => {
+    const wrapper = shallowMountTableViewReport();
+    const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
+    tableViewDisplay.vm.$emit("pending-image", "id1");
+
+    await flushPromises();
+    expect(wrapper.emitted()).toStrictEqual({}); // no emit, due to a pending image
+
+    tableViewDisplay.vm.$emit("rendered-image", "id1");
+    expect(wrapper.emitted()).toStrictEqual({}); // no emit, due to a table not yet ready
+
+    tableViewDisplay.vm.$emit("table-is-ready");
+    await wrapper.vm.$nextTick();
+    expect(wrapper.emitted()).toHaveProperty("rendered");
   });
 });

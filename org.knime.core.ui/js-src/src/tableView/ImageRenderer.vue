@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { uniqueId } from "lodash";
-import { computed, ref, watch, onMounted, type Ref } from "vue";
+import {
+  computed,
+  ref,
+  watch,
+  onMounted,
+  type Ref,
+  onUnmounted,
+  watchEffect,
+  nextTick,
+} from "vue";
 import { fetchImage } from "./utils/images";
 import { useStore } from "vuex";
 
@@ -11,7 +20,17 @@ const props = defineProps<{
   width?: number;
   update?: boolean;
   includeDataInHtml: boolean;
+  tableIsReady: boolean;
 }>();
+
+const waitForTableToBeReady = () =>
+  new Promise<void>((resolve) => {
+    watchEffect(() => {
+      if (props.tableIsReady) {
+        resolve();
+      }
+    });
+  });
 
 const emit = defineEmits(["pending", "rendered"]);
 
@@ -35,13 +54,21 @@ const urlWithDimensions = computed(() =>
     : imageUrl.value,
 );
 
+let uuid: string | null = null;
 onMounted(async () => {
   if (props.includeDataInHtml) {
-    const uuid = uniqueId("Image");
-    if (props.includeDataInHtml) {
-      emit("pending", uuid);
-    }
+    uuid = uniqueId("Image");
+    emit("pending", uuid);
+    await waitForTableToBeReady();
     inlinedSrc.value = await fetchImage(urlWithDimensions.value);
+    // wait until image was rendered in the DOM
+    await nextTick();
+    emit("rendered", uuid);
+  }
+});
+
+onUnmounted(() => {
+  if (props.includeDataInHtml) {
     emit("rendered", uuid);
   }
 });

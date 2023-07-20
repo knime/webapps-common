@@ -17,7 +17,12 @@ describe("ImageRenderer.vue", () => {
   );
 
   beforeEach(() => {
-    props = { baseUrl: "baseUrl", path: "path", includeDataInHtml: false };
+    props = {
+      baseUrl: "baseUrl",
+      path: "path",
+      includeDataInHtml: false,
+      tableIsReady: true,
+    };
     const store = createStore({
       modules: {
         api: {
@@ -113,6 +118,37 @@ describe("ImageRenderer.vue", () => {
         expect.stringContaining("Image"),
       ]);
       expect(wrapper.emitted("rendered")).toBeFalsy();
+      await flushPromises();
+      expect(wrapper.emitted("rendered")[0]).toStrictEqual([
+        expect.stringContaining("Image"),
+      ]);
+    });
+
+    it("emits rendered when the ImageRenderer is unmounted", () => {
+      props.includeDataInHtml = true;
+      const wrapper = mount(ImageRenderer, context);
+      expect(wrapper.emitted("pending")).toStrictEqual([
+        [expect.stringContaining("Image")],
+      ]);
+      expect(wrapper.emitted()).not.toHaveProperty("rendered");
+      wrapper.unmount();
+      expect(wrapper.emitted("rendered")).toStrictEqual([
+        [expect.stringContaining("Image")],
+      ]);
+    });
+
+    it("waits until the table is ready before fetching the images", async () => {
+      props.tableIsReady = false;
+      props.includeDataInHtml = true;
+      const wrapper = mount(ImageRenderer, context);
+      expect(wrapper.emitted("pending")[0]).toStrictEqual([
+        expect.stringContaining("Image"),
+      ]);
+      expect(wrapper.emitted("rendered")).toBeFalsy();
+
+      await wrapper.setProps({ tableIsReady: true });
+      expect(wrapper.emitted("rendered")).toBeFalsy();
+
       await flushPromises();
       expect(wrapper.emitted("rendered")[0]).toStrictEqual([
         expect.stringContaining("Image"),

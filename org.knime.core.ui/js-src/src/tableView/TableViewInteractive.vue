@@ -3,8 +3,8 @@
 import { JsonDataService, SelectionService } from "@knime/ui-extension-service";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
+import { AutoSizeColumnsToContent } from "./types";
 import specialColumns from "./utils/specialColumns";
-import { DEFAULT_IMAGE_ROW_HEIGHT } from "@/tableView/utils/getDataConfig";
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
@@ -57,10 +57,6 @@ export default {
       searchTerm: "",
       columnFiltersMap: new Map(),
       baseUrl: null,
-      currentAvailableWidth: 0,
-      columnSizeOverrides: {},
-      defaultColumnSizeOverride: null,
-      currentRowHeight: DEFAULT_IMAGE_ROW_HEIGHT,
       scopeSize: MIN_SCOPE_SIZE,
       bufferSize: MIN_BUFFER_SIZE,
       numRowsAbove: 0,
@@ -144,38 +140,6 @@ export default {
     },
     indicateRemainingColumnsSkipped() {
       return this.displayedColumns.length < this.columnCount;
-    },
-    useAutoColumnSizes() {
-      const { autoSizeColumnsToContent } = this.settings;
-      return (
-        autoSizeColumnsToContent === "FIT_CONTENT" ||
-        autoSizeColumnsToContent === "FIT_CONTENT_AND_HEADER"
-      );
-    },
-    includeHeadersInAutoColumnSizes() {
-      return (
-        this.settings.autoSizeColumnsToContent === "FIT_CONTENT_AND_HEADER"
-      );
-    },
-    fixedColumnSizes() {
-      const fixedColumnSizes = {};
-      // calculate the size of an img column by the ratio of the original img and the current row height
-      Object.entries(this.table.firstRowImageDimensions || []).forEach(
-        ([columnName, imageDimension]) => {
-          fixedColumnSizes[columnName] = Math.floor(
-            (imageDimension.widthInPx * this.currentRowHeight) /
-              imageDimension.heightInPx,
-          );
-        },
-      );
-      return fixedColumnSizes;
-    },
-    autoColumnSizesOptions() {
-      return {
-        calculateForBody: this.useAutoColumnSizes,
-        calculateForHeader: this.includeHeadersInAutoColumnSizes,
-        fixedSizes: this.fixedColumnSizes,
-      };
     },
   },
   async mounted() {
@@ -760,7 +724,9 @@ export default {
       } else if (
         compactModeChangeInducesRefresh ||
         sortingParamsReseted ||
-        (autoSizeColumnsToContentChanged && this.useAutoColumnSizes)
+        (autoSizeColumnsToContentChanged &&
+          this.settings.autoSizeColumnsToContent !==
+            AutoSizeColumnsToContent.FIXED)
       ) {
         await this.refreshTable();
       } else if (pageSizeChanged || enablePaginationChanged) {
@@ -859,33 +825,6 @@ export default {
         this.displayedColumns,
       );
       this.refreshTable({ resetPage: true, updateTotalSelected: true });
-    },
-    onColumnResize(columnName, newColumnSize) {
-      this.columnSizeOverrides[columnName] = newColumnSize;
-    },
-    onAllColumnsResize(columnSize) {
-      this.defaultColumnSizeOverride = columnSize;
-      this.displayedColumns.forEach((columnName) => {
-        delete this.columnSizeOverrides[columnName];
-      });
-    },
-    updateAvailableWidth(newAvailableWidth) {
-      if (this.currentAvailableWidth && !this.useAutoColumnSizes) {
-        // update all overridden column widths according to the relative change of the available width
-        const ratio = newAvailableWidth / this.currentAvailableWidth;
-        Object.keys(this.columnSizeOverrides).forEach((key) => {
-          this.columnSizeOverrides[key] *= ratio;
-        });
-        Object.getOwnPropertySymbols(this.columnSizeOverrides).forEach(
-          (symbol) => {
-            this.columnSizeOverrides[symbol] *= ratio;
-          },
-        );
-        if (this.defaultColumnSizeOverride) {
-          this.defaultColumnSizeOverride *= ratio;
-        }
-      }
-      this.currentAvailableWidth = newAvailableWidth;
     },
     onHeaderSubMenuItemSelection(item, columnName) {
       if (item.section === "dataRendering") {
@@ -1036,18 +975,6 @@ export default {
         (columnName) => this.colNameSelectedRendererId[columnName] || null,
       );
     },
-    onAutoColumnSizesUpdate(newAutoColumnSizes) {
-      if (Reflect.ownKeys(newAutoColumnSizes).length === 0) {
-        this.columnSizeOverrides = {};
-      } else {
-        Reflect.ownKeys(newAutoColumnSizes).forEach((columnId) => {
-          this.columnSizeOverrides[columnId] = newAutoColumnSizes[columnId];
-        });
-      }
-    },
-    onRowHeightUpdate(rowHeight) {
-      this.currentRowHeight = rowHeight;
-    },
   },
 };
 </script>
@@ -1068,9 +995,6 @@ export default {
       displayedColumns,
       columnFiltersMap,
       columnContentTypes,
-      columnSizeOverrides,
-      defaultColumnSizeOverride,
-      availableWidth: currentAvailableWidth,
       colNameSelectedRendererId,
       dataTypes,
       columnDataTypeIds,
@@ -1099,7 +1023,7 @@ export default {
     :include-image-resources="false"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
-    :auto-column-sizes-options="autoColumnSizesOptions"
+    :first-row-image-dimensions="table.firstRowImageDimensions || {}"
     @page-change="onPageChange"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"
@@ -1107,13 +1031,8 @@ export default {
     @search="onSearch"
     @column-filter="onColumnFilter"
     @clear-filter="onClearFilter"
-    @column-resize="onColumnResize"
-    @all-columns-resize="onAllColumnsResize"
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
-    @update:available-width="updateAvailableWidth"
-    @auto-column-sizes-update="onAutoColumnSizesUpdate"
-    @row-height-update="onRowHeightUpdate"
   />
 </template>
 

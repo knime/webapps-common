@@ -3,6 +3,7 @@ import { JsonDataService } from "@knime/ui-extension-service";
 import { ref, type Ref, onMounted, onUpdated, computed, watch } from "vue";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import getKnimeService from "./utils/getKnimeService";
+import type { ImageDimension } from "./types";
 
 const knimeService = getKnimeService();
 const settings: Ref<any> = ref({});
@@ -15,6 +16,7 @@ const table: Ref<{
   columnCount: number;
   displayedColumns: string[];
   columnContentTypes: ("txt" | "img_path" | "html")[];
+  firstRowImageDimensions: Record<string, ImageDimension>;
 } | null> = ref(null);
 
 onMounted(async () => {
@@ -54,6 +56,8 @@ onMounted(async () => {
 const emit = defineEmits(["rendered"]);
 const pendingImages = ref(new Set());
 
+const tableIsReady = ref(false);
+
 const updatedAfterInitialRender = ref(false);
 onUpdated(() => {
   if (dataLoaded.value) {
@@ -63,7 +67,8 @@ onUpdated(() => {
 
 const imagesLoaded = computed(() => pendingImages.value.size === 0);
 const ready = computed(
-  () => updatedAfterInitialRender.value && imagesLoaded.value,
+  () =>
+    updatedAfterInitialRender.value && imagesLoaded.value && tableIsReady.value,
 );
 watch(ready, () => ready.value && emit("rendered"));
 </script>
@@ -93,7 +98,9 @@ watch(ready, () => ready.value && emit("rendered"));
     global-search-query=""
     :include-image-resources="true"
     :knime-service="knimeService"
+    :first-row-image-dimensions="table?.firstRowImageDimensions || {}"
     @pending-image="(id) => pendingImages.add(id)"
     @rendered-image="(id) => pendingImages.delete(id)"
+    @table-is-ready="tableIsReady = true"
   />
 </template>

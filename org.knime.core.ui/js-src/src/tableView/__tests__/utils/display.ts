@@ -86,6 +86,6 @@ export const getDefaultProps = (): TableViewDisplayProps => {
     knimeService: {
       extensionConfig: { resourceInfo: { baseUrl: "baseUrl" } },
     } as any,
-    autoColumnSizesOptions: {},
+    firstRowImageDimensions: {},
   };
 };

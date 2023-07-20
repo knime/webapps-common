@@ -12,11 +12,18 @@ export interface PageParams {
   columnCount: number;
 }
 
-interface AutoColumnSizesOptions {
-  fixedSizes: Record<string | symbol, number>;
-  calculateForBody: boolean;
-  calculateForHeader: boolean;
+export interface ImageDimension {
+  widthInPx: number;
+  heightInPx: number;
 }
+
+export enum AutoSizeColumnsToContent {
+  FIXED = "FIXED",
+  FIT_CONTENT = "FIT_CONTENT",
+  FIT_CONTENT_AND_HEADER = "FIT_CONTENT_AND_HEADER",
+}
+
+export type ColumnSizes = Record<string | symbol, number>;
 
 export interface TableViewDisplayProps {
   settings: any;
@@ -31,9 +38,6 @@ export interface TableViewDisplayProps {
     displayedColumns: string[];
     columnFiltersMap?: Map<string | symbol, any>;
     columnContentTypes: ("txt" | "img_path" | "html")[];
-    columnSizeOverrides?: Record<string | symbol, number>;
-    defaultColumnSizeOverride?: number;
-    availableWidth?: number;
     dataTypes: Record<string, DataType>;
     columnDataTypeIds: string[];
     colNameSelectedRendererId?: Record<string, string>;
@@ -57,5 +61,5 @@ export interface TableViewDisplayProps {
   includeImageResources: boolean;
   knimeService: KnimeService;
   forceHideTableSizes?: boolean;
-  autoColumnSizesOptions?: AutoColumnSizesOptions;
+  firstRowImageDimensions: Record<string, ImageDimension>;
 }

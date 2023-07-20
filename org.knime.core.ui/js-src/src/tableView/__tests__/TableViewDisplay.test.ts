@@ -1,11 +1,40 @@
-/* eslint-disable vitest/max-nested-describe */
+/* eslint-disable vitest/max-nested-describe, max-lines */
 import type { VueWrapper } from "@vue/test-utils";
-import { describe, it, beforeEach, expect } from "vitest";
+import { describe, it, beforeEach, expect, vi } from "vitest";
 // @ts-ignore
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";
 import { getDefaultProps, shallowMountDisplay } from "./utils/display";
 import specialColumns from "../utils/specialColumns";
+import TableViewDisplay from "../TableViewDisplay.vue";
+import { ref, unref } from "vue";
+import useColumnSizes from "../composables/useColumnSizes";
+import useAutoColumnSizes from "../composables/useAutoColumnSizes";
+
+const useColumnSizesMock: { [key: string]: any } = {
+  columnSizes: ref([50, 50, 50]),
+  onColumnResize: vi.fn(),
+  onAllColumnsResize: vi.fn(),
+  onUpdateAvailableWidth: vi.fn(),
+};
+vi.mock("../composables/useColumnSizes", () => ({
+  default: vi.fn(() => useColumnSizesMock),
+}));
+
+const useAutoColumnSizesMock: { [key: string]: any } = {
+  autoColumnSizes: { col1: 55 },
+  autoColumnSizesActive: true,
+  autoColumnSizesOptions: {
+    calculateForBody: true,
+    calculateForHeader: true,
+    fixedSizes: { col1: 77 },
+  },
+  onAutoColumnSizesUpdate: vi.fn(),
+  onRowHeightUpdate: vi.fn(),
+};
+vi.mock("../composables/useAutoColumnSizes", () => ({
+  default: vi.fn(() => useAutoColumnSizesMock),
+}));
 
 describe("TableViewDisplay.vue", () => {
   let props: TableViewDisplayProps;
@@ -90,7 +119,7 @@ describe("TableViewDisplay.vue", () => {
           isSortable: true,
           key: 2,
           id: "col1",
-          size: 100,
+          size: 50,
           subHeader: undefined,
         });
       });
@@ -102,6 +131,15 @@ describe("TableViewDisplay.vue", () => {
       } = specialColumns;
 
       it("sets dataConfig with special columns", () => {
+        useColumnSizesMock.columnSizes = ref([
+          INDEX.defaultSize,
+          ROW_ID.defaultSize,
+          50,
+          50,
+          50,
+          SKIPPED.defaultSize,
+        ]);
+
         props.settings.showRowIndices = true;
         props.settings.showRowKeys = true;
         props.header.indicateRemainingColumnsSkipped = true;
@@ -171,7 +209,7 @@ describe("TableViewDisplay.vue", () => {
             isSortable: true,
             key: 3,
             id: "col2",
-            size: 100,
+            size: 50,
             subHeader: undefined,
           });
         });
@@ -186,28 +224,6 @@ describe("TableViewDisplay.vue", () => {
 
           expect(columnConfigs[1]).toMatchObject({
             filterConfig: customColumnFilter,
-          });
-        });
-
-        it("sets size overrides", () => {
-          const customSize = 123;
-          props.header.columnSizeOverrides = { col2: customSize };
-          const wrapper = shallowMountDisplay({ props });
-          const columnConfigs = getColumnConfigs(wrapper);
-
-          expect(columnConfigs[1]).toMatchObject({
-            size: customSize,
-          });
-        });
-
-        it("sets default size override", () => {
-          const customDefaultSize = 123;
-          props.header.defaultColumnSizeOverride = customDefaultSize;
-          const wrapper = shallowMountDisplay({ props });
-          const columnConfigs = getColumnConfigs(wrapper);
-
-          expect(columnConfigs[1]).toMatchObject({
-            size: customDefaultSize,
           });
         });
 
@@ -457,5 +473,107 @@ describe("TableViewDisplay.vue", () => {
         });
       });
     });
+  });
+
+  it("sets columnResizeActive state", () => {
+    const wrapper = shallowMountDisplay({ props });
+    const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
+    const tableUIWithAutoSizeCalculation = wrapper.findComponent(
+      TableUIWithAutoSizeCalculation,
+    );
+    const columnResizeActive = (tableViewDisplay.vm as any).columnResizeActive;
+    expect(columnResizeActive.state).toBeFalsy();
+    tableUIWithAutoSizeCalculation.vm.$emit("columnResizeStart");
+    expect(columnResizeActive.state).toBeTruthy();
+
+    tableUIWithAutoSizeCalculation.vm.$emit("columnResizeEnd");
+    expect(columnResizeActive.state).toBeFalsy();
+  });
+
+  it("emits table got visible", () => {
+    const wrapper = shallowMountDisplay({ props });
+    const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
+    const tableUIWithAutoSizeCalculation = wrapper.findComponent(
+      TableUIWithAutoSizeCalculation,
+    );
+
+    tableUIWithAutoSizeCalculation.vm.$emit("ready");
+    expect(tableViewDisplay.emitted()).toHaveProperty("table-is-ready");
+  });
+
+  describe("column size composables", () => {
+    it("uses useAutoColumnSizes with correct values", () => {
+      (useAutoColumnSizes as any).reset();
+      props.firstRowImageDimensions = {
+        col1: { widthInPx: 20, heightInPx: 50 },
+      };
+      shallowMountDisplay({ props });
+      const [{ settings, firstRowImageDimensions }] = (
+        useAutoColumnSizes as any
+      ).mock.calls[0];
+
+      expect(unref(settings)).toStrictEqual(props.settings);
+      expect(unref(firstRowImageDimensions)).toStrictEqual(
+        props.firstRowImageDimensions,
+      );
+    });
+
+    it("uses useColumnSizes with correct values", () => {
+      (useColumnSizes as any).reset();
+      shallowMountDisplay({ props });
+      const [{ settings, header, autoColumnSizes, autoColumnSizesActive }] = (
+        useColumnSizes as any
+      ).mock.calls[0];
+
+      expect(unref(settings)).toStrictEqual(props.settings);
+      expect(unref(header)).toStrictEqual(props.header);
+      expect(unref(autoColumnSizes)).toStrictEqual(
+        useAutoColumnSizesMock.autoColumnSizes,
+      );
+      expect(unref(autoColumnSizesActive)).toBe(
+        useAutoColumnSizesMock.autoColumnSizesActive,
+      );
+    });
+
+    it.each([
+      ["onColumnResize", "column-resize", [0, 60], ["col1", 60]],
+      ["onAllColumnsResize", "all-columns-resize", [60], [60]],
+      ["onUpdateAvailableWidth", "update:available-width", [400], [400]],
+    ])(
+      "calls the method %s within useColumnSizes on emit of %s",
+      (composableMethodName, emitMethodName, emitParams, callParams) => {
+        const wrapper = shallowMountDisplay({ props });
+        const tableUIWithAutoSizeCalculation = wrapper.findComponent(
+          TableUIWithAutoSizeCalculation,
+        );
+
+        tableUIWithAutoSizeCalculation.vm.$emit(emitMethodName, ...emitParams);
+        expect(useColumnSizesMock[composableMethodName]).toHaveBeenCalledWith(
+          ...callParams,
+        );
+      },
+    );
+
+    it.each([
+      [
+        "onAutoColumnSizesUpdate",
+        "auto-column-sizes-update",
+        { col1: 55, col2: 66, col3: 77 },
+      ],
+      ["onRowHeightUpdate", "row-height-update", 99],
+    ])(
+      "calls the method %s within useAutoColumnSizes on emit of %s",
+      (composableMethodName, emitMethodName, emitParams) => {
+        const wrapper = shallowMountDisplay({ props });
+        const tableUIWithAutoSizeCalculation = wrapper.findComponent(
+          TableUIWithAutoSizeCalculation,
+        );
+
+        tableUIWithAutoSizeCalculation.vm.$emit(emitMethodName, emitParams);
+        expect(
+          useAutoColumnSizesMock[composableMethodName],
+        ).toHaveBeenCalledWith(emitParams);
+      },
+    );
   });
 });
