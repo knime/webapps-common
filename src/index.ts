@@ -5,6 +5,7 @@ export {
     IFrameKnimeServiceAdapter,
     SelectionService,
     DialogService,
+    ReportingService,
     ColorService,
     NumericColorHandler,
     NominalColorHandler,

@@ -21,7 +21,9 @@ import { ResourceInfo } from './ResourceInfo';
  * @property {T} [initialSelection] - optional initial selection to provide directly to the UI Extension.
  * @property {FlowVariableSettings} [flowVariableSettings]
  * @property {boolean} hasNodeView
- * @property {string} generatedImageActionId - optional action-id to communicate the generated image back to Java
+ * @property {string} generatedImageActionId - optional action-id to communicate the generated image back to Java.
+ *  TODO UIEXT-1031: We are also (mis)using this prop for cpmmunicating the report back to Java. The two concerns
+ *  should either be unified or separated.
  * @property {Record<string, ColorModel>} colorModels - optional color model per column used to map data cell values
  * (numeric xor nominal) of a column to hexadecimal color codes
  * @template T
