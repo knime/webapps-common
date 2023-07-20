@@ -1,0 +1,8 @@
+@define-mixin svg-icon-size $size {
+  width: calc($size * 1px);
+  height: calc($size * 1px);
+
+  /* get 1px stroke width */
+  stroke-width: calc(32px / $size);
+  @mixin-content;
+}

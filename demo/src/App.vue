@@ -69,6 +69,9 @@ const demoComponents = {
     DonutChart: defineAsyncComponent(() =>
       import("./components/DonutChart.vue")
     ),
+    FileExplorer: defineAsyncComponent(() =>
+      import("./components/FileExplorer.vue")
+    ),
   },
   messages: {
     Message: defineAsyncComponent(() => import("./components/Message.vue")),
