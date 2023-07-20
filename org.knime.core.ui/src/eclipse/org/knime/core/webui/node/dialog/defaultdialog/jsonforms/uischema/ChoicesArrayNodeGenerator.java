@@ -50,7 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -66,13 +66,13 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 final class ChoicesArrayNodeGenerator {
 
-    private final SettingsCreationContext m_settingsContext;
+    private final DefaultNodeSettingsContext m_settingsContext;
 
     private ArrayNode m_arrayNode;
 
     private final ObjectMapper m_mapper;
 
-    ChoicesArrayNodeGenerator(final ObjectMapper mapper, final SettingsCreationContext settingsContext) {
+    ChoicesArrayNodeGenerator(final ObjectMapper mapper, final DefaultNodeSettingsContext settingsContext) {
         m_settingsContext = settingsContext;
         m_mapper = mapper;
     }

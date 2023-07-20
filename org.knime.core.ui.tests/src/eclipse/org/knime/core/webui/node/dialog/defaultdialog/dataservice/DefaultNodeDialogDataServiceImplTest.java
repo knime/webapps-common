@@ -61,7 +61,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -102,7 +102,7 @@ class DefaultNodeDialogDataServiceImplTest {
              */
             @Override
             public PossibleValue[] update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) {
+                final DefaultNodeSettingsContext context) {
                 return getResult(settings.m_foo);
             }
         }
@@ -152,14 +152,14 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             public ButtonChange<String, TestButtonStates> initialize(final String currentValue,
-                final SettingsCreationContext context) {
+                final DefaultNodeSettingsContext context) {
                 return new ButtonChange<>(currentValue, TestButtonStates.FIRST);
 
             }
 
             @Override
             public ButtonChange<String, TestButtonStates> invoke(final TestButtonStates state,
-                final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+                final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context) {
                 return new ButtonChange<>(settings.m_foo, state);
             }
 
@@ -169,7 +169,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             public ButtonChange<String, TestButtonStates> update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) throws WidgetHandlerException {
+                final DefaultNodeSettingsContext context) throws WidgetHandlerException {
                 return new ButtonChange<>(settings.m_foo, TestButtonStates.SECOND);
             }
 
@@ -238,7 +238,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             default public PossibleValue[] update(final TestDefaultNodeSettings settings,
-                final SettingsCreationContext context) {
+                final DefaultNodeSettingsContext context) {
                 return new PossibleValue[]{PossibleValue.fromId(getResult())};
 
             }
@@ -336,36 +336,36 @@ class DefaultNodeDialogDataServiceImplTest {
         }
     }
 
-    static class SettingsCreationContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
+    static class DefaultNodeSettingsContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
         /**
          * We only use this method to find out if the settings creation context is null. {@inheritDoc}
          */
         @Override
         public PossibleValue[] update(final TestDefaultNodeSettings settings,
-            final SettingsCreationContext context) {
+            final DefaultNodeSettingsContext context) {
             return context == null ? null : new PossibleValue[0];
         }
 
     }
 
     @Nested
-    class SettingsCreationContextSupplierTest {
-        private SettingsCreationContext m_context = null; //NOSONAR
+    class DefaultNodeSettingsContextSupplierTest {
+        private DefaultNodeSettingsContext m_context = null; //NOSONAR
 
         @Test
-        void testSuppliesSettingsCreationContextToHandler() throws ExecutionException, InterruptedException {
+        void testSuppliesDefaultNodeSettingsContextToHandler() throws ExecutionException, InterruptedException {
 
             class ButtonSettings {
-                @ChoicesWidget(choicesUpdateHandler = SettingsCreationContextHandler.class)
+                @ChoicesWidget(choicesUpdateHandler = DefaultNodeSettingsContextHandler.class)
                 Boolean m_button;
             }
 
-            final Supplier<SettingsCreationContext> contextProvider =
-                new Supplier<DefaultNodeSettings.SettingsCreationContext>() {
+            final Supplier<DefaultNodeSettingsContext> contextProvider =
+                new Supplier<DefaultNodeSettings.DefaultNodeSettingsContext>() {
 
                     @Override
-                    public SettingsCreationContext get() {
+                    public DefaultNodeSettingsContext get() {
                         return m_context;
                     }
                 };
@@ -375,13 +375,13 @@ class DefaultNodeDialogDataServiceImplTest {
                 new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider);
 
             final var firstResult =
-                dataService.update("widgetId", SettingsCreationContextHandler.class.getName(), null).result();
+                dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
             assertThat(firstResult).isNull();
 
-            m_context = new SettingsCreationContext(new PortObjectSpec[0], null, null);
+            m_context = new DefaultNodeSettingsContext(new PortObjectSpec[0], null, null);
 
             final var secondResult =
-                dataService.update("widgetId", SettingsCreationContextHandler.class.getName(), null).result();
+                dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
             assertThat(secondResult).isNotNull();
 
         }

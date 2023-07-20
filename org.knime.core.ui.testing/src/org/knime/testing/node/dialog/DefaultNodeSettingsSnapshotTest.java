@@ -124,7 +124,7 @@ public class DefaultNodeSettingsSnapshotTest {
 
         // turn it into the json-forms representation
         var jsonFormsSettings =
-            new JsonFormsSettingsImpl(settingsObjects, DefaultNodeSettings.createSettingsCreationContext(m_specs));
+            new JsonFormsSettingsImpl(settingsObjects, DefaultNodeSettings.createDefaultNodeSettingsContext(m_specs));
         var mapper = JsonFormsDataUtil.getMapper();
         var objectNode = mapper.createObjectNode();
         objectNode.set(JsonFormsConsts.FIELD_NAME_DATA, jsonFormsSettings.getData());

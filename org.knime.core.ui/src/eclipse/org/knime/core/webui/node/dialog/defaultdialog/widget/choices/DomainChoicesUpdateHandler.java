@@ -53,7 +53,7 @@ import java.util.Optional;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -66,7 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
 public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
 
     @Override
-    public PossibleValue[] update(final S settings, final SettingsCreationContext context)
+    public PossibleValue[] update(final S settings, final DefaultNodeSettingsContext context)
         throws WidgetHandlerException {
         final var spec = context.getDataTableSpec(0);
         if (spec.isEmpty()) {

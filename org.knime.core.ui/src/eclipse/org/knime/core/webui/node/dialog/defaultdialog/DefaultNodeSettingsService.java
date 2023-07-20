@@ -63,7 +63,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 
@@ -83,7 +83,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
 
     private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
-    private SettingsCreationContext m_creationContext;
+    private DefaultNodeSettingsContext m_creationContext;
 
     /**
      * @param settingsClasses map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
@@ -116,7 +116,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
 
     @Override
     public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings, final PortObjectSpec[] specs) {
-        m_creationContext = DefaultNodeSettings.createSettingsCreationContext(specs);
+        m_creationContext = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
         var loadedSettings = settings.entrySet().stream()//
             .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
         final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, m_creationContext);
@@ -133,7 +133,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         }
     }
 
-    SettingsCreationContext getCreationContext() {
+    DefaultNodeSettingsContext getCreationContext() {
         return m_creationContext;
     }
 

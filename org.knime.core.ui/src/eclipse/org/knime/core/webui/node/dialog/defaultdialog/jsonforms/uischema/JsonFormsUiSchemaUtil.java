@@ -50,7 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutNodesGenerator.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -88,7 +88,7 @@ public final class JsonFormsUiSchemaUtil {
      * @return the ui schema resolved by the mapper from the given settings
      */
     public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
-        final SettingsCreationContext context) {
+        final DefaultNodeSettingsContext context) {
         final var layoutSkeleton = resolveLayout(settings, mapper);
         return new LayoutNodesGenerator(layoutSkeleton, mapper, context).build();
     }

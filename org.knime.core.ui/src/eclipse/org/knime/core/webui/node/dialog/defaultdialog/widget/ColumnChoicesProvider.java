@@ -51,26 +51,26 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget;
 import java.util.stream.Stream;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * A class that provides an array of possible column choices based on the current {@link SettingsCreationContext}.
+ * A class that provides an array of possible column choices based on the current {@link DefaultNodeSettingsContext}.
  *
  * @author Ivan Prigarin, KNIME GmbH, Konstanz, Germany
  */
 public interface ColumnChoicesProvider extends ChoicesProvider {
 
     /**
-     * Computes the array of possible column choices based on the {@link SettingsCreationContext}.
+     * Computes the array of possible column choices based on the {@link DefaultNodeSettingsContext}.
      *
      * @param context the context that holds any available information that might be relevant for determining available
      *            choices
      * @return array of possible values, never {@code null}
      */
-    DataColumnSpec[] columnChoices(SettingsCreationContext context);
+    DataColumnSpec[] columnChoices(DefaultNodeSettingsContext context);
 
     @Override
-    default String[] choices(final SettingsCreationContext context) {
+    default String[] choices(final DefaultNodeSettingsContext context) {
         return Stream.of(columnChoices(context))//
             .map(DataColumnSpec::getName)//
             .toArray(String[]::new);

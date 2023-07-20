@@ -56,7 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import java.util.Collection;
 import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -77,7 +77,7 @@ final class LayoutNodesGenerator {
 
     private Map<Class<?>, JsonFormsExpression> m_signals;
 
-    private final SettingsCreationContext m_settingsCreationContext;
+    private final DefaultNodeSettingsContext m_DefaultNodeSettingsContext;
 
     private final Collection<JsonFormsControl> m_fields;
 
@@ -92,12 +92,12 @@ final class LayoutNodesGenerator {
      * @param context the settings creation context with access to the input ports
      */
     LayoutNodesGenerator(final LayoutSkeleton layout, final ObjectMapper mapper,
-        final SettingsCreationContext context) {
+        final DefaultNodeSettingsContext context) {
         m_mapper = mapper;
         m_signals = layout.signals();
         m_fields = layout.fields();
         m_rootLayoutTree = layout.layoutTreeRoot();
-        m_settingsCreationContext = context;
+        m_DefaultNodeSettingsContext = context;
     }
 
     ObjectNode build() {
@@ -117,7 +117,7 @@ final class LayoutNodesGenerator {
         final var scope = controlElement.scope();
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, scope);
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field, m_settingsCreationContext, m_fields, scope).addOptionsTo(control);
+        new UiSchemaOptionsGenerator(m_mapper, field, m_DefaultNodeSettingsContext, m_fields, scope).addOptionsTo(control);
         new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

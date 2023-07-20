@@ -65,7 +65,7 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
@@ -231,7 +231,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     static class TestColumnChoicesProvider implements ColumnChoicesProvider {
 
         @Override
-        public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
+        public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
             return ((DataTableSpec)context.getPortObjectSpec(0).get()).stream().toArray(DataColumnSpec[]::new);
         }
     }
@@ -241,7 +241,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
          * {@inheritDoc}
          */
         @Override
-        public String[] choices(final SettingsCreationContext context) {
+        public String[] choices(final DefaultNodeSettingsContext context) {
             return new String[]{"column1", "column2"};
         }
     }
@@ -259,12 +259,12 @@ class JsonFormsUiSchemaUtilOptionsTest {
     @Test
     void testChoicesWidget() {
 
-        SettingsCreationContext settingsCreationContext = new SettingsCreationContext(
+        DefaultNodeSettingsContext DefaultNodeSettingsContext = new DefaultNodeSettingsContext(
             new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
                 new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
             null, null);
 
-        var response = buildTestUiSchema(ChoicesSettings.class, settingsCreationContext);
+        var response = buildTestUiSchema(ChoicesSettings.class, DefaultNodeSettingsContext);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().hasSize(2);
@@ -293,7 +293,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     @Test
-    void testChoicesWidgetWitoutSettingsCreationContext() {
+    void testChoicesWidgetWitoutDefaultNodeSettingsContext() {
 
         var response = buildTestUiSchema(ChoicesSettings.class, null);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
@@ -591,7 +591,7 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
         @Override
         public ButtonChange<String, TestStates> update(final OtherSettings settings,
-            final SettingsCreationContext context) throws WidgetHandlerException {
+            final DefaultNodeSettingsContext context) throws WidgetHandlerException {
             return null;
         }
 

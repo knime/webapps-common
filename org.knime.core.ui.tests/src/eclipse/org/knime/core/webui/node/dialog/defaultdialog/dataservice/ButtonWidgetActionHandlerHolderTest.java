@@ -54,7 +54,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -82,13 +82,13 @@ public class ButtonWidgetActionHandlerHolderTest {
 
         @Override
         public ButtonChange<Integer, TestButtonStates> initialize(final Integer currentValue,
-            final SettingsCreationContext context) {
+            final DefaultNodeSettingsContext context) {
             return null;
         }
 
         @Override
         public ButtonChange<Integer, TestButtonStates> invoke(final TestButtonStates state,
-            final TestDefaultNodeSettings settings, final SettingsCreationContext context) {
+            final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context) {
             return null;
         }
 

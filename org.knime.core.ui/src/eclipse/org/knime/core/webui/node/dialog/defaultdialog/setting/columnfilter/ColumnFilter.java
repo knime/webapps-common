@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 import java.util.Objects;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
@@ -124,7 +124,7 @@ public class ColumnFilter implements PersistableSettings {
      *
      * @param context settings creation context
      */
-    public ColumnFilter(final SettingsCreationContext context) {
+    public ColumnFilter(final DefaultNodeSettingsContext context) {
         this();
     }
 
@@ -136,7 +136,7 @@ public class ColumnFilter implements PersistableSettings {
      * @return a new ColumnFilter
      */
     public static ColumnFilter createDefault(final Class<? extends ChoicesProvider> choicesProviderClass,
-        final SettingsCreationContext context) {
+        final DefaultNodeSettingsContext context) {
         ChoicesProvider choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
         var choices = choicesProvider.choices(context);
         var columnFilter = new ColumnFilter(choices);

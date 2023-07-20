@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
@@ -130,7 +130,7 @@ public final class JsonFormsSchemaUtil {
      * @return a schema representation
      */
     public static JsonNode buildCombinedSchema(final Map<String, Class<? extends DefaultNodeSettings>> settingsClasses,
-        final SettingsCreationContext context, final ObjectMapper mapper) {
+        final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
         final var properties = root.putObject(TAG_PROPERTIES);
@@ -153,7 +153,7 @@ public final class JsonFormsSchemaUtil {
     }
 
     @SuppressWarnings("javadoc")
-    public static ObjectNode buildSchema(final Class<?> settingsClass, final SettingsCreationContext context,
+    public static ObjectNode buildSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context,
         final ObjectMapper mapper) {
         final var builder = new SchemaGeneratorConfigBuilder(mapper, VERSION, new OptionPreset(//
             Option.ADDITIONAL_FIXED_TYPES, //
@@ -225,7 +225,7 @@ public final class JsonFormsSchemaUtil {
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
-    private static BigDecimal resolveDouble(final SettingsCreationContext context,
+    private static BigDecimal resolveDouble(final DefaultNodeSettingsContext context,
         final Class<? extends DoubleProvider> providerClass, final double value) {
         if (!DoubleProvider.class.equals(providerClass)) {
             var provider = InstantiationUtil.createInstance(providerClass);

@@ -73,7 +73,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
@@ -172,7 +172,7 @@ class JsonFormsSchemaUtilTest {
 
     private static class TestChoices implements ChoicesProvider {
         @Override
-        public String[] choices(final SettingsCreationContext context) {
+        public String[] choices(final DefaultNodeSettingsContext context) {
             return new String[]{context.getDataTableSpecs()[0].getColumnSpec(0).getName()};
         }
     }
@@ -227,7 +227,7 @@ class JsonFormsSchemaUtilTest {
         private static final class TestProvider implements NumberInputWidget.DoubleProvider {
 
             @Override
-            public double getValue(final SettingsCreationContext context) {
+            public double getValue(final DefaultNodeSettingsContext context) {
                 return 42;
             }
 
@@ -528,7 +528,7 @@ class JsonFormsSchemaUtilTest {
 
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
         return JsonFormsSchemaUtil
-            .buildSchema(clazz, DefaultNodeSettings.createSettingsCreationContext(specs), JsonFormsDataUtil.getMapper())
+            .buildSchema(clazz, DefaultNodeSettings.createDefaultNodeSettingsContext(specs), JsonFormsDataUtil.getMapper())
             .get("properties");
     }
 

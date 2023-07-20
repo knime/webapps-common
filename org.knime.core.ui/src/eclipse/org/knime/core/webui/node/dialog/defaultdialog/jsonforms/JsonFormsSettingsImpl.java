@@ -57,7 +57,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 
@@ -88,14 +88,14 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     private final DefaultNodeSettings m_viewSettings;
 
-    private final SettingsCreationContext m_context;
+    private final DefaultNodeSettingsContext m_context;
 
     /**
      * @param settings the POJOs from which to derive the schema, data and uiSchema
      * @param context the current {@link SettingsCreatingContext} with access to input ports
      */
     public JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings,
-        final SettingsCreationContext context) {
+        final DefaultNodeSettingsContext context) {
         m_modelSettings = settings.get(SettingsType.MODEL);
         m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
         m_viewSettings = settings.get(SettingsType.VIEW);

@@ -54,7 +54,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
  * Annotate a number setting with this in order to provide validation instructions.
@@ -106,7 +106,7 @@ public @interface NumberInputWidget {
          * @param context of the node
          * @return the double value
          */
-        double getValue(final SettingsCreationContext context);
+        double getValue(final DefaultNodeSettingsContext context);
     }
 
 }

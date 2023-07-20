@@ -63,7 +63,7 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
@@ -72,7 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
  */
 class DomainChoicesUpdateHandlerTest {
 
-    static private SettingsCreationContext createContext(final String colName, final List<String> domain) {
+    static private DefaultNodeSettingsContext createContext(final String colName, final List<String> domain) {
         final var colDomainCreator = new DataColumnDomainCreator();
         colDomainCreator.setValues(domain.stream().map(StringCell::new).collect(Collectors.toSet()));
         final var colDomain = colDomainCreator.createDomain();
@@ -81,13 +81,13 @@ class DomainChoicesUpdateHandlerTest {
 
     }
 
-    private static SettingsCreationContext createContextFromDomain(final String colName,
+    private static DefaultNodeSettingsContext createContextFromDomain(final String colName,
         final DataColumnDomain colDomain) {
         final var colSpecCreator = new DataColumnSpecCreator(colName, StringCell.TYPE);
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        return new SettingsCreationContext(new PortObjectSpec[]{new DataTableSpec(//
+        return new DefaultNodeSettingsContext(new PortObjectSpec[]{new DataTableSpec(//
             new DataColumnSpec[]{colSpec} //
                 )}, null, null);
     }
@@ -141,7 +141,7 @@ class DomainChoicesUpdateHandlerTest {
             public String columnName() {
                 return colName;
             }
-        }, new SettingsCreationContext(new PortObjectSpec[]{null}, null, null));
+        }, new DefaultNodeSettingsContext(new PortObjectSpec[]{null}, null, null));
         assertThat(response).isEmpty();
     }
 

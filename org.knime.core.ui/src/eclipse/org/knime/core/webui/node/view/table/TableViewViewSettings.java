@@ -81,7 +81,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     private static final class AllColumns implements ColumnChoicesProvider {
 
         @Override
-        public DataColumnSpec[] columnChoices(final SettingsCreationContext context) {
+        public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
             return context.getDataTableSpec(0)//
                 .stream()//
                 .flatMap(DataTableSpec::stream)//
@@ -271,7 +271,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * @param context
      */
-    protected TableViewViewSettings(final SettingsCreationContext context) {
+    protected TableViewViewSettings(final DefaultNodeSettingsContext context) {
         this(context.getDataTableSpecs()[0]);
     }
 

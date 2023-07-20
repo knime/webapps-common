@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler.NoopEnum;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -67,7 +67,7 @@ public final class NoopButtonUpdateHandler implements ButtonUpdateHandler<Void, 
      * This method should never be called, since the handler should never be used.
      */
     @Override
-    public ButtonChange<Void, NoopEnum> update(final Void settings, final SettingsCreationContext context)
+    public ButtonChange<Void, NoopEnum> update(final Void settings, final DefaultNodeSettingsContext context)
         throws WidgetHandlerException {
         return null;
     }

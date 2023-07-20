@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -69,15 +69,15 @@ public interface UpdateHandler<R, S> extends DependencyHandler<S> {
      * immediate effect.
      *
      * @param settings the dependency settings on update
-     * @param context the current {@link SettingsCreationContext}
+     * @param context the current {@link DefaultNodeSettingsContext}
      *
      * @return result defining state changes in the fronted.
      * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    R update(S settings, SettingsCreationContext context) throws WidgetHandlerException;
+    R update(S settings, DefaultNodeSettingsContext context) throws WidgetHandlerException;
 
     @SuppressWarnings({"javadoc"})
-    default R castAndUpdate(final Object settings, final SettingsCreationContext context)
+    default R castAndUpdate(final Object settings, final DefaultNodeSettingsContext context)
         throws WidgetHandlerException {
         return update(castToDependencies(settings), context);
     }

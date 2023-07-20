@@ -53,7 +53,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationU
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.util.LRUCache;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 import com.github.victools.jsonschema.generator.ConfigFunction;
 import com.github.victools.jsonschema.generator.FieldScope;
@@ -63,11 +63,11 @@ import com.github.victools.jsonschema.generator.FieldScope;
  */
 final class DefaultResolver implements ConfigFunction<FieldScope, Object> {
 
-    private final SettingsCreationContext m_context;
+    private final DefaultNodeSettingsContext m_context;
 
     private final LRUCache<Class<?>, Object> m_defaultObjects = new LRUCache<>(4);
 
-    DefaultResolver(final SettingsCreationContext context) {
+    DefaultResolver(final DefaultNodeSettingsContext context) {
         m_context = context;
     }
 

@@ -75,7 +75,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
@@ -123,7 +123,7 @@ final class UiSchemaOptionsGenerator {
 
     private final JavaType m_fieldType;
 
-    private final SettingsCreationContext m_settingsCreationContext;
+    private final DefaultNodeSettingsContext m_DefaultNodeSettingsContext;
 
     private final Collection<JsonFormsControl> m_fields;
 
@@ -135,13 +135,13 @@ final class UiSchemaOptionsGenerator {
      * @param field the field for which options are to be added from {@link Style} annotations
      */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
-        final SettingsCreationContext context, final Collection<JsonFormsControl> fields, final String scope) {
+        final DefaultNodeSettingsContext context, final Collection<JsonFormsControl> fields, final String scope) {
         m_mapper = mapper;
         m_field = field;
         m_fieldType = field.getType();
         m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
-        m_settingsCreationContext = context;
+        m_DefaultNodeSettingsContext = context;
         m_fields = fields;
         m_scope = scope;
     }
@@ -247,7 +247,7 @@ final class UiSchemaOptionsGenerator {
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
-            final var possibleValuesGenerator = new ChoicesArrayNodeGenerator(m_mapper, m_settingsCreationContext);
+            final var possibleValuesGenerator = new ChoicesArrayNodeGenerator(m_mapper, m_DefaultNodeSettingsContext);
             options.set("possibleValues", possibleValuesGenerator.createChoicesNode(choicesWidget.choices()));
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
                 String format = getChoicesComponentFormat();
@@ -395,7 +395,7 @@ final class UiSchemaOptionsGenerator {
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
         var details =
-            JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_settingsCreationContext).get(TAG_ELEMENTS);
+            JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_DefaultNodeSettingsContext).get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))

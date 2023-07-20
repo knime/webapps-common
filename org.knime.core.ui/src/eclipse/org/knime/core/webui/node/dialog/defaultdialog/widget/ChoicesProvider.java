@@ -48,22 +48,22 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * A class that provides an array of possible values based on the current {@link SettingsCreationContext}.
+ * A class that provides an array of possible values based on the current {@link DefaultNodeSettingsContext}.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 public interface ChoicesProvider {
 
     /**
-     * Computes the array of possible values based on the {@link SettingsCreationContext}.
+     * Computes the array of possible values based on the {@link DefaultNodeSettingsContext}.
      *
      * @param context the context that holds any available information that might be relevant for determining available
      *            choices
      * @return array of possible values, never {@code null}
      */
-    String[] choices(SettingsCreationContext context);
+    String[] choices(DefaultNodeSettingsContext context);
 
 }

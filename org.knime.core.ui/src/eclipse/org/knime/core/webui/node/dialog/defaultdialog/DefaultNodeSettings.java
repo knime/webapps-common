@@ -97,7 +97,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * The implementations must follow the following conventions:
  * <ol>
  * <li>It must provide an empty constructor and optionally a constructor that receives a
- * {@link SettingsCreationContext}.
+ * {@link DefaultNodeSettingsContext}.
  * <li>Fields must be of any of the following supported types:
  * <ul>
  * <li>boolean, int, long, double, float, String, char, or byte
@@ -210,7 +210,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
      * A context that holds any available information that might be relevant for creating a new instance of
      * {@link DefaultNodeSettings}.
      */
-    final class SettingsCreationContext {
+    final class DefaultNodeSettingsContext {
 
         private final PortObjectSpec[] m_specs;
 
@@ -218,7 +218,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
 
         private final CredentialsProvider m_credentialsProvider;
 
-        public SettingsCreationContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
+        public DefaultNodeSettingsContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
             final CredentialsProvider credentialsProvider) {
             m_specs = specs;
             m_stack = stack;
@@ -349,7 +349,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
      * @return a new {@link DefaultNodeSettings}-instance
      */
     static <S extends DefaultNodeSettings> S createSettings(final Class<S> clazz, final PortObjectSpec[] specs) {
-        return InstantiationUtil.createDefaultNodeSettings(clazz, createSettingsCreationContext(specs));
+        return InstantiationUtil.createDefaultNodeSettings(clazz, createDefaultNodeSettingsContext(specs));
     }
 
     /**
@@ -384,24 +384,24 @@ public interface DefaultNodeSettings extends PersistableSettings {
     }
 
     /**
-     * Method to create a new {@link SettingsCreationContext} from input {@link PortObjectSpec PortObjectSpecs}.
+     * Method to create a new {@link DefaultNodeSettingsContext} from input {@link PortObjectSpec PortObjectSpecs}.
      *
      * @param specs the non-null specs with which to create the schema
      * @return the newly created context
      * @throws NullPointerException if the argument is null
      */
-    static SettingsCreationContext createSettingsCreationContext(final PortObjectSpec[] specs) {
+    static DefaultNodeSettingsContext createDefaultNodeSettingsContext(final PortObjectSpec[] specs) {
         Objects.requireNonNull(specs, () -> "Port object specs must not be null.");
         final var nodeContext = NodeContext.getContext();
         if (nodeContext == null) {
-            return new SettingsCreationContext(specs, null, null);
+            return new DefaultNodeSettingsContext(specs, null, null);
         }
         var nc = nodeContext.getNodeContainer();
         CredentialsProvider credentialsProvider = null;
         if (nc instanceof NativeNodeContainer nnc) {
             credentialsProvider = nnc.getNode().getCredentialsProvider();
         }
-        return new SettingsCreationContext(specs, nc.getFlowObjectStack(), credentialsProvider);
+        return new DefaultNodeSettingsContext(specs, nc.getFlowObjectStack(), credentialsProvider);
     }
 
 }

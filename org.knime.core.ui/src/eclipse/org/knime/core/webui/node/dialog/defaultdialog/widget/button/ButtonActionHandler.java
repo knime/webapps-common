@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -70,12 +70,12 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>> extends Dependency
      *
      * @param currentValue the current set value of the button field
      * @param settings the state of the dependency settings
-     * @param context the current {@link SettingsCreationContext}
+     * @param context the current {@link DefaultNodeSettingsContext}
      *
      * @return the initial state of the button and its value.
      * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    ButtonChange<R, M> initialize(R currentValue, SettingsCreationContext context) throws WidgetHandlerException;
+    ButtonChange<R, M> initialize(R currentValue, DefaultNodeSettingsContext context) throws WidgetHandlerException;
 
     /**
      * This method gets called when the button is clicked.
@@ -83,22 +83,22 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>> extends Dependency
      * @param state a string specified by the frontend in order to reuse the same invocation for multiple uses. E.g.
      *            this can be used to cancel an invocation (refer to {@link CancelableActionHandler}.
      * @param settings the settings of type {@code S} which the invocation depends on.
-     * @param context the current {@link SettingsCreationContext}
+     * @param context the current {@link DefaultNodeSettingsContext}
      *
      * @return a representation of how the button is going to change or {@code null} if no change should happen due to
      *         this call.
      * @throws WidgetHandlerException if the request should fail providing the error message to the frontend
      */
-    ButtonChange<R, M> invoke(M state, S settings, SettingsCreationContext context) throws WidgetHandlerException;
+    ButtonChange<R, M> invoke(M state, S settings, DefaultNodeSettingsContext context) throws WidgetHandlerException;
 
     @SuppressWarnings({"javadoc"})
     default ButtonChange<R, M> castAndInvoke(final String stateString, final Object settings,
-        final SettingsCreationContext context) throws WidgetHandlerException {
+        final DefaultNodeSettingsContext context) throws WidgetHandlerException {
         return invoke(castToState(stateString), castToDependencies(settings), context);
     }
 
     @SuppressWarnings({"javadoc", "unchecked"})
-    default ButtonChange<R, M> castAndInitialize(final Object currentValue, final SettingsCreationContext context)
+    default ButtonChange<R, M> castAndInitialize(final Object currentValue, final DefaultNodeSettingsContext context)
         throws WidgetHandlerException {
         return initialize((R)currentValue, context);
     }

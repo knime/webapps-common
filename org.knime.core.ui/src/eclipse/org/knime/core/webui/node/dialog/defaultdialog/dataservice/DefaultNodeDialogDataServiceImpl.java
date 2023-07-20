@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.SettingsCreationContext;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
@@ -73,16 +73,16 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private final ChoicesWidgetHandlerHolder m_choicesService;
 
-    private final Supplier<SettingsCreationContext> m_contextProvider;
+    private final Supplier<DefaultNodeSettingsContext> m_contextProvider;
 
     private final DataServiceRequestHandler m_requestHandler;
 
     /**
      * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the handler classes from.
-     * @param contextProvider providing the current {@link SettingsCreationContext}
+     * @param contextProvider providing the current {@link DefaultNodeSettingsContext}
      */
     public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses,
-        final Supplier<SettingsCreationContext> contextProvider) {
+        final Supplier<DefaultNodeSettingsContext> contextProvider) {
         m_contextProvider = contextProvider;
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);

@@ -95,7 +95,7 @@ class JsonFormsDataUtilTest {
         TestSettingsSpec() {
         }
 
-        TestSettingsSpec(final SettingsCreationContext context) {
+        TestSettingsSpec(final DefaultNodeSettingsContext context) {
             m_fromSpec = context.getDataTableSpecs()[0].getColumnSpec(0).getName();
         }
     }
@@ -121,7 +121,7 @@ class JsonFormsDataUtilTest {
     @Test
     void testCreateDefaultNodeSettingsWithSpecs() {
         assertThat(DefaultNodeSettings.createSettings(TestSettingsSpec.class, createSpecs("bar")))
-            .isEqualTo(new TestSettingsSpec(DefaultNodeSettings.createSettingsCreationContext(createSpecs("bar"))));
+            .isEqualTo(new TestSettingsSpec(DefaultNodeSettings.createDefaultNodeSettingsContext(createSpecs("bar"))));
     }
 
     @Test
