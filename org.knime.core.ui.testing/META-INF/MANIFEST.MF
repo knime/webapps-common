@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test-Node extension for knime-core-ui
 Bundle-SymbolicName: org.knime.core.ui.testing;singleton:=true
-Bundle-Version: 5.1.0.qualifier
+Bundle-Version: 5.2.0.qualifier
 Bundle-ClassPath: knime-core-ui-testing.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.testing.node.dialog,
