@@ -7,11 +7,12 @@ They are built as [Vue libraries] and used in KNIME Analytics Platform and/or KN
 
 ### Prerequisites
 
-* Install [Node.js][node], see version in [package.json](package.json).
+- Install [Node.js][node], see version in [package.json](package.json).
 
 Newer versions may also work, but have not been tested.
 
 Pull the contained [git submodules](https://stackoverflow.com/a/4438292/5134084) with
+
 ```sh
 git submodule update --init
 ```
@@ -34,6 +35,7 @@ npm run dev:TableView
 ```
 
 Second, please add following to the run configuration in Eclipse and start KNIME Analytics Platform:
+
 ```
 -Dorg.knime.ui.dev.node.view.url=http://localhost:4000/<ComponentName>.umd.js
 -Dchromium.remote_debugging_port=8888
@@ -56,22 +58,28 @@ npm run dev:NodeDialog
 ```
 
 and set the following in the run configuration of Eclipse:
+
 ```
 -Dorg.knime.ui.dev.node.dialog.url=http://localhost:3333/NodeDialog.umd.js
 ```
 
 For dialogs there also is a standalone dev app with mocks available:
+
 ```sh
 npm run dev:NodeDialog:standalone
 ```
 
+### Git hooks
 
+When committing your changes, a couple of commit hooks will run via [husky].
 
-
+- `pre-commit` hook to lint and format the changes in your stage zone (via [lintstaged])
+- `prepare-commit-msg` hook to format your commit message to conform with the required format by KNIME. In order for this to work you must set environment variables with your Atlassian email and API token. Refer to `@knime/eslint-config/scripts/README.md` for more information.
 
 ### Testing
 
 #### Running unit tests
+
 This project contains unit tests written with [jest]. They are run with
 
 ```sh
@@ -90,10 +98,10 @@ npm run coverage
 The output can be found in the `coverage` folder. It contains a browseable html report as well as raw coverage data in
 [LCOV] and [Clover] format, which can be used in analysis software (SonarQube, Jenkins, …).
 
-
 ### Running security audit
 
 npm provides a check against known security issues of used dependencies. Run it by calling
+
 ```sh
 npm run audit
 ```
@@ -129,7 +137,7 @@ mvn clean install
 ## Embedding the views in apps
 
 The views can be used in Vue/Nuxt apps like a regular Vue component, e.g. loaded asynchronously.
- 
+
 ### Requirements
 
 The views expect that the embedding app provides the following:
@@ -145,10 +153,9 @@ The views expect that the embedding app provides the following:
 <TableView>
 ```
 
-
 # Join the Community!
-* [KNIME Forum](https://forum.knime.com/)
 
+- [KNIME Forum](https://forum.knime.com/)
 
 [Vue]: https://vuejs.org/
 [node]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/905281540/Node.js+Installation
@@ -158,3 +165,5 @@ The views expect that the embedding app provides the following:
 [jest]: https://jestjs.io/en
 [LCOV]: https://github.com/linux-test-project/lcov
 [Clover]: http://openclover.org/
+[husky]: https://www.npmjs.com/package/husky
+[lintstaged]: https://github.com/okonet/lint-staged

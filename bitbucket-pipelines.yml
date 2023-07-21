@@ -20,7 +20,7 @@ definitions:
           - git submodule update --init
           - cd org.knime.core.ui/js-src
           - npm ci
-          - npm run ci:lint
+          - npm run ci:lint-format
           - npm run coverage
           # - npm run audit # TODO temporarily disabled due to unsolvable issues
           - pipe: sonarsource/sonarcloud-scan:1.4.0
