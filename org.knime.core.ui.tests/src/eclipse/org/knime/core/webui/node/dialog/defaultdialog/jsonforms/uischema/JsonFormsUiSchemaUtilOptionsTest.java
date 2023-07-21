@@ -76,6 +76,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -161,6 +162,31 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("columnFilterDropDown");
         assertThatJson(response).inPath("$.elements[2].options").isObject().containsKey("format");
         assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo(Format.COLUMN_FILTER);
+    }
+
+    @Test
+    void testComboBoxFormat() {
+        class ComboBoxFormatSettings {
+            @ChoicesWidget
+            @ComboBoxWidget
+            String[] m_comboBox;
+
+        }
+
+        var response = buildTestUiSchema(ComboBoxFormatSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("comboBox");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().containsKey("format");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo(Format.COMBO_BOX);
+    }
+
+    @Test
+    void throwsOnComboBoxWidgetWithoutChoicesWidget() {
+        class ComboBoxFormatSettings {
+            @ComboBoxWidget
+            String m_comboBox;
+        }
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(ComboBoxFormatSettings.class));
     }
 
     @Test

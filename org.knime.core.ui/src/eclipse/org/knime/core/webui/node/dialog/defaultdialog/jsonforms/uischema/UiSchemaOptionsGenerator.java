@@ -86,6 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -264,6 +265,14 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
+        if (annotatedWidgets.contains(ComboBoxWidget.class)) {
+            if (!annotatedWidgets.contains(ChoicesWidget.class)) {
+                throw new UiSchemaGenerationException(String.format(
+                    "@ChoicesWidget annotation is missing for field %s with @ComboBoxWidget annotation", m_fieldName));
+            }
+            options.put(TAG_FORMAT, Format.COMBO_BOX);
+        }
+
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
@@ -394,8 +403,8 @@ final class UiSchemaOptionsGenerator {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
-        var details =
-            JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_DefaultNodeSettingsContext).get(TAG_ELEMENTS);
+        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_DefaultNodeSettingsContext)
+            .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))

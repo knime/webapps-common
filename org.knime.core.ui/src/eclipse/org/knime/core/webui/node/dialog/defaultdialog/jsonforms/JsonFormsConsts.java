@@ -201,6 +201,8 @@ public final class JsonFormsConsts {
 
             public static final String TWIN_LIST = "twinList";
 
+            public static final String COMBO_BOX = "comboBox";
+
             public static final String RADIO = "radio";
 
             public static final String BUTTON = "button";
