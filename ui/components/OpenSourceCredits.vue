@@ -50,7 +50,7 @@ export default {
             firstPkg.repository.toLowerCase() ===
               pkg.repository.toLowerCase() &&
             firstPkg.licenseText.replace(/\s+/g, "") ===
-              pkg.licenseText.replace(/\s+/g, "")
+              pkg.licenseText.replace(/\s+/g, ""),
         );
 
         if (!alreadyExists) {

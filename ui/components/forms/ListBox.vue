@@ -55,7 +55,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -103,7 +103,7 @@ export default {
         }
         // select invalid value
         this.selectedIndex = this.selectableValues.findIndex(
-          (item) => item.id === value
+          (item) => item.id === value,
         );
       } else {
         this.selectedIndex = idx;

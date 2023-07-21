@@ -35,7 +35,7 @@ export default defineComponent({
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },

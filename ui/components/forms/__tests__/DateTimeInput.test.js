@@ -117,7 +117,7 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(d));
     });
 
@@ -131,7 +131,7 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(d));
     });
 
@@ -185,10 +185,10 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getHours(wrapper.emitted("update:modelValue")[0][0])
+        getHours(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(hours);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(props.value));
     });
 
@@ -202,10 +202,10 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getMinutes(wrapper.emitted("update:modelValue")[0][0])
+        getMinutes(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(minutes);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(props.value));
     });
 
@@ -219,10 +219,10 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getSeconds(wrapper.emitted("update:modelValue")[0][0])
+        getSeconds(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(seconds);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(props.value));
     });
 
@@ -236,10 +236,10 @@ describe.skip("DateTimeInput.vue", () => {
 
       expect(wrapper.emitted("update:modelValue")).toBeTruthy();
       expect(
-        getMilliseconds(wrapper.emitted("update:modelValue")[0][0])
+        getMilliseconds(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(milliseconds);
       expect(
-        getDayOfYear(wrapper.emitted("update:modelValue")[0][0])
+        getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(props.value));
     });
   });
@@ -254,7 +254,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "hours" })
         .vm.$emit("bounds", { type: "max", input: 25 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-04T01:54:55")
+        new Date("2020-05-04T01:54:55"),
       );
     });
 
@@ -280,7 +280,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "hours" })
         .vm.$emit("bounds", { type: "min", input: -1 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-02T23:54:55")
+        new Date("2020-05-02T23:54:55"),
       );
     });
 
@@ -293,7 +293,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "minutes" })
         .vm.$emit("bounds", { type: "min", input: 63 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T10:03:55")
+        new Date("2020-05-03T10:03:55"),
       );
     });
 
@@ -306,7 +306,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "minutes" })
         .vm.$emit("bounds", { type: "min", input: -1 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T08:59:55")
+        new Date("2020-05-03T08:59:55"),
       );
     });
 
@@ -319,7 +319,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "seconds" })
         .vm.$emit("bounds", { type: "max", input: 61 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T09:55:01")
+        new Date("2020-05-03T09:55:01"),
       );
     });
 
@@ -332,7 +332,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "seconds" })
         .vm.$emit("bounds", { type: "min", input: -1 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T09:53:59")
+        new Date("2020-05-03T09:53:59"),
       );
     });
 
@@ -345,7 +345,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "milliseconds" })
         .vm.$emit("bounds", { type: "max", input: 1000 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T09:54:56")
+        new Date("2020-05-03T09:54:56"),
       );
     });
 
@@ -358,7 +358,7 @@ describe.skip("DateTimeInput.vue", () => {
         .find({ ref: "milliseconds" })
         .vm.$emit("bounds", { type: "min", input: -1 });
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
-        new Date("2020-05-03T09:54:54.999")
+        new Date("2020-05-03T09:54:54.999"),
       );
     });
   });
@@ -377,7 +377,7 @@ describe.skip("DateTimeInput.vue", () => {
       const validation = wrapper.vm.validate();
       expect(validation.isValid).toBeFalsy();
       expect(validation.errorMessage).toBe(
-        "2020-05-03 09:54:50 is before minimum 2020-05-03 09:54:54"
+        "2020-05-03 09:54:50 is before minimum 2020-05-03 09:54:54",
       );
     });
 
@@ -394,7 +394,7 @@ describe.skip("DateTimeInput.vue", () => {
       const validation = wrapper.vm.validate();
       expect(validation.isValid).toBeFalsy();
       expect(validation.errorMessage).toBe(
-        "2020-05-03 is after maximum 2020-05-02"
+        "2020-05-03 is after maximum 2020-05-02",
       );
     });
 
@@ -412,7 +412,7 @@ describe.skip("DateTimeInput.vue", () => {
       const validation = wrapper.vm.validate();
       expect(validation.isValid).toBeFalsy();
       expect(validation.errorMessage).toBe(
-        "14:54:59 is after maximum 14:54:56"
+        "14:54:59 is after maximum 14:54:56",
       );
     });
 
@@ -432,7 +432,7 @@ describe.skip("DateTimeInput.vue", () => {
       const validation = wrapper.vm.validate();
       expect(validation.isValid).toBeFalsy();
       expect(validation.errorMessage).toBe(
-        "2020-05-06 is after maximum 2020-05-05"
+        "2020-05-06 is after maximum 2020-05-05",
       );
     });
 

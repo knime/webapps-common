@@ -18,10 +18,10 @@ interface Props {
 const props = defineProps<Props>();
 
 const baseTools = computed(() =>
-  props.tools.filter(({ secondary }) => !secondary)
+  props.tools.filter(({ secondary }) => !secondary),
 );
 const secondaryTools = computed(() =>
-  props.tools.filter(({ secondary }) => secondary)
+  props.tools.filter(({ secondary }) => secondary),
 );
 const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
   secondaryTools.value.map((tool) => ({
@@ -30,7 +30,7 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
     hotkeyText: props.hotkeyFormatter(tool.hotkey ?? []),
     icon: tool.icon,
     id: tool.id,
-  }))
+  })),
 );
 
 const onSecondaryToolClick = (_: any, { id }: { id: string }) => {

@@ -78,7 +78,7 @@ describe("NodeFeatureList.vue", () => {
     const wrapper = shallowMount(NodeFeatureList);
     expect(wrapper.findComponent(TabBar).props("modelValue")).toBeNull();
     expect(wrapper.find(".placeholder").text()).toBe(
-      "This node does not provide any ports, options or views."
+      "This node does not provide any ports, options or views.",
     );
   });
 
@@ -90,7 +90,7 @@ describe("NodeFeatureList.vue", () => {
     });
     expect(wrapper.findComponent(TabBar).props("modelValue")).toBeNull();
     expect(wrapper.find(".placeholder").text()).toBe(
-      "This is a placeholder text!"
+      "This is a placeholder text!",
     );
   });
 
@@ -112,7 +112,7 @@ describe("NodeFeatureList.vue", () => {
     await wrapper.vm.$nextTick(); // to make sure TabBar.created() was called
 
     expect(wrapper.findComponent(TabBar).props("modelValue")).toBe(
-      "node-dialog-options"
+      "node-dialog-options",
     );
   });
 
@@ -127,7 +127,8 @@ describe("NodeFeatureList.vue", () => {
       },
     });
     expect(
-      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "ports").disabled
+      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "ports")
+        .disabled,
     ).toBe(true);
   });
 
@@ -142,7 +143,8 @@ describe("NodeFeatureList.vue", () => {
       },
     });
     expect(
-      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "ports").disabled
+      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "ports")
+        .disabled,
     ).toBe(false);
   });
 
@@ -157,7 +159,8 @@ describe("NodeFeatureList.vue", () => {
       },
     });
     expect(
-      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "views").disabled
+      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "views")
+        .disabled,
     ).toBe(true);
   });
 
@@ -172,7 +175,8 @@ describe("NodeFeatureList.vue", () => {
       },
     });
     expect(
-      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "views").disabled
+      wrapper.vm.possibleTabValues.find((cfg) => cfg.value === "views")
+        .disabled,
     ).toBe(false);
   });
 
@@ -188,8 +192,8 @@ describe("NodeFeatureList.vue", () => {
     });
     expect(
       wrapper.vm.possibleTabValues.find(
-        (cfg) => cfg.value === "node-dialog-options"
-      ).disabled
+        (cfg) => cfg.value === "node-dialog-options",
+      ).disabled,
     ).toBe(true);
   });
 
@@ -205,8 +209,8 @@ describe("NodeFeatureList.vue", () => {
     });
     expect(
       wrapper.vm.possibleTabValues.find(
-        (cfg) => cfg.value === "node-dialog-options"
-      ).disabled
+        (cfg) => cfg.value === "node-dialog-options",
+      ).disabled,
     ).toBe(false);
   });
 });

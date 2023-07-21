@@ -40,7 +40,7 @@ describe.skip("loadComponentLibrary", () => {
   it("resolves when the component is added to the window object", async () => {
     vi.spyOn(
       HTMLScriptElement.prototype,
-      "addEventListener"
+      "addEventListener",
     ).mockImplementation((event, handler) => {
       if (event === "load") {
         window[mockComponentId] = mockComponent;
@@ -64,7 +64,7 @@ describe.skip("loadComponentLibrary", () => {
   it("should call onLoad callback", async () => {
     vi.spyOn(
       HTMLScriptElement.prototype,
-      "addEventListener"
+      "addEventListener",
     ).mockImplementation((event, handler) => {
       if (event === "load") {
         window[mockComponentId] = mockComponent;
@@ -88,7 +88,7 @@ describe.skip("loadComponentLibrary", () => {
   it("throws if component is not added to window", async () => {
     vi.spyOn(
       HTMLScriptElement.prototype,
-      "addEventListener"
+      "addEventListener",
     ).mockImplementation((event, handler) => {
       if (event === "load") {
         handler();
@@ -101,16 +101,16 @@ describe.skip("loadComponentLibrary", () => {
         vueInstance: mockVueInstance,
         resourceLocation: mockResourceLocation,
         componentName: mockComponentId,
-      })
+      }),
     ).rejects.toThrow(
-      `Component "${mockComponentId}" loading failed. Script invalid.`
+      `Component "${mockComponentId}" loading failed. Script invalid.`,
     );
   });
 
   it("throws if script load fails", async () => {
     vi.spyOn(
       HTMLScriptElement.prototype,
-      "addEventListener"
+      "addEventListener",
     ).mockImplementation((event, handler) => {
       if (event === "error") {
         handler();
@@ -123,7 +123,7 @@ describe.skip("loadComponentLibrary", () => {
         vueInstance: mockVueInstance,
         resourceLocation: mockResourceLocation,
         componentName: mockComponentId,
-      })
+      }),
     ).rejects.toThrow(`Script loading of "${mockResourceLocation}" failed`);
   });
 });

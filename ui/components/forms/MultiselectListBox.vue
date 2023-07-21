@@ -90,7 +90,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -159,7 +159,7 @@ export default {
     // this does not work well with the toggling of selected items, therefore we debounce it
     this.debouncedHandleCtrlClick = debounce(
       this.handleCtrlClick,
-      CLICK_META_KEY_TIMEOUT
+      CLICK_META_KEY_TIMEOUT,
     );
   },
   methods: {
@@ -172,7 +172,7 @@ export default {
     },
     handleShiftClick(value, clickedIndex) {
       this.setSelected(
-        this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex)
+        this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex),
       );
     },
     /**
@@ -216,12 +216,12 @@ export default {
         const index = Number(dataIndex);
         let sectionValues = this.getPossibleValuesInSection(
           this.draggingStartIndex,
-          index
+          index,
         );
         // inverse mode means we remove all selected values from the current selection
         if (this.draggingInverseMode) {
           sectionValues = this.selectedValues.filter(
-            (x) => !sectionValues.includes(x)
+            (x) => !sectionValues.includes(x),
           );
         }
         this.setSelected(sectionValues);
@@ -392,7 +392,7 @@ export default {
         return;
       }
       this.setSelectedNoShiftReset(
-        this.getPossibleValuesInSection(this.shiftStartIndex, next)
+        this.getPossibleValuesInSection(this.shiftStartIndex, next),
       );
       this.currentKeyNavIndex = next;
       this.scrollToCurrent();
@@ -410,7 +410,7 @@ export default {
         return;
       }
       this.setSelectedNoShiftReset(
-        this.getPossibleValuesInSection(this.shiftStartIndex, next)
+        this.getPossibleValuesInSection(this.shiftStartIndex, next),
       );
       this.currentKeyNavIndex = next;
       this.scrollToCurrent();

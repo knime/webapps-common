@@ -216,13 +216,13 @@ export default {
         date,
         this.min,
         this.showDate,
-        this.showTime
+        this.showTime,
       );
       this.isAfterMax = isAfterMaxDate(
         date,
         this.max,
         this.showDate,
-        this.showTime
+        this.showTime,
       );
 
       if (this.isBeforeMin || this.isAfterMax) {
@@ -259,7 +259,7 @@ export default {
     onTimeMillisecondsBounds(bounds) {
       if (["min", "max"].includes(bounds.type)) {
         this.emitInput(
-          setMilliseconds(new Date(this.localValue), bounds.input)
+          setMilliseconds(new Date(this.localValue), bounds.input),
         );
       } else {
         this.emitInput(this.localValue);
@@ -304,14 +304,14 @@ export default {
         isValid = false;
         // eslint-disable-next-line max-len
         errorMessage = `${this.formatDate(
-          this.invalidValue
+          this.invalidValue,
         )} is after maximum ${this.formatDate(this.max)}`;
       }
       if (this.isBeforeMin) {
         isValid = false;
         // eslint-disable-next-line max-len
         errorMessage = `${this.formatDate(
-          this.invalidValue
+          this.invalidValue,
         )} is before minimum ${this.formatDate(this.min)}`;
       }
       return {

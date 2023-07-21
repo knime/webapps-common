@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
   editable: true,
   minHeight: null,
   maxHeight: null,
-  baseExtensions: () => ({} as BaseExtensions),
+  baseExtensions: () => ({}) as BaseExtensions,
   hotkeyFormatter: (hotkey: string[]) => {
     const isMac = () => navigator?.userAgent?.toLowerCase()?.includes("mac");
 
@@ -103,7 +103,7 @@ const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
 };
 
 const getStarterKitExtensionConfig = (
-  extensionName: keyof BaseExtensionsConfig
+  extensionName: keyof BaseExtensionsConfig,
 ): false | undefined | Partial<any> => {
   // eslint-disable-next-line no-undefined
   return isToolEnabled(extensionName) ? undefined : false;
@@ -149,7 +149,7 @@ const editor = useEditor({
 });
 
 const minHeight = computed(() =>
-  props.minHeight ? `${props.minHeight}px` : "initial"
+  props.minHeight ? `${props.minHeight}px` : "initial",
 );
 
 const focus = () => {
@@ -159,7 +159,7 @@ const focus = () => {
 defineExpose({ focus });
 
 const maxHeight = computed(() =>
-  props.maxHeight ? `${props.maxHeight}px` : "initial"
+  props.maxHeight ? `${props.maxHeight}px` : "initial",
 );
 
 watch(modelValue, (_value) => {
@@ -193,7 +193,7 @@ watch(
     if (props.autofocus) {
       focus();
     }
-  }
+  },
 );
 
 onMounted(async () => {

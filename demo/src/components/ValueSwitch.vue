@@ -66,7 +66,7 @@ export default defineComponent({
 
     withDisabledItem() {
       return this.currencies.map((currency) =>
-        currency.id === "usd" ? { ...currency, disabled: true } : currency
+        currency.id === "usd" ? { ...currency, disabled: true } : currency,
       );
     },
   },

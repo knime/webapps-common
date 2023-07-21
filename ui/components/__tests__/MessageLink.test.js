@@ -40,11 +40,11 @@ describe("MessageLink.vue", () => {
     expect(wrapper.findComponent(RouterLinkStub).exists()).toBe(true);
     expect(wrapper.findComponent(RouterLinkStub).text()).toBe("I'm a link");
     expect(wrapper.findComponent(RouterLinkStub).props("to")).toBe(
-      "localhost:3000"
+      "localhost:3000",
     );
     expect(wrapper.findComponent(RouterLinkStub).props("href")).toBeUndefined();
     expect(
-      wrapper.findComponent(RouterLinkStub).attributes("target")
+      wrapper.findComponent(RouterLinkStub).attributes("target"),
     ).toBeUndefined();
   });
 

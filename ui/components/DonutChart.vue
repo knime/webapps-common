@@ -133,7 +133,7 @@ export default {
       // otherwise calculate the difference
       const strokeDiff = Math.min(
         (value / this.maxValue) * this.circumference,
-        this.circumference
+        this.circumference,
       );
       return Math.max(this.circumference - strokeDiff, 0);
     },

@@ -85,7 +85,7 @@ interface Emits {
     e: "item-hovered",
     item: MenuItem | null,
     menuId: string,
-    index: number
+    index: number,
   ): void;
   (e: "close-submenu"): void;
 }
@@ -113,7 +113,7 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
   }
   const nextIndex = getWrappedAroundIndex(
     currentIndexInEnabled + direction,
-    listItems.length
+    listItems.length,
   );
 
   const { element, index, onClick } = listItems[nextIndex];

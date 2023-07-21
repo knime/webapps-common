@@ -116,7 +116,7 @@ export default {
 
     useClickOutside(
       { targets: [submenu, menuItems], callback: closeMenu },
-      expanded
+      expanded,
     );
 
     const { popperInstance, updatePopper } = usePopper(
@@ -135,7 +135,7 @@ export default {
             },
           },
         ],
-      }))
+      })),
     );
 
     watch(orientation, (value) => {

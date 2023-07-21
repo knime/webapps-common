@@ -25,7 +25,7 @@ describe("NodeTorsoNormal.vue", () => {
       let bgs = wrapper.findAll(".bg");
       expect(bgs.length).toBe(1);
       expect(bgs[0].attributes().fill).toBe(color);
-    }
+    },
   );
 
   it("renders plain components", () => {
@@ -73,7 +73,7 @@ describe("NodeTorsoNormal.vue", () => {
     expect(wrapper.find("path").attributes("fill")).toBe(nodeColors.Predictor);
     expect(wrapper.find("path").attributes("d")).toBe(
       "M0,29.2L0,2.8C0,1.3,1.3,0,2.8,0l26.3,0C30.7,0,32,1.3" +
-        ",32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H2.8C1.3,32,0,30.7,0,29.2z"
+        ",32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H2.8C1.3,32,0,30.7,0,29.2z",
     );
 
     wrapper = shallowMount(NodeTorsoNormal, {
@@ -84,7 +84,7 @@ describe("NodeTorsoNormal.vue", () => {
     });
     expect(wrapper.find("path").attributes("fill")).toBe(nodeColors.ScopeEnd);
     expect(wrapper.find("path").attributes("d")).toBe(
-      "M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H4L0,16.1L4,0l25.2,0C30.7,0,32,1.3,32,2.8z"
+      "M32,2.8v26.3c0,1.6-1.3,2.8-2.8,2.8H4L0,16.1L4,0l25.2,0C30.7,0,32,1.3,32,2.8z",
     );
   });
 });

@@ -365,10 +365,10 @@ describe("MultiselectListBox.vue", () => {
       expect(propPossibleValues.required).toBeFalsy();
       expect(propPossibleValues.type).toBe(Array);
       expect(
-        propPossibleValues.validator && propPossibleValues.validator("str")
+        propPossibleValues.validator && propPossibleValues.validator("str"),
       ).toBeFalsy();
       expect(
-        propPossibleValues.validator && propPossibleValues.validator([])
+        propPossibleValues.validator && propPossibleValues.validator([]),
       ).toBeTruthy();
     });
 
@@ -591,7 +591,7 @@ describe("MultiselectListBox.vue", () => {
       propsData.withIsEmptyState = true;
       const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find(".empty-state").text()).toBe(
-        "No entries in this list"
+        "No entries in this list",
       );
       const emptyStateLabel = "Custom label";
       await wrapper.setProps({ emptyStateLabel });
@@ -649,7 +649,7 @@ describe("MultiselectListBox.vue", () => {
       const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find('[role="bottom-box"]').exists()).toBeTruthy();
       expect(
-        wrapper.find('[role="bottom-box"]').find('[role="option"]').text()
+        wrapper.find('[role="bottom-box"]').find('[role="option"]').text(),
       ).toBe(bottomValue.text);
     });
 

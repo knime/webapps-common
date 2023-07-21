@@ -66,7 +66,7 @@ describe("BaseRadioButtons.vue", () => {
 
     expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
     expect(wrapper1.find("input").attributes().name).not.toBe(
-      wrapper2.find("input").attributes().name
+      wrapper2.find("input").attributes().name,
     );
   });
 
@@ -84,7 +84,7 @@ describe("BaseRadioButtons.vue", () => {
       const expectedCheckedValue = option.id === modelValue;
       // eslint-disable-next-line no-extra-parens
       expect((radioInputs[i].element as HTMLInputElement).checked).toBe(
-        expectedCheckedValue
+        expectedCheckedValue,
       );
     });
   });

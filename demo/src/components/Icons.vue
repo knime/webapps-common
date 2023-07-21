@@ -118,7 +118,7 @@ export default {
     FolderIcon,
     ListNumbersIconWithTip: svgWithTitle(
       ListNumbersIcon,
-      "This is a list with numbers"
+      "This is a list with numbers",
     ),
     ImagePreviews,
     CodeExample,
@@ -146,7 +146,7 @@ export default {
     },
     filteredIcons() {
       return this.icons.filter((icon) =>
-        icon.name.includes(this.iconFilterTerm)
+        icon.name.includes(this.iconFilterTerm),
       );
     },
   },

@@ -132,7 +132,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -155,7 +155,7 @@ export default {
       // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
       return Object.assign(
         {},
-        ...this.possibleValues.map((obj) => ({ [obj.id]: obj }))
+        ...this.possibleValues.map((obj) => ({ [obj.id]: obj })),
       );
     },
     possibleValueIds() {
@@ -166,7 +166,7 @@ export default {
     },
     visibleValueIds() {
       const matchingInvalidValueIds = this.invalidValueIds.filter((item) =>
-        this.itemMatchesSearch(this.generateInvalidItem(item))
+        this.itemMatchesSearch(this.generateInvalidItem(item)),
       );
       const matchingValidIds = this.possibleValues
         .filter((possibleValue) => this.itemMatchesSearch(possibleValue))
@@ -177,14 +177,14 @@ export default {
       return this.possibleValues.filter(
         (value) =>
           this.visibleValueIds.includes(value.id) &&
-          !this.chosenValues.includes(value.id)
+          !this.chosenValues.includes(value.id),
       );
     },
     rightItems() {
       return this.chosenValues
         .map(
           (value) =>
-            this.possibleValueMap[value] || this.generateInvalidItem(value)
+            this.possibleValueMap[value] || this.generateInvalidItem(value),
         )
         .filter((value) => this.visibleValueIds.includes(value.id));
     },
@@ -218,7 +218,7 @@ export default {
       }
       return filters.search.normalize(
         this.searchTerm,
-        this.caseSensitiveSearch
+        this.caseSensitiveSearch,
       );
     },
     numAllItems() {
@@ -262,7 +262,7 @@ export default {
       }, []);
       // Reset chosenValues as subset of original to prevent re-execution from resetting value
       this.chosenValues = this.chosenValues.filter((item) =>
-        allValues.includes(item)
+        allValues.includes(item),
       );
     },
     chosenValues(newVal, oldVal) {
@@ -405,7 +405,7 @@ export default {
         item.text,
         this.normalizedSearchTerm,
         this.caseSensitiveSearch,
-        false
+        false,
       );
     },
     getInfoText(numShownItems, numAllItems) {

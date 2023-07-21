@@ -184,8 +184,8 @@ export default {
     onItemClick(event, item, id) {
       window.alert(
         `You clicked on menu ${id} on an item with a value of: ${JSON.stringify(
-          item
-        )}`
+          item,
+        )}`,
       );
     },
     onItemActive(item) {

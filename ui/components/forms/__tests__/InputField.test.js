@@ -178,7 +178,7 @@ describe("InputField.vue", () => {
       const input = wrapper.find("input");
       input.trigger(eventName, { key: "X" });
       expect(wrapper.emitted(eventName)[0][0].key).toBe("X");
-    }
+    },
   );
 
   it("focuses on focus call", () => {

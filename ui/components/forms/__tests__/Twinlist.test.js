@@ -41,10 +41,10 @@ describe("Twinlist.vue", () => {
     expect(wrapper.isVisible()).toBeTruthy();
     expect(
       wrapper.findAllComponents(MultiselectListBox)[0].props("possibleValues")
-        .length
+        .length,
     ).toBe(2);
     expect(
-      wrapper.findAllComponents(MultiselectListBox)[1].props("possibleValues")
+      wrapper.findAllComponents(MultiselectListBox)[1].props("possibleValues"),
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
@@ -390,7 +390,7 @@ describe("Twinlist.vue", () => {
         "test3",
       ]);
       expect(right.vm.$props.possibleValues).toStrictEqual(
-        props.possibleValues
+        props.possibleValues,
       );
     });
 
@@ -412,10 +412,10 @@ describe("Twinlist.vue", () => {
       // move all left to get the invalid left
       await wrapper.find({ ref: "moveAllLeft" }).trigger("click");
       expect(left.props("possibleValues").map((x) => x.id)).not.toContain(
-        "invalidId"
+        "invalidId",
       );
       expect(right.props("possibleValues").map((x) => x.id)).not.toContain(
-        "invalidId"
+        "invalidId",
       );
     });
 
@@ -558,7 +558,7 @@ describe("Twinlist.vue", () => {
         "test3",
       ]);
       expect(right.vm.$props.possibleValues).toStrictEqual(
-        props.possibleValues
+        props.possibleValues,
       );
     });
 
@@ -635,10 +635,10 @@ describe("Twinlist.vue", () => {
       });
       expect(wrapper.findComponent(SearchInput).exists()).toBe(false);
       expect(wrapper.find("div.search-wrapper label.search").exists()).toBe(
-        false
+        false,
       );
       expect(
-        wrapper.find("div.search-wrapper input[type=text].with-icon").exists()
+        wrapper.find("div.search-wrapper input[type=text].with-icon").exists(),
       ).toBe(false);
     });
 
@@ -656,7 +656,7 @@ describe("Twinlist.vue", () => {
       expect(wrapper.findComponent(SearchInput).exists()).toBe(true);
       expect(wrapper.find("div.search-wrapper label").exists()).toBe(true);
       expect(wrapper.find("div.search-wrapper label").text()).toBe(
-        "Filter entries"
+        "Filter entries",
       );
     });
 
@@ -837,14 +837,14 @@ describe("Twinlist.vue", () => {
           .findAllComponents(MultiselectListBox)
           .at(0)
           .find('[role="bottom-box"]')
-          .exists()
+          .exists(),
       ).toBeFalsy();
       expect(
         wrapper
           .findAllComponents(MultiselectListBox)
           .at(1)
           .find('[role="bottom-box"]')
-          .exists()
+          .exists(),
       ).toBeTruthy();
     };
     const expectUnknownValuesAreExcluded = (wrapper) => {
@@ -853,14 +853,14 @@ describe("Twinlist.vue", () => {
           .findAllComponents(MultiselectListBox)
           .at(0)
           .find('[role="bottom-box"]')
-          .exists()
+          .exists(),
       ).toBeTruthy();
       expect(
         wrapper
           .findAllComponents(MultiselectListBox)
           .at(1)
           .find('[role="bottom-box"]')
-          .exists()
+          .exists(),
       ).toBeFalsy();
     };
 

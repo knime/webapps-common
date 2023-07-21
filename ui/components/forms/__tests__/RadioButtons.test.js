@@ -55,7 +55,7 @@ describe("RadioButtons.vue", () => {
       },
     });
     expect(
-      wrapper.findComponent(BaseRadioButtons).attributes("onfakeevent")
+      wrapper.findComponent(BaseRadioButtons).attributes("onfakeevent"),
     ).toBeDefined();
   });
 

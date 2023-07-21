@@ -36,7 +36,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -285,7 +285,7 @@ export default {
           .sort(
             (option1, option2) =>
               parseInt(option1.$el.dataset.index, 10) -
-              parseInt(option2.$el.dataset.index, 10)
+              parseInt(option2.$el.dataset.index, 10),
           )
           .map((el) => el.$el && el.$el.firstChild);
       }

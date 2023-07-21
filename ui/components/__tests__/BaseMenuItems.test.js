@@ -28,16 +28,16 @@ describe("BaseMenuItems.vue", () => {
     // Test texts
     items.forEach((item, index) => {
       expect(wrapper.find(`li:nth-child(${index + 1})`).text()).toBe(
-        items[index].text
+        items[index].text,
       );
     });
 
     // Test links
     expect(wrapper.find("li:nth-child(1) a").attributes("href")).toBe(
-      items[0].href
+      items[0].href,
     );
     expect(wrapper.find("li:nth-child(2) a").attributes("href")).toBe(
-      items[1].href
+      items[1].href,
     );
     expect(wrapper.findComponent(NuxtLink).props("to")).toBe(items[2].to);
   });
@@ -268,7 +268,7 @@ describe("BaseMenuItems.vue", () => {
       },
     });
     expect(wrapper.findAll("li")[0].attributes("title")).toMatch(
-      "This is an example title"
+      "This is an example title",
     );
     expect(wrapper.findAll("li")[1].attributes("title")).toBeUndefined();
   });

@@ -23,7 +23,7 @@ const modeDefinitions = [
       if (searchTerm.length > 0) {
         const escapedSearchTerm = searchTerm.replace(
           /[-[\]{}()+.,\\^$|#\s]/g,
-          "\\$&"
+          "\\$&",
         );
         const wildcardSearchTerm = escapedSearchTerm
           .replace(/\*/g, ".*")
@@ -77,5 +77,5 @@ const modeDefinitions = [
 // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
 export const filters = Object.assign(
   {},
-  ...modeDefinitions.map((obj) => ({ [obj.id]: obj }))
+  ...modeDefinitions.map((obj) => ({ [obj.id]: obj })),
 );

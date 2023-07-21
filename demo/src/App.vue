@@ -23,7 +23,7 @@ const demoComponents = {
     Grid: defineAsyncComponent(() => import("./components/Grid.vue")),
     Headlines: defineAsyncComponent(() => import("./components/Headlines.vue")),
     Description: defineAsyncComponent(() =>
-      import("./components/Description.vue")
+      import("./components/Description.vue"),
     ),
   },
   images: {
@@ -32,42 +32,42 @@ const demoComponents = {
   },
   interactive: {
     Breadcrumb: defineAsyncComponent(() =>
-      import("./components/Breadcrumb.vue")
+      import("./components/Breadcrumb.vue"),
     ),
     LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
     Button: defineAsyncComponent(() => import("./components/Button.vue")),
     FunctionButton: defineAsyncComponent(() =>
-      import("./components/FunctionButton.vue")
+      import("./components/FunctionButton.vue"),
     ),
     SplitButton: defineAsyncComponent(() =>
-      import("./components/SplitButton.vue")
+      import("./components/SplitButton.vue"),
     ),
     PlusButton: defineAsyncComponent(() =>
-      import("./components/PlusButton.vue")
+      import("./components/PlusButton.vue"),
     ),
     Carousel: defineAsyncComponent(() => import("./components/Carousel.vue")),
     ExpandTransition: defineAsyncComponent(() =>
-      import("./components/transitions/ExpandTransition.vue")
+      import("./components/transitions/ExpandTransition.vue"),
     ),
     Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
     FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
     IdleReadyButton: defineAsyncComponent(() =>
-      import("./components/IdleReadyButton.vue")
+      import("./components/IdleReadyButton.vue"),
     ),
     Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
     MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
     SideDrawer: defineAsyncComponent(() =>
-      import("./components/SideDrawer.vue")
+      import("./components/SideDrawer.vue"),
     ),
     SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
     Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
     TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
     TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
     LoadingIcon: defineAsyncComponent(() =>
-      import("./components/LoadingIcon.vue")
+      import("./components/LoadingIcon.vue"),
     ),
     DonutChart: defineAsyncComponent(() =>
-      import("./components/DonutChart.vue")
+      import("./components/DonutChart.vue"),
     ),
   },
   messages: {
@@ -78,63 +78,63 @@ const demoComponents = {
     Label: defineAsyncComponent(() => import("./components/Label.vue")),
     Fieldset: defineAsyncComponent(() => import("./components/Fieldset.vue")),
     InputField: defineAsyncComponent(() =>
-      import("./components/InputField.vue")
+      import("./components/InputField.vue"),
     ),
     TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
     SearchInput: defineAsyncComponent(() =>
-      import("./components/SearchInput.vue")
+      import("./components/SearchInput.vue"),
     ),
     NumberInput: defineAsyncComponent(() =>
-      import("./components/NumberInput.vue")
+      import("./components/NumberInput.vue"),
     ),
     Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
     Checkboxes: defineAsyncComponent(() =>
-      import("./components/Checkboxes.vue")
+      import("./components/Checkboxes.vue"),
     ),
     ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
     RadioButtons: defineAsyncComponent(() =>
-      import("./components/RadioButtons.vue")
+      import("./components/RadioButtons.vue"),
     ),
     ValueSwitch: defineAsyncComponent(() =>
-      import("./components/ValueSwitch.vue")
+      import("./components/ValueSwitch.vue"),
     ),
     DateTimeInput: defineAsyncComponent(() =>
-      import("./components/DateTimeInput.vue")
+      import("./components/DateTimeInput.vue"),
     ),
     TimePartInput: defineAsyncComponent(() =>
-      import("./components/TimePartInput.vue")
+      import("./components/TimePartInput.vue"),
     ),
     ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
     Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
     Multiselect: defineAsyncComponent(() =>
-      import("./components/Multiselect.vue")
+      import("./components/Multiselect.vue"),
     ),
     MultiselectListBox: defineAsyncComponent(() =>
-      import("./components/MultiselectListBox.vue")
+      import("./components/MultiselectListBox.vue"),
     ),
     StyledListItem: defineAsyncComponent(() =>
-      import("./components/StyledListItem.vue")
+      import("./components/StyledListItem.vue"),
     ),
     ToggleSwitch: defineAsyncComponent(() =>
-      import("./components/ToggleSwitch.vue")
+      import("./components/ToggleSwitch.vue"),
     ),
     Twinlist: defineAsyncComponent(() => import("./components/Twinlist.vue")),
     MultiModeTwinlist: defineAsyncComponent(() =>
-      import("./components/MultiModeTwinlist.vue")
+      import("./components/MultiModeTwinlist.vue"),
     ),
     RichTextEditor: defineAsyncComponent(() =>
-      import("./components/RichTextEditor.vue")
+      import("./components/RichTextEditor.vue"),
     ),
   },
   misc: {
     NodePreview: defineAsyncComponent(() =>
-      import("./components/NodePreview.vue")
+      import("./components/NodePreview.vue"),
     ),
     NodeFeatureList: defineAsyncComponent(() =>
-      import("./components/NodeFeatureList.vue")
+      import("./components/NodeFeatureList.vue"),
     ),
     OpenSourceCredits: defineAsyncComponent(() =>
-      import("./components/OpenSourceCredits.vue")
+      import("./components/OpenSourceCredits.vue"),
     ),
   },
   npm: {
@@ -186,7 +186,7 @@ export default {
       }
       let filtered = {};
       for (let [category, componentByName] of Object.entries(
-        this.demoComponents
+        this.demoComponents,
       )) {
         for (let [name, component] of Object.entries(componentByName)) {
           if (name.toLowerCase().includes(this.searchQuery.toLowerCase())) {

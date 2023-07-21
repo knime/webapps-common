@@ -60,7 +60,7 @@ describe("FunctionButton.vue", () => {
       },
     });
     expect(
-      wrapper.findComponent(BaseButton).attributes("onfakeevent")
+      wrapper.findComponent(BaseButton).attributes("onfakeevent"),
     ).toBeDefined();
   });
 

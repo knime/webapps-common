@@ -42,7 +42,7 @@ export default {
       // keep options that have fields or that start a section
       return this.options.filter(
         (option) =>
-          (option.fields && option.fields.length) || option.sectionDescription
+          (option.fields && option.fields.length) || option.sectionDescription,
       );
     },
   },

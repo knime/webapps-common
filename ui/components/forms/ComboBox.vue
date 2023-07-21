@@ -48,7 +48,7 @@ export default defineComponent({
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -119,11 +119,11 @@ export default defineComponent({
 
     searchResults() {
       const hasExactSearchMatch = this.allPossibleItems.some(
-        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase()
+        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase(),
       );
 
       const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
-        text.toLowerCase().includes(this.searchValue.toLowerCase())
+        text.toLowerCase().includes(this.searchValue.toLowerCase()),
       );
 
       if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
@@ -227,7 +227,7 @@ export default defineComponent({
       };
 
       const isDuplicateItem = this.allPossibleItems.some(
-        (item) => item.id === newItem.id
+        (item) => item.id === newItem.id,
       );
 
       if (isDuplicateItem) {
@@ -237,13 +237,13 @@ export default defineComponent({
       this.allPossibleItems.push(newItem);
 
       setSelectedIds(
-        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id))
+        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id)),
       );
     },
 
     removeTag(idToRemove: string) {
       this.updateSelectedIds(
-        this.selectedIds.filter((id) => id !== idToRemove)
+        this.selectedIds.filter((id) => id !== idToRemove),
       );
       this.closeOptions();
     },

@@ -49,13 +49,15 @@ export default defineComponent({
   border: 0;
   cursor: pointer;
   background-color: transparent;
-  box-shadow: 0 0 10px var(--knime-gray-dark-semi),
+  box-shadow:
+    0 0 10px var(--knime-gray-dark-semi),
     0 0 4px var(--knime-gray-dark-semi);
   display: flex;
   justify-content: center;
 
   &:hover {
-    box-shadow: 0 0 10px var(--knime-gray-dark-semi),
+    box-shadow:
+      0 0 10px var(--knime-gray-dark-semi),
       0 0 10px var(--knime-gray-dark-semi);
   }
 

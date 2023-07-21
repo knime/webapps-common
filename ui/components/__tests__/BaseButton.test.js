@@ -71,7 +71,7 @@ describe("BaseButton.vue", () => {
       .wrapperElement.addEventListener(
         "click",
         (event) => event.preventDefault(),
-        false
+        false,
       );
     wrapper.find("a").trigger("click");
     expect(wrapper.emitted("click")).toBeDefined();

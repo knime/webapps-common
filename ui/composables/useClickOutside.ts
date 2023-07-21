@@ -11,7 +11,7 @@ type ClickOutsideParams = {
 // wrapper for the vueuse onClickOutside component to only listen for clicks if active
 export default (
   { targets, callback }: ClickOutsideParams,
-  active: Ref<boolean>
+  active: Ref<boolean>,
 ) => {
   let stop: (() => void) | undefined;
 
@@ -36,7 +36,7 @@ export default (
     },
     {
       immediate: true,
-    }
+    },
   );
 
   onUnmounted(disposeEventListeners);

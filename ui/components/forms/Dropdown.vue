@@ -68,7 +68,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -241,7 +241,7 @@ export default {
       consola.trace(`Searching for ${this.searchQuery}`);
 
       const candidate = this.possibleValues.find((item) =>
-        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase())
+        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
       if (candidate) {
         this.setSelected(candidate.id);

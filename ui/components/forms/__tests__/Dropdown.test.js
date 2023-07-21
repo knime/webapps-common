@@ -49,7 +49,7 @@ describe("Dropdown.vue", () => {
     expect(wrapper.html()).toBeTruthy();
     expect(wrapper.isVisible()).toBeTruthy();
     expect(wrapper.findAll("[role=option]").length).toBe(
-      props.possibleValues.length
+      props.possibleValues.length,
     );
   });
 
@@ -147,7 +147,7 @@ describe("Dropdown.vue", () => {
     await input.trigger("click");
 
     expect(wrapper.emitted("update:modelValue")[0][0]).toEqual(
-      props.possibleValues[newValueIndex].id
+      props.possibleValues[newValueIndex].id,
     );
 
     // listbox closed
