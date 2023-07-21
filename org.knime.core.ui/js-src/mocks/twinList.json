@@ -1,6 +1,6 @@
 {
   "result": {
-    "name": "Dropdowns",
+    "name": "Twinlists",
     "data": {
       "AnyOfControl": ["foo", "foo2"],
       "StringArray": ["foo", "foo2"],

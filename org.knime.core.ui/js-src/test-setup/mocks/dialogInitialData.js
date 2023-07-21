@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 export const dialogInitialData = {
   data: {
     view: {
@@ -255,10 +254,14 @@ export const dialogInitialData = {
               },
             },
           },
+          comboBox: {
+            type: "array",
+          },
         },
       },
     },
   },
+  /* eslint-disable-next-line camelcase */
   ui_schema: {
     elements: [
       {
@@ -373,6 +376,35 @@ export const dialogInitialData = {
           {
             type: "Control",
             scope: "#/properties/view/properties/yAxisLabel",
+          },
+          {
+            type: "Control",
+            scope: "#/properties/view/properties/comboBox",
+            options: {
+              format: "comboBox",
+              possibleValues: [
+                {
+                  id: "Cluster_Membership",
+                  text: "Cluster_Membership",
+                },
+                {
+                  id: "Universe_0_0",
+                  text: "Universe_0_0",
+                },
+                {
+                  id: "Universe_0_1",
+                  text: "Universe_0_1",
+                },
+                {
+                  id: "Universe_1_0",
+                  text: "Universe_1_0",
+                },
+                {
+                  id: "Universe_1_1",
+                  text: "Universe_1_1",
+                },
+              ],
+            },
           },
           {
             type: "Control",
@@ -504,6 +536,10 @@ export const expectedRenderers = [
   },
   { scope: "#/properties/view/properties/xAxisLabel", component: "TextInput" },
   { scope: "#/properties/view/properties/yAxisLabel", component: "TextInput" },
+  {
+    scope: "#/properties/view/properties/comboBox",
+    component: "ComboBoxInput",
+  },
   {
     scope: "#/properties/view/properties/frequencyColumns",
     component: "ColumnFilter",

@@ -10,5 +10,6 @@ export const inputFormats = {
   columnFilter: "columnFilter",
   richTextInput: "richTextInput",
   twinList: "twinList",
+  comboBox: "comboBox",
   button: "button",
 };

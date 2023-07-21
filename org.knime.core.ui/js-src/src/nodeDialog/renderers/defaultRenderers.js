@@ -1,36 +1,42 @@
-import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
-import { checkboxRenderer } from "./checkboxRenderer";
-import { checkboxesRenderer } from "./checkboxesRenderer";
-import { dropdownRenderer } from "./dropdownRenderer";
-import { numberRenderer } from "./numberRenderer";
-import { radioRenderer } from "./radioRenderer";
-import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
-import { columnFilterRenderer } from "./columnFilterRenderer";
-import { columnSelectRenderer } from "./columnSelectRenderer";
-import { integerRenderer } from "./integerRenderer";
 import { arrayLayoutRenderer } from "./arrayLayoutRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
-import { valueSwitchRenderer } from "./valueSwitchRenderer";
+import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
+
 import { buttonRenderer } from "./buttonRenderer";
+import { checkboxRenderer } from "./checkboxRenderer";
+import { checkboxesRenderer } from "./checkboxesRenderer";
+import { columnFilterRenderer } from "./columnFilterRenderer";
+import { columnSelectRenderer } from "./columnSelectRenderer";
+import { comboBoxRenderer } from "./comboBoxRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
+import { dropdownRenderer } from "./dropdownRenderer";
+import { integerRenderer } from "./integerRenderer";
+import { numberRenderer } from "./numberRenderer";
+import { radioRenderer } from "./radioRenderer";
 import { richTextInputRenderer } from "./richTextInputRenderer";
+import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
+import { valueSwitchRenderer } from "./valueSwitchRenderer";
 
 export const defaultRenderers = [
-  sectionLayoutRenderer,
-  checkboxRenderer,
-  checkboxesRenderer,
-  dropdownRenderer,
-  simpleTwinlistRenderer,
-  numberRenderer,
-  radioRenderer,
-  twinlistRenderer,
-  columnFilterRenderer,
-  columnSelectRenderer,
-  integerRenderer,
+  /* layout renderers */
   arrayLayoutRenderer,
   horizontalLayoutRenderer,
-  valueSwitchRenderer,
-  richTextInputRenderer,
+  sectionLayoutRenderer,
+
+  /* component renderers */
   buttonRenderer,
+  checkboxRenderer,
+  checkboxesRenderer,
+  columnFilterRenderer,
+  columnSelectRenderer,
+  comboBoxRenderer,
   dateTimeRenderer,
+  dropdownRenderer,
+  integerRenderer,
+  numberRenderer,
+  radioRenderer,
+  richTextInputRenderer,
+  simpleTwinlistRenderer,
+  twinlistRenderer,
+  valueSwitchRenderer,
 ];

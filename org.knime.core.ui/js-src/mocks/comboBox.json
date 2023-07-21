@@ -1,0 +1,40 @@
+{
+  "result": {
+    "name": "ComboBox",
+    "data": {
+      "comboBoxControl": ["foo", "foo2"]
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "comboBoxControl": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "properties/comboBoxControl",
+          "options": {
+            "format": "comboBox",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo"
+              },
+              {
+                "id": "bar",
+                "text": "Bar"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
