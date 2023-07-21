@@ -1,6 +1,6 @@
 {
   "name": "@knime/eslint-config",
-  "version": "8.0.4",
+  "version": "8.0.6",
   "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
   "scripts": {
     "lint": "eslint --fix --cache --ext .js .",
@@ -16,7 +16,7 @@
   },
   "peerDependencies": {
     "eslint": "8.x",
-    "prettier": "2.x",
+    "prettier": "3.x",
     "stylelint": "14.x - 15.x"
   },
   "dependencies": {
@@ -36,7 +36,7 @@
     "stylelint-config-standard-vue": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "8.40.0",
+    "eslint": "8.45.0",
     "prettier": "3.0.0"
   },
   "engines": {

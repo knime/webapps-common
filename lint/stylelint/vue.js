@@ -70,5 +70,11 @@ module.exports = {
         ignoreAtRules: ["define-mixin", "mixin"],
       },
     ],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        ignorePseudoClasses: ["deep", "global", "slotted"],
+      },
+    ],
   },
 };
