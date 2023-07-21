@@ -166,10 +166,14 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     @Test
     void testComboBoxFormat() {
+        @SuppressWarnings("unused")
         class ComboBoxFormatSettings {
+
+            String[] m_comboBox;
+
             @ChoicesWidget
             @ComboBoxWidget
-            String[] m_comboBox;
+            String[] m_comboBoxWithChoices;
 
         }
 
@@ -178,15 +182,10 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("comboBox");
         assertThatJson(response).inPath("$.elements[0].options").isObject().containsKey("format");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo(Format.COMBO_BOX);
-    }
 
-    @Test
-    void throwsOnComboBoxWidgetWithoutChoicesWidget() {
-        class ComboBoxFormatSettings {
-            @ComboBoxWidget
-            String m_comboBox;
-        }
-        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(ComboBoxFormatSettings.class));
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("comboBoxWithChoices");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("format");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo(Format.COMBO_BOX);
     }
 
     @Test

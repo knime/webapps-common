@@ -1,12 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
@@ -120,6 +112,21 @@ describe("ComboBoxInput.vue", () => {
 
   it("sets correct label", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
+  });
+
+  it("sets allowNewValues to false when there are possible values defined", () => {
+    const comboBox = wrapper.findComponent(ComboBox);
+    expect(comboBox.props().allowNewValues).toBe(false);
+  });
+
+  it("sets allowNewValues to true when there are no possible values defined", async () => {
+    props.control.uischema.options.possibleValues = undefined;
+    const { wrapper } = mountJsonFormsComponent(ComboBoxInput, {
+      props,
+    });
+    await wrapper.vm.$nextTick();
+    const comboBox = wrapper.findComponent(ComboBox);
+    expect(comboBox.props().allowNewValues).toBe(true);
   });
 
   it("disables comboBox when controlled by a flow variable", () => {

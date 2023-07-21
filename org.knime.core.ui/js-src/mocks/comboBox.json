@@ -2,12 +2,19 @@
   "result": {
     "name": "ComboBox",
     "data": {
-      "comboBoxControl": ["foo", "foo2"]
+      "comboBoxWithPossibleValues": ["foo", "foo2"],
+      "comboBoxWithoutPossibleValues": ["foo", "foo2"]
     },
     "schema": {
       "type": "object",
       "properties": {
-        "comboBoxControl": {
+        "comboBoxWithPossibleValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "comboBoxWithoutPossibleValues": {
           "type": "array",
           "items": {
             "type": "string"
@@ -19,7 +26,7 @@
       "elements": [
         {
           "type": "Control",
-          "scope": "properties/comboBoxControl",
+          "scope": "properties/comboBoxWithPossibleValues",
           "options": {
             "format": "comboBox",
             "possibleValues": [
@@ -32,6 +39,13 @@
                 "text": "Bar"
               }
             ]
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "properties/comboBoxWithoutPossibleValues",
+          "options": {
+            "format": "comboBox"
           }
         }
       ]

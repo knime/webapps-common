@@ -105,7 +105,7 @@ public final class WidgetImplementationUtil {
      */
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
-            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION, LOCAL_DATE
+            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY
     }
 
     /**
@@ -133,8 +133,8 @@ public final class WidgetImplementationUtil {
     };
 
     /**
-     * Extend this for every fields type which has default format set.
      *
+     * Extend this for every fields type which has default format set.
      * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
      */
     private static DefaultWidget[] defaultWidgets = new DefaultWidget[]{//
@@ -142,6 +142,7 @@ public final class WidgetImplementationUtil {
         new DefaultWidget(List.of(ColumnFilter.class), DefaultWidgetType.COLUMN_FILTER), //
         new DefaultWidget(List.of(ColumnSelection.class), DefaultWidgetType.COLUMN_SELECTION), //
         new DefaultWidget(List.of(LocalDate.class), DefaultWidgetType.LOCAL_DATE), //
+        new DefaultWidget(List.of(String[].class), DefaultWidgetType.STRING_ARRAY), //
     };
 
     /**

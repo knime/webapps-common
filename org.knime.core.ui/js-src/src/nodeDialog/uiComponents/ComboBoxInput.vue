@@ -21,10 +21,15 @@ const ComboBoxInput = defineComponent({
     // @ts-ignore
     return useJsonFormsControlWithUpdate(props);
   },
-  data(): { options: null | string[]; initialSelectedIds: string[] } {
+  data(): {
+    options: string[] | undefined;
+    initialSelectedIds: string[];
+    loaded: boolean;
+  } {
     return {
-      options: null,
+      options: [],
       initialSelectedIds: [],
+      loaded: false,
     };
   },
   computed: {
@@ -38,19 +43,18 @@ const ComboBoxInput = defineComponent({
       return (
         !this.control.enabled ||
         this.flowSettings?.controllingFlowVariableAvailable ||
-        this.options === null ||
+        typeof this.options === "undefined" ||
         this.options.length === 0
       );
     },
-    placeholderText() {
-      return this.options !== null && this.options.length > 0
-        ? "No value selected"
-        : "No values present";
+    noPossibleValuesPresent() {
+      return typeof this.options === "undefined";
     },
   },
   mounted() {
     this.initialSelectedIds = this.control.data;
     this.options = this.control.uischema?.options?.possibleValues;
+    this.loaded = true;
   },
   methods: {
     onChange(value: string[]) {
@@ -74,11 +78,16 @@ export default ComboBoxInput;
       :flow-settings="flowSettings"
       :description="control.description"
     >
+      <!--
+        TODO Enable unsing :allow-new-values="noPossibleValuesPresent"
+        (see https://github.com/vuejs/vue/issues/2169)
+      -->
       <ComboBox
-        v-if="options"
+        v-if="loaded"
+        :allow-new-values="noPossibleValuesPresent ? '' : false"
         :aria-label="control.label"
         :disabled="disabled"
-        :possible-values="options"
+        :possible-values="noPossibleValuesPresent ? [] : options"
         :initial-selected-ids="initialSelectedIds"
         @update:selected-ids="onChange"
       />

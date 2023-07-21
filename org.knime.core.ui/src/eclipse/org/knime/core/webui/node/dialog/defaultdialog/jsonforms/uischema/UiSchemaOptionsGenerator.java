@@ -177,6 +177,8 @@ final class UiSchemaOptionsGenerator {
                     options.put(TAG_FORMAT, Format.DATE_TIME);
                     disableTimeFields(options);
                     break;
+                case STRING_ARRAY:
+                    options.put(TAG_FORMAT, Format.COMBO_BOX);
             }
         }
 
@@ -263,15 +265,11 @@ final class UiSchemaOptionsGenerator {
                 final var dependencies = options.putArray(TAG_DEPENDENCIES);
                 addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
             }
+            if (annotatedWidgets.contains(ComboBoxWidget.class)) {
+                options.put(TAG_FORMAT, Format.COMBO_BOX);
+            }
         }
 
-        if (annotatedWidgets.contains(ComboBoxWidget.class)) {
-            if (!annotatedWidgets.contains(ChoicesWidget.class)) {
-                throw new UiSchemaGenerationException(String.format(
-                    "@ChoicesWidget annotation is missing for field %s with @ComboBoxWidget annotation", m_fieldName));
-            }
-            options.put(TAG_FORMAT, Format.COMBO_BOX);
-        }
 
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
