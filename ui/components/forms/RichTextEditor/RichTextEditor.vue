@@ -92,6 +92,7 @@ const { modelValue, editable, disabled } = toRefs(props);
 
 const emit = defineEmits<{
   (e: "update:modelValue", content: string): void;
+  (e: "blur"): void;
 }>();
 
 const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
@@ -146,6 +147,7 @@ const editor = useEditor({
   autofocus: props.autofocus,
   extensions,
   onUpdate: () => emit("update:modelValue", editor.value?.getHTML() ?? ""),
+  onBlur: () => emit("blur"),
 });
 
 const minHeight = computed(() =>
