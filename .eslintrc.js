@@ -1,10 +1,10 @@
 // This is a workaround for https://github.com/eslint/eslint/issues/3458
-require('@rushstack/eslint-patch/modern-module-resolution');
+require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
-    extends: ['@knime/eslint-config/typescript'],
-    env: {
-        node: true,
-        browser: true
-    }
+  extends: ["@knime/eslint-config/typescript", "@knime/eslint-config/base"],
+  env: {
+    node: true,
+    browser: true,
+  },
 };

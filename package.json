@@ -1,59 +1,63 @@
 {
-    "name": "@knime/ui-extension-service",
-    "version": "0.14.0",
-    "description": "KNIME UI Extension Service for KNIME Analytics Platform",
-    "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
-    "author": "KNIME AG, Zurich, Switzerland",
-    "repository": {
-        "type": "git",
-        "url": "https://bitbucket.org/KNIME/knime-ui-extension-service"
-    },
-    "scripts": {
-        "build": "rm -rf dist && rollup -c ./rollup.config.js",
-        "lint": "npm run lint:ts && npm run lint:json",
-        "lint:fix": "eslint --fix --ext .ts .",
-        "lint:ts": "eslint --ext .ts .",
-        "lint:json": "eslint --ext .json .",
-        "lint:ci": "eslint --ext .ts,.vue,.json -f json -o target/eslint.json || true",
-        "audit": "npm audit --production --json > target/audit.json || true",
-        "test": "npm run test:unit",
-        "test:unit": "jest",
-        "coverage": "jest --coverage --runInBand",
-        "coverage:watch": "npm run test:unit -- --coverage --watch"
-    },
-    "dependencies": {
-        "@types/color-convert": "2.0.0",
-        "color-convert": "2.0.1"
-    },
-    "devDependencies": {
-        "@babel/cli": "7.15.7",
-        "@babel/core": "7.15.5",
-        "@babel/polyfill": "7.12.1",
-        "@babel/preset-env": "7.15.6",
-        "@babel/preset-typescript": "7.15.0",
-        "@babel/register": "7.15.3",
-        "@knime/eslint-config": "7.0.5",
-        "@rollup/plugin-commonjs": "20.0.0",
-        "@types/jest": "27.0.2",
-        "core-js": "3.18.1",
-        "eslint": "8.25.0",
-        "jest": "27.2.0",
-        "jest-junit": "12.2.0",
-        "rollup": "2.38.3",
-        "rollup-plugin-terser": "7.0.2",
-        "rollup-plugin-ts": "1.4.7",
-        "ts-jest": "27.0.5",
-        "ts-loader": "9.2.6",
-        "typescript": "4.4.3"
-    },
-    "main": "dist/index.js",
-    "files": [
-        "dist"
-    ],
-    "engines": {
-        "node": "18.x"
-    },
-    "volta": {
-        "node": "18.10.0"
-    }
+  "name": "@knime/ui-extension-service",
+  "version": "0.14.0",
+  "description": "KNIME UI Extension Service for KNIME Analytics Platform",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/KNIME/knime-ui-extension-service"
+  },
+  "scripts": {
+    "build": "rm -rf dist && rollup -c ./rollup.config.js",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
+    "lint": "eslint --cache --fix --ext .ts .",
+    "ci:lint": "mkdir -p target && eslint --cache --ext .ts,.vue -f json -o target/eslint.json || true",
+    "ci:lint-format": "run-p ci:lint format:check -c",
+    "audit": "mkdir -p target && npm audit --omit=dev --json > target/audit.json || true",
+    "test": "npm run test:unit",
+    "test:unit": "jest",
+    "coverage": "jest --coverage --runInBand",
+    "coverage:watch": "npm run test:unit -- --coverage --watch",
+    "prepare": "husky install ./.husky"
+  },
+  "dependencies": {
+    "@types/color-convert": "2.0.0",
+    "color-convert": "2.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.15.7",
+    "@babel/core": "7.15.5",
+    "@babel/polyfill": "7.12.1",
+    "@babel/preset-env": "7.15.6",
+    "@babel/preset-typescript": "7.15.0",
+    "@babel/register": "7.15.3",
+    "@knime/eslint-config": "8.0.7",
+    "@rollup/plugin-commonjs": "20.0.0",
+    "@types/jest": "27.0.2",
+    "core-js": "3.18.1",
+    "eslint": "8.45.0",
+    "jest": "27.2.0",
+    "jest-junit": "12.2.0",
+    "npm-run-all": "4.1.5",
+    "husky": "8.0.3",
+    "prettier": "3.0.0",
+    "rollup": "2.38.3",
+    "rollup-plugin-terser": "7.0.2",
+    "rollup-plugin-ts": "1.4.7",
+    "ts-jest": "27.0.5",
+    "ts-loader": "9.2.6",
+    "typescript": "4.4.3"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "18.x"
+  },
+  "volta": {
+    "node": "18.10.0"
+  }
 }

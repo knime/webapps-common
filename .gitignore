@@ -24,6 +24,8 @@ coverage
 
 # other test outputs
 test/*/reports
+test-results
+**/test-results/
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -85,10 +87,9 @@ typings/
 .scannerwork/
 
 /node/
-target/
 
 dist/
+target/
 
 # Maven build artifacts
 **/.flattened-pom.xml
-**/target/

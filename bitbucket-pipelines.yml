@@ -1,6 +1,6 @@
 image: node:18.10.0
 
-definitions: 
+definitions:
   steps:
     - step: &lint-test-build
         name: Lint, tests and build
@@ -8,16 +8,16 @@ definitions:
           - node
         script:
           - npm ci
-          - npm run lint
+          - npm run ci:lint-format
           - npm run coverage -- --ci
           - npm run build
-          - npm audit --production
+          - npm run audit
         artifacts:
           - dist/**
 
 pipelines:
   pull-requests:
-    '**':
+    "**":
       - step: *lint-test-build
       - step:
           # actually publishing should be only possible on the master branch, but see

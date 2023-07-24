@@ -13,7 +13,7 @@ try {
     node('maven && java11') {
         knimetools.defaultMavenBuild(withoutNode: true)
 
-        junit '**/coverage/junit.xml'
+        junit '**/test-results/junit.xml'
         knimetools.processAuditResults(skipStylelint: true)
 
         stage('Sonarqube analysis') {
