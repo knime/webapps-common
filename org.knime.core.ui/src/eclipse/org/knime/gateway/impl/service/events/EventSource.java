@@ -66,7 +66,7 @@ import java.util.function.BiConsumer;
  */
 public abstract class EventSource<T, E> {
 
-    private final BiConsumer<String, Object> m_eventConsumer;
+    private final EventConsumer m_eventConsumer;
 
     /**
      * Lock to make sure that the initial events issued by {@link #addEventListenerAndGetInitialEventFor(Object)} are
@@ -84,6 +84,13 @@ public abstract class EventSource<T, E> {
      * @param eventConsumer consumes the emitted events
      */
     protected EventSource(final BiConsumer<String, Object> eventConsumer) {
+        m_eventConsumer = eventConsumer::accept;
+    }
+
+    /**
+     * @param eventConsumer consumes the emitted events
+     */
+    protected EventSource(final EventConsumer eventConsumer) {
         m_eventConsumer = eventConsumer;
     }
 
@@ -106,9 +113,23 @@ public abstract class EventSource<T, E> {
      * @throws IllegalArgumentException if object describing the event type isn't valid
      */
     public void addEventListenerFor(final T eventTypeEnt) {
+        addEventListenerFor(eventTypeEnt, null);
+    }
+
+    /**
+     * Registers a listener with the event source for the specified type of event.
+     *
+     * @param eventTypeEnt
+     * @param workflowProjectId id of the workflow project this event listener is associated with (i.e. the initial
+     *            event, if there is one, will be associated wit that workflow project - see
+     *            {@link #sendEvent(Object, String)}; can be {@code null}
+     *
+     * @throws IllegalArgumentException if object describing the event type isn't valid
+     */
+    public void addEventListenerFor(final T eventTypeEnt, final String workflowProjectId) {
         // make sure the returned event is the first being send!
         synchronized (m_sendEventLock) {
-            addEventListenerAndGetInitialEventFor(eventTypeEnt).ifPresent(this::sendEvent);
+            addEventListenerAndGetInitialEventFor(eventTypeEnt).ifPresent(e -> sendEvent(e, workflowProjectId));
         }
     }
 
@@ -133,6 +154,19 @@ public abstract class EventSource<T, E> {
     protected final void sendEvent(final E event) {
         synchronized (m_sendEventLock) {
             m_eventConsumer.accept(getName(), event);
+        }
+    }
+
+    /**
+     * Called by sub-classes to emit an event. This event is associated with a dedicated workflow project (specified by
+     * the project id).
+     *
+     * @param event the event instance
+     * @param projectId
+     */
+    protected final void sendEvent(final E event, final String projectId) {
+        synchronized (m_sendEventLock) {
+            m_eventConsumer.accept(getName(), event, projectId);
         }
     }
 
