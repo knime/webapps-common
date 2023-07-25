@@ -32,7 +32,10 @@ The script will now run as part of your regular git workflow.
 - Follow [Husky's][husky] installation instructions
 - Create a file `.husky/prepare-commit-msg` with the following content:
 
-  `source ./path/to/webapps-common/scripts/prepare-commit-msg`
+  ```
+  #!/usr/bin/env bash
+  knime-eslint-config-prepare-commit-msg "$@"
+  ```
 
 [husky]: https://typicode.github.io/husky/#/
 [commit-guidelines]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/400228362/Git+Workflow#%5BinlineExtension%5DCommitting

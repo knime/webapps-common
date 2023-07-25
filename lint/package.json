@@ -6,6 +6,9 @@
     "lint": "eslint --fix --cache --ext .js .",
     "format": "prettier --write --cache ."
   },
+  "bin": {
+    "knime-eslint-config-prepare-commit-msg": "./scripts/prepare-commit-msg"
+  },
   "main": "index.js",
   "license": "See the file LICENSE",
   "author": "KNIME AG, Zurich, Switzerland",

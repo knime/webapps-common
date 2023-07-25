@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-
-source ./scripts/prepare-commit-msg
+knime-eslint-config-prepare-commit-msg "$@"
