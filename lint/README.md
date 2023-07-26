@@ -4,7 +4,7 @@ This repository contains an [ESLint] ruleset for typical KNIME frontend projects
 JavaScript/TypeScript setups as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test
 scenarios with [Jest] and [Vitest] are also present.
 
-Also it contains some configs for [Stylelint].
+Also it contains some configs for [Stylelint], [lintstaged] and a Git hook to format commit messages.
 
 Formatting is supposed to be handled via [Prettier].
 
@@ -31,37 +31,6 @@ The different ESLint profiles contained herein can also be linted by running
 ```sh
 npm run lint
 ```
-
-### Git hooks
-
-The package supplies the tools to running a couple of commit hooks.
-
-#### Linting and formatting staged changes
-
-Include the following in a `pre-commit` hook to lint and format the changes in your stage zone (via [lintstaged]).
-
-```bash
-#!/usr/bin/env bash
-npx lint-staged
-```
-
-Additionaly, use the [lint-staged.config.mjs](lint-staged.config.mjs) file to configure lint-staged, i.e. create a `lint-staged.config.mjs` file in the root folder containing
-
-```js
-import config from "@knime/eslint-config/lint-staged.config.mjs";
-export default config;
-```
-
-#### Format commit message
-
-Use a `prepare-commit-msg` hook to format your commit message to conform with the required format by KNIME:
-
-```bash
-#!/usr/bin/env bash
-knime-eslint-config-prepare-commit-msg "$@"
-```
-
-Refer to [scripts/README.md](scripts/README.md) for more information.
 
 ### Running security audit
 
@@ -111,6 +80,37 @@ Projects still need to specify the following `devDependency` in their respective
 - [ESlint]
 - [Stylelint]
 - [Prettier]
+
+## Using Git hooks in your project
+
+The package supplies the tools to running a couple of commit hooks:
+
+### Linting and formatting staged changes
+
+Include the following in a `pre-commit` hook to lint and format the changes in your stage zone (via [lintstaged]).
+
+```bash
+#!/usr/bin/env bash
+npx lint-staged
+```
+
+Additionaly, use the [lint-staged.config.mjs](lint-staged.config.mjs) file to configure lint-staged, i.e. create a `lint-staged.config.mjs` file in the root folder containing
+
+```js
+import config from "@knime/eslint-config/lint-staged.config.mjs";
+export default config;
+```
+
+### Format commit message
+
+Use a `prepare-commit-msg` hook to format your commit message to conform with the required format by KNIME:
+
+```bash
+#!/usr/bin/env bash
+knime-eslint-config-prepare-commit-msg "$@"
+```
+
+Refer to [scripts/README.md](scripts/README.md) for more information.
 
 [node]: https://knime-com.atlassian.net/wiki/spaces/SPECS/pages/905281540/Node.js+Installation
 [ESLint]: https://eslint.org/
