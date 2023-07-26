@@ -1,29 +1,31 @@
 <script>
-import { defineComponent } from 'vue';
-import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue';
-import LayoutComponentWrapper from './LayoutComponentWrapper.vue';
+import { defineComponent } from "vue";
+import {
+  useJsonFormsLayout,
+  rendererProps,
+  DispatchRenderer,
+} from "@jsonforms/vue";
+import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
 
 const SectionLayout = defineComponent({
-    name: 'SectionLayout',
-    components: {
-        DispatchRenderer,
-        LayoutComponentWrapper
-    },
-    props: {
-        ...rendererProps()
-    },
-    setup(props) {
-        return useJsonFormsLayout(props);
-    }
+  name: "SectionLayout",
+  components: {
+    DispatchRenderer,
+    LayoutComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+  },
+  setup(props) {
+    return useJsonFormsLayout(props);
+  },
 });
 export default SectionLayout;
 </script>
 
 <template>
   <LayoutComponentWrapper :layout="layout">
-    <div
-      class="section"
-    >
+    <div class="section">
       <h3>{{ layout.uischema.label }}</h3>
       <div
         v-for="(element, index) in layout.uischema.elements"

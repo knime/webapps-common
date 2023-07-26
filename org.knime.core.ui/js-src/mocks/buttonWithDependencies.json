@@ -53,14 +53,10 @@
               }
             ],
             "actionHandler": "[Class name of ActionHandler]",
-            "dependencies": [
-              "#/properties/string"
-            ],
+            "dependencies": ["#/properties/string"],
             "updateOptions": {
               "updateHandler": "[Class name of UpdateHandler]",
-              "dependencies": [
-                "#/properties/string2"
-              ]
+              "dependencies": ["#/properties/string2"]
             }
           }
         },
@@ -79,5 +75,4 @@
       ]
     }
   }
-    
 }

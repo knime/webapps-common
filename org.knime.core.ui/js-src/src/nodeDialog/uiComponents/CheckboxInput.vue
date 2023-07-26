@@ -1,55 +1,58 @@
 <script>
-import { defineComponent } from 'vue';
-import { rendererProps } from '@jsonforms/vue';
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
-import Checkbox from 'webapps-common/ui/components/forms/Checkbox.vue';
-import ReexecutionIcon from 'webapps-common/ui/assets/img/icons/reexecution.svg';
-import FlowVariableIcon from './FlowVariableIcon.vue';
-import ErrorMessage from './ErrorMessage.vue';
-import DescriptionPopover from './DescriptionPopover.vue';
-import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { defineComponent } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
+import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
+import FlowVariableIcon from "./FlowVariableIcon.vue";
+import ErrorMessage from "./ErrorMessage.vue";
+import DescriptionPopover from "./DescriptionPopover.vue";
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
 
 const CheckboxInput = defineComponent({
-    name: 'CheckboxInput',
-    components: {
-        Checkbox,
-        ErrorMessage,
-        FlowVariableIcon,
-        DescriptionPopover,
-        ReexecutionIcon,
-        DialogComponentWrapper
+  name: "CheckboxInput",
+  components: {
+    Checkbox,
+    ErrorMessage,
+    FlowVariableIcon,
+    DescriptionPopover,
+    ReexecutionIcon,
+    DialogComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+  },
+  setup(props) {
+    return useJsonFormsControlWithUpdate(props);
+  },
+  data() {
+    return {
+      hover: false,
+    };
+  },
+  computed: {
+    isModelSettingAndHasNodeView() {
+      return isModelSettingAndHasNodeView(this.control);
     },
-    props: {
-        ...rendererProps()
+    flowSettings() {
+      return getFlowVariablesMap(this.control);
     },
-    setup(props) {
-        return useJsonFormsControlWithUpdate(props);
+    disabled() {
+      return (
+        !this.control.enabled ||
+        this.flowSettings?.controllingFlowVariableAvailable
+      );
     },
-    data() {
-        return {
-            hover: false
-        };
+  },
+  methods: {
+    onChange(event) {
+      this.handleChange(this.control.path, event);
+      if (this.isModelSettingAndHasNodeView) {
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      }
     },
-    computed: {
-        isModelSettingAndHasNodeView() {
-            return isModelSettingAndHasNodeView(this.control);
-        },
-        flowSettings() {
-            return getFlowVariablesMap(this.control);
-        },
-        disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
-        }
-    },
-    methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
-            if (this.isModelSettingAndHasNodeView) {
-                this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
-            }
-        }
-    }
+  },
 });
 export default CheckboxInput;
 </script>

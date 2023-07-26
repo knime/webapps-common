@@ -18,15 +18,11 @@
               "type": "object",
               "properties": {
                 "compatibleTypes": {
-                  "configKeys": [
-                    "compatibleTypes_Internals"
-                  ],
+                  "configKeys": ["compatibleTypes_Internals"],
                   "type": "array",
                   "items": {
                     "type": "string",
-                    "configKeys": [
-                      "compatibleTypes_Internals"
-                    ]
+                    "configKeys": ["compatibleTypes_Internals"]
                   }
                 },
                 "selected": {
@@ -114,9 +110,7 @@
                   "org.knime.core.data.BoundedValue"
                 ]
               },
-              "configKeys": [
-                "yAxisColumn"
-              ]
+              "configKeys": ["yAxisColumn"]
             }
           }
         }
@@ -200,6 +194,5 @@
         }
       ]
     }
-    
   }
 }

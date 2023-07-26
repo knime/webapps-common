@@ -1,25 +1,22 @@
 <script>
-import { defineComponent } from 'vue';
-import isSettingsVisibleMixin from '../mixins/isSettingsVisibleMixin';
+import { defineComponent } from "vue";
+import isSettingsVisibleMixin from "../mixins/isSettingsVisibleMixin";
 
 const DialogComponentWrapper = defineComponent({
-    name: 'DialogComponentWrapper',
-    mixins: [isSettingsVisibleMixin],
-    props: {
-        control: {
-            type: Object,
-            default: () => {}
-        }
-    }
+  name: "DialogComponentWrapper",
+  mixins: [isSettingsVisibleMixin],
+  props: {
+    control: {
+      type: Object,
+      default: () => {},
+    },
+  },
 });
 export default DialogComponentWrapper;
 </script>
 
 <template>
-  <div
-    v-if="isVisible"
-    :class="{fadeContainer: isAdvanced}"
-  >
+  <div v-if="isVisible" :class="{ fadeContainer: isAdvanced }">
     <slot />
   </div>
 </template>

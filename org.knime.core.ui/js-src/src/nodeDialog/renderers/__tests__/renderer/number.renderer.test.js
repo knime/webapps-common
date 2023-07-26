@@ -1,47 +1,51 @@
-import { describe, expect, it } from 'vitest';
-import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-import { fallbackRenderers, defaultRenderers } from '..';
-import { determineRenderer } from '../rendererTestUtils';
+import { describe, expect, it } from "vitest";
+import { vanillaRenderers } from "@jsonforms/vue-vanilla";
+import { fallbackRenderers, defaultRenderers } from "..";
+import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
+const renderers = [
+  ...vanillaRenderers,
+  ...fallbackRenderers,
+  ...defaultRenderers,
+];
 
-describe('NumberInput', () => {
-    const schema = {
-        type: 'object',
-        properties: {
-            number: {
-                type: 'number'
-            }
-        }
+describe("NumberInput", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      number: {
+        type: "number",
+      },
+    },
+  };
+
+  it("numberInput config error", () => {
+    const uiSchema = {
+      type: "Controll",
+      scope: "#/properties/number",
     };
 
-    it('numberInput config error', () => {
-        const uiSchema = {
-            type: 'Controll',
-            scope: '#/properties/number'
-        };
+    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+  });
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
-    });
+  it("numberInput with options", () => {
+    const uiSchema = {
+      type: "Control",
+      scope: "#/properties/number",
+      options: {
+        format: "number",
+      },
+    };
 
-    it('numberInput with options', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/number',
-            options: {
-                format: 'number'
-            }
-        };
-        
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('IntegerInput');
-    });
+    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+  });
 
-    it('numberInput without options', () => {
-        const uiSchema = {
-            type: 'Control',
-            scope: '#/properties/number'
-        };
+  it("numberInput without options", () => {
+    const uiSchema = {
+      type: "Control",
+      scope: "#/properties/number",
+    };
 
-        expect(determineRenderer(uiSchema, schema, renderers)).toBe('IntegerInput');
-    });
+    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+  });
 });

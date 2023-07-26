@@ -171,18 +171,14 @@
               "default": {
                 "m_selected": "Universe_0_0"
               },
-              "configKeys": [
-                "dimension"
-              ]
+              "configKeys": ["dimension"]
             },
             "generateImage": {
               "type": "boolean",
               "title": "Generate image",
               "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
               "default": false,
-              "configKeys": [
-                "generateImage"
-              ]
+              "configKeys": ["generateImage"]
             },
             "hasFixedLowerBound": {
               "type": "boolean",
@@ -209,9 +205,7 @@
               "description": "The height of the generated image (in pixels).",
               "default": 600,
               "minimum": 1,
-              "configKeys": [
-                "height"
-              ]
+              "configKeys": ["height"]
             },
             "lowerBound": {
               "type": "number",
@@ -262,9 +256,7 @@
               "description": "The width of the generated image (in pixels).",
               "default": 800,
               "minimum": 1,
-              "configKeys": [
-                "width"
-              ]
+              "configKeys": ["width"]
             }
           }
         }

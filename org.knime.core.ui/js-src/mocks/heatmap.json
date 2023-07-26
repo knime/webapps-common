@@ -136,9 +136,7 @@
               "title": "Generate image",
               "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
               "default": false,
-              "configKeys": [
-                "generateImage"
-              ]
+              "configKeys": ["generateImage"]
             },
             "height": {
               "type": "integer",
@@ -147,9 +145,7 @@
               "description": "The height of the generated image (in pixels).",
               "default": 600,
               "minimum": 1,
-              "configKeys": [
-                "height"
-              ]
+              "configKeys": ["height"]
             },
             "horizontalColumn": {
               "type": "object",
@@ -168,9 +164,7 @@
               "default": {
                 "m_selected": "Cluster Membership"
               },
-              "configKeys": [
-                "horizontalColumn"
-              ]
+              "configKeys": ["horizontalColumn"]
             },
             "valueColumn": {
               "type": "object",
@@ -201,9 +195,7 @@
               "default": {
                 "m_selected": "Universe_0_0"
               },
-              "configKeys": [
-                "valueColumn"
-              ]
+              "configKeys": ["valueColumn"]
             },
             "verticalColumn": {
               "type": "object",
@@ -222,9 +214,7 @@
               "default": {
                 "m_selected": "Cluster Membership"
               },
-              "configKeys": [
-                "verticalColumn"
-              ]
+              "configKeys": ["verticalColumn"]
             },
             "width": {
               "type": "integer",
@@ -233,9 +223,7 @@
               "description": "The width of the generated image (in pixels).",
               "default": 800,
               "minimum": 1,
-              "configKeys": [
-                "width"
-              ]
+              "configKeys": ["width"]
             }
           }
         }

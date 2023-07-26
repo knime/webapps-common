@@ -1,20 +1,24 @@
 <script>
-import { defineComponent } from 'vue';
-import { useJsonFormsLayout, rendererProps, DispatchRenderer } from '@jsonforms/vue';
-import LayoutComponentWrapper from './LayoutComponentWrapper.vue';
+import { defineComponent } from "vue";
+import {
+  useJsonFormsLayout,
+  rendererProps,
+  DispatchRenderer,
+} from "@jsonforms/vue";
+import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
 
 const HorizontalLayout = defineComponent({
-    name: 'HorizontalLayout',
-    components: {
-        DispatchRenderer,
-        LayoutComponentWrapper
-    },
-    props: {
-        ...rendererProps()
-    },
-    setup(props) {
-        return useJsonFormsLayout(props);
-    }
+  name: "HorizontalLayout",
+  components: {
+    DispatchRenderer,
+    LayoutComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+  },
+  setup(props) {
+    return useJsonFormsLayout(props);
+  },
 });
 export default HorizontalLayout;
 </script>
@@ -51,5 +55,4 @@ export default HorizontalLayout;
 .horizontal > *:first-child {
   margin-left: 0;
 }
-
 </style>

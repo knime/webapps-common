@@ -1,72 +1,79 @@
 <script>
-import { defineComponent } from 'vue';
-import { rendererProps } from '@jsonforms/vue';
-import { optionsMapper, getFlowVariablesMap, isModelSettingAndHasNodeView } from '../utils';
-import RadioButtons from 'webapps-common/ui/components/forms/RadioButtons.vue';
-import ValueSwitch from 'webapps-common/ui/components/forms/ValueSwitch.vue';
-import LabeledInput from './LabeledInput.vue';
-import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { defineComponent } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import {
+  optionsMapper,
+  getFlowVariablesMap,
+  isModelSettingAndHasNodeView,
+} from "../utils";
+import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
+import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
+import LabeledInput from "./LabeledInput.vue";
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
 
 const RadioInputBase = defineComponent({
-    name: 'RadioInputBase',
-    components: {
-        RadioButtons,
-        ValueSwitch,
-        LabeledInput,
-        DialogComponentWrapper
+  name: "RadioInputBase",
+  components: {
+    RadioButtons,
+    ValueSwitch,
+    LabeledInput,
+    DialogComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+    type: {
+      type: String,
+      required: true,
+      default: "radio",
     },
-    props: {
-        ...rendererProps(),
-        type: {
-            type: String,
-            required: true,
-            default: 'radio'
-        }
+  },
+  setup(props) {
+    return useJsonFormsControlWithUpdate(props);
+  },
+  data() {
+    return {
+      options: null,
+    };
+  },
+  computed: {
+    isModelSettingAndHasNodeView() {
+      return isModelSettingAndHasNodeView(this.control);
     },
-    setup(props) {
-        return useJsonFormsControlWithUpdate(props);
+    flowSettings() {
+      return getFlowVariablesMap(this.control);
     },
-    data() {
-        return {
-            options: null
-        };
+    disabled() {
+      return (
+        !this.control.enabled ||
+        this.flowSettings?.controllingFlowVariableAvailable
+      );
     },
-    computed: {
-        isModelSettingAndHasNodeView() {
-            return isModelSettingAndHasNodeView(this.control);
-        },
-        flowSettings() {
-            return getFlowVariablesMap(this.control);
-        },
-        disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
-        },
-        alignment() {
-            return this.control.uischema.options?.radioLayout;
-        },
-        uiComponent() {
-            switch (this.type) {
-                case 'valueSwitch':
-                    return ValueSwitch;
-                case 'radio':
-                    return RadioButtons;
-                default:
-                    return RadioButtons;
-            }
-        }
+    alignment() {
+      return this.control.uischema.options?.radioLayout;
     },
-    mounted() {
-        this.options = this.control?.schema?.oneOf?.map(optionsMapper);
+    uiComponent() {
+      switch (this.type) {
+        case "valueSwitch":
+          return ValueSwitch;
+        case "radio":
+          return RadioButtons;
+        default:
+          return RadioButtons;
+      }
     },
-    methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
-            if (this.isModelSettingAndHasNodeView) {
-                this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
-            }
-        }
-    }
+  },
+  mounted() {
+    this.options = this.control?.schema?.oneOf?.map(optionsMapper);
+  },
+  methods: {
+    onChange(event) {
+      this.handleChange(this.control.path, event);
+      if (this.isModelSettingAndHasNodeView) {
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      }
+    },
+  },
 });
 export default RadioInputBase;
 </script>

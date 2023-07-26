@@ -81,9 +81,7 @@
               "title": "Value axis limits",
               "description": "Choose if the axis range of the value axis should be calculated automatically by the charting framework, taken from the domain range or set manually. You might need to use a Domain Calculator or Edit Numeric Domain node before this node.",
               "default": "AUTO",
-              "configKeys": [
-                "axisExtentMethod"
-              ]
+              "configKeys": ["axisExtentMethod"]
             },
             "yAxisManualMin": {
               "type": "number",
@@ -104,18 +102,14 @@
               "description": "Numeric value that defines the marker size.",
               "default": 5,
               "minimum": 1,
-              "configKeys": [
-                "dataPointMarkerSize"
-              ]
+              "configKeys": ["dataPointMarkerSize"]
             },
             "enableAnimation": {
               "type": "boolean",
               "title": "Enable animation",
               "description": "When checked, the animation of the graph is active.",
               "default": true,
-              "configKeys": [
-                "enableAnimation"
-              ]
+              "configKeys": ["enableAnimation"]
             },
             "enableDataZoom": {
               "type": "boolean",
@@ -144,9 +138,7 @@
               "title": "Show data point markers",
               "description": "When checked, markers show the location of each data point.",
               "default": false,
-              "configKeys": [
-                "showDataPointMarkers"
-              ]
+              "configKeys": ["showDataPointMarkers"]
             },
             "showTooltip": {
               "type": "boolean",
@@ -199,9 +191,7 @@
               "default": {
                 "m_selected": "Universe_0_0"
               },
-              "configKeys": [
-                "xAxisColumn"
-              ]
+              "configKeys": ["xAxisColumn"]
             },
             "xAxisLabel": {
               "type": "string",
@@ -308,9 +298,7 @@
                       "columnTypeDisplayed": "Number (double)"
                     }
                   ],
-                  "configKeys": [
-                    "selected_Internals"
-                  ]
+                  "configKeys": ["selected_Internals"]
                 },
                 "typeFilter": {
                   "type": "object",
@@ -369,9 +357,7 @@
                   "m_typeDisplays": []
                 }
               },
-              "configKeys": [
-                "yAxisColumn"
-              ]
+              "configKeys": ["yAxisColumn"]
             },
             "yAxisLabel": {
               "type": "string",
@@ -404,9 +390,7 @@
               "title": "Generate image",
               "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
               "default": false,
-              "configKeys": [
-                "generateImage"
-              ]
+              "configKeys": ["generateImage"]
             },
             "height": {
               "type": "integer",
@@ -415,9 +399,7 @@
               "description": "The height of the generated image (in pixels).",
               "default": 600,
               "minimum": 1,
-              "configKeys": [
-                "height"
-              ]
+              "configKeys": ["height"]
             },
             "width": {
               "type": "integer",
@@ -426,9 +408,7 @@
               "description": "The width of the generated image (in pixels).",
               "default": 800,
               "minimum": 1,
-              "configKeys": [
-                "width"
-              ]
+              "configKeys": ["width"]
             }
           }
         }

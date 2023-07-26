@@ -1,34 +1,34 @@
 <script>
-import { defineComponent } from 'vue';
-import TwinlistInput from './TwinlistInput.vue';
+import { defineComponent } from "vue";
+import TwinlistInput from "./TwinlistInput.vue";
 
 const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = 'Excludes';
-const defaultTwinlistRightLabel = 'Includes';
+const defaultTwinlistLeftLabel = "Excludes";
+const defaultTwinlistRightLabel = "Includes";
 
 const ColumnFilter = defineComponent({
-    name: 'ColumnFilter',
-    components: {
-        TwinlistInput
+  name: "ColumnFilter",
+  components: {
+    TwinlistInput,
+  },
+  inheritAttrs: false,
+  props: {
+    twinlistSize: {
+      type: Number,
+      required: false,
+      default: defaultTwinlistSize,
     },
-    inheritAttrs: false,
-    props: {
-        twinlistSize: {
-            type: Number,
-            required: false,
-            default: defaultTwinlistSize
-        },
-        twinlistLeftLabel: {
-            type: String,
-            required: false,
-            default: defaultTwinlistLeftLabel
-        },
-        twinlistRightLabel: {
-            type: String,
-            required: false,
-            default: defaultTwinlistRightLabel
-        }
-    }
+    twinlistLeftLabel: {
+      type: String,
+      required: false,
+      default: defaultTwinlistLeftLabel,
+    },
+    twinlistRightLabel: {
+      type: String,
+      required: false,
+      default: defaultTwinlistRightLabel,
+    },
+  },
 });
 export default ColumnFilter;
 </script>

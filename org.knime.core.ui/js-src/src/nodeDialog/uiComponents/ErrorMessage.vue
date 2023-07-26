@@ -1,16 +1,16 @@
 <script>
 export default {
-    props: {
-        errors: {
-            default: () => [],
-            type: Array
-        }
+  props: {
+    errors: {
+      default: () => [],
+      type: Array,
     },
-    computed: {
-        displayableErrors() {
-            return this.errors.map(({ message }) => message)?.join('; ');
-        }
-    }
+  },
+  computed: {
+    displayableErrors() {
+      return this.errors.map(({ message }) => message)?.join("; ");
+    },
+  },
 };
 </script>
 

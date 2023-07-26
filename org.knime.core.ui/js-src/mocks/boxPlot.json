@@ -160,9 +160,7 @@
               "default": {
                 "m_selected": "<none>"
               },
-              "configKeys": [
-                "categoryColumn"
-              ]
+              "configKeys": ["categoryColumn"]
             },
             "frequencyColumns": {
               "type": "object",
@@ -263,9 +261,7 @@
                       "columnTypeDisplayed": "Number (double)"
                     }
                   ],
-                  "configKeys": [
-                    "selected_Internals"
-                  ]
+                  "configKeys": ["selected_Internals"]
                 },
                 "typeFilter": {
                   "type": "object",
@@ -324,18 +320,14 @@
                   "m_typeDisplays": []
                 }
               },
-              "configKeys": [
-                "frequencyColumns"
-              ]
+              "configKeys": ["frequencyColumns"]
             },
             "generateImage": {
               "type": "boolean",
               "title": "Generate image",
               "description": "If checked, adds an image output port and, upon execution, generates a PNG image which is made available via this port.",
               "default": false,
-              "configKeys": [
-                "generateImage"
-              ]
+              "configKeys": ["generateImage"]
             },
             "height": {
               "type": "integer",
@@ -344,9 +336,7 @@
               "description": "The height of the generated image (in pixels).",
               "default": 600,
               "minimum": 1,
-              "configKeys": [
-                "height"
-              ]
+              "configKeys": ["height"]
             },
             "width": {
               "type": "integer",
@@ -355,9 +345,7 @@
               "description": "The width of the generated image (in pixels).",
               "default": 800,
               "minimum": 1,
-              "configKeys": [
-                "width"
-              ]
+              "configKeys": ["width"]
             },
             "enableAnimation": {
               "type": "boolean",

@@ -1,80 +1,83 @@
 <script>
-import { defineComponent } from 'vue';
-import { rendererProps } from '@jsonforms/vue';
-import { isModelSettingAndHasNodeView,
-    getFlowVariablesMap } from '../utils';
-import LabeledInput from './LabeledInput.vue';
-import DateInput from 'webapps-common/ui/components/forms/DateTimeInput.vue';
-import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { defineComponent } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
+import LabeledInput from "./LabeledInput.vue";
+import DateInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
 
 const DateTimeInput = defineComponent({
-    name: 'DateTimeInput',
-    components: {
-        DateInput,
-        LabeledInput,
-        DialogComponentWrapper
+  name: "DateTimeInput",
+  components: {
+    DateInput,
+    LabeledInput,
+    DialogComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+  },
+  setup(props) {
+    return useJsonFormsControlWithUpdate(props);
+  },
+  computed: {
+    isModelSettingAndHasNodeView() {
+      return isModelSettingAndHasNodeView(this.control);
     },
-    props: {
-        ...rendererProps()
+    flowSettings() {
+      return getFlowVariablesMap(this.control);
     },
-    setup(props) {
-        return useJsonFormsControlWithUpdate(props);
+    disabled() {
+      return (
+        !this.control.enabled ||
+        this.flowSettings?.controllingFlowVariableAvailable
+      );
     },
-    computed: {
-        isModelSettingAndHasNodeView() {
-            return isModelSettingAndHasNodeView(this.control);
-        },
-        flowSettings() {
-            return getFlowVariablesMap(this.control);
-        },
-        disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
-        },
-        options() {
-            return this.control.uischema.options;
-        },
-        minimum() {
-            const minDate = this.options?.minimum ? new Date(this.options?.minimum) : null;
-            return minDate;
-        },
-        maximum() {
-            const maxDate = this.options?.maximum ? new Date(this.options?.maximum) : null;
-            return maxDate;
-        },
-        showTime() {
-            return this.options?.showTime;
-        },
-        showSeconds() {
-            return this.options?.showSeconds;
-        },
-        showMilliseconds() {
-            return this.options?.showMilliseconds;
-        },
-        timezone() {
-            return this.options?.timezone;
-        },
-        dateFormat() {
-            return this.options?.dateFormat;
-        }
+    options() {
+      return this.control.uischema.options;
     },
-    methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
-            if (this.isModelSettingAndHasNodeView) {
-                this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
-            }
-        }
-    }
+    minimum() {
+      const minDate = this.options?.minimum
+        ? new Date(this.options?.minimum)
+        : null;
+      return minDate;
+    },
+    maximum() {
+      const maxDate = this.options?.maximum
+        ? new Date(this.options?.maximum)
+        : null;
+      return maxDate;
+    },
+    showTime() {
+      return this.options?.showTime;
+    },
+    showSeconds() {
+      return this.options?.showSeconds;
+    },
+    showMilliseconds() {
+      return this.options?.showMilliseconds;
+    },
+    timezone() {
+      return this.options?.timezone;
+    },
+    dateFormat() {
+      return this.options?.dateFormat;
+    },
+  },
+  methods: {
+    onChange(event) {
+      this.handleChange(this.control.path, event);
+      if (this.isModelSettingAndHasNodeView) {
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      }
+    },
+  },
 });
 export default DateTimeInput;
 </script>
 
 <template>
-  <DialogComponentWrapper
-    :control="control"
-    style="min-width: 0"
-  >
+  <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
       :text="control.label"
       :description="control.description"
@@ -103,19 +106,19 @@ export default DateTimeInput;
 
 <style lang="postcss" scoped>
 .date-time {
-    &:deep(.date-picker) {
+  &:deep(.date-picker) {
     width: 100%;
     margin-top: 0;
     margin-right: 0;
     max-width: unset;
-    }
+  }
 
-    &:deep(.time) {
-        width: 100%;
+  &:deep(.time) {
+    width: 100%;
 
-        & .wrapper {
-            flex: 1 1;
-        }
+    & .wrapper {
+      flex: 1 1;
     }
+  }
 }
 </style>

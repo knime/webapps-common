@@ -2,24 +2,13 @@
   "result": {
     "name": "Dropdowns",
     "data": {
-      "AnyOfControl": [
-        "foo",
-        "foo2"
-      ],
-      "StringArray": [
-        "foo",
-        "foo2"
-      ],
+      "AnyOfControl": ["foo", "foo2"],
+      "StringArray": ["foo", "foo2"],
       "MultiModeTwinlist": {
         "mode": "MANUAL",
         "manualFilter": {
-          "manuallySelected": [
-            "foo",
-            "foo2"
-          ],
-          "manuallyDeselected": [
-            "bar"
-          ]
+          "manuallySelected": ["foo", "foo2"],
+          "manuallyDeselected": ["bar"]
         },
         "typeFilter": {
           "selectedTypes": []
@@ -32,18 +21,11 @@
       "ColumnFilter": {
         "mode": "MANUAL",
         "manualFilter": {
-          "manuallySelected": [
-            "foo",
-            "foo2"
-          ],
-          "manuallyDeselected": [
-            "bar"
-          ]
+          "manuallySelected": ["foo", "foo2"],
+          "manuallyDeselected": ["bar"]
         },
         "typeFilter": {
-          "selectedTypes": [
-            "typeA"
-          ]
+          "selectedTypes": ["typeA"]
         },
 
         "patternFilter": {

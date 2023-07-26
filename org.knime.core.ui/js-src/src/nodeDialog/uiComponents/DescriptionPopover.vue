@@ -1,67 +1,66 @@
 <script>
-import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
-import Description from 'webapps-common/ui/components/Description.vue';
-import DescriptionIcon from 'webapps-common/ui/assets/img/icons/circle-help.svg';
-import { mixin as VueClickAway } from 'vue3-click-away';
-
+import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import Description from "webapps-common/ui/components/Description.vue";
+import DescriptionIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import { mixin as VueClickAway } from "vue3-click-away";
 
 export default {
-    components: {
-        FunctionButton,
-        Description,
-        DescriptionIcon
+  components: {
+    FunctionButton,
+    Description,
+    DescriptionIcon,
+  },
+  mixins: [VueClickAway],
+  props: {
+    html: {
+      default: null,
+      type: String,
     },
-    mixins: [VueClickAway],
-    props: {
-        html: {
-            default: null,
-            type: String
-        },
-        hover: {
-            default: false,
-            type: Boolean
-        }
+    hover: {
+      default: false,
+      type: Boolean,
     },
-    emits: ['close'],
-    data() {
-        return {
-            orientation: 'above',
-            expanded: false
-        };
+  },
+  emits: ["close"],
+  data() {
+    return {
+      orientation: "above",
+      expanded: false,
+    };
+  },
+  watch: {
+    expanded(value) {
+      if (value) {
+        this.updateOrientation();
+      }
     },
-    watch: {
-        expanded(value) {
-            if (value) {
-                this.updateOrientation();
-            }
-        }
+  },
+  methods: {
+    toggle() {
+      this.expanded = !this.expanded;
     },
-    methods: {
-        toggle() {
-            this.expanded = !this.expanded;
-        },
-        close() {
-            this.expanded = false;
-            // emit event to notify parent to set the hover prop to false
-            this.$emit('close');
-        },
-        closeUnlessHover() {
-            if (!this.hover) {
-                this.close();
-            }
-        },
-        async updateOrientation() {
-            this.orientation = 'above'; // by default, render the popover's content box above the help button
-            await this.$nextTick(); // to wait until the DOM is updated
-            const top = this.$refs.box.getBoundingClientRect()?.top;
+    close() {
+      this.expanded = false;
+      // emit event to notify parent to set the hover prop to false
+      this.$emit("close");
+    },
+    closeUnlessHover() {
+      if (!this.hover) {
+        this.close();
+      }
+    },
+    async updateOrientation() {
+      this.orientation = "above"; // by default, render the popover's content box above the help button
+      await this.$nextTick(); // to wait until the DOM is updated
+      const top = this.$refs.box.getBoundingClientRect()?.top;
 
-            // if the content box is off-screen, render it below the help button
-            // this does not work in the standalone app (since its dialog starts at some y > 0), but it works in the AP
-            if (top < 0) {
-                this.orientation = 'below';
-            }
-        }
-    }
+      // if the content box is off-screen, render it below the help button
+      // this does not work in the standalone app (since its dialog starts at some y > 0), but it works in the AP
+      if (top < 0) {
+        this.orientation = "below";
+      }
+    },
+  },
 };
 </script>
 
@@ -82,15 +81,8 @@ export default {
     >
       <DescriptionIcon />
     </FunctionButton>
-    <div
-      v-if="expanded"
-      ref="box"
-      :class="['box', orientation]"
-    >
-      <Description
-        :text="html"
-        render-as-html
-      />
+    <div v-if="expanded" ref="box" :class="['box', orientation]">
+      <Description :text="html" render-as-html />
     </div>
   </div>
 </template>
@@ -127,7 +119,8 @@ export default {
     background: var(--knime-white);
     box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
 
-    &::after { /* selector for the arrow between the description button and the content box */
+    &::after {
+      /* selector for the arrow between the description button and the content box */
       position: absolute;
       right: var(--popover-oversize);
       content: "";
@@ -136,20 +129,28 @@ export default {
     }
 
     &.above {
-      bottom: calc(100% + calc(var(--vertical-margin) + 0.5 * var(--description-button-size)));
+      bottom: calc(
+        100% +
+          calc(var(--vertical-margin) + 0.5 * var(--description-button-size))
+      );
 
       &::after {
         top: 100%;
-        border-top: calc(0.5 * var(--description-button-size)) solid var(--knime-white);
+        border-top: calc(0.5 * var(--description-button-size)) solid
+          var(--knime-white);
       }
     }
 
     &.below {
-      top: calc(100% + calc(var(--vertical-margin) + 0.5 * var(--description-button-size)));
+      top: calc(
+        100% +
+          calc(var(--vertical-margin) + 0.5 * var(--description-button-size))
+      );
 
       &::after {
         bottom: 100%;
-        border-bottom: calc(0.5 * var(--description-button-size)) solid var(--knime-white);
+        border-bottom: calc(0.5 * var(--description-button-size)) solid
+          var(--knime-white);
       }
     }
 

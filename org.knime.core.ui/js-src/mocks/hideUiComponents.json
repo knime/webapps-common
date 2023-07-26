@@ -6,10 +6,7 @@
         "showCheckboxInput": false,
         "checkboxInput": false,
         "showColumnFilter": false,
-        "columnFilter": [
-          "Option1",
-          "Option2"
-        ],
+        "columnFilter": ["Option1", "Option2"],
         "showColumnSelect": false,
         "columnSelect": "Option1",
         "showDropdownInput": false,
@@ -23,10 +20,7 @@
         "showTextInput": false,
         "textInput": "Dummy text",
         "showTwinlistInput": false,
-        "twinlistInput": [
-          "Option1",
-          "Option2"
-        ],
+        "twinlistInput": ["Option1", "Option2"],
         "showValueSwitchInput": false,
         "valueSwitchInput": "Option1"
       }

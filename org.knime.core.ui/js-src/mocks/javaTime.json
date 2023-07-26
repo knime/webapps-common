@@ -1,11 +1,8 @@
 {
-  "result":
-  {
+  "result": {
     "name": "Support for classes from java.time (Date/Date&Time)",
-    "data":
-    {
-      "model":
-      {
+    "data": {
+      "model": {
         "duration": 42.0,
         "year": "2006",
         "instant": "2006-07-28T10:30:00Z",
@@ -22,112 +19,90 @@
         "period": "P16Y7M1D"
       }
     },
-    "schema":
-    {
+    "schema": {
       "type": "object",
-      "properties":
-      {
-        "model":
-        {
+      "properties": {
+        "model": {
           "type": "object",
-          "properties":
-          {
-            "duration":
-            {
+          "properties": {
+            "duration": {
               "default": 42.0,
               "format": "int32",
               "type": "integer"
             },
-            "year":
-            {
+            "year": {
               "default": "2006",
               "format": "int32",
               "type": "integer"
             },
-            "instant":
-            {
+            "instant": {
               "default": "2006-07-28T10:30:00Z",
               "format": "date-time",
               "type": "string"
             },
-            "localDate":
-            {
+            "localDate": {
               "default": "2006-07-28",
               "format": "date",
               "type": "string"
             },
-            "localDateTime":
-            {
+            "localDateTime": {
               "default": "2006-07-28T10:30:00",
               "format": "date-time",
               "type": "string"
             },
-            "localTime":
-            {
+            "localTime": {
               "default": "10:30:00",
               "format": "date-time",
               "type": "string"
             },
-            "offsetDateTime":
-            {
+            "offsetDateTime": {
               "default": "2006-07-28T10:30:00Z",
               "format": "date-time",
               "type": "string"
             },
-            "offsetTime":
-            {
+            "offsetTime": {
               "default": "10:30Z",
               "format": "date-time",
               "type": "string"
             },
-            "zonedDateTime":
-            {
+            "zonedDateTime": {
               "default": "2006-07-28T10:30:00Z",
               "format": "date-time",
               "type": "string"
             },
-            "yearMonth":
-            {
+            "yearMonth": {
               "default": "2006-07",
               "type": "string"
             },
-            "zoneId":
-            {
+            "zoneId": {
               "default": "Europe/Berlin",
               "type": "string"
             },
-            "zoneOffset":
-            {
+            "zoneOffset": {
               "default": "+02:00",
               "type": "string"
             },
-            "monthDay":
-            {
+            "monthDay": {
               "default": "--07-28",
               "type": "string"
             },
-            "period":
-            {
+            "period": {
               "default": "P16Y7M1D",
               "type": "string"
             }
           }
         }
       },
-      "flowVariablesMap":
-      {},
+      "flowVariablesMap": {},
       "hasNodeView": false,
       "showAdvancedSettings": false
     },
-    "ui_schema":
-    {
-      "elements":
-      [
+    "ui_schema": {
+      "elements": [
         {
           "type": "Section",
           "label": "As numeric",
-          "elements":
-          [
+          "elements": [
             {
               "type": "Control",
               "scope": "#/properties/model/properties/duration"
@@ -141,8 +116,7 @@
         {
           "type": "Section",
           "label": "String with date/date-time format",
-          "elements":
-          [
+          "elements": [
             {
               "type": "Control",
               "scope": "#/properties/model/properties/localDate"
@@ -176,8 +150,7 @@
         {
           "type": "Section",
           "label": "String without format",
-          "elements":
-          [
+          "elements": [
             {
               "type": "Control",
               "scope": "#/properties/model/properties/monthDay"

@@ -1,29 +1,29 @@
 <script>
-import OnlyFlowVariable from 'webapps-common/ui/assets/img/icons/only-flow-variables.svg';
-import ExposeFlowVariable from 'webapps-common/ui/assets/img/icons/expose-flow-variables.svg';
-import BothFlowVariables from 'webapps-common/ui/assets/img/icons/both-flow-variables.svg';
+import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
+import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
+import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
 
 const FlowVariableIcon = {
-    name: 'FlowVariableIcon',
-    components: {
-        OnlyFlowVariable,
-        ExposeFlowVariable,
-        BothFlowVariables
+  name: "FlowVariableIcon",
+  components: {
+    OnlyFlowVariable,
+    ExposeFlowVariable,
+    BothFlowVariables,
+  },
+  props: {
+    flowSettings: {
+      default: null,
+      type: Object,
     },
-    props: {
-        flowSettings: {
-            default: null,
-            type: Object
-        }
+  },
+  computed: {
+    isControlledByFlowVariable() {
+      return this.flowSettings?.controllingFlowVariableName;
     },
-    computed: {
-        isControlledByFlowVariable() {
-            return this.flowSettings?.controllingFlowVariableName;
-        },
-        isExposedFlowVariable() {
-            return this.flowSettings?.exposedFlowVariableName;
-        }
-    }
+    isExposedFlowVariable() {
+      return this.flowSettings?.exposedFlowVariableName;
+    },
+  },
 };
 export default FlowVariableIcon;
 </script>
@@ -34,9 +34,7 @@ export default FlowVariableIcon;
     title="Config is overwritten by flow variable and exposes a flow variable"
     class="flow-icon-tooltip"
   >
-    <BothFlowVariables
-      class="flow-icon"
-    />
+    <BothFlowVariables class="flow-icon" />
   </div>
   <div
     v-else-if="isControlledByFlowVariable"

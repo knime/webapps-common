@@ -1,77 +1,83 @@
 <script>
-import { defineComponent } from 'vue';
-import { rendererProps } from '@jsonforms/vue';
-import { getFlowVariablesMap, isModelSettingAndHasNodeView, getPossibleValuesFromUiSchema } from '../utils';
-import Twinlist from 'webapps-common/ui/components/forms/Twinlist.vue';
-import LabeledInput from './LabeledInput.vue';
-import DialogComponentWrapper from './DialogComponentWrapper.vue';
-import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { defineComponent } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import {
+  getFlowVariablesMap,
+  isModelSettingAndHasNodeView,
+  getPossibleValuesFromUiSchema,
+} from "../utils";
+import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
+import LabeledInput from "./LabeledInput.vue";
+import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
 
 const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = 'Excludes';
-const defaultTwinlistRightLabel = 'Includes';
+const defaultTwinlistLeftLabel = "Excludes";
+const defaultTwinlistRightLabel = "Includes";
 
 const SimpleTwinlistInput = defineComponent({
-    name: 'SimpleTwinListInput',
-    components: {
-        Twinlist,
-        LabeledInput,
-        DialogComponentWrapper
-        
+  name: "SimpleTwinListInput",
+  components: {
+    Twinlist,
+    LabeledInput,
+    DialogComponentWrapper,
+  },
+  props: {
+    ...rendererProps(),
+    twinlistSize: {
+      type: Number,
+      required: false,
+      default: defaultTwinlistSize,
     },
-    props: {
-        ...rendererProps(),
-        twinlistSize: {
-            type: Number,
-            required: false,
-            default: defaultTwinlistSize
-        },
-        twinlistLeftLabel: {
-            type: String,
-            required: false,
-            default: defaultTwinlistLeftLabel
-        },
-        twinlistRightLabel: {
-            type: String,
-            required: false,
-            default: defaultTwinlistRightLabel
-        },
-        optionsGenerator: {
-            type: Function,
-            required: false,
-            default: getPossibleValuesFromUiSchema
-        }
+    twinlistLeftLabel: {
+      type: String,
+      required: false,
+      default: defaultTwinlistLeftLabel,
     },
-    setup(props) {
-        return useJsonFormsControlWithUpdate(props);
+    twinlistRightLabel: {
+      type: String,
+      required: false,
+      default: defaultTwinlistRightLabel,
     },
-    data() {
-        return {
-            possibleValues: null
-        };
+    optionsGenerator: {
+      type: Function,
+      required: false,
+      default: getPossibleValuesFromUiSchema,
     },
-    computed: {
-        isModelSettingAndHasNodeView() {
-            return isModelSettingAndHasNodeView(this.control);
-        },
-        flowSettings() {
-            return getFlowVariablesMap(this.control);
-        },
-        disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
-        }
+  },
+  setup(props) {
+    return useJsonFormsControlWithUpdate(props);
+  },
+  data() {
+    return {
+      possibleValues: null,
+    };
+  },
+  computed: {
+    isModelSettingAndHasNodeView() {
+      return isModelSettingAndHasNodeView(this.control);
     },
-    created() {
-        this.possibleValues = this.optionsGenerator(this.control);
+    flowSettings() {
+      return getFlowVariablesMap(this.control);
     },
-    methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
-            if (this.isModelSettingAndHasNodeView) {
-                this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
-            }
-        }
-    }
+    disabled() {
+      return (
+        !this.control.enabled ||
+        this.flowSettings?.controllingFlowVariableAvailable
+      );
+    },
+  },
+  created() {
+    this.possibleValues = this.optionsGenerator(this.control);
+  },
+  methods: {
+    onChange(event) {
+      this.handleChange(this.control.path, event);
+      if (this.isModelSettingAndHasNodeView) {
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      }
+    },
+  },
 });
 export default SimpleTwinlistInput;
 </script>
@@ -109,5 +115,4 @@ export default SimpleTwinlistInput;
   font-weight: 500;
   color: var(--knime-dove-gray);
 }
-
 </style>

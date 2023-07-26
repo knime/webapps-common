@@ -2,27 +2,34 @@
  * renderers, given a certain schema and uischema.
  * The functions below have mainly been copied directly from JSONForms v. 2.5.2 and adapted slightly to be usable
  * for tests. */
-import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-import { fallbackRenderers, defaultRenderers } from '..';
+import { vanillaRenderers } from "@jsonforms/vue-vanilla";
+import { fallbackRenderers, defaultRenderers } from "..";
 
-const maxBy = require('lodash/maxBy');
-const _interopDefaultLegacy = (e) => e && typeof e === 'object' && 'default' in e ? e : { default: e };
+const maxBy = require("lodash/maxBy");
+const _interopDefaultLegacy = (e) =>
+  e && typeof e === "object" && "default" in e ? e : { default: e };
 const maxByDefault = _interopDefaultLegacy(maxBy);
 
-const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
+const renderers = [
+  ...vanillaRenderers,
+  ...fallbackRenderers,
+  ...defaultRenderers,
+];
 
 const findRenderer = (uiSchema, schema) => {
-    const renderer = maxByDefault.default(renderers, (r) => r.tester(uiSchema, schema));
+  const renderer = maxByDefault.default(renderers, (r) =>
+    r.tester(uiSchema, schema),
+  );
 
-    // eslint-disable-next-line no-undefined
-    if (renderer === undefined || renderer.tester(uiSchema, schema) === -1) {
-        return {};
-    } else {
-        return renderer.renderer;
-    }
+  // eslint-disable-next-line no-undefined
+  if (renderer === undefined || renderer.tester(uiSchema, schema) === -1) {
+    return {};
+  } else {
+    return renderer.renderer;
+  }
 };
 
 export const determineRenderer = (uiSchema, schema) => {
-    const renderer = findRenderer(uiSchema, schema);
-    return renderer.name;
+  const renderer = findRenderer(uiSchema, schema);
+  return renderer.name;
 };

@@ -1,47 +1,49 @@
 <script>
-import { defineComponent } from 'vue';
-import { rendererProps } from '@jsonforms/vue';
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from '../utils';
-import RichTextEditor from 'webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue';
-import LabeledInput from './LabeledInput.vue';
-import { useJsonFormsControlWithUpdate } from './composables/jsonFormsControlWithUpdate';
+import { defineComponent } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
+import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
+import LabeledInput from "./LabeledInput.vue";
+import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
 
 const RichTextInput = defineComponent({
-    name: 'RichTextInput',
-    components: {
-        RichTextEditor,
-        LabeledInput
+  name: "RichTextInput",
+  components: {
+    RichTextEditor,
+    LabeledInput,
+  },
+  props: {
+    ...rendererProps(),
+  },
+  emits: ["update"],
+  setup(props) {
+    return useJsonFormsControlWithUpdate(props);
+  },
+  computed: {
+    isModelSettingAndHasNodeView() {
+      return isModelSettingAndHasNodeView(this.control);
     },
-    props: {
-        ...rendererProps()
+    flowSettings() {
+      return getFlowVariablesMap(this.control);
     },
-    emits: ['update'],
-    setup(props) {
-        return useJsonFormsControlWithUpdate(props);
+    disabled() {
+      return (
+        !this.control.enabled ||
+        this.flowSettings?.controllingFlowVariableAvailable
+      );
     },
-    computed: {
-        isModelSettingAndHasNodeView() {
-            return isModelSettingAndHasNodeView(this.control);
-        },
-        flowSettings() {
-            return getFlowVariablesMap(this.control);
-        },
-        disabled() {
-            return !this.control.enabled || this.flowSettings?.controllingFlowVariableAvailable;
-        }
+  },
+  mounted() {
+    this.initialValue = this.control.data;
+  },
+  methods: {
+    onChange(event) {
+      this.handleChange(this.control.path, event);
+      if (this.isModelSettingAndHasNodeView) {
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      }
     },
-    mounted() {
-        this.initialValue = this.control.data;
-    },
-    methods: {
-        onChange(event) {
-            this.handleChange(this.control.path, event);
-            if (this.isModelSettingAndHasNodeView) {
-                this.$store.dispatch('pagebuilder/dialog/dirtySettings', true);
-            }
-        }
-    }
-
+  },
 });
 export default RichTextInput;
 </script>
@@ -57,7 +59,7 @@ export default RichTextInput;
   >
     <RichTextEditor
       class="editor"
-      :class="{'editor-editable': !disabled}"
+      :class="{ 'editor-editable': !disabled }"
       :min-height="400"
       :model-value="control.data"
       :editable="!disabled"
@@ -74,7 +76,7 @@ export default RichTextInput;
         code: true,
         codeBlock: true,
         horizontalRule: true,
-        strike: true
+        strike: true,
       }"
       @update:model-value="onChange"
     />
@@ -82,24 +84,21 @@ export default RichTextInput;
 </template>
 
 <style lang="postcss" scoped>
-
 .editor {
-    height: calc(100% - 20px);
+  height: calc(100% - 20px);
 }
 
 .editor-editable {
-    &:deep(.rich-text-editor) {
-        height: calc(100% - var(--toolbar-height));
-    }
+  &:deep(.rich-text-editor) {
+    height: calc(100% - var(--toolbar-height));
+  }
 }
 
 .input-wrapper {
+  height: 100%;
+
+  &:deep(.label-wrapper) {
     height: 100%;
-
-    &:deep(.label-wrapper) {
-        height: 100%;
-    }
+  }
 }
-
 </style>
- 
