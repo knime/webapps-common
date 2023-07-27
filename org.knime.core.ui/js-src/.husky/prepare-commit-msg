@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-knime-eslint-config-prepare-commit-msg "$@"
+./org.knime.core.ui/js-src/node_modules/.bin/knime-eslint-config-prepare-commit-msg "$@"
