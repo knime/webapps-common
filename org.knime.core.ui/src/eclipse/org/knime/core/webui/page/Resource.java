@@ -50,8 +50,10 @@ package org.knime.core.webui.page;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Represents a web resource used in ui-extensions (such as node view, port view and node dialog).
@@ -103,6 +105,7 @@ public interface Resource {
                 .orElseThrow(
                     () -> new IllegalArgumentException("Can't determine resource content type for path " + path));
         }
+
     }
 
     /**
@@ -130,5 +133,13 @@ public interface Resource {
      * @return the content type of the resource
      */
     ContentType getContentType();
+
+    /**
+     * @return the charset the resource uses; an empty optional if it's not a text-based resource or if it's using the
+     *         default charset (i.e. {@link Charset#defaultCharset()}).
+     */
+    default Optional<Charset> getCharset() {
+        return Optional.empty();
+    }
 
 }

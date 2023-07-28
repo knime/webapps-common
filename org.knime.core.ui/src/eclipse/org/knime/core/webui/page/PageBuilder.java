@@ -51,11 +51,13 @@ package org.knime.core.webui.page;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -76,30 +78,8 @@ public class PageBuilder {
 
     final Resource m_pageResource;
 
-    PageBuilder(final Supplier<InputStream> content, final String relativePath) {
-        m_pageResource = new Resource() {
-
-            @Override
-            public String getRelativePath() {
-                return relativePath;
-            }
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return content.get();
-            }
-
-            @Override
-            public boolean isStatic() {
-                return false;
-            }
-
-            @Override
-            public ContentType getContentType() {
-                return ContentType.determineType(relativePath);
-            }
-
-        };
+    PageBuilder(final Supplier<InputStream> content, final String relativePath, final Charset charset) {
+        m_pageResource = createResource(content, relativePath, false, charset);
     }
 
     /**
@@ -117,29 +97,12 @@ public class PageBuilder {
      * @return this page builder instance
      */
     public PageBuilder addResource(final Supplier<InputStream> content, final String relativePath) {
-        m_resources.add(new Resource() {
+        return addResource(content, relativePath, null);
+    }
 
-            @Override
-            public String getRelativePath() {
-                return relativePath;
-            }
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return content.get();
-            }
-
-            @Override
-            public boolean isStatic() {
-                return false;
-            }
-
-            @Override
-            public ContentType getContentType() {
-                return ContentType.determineType(relativePath);
-            }
-
-        });
+    private PageBuilder addResource(final Supplier<InputStream> content, final String relativePath,
+        final Charset charset) {
+        m_resources.add(createResource(content, relativePath, false, charset));
         return this;
     }
 
@@ -163,29 +126,7 @@ public class PageBuilder {
             if (inputStream == null) {
                 return null;
             }
-            return new Resource() {
-
-                @Override
-                public String getRelativePath() {
-                    return relativePath;
-                }
-
-                @Override
-                public InputStream getInputStream() throws IOException {
-                    return inputStream;
-                }
-
-                @Override
-                public boolean isStatic() {
-                    return areStatic;
-                }
-
-                @Override
-                public ContentType getContentType() {
-                    return ContentType.determineType(relativePath);
-                }
-
-            };
+            return createResource(() -> inputStream, relativePath, areStatic, null);
         });
         if (!areStatic) {
             m_dynamicResourcesAreStatic = false;
@@ -201,7 +142,8 @@ public class PageBuilder {
      * @return this page builder instance
      */
     public PageBuilder addResourceFromString(final Supplier<String> content, final String relativePath) {
-        addResource(() -> new ByteArrayInputStream(content.get().getBytes(StandardCharsets.UTF_8)), relativePath);
+        addResource(() -> new ByteArrayInputStream(content.get().getBytes(StandardCharsets.UTF_8)), relativePath,
+            StandardCharsets.UTF_8);
         return this;
     }
 
@@ -210,6 +152,38 @@ public class PageBuilder {
      */
     public Page build() {
         return new Page(m_pageResource, m_resources, m_dynamicResources, m_dynamicResourcesAreStatic, null);
+    }
+
+    private static Resource createResource(final Supplier<InputStream> content, final String relativePath,
+        final boolean isStatic, final Charset charset) {
+        return new Resource() { // NOSONAR
+
+            @Override
+            public String getRelativePath() {
+                return relativePath;
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return content.get();
+            }
+
+            @Override
+            public boolean isStatic() {
+                return isStatic;
+            }
+
+            @Override
+            public ContentType getContentType() {
+                return ContentType.determineType(relativePath);
+            }
+
+            @Override
+            public Optional<Charset> getCharset() {
+                return Charset.defaultCharset().equals(charset) ? Optional.<Charset> empty()
+                    : Optional.ofNullable(charset);
+            }
+        };
     }
 
 }
