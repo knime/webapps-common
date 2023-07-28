@@ -54,6 +54,7 @@ import java.util.function.BiConsumer;
  * Interface for an event consumer that accepts event usually emitted by an {@link EventSource}.
  *
  * @author Kai Franze, KNIME GmbH
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public interface EventConsumer extends BiConsumer<String, Object> {
 

@@ -78,7 +78,7 @@ public abstract class EventSource<T, E> {
     /*
      * For testing purposes only.
      */
-    private Runnable m_preEventCreationCallback = null;
+    private Runnable m_preEventCreationCallback;
 
     /**
      * @param eventConsumer consumes the emitted events
