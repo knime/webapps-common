@@ -306,6 +306,9 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
             return null;
         }
         var page = getPage(segments.pageId());
+        if (page == null) {
+            return null;
+        }
         var relPath = segments.relativePagePath();
 
         // conditionally remove page-content-id from path
