@@ -233,7 +233,7 @@ public final class Page implements Resource {
      * @return a new {@link PageBuilder}-instance
      */
     public static PageBuilder builder(final InputStreamSupplier content, final String relativePath) {
-        return new PageBuilder(content, relativePath);
+        return new PageBuilder(content, relativePath, null);
     }
 
     /**
@@ -245,7 +245,8 @@ public final class Page implements Resource {
      * @return a new {@link PageBuilder}-instance
      */
     public static PageBuilder builder(final StringSupplier content, final String relativePath) {
-        return builder(() -> new ByteArrayInputStream(content.get().getBytes(StandardCharsets.UTF_8)), relativePath);
+        return new PageBuilder(() -> new ByteArrayInputStream(content.get().getBytes(StandardCharsets.UTF_8)),
+            relativePath, StandardCharsets.UTF_8);
     }
 
     /**
