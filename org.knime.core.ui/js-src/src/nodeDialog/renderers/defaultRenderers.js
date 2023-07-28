@@ -1,5 +1,6 @@
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
+import { checkboxesRenderer } from "./checkboxesRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
@@ -17,6 +18,7 @@ import { richTextInputRenderer } from "./richTextInputRenderer";
 export const defaultRenderers = [
   sectionLayoutRenderer,
   checkboxRenderer,
+  checkboxesRenderer,
   dropdownRenderer,
   simpleTwinlistRenderer,
   numberRenderer,
