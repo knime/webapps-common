@@ -107,7 +107,14 @@ Use a `prepare-commit-msg` hook to format your commit message to conform with th
 
 ```bash
 #!/usr/bin/env bash
-knime-eslint-config-prepare-commit-msg "$@"
+npm exec knime-eslint-config-prepare-commit-msg "$@"
+```
+
+In case the npm project isn't in the root folder, please do:
+
+```bash
+#!/usr/bin/env bash
+<path-to-npm-project>/node_modules/.bin/knime-eslint-config-prepare-commit-msg "$@"
 ```
 
 Refer to [scripts/README.md](scripts/README.md) for more information.

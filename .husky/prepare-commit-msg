@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-knime-eslint-config-prepare-commit-msg "$@"
+npm exec knime-eslint-config-prepare-commit-msg "$@"
