@@ -32,9 +32,16 @@ The script will now run as part of your regular git workflow.
 - Follow [Husky's][husky] installation instructions
 - Create a file `.husky/prepare-commit-msg` with the following content:
 
-  ```
+  ```bash
   #!/usr/bin/env bash
-  knime-eslint-config-prepare-commit-msg "$@"
+  npm exec knime-eslint-config-prepare-commit-msg "$@"
+  ```
+
+  In case the npm project isn't in the root folder, please do:
+
+  ```bash
+  #!/usr/bin/env bash
+  <path-to-npm-project>/node_modules/.bin/knime-eslint-config-prepare-commit-msg "$@"
   ```
 
 [husky]: https://typicode.github.io/husky/#/
