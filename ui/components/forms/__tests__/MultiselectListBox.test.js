@@ -4,11 +4,23 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import MultiselectListBox from "../MultiselectListBox.vue";
+import { RecycleScroller } from "vue-virtual-scroller";
 
 vi.useFakeTimers();
 
 describe("MultiselectListBox.vue", () => {
   let possibleValues;
+
+  const fillRecycleScroller = async (wrapper, scrollerHeight) => {
+    const scroller = wrapper.findComponent(RecycleScroller);
+    Object.defineProperty(scroller.vm.$el, "clientHeight", {
+      value: scrollerHeight || wrapper.vm.cssStyleSize.height || 0,
+    });
+    scroller.vm.updateVisibleItems();
+    await wrapper.vm.$nextTick();
+  };
+
+  let props;
 
   beforeEach(() => {
     possibleValues = [
@@ -29,17 +41,12 @@ describe("MultiselectListBox.vue", () => {
         text: "Option 4",
       },
     ];
+    props = { ariaLabel: "A Label", modelValue: [], possibleValues };
   });
 
-  it("renders", () => {
-    let props = {
-      possibleValues,
-      modelValue: [],
-      ariaLabel: "A Label",
-    };
-    const wrapper = mount(MultiselectListBox, {
-      props,
-    });
+  it("renders", async () => {
+    const wrapper = mount(MultiselectListBox, { props });
+    await fillRecycleScroller(wrapper);
     expect(wrapper.html()).toBeTruthy();
     expect(wrapper.isVisible()).toBeTruthy();
 
@@ -99,7 +106,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
-
+      await fillRecycleScroller(wrapper);
       await wrapper.findAll("[role=option]")[3].trigger("click");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test4",
@@ -114,6 +121,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
       await wrapper
         .findAll("[role=option]")[3]
         .trigger("click", { shiftKey: true });
@@ -131,6 +139,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
       await wrapper
         .findAll("[role=option]")[3]
         .trigger("click", { ctrlKey: true });
@@ -152,6 +161,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
       await wrapper
         .findAll("[role=option]")[3]
         .trigger("click", { ctrlKey: true });
@@ -161,7 +171,7 @@ describe("MultiselectListBox.vue", () => {
       ]);
     });
 
-    it("adds items to selected while holding meta (mac: command) key", () => {
+    it("adds items to selected while holding meta (mac: command) key", async () => {
       const wrapper = mount(MultiselectListBox, {
         props: {
           possibleValues,
@@ -169,6 +179,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
 
       wrapper.findAll("[role=option]")[3].trigger("click", { metaKey: true });
       wrapper.findAll("[role=option]")[1].trigger("click", { metaKey: true });
@@ -191,6 +202,7 @@ describe("MultiselectListBox.vue", () => {
           disabled: true,
         },
       });
+      await fillRecycleScroller(wrapper);
 
       await wrapper.findAll("[role=option]")[3].trigger("click");
       expect(wrapper.props("modelValue")).toStrictEqual(["test1", "test3"]);
@@ -216,14 +228,20 @@ describe("MultiselectListBox.vue", () => {
   });
 
   describe("keyboard navigation", () => {
-    it("selects all by CTRL+a", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test3"],
-          ariaLabel: "A Label",
-        },
+    let wrapper, props;
+
+    beforeEach(() => {
+      props = {
+        possibleValues,
+        modelValue: ["test3"],
+        ariaLabel: "A Label",
+      };
+      wrapper = mount(MultiselectListBox, {
+        props,
       });
+    });
+
+    it("selects all by CTRL+a", async () => {
       await wrapper
         .find("[role=listbox]")
         .trigger("keydown.a", { ctrlKey: true });
@@ -236,13 +254,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects item by key up", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test3"],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper.find("[role=listbox]").trigger("keydown.up");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test2",
@@ -250,13 +261,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects item by key up with shift", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test3"],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper
         .find("[role=listbox]")
         .trigger("keydown.up", { shiftKey: true });
@@ -267,13 +271,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects item by key down", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test3"],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper.find("[role=listbox]").trigger("keydown.down");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test4",
@@ -281,13 +278,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects item by key down with shift", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test3"],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper
         .find("[role=listbox]")
         .trigger("keydown.down", { shiftKey: true });
@@ -298,13 +288,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects first item by HOME key", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test2"],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper.find("[role=listbox]").trigger("keydown.home");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
@@ -312,13 +295,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects last item by END key", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: [],
-          ariaLabel: "A Label",
-        },
-      });
       await wrapper.find("[role=listbox]").trigger("keydown.end");
       // NOTE:
       // this seems to generate more than one input event even if it shouldn't
@@ -329,14 +305,9 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("disables all keyboard controls", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: [],
-          ariaLabel: "A Label",
-          disabled: true,
-        },
-      });
+      props.disabled = true;
+      props.modelValue = [];
+      const wrapper = mount(MultiselectListBox, { props });
 
       wrapper.find("[role=listbox]").trigger("keydown.up");
       wrapper.find("[role=listbox]").trigger("keydown.down");
@@ -350,6 +321,69 @@ describe("MultiselectListBox.vue", () => {
 
       await wrapper.vm.$nextTick();
       expect(wrapper.props("modelValue")).toStrictEqual([]);
+    });
+
+    describe("scroll to navigated item", () => {
+      let itemHeight;
+      const scrollerHeight = 40;
+
+      beforeEach(async () => {
+        await fillRecycleScroller(wrapper, scrollerHeight);
+        itemHeight = wrapper.vm.optionLineHeight;
+      });
+
+      const getScroll = (wrapper) =>
+        wrapper.findComponent(RecycleScroller).vm.getScroll();
+
+      const getTopEdge = (wrapper) => getScroll(wrapper).start;
+      const getBottomEdge = (wrapper) => getScroll(wrapper).end;
+
+      it("scrolls to item by key up", async () => {
+        await wrapper.find("[role=listbox]").trigger("keydown.up");
+        expect(getTopEdge(wrapper)).toBe(itemHeight);
+      });
+
+      it("does not scroll when the element that is scrolled to is already visible", async () => {
+        const wrapper = mount(MultiselectListBox, {
+          props: {
+            possibleValues,
+            modelValue: ["test3"],
+            ariaLabel: "A Label",
+          },
+        });
+        await fillRecycleScroller(wrapper, 1000);
+        await wrapper.find("[role=listbox]").trigger("keydown.up");
+        expect(getTopEdge(wrapper)).toBe(0);
+      });
+
+      it("scrolls to item by key up with shift", async () => {
+        await wrapper
+          .find("[role=listbox]")
+          .trigger("keydown.up", { shiftKey: true });
+        expect(getTopEdge(wrapper)).toBe(itemHeight);
+      });
+
+      it("scrolls to item by key down", async () => {
+        await wrapper.find("[role=listbox]").trigger("keydown.down");
+        expect(getBottomEdge(wrapper)).toBe(itemHeight * 4);
+      });
+
+      it("scrolls to item by key down with shift", async () => {
+        await wrapper
+          .find("[role=listbox]")
+          .trigger("keydown.down", { shiftKey: true });
+        expect(getBottomEdge(wrapper)).toBe(itemHeight * 4);
+      });
+
+      it("scrolls to first item by HOME key", async () => {
+        await wrapper.find("[role=listbox]").trigger("keydown.home");
+        expect(getTopEdge(wrapper)).toBe(0);
+      });
+
+      it("scrolls to last item by END key", async () => {
+        await wrapper.find("[role=listbox]").trigger("keydown.end");
+        expect(getBottomEdge(wrapper)).toBe(itemHeight * 4);
+      });
     });
   });
 
@@ -446,6 +480,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
       await wrapper.findAll("[role=option]")[2].trigger("dblclick");
       expect(wrapper.emitted().doubleClickOnItem[0][0]).toBe("test3");
     });
@@ -458,6 +493,7 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
       await wrapper
         .findAll("[role=option]")[1]
         .trigger("dblclick", { shiftKey: true });
@@ -469,14 +505,20 @@ describe("MultiselectListBox.vue", () => {
   });
 
   describe("drag", () => {
-    it("selects multiple elements on mouse move while mouse down (drag)", async () => {
-      const wrapper = mount(MultiselectListBox, {
+    let wrapper;
+
+    beforeEach(async () => {
+      wrapper = mount(MultiselectListBox, {
         props: {
           possibleValues,
-          modelValue: [],
+          modelValue: ["test1", "test2", "test3"],
           ariaLabel: "A Label",
         },
       });
+      await fillRecycleScroller(wrapper);
+    });
+
+    it("selects multiple elements on mouse move while mouse down (drag)", async () => {
       wrapper.findAll("[role=option]")[1].trigger("mousedown");
       wrapper.findAll("[role=option]")[3].trigger("mousemove");
       await wrapper.vm.$nextTick();
@@ -489,14 +531,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("deselects multiple elements on mouse move while mouse down (drag) with ctrl down", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test1", "test2", "test3"],
-          ariaLabel: "A Label",
-        },
-      });
-      // select
       wrapper
         .findAll("[role=option]")[1]
         .trigger("mousedown", { ctrlKey: true });
@@ -512,14 +546,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("deselects multiple elements on mouse move while mouse down (drag) with meta/cmd down", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test1", "test2", "test3"],
-          ariaLabel: "A Label",
-        },
-      });
-      // select
       wrapper
         .findAll("[role=option]")[1]
         .trigger("mousedown", { metaKey: true });
@@ -535,14 +561,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("does not select multiple items if shift is pressed", async () => {
-      const wrapper = mount(MultiselectListBox, {
-        props: {
-          possibleValues,
-          modelValue: ["test1", "test2", "test3"],
-          ariaLabel: "A Label",
-        },
-      });
-      // select
       wrapper
         .findAll("[role=option]")[1]
         .trigger("mousedown", { shiftKey: true });
@@ -554,7 +572,7 @@ describe("MultiselectListBox.vue", () => {
       expect(wrapper.emitted("update:modelValue")).toBeUndefined();
     });
 
-    it("disables selection on drag", async () => {
+    it("disables drag when component is disabled", async () => {
       const wrapper = mount(MultiselectListBox, {
         props: {
           possibleValues,
@@ -563,6 +581,7 @@ describe("MultiselectListBox.vue", () => {
           disabled: true,
         },
       });
+      await fillRecycleScroller(wrapper);
       wrapper.findAll("[role=option]")[1].trigger("mousedown");
       wrapper.findAll("[role=option]")[3].trigger("mousemove");
       await wrapper.vm.$nextTick();
@@ -572,24 +591,24 @@ describe("MultiselectListBox.vue", () => {
   });
 
   describe("empty state", () => {
-    let propsData;
+    let props;
 
     beforeEach(() => {
-      propsData = {
+      props = {
         possibleValues: [],
-        value: [],
+        modelValue: [],
         ariaLabel: "A Label",
       };
     });
 
     it("does not display an empty state per default", () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
+      const wrapper = mount(MultiselectListBox, { props });
       expect(wrapper.find(".empty-state").exists()).toBeFalsy();
     });
 
     it("displays an empty state if wanted", async () => {
-      propsData.withIsEmptyState = true;
-      const wrapper = mount(MultiselectListBox, { propsData });
+      props.withIsEmptyState = true;
+      const wrapper = mount(MultiselectListBox, { props });
       expect(wrapper.find(".empty-state").text()).toBe(
         "No entries in this list",
       );
@@ -599,22 +618,21 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("does not displays an empty state if the box is not empty", () => {
-      propsData.withIsEmptyState = true;
-      propsData.possibleValues = possibleValues;
-      const wrapper = mount(MultiselectListBox, { propsData });
+      props.withIsEmptyState = true;
+      props.possibleValues = possibleValues;
+      const wrapper = mount(MultiselectListBox, { props });
       expect(wrapper.find(".empty-state").exists()).toBeFalsy();
     });
 
     it("does not take the bottom value into account", () => {
-      propsData.withIsEmptyState = true;
-      propsData.withBottomValue = true;
-      const wrapper = mount(MultiselectListBox, { propsData });
+      props.withIsEmptyState = true;
+      props.withBottomValue = true;
+      const wrapper = mount(MultiselectListBox, { props });
       expect(wrapper.find(".empty-state").exists()).toBeTruthy();
     });
   });
 
   describe("bottom value", () => {
-    let propsData;
     const bottomValue = {
       id: Symbol("Bottom value"),
       text: "Bottom value",
@@ -626,27 +644,31 @@ describe("MultiselectListBox.vue", () => {
     const getSelectedBottomValueOption = (wrapper) =>
       wrapper.find('[role="bottom-box"]').find('[role="option"].selected');
 
-    beforeEach(() => {
-      propsData = {
-        bottomValue,
-        withBottomValue: true,
-        possibleValues,
-        value: [],
-        ariaLabel: "A Label",
-      };
+    let wrapper;
+
+    beforeEach(async () => {
+      wrapper = mount(MultiselectListBox, {
+        props: {
+          bottomValue,
+          withBottomValue: true,
+          possibleValues,
+          ariaLabel: "A Label",
+          modelValue: [],
+        },
+      });
+      await fillRecycleScroller(wrapper);
     });
 
     it("does not render bottom value by default", () => {
       const wrapper = mount(MultiselectListBox, {
         possibleValues,
-        value: [],
+        modelValue: [],
         ariaLabel: "A Label",
       });
       expect(wrapper.find('[role="bottom-box"]').exists()).toBeFalsy();
     });
 
     it("renders default bottom value if wanted", () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find('[role="bottom-box"]').exists()).toBeTruthy();
       expect(
         wrapper.find('[role="bottom-box"]').find('[role="option"]').text(),
@@ -654,7 +676,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("selects bottom element on click", async () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
       await getBottomValueOption(wrapper).trigger("click", {
         preventDefault: () => {},
       });
@@ -665,7 +686,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("emits dblclick event on double click", () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
       getBottomValueOption(wrapper).trigger("dblclick", {
         preventDefault: () => {},
       });
@@ -674,8 +694,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("adds selection from the current selected index to the bottom on shift click", async () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
-
       wrapper.findAll("[role=option]").at(2).trigger("click");
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
@@ -706,8 +724,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("adds selectionon ctrl click", async () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
-
       wrapper.findAll("[role=option]").at(2).trigger("click");
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
@@ -733,7 +749,6 @@ describe("MultiselectListBox.vue", () => {
     });
 
     it("bottom value gets selected on ctrl a", async () => {
-      const wrapper = mount(MultiselectListBox, { propsData });
       wrapper.find("[role=listbox]").trigger("keydown.a", { ctrlKey: true });
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
@@ -748,7 +763,6 @@ describe("MultiselectListBox.vue", () => {
 
     describe("keyboard interaction", () => {
       it("bottom is reachable with keydown.down", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(3).trigger("click");
         await wrapper.vm.$nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
@@ -762,7 +776,6 @@ describe("MultiselectListBox.vue", () => {
       });
 
       it("keydown.up from the bottom leads to the last element in the list", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         getBottomValueOption(wrapper).trigger("click", {
           preventDefault: () => {},
         });
@@ -778,7 +791,6 @@ describe("MultiselectListBox.vue", () => {
       });
 
       it("bottom is reachable with shift + keydown.down", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(3).trigger("click");
         await wrapper.vm.$nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
@@ -795,7 +807,6 @@ describe("MultiselectListBox.vue", () => {
       });
 
       it("shift + keydown.up from the bottom leads to combined selection with list elements", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         getBottomValueOption(wrapper).trigger("click", {
           preventDefault: () => {},
         });
@@ -816,7 +827,6 @@ describe("MultiselectListBox.vue", () => {
 
     describe("drag", () => {
       it("starts drag on handleStartDrag", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         getBottomValueOption(wrapper).trigger("mousedown", {
           shiftKey: false,
           ctrlKey: false,
@@ -833,7 +843,6 @@ describe("MultiselectListBox.vue", () => {
       });
 
       it("continues drag on handleDrag", async () => {
-        const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(1).trigger("mousedown");
         getBottomValueOption(wrapper).trigger("mousemove");
         await wrapper.vm.$nextTick();

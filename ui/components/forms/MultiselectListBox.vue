@@ -1,12 +1,15 @@
 <script>
 import debounce from "../../../util/debounce";
 import StyledListItem from "../StyledListItem.vue";
+import { RecycleScroller } from "vue-virtual-scroller";
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+import useScroller from "../../composables/useScroller";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
 
 export default {
-  components: { StyledListItem },
+  components: { StyledListItem, RecycleScroller },
   props: {
     id: {
       type: String,
@@ -102,6 +105,9 @@ export default {
     "keyArrowLeft",
     "keyArrowRight",
   ],
+  setup() {
+    return useScroller();
+  },
   data() {
     return {
       selectedValues: this.modelValue,
@@ -326,24 +332,11 @@ export default {
         this.setSelected([item.id]);
       }
     },
-    scrollToCurrent() {
+    scrollToCurrent(direction) {
       if (this.currentKeyNavIndex === this.bottomIndex) {
         return;
       }
-      const listBoxNode = this.$refs.ul;
-      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        // Vue does not guarantee the correct oder of $refs arrays defined in v-for.
-        // See: https://github.com/vuejs/vue/issues/4952#issuecomment-280661367
-        // To prevent this bug we use the DOM children of the parent to find the correct element.
-        const element = this.$refs.ul.children[this.currentKeyNavIndex];
-        const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        const elementBottom = element.offsetTop + element.offsetHeight;
-        if (elementBottom > scrollBottom) {
-          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
-        } else if (element.offsetTop < listBoxNode.scrollTop) {
-          listBoxNode.scrollTop = element.offsetTop;
-        }
-      }
+      this.scrollToItem(this.currentKeyNavIndex, direction);
     },
     isOutOfRange(index) {
       if (index < 0) {
@@ -365,7 +358,7 @@ export default {
       }
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.scrollToCurrent();
+      this.scrollToCurrent("down");
     },
     onArrowUp() {
       if (this.disabled) {
@@ -377,7 +370,7 @@ export default {
       }
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.scrollToCurrent();
+      this.scrollToCurrent("up");
     },
     onArrowDownShift() {
       if (this.disabled) {
@@ -395,7 +388,7 @@ export default {
         this.getPossibleValuesInSection(this.shiftStartIndex, next),
       );
       this.currentKeyNavIndex = next;
-      this.scrollToCurrent();
+      this.scrollToCurrent("down");
     },
     onArrowUpShift() {
       if (this.disabled) {
@@ -413,19 +406,19 @@ export default {
         this.getPossibleValuesInSection(this.shiftStartIndex, next),
       );
       this.currentKeyNavIndex = next;
-      this.scrollToCurrent();
+      this.scrollToCurrent("up");
     },
     onEndKey() {
       const next = this.possibleValues.length - 1;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
+      this.scrollToItem(next, "down");
     },
     onHomeKey() {
       const next = 0;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.$refs.ul.scrollTop = 0;
+      this.scrollToItem(0, "up");
     },
     onArrowLeft() {
       if (this.disabled) {
@@ -471,7 +464,7 @@ export default {
       if (this.disabled) {
         return;
       }
-      this.$refs.ul.focus();
+      this.$refs.scroller.$el.focus();
     },
     clearSelection() {
       if (this.disabled) {
@@ -489,9 +482,13 @@ export default {
     :style="cssStyleSize"
   >
     <div class="box">
-      <ul
+      <RecycleScroller
         :id="id"
-        ref="ul"
+        #default="{ item, index }"
+        ref="scroller"
+        list-tag="ul"
+        :items="possibleValues"
+        :item-size="optionLineHeight"
         role="listbox"
         tabindex="0"
         :class="{ disabled, 'empty-box': showEmptyState }"
@@ -510,7 +507,6 @@ export default {
         @mousemove="onDrag"
       >
         <StyledListItem
-          v-for="(item, index) of possibleValues"
           :id="generateOptionId(item)"
           :key="`listbox-${item.id}`"
           :text="item.text"
@@ -523,7 +519,7 @@ export default {
           @dblclick-shift="handleShiftDblClick()"
           @dblclick-exact="handleDblClick(item.id, index)"
         />
-      </ul>
+      </RecycleScroller>
       <div v-if="showEmptyState" class="empty-state">
         <span>
           {{ emptyStateLabel }}
@@ -569,6 +565,10 @@ export default {
     }
   }
 
+  & :deep(.foo) {
+    background-color: green;
+  }
+
   & .box {
     height: 100%;
     width: 100%;
@@ -593,12 +593,15 @@ export default {
   }
 
   /* this selector is required to override some * rules which interfere - so do not simplify */
-  & ul[role="listbox"] {
+  & [role="listbox"] {
+    & :deep(ul) {
+      overflow-y: auto;
+      position: relative;
+      padding: 0;
+      margin: 0;
+    }
+
     background: var(--theme-multiselect-listbox-background-color);
-    overflow-y: auto;
-    position: relative;
-    padding: 0;
-    margin: 0;
     flex-grow: 1;
 
     &.empty-box {
