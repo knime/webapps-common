@@ -162,22 +162,29 @@ export default {
       return this.possibleValues.map((x) => x.id);
     },
     invalidValueIds() {
-      return this.modelValue.filter((x) => !this.possibleValueMap[x]);
+      return this.chosenValues.filter((x) => !this.possibleValueMap[x]);
     },
-    visibleValueIds() {
-      const matchingInvalidValueIds = this.invalidValueIds.filter((item) =>
+    matchingInvalidValueIds() {
+      return this.invalidValueIds.filter((item) =>
         this.itemMatchesSearch(this.generateInvalidItem(item)),
       );
-      const matchingValidIds = this.possibleValues
+    },
+    matchingValidIds() {
+      return this.possibleValues
         .filter((possibleValue) => this.itemMatchesSearch(possibleValue))
         .map((possibleValue) => possibleValue.id);
-      return [...matchingValidIds, ...matchingInvalidValueIds];
+    },
+    visibleValueIds() {
+      return new Set([
+        ...this.matchingValidIds,
+        ...this.matchingInvalidValueIds,
+      ]);
     },
     leftItems() {
+      const chosenValuesSet = new Set(this.chosenValues);
       return this.possibleValues.filter(
         (value) =>
-          this.visibleValueIds.includes(value.id) &&
-          !this.chosenValues.includes(value.id),
+          this.visibleValueIds.has(value.id) && !chosenValuesSet.has(value.id),
       );
     },
     rightItems() {
@@ -186,7 +193,7 @@ export default {
           (value) =>
             this.possibleValueMap[value] || this.generateInvalidItem(value),
         )
-        .filter((value) => this.visibleValueIds.includes(value.id));
+        .filter((value) => this.visibleValueIds.has(value.id));
     },
     listSize() {
       // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -252,7 +259,9 @@ export default {
   },
   watch: {
     modelValue(newValue) {
-      this.chosenValues = newValue;
+      if (JSON.stringify(newValue) !== JSON.stringify(this.chosenValues)) {
+        this.chosenValues = newValue;
+      }
     },
     possibleValues(newPossibleValues) {
       // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)

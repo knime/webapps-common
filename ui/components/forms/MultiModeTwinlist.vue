@@ -220,9 +220,8 @@ export default {
       return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
     },
     deselectedValues() {
-      return this.possibleValueIds.filter(
-        (id) => !this.selectedValues.includes(id),
-      );
+      const selectedValuesSet = new Set(this.selectedValues);
+      return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
     selectionDisabled() {
       return this.disabled || this.mode !== "manual";
