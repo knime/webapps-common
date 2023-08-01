@@ -31,10 +31,14 @@ export default {
   data() {
     return {
       jsonDataService: null,
-      settings: null,
+      originalModelSettings: null,
       renderers: Object.freeze(renderers),
       registeredWatchers: [],
-      originalModelSettings: null,
+      currentData: null,
+      initialData: null,
+      schema: null,
+      uischema: null,
+      ready: false,
     };
   },
   // TODO: UIEXT-236 Move to dialog service
@@ -46,33 +50,34 @@ export default {
   async mounted() {
     this.jsonDataService = new JsonDataService(this.getKnimeService());
     this.dialogService = new DialogService(this.getKnimeService());
-    const settings = await this.jsonDataService.initialData();
-    settings.schema.flowVariablesMap =
+    const initialSettings = await this.jsonDataService.initialData();
+    const { schema } = initialSettings;
+    schema.flowVariablesMap =
       await this.dialogService.getFlowVariableSettings();
-    settings.schema.hasNodeView = this.dialogService.hasNodeView();
-    settings.schema.showAdvancedSettings = false;
-    this.settings = settings;
-    this.setOriginalModelSettings(settings);
+    schema.hasNodeView = this.dialogService.hasNodeView();
+    schema.showAdvancedSettings = false;
+    this.schema = schema;
+    this.uischema = initialSettings.ui_schema;
+    this.currentData = this.initialData = initialSettings.data;
+    this.setOriginalModelSettings(this.initialData);
     this.jsonDataService.registerDataGetter(this.getData);
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
     });
+    this.ready = true;
   },
   methods: {
     getData() {
-      return this.settings.data;
+      return this.currentData;
     },
-    setOriginalModelSettings(settings) {
-      this.originalModelSettings = this.getModelSettings(settings);
+    setOriginalModelSettings(data) {
+      this.originalModelSettings = this.getModelSettings(data);
     },
-    hasOriginalModelSettings(settings) {
-      return isEqual(
-        this.originalModelSettings,
-        this.getModelSettings(settings),
-      );
+    hasOriginalModelSettings(data) {
+      return isEqual(this.originalModelSettings, this.getModelSettings(data));
     },
-    getModelSettings(settings) {
-      return settings?.data?.model;
+    getModelSettings(data) {
+      return data.model;
     },
     callDataService({ method, options }) {
       return this.jsonDataService.data({ method, options });
@@ -95,7 +100,7 @@ export default {
         handleChange(path, data);
         return;
       }
-      const newData = cloneDeep(this.settings.data);
+      const newData = cloneDeep(this.currentData);
       set(newData, path, data);
       for (const watcher of triggeredWatchers) {
         await watcher.transformSettings(newData);
@@ -108,27 +113,30 @@ export default {
         dataPaths: dependencies.map(toDataPath),
       });
       if (typeof init === "function") {
-        await init(this.settings.data);
+        await init(this.currentData);
       }
     },
-    onSettingsChanged(data) {
-      if (data.data) {
-        this.settings.data = data.data;
-        if (this.hasOriginalModelSettings(this.settings)) {
+    onSettingsChanged({ data }) {
+      if (data) {
+        this.currentData = data;
+        if (this.hasOriginalModelSettings(this.currentData)) {
           this.$store.dispatch(
             "pagebuilder/dialog/cleanSettings",
-            cloneDeep(this.settings.data),
+            cloneDeep(this.currentData),
           );
         }
         // TODO: UIEXT-236 Move to dialog service
         if (!this.dirtyModelSettings) {
-          const rawSettings = cloneDeep(this.settings);
-          this.jsonDataService.publishData(rawSettings);
+          const publishedData = cloneDeep({
+            data,
+            schema: this.schema,
+          });
+          this.jsonDataService.publishData(publishedData);
         }
       }
     },
     applySettings() {
-      this.setOriginalModelSettings(this.settings);
+      this.setOriginalModelSettings(this.currentData);
       return this.jsonDataService.applyData();
     },
     async applySettingsCloseDialog() {
@@ -143,14 +151,13 @@ export default {
       window.closeCEFWindow();
     },
     changeAdvancedSettings() {
-      this.settings.schema.showAdvancedSettings =
-        !this.settings.schema.showAdvancedSettings;
+      this.schema.showAdvancedSettings = !this.schema.showAdvancedSettings;
     },
     hasAdvancedOptions() {
-      if (!this.settings) {
+      if (!this.uischema) {
         return false;
       }
-      return hasAdvancedOptions(this.settings.ui_schema);
+      return hasAdvancedOptions(this.uischema);
     },
   },
 };
@@ -160,10 +167,11 @@ export default {
   <div class="dialog">
     <div class="form">
       <JsonForms
-        v-if="settings"
-        :data="settings.data"
-        :schema="settings.schema"
-        :uischema="settings.ui_schema"
+        v-if="ready"
+        ref="jsonforms"
+        :data="initialData"
+        :schema="schema"
+        :uischema="uischema"
         :renderers="renderers"
         @change="onSettingsChanged"
       />

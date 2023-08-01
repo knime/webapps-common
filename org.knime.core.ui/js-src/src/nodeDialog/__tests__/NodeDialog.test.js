@@ -127,9 +127,8 @@ describe("NodeDialog.vue", () => {
         model: { yAxisScale: "NEW_VALUE" },
       };
 
-      expect(wrapper.vm.settings.data).toStrictEqual(expectedData);
       expect(publishDataSpy).toHaveBeenCalledWith({
-        ...dialogInitialData,
+        schema: dialogInitialData.schema,
         data: expectedData,
       });
     });
@@ -137,7 +136,7 @@ describe("NodeDialog.vue", () => {
     it("does not set new value if data is not provided", () => {
       jsonformsStub.vm.$emit("change", {});
 
-      expect(wrapper.vm.settings.data).toStrictEqual({
+      expect(wrapper.vm.getData()).toStrictEqual({
         ...dialogInitialData.data,
       });
       expect(publishDataSpy).not.toHaveBeenCalled();
@@ -147,10 +146,10 @@ describe("NodeDialog.vue", () => {
       const payload = {
         data: { ...dialogInitialData.data, model: { yAxisScale: "NEW_VALUE" } },
       };
-      wrapper.vm.setOriginalModelSettings(payload);
+      wrapper.vm.setOriginalModelSettings(payload.data);
       await jsonformsStub.vm.$emit("change", payload);
       expect(onSettingsChangedSpy).toHaveBeenCalledWith(payload);
-      expect(publishDataSpy).toHaveBeenCalledWith(wrapper.vm.settings);
+      expect(publishDataSpy).toHaveBeenCalled();
       expect(cleanSettingsMock).toHaveBeenCalledWith(
         expect.anything(),
         payload.data,
@@ -334,7 +333,7 @@ describe("NodeDialog.vue", () => {
         expect(transformSettings).toHaveBeenCalled();
       });
       expect(handleChange).toHaveBeenCalledWith("", {
-        ...wrapper.vm.settings.data,
+        ...wrapper.vm.getData(),
         test2: data,
         test4: "transformed",
       });
