@@ -208,7 +208,7 @@ export default {
 <template>
   <div
     ref="submenu"
-    :class="['submenu', { disabled }]"
+    :class="['submenu', { expanded }, { disabled }]"
     :aria-owns="activeDescendant"
     :aria-activedescendant="activeDescendant"
     @keydown="onKeydown"
