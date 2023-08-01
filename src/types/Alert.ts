@@ -1,5 +1,5 @@
-import { AlertTypes } from './AlertTypes';
-import { NodeInfo } from './NodeInfo';
+import { AlertTypes } from "./AlertTypes";
+import { NodeInfo } from "./NodeInfo";
 
 /**
  *
@@ -11,10 +11,10 @@ import { NodeInfo } from './NodeInfo';
  * @property {string} [message] - an optional message body for the alert.
  */
 export type Alert = {
-    nodeId: string;
-    nodeInfo: NodeInfo;
-    type: AlertTypes | keyof typeof AlertTypes;
-    code?: string | number;
-    subtitle?: string;
-    message?: string;
+  nodeId: string;
+  nodeInfo: NodeInfo;
+  type: AlertTypes | keyof typeof AlertTypes;
+  code?: string | number;
+  subtitle?: string;
+  message?: string;
 };

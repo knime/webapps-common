@@ -1,5 +1,9 @@
-import * as KnimeUIExtensionService from './index';
+import * as KnimeUIExtensionService from "./index";
 
-Object.defineProperty(window, 'KnimeUIExtensionService', KnimeUIExtensionService);
+Object.defineProperty(
+  window,
+  "KnimeUIExtensionService",
+  KnimeUIExtensionService,
+);
 
 export default KnimeUIExtensionService;

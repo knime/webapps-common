@@ -5,6 +5,6 @@
  * @enum
  */
 export enum ExtensionTypes {
-    DIALOG = 'dialog',
-    VIEW = 'view'
+  DIALOG = "dialog",
+  VIEW = "view",
 }

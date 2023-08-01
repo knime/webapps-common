@@ -1,3 +1,3 @@
 module.exports = {
-    extends: ['@knime/eslint-config/jest']
+  extends: ["@knime/eslint-config/jest"],
 };

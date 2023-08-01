@@ -2,6 +2,6 @@
  * @enum
  */
 export enum AlertTypes {
-    ERROR = 'error',
-    WARN = 'warn'
+  ERROR = "error",
+  WARN = "warn",
 }

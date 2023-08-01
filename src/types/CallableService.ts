@@ -6,6 +6,6 @@
  * @returns {Promise<any>} the service response as a Promise.
  */
 export type CallableService = {
-    env?: string;
-    (...payload: any[]): Promise<any>;
-}
+  env?: string;
+  (...payload: any[]): Promise<any>;
+};

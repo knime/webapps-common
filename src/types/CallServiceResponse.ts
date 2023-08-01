@@ -1,7 +1,7 @@
 export type CallServiceResponse = {
-    error: {
-        code: string;
-        message: string;
-    };
-    result?: any;
+  error: {
+    code: string;
+    message: string;
+  };
+  result?: any;
 };

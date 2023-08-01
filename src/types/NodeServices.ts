@@ -3,10 +3,10 @@
  * targets specific workflow-level node service functionality for UI Extensions.
  */
 export enum NodeServices {
-    // Data service method signature.
-    CALL_NODE_DATA_SERVICE = 'NodeService.callNodeDataService',
-    // Selection service method signature.
-    CALL_NODE_SELECTION_SERVICE = 'NodeService.updateDataPointSelection',
+  // Data service method signature.
+  CALL_NODE_DATA_SERVICE = "NodeService.callNodeDataService",
+  // Selection service method signature.
+  CALL_NODE_SELECTION_SERVICE = "NodeService.updateDataPointSelection",
 }
 
 /**

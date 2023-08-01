@@ -6,9 +6,9 @@
  * @property {string} nodeName - the human-readable node name as it's registered with the node description.
  */
 export type NodeInfo = {
-    nodeAnnotation?: string;
-    nodeState: string;
-    nodeErrorMessage?: string;
-    nodeWarnMessage?: string;
-    nodeName: string;
+  nodeAnnotation?: string;
+  nodeState: string;
+  nodeErrorMessage?: string;
+  nodeWarnMessage?: string;
+  nodeName: string;
 };

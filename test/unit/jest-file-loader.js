@@ -1,10 +1,10 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-    process(content, filename) {
-        let basename = path.basename(filename);
-        return {
-            code: `module.exports = "${basename}";`
-        };
-    }
+  process(content, filename) {
+    let basename = path.basename(filename);
+    return {
+      code: `module.exports = "${basename}";`,
+    };
+  },
 };

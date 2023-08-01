@@ -1,8 +1,8 @@
-import { ColorModel } from './ColorModel';
-import { ExtensionTypes } from './ExtensionTypes';
-import { FlowVariableSettings } from './FlowVariableSettings';
-import { NodeInfo } from './NodeInfo';
-import { ResourceInfo } from './ResourceInfo';
+import { ColorModel } from "./ColorModel";
+import { ExtensionTypes } from "./ExtensionTypes";
+import { FlowVariableSettings } from "./FlowVariableSettings";
+import { NodeInfo } from "./NodeInfo";
+import { ResourceInfo } from "./ResourceInfo";
 
 /**
  * The base configuration of any UI Extension which contains all of the relevant information about the UI Extension
@@ -29,16 +29,16 @@ import { ResourceInfo } from './ResourceInfo';
  * @template T
  */
 export type ExtensionConfig<T = any> = {
-    nodeId: string;
-    projectId: string;
-    workflowId: string;
-    resourceInfo: ResourceInfo;
-    nodeInfo: NodeInfo;
-    extensionType: ExtensionTypes;
-    initialData?: T;
-    initialSelection?: T;
-    flowVariableSettings?: FlowVariableSettings;
-    hasNodeView: boolean;
-    generatedImageActionId?: string;
-    colorModels?: Record<string, ColorModel>;
+  nodeId: string;
+  projectId: string;
+  workflowId: string;
+  resourceInfo: ResourceInfo;
+  nodeInfo: NodeInfo;
+  extensionType: ExtensionTypes;
+  initialData?: T;
+  initialSelection?: T;
+  flowVariableSettings?: FlowVariableSettings;
+  hasNodeView: boolean;
+  generatedImageActionId?: string;
+  colorModels?: Record<string, ColorModel>;
 };
