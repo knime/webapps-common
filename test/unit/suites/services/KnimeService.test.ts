@@ -88,6 +88,22 @@ describe("KnimeService", () => {
   });
 
   describe("pushEvent", () => {
+    /* eslint-disable no-console */
+    let originalError;
+
+    beforeAll(() => {
+      originalError = console.error;
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    afterAll(() => {
+      console.error = originalError;
+    });
+
     it("Handles error if extension config not provided", async () => {
       const knimeService = new KnimeService(null, null, jest.fn());
       const sendErrorMock = jest.spyOn(knimeService, "sendError");
@@ -104,6 +120,7 @@ describe("KnimeService", () => {
         subtitle: "Missing extension config",
         type: "error",
       });
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("Handles error if push event not provided", async () => {
@@ -115,14 +132,17 @@ describe("KnimeService", () => {
         eventType: EventTypes.DataEvent,
       });
       expect(response).toStrictEqual({});
-      expect(sendErrorMock).toHaveBeenCalledWith({
+      const errorObject = {
         code: undefined,
         message: "Push event is not available",
         nodeId: extensionConfig.nodeId,
         nodeInfo: extensionConfig.nodeInfo,
         subtitle: "Push event failed",
         type: "error",
-      });
+      };
+      expect(sendErrorMock).toHaveBeenCalledWith(errorObject);
+      expect(console.error).toHaveBeenCalledWith(errorObject);
+      /* eslint-enable no-console */
     });
 
     it("Pushes event successfully", () => {
