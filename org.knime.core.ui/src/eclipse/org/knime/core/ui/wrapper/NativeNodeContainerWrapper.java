@@ -83,7 +83,7 @@ public final class NativeNodeContainerWrapper extends SingleNodeContainerWrapper
      */
     @Override
     public String getNodeFactoryClassName() {
-        return unwrap().getNode().getFactory().getClass().getCanonicalName();
+        return unwrap().getNode().getFactory().getClass().getName();
     }
 
     /**
