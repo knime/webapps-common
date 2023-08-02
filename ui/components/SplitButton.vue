@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="split-button">
     <slot />
   </div>
 </template>
 
 <style lang="postcss" scoped>
-div {
+.split-button {
   display: inline-flex;
   border-radius: var(
     --theme-button-split-border-radius
   ); /* needed for correct :hover style trigger below */
 
-  & :deep(.button.primary) {
+  & :slotted(.button.primary) {
     position: relative;
     margin-bottom: 0;
 
@@ -31,7 +31,7 @@ div {
     }
   }
 
-  & :deep(.button.primary.compact) {
+  & :slotted(.button.primary.compact) {
     /* best way to ensure flexible 1/4 corners also for a button in compact mode */
     border-radius: var(--theme-button-split-border-radius) 0 0
       var(--theme-button-split-border-radius);
@@ -39,14 +39,14 @@ div {
 
   &:hover,
   &:focus-within {
-    & :deep(.button) {
+    & :slotted(.button) {
       &::after {
         display: none;
       }
     }
   }
 
-  & :deep(.submenu) {
+  & :slotted(.submenu) {
     display: inline-flex;
 
     /* best way to ensure flexible 1/4 corners */

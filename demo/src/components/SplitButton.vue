@@ -72,7 +72,7 @@ export default {
   &:hover {
     background-color: var(--knime-masala);
 
-    & button svg {
+    & .submenu-toggle svg {
       stroke: var(--knime-white);
     }
   }
@@ -166,7 +166,7 @@ h4 {
   &:hover {
     background-color: var(--knime-masala);
 
-    & button svg {
+    & .submenu-toggle svg {
       stroke: var(--knime-white);
     }
   }
