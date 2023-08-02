@@ -106,10 +106,6 @@
             "axisExtentMethod": {
               "oneOf": [
                 {
-                  "const": "AUTO",
-                  "title": "Automatic"
-                },
-                {
                   "const": "COLUMN_DOMAIN",
                   "title": "Domain bounds"
                 },
@@ -119,7 +115,7 @@
                 }
               ],
               "title": "Axis limits",
-              "description": "Choose if the axis extents should be calculated by the charting framework, taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
+              "description": "Choose if the axis extents should be taken from the domain extents or set manually. You might need to use a Domain Calculator or Edit Numeric domain node before this node.",
               "default": "AUTO"
             },
             "horizontalAxisManualMin": {
