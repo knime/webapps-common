@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import TableViewInteractive from './TableViewInteractive.vue';
 import TableViewReport from './TableViewReport.vue';
-import { useStore } from 'vuex';
 import { inject } from 'vue';
-import type { KnimeService } from '@knime/ui-extension-service';
+import { ReportingService, type KnimeService } from '@knime/ui-extension-service';
+
 const getKnimeService = (inject('getKnimeService') || (() => null)) as (() => KnimeService);
 const knimeService = getKnimeService();
-const isReport = Boolean(knimeService.extensionConfig.generatedImageActionId);
-// TODO UIEXT-1052 move to knime-ui-extension-service
-const store = useStore();
-const onRendered = () => {
-    store.dispatch('pagebuilder/setReportingContent', {
-        nodeId: knimeService.extensionConfig.nodeId,
-        reportContent: false
-    });
-};
+const reportingService = new ReportingService(knimeService);
+const isReport = reportingService.isReportingActive();
+const onRendered = () => reportingService.setRenderCompleted();
 </script>
 
 <template>

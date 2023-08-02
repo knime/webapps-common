@@ -1,5 +1,6 @@
 <script>
-import { JsonDataService } from '@knime/ui-extension-service';
+import { JsonDataService, ReportingService } from '@knime/ui-extension-service';
+
 
 export default {
     inject: ['getKnimeService'],
@@ -26,14 +27,11 @@ export default {
         const { content, flowVariablesMap } = await this.jsonDataService.initialData();
         this.flowVariablesMap = flowVariablesMap;
         this.richTextContent = this.replaceFlowVariablesInContent(content);
-        // TODO needs to be removed as soon as we have a reporting service
-        const isReporting = this.knimeService.extensionConfig?.generatedImageActionId === 'generatingReportContent';
+        const reportingService = new ReportingService(this.knimeService);
+        const isReport = reportingService.isReportingActive();
         await this.$nextTick();
-        if (isReporting) {
-            await this.$store.dispatch('pagebuilder/setReportingContent', {
-                nodeId: this.knimeService.extensionConfig.nodeId,
-                reportContent: false
-            });
+        if (isReport) {
+            await reportingService.setRenderCompleted();
         }
     },
     methods: {
