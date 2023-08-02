@@ -68,6 +68,22 @@ describe("SubMenu.vue", () => {
     );
   });
 
+  it("adds expanded classes to root and toggle button", async () => {
+    const wrapper = mount(SubMenu, { props });
+
+    expect(wrapper.findComponent(FunctionButton).classes()).not.toContain(
+      "expanded",
+    );
+    expect(wrapper.classes()).not.toContain("expanded");
+
+    await wrapper.find(".submenu-toggle").trigger("click"); // open
+
+    expect(wrapper.findComponent(FunctionButton).classes()).toContain(
+      "expanded",
+    );
+    expect(wrapper.classes()).toContain("expanded");
+  });
+
   it("exposes expanded prop in slot", () => {
     const wrapper = shallowMount(SubMenu, {
       slots: {
