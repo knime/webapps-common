@@ -46,6 +46,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import java.util.Collection;
@@ -54,7 +55,6 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-
 /**
  * Test UI schema generation with arrays.
  *
@@ -177,8 +177,6 @@ class JsonFormsUiSchemaUtilArrayTest {
         }
         class TestPrimitiveOrBoxedArraySettings implements DefaultNodeSettings {
 
-            String[] m_stringArray;
-
             double[] m_doubleArray;
 
             Double[] m_boxedDoubleArray;
@@ -217,5 +215,17 @@ class JsonFormsUiSchemaUtilArrayTest {
         for (var item : response.get("elements")) {
             assertThatJson(item).isObject().doesNotContainKey("options");
         }
+    }
+
+    @Test
+    void testDoesNotApplyArrayLayoutOnStringArrays() {
+
+        class TestStringArraySettings implements DefaultNodeSettings {
+
+            String[] m_stringArray;
+        }
+
+        final var response = buildTestUiSchema(TestStringArraySettings.class);
+        assertThatJson(response).inPath("elements[0].options").isObject().doesNotContainKey(TAG_ARRAY_LAYOUT_DETAIL);
     }
 }
