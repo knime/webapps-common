@@ -100,7 +100,7 @@ export default {
 </script>
 
 <template>
-  <div class="table-view-wrapper">
+  <div class="table-view-wrapper knime-ui-DeferredTableView">
     <div class="submenu-wrapper">
       <SubMenu
         v-if="tableViewInitialData"

@@ -15,6 +15,10 @@ const onRendered = () => reportingService.setRenderCompleted();
 </script>
 
 <template>
-  <TableViewReport v-if="isReport" @rendered="onRendered" />
-  <TableViewInteractive v-else />
+  <TableViewReport
+    v-if="isReport"
+    class="knime-ui-TableView"
+    @rendered="onRendered"
+  />
+  <TableViewInteractive v-else class="knime-ui-TableView" />
 </template>

@@ -70,7 +70,7 @@ export default {
 </script>
 
 <template>
-  <div class="text-view-container" v-html="richTextContent" />
+  <div class="text-view-container knime-ui-TextView" v-html="richTextContent" />
 </template>
 
 <style lang="postcss" scoped>

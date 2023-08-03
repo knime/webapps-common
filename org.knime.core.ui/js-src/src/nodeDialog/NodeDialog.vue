@@ -169,7 +169,7 @@ export default {
 </script>
 
 <template>
-  <div class="dialog">
+  <div class="dialog knime-ui-NodeDialog">
     <div class="form">
       <JsonForms
         v-if="ready"
