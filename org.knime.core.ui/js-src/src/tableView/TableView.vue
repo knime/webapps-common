@@ -6,6 +6,7 @@ import {
   ReportingService,
   type KnimeService,
 } from "@knime/ui-extension-service";
+
 const getKnimeService = (inject("getKnimeService") ||
   (() => null)) as () => KnimeService;
 const knimeService = getKnimeService();
@@ -15,10 +16,8 @@ const onRendered = () => reportingService.setRenderCompleted();
 </script>
 
 <template>
-  <TableViewReport
-    v-if="isReport"
-    class="knime-ui-TableView"
-    @rendered="onRendered"
-  />
-  <TableViewInteractive v-else class="knime-ui-TableView" />
+  <div class="knime-ui-TableView">
+    <TableViewReport v-if="isReport" @rendered="onRendered" />
+    <TableViewInteractive v-else />
+  </div>
 </template>

@@ -100,47 +100,49 @@ export default {
 </script>
 
 <template>
-  <div class="table-view-wrapper knime-ui-DeferredTableView">
-    <div class="submenu-wrapper">
-      <SubMenu
-        v-if="tableViewInitialData"
-        :items="subMenuItems"
-        orientation="left"
-        @item-click="(_, item) => onSubmenuItemClick(item.value)"
-      >
-        <span>
-          Rows: {{ numDisplayedRows }}
-          <DropdownIcon />
-        </span>
-      </SubMenu>
-      <span v-if="columnCount" class="column-count">
-        {{ `   |   Columns: ${columnCount}` }}
-      </span>
-    </div>
-    <TableViewInteractive
-      v-if="tableViewInitialData"
-      :key="tableViewKey"
-      :initial-data="tableViewInitialData"
-      force-hide-table-sizes="true"
-    />
-    <div v-else class="empty-container">
-      <p class="description">
-        To see the output table please fetch data from database
-      </p>
-      <SplitButton>
-        <Button primary compact @click="fetchTableData">
-          <CircleArrow />
-          Fetch {{ numRows }} table rows
-        </Button>
+  <div class="knime-ui-DeferredTableView">
+    <div class="table-view-wrapper">
+      <div class="submenu-wrapper">
         <SubMenu
+          v-if="tableViewInitialData"
           :items="subMenuItems"
-          class="submenu"
           orientation="left"
           @item-click="(_, item) => onSubmenuItemClick(item.value)"
         >
-          <DropdownIcon />
+          <span>
+            Rows: {{ numDisplayedRows }}
+            <DropdownIcon />
+          </span>
         </SubMenu>
-      </SplitButton>
+        <span v-if="columnCount" class="column-count">
+          {{ `   |   Columns: ${columnCount}` }}
+        </span>
+      </div>
+      <TableViewInteractive
+        v-if="tableViewInitialData"
+        :key="tableViewKey"
+        :initial-data="tableViewInitialData"
+        force-hide-table-sizes="true"
+      />
+      <div v-else class="empty-container">
+        <p class="description">
+          To see the output table please fetch data from database
+        </p>
+        <SplitButton>
+          <Button primary compact @click="fetchTableData">
+            <CircleArrow />
+            Fetch {{ numRows }} table rows
+          </Button>
+          <SubMenu
+            :items="subMenuItems"
+            class="submenu"
+            orientation="left"
+            @item-click="(_, item) => onSubmenuItemClick(item.value)"
+          >
+            <DropdownIcon />
+          </SubMenu>
+        </SplitButton>
+      </div>
     </div>
   </div>
 </template>

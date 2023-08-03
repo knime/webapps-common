@@ -169,30 +169,33 @@ export default {
 </script>
 
 <template>
-  <div class="dialog knime-ui-NodeDialog">
-    <div class="form">
-      <JsonForms
-        v-if="ready"
-        ref="jsonforms"
-        :data="markRaw(currentData)"
-        :schema="schema"
-        :uischema="uischema"
-        :renderers="renderers"
-        @change="onSettingsChanged"
-      />
-      <a
-        v-if="hasAdvancedOptions()"
-        class="advanced-options"
-        @click="changeAdvancedSettings"
-      >
-        {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
-      </a>
-    </div>
-    <div class="controls">
-      <Button with-border compact @click="closeDialog"> Cancel </Button>
-      <Button primary compact @click.prevent="applySettingsCloseDialog">
-        Ok
-      </Button>
+  <div class="knime-ui-NodeDialog">
+    <div class="dialog">
+      <div class="form">
+        <JsonForms
+          v-if="ready"
+          ref="jsonforms"
+          :data="markRaw(currentData)"
+          :schema="schema"
+          :uischema="uischema"
+          :renderers="renderers"
+          @change="onSettingsChanged"
+        />
+        <a
+          v-if="hasAdvancedOptions()"
+          class="advanced-options"
+          @click="changeAdvancedSettings"
+        >
+          {{ schema.showAdvancedSettings ? 'Hide' : 'Show' }} advanced
+          settings
+        </a>
+      </div>
+      <div class="controls">
+        <Button with-border compact @click="closeDialog"> Cancel</Button>
+        <Button primary compact @click.prevent="applySettingsCloseDialog">
+          Ok
+        </Button>
+      </div>
     </div>
   </div>
 </template>
@@ -219,6 +222,7 @@ export default {
     overflow-y: auto;
 
     /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
+
     & .vertical-layout:last-child {
       display: flex;
       flex-direction: column;
