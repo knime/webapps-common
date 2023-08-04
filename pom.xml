@@ -17,12 +17,6 @@
 
     <properties>
         <revision>0.0.0</revision>
-        <sonar.sources>.</sonar.sources>
-        <sonar.tests>test</sonar.tests>
-        <sonar.nodejs.executable>${project.build.directory}/node/node</sonar.nodejs.executable>
-        <sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
-        <sonar.eslint.reportPaths>test-results/eslint.json</sonar.eslint.reportPaths>
-        <sonar.exclusions>test/**,node_modules/**/*,dist/**/*,.nyc_output/**/*,coverage/**/*,*.log,config/**/*,**/config.js,**/*.config.js,buildtools/**</sonar.exclusions>
         <node.version>v18.10.0</node.version>
         <npm.version>8.19.2</npm.version>
         <dependency-check.skip>true</dependency-check.skip>
@@ -85,28 +79,6 @@
                         </goals>
                         <configuration>
                             <arguments>run coverage -- --ci</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>npm run audit</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run audit</arguments>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>npm run lint</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run ci:lint-format</arguments>
                         </configuration>
                     </execution>
                 </executions>

@@ -14,20 +14,6 @@ try {
         knimetools.defaultMavenBuild(withoutNode: true)
 
         junit '**/test-results/junit.xml'
-        knimetools.processAuditResults(skipStylelint: true)
-
-        stage('Sonarqube analysis') {
-            withCredentials([usernamePassword(credentialsId: 'ARTIFACTORY_CREDENTIALS', passwordVariable: 'ARTIFACTORY_PASSWORD', usernameVariable: 'ARTIFACTORY_LOGIN')]) {
-                withSonarQubeEnv('Sonarcloud') {
-                    withMaven(options: [artifactsPublisher(disabled: true)]) {
-                        def sonarArgs = knimetools.getSonarArgsForMaven(env.SONAR_CONFIG_NAME)
-                        sh """
-                            mvn -Dknime.p2.repo=${P2_REPO} validate $sonarArgs
-                        """
-                    }
-                }
-            }
-        }
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'

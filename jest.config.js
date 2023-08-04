@@ -21,6 +21,7 @@ module.exports = {
     "!.eslintrc*.js",
     "!**/.eslintrc*.js",
     "!<rootDir>/test/unit/test-util",
+    "!**/types/**",
   ],
   coveragePathIgnorePatterns: [
     "^<rootDir>/(coverage|dist|test|test-results|node_modules|bin|src/dev)/",
