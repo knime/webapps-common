@@ -30,7 +30,9 @@ module.exports = {
   watchPathIgnorePatterns: [
     "^<rootDir>/(coverage|dist|test-results|node_modules|bin)/",
   ],
-  testURL: "http://test.example/",
+  testEnvironmentOptions: {
+    url: "http://test.example/",
+  },
   testMatch: ["<rootDir>/test/unit/suites/**/*.test.ts"],
   watchPlugins: [],
   setupFiles: ["<rootDir>/test/unit/jest-setup"],
