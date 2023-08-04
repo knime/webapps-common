@@ -92,6 +92,7 @@ watch(ready, () => ready.value && emit("rendered"));
       currentPage: 1,
       columnCount: table?.columnCount || 0,
     }"
+    :enable-cell-selection="false"
     :enable-virtual-scrolling="false"
     :enable-column-resizing="false"
     :enable-row-resizing="false"

@@ -27,6 +27,11 @@ export default {
       default: false,
       required: false,
     },
+    enableCellSelection: {
+      type: Boolean,
+      default: true,
+      required: false,
+    },
   },
   data() {
     return {
@@ -663,6 +668,7 @@ export default {
         updateTotalSelected = false,
       } = params || {};
       this.$refs.tableViewDisplay.refreshScroller();
+      this.$refs.tableViewDisplay.clearCellSelection();
       if (resetPage) {
         this.currentPage = 1;
         this.currentIndex = 0;
@@ -715,6 +721,9 @@ export default {
           showRowKeysChanged,
           showRowIndicesChanged,
         );
+      }
+      if (showRowKeysChanged || showRowIndicesChanged) {
+        this.$refs.tableViewDisplay.clearCellSelection();
       }
       if (displayedColumnsChanged) {
         this.refreshTable({
@@ -975,6 +984,28 @@ export default {
         (columnName) => this.colNameSelectedRendererId[columnName] || null,
       );
     },
+    async onCopySelection(rect) {
+      const fromIndex = rect.isTop
+        ? rect.fromIndex
+        : this.bottomScrollIndexToIndex(rect.fromIndex);
+      const toIndex = rect.isTop
+        ? rect.toIndex
+        : this.bottomScrollIndexToIndex(rect.toIndex);
+      const copyContent = await this.performRequest("getCopyContent", [
+        rect.withRowIndices,
+        rect.withRowKeys,
+        rect.columnNames,
+        fromIndex,
+        toIndex,
+      ]);
+      navigator.clipboard.writeText(copyContent);
+    },
+    /**
+     * A method to revert the index shift caused by leaving out rows between top and bottom rows by counting from the bottom.
+     */
+    bottomScrollIndexToIndex(bottomScrollIndex) {
+      return this.currentRowCount - this.maxNumRows + bottomScrollIndex;
+    },
   },
 };
 </script>
@@ -1021,6 +1052,7 @@ export default {
     :enable-column-resizing="true"
     :enable-row-resizing="true"
     :include-image-resources="false"
+    :enable-cell-selection="enableCellSelection"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"
@@ -1033,6 +1065,7 @@ export default {
     @clear-filter="onClearFilter"
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
+    @copy-selection="onCopySelection"
   />
 </template>
 

@@ -27,6 +27,7 @@ export default ({
   sortParams,
   globalSearchQuery,
   enableVirtualScrolling,
+  enableCellSelection,
   enableColumnResizing,
   forceHideTableSizes,
 }: {
@@ -38,6 +39,7 @@ export default ({
   };
   globalSearchQuery: string;
   enableVirtualScrolling: boolean;
+  enableCellSelection: boolean;
   enableColumnResizing: boolean;
   forceHideTableSizes: boolean;
 }) => {
@@ -54,6 +56,7 @@ export default ({
   return {
     subMenuItems: [],
     showSelection: publishSelection || subscribeToSelection || false,
+    enableCellSelection,
     enableColumnResizing,
     showColumnFilters: enableColumnSearch || false,
     ...getPageConfig(

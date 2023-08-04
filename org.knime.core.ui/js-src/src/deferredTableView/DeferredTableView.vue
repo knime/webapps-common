@@ -122,7 +122,8 @@ export default {
         v-if="tableViewInitialData"
         :key="tableViewKey"
         :initial-data="tableViewInitialData"
-        force-hide-table-sizes="true"
+        :enable-cell-selection="false"
+        :force-hide-table-sizes="true"
       />
       <div v-else class="empty-container">
         <p class="description">

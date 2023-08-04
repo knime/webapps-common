@@ -56,6 +56,7 @@ export interface TableViewDisplayProps {
   };
   globalSearchQuery: string;
   enableVirtualScrolling: boolean;
+  enableCellSelection: boolean;
   enableColumnResizing: boolean;
   enableRowResizing: boolean;
   includeImageResources: boolean;

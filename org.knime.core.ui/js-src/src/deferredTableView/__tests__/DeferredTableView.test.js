@@ -33,6 +33,14 @@ describe("DeferredTableView.vue", () => {
         },
         stubs: {
           TableViewInteractive: {
+            props: {
+              enableCellSelection: {
+                type: Boolean,
+              },
+              forceHideTableSizes: {
+                type: Boolean,
+              },
+            },
             template: "<div/>",
           },
         },
@@ -85,6 +93,12 @@ describe("DeferredTableView.vue", () => {
     });
     await wrapper.vm.$nextTick();
     expect(wrapper.findComponent(TableViewInteractive).exists()).toBeTruthy();
+    expect(
+      wrapper.findComponent(TableViewInteractive).props().enableCellSelection,
+    ).toBeFalsy();
+    expect(
+      wrapper.findComponent(TableViewInteractive).props().forceHideTableSizes,
+    ).toBeTruthy();
     expect(wrapper.findComponent(SubMenu).props()).toEqual({
       allowOverflowMainAxis: false,
       buttonTitle: "",

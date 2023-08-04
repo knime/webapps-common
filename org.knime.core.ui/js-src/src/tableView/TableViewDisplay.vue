@@ -10,6 +10,7 @@ import useColumnSizes from "./composables/useColumnSizes";
 import useAutoColumnSizes from "./composables/useAutoColumnSizes";
 import type { TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
+import specialColumns from "./utils/specialColumns";
 
 const emit = defineEmits([
   "page-change",
@@ -30,6 +31,7 @@ const emit = defineEmits([
   "auto-column-sizes-update",
   "row-height-update",
   "table-is-ready",
+  "copy-selection",
 ]);
 
 const props = defineProps<TableViewDisplayProps>();
@@ -111,6 +113,7 @@ const tableConfig = computed(() =>
 
     globalSearchQuery: props.globalSearchQuery,
     enableVirtualScrolling: props.enableVirtualScrolling,
+    enableCellSelection: props.enableCellSelection,
     enableColumnResizing: props.enableColumnResizing,
     forceHideTableSizes: props.forceHideTableSizes || false,
   }),
@@ -138,8 +141,7 @@ const getContentType = (index: number) =>
   props.header.columnContentTypes[index - 2];
 const columnResizeActive = useBoolean();
 
-const tableUIWithAutoSizeCalculation: Ref<null | TableUIWithAutoSizeCalculation> =
-  ref(null);
+const table: Ref<null | TableUIWithAutoSizeCalculation> = ref(null);
 
 const tableIsReady = ref(false);
 const onTableIsReady = () => {
@@ -147,20 +149,51 @@ const onTableIsReady = () => {
   tableIsReady.value = true;
 };
 
-defineExpose({
-  refreshScroller: () => {
-    if (tableUIWithAutoSizeCalculation.value?.refreshScroller) {
-      tableUIWithAutoSizeCalculation.value.refreshScroller();
-    }
-  },
-  triggerCalculationOfAutoColumnSizes: () => {
-    if (
-      tableUIWithAutoSizeCalculation.value?.triggerCalculationOfAutoColumnSizes
-    ) {
-      tableUIWithAutoSizeCalculation.value?.triggerCalculationOfAutoColumnSizes();
-    }
-  },
-});
+defineExpose(
+  [
+    "refreshScroller",
+    "clearCellSelection",
+    "triggerCalculationOfAutoColumnSizes",
+  ].reduce((acc: Record<string, Function>, methodName) => {
+    acc[methodName] = () => {
+      if (table.value?.[methodName]) {
+        table.value[methodName]();
+      }
+    };
+    return acc;
+  }, {}),
+);
+
+type MinMax = { min: number; max: number };
+type Rect = { x: MinMax; y: MinMax };
+
+const onCopySelection = ({
+  rect: { x, y },
+  id,
+}: {
+  rect: Rect;
+  id: boolean;
+}) => {
+  const { min, max } = x;
+  const indices = Array.from(
+    { length: max - min + 1 },
+    (_, index) => min + index,
+  );
+  const columnIds = indices.map(getColumnId);
+  const columnNames = columnIds.filter((v) => typeof v === "string");
+  const withRowKeys = columnIds.some((v) => v === specialColumns.ROW_ID.id);
+  const withRowIndices = columnIds.some((v) => v === specialColumns.INDEX.id);
+  const fromIndex = y.min;
+  const toIndex = y.max;
+  emit("copy-selection", {
+    columnNames,
+    withRowIndices,
+    withRowKeys,
+    fromIndex,
+    toIndex,
+    isTop: id,
+  });
+};
 </script>
 
 <template>
@@ -170,7 +203,7 @@ defineExpose({
     </h4>
     <TableUIWithAutoSizeCalculation
       v-if="rows.loaded && numberOfDisplayedColumns > 0"
-      ref="tableUIWithAutoSizeCalculation"
+      ref="table"
       :data="[rowData]"
       :bottom-data="bottomRowData"
       :current-selection="[selection?.top]"
@@ -210,6 +243,7 @@ defineExpose({
       @auto-column-sizes-update="onAutoColumnSizesUpdate"
       @row-height-update="onRowHeightUpdate"
       @ready="onTableIsReady"
+      @copy-selection="onCopySelection"
     >
       <template
         v-for="index in numberOfUsedColumns"

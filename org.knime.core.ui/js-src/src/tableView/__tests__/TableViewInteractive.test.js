@@ -216,7 +216,7 @@ describe("TableViewInteractive.vue", () => {
     vi.clearAllMocks();
   });
 
-  const findTableUIWithAutoSizeCalculation = (wrapper) =>
+  const findTableComponent = (wrapper) =>
     wrapper
       .findComponent(TableViewDisplay)
       .findComponent(TableUIWithAutoSizeCalculation);
@@ -225,7 +225,7 @@ describe("TableViewInteractive.vue", () => {
     it("does not render the TableUIWithAutoSizeCalculation when no initialData is given", async () => {
       initialDataMock = null;
       const wrapper = await shallowMountInteractive(context);
-      expect(findTableUIWithAutoSizeCalculation(wrapper).exists()).toBeFalsy();
+      expect(findTableComponent(wrapper).exists()).toBeFalsy();
     });
 
     it("fetches initialData", async () => {
@@ -257,7 +257,7 @@ describe("TableViewInteractive.vue", () => {
       initialDataMock.table.displayedColumns = [];
       initialDataMock.table.columnCount = 0;
       const wrapper = await shallowMountInteractive(context);
-      expect(findTableUIWithAutoSizeCalculation(wrapper).exists()).toBeFalsy();
+      expect(findTableComponent(wrapper).exists()).toBeFalsy();
       expect(wrapper.find(".no-columns").exists()).toBeTruthy();
     });
 
@@ -266,8 +266,7 @@ describe("TableViewInteractive.vue", () => {
       initialDataMock.settings.subscribeToSelection = true;
 
       const wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       expect(tableUIWithAutoSizeCalculation.exists()).toBe(true);
       const { data, currentSelection, dataConfig, tableConfig } =
         tableUIWithAutoSizeCalculation.vm.$props;
@@ -292,6 +291,7 @@ describe("TableViewInteractive.vue", () => {
           sortColumn: null,
           sortDirection: null,
         },
+        enableCellSelection: true,
         enableVirtualScrolling: true,
         showSelection: true,
         enableColumnResizing: true,
@@ -368,7 +368,7 @@ describe("TableViewInteractive.vue", () => {
         },
       });
 
-      expect(findTableUIWithAutoSizeCalculation(wrapper).exists()).toBe(true);
+      expect(findTableComponent(wrapper).exists()).toBe(true);
       expect(tableConfig).toMatchObject({
         showSelection: true,
       });
@@ -378,8 +378,7 @@ describe("TableViewInteractive.vue", () => {
       initialDataMock.settings.showRowKeys = true;
 
       const wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       expect(tableUIWithAutoSizeCalculation.exists()).toBeTruthy();
       const expectedColumnSize = DEFAULT_COLUMN_SIZE;
       expect(tableUIWithAutoSizeCalculation.vm.dataConfig).toMatchObject({
@@ -430,8 +429,7 @@ describe("TableViewInteractive.vue", () => {
         },
       ];
 
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       expect(tableUIWithAutoSizeCalculation.exists()).toBe(true);
       expect(tableUIWithAutoSizeCalculation.vm.dataConfig).toMatchObject({
         columnConfigs: newColumnConfig,
@@ -444,8 +442,7 @@ describe("TableViewInteractive.vue", () => {
 
       const wrapper = await shallowMountInteractive(context);
 
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       expect(tableUIWithAutoSizeCalculation.exists()).toBe(true);
       expect(tableUIWithAutoSizeCalculation.vm.tableConfig).toMatchObject({
         showSelection: false,
@@ -525,17 +522,41 @@ describe("TableViewInteractive.vue", () => {
         });
 
         it("renders table after lazy loading", () => {
-          const tableUIWithAutoSizeCalculation =
-            findTableUIWithAutoSizeCalculation(wrapper);
+          const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
           expect(tableUIWithAutoSizeCalculation.exists()).toBe(true);
         });
       });
 
-      it("refreshes the scroller when refreshing the table", () => {
-        const tableUI = findTableUIWithAutoSizeCalculation(wrapper);
-        tableUI.vm.refreshScroller = vi.fn();
-        wrapper.vm.refreshTable();
-        expect(tableUI.vm.refreshScroller).toHaveBeenCalled();
+      describe("cleaning the state of the table component", () => {
+        let tableComp;
+
+        beforeEach(() => {
+          tableComp = findTableComponent(wrapper);
+          tableComp.vm.refreshScroller = vi.fn();
+          tableComp.vm.clearCellSelection = vi.fn();
+        });
+
+        it("refreshes the scroller and clears the cell selection when refreshing the table", () => {
+          wrapper.vm.refreshTable();
+          expect(tableComp.vm.refreshScroller).toHaveBeenCalled();
+          expect(tableComp.vm.clearCellSelection).toHaveBeenCalled();
+        });
+
+        it("clears the cell selection when changing row keys", () => {
+          changeViewSetting(wrapper, "showRowKeys", !wrapper.vm.showRowKeys);
+          expect(tableComp.vm.refreshScroller).not.toHaveBeenCalled();
+          expect(tableComp.vm.clearCellSelection).toHaveBeenCalled();
+        });
+
+        it("clears the cell selection when changing row indices", () => {
+          changeViewSetting(
+            wrapper,
+            "showRowIndices",
+            !wrapper.vm.showRowIndices,
+          );
+          expect(tableComp.vm.refreshScroller).not.toHaveBeenCalled();
+          expect(tableComp.vm.clearCellSelection).toHaveBeenCalled();
+        });
       });
 
       describe("on data update", () => {
@@ -1358,8 +1379,7 @@ describe("TableViewInteractive.vue", () => {
         initialDataMock.table.displayedColumns,
       );
       expect(
-        findTableUIWithAutoSizeCalculation(wrapper).vm.tableConfig.pageConfig
-          .columnCount,
+        findTableComponent(wrapper).vm.tableConfig.pageConfig.columnCount,
       ).toBe(dataRequestResult.columnCount);
       expect(wrapper.vm.columnContentTypes).toStrictEqual(
         dataRequestResult.columnContentTypes,
@@ -1408,8 +1428,7 @@ describe("TableViewInteractive.vue", () => {
           subHeader: undefined,
         },
       ];
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       expect(tableUIWithAutoSizeCalculation.vm.dataConfig).toMatchObject({
         columnConfigs: newColumnConfig,
       });
@@ -1459,9 +1478,7 @@ describe("TableViewInteractive.vue", () => {
           hasSlotContent: true,
         },
       ];
-      expect(
-        findTableUIWithAutoSizeCalculation(wrapper).vm.dataConfig,
-      ).toMatchObject({
+      expect(findTableComponent(wrapper).vm.dataConfig).toMatchObject({
         columnConfigs: newColumnConfig,
       });
     });
@@ -1470,8 +1487,7 @@ describe("TableViewInteractive.vue", () => {
       let sortColumn;
 
       beforeEach(() => {
-        const tableUIWithAutoSizeCalculation =
-          findTableUIWithAutoSizeCalculation(wrapper);
+        const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
         sortColumn = (index) => {
           tableUIWithAutoSizeCalculation.vm.$emit("columnSort", index);
         };
@@ -1587,8 +1603,7 @@ describe("TableViewInteractive.vue", () => {
 
     beforeEach(async () => {
       wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       sortColumn = (colIndex) => {
         tableUIWithAutoSizeCalculation.vm.$emit("columnSort", colIndex);
       };
@@ -1640,8 +1655,7 @@ describe("TableViewInteractive.vue", () => {
           false,
         );
       });
-      const { tableConfig } =
-        findTableUIWithAutoSizeCalculation(wrapper).vm.$props;
+      const { tableConfig } = findTableComponent(wrapper).vm.$props;
       expect(tableConfig).toMatchObject({
         subMenuItems: [],
         pageConfig: {
@@ -1749,8 +1763,7 @@ describe("TableViewInteractive.vue", () => {
     it("passes the correct parameters when sorting by rowKeys", async () => {
       initialDataMock.settings.showRowKeys = true;
       const wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       tableUIWithAutoSizeCalculation.vm.$emit("columnSort", 0);
 
       expect(getData).toHaveBeenCalledWith({
@@ -1813,7 +1826,7 @@ describe("TableViewInteractive.vue", () => {
           wrapper.vm.selectionService,
           "publishOnSelectionChange",
         );
-        tableViewDisplay = findTableUIWithAutoSizeCalculation(wrapper);
+        tableViewDisplay = findTableComponent(wrapper);
       });
 
       it("calls the selection service and updates local selection on select single row", async () => {
@@ -2046,8 +2059,7 @@ describe("TableViewInteractive.vue", () => {
 
     beforeEach(async () => {
       wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       setColumnFilter = (colIndex, filterVal) => {
         tableUIWithAutoSizeCalculation.vm.$emit(
           "columnFilter",
@@ -2088,10 +2100,7 @@ describe("TableViewInteractive.vue", () => {
     it("requests new data on global search", () => {
       const globalSearchTerm = "entry1";
 
-      findTableUIWithAutoSizeCalculation(wrapper).vm.$emit(
-        "search",
-        globalSearchTerm,
-      );
+      findTableComponent(wrapper).vm.$emit("search", globalSearchTerm);
 
       expect(getData).toBeCalledWith({
         method: "getFilteredAndSortedTable",
@@ -2155,8 +2164,7 @@ describe("TableViewInteractive.vue", () => {
 
     beforeEach(async () => {
       wrapper = await shallowMountInteractive(context);
-      const tableUIWithAutoSizeCalculation =
-        findTableUIWithAutoSizeCalculation(wrapper);
+      const tableUIWithAutoSizeCalculation = findTableComponent(wrapper);
       setHeaderSubMenuItem = (item, colIndex) => {
         tableUIWithAutoSizeCalculation.vm.$emit(
           "header-sub-menu-item-selection",
@@ -2267,8 +2275,7 @@ describe("TableViewInteractive.vue", () => {
       async (_, changeCallback) => {
         initialDataMock.settings.autoSizeColumnsToContent = "FIT_CONTENT";
         const wrapper = await shallowMountInteractive(context);
-        const tableUIWithAutoSizeCalc =
-          findTableUIWithAutoSizeCalculation(wrapper);
+        const tableUIWithAutoSizeCalc = findTableComponent(wrapper);
         tableUIWithAutoSizeCalc.vm.triggerCalculationOfAutoColumnSizes =
           vi.fn();
         changeCallback(wrapper);
@@ -2281,5 +2288,58 @@ describe("TableViewInteractive.vue", () => {
         });
       },
     );
+  });
+
+  describe("copying content", () => {
+    let wrapper, copyContent;
+
+    beforeEach(async () => {
+      wrapper = await shallowMountInteractive(context);
+      navigator.clipboard = {
+        writeText: vi.fn(),
+      };
+      dataRequestResult = "copyContent";
+      const tableComp = findTableComponent(wrapper);
+      copyContent = (rect, isTop = true) => {
+        tableComp.vm.$emit("copySelection", { rect, id: isTop });
+      };
+    });
+
+    it.each([
+      [true, true, ["col1", "col2"]],
+      [true, false, ["col1", "col2", "col3"]],
+      [false, true, ["col1", "col2", "col3"]],
+      [false, false, ["col1", "col2", "col3", "col4"]],
+    ])(
+      "copies table content when showIndices is %s amd showRowKeys is %s",
+      async (showRowIndices, showRowKeys, otherColumns) => {
+        await wrapper.setData({
+          settings: {
+            ...initialDataMock.settings,
+            showRowIndices,
+            showRowKeys,
+          },
+        });
+        copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
+        expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+          method: "getCopyContent",
+          options: [showRowIndices, showRowKeys, otherColumns, 1, 4],
+        });
+      },
+    );
+
+    it("copies table content for bottom rows", () => {
+      copyContent(
+        {
+          x: { min: 2, max: 3 },
+          y: { min: wrapper.vm.maxNumRows - 3, max: wrapper.vm.maxNumRows - 2 },
+        },
+        false,
+      );
+      expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+        method: "getCopyContent",
+        options: [false, false, ["col3", "col4"], 1, 2],
+      });
+    });
   });
 });

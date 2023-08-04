@@ -78,6 +78,7 @@ describe("TableViewReport.vue", () => {
     expect(wrapper.findComponent(TableViewDisplay).props()).toStrictEqual({
       enableColumnResizing: false,
       enableRowResizing: false,
+      enableCellSelection: false,
       globalSearchQuery: "",
       knimeService: knimeSeviceMock,
       enableVirtualScrolling: false,
