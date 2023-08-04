@@ -117,7 +117,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
      * @param rendererFactory required to turn data values into text or images
      * @param rendererRegistry lazily supplied image content for cells that are rendered into images (cleared and filled
      *            whenever new rows are being requested, e.g., via
-     *            {@link #getTable(String[], long, int, String[], boolean, boolean)}
+     *            {@link #getTable(String[], long, int, String[], boolean, boolean, boolean)}
      */
     public TableViewDataServiceImpl(final Supplier<BufferedDataTable> tableSupplier, final String tableId,
         final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
@@ -141,7 +141,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
      * @param rendererFactory required to turn data values into text or images
      * @param rendererRegistry lazily supplied image content for cells that are rendered into images (cleared and filled
      *            whenever new rows are being requested, e.g., via
-     *            {@link #getTable(String[], long, int, String[], boolean, boolean)})
+     *            {@link #getTable(String[], long, int, String[], boolean, boolean, boolean)})
      */
     public TableViewDataServiceImpl(final Supplier<BufferedDataTable> tableSupplier,
         final Supplier<Set<RowKey>> selectionSupplier, final String tableId,
@@ -175,9 +175,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
+        final var spec = bufferedDataTable.getSpec();
 
         final var allDisplayedColumns =
-            updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
+            updateDisplayedColumns ? filterInvalids(columns, spec) : columns;
         final var numDisplayedColumns = allDisplayedColumns.length;
         final String[] displayedColumns =
             trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
@@ -195,7 +196,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             sortColumn, sortAscending);
         final var filteredAndSortedTable = m_filteredAndSortedTableCache.getCachedTable().orElseGet(() -> sortedTable);
 
-        final var spec = bufferedDataTable.getSpec();
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
                 || m_filteredAndSortedTableCache.wasUpdated()) {
@@ -305,6 +305,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
         };
     }
+
+    private BufferedDataTable getInputTable();
+
+    private BufferedDataTable getSortedTableFromCache();
+
+    private BufferedDataTable getFilteredAndSortedTable();
 
     private static String[] getTrimmedColumns(final int numDisplayedColumns, final String[] allDisplayedColumns) {
         final var maxNumColumns = 100;
