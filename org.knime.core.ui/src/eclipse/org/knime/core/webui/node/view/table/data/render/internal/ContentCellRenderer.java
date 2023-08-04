@@ -44,66 +44,67 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.List;
-import java.util.Map;
-
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.MissingCell;
+import org.knime.core.webui.node.view.table.data.Cell;
+import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 
 /**
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ *
+ * @author Paul Bärnreuther
  */
-public interface Table {
+interface ContentCellRenderer extends CellRenderer<Object> {
 
-    /**
-     * @return the displayed columns which remain after missing columns are filtered out.
-     */
-    String[] getDisplayedColumns();
+    String getColor(final DataCell cell);
 
-    /**
-     * @return the content type per column (which depends on the selected renderer per column)
-     */
-    String[] getColumnContentTypes();
+    String renderCellContent(final DataCell cell);
 
-    /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
-     */
-    String[] getColumnDataTypeIds();
+    @Override
+    default public Object renderCell(final DataCell cell) {
+        final var color = getColor(cell);
+        if (cell.isMissing()) {
+            return createMetadataCell(cell, color);
+        }
+        final var renderedValue = renderCellContent(cell);
+        if (color != null) {
+            return createColoredCell(color, renderedValue);
+        }
+        return renderedValue;
+    }
 
-    /**
-     * @return the description of the formatters attached to the columns or null where none is attached.
-     */
-    String[] getColumnFormatterDescriptions();
+    private static Cell createColoredCell(final String color, final String renderedValue) {
+        return new Cell() {
 
-    /**
-     * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
-     *         {@code Cell}s in case of missing values
-     */
-    List<List<Object>> getRows();
+            @Override
+            public String getValue() {
+                return renderedValue;
+            }
 
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
+            @Override
+            public String getColor() {
+                return color;
+            }
+        };
+    }
 
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
+    private static MissingCellWithMessage createMetadataCell(final DataCell cell, final String color) {
+        final var missingCellErrorMsg = ((MissingCell)cell).getError();
+        return missingCellErrorMsg == null && color == null ? null : new MissingCellWithMessage() {
 
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
+            @Override
+            public String getMetadata() {
+                return missingCellErrorMsg;
+            }
 
-    /**
-     * @return the column sizes of image columns
-     */
-    Map<String, ImageDimension> getFirstRowImageDimensions();
+            @Override
+            public String getColor() {
+                return color;
+            }
+        };
+    }
 
 }

@@ -44,66 +44,69 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
+import org.knime.core.data.container.filter.TableFilter;
+import org.knime.core.node.BufferedDataTable;
 
 /**
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * This class is used to apply a {@link RowRenderer} to a section from/to an index in a table.
+ *
+ * @author Paul Bärnreuther
+ * @param <R> output type
  */
-public interface Table {
+public final class TableSectionRenderer<R> {
+
+    private final RowRenderer<R> m_rowRenderer;
+
+    private final long m_fromIndex;
+
+    private final long m_toIndex;
 
     /**
-     * @return the displayed columns which remain after missing columns are filtered out.
+     * @param rowRenderer which is applied to each row
+     * @param fromIndex from which to start
+     * @param toIndex until which (inclusive) rows should be rendered
      */
-    String[] getDisplayedColumns();
+    public TableSectionRenderer(final RowRenderer<R> rowRenderer, final long fromIndex, final long toIndex) {
+        m_rowRenderer = rowRenderer;
+        m_fromIndex = fromIndex;
+        m_toIndex = toIndex;
+    }
 
     /**
-     * @return the content type per column (which depends on the selected renderer per column)
+     * @param table
+     * @return the result of the row renderer for all rows in the section
      */
-    String[] getColumnContentTypes();
+    public List<List<R>> renderRows(final BufferedDataTable table) {
+        final var size = (int)getSize();
+        List<List<R>> out = new ArrayList<List<R>>(size);
+        if (size > 0) {
+            try (final var iterator = table.filter(getFilter()).iterator()) {
+                iterator.forEachRemaining(row -> out.add(m_rowRenderer.renderRow(row)));
+            }
+        }
+        return out;
+    }
 
-    /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
-     */
-    String[] getColumnDataTypeIds();
+    private long getSize() {
+        return m_toIndex - m_fromIndex + 1;
+    }
 
-    /**
-     * @return the description of the formatters attached to the columns or null where none is attached.
-     */
-    String[] getColumnFormatterDescriptions();
+    private int[] getMaterializedColumnIndices() {
+        return m_rowRenderer.getMaterializedColumnIndices();
+    }
 
-    /**
-     * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
-     *         {@code Cell}s in case of missing values
-     */
-    List<List<Object>> getRows();
-
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
-
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
-
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
-
-    /**
-     * @return the column sizes of image columns
-     */
-    Map<String, ImageDimension> getFirstRowImageDimensions();
-
+    private TableFilter getFilter() {
+        final var filter = new TableFilter.Builder();
+        filter.withFromRowIndex(m_fromIndex); // will throw exception when fromIndex < 0
+        filter.withToRowIndex(m_toIndex); // will throw exception when toIndex < fromIndex
+        filter.withMaterializeColumnIndices(getMaterializedColumnIndices());
+        return filter.build();
+    }
 }

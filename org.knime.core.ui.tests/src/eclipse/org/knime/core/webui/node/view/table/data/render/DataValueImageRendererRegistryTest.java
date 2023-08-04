@@ -93,12 +93,12 @@ public class DataValueImageRendererRegistryTest {
 
         // test pre-condition: make sure that all images in the table have unique ids
         var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
-        assertThat(Arrays.stream(table.getRows()).map(r -> r[1]).collect(Collectors.toSet())).hasSize(15);
+        assertThat(table.getRows().stream().map(r -> r.get(1)).collect(Collectors.toSet())).hasSize(15);
         imgReg.clearImageDataCache("test_table_id");
 
         // access the same image multiple times (within the same chunk/page of rows)
         table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
-        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         img = imgReg.renderImage(imgPath);
@@ -109,7 +109,7 @@ public class DataValueImageRendererRegistryTest {
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         // request image from the new chunk
-        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
 
@@ -118,7 +118,7 @@ public class DataValueImageRendererRegistryTest {
         // request image from the previous chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSize(0);
-        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         // request image from the new chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
@@ -136,7 +136,7 @@ public class DataValueImageRendererRegistryTest {
 
         // read dimensions of same image twice
         var table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
-        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var imgDims = imgReg.getImageDimensions(imgPath);
         assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
         assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
@@ -151,7 +151,7 @@ public class DataValueImageRendererRegistryTest {
         imgDims = imgReg.getImageDimensions(imgPath);
         assertThat(imgDims).isNull();
 
-        imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         imgDims = imgReg.getImageDimensions(imgPath);
         assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
         assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
@@ -175,21 +175,21 @@ public class DataValueImageRendererRegistryTest {
         var columns = new String[]{"double", "image"};
         for (var i = 0; i <= 1; i++) {
             var table = dataService.getTable(columns, i * 100l, 100, rendererIds, false, false, false);
-            Arrays.stream(table.getRows()).forEach(r -> imgPaths.add((String)r[1]));
+            table.getRows().forEach(r -> imgPaths.add((String)r.get(1)));
             var stats = imgReg.getStatsPerTable(tableId);
             assertThat(stats.numImages()).isEqualTo((i + 1) * 100 * 2); // there are two images per row
             var batchSizes = new int[i + 1];
             Arrays.fill(batchSizes, 100 * 2);
             assertThat(stats.batchSizes()).isEqualTo(batchSizes);
-            imgReg.renderImage(((String)table.getRows()[0][2]).replace(pathPrefix, ""));
-            imgReg.renderImage(((String)table.getRows()[50][2]).replace(pathPrefix, ""));
+            imgReg.renderImage(((String)table.getRows().get(0).get(2)).replace(pathPrefix, ""));
+            imgReg.renderImage(((String)table.getRows().get(50).get(2)).replace(pathPrefix, ""));
             assertThat(stats.numRenderedImages()).isEqualTo(2 * (i + 1));
         }
         assertThat(imgReg.getStatsPerTable(tableId).batchSizes()).isEqualTo(new int[]{200, 200});
 
         // the image data cache has it's limit at 2 row batches -> if exceed, the oldest batch is removed
         var table = dataService.getTable(columns, 200, 80, rendererIds, false, false, false);
-        Arrays.stream((table.getRows())).forEach(r -> imgPaths.add((String)r[1]));
+        table.getRows().forEach(r -> imgPaths.add((String)r.get(1)));
         var stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(360); // there are two images per row
         var batchSizes = new int[]{160, 200};
@@ -257,7 +257,7 @@ public class DataValueImageRendererRegistryTest {
 
         // access the same image multiple times (within the same chunk/page of rows)
         table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
-        var imgPath = ((String)table.getRows()[3][2]).replace(pathPrefix, "");
+        var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var res1 = imgReg.renderImage(imgPath);
         var res2 = imgReg.renderImage(imgPath + "?w=20&h=30");
         var res3 = imgReg.renderImage(imgPath);

@@ -44,66 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Aug 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedList;
 
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
+import org.knime.core.data.DataRow;
 
 /**
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * An interface used in {@link TableSectionRenderer} to render the rows to lists.
+ *
+ * @author Paul Bärnreuther
+ * @param <R> output type
  */
-public interface Table {
+public interface RowRenderer<R> {
 
     /**
-     * @return the displayed columns which remain after missing columns are filtered out.
+     * @param row
+     * @return a list of the output type
      */
-    String[] getDisplayedColumns();
+    LinkedList<R> renderRow(final DataRow row);
 
     /**
-     * @return the content type per column (which depends on the selected renderer per column)
+     * @return the indices which have to be materialized in order to render the row.
      */
-    String[] getColumnContentTypes();
-
-    /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
-     */
-    String[] getColumnDataTypeIds();
-
-    /**
-     * @return the description of the formatters attached to the columns or null where none is attached.
-     */
-    String[] getColumnFormatterDescriptions();
-
-    /**
-     * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
-     *         {@code Cell}s in case of missing values
-     */
-    List<List<Object>> getRows();
-
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
-
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
-
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
-
-    /**
-     * @return the column sizes of image columns
-     */
-    Map<String, ImageDimension> getFirstRowImageDimensions();
-
+    int[] getMaterializedColumnIndices();
 }

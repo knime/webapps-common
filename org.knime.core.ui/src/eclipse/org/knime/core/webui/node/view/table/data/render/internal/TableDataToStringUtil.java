@@ -46,31 +46,36 @@
  * History
  *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 /**
- * A utility class for converting table data in a format readable by a spreadsheet. This is used when copying data in
- * the TableView.
+ * A utility class for converting table data into a single string in a format suitable to be copied into the clipboard.
  *
  * @author Paul Bärnreuther
  */
-class SpreadsheetUtil {
+public class TableDataToStringUtil {
 
-    private SpreadsheetUtil() {
-
+    private TableDataToStringUtil() {
+        // utility
     }
 
-    String toSpreadsheetContent(final String[][] data) throws IOException {
+    /**
+     * @param rows the table data
+     * @return the table as CSV string
+     * @throws IOException
+     */
+    public static String toCSV(final List<List<String>> rows) throws IOException {
         StringWriter out = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.TDF)) {
-            for (String[] row : data) {
-                printer.printRecord((Object[])row);
+            for (var row : rows) {
+                printer.printRecord(row);
             }
         }
         return out.toString();

@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import java.io.IOException;
+
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -95,6 +97,22 @@ public interface TableViewDataService {
         boolean sortAscending, String globalSearchTerm, String[][] columnFilterValue, boolean filterRowKeys,
         String[] rendererIds, boolean updateDisplayedColumns, boolean updateTotalSelected,
         boolean forceClearImageDataCache, boolean trimColumns);
+
+    /**
+     * A method receiving a representation of a selected rectangle of cells in the frontend which is invoked when these
+     * are copied.
+     *
+     * @param withIndices whether the index column is part of the selection
+     * @param withRowKeys whether the row key column is part of the selection
+     * @param dataColumns the names of the selected columns
+     * @param fromIndex the index of the first row which is partially selected (within the filtered table)
+     * @param toIndex the index of the last row which is partially selected (within the filtered table)
+     *
+     * @return the original content of the cells as spreadsheet-readable formatted String
+     * @throws IOException when an I/O error occurs during conversion to csv format.
+     */
+    String getCopyContent(boolean withIndices, boolean withRowKeys, String[] dataColumns, int fromIndex, int toIndex)
+        throws IOException;
 
     /**
      * @return the row keys of the currently cached sorted and filtered table or the input table

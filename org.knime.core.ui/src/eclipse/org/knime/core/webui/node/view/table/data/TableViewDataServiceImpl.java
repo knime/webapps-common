@@ -48,10 +48,13 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import java.io.IOException;
 import java.lang.ref.Cleaner;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -65,27 +68,27 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.filter.TableFilter;
-import org.knime.core.data.property.ColorHandler;
-import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.util.Pair;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
-import org.knime.core.webui.node.view.table.data.render.DataValueRenderer;
 import org.knime.core.webui.node.view.table.data.render.DataValueRendererFactory;
-import org.knime.core.webui.node.view.table.data.render.DataValueTextRenderer;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRenderer;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndices;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithRowKeys;
+import org.knime.core.webui.node.view.table.data.render.internal.SimpleRowRenderer;
+import org.knime.core.webui.node.view.table.data.render.internal.TableDataToStringUtil;
+import org.knime.core.webui.node.view.table.data.render.internal.TableRenderer;
+import org.knime.core.webui.node.view.table.data.render.internal.TableSectionRenderer;
 
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
@@ -171,14 +174,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
         final boolean trimColumns) {
-        var bufferedDataTable = m_tableSupplier.get();
+        var bufferedDataTable = getInputTable();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
         final var spec = bufferedDataTable.getSpec();
 
-        final var allDisplayedColumns =
-            updateDisplayedColumns ? filterInvalids(columns, spec) : columns;
+        final var allDisplayedColumns = updateDisplayedColumns ? filterInvalids(columns, spec) : columns;
         final var numDisplayedColumns = allDisplayedColumns.length;
         final String[] displayedColumns =
             trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
@@ -189,12 +191,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
         sortTable(bufferedDataTable, sortColumn, sortAscending), sortColumn == null || bufferedDataTable.size() <= 1,
             sortColumn, sortAscending);
-        final var sortedTable = m_sortedTableCache.getCachedTable().orElseGet(() -> bufferedDataTable);
+        final var sortedTable = getSortedTableFromCache();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
             () -> filterTable(sortedTable, columns, globalSearchTerm, columnFilterValue, filterRowKeys),
             globalSearchTerm == null && columnFilterValue == null, globalSearchTerm, columnFilterValue, columns,
             sortColumn, sortAscending);
-        final var filteredAndSortedTable = m_filteredAndSortedTableCache.getCachedTable().orElseGet(() -> sortedTable);
+        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
 
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
@@ -224,38 +226,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 rendererIds = rendererIdsParam;
             }
         }
-        Map<Pair<String, String>, DataValueRenderer> renderersMap =
-            createRenderers(spec, displayedColumns, rendererIds);
 
-        final var tableSize = filteredAndSortedTable.size();
-        final var toIndex = Math.min(fromIndex + numRows, tableSize) - 1;
-        final var size = (int)(toIndex - fromIndex + 1);
+        final var tableDataRendererUtil = new TableRenderer(m_rendererFactory, spec, displayedColumns,
+            rendererIds, m_rendererRegistry, m_tableId);
 
-        final Object[][] rows;
-        if (size > 0) {
-            final var colIndices = spec.columnsToIndices(displayedColumns);
-            final var colorHandlers = IntStream.of(colIndices).mapToObj(spec::getColumnSpec)
-                .map(DataColumnSpec::getColorHandler).toArray(ColorHandler[]::new);
-            final var filter = new TableFilter.Builder();
-            filter.withFromRowIndex(fromIndex); // will throw exception when fromIndex < 0
-            filter.withToRowIndex(toIndex); // will throw exception when toIndex < fromIndex
-            filter.withMaterializeColumnIndices(colIndices);
-            rows = renderRows(displayedColumns, colIndices, colorHandlers, rendererIds, size,
-                () -> filteredAndSortedTable.filter(filter.build()).iterator(), m_rendererRegistry, renderersMap,
-                m_tableId);
-        } else {
-            rows = new String[0][];
-        }
-        final var tableSpec = bufferedDataTable.getDataTableSpec();
-        final var contentTypes = getColumnContentTypes(displayedColumns, rendererIds, renderersMap);
-        final var dataTypeIds = getColumnDataTypeIds(displayedColumns, tableSpec);
+        final var rows =
+            tableDataRendererUtil.renderTableContent(getFilteredAndSortedTableFromCache(), fromIndex, numRows);
+        final var contentTypes = tableDataRendererUtil.getColumnContentTypes();
         final var firstRowImageDimensions = getFirstRowImageDimensions(rows, contentTypes, displayedColumns);
-        var currentSelection = getCurrentSelection();
-        var totalSelected = m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
-            : countSelectedRows(filteredAndSortedTable, currentSelection);
-        final var columnFormatterDescriptions = Arrays.asList(displayedColumns).stream().map(tableSpec::getColumnSpec)
-            .map(DataColumnSpec::getValueFormatHandler).map(f -> f == null ? null : "Attached formatter")
-            .toArray(String[]::new);
+
         return new Table() {
 
             @Override
@@ -270,22 +249,25 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
             @Override
             public String[] getColumnDataTypeIds() {
-                return dataTypeIds;
+                return Arrays.stream(displayedColumns)
+                    .map(c -> String.valueOf(spec.getColumnSpec(c).getType().hashCode())).toArray(String[]::new);
             }
 
             @Override
             public String[] getColumnFormatterDescriptions() {
-                return columnFormatterDescriptions;
+                return Arrays.asList(displayedColumns).stream().map(spec::getColumnSpec)
+                    .map(DataColumnSpec::getValueFormatHandler).map(f -> f == null ? null : "Attached formatter")
+                    .toArray(String[]::new);
             }
 
             @Override
-            public Object[][] getRows() {
+            public List<List<Object>> getRows() {
                 return rows;
             }
 
             @Override
             public long getRowCount() {
-                return tableSize;
+                return filteredAndSortedTable.size();
             }
 
             @Override
@@ -295,7 +277,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
             @Override
             public Long getTotalSelected() {
-                return totalSelected;
+                var currentSelection = getCurrentSelection();
+                return m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
+                    : countSelectedRows(filteredAndSortedTable, currentSelection);
             }
 
             @Override
@@ -306,11 +290,17 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         };
     }
 
-    private BufferedDataTable getInputTable();
+    private BufferedDataTable getInputTable() {
+        return m_tableSupplier.get();
+    }
 
-    private BufferedDataTable getSortedTableFromCache();
+    private BufferedDataTable getSortedTableFromCache() {
+        return m_sortedTableCache.getCachedTable().orElseGet(this::getInputTable);
+    }
 
-    private BufferedDataTable getFilteredAndSortedTable();
+    private BufferedDataTable getFilteredAndSortedTableFromCache() {
+        return m_filteredAndSortedTableCache.getCachedTable().orElseGet(this::getSortedTableFromCache);
+    }
 
     private static String[] getTrimmedColumns(final int numDisplayedColumns, final String[] allDisplayedColumns) {
         final var maxNumColumns = 100;
@@ -481,133 +471,31 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             || cellStringValue.contains(globalSearchTerm.toLowerCase());
     }
 
-    @SuppressWarnings("java:S107") // accept the large number of parameters
-    private static Object[][] renderRows(final String[] columns, final int[] colIndices,
-        final ColorHandler[] colorHandlers, final String[] rendererIds, final int size,
-        final Supplier<CloseableRowIterator> rowIteratorSupplier, final DataValueImageRendererRegistry rendererRegistry,
-        final Map<Pair<String, String>, DataValueRenderer> renderersMap, final String tableId) {
-        var renderers = IntStream.range(0, columns.length)
-            .mapToObj(i -> renderersMap.get(Pair.create(columns[i], rendererIds[i]))).toArray(DataValueRenderer[]::new);
-        final var rows = new Object[size][];
-        try (final var iterator = rowIteratorSupplier.get()) {
-            IntStream.range(0, size).forEach(index -> {
-                final var row = iterator.next();
-                rows[index] = renderRow(row, colIndices, colorHandlers, renderers, rendererRegistry, tableId);
-            });
-        }
-        return rows;
-    }
-
-    private static Object createCell(final DataCell cell, final DataValueRenderer renderer, final String color,
-        final DataValueImageRendererRegistry rendererRegistry, final String tableId) {
-        if (cell.isMissing()) {
-            return createCellMetadata(cell, color);
-        }
-        final var renderedValue = renderCell(cell, renderer, rendererRegistry, tableId);
-        if (color != null) {
-            return new Cell() {
-
-                @Override
-                public String getValue() {
-                    return renderedValue;
-                }
-
-                @Override
-                public String getColor() {
-                    return color;
-                }
-            };
-        }
-        return renderedValue;
-    }
-
-    private static Object createCellMetadata(final DataCell cell, final String color) {
-        final var missingCellErrorMsg = ((MissingCell)cell).getError();
-        return missingCellErrorMsg == null && color == null ? null : new MissingCellWithMessage() {
-
-            @Override
-            public String getMetadata() {
-                return missingCellErrorMsg;
-            }
-
-            @Override
-            public String getColor() {
-                return color;
-            }
-        };
-    }
-
-    private static Object[] renderRow(final DataRow row, final int[] colIndices, final ColorHandler[] colorHandlers,
-        final DataValueRenderer[] renderers, final DataValueImageRendererRegistry rendererRegistry,
-        final String tableId) {
-        final var rowIndex = row.getCell(0).toString();
-        final var rowKey = row.getKey().toString();
-        return Stream.concat(Stream.of(rowIndex, rowKey), //
-            IntStream.range(0, colIndices.length) //
-                .mapToObj(i -> {
-                    final var cell = row.getCell(colIndices[i]);
-                    final var renderer = renderers[i];
-                    final var color = getColor(colorHandlers[i], cell);
-                    return createCell(cell, renderer, color, rendererRegistry, tableId);
-                }))
-            .toArray(Object[]::new);
-    }
-
-    private static String getColor(final ColorHandler colorHandler, final DataCell cell) {
-        if (colorHandler == null) {
-            return null;
-        }
-        return ColorModel.colorToHexString(colorHandler.getColorAttr(cell).getColor());
-    }
-
-    private static String renderCell(final DataCell cell, final DataValueRenderer renderer,
-        final DataValueImageRendererRegistry rendererRegistry, final String tableId) {
-        if (renderer instanceof DataValueTextRenderer) {
-            return ((DataValueTextRenderer)renderer).renderText(cell);
-        } else if (renderer instanceof DataValueImageRenderer) {
-            return rendererRegistry.addRendererAndGetImgPath(tableId, cell, (DataValueImageRenderer)renderer);
-        } else {
-            throw new UnsupportedOperationException(
-                "Unsupported data value renderer: " + renderer.getClass().getName());
-        }
-    }
-
-    private Map<Pair<String, String>, DataValueRenderer> createRenderers(final DataTableSpec spec,
-        final String[] columns, final String[] rendererIds) {
-        var result = new HashMap<Pair<String, String>, DataValueRenderer>();
-        for (var i = 0; i < columns.length; i++) {
-            var key = Pair.create(columns[i], rendererIds[i]);
-            result.put(key,
-                m_rendererFactory.createDataValueRenderer(spec.getColumnSpec(key.getFirst()), key.getSecond()));
-        }
-        return result;
-    }
-
-    private static String[] getColumnContentTypes(final String[] columns, final String[] rendererIds,
-        final Map<Pair<String, String>, DataValueRenderer> renderersMap) {
-        return IntStream.range(0, columns.length)
-            .mapToObj(i -> renderersMap.get(Pair.create(columns[i], rendererIds[i])).getContentType().toString())
-            .toArray(String[]::new);
-    }
-
-    private static String[] getColumnDataTypeIds(final String[] columns, final DataTableSpec spec) {
-        return Arrays.stream(columns).map(c -> String.valueOf(spec.getColumnSpec(c).getType().hashCode()))
-            .toArray(String[]::new);
-    }
-
-    private Map<String, ImageDimension> getFirstRowImageDimensions(final Object[][] rows,
+    private Map<String, ImageDimension> getFirstRowImageDimensions(final List<List<Object>> rows,
         final String[] contentTypes, final String[] displayedColumns) {
-        if (rows.length == 0) {
+        if (rows.size() == 0) {
             return new HashMap<>(0);
         }
-        final var firstRowImageDimensions = new HashMap<String, ImageDimension>(rows[0].length);
+        final var firstRow = rows.get(0);
+
+        final var firstRowImageDimensions = new HashMap<String, ImageDimension>(firstRow.size());
         IntStream.range(0, contentTypes.length).forEach(index -> {
-            if (contentTypes[index].equals(DataCellContentType.IMG_PATH.toString()) && (rows[0][index + 2] != null
-                || (rows[0][index + 2] instanceof Cell && ((Cell)rows[0][index + 2]).getValue() != null))) {
-                final var originalDims = m_rendererRegistry.getImageDimensions((String)rows[0][index + 2]);
-                if (originalDims != null) {
-                    firstRowImageDimensions.put(displayedColumns[index], originalDims);
-                }
+            final var imageCell = firstRow.get(index + 2);
+            if (!contentTypes[index].equals(DataCellContentType.IMG_PATH.toString())) {
+                return;
+            }
+            String imageCellContent = null;
+            if (imageCell instanceof String imageCellString) {
+                imageCellContent = imageCellString;
+            } else if (imageCell instanceof Cell cell) {
+                imageCellContent = cell.getValue();
+            }
+            if (imageCellContent == null) {
+                return;
+            }
+            final var originalDims = m_rendererRegistry.getImageDimensions(imageCellContent);
+            if (originalDims != null) {
+                firstRowImageDimensions.put(displayedColumns[index], originalDims);
             }
         });
         return firstRowImageDimensions;
@@ -637,8 +525,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             }
 
             @Override
-            public Object[][] getRows() {
-                return new String[0][0];
+            public List<List<Object>> getRows() {
+                return new ArrayList<>(0);
             }
 
             @Override
@@ -686,6 +574,28 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final var filter = new TableFilter.Builder();
         filter.withMaterializeColumnIndices(new int[0]);
         return filter.build();
+    }
+
+    @Override
+    public String getCopyContent(final boolean withIndices, final boolean withRowKeys, final String[] dataColumns,
+        final int fromIndex, final int toIndex) throws IOException {
+        final var colIndices = getInputTable().getSpec().columnsToIndices(dataColumns);
+        final var rowRenderer = getCopyContentRowRenderer(withIndices, withRowKeys, colIndices);
+        final var tableRenderer = new TableSectionRenderer<String>(rowRenderer, fromIndex, toIndex);
+        final var rows = tableRenderer.renderRows(getFilteredAndSortedTableFromCache());
+        return TableDataToStringUtil.toCSV(rows);
+    }
+
+    private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices,
+        final boolean withRowKeys, final int[] colIndices) {
+        RowRenderer<String> rowRenderer = new SimpleRowRenderer<String>(colIndices, i -> DataCell::toString);
+        if (withRowKeys) {
+            rowRenderer = new RowRendererWithRowKeys<String>(rowRenderer, RowKey::toString);
+        }
+        if (withIndices) {
+            rowRenderer = new RowRendererWithIndices<String>(rowRenderer, DataCell::toString);
+        }
+        return rowRenderer;
     }
 
 }

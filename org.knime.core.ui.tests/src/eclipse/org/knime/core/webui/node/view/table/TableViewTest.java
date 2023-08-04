@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -75,6 +76,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -143,18 +145,18 @@ class TableViewTest {
     @Test
     void testDataServiceGetData() {
         final var expectedResult =
-            new String[][]{{"2", "rowkey 1", "1", "1", "11", "uiext/pageId/images/tableId/2018748495.png", "0001",
-                "true", "uiext/pageId/images/tableId/-1084641940.png"}};
+            List.of(List.of("2", "rowkey 1", "1", "1", "11", "uiext/pageId/images/tableId/2018748495.png", "0001",
+                "true", "uiext/pageId/images/tableId/-1084641940.png"));
         var rendererRegistry = new DataValueImageRendererRegistry(() -> "pageId");
-        var rendererIds = new String[expectedResult[0].length];
+        var rendererIds = new String[expectedResult.get(0).size()];
         rendererIds[3] = "org.knime.core.data.renderer.DoubleBarRenderer$Factory";
         final var table = new TableViewDataServiceImpl(createDefaultTestTable(2), "tableId",
             new SwingBasedRendererFactory(), rendererRegistry).getTable(getDefaultTestSpec().getColumnNames(), 1, 1,
                 rendererIds, false, true, false);
         var rows = table.getRows();
         assertThat(rows).as("check that the first row has the correct test values")
-            .overridingErrorMessage("The values of the first row should be %s, not %s.", rows[0].toString(),
-                expectedResult[0].toString())
+            .overridingErrorMessage("The values of the first row should be %s, not %s.", rows.get(0).toString(),
+                expectedResult.get(0).toString())
             .isEqualTo(expectedResult);
         assertThat(rendererRegistry.numRegisteredRenderers("tableId")).isEqualTo(2);
 
@@ -169,7 +171,8 @@ class TableViewTest {
         assertThat(new String(cellImg2, StandardCharsets.UTF_8)).startsWith("�PNG");
         assertThat(table.getRowCount()).isEqualTo(2);
 
-        assertThat(table.getFirstRowImageDimensions()).isEqualTo(Map.of("double", new ImageDimension(2, 2), "image", new ImageDimension(11, 11)));
+        assertThat(table.getFirstRowImageDimensions())
+            .isEqualTo(Map.of("double", new ImageDimension(2, 2), "image", new ImageDimension(11, 11)));
     }
 
     @Test
@@ -184,9 +187,9 @@ class TableViewTest {
             rendererRegistry).getTable(new String[]{"firstCol", "secondCol", "thirdCol"}, 0, 1, rendererIds, false,
                 true, false);
         var rows = table.getRows();
-        assertThat(rows[0][2]).isEqualTo("<h1>dummy html</h1>");
-        assertThat((String)rows[0][3]).endsWith("%"); // Asserting the exact string is not possible as it is locale-dependent.
-        assertThat(rows[0][4]).isEqualTo("B");
+        assertThat(rows.get(0).get(2)).isEqualTo("<h1>dummy html</h1>");
+        assertThat((String)rows.get(0).get(3)).endsWith("%"); // Asserting the exact string is not possible as it is locale-dependent.
+        assertThat(rows.get(0).get(4)).isEqualTo("B");
 
         assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"html", "txt", "txt"});
         assertThat(table.getColumnFormatterDescriptions())
@@ -332,15 +335,15 @@ class TableViewTest {
         var columns = getDefaultTestSpec().getColumnNames();
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(columns, 0, 5, sortColumnName, true, null,
             null, true, null, false, false, true, false).getRows();
-        IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
-            assertThat((String)tableSortedAscending[rowIndex][sortColumnIndex])
-                .isGreaterThanOrEqualTo((String)tableSortedAscending[rowIndex - 1][sortColumnIndex]);
+        IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndex))
+                .isGreaterThanOrEqualTo((String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndex));
         });
         final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
             5, sortColumnName, false, null, null, true, null, false, false, true, false).getRows();
-        IntStream.range(1, tableSortedDescending.length).forEach(rowIndex -> {
-            assertThat((String)tableSortedDescending[rowIndex][sortColumnIndex])
-                .isLessThanOrEqualTo((String)tableSortedDescending[rowIndex - 1][sortColumnIndex]);
+        IntStream.range(1, tableSortedDescending.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedDescending.get(rowIndex).get(sortColumnIndex))
+                .isLessThanOrEqualTo((String)tableSortedDescending.get(rowIndex - 1).get(sortColumnIndex));
         });
     }
 
@@ -352,15 +355,17 @@ class TableViewTest {
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
             5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
-        IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
-            assertThat((String)tableSortedAscending[rowIndex][sortColumnIndexInResultTable])
-                .isGreaterThanOrEqualTo((String)tableSortedAscending[rowIndex - 1][sortColumnIndexInResultTable]);
+        IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndexInResultTable))
+                .isGreaterThanOrEqualTo(
+                    (String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndexInResultTable));
         });
         final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 5,
             5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
-        IntStream.range(1, tableSortedDescending.length).forEach(rowIndex -> {
-            assertThat((String)tableSortedDescending[rowIndex][sortColumnIndexInResultTable])
-                .isGreaterThanOrEqualTo((String)tableSortedDescending[rowIndex - 1][sortColumnIndexInResultTable]);
+        IntStream.range(1, tableSortedDescending.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedDescending.get(rowIndex).get(sortColumnIndexInResultTable))
+                .isGreaterThanOrEqualTo(
+                    (String)tableSortedDescending.get(rowIndex - 1).get(sortColumnIndexInResultTable));
         });
     }
 
@@ -373,7 +378,7 @@ class TableViewTest {
             .getTable(Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo"))
                 .toArray(String[]::new), 0, 1, null, true, true, false)
             .getRows();
-        assertThat(rows[0]).as("The output table has the correct amount of columns")
+        assertThat(rows.get(0)).as("The output table has the correct amount of columns")
             .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
             "Adds warning message for single missing column.");
@@ -435,7 +440,7 @@ class TableViewTest {
             Stream.concat(Arrays.asList(getDefaultTestSpec().getColumnNames()).stream(), Stream.of("foo", "bar"))
                 .toArray(String[]::new),
             0, 1, null, true, true, false).getRows();
-        assertThat(rows[0]).as("The output table has the correct amount of columns")
+        assertThat(rows.get(0)).as("The output table has the correct amount of columns")
             .hasSize(getDefaultTestSpec().getNumColumns() + 2);
         assertTrue(warningMessageAsserter.allRegisteredMessagesCalled(),
             "Adds warning message for single missing column.");
@@ -458,11 +463,11 @@ class TableViewTest {
         final var emptyTable = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(),
             0, 2, sortColumnName, true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false)
             .getRows();
-        assertThat(emptyTable.length).as("filters and excludes all rows").isEqualTo(0);
+        assertThat(emptyTable.size()).as("filters and excludes all rows").isEqualTo(0);
 
         final var table = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2,
             sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false).getRows();
-        assertThat(table.length).as("filters all rows correctly").isEqualTo(1);
+        assertThat(table.size()).as("filters all rows correctly").isEqualTo(1);
     }
 
     @Test
@@ -476,16 +481,18 @@ class TableViewTest {
         final var tableSortedAscending =
             testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
                 globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
-        IntStream.range(1, tableSortedAscending.length).forEach(rowIndex -> {
-            assertThat((String)tableSortedAscending[rowIndex][sortColumnIndex])
-                .isGreaterThanOrEqualTo((String)tableSortedAscending[rowIndex - 1][sortColumnIndex]);
+        IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
+            assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndex))
+                .isGreaterThanOrEqualTo((String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndex));
         });
-        assertThat(tableSortedAscending.length).as("filters rows correctly").isEqualTo(1);
+        assertThat(tableSortedAscending.size()).as("filters rows correctly").isEqualTo(1);
 
-        final var cachedTable =
-            testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
-                globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
-        assertThat(cachedTable).isDeepEqualTo(tableSortedAscending);
+        final var cachedTable = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5,
+            sortColumnName, true, globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+        assertThat(cachedTable).hasSameSizeAs(tableSortedAscending);
+        for (int i = 0; i < cachedTable.size(); i++) {
+            assertThat(cachedTable.get(i)).hasSameElementsAs(tableSortedAscending.get(i));
+        }
     }
 
     @Test
@@ -554,14 +561,14 @@ class TableViewTest {
     void testDataServiceGetDataNullTable() {
         final var rows = createTableViewDataServiceInstance(() -> null)
             .getTable(getDefaultTestSpec().getColumnNames(), 0, 2, null, false, true, false).getRows();
-        assertThat(rows).hasDimensions(0, 0);
+        assertThat(rows).hasSize(0);
     }
 
     @Test
     void testDataServiceGetDataZeroRows() {
         final var rows = createTableViewDataServiceInstance(() -> null)
             .getTable(getDefaultTestSpec().getColumnNames(), 0, 0, null, false, true, false).getRows();
-        assertThat(rows).hasDimensions(0, 0);
+        assertThat(rows).hasSize(0);
     }
 
     @Test
@@ -595,7 +602,8 @@ class TableViewTest {
 
         assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"col1", "col2"});
         assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
-        assertThat(table.getRows()).isEqualTo(new String[][]{{"1", "rowkey 0", "A", "1"}, {"2", "rowkey 1", "B", "3"}});
+        assertThat(table.getRows())
+            .isEqualTo(List.of(List.of("1", "rowkey 0", "A", "1"), List.of("2", "rowkey 1", "B", "3")));
     }
 
     @Test
@@ -612,10 +620,10 @@ class TableViewTest {
         final var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false);
         final var rows = table.getRows();
 
-        assertThat(((MissingCellWithMessage)rows[0][2]).getMetadata()).isEqualTo("Row1_Col1");
-        assertThat(((MissingCellWithMessage)rows[0][3]).getMetadata()).isEqualTo("Row1_Col2");
-        assertThat(rows[1][2]).isNull();
-        assertThat(((MissingCellWithMessage)rows[1][3]).getMetadata()).isEqualTo("Row2_Col2");
+        assertThat(((MissingCellWithMessage)rows.get(0).get(2)).getMetadata()).isEqualTo("Row1_Col1");
+        assertThat(((MissingCellWithMessage)rows.get(0).get(3)).getMetadata()).isEqualTo("Row1_Col2");
+        assertThat(rows.get(1).get(2)).isNull();
+        assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isEqualTo("Row2_Col2");
     }
 
     @Test
@@ -637,17 +645,77 @@ class TableViewTest {
 
         final var missingCellsColor = "#404040";
 
-        assertThat(((Cell)rows[0][2]).getColor()).isEqualTo("#00FF00");
-        assertThat(((Cell)rows[0][2]).getValue()).isEqualTo("value1");
-        assertThat(((Cell)rows[1][2]).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows[1][2]).getValue()).isEqualTo(null);
+        assertThat(((Cell)rows.get(0).get(2)).getColor()).isEqualTo("#00FF00");
+        assertThat(((Cell)rows.get(0).get(2)).getValue()).isEqualTo("value1");
+        assertThat(((Cell)rows.get(1).get(2)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(1).get(2)).getValue()).isEqualTo(null);
 
-        assertThat(((Cell)rows[0][3]).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows[0][3]).getValue()).isEqualTo(null);
-        assertThat(((MissingCellWithMessage)rows[0][3]).getMetadata()).isEqualTo("Row1_Col2");
-        assertThat(((Cell)rows[1][3]).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows[1][3]).getValue()).isEqualTo(null);
-        assertThat(((MissingCellWithMessage)rows[1][3]).getMetadata()).isEqualTo("Row2_Col2");
+        assertThat(((Cell)rows.get(0).get(3)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(0).get(3)).getValue()).isEqualTo(null);
+        assertThat(((MissingCellWithMessage)rows.get(0).get(3)).getMetadata()).isEqualTo("Row1_Col2");
+        assertThat(((Cell)rows.get(1).get(3)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(1).get(3)).getValue()).isEqualTo(null);
+        assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isEqualTo("Row2_Col2");
+    }
+
+    @Nested
+    class GetCopyContentTest {
+
+        private final String[] allTestColumns = getDefaultTestSpec().getColumnNames();
+
+        private final String[] selectedTestColumns = new String[]{allTestColumns[2], allTestColumns[3]};
+
+        private TableViewDataService dataService;
+
+        @BeforeEach
+        void createDataService() {
+            dataService = new TableViewDataServiceImpl(createDefaultTestTable(10), null, null, null);
+        }
+
+        @Test
+        void testGetCopyContent() throws IOException {
+            final var expectedResult = "11\t1.0\r\n" //
+                + "22\t2.0\r\n" //
+                + "33\t3.0\r\n";
+
+            final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 1, 3);
+            assertThat(copyContent).isEqualTo(expectedResult);
+        }
+
+        @Test
+        void testGetCopyContentWithRowKeys() throws IOException {
+            final var expectedResult = "rowkey 1\t11\t1.0\r\n" //
+                + "rowkey 2\t22\t2.0\r\n" //
+                + "rowkey 3\t33\t3.0\r\n";
+
+            final var copyContent = dataService.getCopyContent(false, true, selectedTestColumns, 1, 3);
+            assertThat(copyContent).isEqualTo(expectedResult);
+        }
+
+        @Test
+        void testGetCopyContentWithIndices() throws IOException {
+            final var expectedResult = "2\t11\t1.0\r\n" //
+                + "3\t22\t2.0\r\n" //
+                + "4\t33\t3.0\r\n";
+
+            final var copyContent = dataService.getCopyContent(true, false, selectedTestColumns, 1, 3);
+            assertThat(copyContent).isEqualTo(expectedResult);
+        }
+
+        @Test
+        void testGetCopyContentForFilteredAndSortedTable() throws IOException {
+            final var expectedResult = "1034\t94.0\r\n"//
+                + "1023\t93.0\r\n";
+
+            dataService =
+                new TableViewDataServiceImpl(createDefaultTestTable(100), null, new SwingBasedRendererFactory(), null);
+
+            dataService.getFilteredAndSortedTable(selectedTestColumns, 1, 1, selectedTestColumns[0], false, "3", null,
+                false, null, false, false, false, false);
+            final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 0, 1);
+            assertThat(copyContent).isEqualTo(expectedResult);
+        }
+
     }
 
     private static TableViewDataService

@@ -44,66 +44,83 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 15, 2022 (hornm): created
+ *   Aug 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.List;
-import java.util.Map;
-
-import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.MissingCell;
+import org.knime.core.data.property.ColorHandler;
+import org.knime.core.data.property.ColorModel;
+import org.knime.core.webui.node.view.table.data.Cell;
+import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 
 /**
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * A decorator cell renderer which wraps rendered content to an object with additional metadata information about color
+ * or missing value message of the cell.
+ *
+ * @author Paul Bärnreuther
  */
-public interface Table {
+class MetadataCellRenderer implements CellRenderer<Object> {
 
-    /**
-     * @return the displayed columns which remain after missing columns are filtered out.
-     */
-    String[] getDisplayedColumns();
+    private final CellRenderer<String> m_contentRenderer;
 
-    /**
-     * @return the content type per column (which depends on the selected renderer per column)
-     */
-    String[] getColumnContentTypes();
+    private ColorHandler m_colorHandler;
 
-    /**
-     * @return the data type ids per column; can be used to access the actual data type via
-     *         {@link TableViewInitialData#getDataTypes()}
-     */
-    String[] getColumnDataTypeIds();
+    MetadataCellRenderer(final CellRenderer<String> contentRenderer, final ColorHandler colorHandler) {
+        m_contentRenderer = contentRenderer;
+        m_colorHandler = colorHandler;
+    }
 
-    /**
-     * @return the description of the formatters attached to the columns or null where none is attached.
-     */
-    String[] getColumnFormatterDescriptions();
+    private String getColor(final DataCell cell) {
+        if (m_colorHandler == null) {
+            return null;
+        }
+        return ColorModel.colorToHexString(m_colorHandler.getColorAttr(cell).getColor());
+    }
 
-    /**
-     * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
-     *         {@code Cell}s in case of missing values
-     */
-    List<List<Object>> getRows();
+    @Override
+    public Object renderCell(final DataCell cell) {
+        final var color = getColor(cell);
+        if (cell.isMissing()) {
+            return createMetadataCell(cell, color);
+        }
+        final var renderedValue = m_contentRenderer.renderCell(cell);
+        if (color != null) {
+            return createColoredCell(color, renderedValue);
+        }
+        return renderedValue;
+    }
 
-    /**
-     * @return the row count of the table in use
-     */
-    long getRowCount();
+    private static Cell createColoredCell(final String color, final String renderedValue) {
+        return new Cell() {
 
-    /**
-     * @return the number of valid selected columns of the table in use. These can be possibly more than the displayed
-     *         ones if the columns are trimmed.
-     */
-    long getColumnCount();
+            @Override
+            public String getValue() {
+                return renderedValue;
+            }
 
-    /**
-     * @return the number of selected rows of the table in use
-     */
-    Long getTotalSelected();
+            @Override
+            public String getColor() {
+                return color;
+            }
+        };
+    }
 
-    /**
-     * @return the column sizes of image columns
-     */
-    Map<String, ImageDimension> getFirstRowImageDimensions();
+    private static MissingCellWithMessage createMetadataCell(final DataCell cell, final String color) {
+        final var missingCellErrorMsg = ((MissingCell)cell).getError();
+        return missingCellErrorMsg == null && color == null ? null : new MissingCellWithMessage() {
+
+            @Override
+            public String getMetadata() {
+                return missingCellErrorMsg;
+            }
+
+            @Override
+            public String getColor() {
+                return color;
+            }
+        };
+    }
 
 }
