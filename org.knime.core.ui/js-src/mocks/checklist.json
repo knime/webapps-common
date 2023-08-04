@@ -38,7 +38,7 @@
       "elements": [
         {
           "type": "Section",
-          "label": "View",
+          "label": "Checkboxes",
           "elements": [
             {
               "type": "Control",

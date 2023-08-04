@@ -12,4 +12,5 @@ export const inputFormats = {
   twinList: "twinList",
   comboBox: "comboBox",
   button: "button",
+  textArea: "textArea",
 };

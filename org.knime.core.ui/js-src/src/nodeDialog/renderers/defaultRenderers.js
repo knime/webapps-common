@@ -16,6 +16,7 @@ import { radioRenderer } from "./radioRenderer";
 import { richTextInputRenderer } from "./richTextInputRenderer";
 import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
+import { textAreaRenderer } from "./textAreaRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -39,4 +40,5 @@ export const defaultRenderers = [
   simpleTwinlistRenderer,
   twinlistRenderer,
   valueSwitchRenderer,
+  textAreaRenderer,
 ];
